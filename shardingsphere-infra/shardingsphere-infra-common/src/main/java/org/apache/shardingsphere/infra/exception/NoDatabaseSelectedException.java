@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.infra.exception;
 
 import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 
 /**
- * Backend exception.
+ * No database selected exception.
  */
-public abstract class BackendException extends ShardingSphereInsideException {
+public final class NoDatabaseSelectedException extends ShardingSphereInsideException {
     
-    private static final long serialVersionUID = -2361593557266150160L;
+    private static final long serialVersionUID = 7820981156141678308L;
 }

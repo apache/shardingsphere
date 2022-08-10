@@ -66,13 +66,13 @@ public interface PipelineJobContext {
      * @return job process context
      */
     PipelineProcessContext getJobProcessContext();
-
+    
     /**
      * Set stopping.
      * @param stopping stopping
      */
     void setStopping(boolean stopping);
-
+    
     /**
      * Get stopping.
      * @return stopping

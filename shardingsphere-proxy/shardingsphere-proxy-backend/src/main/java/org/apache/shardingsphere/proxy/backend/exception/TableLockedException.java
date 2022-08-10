@@ -19,13 +19,14 @@ package org.apache.shardingsphere.proxy.backend.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 
 /**
  * Table locked exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class TableLockedException extends BackendException {
+public final class TableLockedException extends ShardingSphereInsideException {
     
     private static final long serialVersionUID = 2622020743612706932L;
     

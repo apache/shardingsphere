@@ -19,13 +19,14 @@ package org.apache.shardingsphere.proxy.backend.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 
 /**
  * Unknown database exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class UnknownDatabaseException extends BackendException {
+public final class UnknownDatabaseException extends ShardingSphereInsideException {
     
     private static final long serialVersionUID = 6442120909016308638L;
     

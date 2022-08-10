@@ -36,8 +36,8 @@ import java.util.Collection;
 /**
  * Rule altered job scheduler.
  */
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public final class RuleAlteredJobScheduler implements PipelineTasksRunner {
     
     @Getter
