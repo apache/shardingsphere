@@ -116,8 +116,8 @@ public final class RuleAlteredJobPreparer {
     }
     
     private void waitUntilLockReleased(final LockContext lockContext, final LockDefinition lockDefinition) {
-        log.info("waiting for lock released, lockKey={}", lockDefinition.getLockKey());
         for (int loopCount = 0; loopCount < 30; loopCount++) {
+            log.info("waiting for lock released, lockKey={}, loopCount={}", lockDefinition.getLockKey(), loopCount);
             ThreadUtil.sleep(TimeUnit.SECONDS.toMillis(5));
             if (!lockContext.isLocked(lockDefinition)) {
                 log.info("unlocked, lockName={}", lockDefinition.getLockKey());
