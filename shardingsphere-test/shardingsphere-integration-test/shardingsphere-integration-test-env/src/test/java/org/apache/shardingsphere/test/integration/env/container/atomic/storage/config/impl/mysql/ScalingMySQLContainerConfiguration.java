@@ -29,6 +29,6 @@ public class ScalingMySQLContainerConfiguration extends DefaultMySQLContainerCon
     
     @Override
     public Map<String, String> getResourceMappings() {
-        return ImmutableMap.<String, String>builder().put("/env/scaling/mysql/my.cnf", "/etc/mysql/my.cnf").build();
+        return ImmutableMap.<String, String>builder().put("/env/mysql/my.cnf", "/etc/mysql/my.cnf").build();
     }
 }
