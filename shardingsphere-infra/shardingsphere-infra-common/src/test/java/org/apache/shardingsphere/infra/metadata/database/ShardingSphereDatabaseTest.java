@@ -26,12 +26,15 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
-import java.util.Collection;
 import java.util.Collections;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+
 
 public final class ShardingSphereDatabaseTest {
     
@@ -61,11 +64,9 @@ public final class ShardingSphereDatabaseTest {
     @Test
     public void assertReloadRules() {
         ShardingSphereResource resource = new ShardingSphereResource(Collections.singletonMap("ds", new MockedDataSource()));
-        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList());
+        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.singletonList(mock(MutableDataNodeRule.class, RETURNS_DEEP_STUBS)));
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), resource, ruleMetaData, Collections.emptyMap());
-        Collection<ShardingSphereRule> rules = database.getRuleMetaData().getRules();
-        assertTrue(rules.isEmpty());
         database.reloadRules(MutableDataNodeRule.class);
-        assertFalse(rules.isEmpty());
+        assertThat(database.getRuleMetaData().getRules().size(), is(1));
     }
 }
