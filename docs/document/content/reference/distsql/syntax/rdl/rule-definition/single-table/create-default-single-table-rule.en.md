@@ -22,7 +22,7 @@ resourceName ::=
 
 ### Supplement
 
-- `RESOURCE` needs to use data source resource managed by RDL
+- `RESOURCE` needs to use data source resource managed by RDL.
 
 ### Example
 

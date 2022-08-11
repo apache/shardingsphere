@@ -48,28 +48,28 @@ algorithmName ::=
 
 - `tableDefinition` is defined for standard sharding table rule; `autoTableDefinition` is defined for auto sharding
   table rule. For standard sharding rules and auto sharding rule, refer
-  to [Data Sharding](en/user-manual/shardingsphere-jdbc/yaml-config/rules/sharding/).
-- use standard sharding table rule
+  to [Data Sharding](en/user-manual/shardingsphere-jdbc/yaml-config/rules/sharding/);
+- use standard sharding table rule:
     - `DATANODES` can only use resources that have been added to the current database, and can only use INLINE
-      expressions to specify required resources
+      expressions to specify required resources;
     - `DATABASE_STRATEGY`, `TABLE_STRATEGY` are the database sharding strategy and the table sharding strategy, which
-      are optional, and the default strategy is used when not configured
+      are optional, and the default strategy is used when not configured;
     - The attribute `TYPE` in `strategyDefinition` is used to specify the type
       of [Sharding Algorithm](/en/features/sharding/concept/sharding/#user-defined-sharding-algorithm), currently only
       supports `STANDARD`, `COMPLEX`. Using `COMPLEX` requires specifying multiple sharding columns
       with `SHARDING_COLUMNS`.
-- use auto sharding table rule
+- use auto sharding table rule:
     - `RESOURCES` can only use resources that have been added to the current database, and the required resources can be
-      specified by enumeration or INLINE expression
+      specified by enumeration or INLINE expression;
     - Only auto sharding algorithm can be used, please refer
-      to [Auto Sharding Algorithm](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/#auto-sharding-algorithm)
+      to [Auto Sharding Algorithm](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/#auto-sharding-algorithm).
 - `algorithmType` is the sharding algorithm type, please refer
-  to [Sharding Algorithm](en/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding)
-- The auto-generated algorithm naming rule is `tableName` _ `strategyType` _ `shardingAlgorithmType`
-- The auto-generated primary key strategy naming rule is `tableName` _ `strategyType`
+  to [Sharding Algorithm](en/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding);
+- The auto-generated algorithm naming rule is `tableName` _ `strategyType` _ `shardingAlgorithmType`;
+- The auto-generated primary key strategy naming rule is `tableName` _ `strategyType`;
 - `KEY_GENERATE_STRATEGY` is used to specify the primary key generation strategy, which is optional. For the primary key
   generation strategy, please refer
-  to [Distributed Primary Key](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen/)
+  to [Distributed Primary Key](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen/).
 
 ### Example
 
