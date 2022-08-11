@@ -182,13 +182,13 @@ function check_port() {
   fi
 
   if [ -n "$ADDRESSES" ]; then
-    REGEXP_ADDRESSES="\(0.0.0.0\|::\|$ADDRESSES\)"
+    REGEXP_ADDRESSES="(0.0.0.0|::|${ADDRESSES//,/|})"
   else
-    REGEXP_ADDRESSES="\(0.0.0.0\|::\)"
+    REGEXP_ADDRESSES="(0.0.0.0|::)"
   fi
 
   GREP_REGEXP="$REGEXP_ADDRESSES:$REGEXP_PORT\s.*LISTEN"
-  PORT_STATUS=$(netstat -ant |$GREP -e "$GREP_REGEXP")
+  PORT_STATUS=$(netstat -ant |$GREP -E "$GREP_REGEXP")
   if [ -n "$PORT_STATUS" ]; then
     return 0
   fi
@@ -226,19 +226,19 @@ if [ $? -eq 0 ]; then
           continue
         fi
 
-        echo "FAILED TO START"
+        echo " FAILED TO START"
         break
       fi
 
       if ps -p "${pid}" > /dev/null 2>&1; then
-        echo "SUCCESS, PID: $pid"
+        echo " SUCCESS, PID: $pid"
         exit 0
       fi
     done
   else
-    echo "FAILED TO GET PID"
+    echo " FAILED TO GET PID"
   fi
 else
-  echo "SERVER DID NOT START"
+  echo " SERVER DID NOT START"
 fi
 exit 1
