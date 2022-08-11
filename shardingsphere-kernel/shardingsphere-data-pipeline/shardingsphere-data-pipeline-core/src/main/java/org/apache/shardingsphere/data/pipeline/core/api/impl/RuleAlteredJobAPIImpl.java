@@ -51,7 +51,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreatio
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineVerifyFailedException;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlJobProgress;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlInventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlJobProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
@@ -444,7 +444,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         if (StringUtils.isBlank(data)) {
             return null;
         }
-        return SWAPPER.swapToObject(YamlEngine.unmarshal(data, YamlJobProgress.class));
+        return SWAPPER.swapToObject(YamlEngine.unmarshal(data, YamlInventoryIncrementalJobItemProgress.class));
     }
     
     @Override

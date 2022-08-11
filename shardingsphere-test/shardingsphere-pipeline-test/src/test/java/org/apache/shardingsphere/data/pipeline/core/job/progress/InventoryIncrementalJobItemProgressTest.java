@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.IntegerPrimar
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlJobProgress;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlInventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlJobProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.core.util.ConfigurationFileUtil;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -88,6 +88,6 @@ public final class InventoryIncrementalJobItemProgressTest {
     }
     
     private InventoryIncrementalJobItemProgress getJobItemProgress(final String data) {
-        return SWAPPER.swapToObject(YamlEngine.unmarshal(data, YamlJobProgress.class));
+        return SWAPPER.swapToObject(YamlEngine.unmarshal(data, YamlInventoryIncrementalJobItemProgress.class));
     }
 }

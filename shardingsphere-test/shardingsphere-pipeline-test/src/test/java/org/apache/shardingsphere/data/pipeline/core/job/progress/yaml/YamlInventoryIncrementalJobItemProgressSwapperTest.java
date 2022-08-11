@@ -33,8 +33,8 @@ public final class YamlInventoryIncrementalJobItemProgressSwapperTest {
     
     @Test
     public void assertFullSwapToYamlConfiguration() {
-        InventoryIncrementalJobItemProgress progress = SWAPPER.swapToObject(YamlEngine.unmarshal(ConfigurationFileUtil.readFile("job-progress.yaml"), YamlJobProgress.class));
-        YamlJobProgress actual = SWAPPER.swapToYamlConfiguration(progress);
+        InventoryIncrementalJobItemProgress progress = SWAPPER.swapToObject(YamlEngine.unmarshal(ConfigurationFileUtil.readFile("job-progress.yaml"), YamlInventoryIncrementalJobItemProgress.class));
+        YamlInventoryIncrementalJobItemProgress actual = SWAPPER.swapToYamlConfiguration(progress);
         assertThat(actual.getStatus(), is("RUNNING"));
         assertThat(actual.getSourceDatabaseType(), is("H2"));
         assertThat(actual.getInventory().getFinished().length, is(2));
@@ -48,21 +48,21 @@ public final class YamlInventoryIncrementalJobItemProgressSwapperTest {
     
     @Test
     public void assertSwapWithFullConfig() {
-        YamlJobProgress yamlProgress = YamlEngine.unmarshal(ConfigurationFileUtil.readFile("job-progress.yaml"), YamlJobProgress.class);
-        YamlJobProgress actual = SWAPPER.swapToYamlConfiguration(SWAPPER.swapToObject(yamlProgress));
+        YamlInventoryIncrementalJobItemProgress yamlProgress = YamlEngine.unmarshal(ConfigurationFileUtil.readFile("job-progress.yaml"), YamlInventoryIncrementalJobItemProgress.class);
+        YamlInventoryIncrementalJobItemProgress actual = SWAPPER.swapToYamlConfiguration(SWAPPER.swapToObject(yamlProgress));
         assertThat(YamlEngine.marshal(actual), is(YamlEngine.marshal(yamlProgress)));
     }
     
     @Test
     public void assertSwapWithoutInventoryIncremental() {
-        YamlJobProgress yamlProgress = YamlEngine.unmarshal(ConfigurationFileUtil.readFile("job-progress-failure.yaml"), YamlJobProgress.class);
+        YamlInventoryIncrementalJobItemProgress yamlProgress = YamlEngine.unmarshal(ConfigurationFileUtil.readFile("job-progress-failure.yaml"), YamlInventoryIncrementalJobItemProgress.class);
         InventoryIncrementalJobItemProgress progress = SWAPPER.swapToObject(yamlProgress);
         assertNotNull(progress.getInventory());
         assertNotNull(progress.getIncremental());
         assertThat(progress.getInventory().getInventoryFinishedPercentage(), is(0));
         assertThat(progress.getIncremental().getDataSourceName(), is(""));
         assertThat(progress.getIncremental().getIncrementalLatestActiveTimeMillis(), is(0L));
-        YamlJobProgress actual = SWAPPER.swapToYamlConfiguration(progress);
+        YamlInventoryIncrementalJobItemProgress actual = SWAPPER.swapToYamlConfiguration(progress);
         assertNotNull(actual.getInventory());
         assertNotNull(actual.getIncremental());
         assertThat(YamlEngine.marshal(actual), is(YamlEngine.marshal(yamlProgress)));
@@ -70,14 +70,14 @@ public final class YamlInventoryIncrementalJobItemProgressSwapperTest {
     
     @Test
     public void assertSwapWithRunningConfig() {
-        YamlJobProgress yamlProgress = YamlEngine.unmarshal(ConfigurationFileUtil.readFile("job-progress-running.yaml"), YamlJobProgress.class);
+        YamlInventoryIncrementalJobItemProgress yamlProgress = YamlEngine.unmarshal(ConfigurationFileUtil.readFile("job-progress-running.yaml"), YamlInventoryIncrementalJobItemProgress.class);
         InventoryIncrementalJobItemProgress progress = SWAPPER.swapToObject(yamlProgress);
         assertNotNull(progress.getInventory());
         assertNotNull(progress.getIncremental());
         assertThat(progress.getInventory().getInventoryFinishedPercentage(), is(0));
         assertThat(progress.getIncremental().getDataSourceName(), is("ds_0"));
         assertThat(progress.getIncremental().getIncrementalLatestActiveTimeMillis(), is(0L));
-        YamlJobProgress actual = SWAPPER.swapToYamlConfiguration(progress);
+        YamlInventoryIncrementalJobItemProgress actual = SWAPPER.swapToYamlConfiguration(progress);
         assertNotNull(actual.getInventory());
         assertNotNull(actual.getIncremental());
         assertThat(YamlEngine.marshal(actual), is(YamlEngine.marshal(yamlProgress)));
