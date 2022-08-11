@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.work
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
@@ -66,7 +67,7 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     private Optional<Long> generateAvailableWorkerId() {
         Set<Long> assignedWorkerIds = registryCenter.getComputeNodeStatusService().getAssignedWorkerIds();
         if (assignedWorkerIds.size() > 1024) {
-            throw new IllegalMaxOffsetException("System assigned %s failed, Illegal max vibration offset.", WORKER_ID_KEY);
+            throw new ShardingSphereException("System assigned %s failed, Illegal max vibration offset.", WORKER_ID_KEY);
         }
         Collection<Long> maxAvailableIds = new ArrayList<>(1024);
         for (int i = 0; i < 1024; i++) {
