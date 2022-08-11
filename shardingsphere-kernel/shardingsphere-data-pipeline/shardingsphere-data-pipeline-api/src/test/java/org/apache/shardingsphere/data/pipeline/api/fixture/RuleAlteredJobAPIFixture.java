@@ -25,7 +25,7 @@ import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobContext;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 
@@ -74,12 +74,12 @@ public final class RuleAlteredJobAPIFixture implements RuleAlteredJobAPI {
     }
     
     @Override
-    public Map<Integer, JobProgress> getProgress(final String jobId) {
+    public Map<Integer, InventoryIncrementalJobItemProgress> getProgress(final String jobId) {
         return null;
     }
     
     @Override
-    public Map<Integer, JobProgress> getProgress(final RuleAlteredJobConfiguration jobConfig) {
+    public Map<Integer, InventoryIncrementalJobItemProgress> getProgress(final RuleAlteredJobConfiguration jobConfig) {
         return null;
     }
     
@@ -161,7 +161,7 @@ public final class RuleAlteredJobAPIFixture implements RuleAlteredJobAPI {
     }
     
     @Override
-    public JobProgress getJobProgress(final String jobId, final int shardingItem) {
+    public InventoryIncrementalJobItemProgress getJobProgress(final String jobId, final int shardingItem) {
         return null;
     }
     

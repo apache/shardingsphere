@@ -26,8 +26,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
  */
 @Getter
 @Setter
-// TODO now rename
-public final class JobProgress implements PipelineJobItemProgress {
+public final class InventoryIncrementalJobItemProgress implements PipelineJobItemProgress {
     
     private JobStatus status = JobStatus.RUNNING;
     

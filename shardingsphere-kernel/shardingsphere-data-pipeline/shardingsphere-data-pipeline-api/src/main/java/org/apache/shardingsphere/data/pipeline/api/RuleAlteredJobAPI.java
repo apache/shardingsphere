@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsist
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobContext;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
@@ -58,8 +58,7 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI {
      * @param jobId job id
      * @return each sharding item progress
      */
-    // TODO now update JobProgress
-    Map<Integer, JobProgress> getProgress(String jobId);
+    Map<Integer, InventoryIncrementalJobItemProgress> getProgress(String jobId);
     
     /**
      * Get job progress.
@@ -67,7 +66,7 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI {
      * @param jobConfig job configuration
      * @return each sharding item progress
      */
-    Map<Integer, JobProgress> getProgress(RuleAlteredJobConfiguration jobConfig);
+    Map<Integer, InventoryIncrementalJobItemProgress> getProgress(RuleAlteredJobConfiguration jobConfig);
     
     /**
      * Stop cluster writing.
@@ -198,7 +197,7 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI {
      * @param shardingItem sharding item
      * @return job progress
      */
-    JobProgress getJobProgress(String jobId, int shardingItem);
+    InventoryIncrementalJobItemProgress getJobProgress(String jobId, int shardingItem);
     
     /**
      * Update sharding job status.

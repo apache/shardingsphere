@@ -25,7 +25,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfig
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemIncrementalTasksProgress;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineIgnoredException;
@@ -85,7 +85,6 @@ public final class RuleAlteredJobPreparer {
     
     private void prepareAndCheckTargetWithLock(final RuleAlteredJobContext jobContext) {
         RuleAlteredJobConfiguration jobConfig = jobContext.getJobConfig();
-        // TODO the lock will be replaced
         String lockName = "prepare-" + jobConfig.getJobId();
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
         LockDefinition lockDefinition = new ExclusiveLockDefinition(lockName);
@@ -93,9 +92,9 @@ public final class RuleAlteredJobPreparer {
         if (lockContext.tryLock(lockDefinition, 180000)) {
             log.info("try lock success, jobId={}, shardingItem={}", jobConfig.getJobId(), jobContext.getShardingItem());
             try {
-                JobProgress jobProgress = RuleAlteredJobAPIFactory.getInstance().getJobProgress(jobContext.getJobId(), jobContext.getShardingItem());
-                boolean prepareFlag = JobStatus.PREPARING.equals(jobProgress.getStatus()) || JobStatus.RUNNING.equals(jobProgress.getStatus())
-                        || JobStatus.PREPARING_FAILURE.equals(jobProgress.getStatus());
+                InventoryIncrementalJobItemProgress jobItemProgress = RuleAlteredJobAPIFactory.getInstance().getJobProgress(jobContext.getJobId(), jobContext.getShardingItem());
+                boolean prepareFlag = JobStatus.PREPARING.equals(jobItemProgress.getStatus()) || JobStatus.RUNNING.equals(jobItemProgress.getStatus())
+                        || JobStatus.PREPARING_FAILURE.equals(jobItemProgress.getStatus());
                 if (prepareFlag) {
                     log.info("execute prepare, jobId={}, shardingItem={}", jobConfig.getJobId(), jobContext.getShardingItem());
                     jobContext.setStatus(JobStatus.PREPARING);
@@ -115,7 +114,7 @@ public final class RuleAlteredJobPreparer {
     
     private void prepareAndCheckTarget(final RuleAlteredJobContext jobContext) {
         prepareTarget(jobContext);
-        JobProgress initProgress = jobContext.getInitProgress();
+        InventoryIncrementalJobItemProgress initProgress = jobContext.getInitProgress();
         if (null == initProgress || initProgress.getStatus() == JobStatus.PREPARING_FAILURE) {
             PipelineDataSourceWrapper targetDataSource = jobContext.getDataSourceManager().getDataSource(jobContext.getTaskConfig().getImporterConfig().getDataSourceConfig());
             PipelineJobPreparerUtils.checkTargetDataSource(jobContext.getJobConfig().getTargetDatabaseType(), jobContext.getTaskConfig().getImporterConfig(),

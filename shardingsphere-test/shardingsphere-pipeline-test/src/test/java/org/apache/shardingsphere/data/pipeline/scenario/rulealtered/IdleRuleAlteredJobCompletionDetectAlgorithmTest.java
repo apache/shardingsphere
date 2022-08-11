@@ -20,9 +20,9 @@ package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 import org.apache.shardingsphere.data.pipeline.api.detect.RuleAlteredJobAlmostCompletedParameter;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemIncrementalTasksProgress;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemInventoryTasksProgress;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
 import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlgorithmFactory;
@@ -58,7 +58,7 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithmTest {
     @Test
     public void assertFalseOnFewJobProgresses() {
         int jobShardingCount = 2;
-        Collection<JobProgress> jobProgresses = Collections.singleton(new JobProgress());
+        Collection<InventoryIncrementalJobItemProgress> jobProgresses = Collections.singleton(new InventoryIncrementalJobItemProgress());
         RuleAlteredJobAlmostCompletedParameter parameter = new RuleAlteredJobAlmostCompletedParameter(jobShardingCount, jobProgresses);
         assertFalse(JobCompletionDetectAlgorithmFactory.newInstance(new AlgorithmConfiguration("IDLE", new Properties())).isAlmostCompleted(parameter));
     }
@@ -67,9 +67,9 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithmTest {
     @Test
     public void assertFalseOnUnFinishedPosition() {
         int jobShardingCount = 1;
-        JobProgress jobProgress = new JobProgress();
+        InventoryIncrementalJobItemProgress jobProgress = new InventoryIncrementalJobItemProgress();
         jobProgress.setInventory(new JobItemInventoryTasksProgress(Collections.singletonMap("foo_ds", new InventoryTaskProgress(new PlaceholderPosition()))));
-        Collection<JobProgress> jobProgresses = Collections.singleton(jobProgress);
+        Collection<InventoryIncrementalJobItemProgress> jobProgresses = Collections.singleton(jobProgress);
         RuleAlteredJobAlmostCompletedParameter parameter = new RuleAlteredJobAlmostCompletedParameter(jobShardingCount, jobProgresses);
         assertFalse(JobCompletionDetectAlgorithmFactory.newInstance(new AlgorithmConfiguration("IDLE", new Properties())).isAlmostCompleted(parameter));
     }
@@ -79,8 +79,8 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithmTest {
     public void assertTrueWhenIdleMinutesNotReach() {
         int jobShardingCount = 1;
         long latestActiveTimeMillis = System.currentTimeMillis() - ThreadLocalRandom.current().nextLong(1, 1800L);
-        JobProgress jobProgress = createJobProgress(latestActiveTimeMillis);
-        Collection<JobProgress> jobProgresses = Collections.singleton(jobProgress);
+        InventoryIncrementalJobItemProgress jobProgress = createJobProgress(latestActiveTimeMillis);
+        Collection<InventoryIncrementalJobItemProgress> jobProgresses = Collections.singleton(jobProgress);
         RuleAlteredJobAlmostCompletedParameter parameter = new RuleAlteredJobAlmostCompletedParameter(jobShardingCount, jobProgresses);
         assertFalse(JobCompletionDetectAlgorithmFactory.newInstance(new AlgorithmConfiguration("IDLE", new Properties())).isAlmostCompleted(parameter));
     }
@@ -90,14 +90,14 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithmTest {
     public void assertTrueWhenJobAlmostCompleted() {
         int jobShardingCount = 1;
         long latestActiveTimeMillis = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(1800L + 1800L);
-        JobProgress jobProgress = createJobProgress(latestActiveTimeMillis);
-        Collection<JobProgress> jobProgresses = Collections.singleton(jobProgress);
+        InventoryIncrementalJobItemProgress jobProgress = createJobProgress(latestActiveTimeMillis);
+        Collection<InventoryIncrementalJobItemProgress> jobProgresses = Collections.singleton(jobProgress);
         RuleAlteredJobAlmostCompletedParameter parameter = new RuleAlteredJobAlmostCompletedParameter(jobShardingCount, jobProgresses);
         assertTrue(JobCompletionDetectAlgorithmFactory.newInstance(new AlgorithmConfiguration("IDLE", new Properties())).isAlmostCompleted(parameter));
     }
     
-    private JobProgress createJobProgress(final long latestActiveTimeMillis) {
-        JobProgress result = new JobProgress();
+    private InventoryIncrementalJobItemProgress createJobProgress(final long latestActiveTimeMillis) {
+        InventoryIncrementalJobItemProgress result = new InventoryIncrementalJobItemProgress();
         result.setInventory(new JobItemInventoryTasksProgress(Collections.singletonMap("foo_ds", new InventoryTaskProgress(new FinishedPosition()))));
         IncrementalTaskProgress incrementalTaskProgress = new IncrementalTaskProgress();
         incrementalTaskProgress.getIncrementalTaskDelay().setLatestActiveTimeMillis(latestActiveTimeMillis);
