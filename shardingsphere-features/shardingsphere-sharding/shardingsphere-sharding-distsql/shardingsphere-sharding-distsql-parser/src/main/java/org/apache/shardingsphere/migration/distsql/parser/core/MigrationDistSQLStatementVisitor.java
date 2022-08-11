@@ -58,9 +58,9 @@ import org.apache.shardingsphere.migration.distsql.statement.DropShardingScaling
 import org.apache.shardingsphere.migration.distsql.statement.EnableShardingScalingRuleStatement;
 import org.apache.shardingsphere.migration.distsql.statement.ResetMigrationStatement;
 import org.apache.shardingsphere.migration.distsql.statement.RestoreMigrationSourceWritingStatement;
-import org.apache.shardingsphere.migration.distsql.statement.ShowScalingCheckAlgorithmsStatement;
+import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationCheckAlgorithmsStatement;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationListStatement;
-import org.apache.shardingsphere.migration.distsql.statement.ShowScalingStatusStatement;
+import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationStatusStatement;
 import org.apache.shardingsphere.migration.distsql.statement.ShowShardingScalingRulesStatement;
 import org.apache.shardingsphere.migration.distsql.statement.StartMigrationStatement;
 import org.apache.shardingsphere.migration.distsql.statement.StopMigrationSourceWritingStatement;
@@ -86,7 +86,7 @@ public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStat
     
     @Override
     public ASTNode visitShowScalingStatus(final ShowScalingStatusContext ctx) {
-        return new ShowScalingStatusStatement(getIdentifierValue(ctx.jobId()));
+        return new ShowMigrationStatusStatement(getIdentifierValue(ctx.jobId()));
     }
     
     @Override
@@ -120,7 +120,7 @@ public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStat
     
     @Override
     public ASTNode visitShowScalingCheckAlgorithms(final ShowScalingCheckAlgorithmsContext ctx) {
-        return new ShowScalingCheckAlgorithmsStatement();
+        return new ShowMigrationCheckAlgorithmsStatement();
     }
     
     @Override

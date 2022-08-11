@@ -15,26 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.migration.distsql.handler.handler.query;
+package org.apache.shardingsphere.migration.distsql.handler.query;
 
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
 import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.migration.distsql.statement.ShowScalingStatusStatement;
+import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationListStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
- * Query result set for show migration job status.
+ * Query result set fpr show migration list.
  */
-public final class ShowMigrationJobStatusQueryResultSet implements DatabaseDistSQLResultSet {
+public final class ShowMigrationListQueryResultSet implements DatabaseDistSQLResultSet {
     
     private static final RuleAlteredJobAPI RULE_ALTERED_JOB_API = RuleAlteredJobAPIFactory.getInstance();
     
@@ -42,32 +41,22 @@ public final class ShowMigrationJobStatusQueryResultSet implements DatabaseDistS
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        long currentTimeMillis = System.currentTimeMillis();
-        data = RULE_ALTERED_JOB_API.getJobProgress(((ShowScalingStatusStatement) sqlStatement).getJobId()).entrySet().stream()
-                .map(entry -> {
+        data = RULE_ALTERED_JOB_API.list().stream()
+                .map(each -> {
                     Collection<Object> result = new LinkedList<>();
-                    result.add(entry.getKey());
-                    if (null != entry.getValue()) {
-                        result.add(entry.getValue().getIncremental().getDataSourceName());
-                        result.add(entry.getValue().getStatus());
-                        result.add(entry.getValue().isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
-                        result.add(entry.getValue().getInventory().getInventoryFinishedPercentage());
-                        long latestActiveTimeMillis = entry.getValue().getIncremental().getIncrementalLatestActiveTimeMillis();
-                        result.add(latestActiveTimeMillis > 0 ? TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis) : 0);
-                    } else {
-                        result.add("");
-                        result.add("");
-                        result.add("");
-                        result.add("");
-                        result.add("");
-                    }
+                    result.add(each.getJobId());
+                    result.add(each.getTables());
+                    result.add(each.getShardingTotalCount());
+                    result.add(each.isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
+                    result.add(each.getCreateTime());
+                    result.add(each.getStopTime());
                     return result;
                 }).collect(Collectors.toList()).iterator();
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("item", "data_source", "status", "active", "inventory_finished_percentage", "incremental_idle_seconds");
+        return Arrays.asList("id", "tables", "sharding_total_count", "active", "create_time", "stop_time");
     }
     
     @Override
@@ -82,6 +71,6 @@ public final class ShowMigrationJobStatusQueryResultSet implements DatabaseDistS
     
     @Override
     public String getType() {
-        return ShowScalingStatusStatement.class.getName();
+        return ShowMigrationListStatement.class.getName();
     }
 }

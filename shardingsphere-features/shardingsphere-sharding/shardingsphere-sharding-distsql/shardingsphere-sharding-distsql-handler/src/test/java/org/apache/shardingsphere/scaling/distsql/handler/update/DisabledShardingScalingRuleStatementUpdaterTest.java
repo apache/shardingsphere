@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDisabledException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.migration.distsql.handler.handler.update.DisableShardingScalingRuleStatementUpdater;
+import org.apache.shardingsphere.migration.distsql.handler.update.DisableShardingScalingRuleStatementUpdater;
 import org.apache.shardingsphere.migration.distsql.statement.DisableShardingScalingRuleStatement;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.junit.Before;

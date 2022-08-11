@@ -17,16 +17,10 @@
 
 package org.apache.shardingsphere.migration.distsql.statement;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
 
 /**
- * Show scaling status statement.
+ * Show scaling check migration statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ShowScalingStatusStatement extends QueryableScalingRALStatement {
-    
-    private final String jobId;
+public final class ShowMigrationCheckAlgorithmsStatement extends QueryableScalingRALStatement {
 }

@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.migration.distsql.handler.handler.update;
+package org.apache.shardingsphere.migration.distsql.handler.update;
 
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
-import org.apache.shardingsphere.migration.distsql.statement.RestoreMigrationSourceWritingStatement;
+import org.apache.shardingsphere.migration.distsql.statement.DropMigrationStatement;
 
 /**
- * Restore scaling source writing updater.
+ * Drop scaling updater.
  */
-public final class RestoreMigrationSourceWritingUpdater implements RALUpdater<RestoreMigrationSourceWritingStatement> {
+public final class DropMigrationUpdater implements RALUpdater<DropMigrationStatement> {
     
     private static final RuleAlteredJobAPI RULE_ALTERED_JOB_API = RuleAlteredJobAPIFactory.getInstance();
     
     @Override
-    public void executeUpdate(final RestoreMigrationSourceWritingStatement sqlStatement) {
-        RULE_ALTERED_JOB_API.restoreClusterWriteDB(sqlStatement.getJobId());
+    public void executeUpdate(final DropMigrationStatement sqlStatement) {
+        RULE_ALTERED_JOB_API.remove(sqlStatement.getJobId());
     }
     
     @Override
     public String getType() {
-        return RestoreMigrationSourceWritingStatement.class.getName();
+        return DropMigrationStatement.class.getName();
     }
 }

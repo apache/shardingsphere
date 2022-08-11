@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.scaling.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.migration.distsql.handler.handler.query.ShowMigrationCheckAlgorithmsQueryResultSet;
-import org.apache.shardingsphere.migration.distsql.statement.ShowScalingCheckAlgorithmsStatement;
+import org.apache.shardingsphere.migration.distsql.handler.query.ShowMigrationCheckAlgorithmsQueryResultSet;
+import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationCheckAlgorithmsStatement;
 import org.apache.shardingsphere.scaling.distsql.util.PipelineContextUtil;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -42,7 +42,7 @@ public final class ShowMigrationCheckAlgorithmsQueryResultSetTest {
     private ShardingSphereDatabase database;
     
     @Mock
-    private ShowScalingCheckAlgorithmsStatement showMigrationCheckAlgorithmsStatement;
+    private ShowMigrationCheckAlgorithmsStatement showMigrationCheckAlgorithmsStatement;
     
     @BeforeClass
     public static void beforeClass() {

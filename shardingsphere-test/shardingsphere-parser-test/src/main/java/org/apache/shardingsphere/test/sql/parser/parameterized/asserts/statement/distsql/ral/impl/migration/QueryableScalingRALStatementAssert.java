@@ -21,9 +21,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
 import org.apache.shardingsphere.migration.distsql.statement.CheckMigrationStatement;
-import org.apache.shardingsphere.migration.distsql.statement.ShowScalingCheckAlgorithmsStatement;
+import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationCheckAlgorithmsStatement;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationListStatement;
-import org.apache.shardingsphere.migration.distsql.statement.ShowScalingStatusStatement;
+import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationStatusStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.migration.query.CheckMigrationStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.migration.query.ShowMigrationCheckAlgorithmsStatementAssert;
@@ -52,12 +52,12 @@ public final class QueryableScalingRALStatementAssert {
         // TODO add more test case
         if (actual instanceof ShowMigrationListStatement) {
             ShowMigrationListStatementAssert.assertIs(assertContext, (ShowMigrationListStatement) actual, (ShowMigrationListStatementTestCase) expected);
-        } else if (actual instanceof ShowScalingCheckAlgorithmsStatement) {
-            ShowMigrationCheckAlgorithmsStatementAssert.assertIs(assertContext, (ShowScalingCheckAlgorithmsStatement) actual, (ShowMigrationCheckAlgorithmsStatementTestCase) expected);
+        } else if (actual instanceof ShowMigrationCheckAlgorithmsStatement) {
+            ShowMigrationCheckAlgorithmsStatementAssert.assertIs(assertContext, (ShowMigrationCheckAlgorithmsStatement) actual, (ShowMigrationCheckAlgorithmsStatementTestCase) expected);
         } else if (actual instanceof CheckMigrationStatement) {
             CheckMigrationStatementAssert.assertIs(assertContext, (CheckMigrationStatement) actual, (CheckMigrationStatementTestCase) expected);
-        } else if (actual instanceof ShowScalingStatusStatement) {
-            ShowMigrationStatusStatementAssert.assertIs(assertContext, (ShowScalingStatusStatement) actual, (ShowMigrationStatusStatementTestCase) expected);
+        } else if (actual instanceof ShowMigrationStatusStatement) {
+            ShowMigrationStatusStatementAssert.assertIs(assertContext, (ShowMigrationStatusStatement) actual, (ShowMigrationStatusStatementTestCase) expected);
         }
     }
 }

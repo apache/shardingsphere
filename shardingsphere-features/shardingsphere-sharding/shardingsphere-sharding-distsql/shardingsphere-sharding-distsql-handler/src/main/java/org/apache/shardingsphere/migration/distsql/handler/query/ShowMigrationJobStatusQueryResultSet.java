@@ -15,28 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.migration.distsql.handler.handler.query;
+package org.apache.shardingsphere.migration.distsql.handler.query;
 
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
-import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.migration.distsql.statement.CheckMigrationStatement;
+import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
- * Query result set for check migration.
+ * Query result set for show migration job status.
  */
-public final class CheckMigrationQueryResultSet implements DatabaseDistSQLResultSet {
+public final class ShowMigrationJobStatusQueryResultSet implements DatabaseDistSQLResultSet {
     
     private static final RuleAlteredJobAPI RULE_ALTERED_JOB_API = RuleAlteredJobAPIFactory.getInstance();
     
@@ -44,29 +42,32 @@ public final class CheckMigrationQueryResultSet implements DatabaseDistSQLResult
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        CheckMigrationStatement checkMigrationStatement = (CheckMigrationStatement) sqlStatement;
-        Map<String, DataConsistencyCheckResult> checkResultMap;
-        AlgorithmSegment typeStrategy = checkMigrationStatement.getTypeStrategy();
-        if (null == typeStrategy) {
-            checkResultMap = RULE_ALTERED_JOB_API.dataConsistencyCheck(checkMigrationStatement.getJobId());
-        } else {
-            checkResultMap = RULE_ALTERED_JOB_API.dataConsistencyCheck(checkMigrationStatement.getJobId(), typeStrategy.getName(), typeStrategy.getProps());
-        }
-        data = checkResultMap.entrySet().stream()
-                .map(each -> {
+        long currentTimeMillis = System.currentTimeMillis();
+        data = RULE_ALTERED_JOB_API.getJobProgress(((ShowMigrationStatusStatement) sqlStatement).getJobId()).entrySet().stream()
+                .map(entry -> {
                     Collection<Object> result = new LinkedList<>();
-                    result.add(each.getKey());
-                    result.add(each.getValue().getCountCheckResult().getSourceRecordsCount());
-                    result.add(each.getValue().getCountCheckResult().getTargetRecordsCount());
-                    result.add(each.getValue().getCountCheckResult().isMatched() + "");
-                    result.add(each.getValue().getContentCheckResult().isMatched() + "");
+                    result.add(entry.getKey());
+                    if (null != entry.getValue()) {
+                        result.add(entry.getValue().getIncremental().getDataSourceName());
+                        result.add(entry.getValue().getStatus());
+                        result.add(entry.getValue().isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
+                        result.add(entry.getValue().getInventory().getInventoryFinishedPercentage());
+                        long latestActiveTimeMillis = entry.getValue().getIncremental().getIncrementalLatestActiveTimeMillis();
+                        result.add(latestActiveTimeMillis > 0 ? TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis) : 0);
+                    } else {
+                        result.add("");
+                        result.add("");
+                        result.add("");
+                        result.add("");
+                        result.add("");
+                    }
                     return result;
                 }).collect(Collectors.toList()).iterator();
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("table_name", "source_records_count", "target_records_count", "records_count_matched", "records_content_matched");
+        return Arrays.asList("item", "data_source", "status", "active", "inventory_finished_percentage", "incremental_idle_seconds");
     }
     
     @Override
@@ -81,6 +82,6 @@ public final class CheckMigrationQueryResultSet implements DatabaseDistSQLResult
     
     @Override
     public String getType() {
-        return CheckMigrationStatement.class.getName();
+        return ShowMigrationStatusStatement.class.getName();
     }
 }

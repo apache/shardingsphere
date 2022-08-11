@@ -15,25 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.migration.distsql.handler.handler.query;
+package org.apache.shardingsphere.migration.distsql.handler.query;
 
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationListStatement;
+import org.apache.shardingsphere.migration.distsql.statement.CheckMigrationStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Query result set fpr show migration list.
+ * Query result set for check migration.
  */
-public final class ShowMigrationListQueryResultSet implements DatabaseDistSQLResultSet {
+public final class CheckMigrationQueryResultSet implements DatabaseDistSQLResultSet {
     
     private static final RuleAlteredJobAPI RULE_ALTERED_JOB_API = RuleAlteredJobAPIFactory.getInstance();
     
@@ -41,22 +44,29 @@ public final class ShowMigrationListQueryResultSet implements DatabaseDistSQLRes
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        data = RULE_ALTERED_JOB_API.list().stream()
+        CheckMigrationStatement checkMigrationStatement = (CheckMigrationStatement) sqlStatement;
+        Map<String, DataConsistencyCheckResult> checkResultMap;
+        AlgorithmSegment typeStrategy = checkMigrationStatement.getTypeStrategy();
+        if (null == typeStrategy) {
+            checkResultMap = RULE_ALTERED_JOB_API.dataConsistencyCheck(checkMigrationStatement.getJobId());
+        } else {
+            checkResultMap = RULE_ALTERED_JOB_API.dataConsistencyCheck(checkMigrationStatement.getJobId(), typeStrategy.getName(), typeStrategy.getProps());
+        }
+        data = checkResultMap.entrySet().stream()
                 .map(each -> {
                     Collection<Object> result = new LinkedList<>();
-                    result.add(each.getJobId());
-                    result.add(each.getTables());
-                    result.add(each.getShardingTotalCount());
-                    result.add(each.isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
-                    result.add(each.getCreateTime());
-                    result.add(each.getStopTime());
+                    result.add(each.getKey());
+                    result.add(each.getValue().getCountCheckResult().getSourceRecordsCount());
+                    result.add(each.getValue().getCountCheckResult().getTargetRecordsCount());
+                    result.add(each.getValue().getCountCheckResult().isMatched() + "");
+                    result.add(each.getValue().getContentCheckResult().isMatched() + "");
                     return result;
                 }).collect(Collectors.toList()).iterator();
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("id", "tables", "sharding_total_count", "active", "create_time", "stop_time");
+        return Arrays.asList("table_name", "source_records_count", "target_records_count", "records_count_matched", "records_content_matched");
     }
     
     @Override
@@ -71,6 +81,6 @@ public final class ShowMigrationListQueryResultSet implements DatabaseDistSQLRes
     
     @Override
     public String getType() {
-        return ShowMigrationListStatement.class.getName();
+        return CheckMigrationStatement.class.getName();
     }
 }

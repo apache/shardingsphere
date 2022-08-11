@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.migration.distsql.handler.handler.update;
+package org.apache.shardingsphere.migration.distsql.handler.update;
 
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
-import org.apache.shardingsphere.migration.distsql.statement.StartMigrationStatement;
+import org.apache.shardingsphere.migration.distsql.statement.StopMigrationStatement;
 
 /**
- * Start scaling updater.
+ * Stop scaling updater.
  */
-public final class StartMigrationUpdater implements RALUpdater<StartMigrationStatement> {
+public final class StopMigrationUpdater implements RALUpdater<StopMigrationStatement> {
     
     private static final RuleAlteredJobAPI RULE_ALTERED_JOB_API = RuleAlteredJobAPIFactory.getInstance();
     
     @Override
-    public void executeUpdate(final StartMigrationStatement sqlStatement) {
-        RULE_ALTERED_JOB_API.startDisabledJob(sqlStatement.getJobId());
+    public void executeUpdate(final StopMigrationStatement sqlStatement) {
+        RULE_ALTERED_JOB_API.stop(sqlStatement.getJobId());
     }
     
     @Override
     public String getType() {
-        return StartMigrationStatement.class.getName();
+        return StopMigrationStatement.class.getName();
     }
 }

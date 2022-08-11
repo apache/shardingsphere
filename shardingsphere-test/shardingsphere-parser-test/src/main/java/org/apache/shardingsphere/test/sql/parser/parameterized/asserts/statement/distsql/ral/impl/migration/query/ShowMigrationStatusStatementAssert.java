@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.migration.query;
 
-import org.apache.shardingsphere.migration.distsql.statement.ShowScalingStatusStatement;
+import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationStatusStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.ShowMigrationStatusStatementTestCase;
 
@@ -40,7 +40,7 @@ public final class ShowMigrationStatusStatementAssert {
      * @param actual actual check migration statement
      * @param expected expected check migration statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowScalingStatusStatement actual, final ShowMigrationStatusStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowMigrationStatusStatement actual, final ShowMigrationStatusStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
