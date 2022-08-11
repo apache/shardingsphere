@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.singletable.rule;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
@@ -223,6 +224,12 @@ public final class SingleTableRule implements DatabaseRule, DataNodeContainedRul
             }
         }
         return Optional.empty();
+    }
+    
+    @Override
+    public ShardingSphereRule reloadRule(final RuleConfiguration config, final String databaseName, final Map<String, DataSource> dataSourceMap,
+                                         final Collection<ShardingSphereRule> builtRules) {
+        return new SingleTableRule((SingleTableRuleConfiguration) config, databaseName, dataSourceMap, builtRules);
     }
     
     @Override
