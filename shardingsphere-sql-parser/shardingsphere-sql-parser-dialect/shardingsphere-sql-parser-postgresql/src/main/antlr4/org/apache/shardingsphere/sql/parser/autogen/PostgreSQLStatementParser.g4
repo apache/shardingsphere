@@ -173,5 +173,6 @@ execute
     | alterStatistics
     | createGroup
     | alterSubscription
+    | createMaterializedView
     ) SEMI_? EOF
     ;

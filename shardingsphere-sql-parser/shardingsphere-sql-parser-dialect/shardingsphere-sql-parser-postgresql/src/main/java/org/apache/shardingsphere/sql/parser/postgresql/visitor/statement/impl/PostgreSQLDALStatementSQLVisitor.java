@@ -181,7 +181,6 @@ public final class PostgreSQLDALStatementSQLVisitor extends PostgreSQLStatementS
         } else if (null != ctx.executeStmt()) {
             return visit(ctx.executeStmt());
         } else if (null != ctx.createMaterializedView()) {
-            // TODO visit create materialized view statement
             return visit(ctx.createMaterializedView());
         } else {
             // TODO visit refresh materialized view statement
