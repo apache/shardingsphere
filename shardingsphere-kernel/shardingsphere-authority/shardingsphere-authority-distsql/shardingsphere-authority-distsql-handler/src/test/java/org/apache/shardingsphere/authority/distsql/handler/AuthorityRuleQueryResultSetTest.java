@@ -21,8 +21,8 @@ import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.distsql.parser.statement.ShowAuthorityRuleStatement;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.distsql.query.GlobalRuleDistSQLResultSet;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.junit.Test;
 
@@ -34,7 +34,6 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -42,9 +41,9 @@ public final class AuthorityRuleQueryResultSetTest {
     
     @Test
     public void assertAuthorityRule() {
-        ShardingSphereDatabase database = mockDatabase();
-        DistSQLResultSet resultSet = new AuthorityRuleQueryResultSet();
-        resultSet.init(database, mock(ShowAuthorityRuleStatement.class));
+        ShardingSphereRuleMetaData ruleMetaData = mockRuleMetaData();
+        GlobalRuleDistSQLResultSet resultSet = new AuthorityRuleQueryResultSet();
+        resultSet.init(ruleMetaData, mock(ShowAuthorityRuleStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(3));
         assertTrue(actual.contains("root@localhost"));
@@ -52,11 +51,10 @@ public final class AuthorityRuleQueryResultSetTest {
         assertTrue(actual.contains(""));
     }
     
-    private ShardingSphereDatabase mockDatabase() {
-        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        AuthorityRule rule = mock(AuthorityRule.class);
-        when(rule.getConfiguration()).thenReturn(getAuthorityRuleConfiguration());
-        when(result.getRuleMetaData().findSingleRule(AuthorityRule.class)).thenReturn(Optional.of(rule));
+    private ShardingSphereRuleMetaData mockRuleMetaData() {
+        AuthorityRule authorityRule = new AuthorityRule(getAuthorityRuleConfiguration(), Collections.emptyMap());
+        ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class);
+        when(result.findSingleRule(AuthorityRule.class)).thenReturn(Optional.of(authorityRule));
         return result;
     }
     

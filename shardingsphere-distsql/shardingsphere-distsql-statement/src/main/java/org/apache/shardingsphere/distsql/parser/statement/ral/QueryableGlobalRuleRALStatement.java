@@ -15,12 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.distsql.parser.statement;
-
-import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableGlobalRuleRALStatement;
+package org.apache.shardingsphere.distsql.parser.statement.ral;
 
 /**
- * Show authority rule statement.
+ * Queryable RAL statement for global rule.
  */
-public final class ShowAuthorityRuleStatement extends QueryableGlobalRuleRALStatement {
+public abstract class QueryableGlobalRuleRALStatement extends QueryableRALStatement {
 }

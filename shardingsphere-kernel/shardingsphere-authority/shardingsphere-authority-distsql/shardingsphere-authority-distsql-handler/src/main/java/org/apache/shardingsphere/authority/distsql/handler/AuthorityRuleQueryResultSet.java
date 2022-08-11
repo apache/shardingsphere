@@ -20,8 +20,8 @@ package org.apache.shardingsphere.authority.distsql.handler;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.distsql.parser.statement.ShowAuthorityRuleStatement;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.distsql.query.GlobalRuleDistSQLResultSet;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 /**
  * Query result set for authority rule.
  */
-public final class AuthorityRuleQueryResultSet implements DistSQLResultSet {
+public final class AuthorityRuleQueryResultSet implements GlobalRuleDistSQLResultSet {
     
     private static final String USERS = "users";
     
@@ -46,8 +46,8 @@ public final class AuthorityRuleQueryResultSet implements DistSQLResultSet {
     private Iterator<Collection<Object>> data = Collections.emptyIterator();
     
     @Override
-    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        Optional<AuthorityRule> rule = database.getRuleMetaData().findSingleRule(AuthorityRule.class);
+    public void init(final ShardingSphereRuleMetaData ruleMetaData, final SQLStatement sqlStatement) {
+        Optional<AuthorityRule> rule = ruleMetaData.findSingleRule(AuthorityRule.class);
         rule.ifPresent(optional -> data = buildData(optional.getConfiguration()).iterator());
     }
     
