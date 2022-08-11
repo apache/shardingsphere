@@ -77,12 +77,12 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     }
     
     @Override
-    public Connection getConnection() throws SQLException {
+    public Connection getConnection() {
         return DriverStateContext.getConnection(databaseName, contextManager, jdbcContext);
     }
     
     @Override
-    public Connection getConnection(final String username, final String password) throws SQLException {
+    public Connection getConnection(final String username, final String password) {
         return getConnection();
     }
     

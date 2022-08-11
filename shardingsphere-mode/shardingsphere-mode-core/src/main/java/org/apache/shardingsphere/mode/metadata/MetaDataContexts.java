@@ -35,7 +35,8 @@ public final class MetaDataContexts implements AutoCloseable {
     private final ShardingSphereMetaData metaData;
     
     @Override
-    public void close() throws Exception {
+    public void close() {
+        persistService.getRepository().close();
         metaData.getGlobalRuleMetaData().findRules(ResourceHeldRule.class).forEach(ResourceHeldRule::closeStaleResource);
         metaData.getDatabases().values().forEach(each -> each.getRuleMetaData().findRules(ResourceHeldRule.class).forEach(ResourceHeldRule::closeStaleResource));
     }
