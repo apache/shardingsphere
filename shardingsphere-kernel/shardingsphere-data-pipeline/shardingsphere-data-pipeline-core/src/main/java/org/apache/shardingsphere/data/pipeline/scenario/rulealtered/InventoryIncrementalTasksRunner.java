@@ -34,11 +34,11 @@ import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import java.util.Collection;
 
 /**
- * Rule altered job scheduler.
+ * Inventory incremental tasks' runner.
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class RuleAlteredJobScheduler implements PipelineTasksRunner {
+public final class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
     
     @Getter
     private final PipelineJobContext jobContext;

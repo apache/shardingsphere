@@ -59,18 +59,17 @@ public final class RuleAlteredJob extends AbstractPipelineJob implements SimpleJ
         RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, shardingContext.getShardingItem(), initProgress, dataSourceManager);
         int shardingItem = jobContext.getShardingItem();
         if (getTasksRunnerMap().containsKey(shardingItem)) {
-            // If the following log is output, it is possible that the elasticjob task was not shutdown correctly
-            log.warn("schedulerMap contains shardingItem {}, ignore", shardingItem);
+            log.warn("tasksRunnerMap contains shardingItem {}, ignore", shardingItem);
             return;
         }
-        log.info("start RuleAlteredJobScheduler, jobId={}, shardingItem={}", getJobId(), shardingItem);
-        RuleAlteredJobScheduler jobScheduler = new RuleAlteredJobScheduler(jobContext, jobContext.getInventoryTasks(), jobContext.getIncrementalTasks(),
+        log.info("start tasks runner, jobId={}, shardingItem={}", getJobId(), shardingItem);
+        InventoryIncrementalTasksRunner tasksRunner = new InventoryIncrementalTasksRunner(jobContext, jobContext.getInventoryTasks(), jobContext.getIncrementalTasks(),
                 jobContext.getJobProcessContext().getInventoryDumperExecuteEngine(), jobContext.getJobProcessContext().getIncrementalDumperExecuteEngine());
         runInBackground(() -> {
             prepare(jobContext);
-            jobScheduler.start();
+            tasksRunner.start();
         });
-        getTasksRunnerMap().put(shardingItem, jobScheduler);
+        getTasksRunnerMap().put(shardingItem, tasksRunner);
         PipelineJobProgressPersistService.addJobProgressPersistContext(getJobId(), shardingItem);
     }
     
@@ -104,7 +103,7 @@ public final class RuleAlteredJob extends AbstractPipelineJob implements SimpleJ
             log.info("stop, jobId is null, ignore");
             return;
         }
-        log.info("stop job scheduler, jobId={}", getJobId());
+        log.info("stop tasks runner, jobId={}", getJobId());
         for (PipelineTasksRunner each : getTasksRunnerMap().values()) {
             each.stop();
         }
