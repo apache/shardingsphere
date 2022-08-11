@@ -68,8 +68,8 @@ public final class GovernanceRepositoryAPIImplTest {
     @Test
     public void assertPersistJobProgress() {
         RuleAlteredJobContext jobItemContext = mockJobItemContext();
-        governanceRepositoryAPI.persistJobProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), "testValue");
-        String actual = governanceRepositoryAPI.getJobProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem());
+        governanceRepositoryAPI.persistJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), "testValue");
+        String actual = governanceRepositoryAPI.getJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem());
         assertThat(actual, is("testValue"));
     }
     
@@ -85,7 +85,7 @@ public final class GovernanceRepositoryAPIImplTest {
     public void assertDeleteJob() {
         governanceRepositoryAPI.persist(DataPipelineConstants.DATA_PIPELINE_ROOT + "/1", "");
         governanceRepositoryAPI.deleteJob("1");
-        String actual = governanceRepositoryAPI.getJobProgress("1", 0);
+        String actual = governanceRepositoryAPI.getJobItemProgress("1", 0);
         assertNull(actual);
     }
     
@@ -119,7 +119,7 @@ public final class GovernanceRepositoryAPIImplTest {
     @Test
     public void assertGetShardingItems() {
         RuleAlteredJobContext jobItemContext = mockJobItemContext();
-        governanceRepositoryAPI.persistJobProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), "testValue");
+        governanceRepositoryAPI.persistJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), "testValue");
         List<Integer> shardingItems = governanceRepositoryAPI.getShardingItems(jobItemContext.getJobId());
         assertThat(shardingItems.size(), is(1));
         assertThat(shardingItems.get(0), is(jobItemContext.getShardingItem()));

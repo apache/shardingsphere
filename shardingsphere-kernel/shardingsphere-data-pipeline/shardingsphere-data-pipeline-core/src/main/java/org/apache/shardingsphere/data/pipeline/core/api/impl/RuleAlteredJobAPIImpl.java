@@ -381,7 +381,6 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         }
         ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(jobConfig.getDatabaseName(), jobConfig.getActiveVersion(), jobConfig.getNewVersion());
         PipelineContext.getContextManager().getInstanceContext().getEventBusContext().post(taskFinishedEvent);
-        // TODO rewrite job status update after job progress structure refactor
         for (int each : repositoryAPI.getShardingItems(jobId)) {
             PipelineJobCenter.getJobItemContext(jobId, each).ifPresent(jobItemContext -> jobItemContext.setStatus(JobStatus.FINISHED));
             updateJobItemStatus(jobId, each, JobStatus.FINISHED);
@@ -419,7 +418,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         jobItemProgress.setIncremental(getIncrementalTasksProgress(context));
         jobItemProgress.setInventory(getInventoryTasksProgress(context));
         String value = YamlEngine.marshal(SWAPPER.swapToYamlConfiguration(jobItemProgress));
-        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), value);
+        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), value);
     }
     
     private JobItemIncrementalTasksProgress getIncrementalTasksProgress(final RuleAlteredJobContext jobItemContext) {
@@ -440,7 +439,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     
     @Override
     public InventoryIncrementalJobItemProgress getJobItemProgress(final String jobId, final int shardingItem) {
-        String data = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobProgress(jobId, shardingItem);
+        String data = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobItemProgress(jobId, shardingItem);
         if (StringUtils.isBlank(data)) {
             return null;
         }
@@ -455,6 +454,6 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
             return;
         }
         jobItemProgress.setStatus(status);
-        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobProgress(jobId, shardingItem, YamlEngine.marshal(SWAPPER.swapToYamlConfiguration(jobItemProgress)));
+        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobItemProgress(jobId, shardingItem, YamlEngine.marshal(SWAPPER.swapToYamlConfiguration(jobItemProgress)));
     }
 }
