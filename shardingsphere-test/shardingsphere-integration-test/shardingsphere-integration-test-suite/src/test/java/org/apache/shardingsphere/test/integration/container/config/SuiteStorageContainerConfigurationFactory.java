@@ -15,39 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.container.atomic.storage.config;
+package org.apache.shardingsphere.test.integration.container.config;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.mysql.DefaultMySQLContainerConfiguration;
-import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.mysql.ScalingMySQLContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.opengauss.DefaultOpenGaussContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.postgresql.DefaultPostgreSQLContainerConfiguration;
-import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.postgresql.ScalingPostgreSQLContainerConfiguration;
 
-public class StorageContainerConfigurationFactory {
+public class SuiteStorageContainerConfigurationFactory {
     
     /**
      * Create new instance of storage container.
      *
      * @param databaseType database type
-     * @param module module
      * @param scenario scenario
      * @return created instance
      */
-    public static StorageContainerConfiguration newInstance(final DatabaseType databaseType, final String scenario, final String module) {
+    public static StorageContainerConfiguration newInstance(final DatabaseType databaseType, final String scenario) {
         switch (databaseType.getType()) {
             case "MySQL":
-                if ("scaling".equalsIgnoreCase(module)) {
-                    return new ScalingMySQLContainerConfiguration(scenario);
+                if ("default".equalsIgnoreCase(scenario)) {
+                    return new DefaultMySQLContainerConfiguration();
                 }
-                return new DefaultMySQLContainerConfiguration(scenario);
+                return new DefaultMySQLContainerConfiguration();
             case "PostgreSQL":
-                if ("scaling".equalsIgnoreCase(module)) {
-                    return new ScalingPostgreSQLContainerConfiguration(scenario);
+                if ("default".equalsIgnoreCase(scenario)) {
+                    return new DefaultPostgreSQLContainerConfiguration();
                 }
-                return new DefaultPostgreSQLContainerConfiguration(scenario);
+                return new DefaultPostgreSQLContainerConfiguration();
             case "openGauss":
-                return new DefaultOpenGaussContainerConfiguration(scenario);
+                return new DefaultOpenGaussContainerConfiguration();
             default:
                 throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
         }

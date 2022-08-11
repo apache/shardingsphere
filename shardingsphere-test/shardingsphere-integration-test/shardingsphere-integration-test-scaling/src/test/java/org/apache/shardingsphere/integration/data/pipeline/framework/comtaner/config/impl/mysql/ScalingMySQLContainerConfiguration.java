@@ -15,20 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.postgresql;
+package org.apache.shardingsphere.integration.data.pipeline.framework.comtaner.config.impl.mysql;
 
-import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.mysql.DefaultMySQLContainerConfiguration;
 
+import java.util.Collections;
 import java.util.Map;
 
-public class ScalingPostgreSQLContainerConfiguration extends DefaultPostgreSQLContainerConfiguration {
+/**
+ * Scaling mysql container configuration.
+ */
+public final class ScalingMySQLContainerConfiguration implements StorageContainerConfiguration {
     
-    public ScalingPostgreSQLContainerConfiguration(final String scenario) {
-        super(scenario);
+    @Override
+    public String[] getCommands() {
+        return new DefaultMySQLContainerConfiguration().getCommands();
+    }
+    
+    @Override
+    public Map<String, String> getEnvs() {
+        return new DefaultMySQLContainerConfiguration().getEnvs();
     }
     
     @Override
     public Map<String, String> getResourceMappings() {
-        return ImmutableMap.<String, String>builder().put("/env/postgresql/postgresql.conf", "/etc/postgresql/postgresql.conf").build();
+        return Collections.singletonMap("/env/mysql/my.cnf", "/etc/mysql/my.cnf");
     }
 }

@@ -17,16 +17,12 @@
 
 package org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.postgresql;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
-import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 
+import java.util.Collections;
 import java.util.Map;
 
-@RequiredArgsConstructor
 public class DefaultPostgreSQLContainerConfiguration implements StorageContainerConfiguration {
-    
-    private final String scenario;
     
     @Override
     public String[] getCommands() {
@@ -37,11 +33,11 @@ public class DefaultPostgreSQLContainerConfiguration implements StorageContainer
     
     @Override
     public Map<String, String> getEnvs() {
-        return ImmutableMap.<String, String>builder().put("POSTGRES_PASSWORD", "Test@123").build();
+        return Collections.singletonMap("POSTGRES_PASSWORD", "Test@123");
     }
     
     @Override
     public Map<String, String> getResourceMappings() {
-        return ImmutableMap.<String, String>builder().put("/env/postgresql/postgresql.conf", "/etc/postgresql/postgresql.conf").build();
+        return Collections.singletonMap("/env/postgresql/postgresql.conf", "/etc/postgresql/postgresql.conf");
     }
 }

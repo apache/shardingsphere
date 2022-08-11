@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.env.container.atomic.storage.
 import java.util.Map;
 
 /**
- * Docker Storage Container Config.
+ * Docker storage container configuration.
  */
 public interface StorageContainerConfiguration {
     

@@ -17,16 +17,12 @@
 
 package org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.opengauss;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 
 import java.util.Map;
 
-@RequiredArgsConstructor
 public class DefaultOpenGaussContainerConfiguration implements StorageContainerConfiguration {
-    
-    private final String scenario;
     
     @Override
     public String[] getCommands() {
