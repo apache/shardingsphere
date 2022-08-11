@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.rewrite.engine.RouteSQLRewriteEngine;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.session.SQLSession;
+import org.apache.shardingsphere.infra.session.ConnectionContext;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 
 import java.util.List;
@@ -65,12 +65,12 @@ public final class SQLRewriteEntry {
      * @param parameters SQL parameters
      * @param sqlStatementContext SQL statement context
      * @param routeContext route context
-     * @param sqlSession sql session
+     * @param connectionContext connection context
      * @return route unit and SQL rewrite result map
      */
     public SQLRewriteResult rewrite(final String sql, final List<Object> parameters, final SQLStatementContext<?> sqlStatementContext,
-                                    final RouteContext routeContext, final SQLSession sqlSession) {
-        SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(sql, parameters, sqlStatementContext, routeContext, sqlSession);
+                                    final RouteContext routeContext, final ConnectionContext connectionContext) {
+        SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(sql, parameters, sqlStatementContext, routeContext, connectionContext);
         SQLTranslatorRule rule = globalRuleMetaData.getSingleRule(SQLTranslatorRule.class);
         DatabaseType protocolType = database.getProtocolType();
         DatabaseType storageType = database.getResource().getDatabaseType();
@@ -80,8 +80,8 @@ public final class SQLRewriteEntry {
     }
     
     private SQLRewriteContext createSQLRewriteContext(final String sql, final List<Object> parameters, final SQLStatementContext<?> sqlStatementContext,
-                                                      final RouteContext routeContext, final SQLSession sqlSession) {
-        SQLRewriteContext result = new SQLRewriteContext(database.getName(), database.getSchemas(), sqlStatementContext, sql, parameters, sqlSession);
+                                                      final RouteContext routeContext, final ConnectionContext connectionContext) {
+        SQLRewriteContext result = new SQLRewriteContext(database.getName(), database.getSchemas(), sqlStatementContext, sql, parameters, connectionContext);
         decorate(decorators, result, routeContext);
         result.generateSQLTokens();
         return result;

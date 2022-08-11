@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.merge;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.session.SQLSession;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.engine.ResultProcessEngine;
 import org.apache.shardingsphere.infra.merge.engine.ResultProcessEngineFactory;
@@ -31,6 +30,7 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.session.ConnectionContext;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -50,13 +50,13 @@ public final class MergeEngine {
     @SuppressWarnings("rawtypes")
     private final Map<ShardingSphereRule, ResultProcessEngine> engines;
     
-    private final SQLSession sqlSession;
+    private final ConnectionContext connectionContext;
     
-    public MergeEngine(final ShardingSphereDatabase database, final ConfigurationProperties props, final SQLSession sqlSession) {
+    public MergeEngine(final ShardingSphereDatabase database, final ConfigurationProperties props, final ConnectionContext connectionContext) {
         this.database = database;
         this.props = props;
         engines = ResultProcessEngineFactory.getInstances(database.getRuleMetaData().getRules());
-        this.sqlSession = sqlSession;
+        this.connectionContext = connectionContext;
     }
     
     /**
@@ -79,7 +79,7 @@ public final class MergeEngine {
             if (entry.getValue() instanceof ResultMergerEngine) {
                 ResultMerger resultMerger = ((ResultMergerEngine) entry.getValue()).newInstance(
                         database.getName(), database.getResource().getDatabaseType(), entry.getKey(), props, sqlStatementContext);
-                return Optional.of(resultMerger.merge(queryResults, sqlStatementContext, database, sqlSession));
+                return Optional.of(resultMerger.merge(queryResults, sqlStatementContext, database, connectionContext));
             }
         }
         return Optional.empty();

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.session.SQLSession;
+import org.apache.shardingsphere.infra.session.ConnectionContext;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
@@ -80,7 +80,7 @@ public final class RowNumberDecoratorMergedResultTest {
                 Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), null, selectStatement, DefaultDatabase.LOGIC_NAME);
         when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, database,
-                mock(SQLSession.class));
+                mock(ConnectionContext.class));
         assertFalse(actual.next());
     }
     
@@ -94,7 +94,7 @@ public final class RowNumberDecoratorMergedResultTest {
                 Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), null, selectStatement, DefaultDatabase.LOGIC_NAME);
         when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, database,
-                mock(SQLSession.class));
+                mock(ConnectionContext.class));
         for (int i = 0; i < 8; i++) {
             assertTrue(actual.next());
         }
@@ -130,7 +130,7 @@ public final class RowNumberDecoratorMergedResultTest {
                 Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), null, selectStatement, DefaultDatabase.LOGIC_NAME);
         when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, database,
-                mock(SQLSession.class));
+                mock(ConnectionContext.class));
         assertTrue(actual.next());
         assertTrue(actual.next());
         assertFalse(actual.next());
@@ -164,7 +164,7 @@ public final class RowNumberDecoratorMergedResultTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), null, selectStatement, DefaultDatabase.LOGIC_NAME);
         when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, database,
-                mock(SQLSession.class));
+                mock(ConnectionContext.class));
         assertTrue(actual.next());
         assertTrue(actual.next());
         assertTrue(actual.next());

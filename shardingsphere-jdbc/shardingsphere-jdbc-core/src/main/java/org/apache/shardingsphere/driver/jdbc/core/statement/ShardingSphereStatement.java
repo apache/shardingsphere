@@ -185,12 +185,12 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private Optional<String> getInstanceIdAndSet(final LogicSQL logicSQL) {
-        Optional<String> result = connection.getSqlSession().getTrafficInstanceId();
+        Optional<String> result = connection.getConnectionContext().getTrafficInstanceId();
         if (!result.isPresent()) {
             result = getInstanceId(logicSQL);
         }
         if (connection.isHoldTransaction() && result.isPresent()) {
-            connection.getSqlSession().setTrafficInstanceId(result.get());
+            connection.getConnectionContext().setTrafficInstanceId(result.get());
         }
         return result;
     }
@@ -483,7 +483,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                 metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData().getRules(),
                 connection.getDatabaseName(), metaDataContexts.getMetaData().getDatabases(), null);
         return kernelProcessor.generateExecutionContext(logicSQL, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()), metaDataContexts.getMetaData().getGlobalRuleMetaData(),
-                metaDataContexts.getMetaData().getProps(), connection.getSqlSession());
+                metaDataContexts.getMetaData().getProps(), connection.getConnectionContext());
     }
     
     private ExecutionGroupContext<JDBCExecutionUnit> createExecutionContext() throws SQLException {
@@ -556,7 +556,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {
-        MergeEngine mergeEngine = new MergeEngine(metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()), metaDataContexts.getMetaData().getProps(), connection.getSqlSession());
+        MergeEngine mergeEngine = new MergeEngine(metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()),
+                metaDataContexts.getMetaData().getProps(), connection.getConnectionContext());
         return mergeEngine.merge(queryResults, executionContext.getSqlStatementContext());
     }
     

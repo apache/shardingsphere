@@ -29,10 +29,10 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.session.SQLSession;
+import org.apache.shardingsphere.infra.session.ConnectionContext;
+import org.apache.shardingsphere.sharding.merge.common.IteratorStreamMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.GroupByMemoryMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.GroupByStreamMergedResult;
-import org.apache.shardingsphere.sharding.merge.common.IteratorStreamMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.orderby.OrderByStreamMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.pagination.LimitDecoratorMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.pagination.RowNumberDecoratorMergedResult;
@@ -86,7 +86,7 @@ public final class ShardingDQLResultMergerTest {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), Collections.emptyList(),
                 selectStatement, DefaultDatabase.LOGIC_NAME);
-        assertThat(resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(SQLSession.class)), instanceOf(IteratorStreamMergedResult.class));
+        assertThat(resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class)), instanceOf(IteratorStreamMergedResult.class));
     }
     
     @Test
@@ -99,7 +99,7 @@ public final class ShardingDQLResultMergerTest {
         selectStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 1), null));
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), Collections.emptyList(),
                 selectStatement, DefaultDatabase.LOGIC_NAME);
-        assertThat(resultMerger.merge(Collections.singletonList(createQueryResult()), selectStatementContext, createDatabase(), mock(SQLSession.class)),
+        assertThat(resultMerger.merge(Collections.singletonList(createQueryResult()), selectStatementContext, createDatabase(), mock(ConnectionContext.class)),
                 instanceOf(IteratorStreamMergedResult.class));
     }
     
@@ -113,7 +113,7 @@ public final class ShardingDQLResultMergerTest {
         selectStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 1), null));
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), Collections.emptyList(),
                 selectStatement, DefaultDatabase.LOGIC_NAME);
-        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(SQLSession.class));
+        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class));
         assertThat(actual, instanceOf(LimitDecoratorMergedResult.class));
         assertThat(((LimitDecoratorMergedResult) actual).getMergedResult(), instanceOf(IteratorStreamMergedResult.class));
     }
@@ -144,7 +144,7 @@ public final class ShardingDQLResultMergerTest {
         selectStatement.setWhere(whereSegment);
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database),
                 null, selectStatement, DefaultDatabase.LOGIC_NAME);
-        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(SQLSession.class));
+        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class));
         assertThat(actual, instanceOf(RowNumberDecoratorMergedResult.class));
         assertThat(((RowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(IteratorStreamMergedResult.class));
     }
@@ -159,7 +159,7 @@ public final class ShardingDQLResultMergerTest {
         selectStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 1), null));
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), Collections.emptyList(),
                 selectStatement, DefaultDatabase.LOGIC_NAME);
-        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(SQLSession.class));
+        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class));
         assertThat(actual, instanceOf(TopAndRowNumberDecoratorMergedResult.class));
         assertThat(((TopAndRowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(IteratorStreamMergedResult.class));
     }
@@ -174,7 +174,7 @@ public final class ShardingDQLResultMergerTest {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), Collections.emptyList(),
                 selectStatement, DefaultDatabase.LOGIC_NAME);
-        assertThat(resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(SQLSession.class)), instanceOf(OrderByStreamMergedResult.class));
+        assertThat(resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class)), instanceOf(OrderByStreamMergedResult.class));
     }
     
     @Test
@@ -188,7 +188,7 @@ public final class ShardingDQLResultMergerTest {
         selectStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 1), null));
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), Collections.emptyList(),
                 selectStatement, DefaultDatabase.LOGIC_NAME);
-        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(SQLSession.class));
+        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class));
         assertThat(actual, instanceOf(LimitDecoratorMergedResult.class));
         assertThat(((LimitDecoratorMergedResult) actual).getMergedResult(), instanceOf(OrderByStreamMergedResult.class));
     }
@@ -220,7 +220,7 @@ public final class ShardingDQLResultMergerTest {
         selectStatement.setWhere(whereSegment);
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), null,
                 selectStatement, DefaultDatabase.LOGIC_NAME);
-        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(SQLSession.class));
+        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class));
         assertThat(actual, instanceOf(RowNumberDecoratorMergedResult.class));
         assertThat(((RowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(OrderByStreamMergedResult.class));
     }
@@ -236,7 +236,7 @@ public final class ShardingDQLResultMergerTest {
         selectStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null));
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), Collections.emptyList(),
                 selectStatement, DefaultDatabase.LOGIC_NAME);
-        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(SQLSession.class));
+        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class));
         assertThat(actual, instanceOf(TopAndRowNumberDecoratorMergedResult.class));
         assertThat(((TopAndRowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(OrderByStreamMergedResult.class));
     }
@@ -252,7 +252,7 @@ public final class ShardingDQLResultMergerTest {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), Collections.emptyList(),
                 selectStatement, DefaultDatabase.LOGIC_NAME);
-        assertThat(resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(SQLSession.class)), instanceOf(GroupByStreamMergedResult.class));
+        assertThat(resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class)), instanceOf(GroupByStreamMergedResult.class));
     }
     
     @Test
@@ -267,7 +267,7 @@ public final class ShardingDQLResultMergerTest {
         selectStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 1), null));
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), Collections.emptyList(),
                 selectStatement, DefaultDatabase.LOGIC_NAME);
-        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(SQLSession.class));
+        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class));
         assertThat(actual, instanceOf(LimitDecoratorMergedResult.class));
         assertThat(((LimitDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByStreamMergedResult.class));
     }
@@ -300,7 +300,7 @@ public final class ShardingDQLResultMergerTest {
         selectStatement.setWhere(whereSegment);
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), null,
                 selectStatement, DefaultDatabase.LOGIC_NAME);
-        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(SQLSession.class));
+        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class));
         assertThat(actual, instanceOf(RowNumberDecoratorMergedResult.class));
         assertThat(((RowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByStreamMergedResult.class));
     }
@@ -317,7 +317,7 @@ public final class ShardingDQLResultMergerTest {
         selectStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null));
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), Collections.emptyList(),
                 selectStatement, DefaultDatabase.LOGIC_NAME);
-        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(SQLSession.class));
+        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class));
         assertThat(actual, instanceOf(TopAndRowNumberDecoratorMergedResult.class));
         assertThat(((TopAndRowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByStreamMergedResult.class));
     }
@@ -332,7 +332,7 @@ public final class ShardingDQLResultMergerTest {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), Collections.emptyList(),
                 selectStatement, DefaultDatabase.LOGIC_NAME);
-        assertThat(resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(SQLSession.class)), instanceOf(GroupByStreamMergedResult.class));
+        assertThat(resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class)), instanceOf(GroupByStreamMergedResult.class));
     }
     
     @Test
@@ -346,7 +346,7 @@ public final class ShardingDQLResultMergerTest {
         selectStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 1), null));
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), Collections.emptyList(),
                 selectStatement, DefaultDatabase.LOGIC_NAME);
-        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(SQLSession.class));
+        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class));
         assertThat(actual, instanceOf(LimitDecoratorMergedResult.class));
         assertThat(((LimitDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByStreamMergedResult.class));
     }
@@ -379,7 +379,7 @@ public final class ShardingDQLResultMergerTest {
         selectStatement.setWhere(whereSegment);
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), null,
                 selectStatement, DefaultDatabase.LOGIC_NAME);
-        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(SQLSession.class));
+        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class));
         assertThat(actual, instanceOf(RowNumberDecoratorMergedResult.class));
         assertThat(((RowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByStreamMergedResult.class));
     }
@@ -397,7 +397,7 @@ public final class ShardingDQLResultMergerTest {
         selectStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null));
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), Collections.emptyList(),
                 selectStatement, DefaultDatabase.LOGIC_NAME);
-        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(SQLSession.class));
+        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class));
         assertThat(actual, instanceOf(TopAndRowNumberDecoratorMergedResult.class));
         assertThat(((TopAndRowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByMemoryMergedResult.class));
     }
@@ -413,7 +413,7 @@ public final class ShardingDQLResultMergerTest {
         selectStatement.setProjections(projectionsSegment);
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), Collections.emptyList(),
                 selectStatement, DefaultDatabase.LOGIC_NAME);
-        assertThat(resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(SQLSession.class)), instanceOf(GroupByMemoryMergedResult.class));
+        assertThat(resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class)), instanceOf(GroupByMemoryMergedResult.class));
     }
     
     @Test
@@ -429,7 +429,7 @@ public final class ShardingDQLResultMergerTest {
                 selectStatement, DefaultDatabase.LOGIC_NAME);
         DatabaseType databaseType = DatabaseTypeFactory.getInstance("MySQL");
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
-        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(SQLSession.class));
+        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class));
         assertThat(actual, instanceOf(LimitDecoratorMergedResult.class));
         assertThat(((LimitDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByMemoryMergedResult.class));
     }
@@ -462,7 +462,7 @@ public final class ShardingDQLResultMergerTest {
         selectStatement.setWhere(whereSegment);
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), null,
                 selectStatement, DefaultDatabase.LOGIC_NAME);
-        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(SQLSession.class));
+        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class));
         assertThat(actual, instanceOf(RowNumberDecoratorMergedResult.class));
         assertThat(((RowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByMemoryMergedResult.class));
     }
@@ -479,7 +479,7 @@ public final class ShardingDQLResultMergerTest {
         selectStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null));
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), Collections.emptyList(),
                 selectStatement, DefaultDatabase.LOGIC_NAME);
-        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(SQLSession.class));
+        MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class));
         assertThat(actual, instanceOf(TopAndRowNumberDecoratorMergedResult.class));
         assertThat(((TopAndRowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByMemoryMergedResult.class));
     }

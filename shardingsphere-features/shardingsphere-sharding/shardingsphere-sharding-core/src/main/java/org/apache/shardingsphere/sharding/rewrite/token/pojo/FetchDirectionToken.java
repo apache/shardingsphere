@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
-import org.apache.shardingsphere.infra.session.SQLSession;
+import org.apache.shardingsphere.infra.session.ConnectionContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.DirectionType;
 
 /**
@@ -37,20 +37,21 @@ public final class FetchDirectionToken extends SQLToken implements Substitutable
     
     private final String cursorName;
     
-    private final SQLSession sqlSession;
+    private final ConnectionContext connectionContext;
     
-    public FetchDirectionToken(final int startIndex, final int stopIndex, final DirectionType directionType, final long fetchCount, final String cursorName, final SQLSession sqlSession) {
+    public FetchDirectionToken(final int startIndex, final int stopIndex, final DirectionType directionType, final long fetchCount,
+                               final String cursorName, final ConnectionContext connectionContext) {
         super(startIndex);
         this.stopIndex = stopIndex;
         this.directionType = directionType;
         this.fetchCount = fetchCount;
         this.cursorName = cursorName;
-        this.sqlSession = sqlSession;
+        this.connectionContext = connectionContext;
     }
     
     @Override
     public String toString() {
-        long actualFetchCount = Math.max(fetchCount - sqlSession.getCursorSQLSession().getMinGroupRowCounts().getOrDefault(cursorName, 0L), 0);
+        long actualFetchCount = Math.max(fetchCount - connectionContext.getCursorConnectionContext().getMinGroupRowCounts().getOrDefault(cursorName, 0L), 0);
         if (DirectionType.isForwardCountDirectionType(directionType)) {
             return " FORWARD " + actualFetchCount + " ";
         }
