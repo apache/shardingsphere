@@ -39,7 +39,7 @@ import static org.mockito.Mockito.when;
 public final class ShowSQLTranslatorRuleHandlerTest extends ProxyContextRestorer {
     
     @Test
-    public void assertExecutor() throws SQLException {
+    public void assertExecute() throws SQLException {
         ShowSQLTranslatorRuleHandler handler = new ShowSQLTranslatorRuleHandler();
         handler.init(new ShowSQLTranslatorRuleStatement(), null);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);

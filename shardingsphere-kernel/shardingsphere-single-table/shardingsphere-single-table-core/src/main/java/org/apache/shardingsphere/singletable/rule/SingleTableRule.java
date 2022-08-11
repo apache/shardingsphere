@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.singletable.rule;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
@@ -226,6 +227,12 @@ public final class SingleTableRule implements DatabaseRule, DataNodeContainedRul
     }
     
     @Override
+    public ShardingSphereRule reloadRule(final RuleConfiguration config, final String databaseName, final Map<String, DataSource> dataSourceMap,
+                                         final Collection<ShardingSphereRule> builtRules) {
+        return new SingleTableRule((SingleTableRuleConfiguration) config, databaseName, dataSourceMap, builtRules);
+    }
+    
+    @Override
     public Map<String, Collection<DataNode>> getAllDataNodes() {
         return singleTableDataNodes;
     }
@@ -257,7 +264,9 @@ public final class SingleTableRule implements DatabaseRule, DataNodeContainedRul
     
     @Override
     public Collection<String> getAllTables() {
-        return new HashSet<>(tableNames.values());
+        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        result.addAll(tableNames.values());
+        return result;
     }
     
     @Override

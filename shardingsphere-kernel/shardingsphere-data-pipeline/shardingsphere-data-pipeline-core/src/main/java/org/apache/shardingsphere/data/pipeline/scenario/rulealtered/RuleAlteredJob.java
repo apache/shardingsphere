@@ -24,13 +24,14 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAltere
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.RuleAlteredJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJob;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineIgnoredException;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
+import org.apache.shardingsphere.data.pipeline.core.task.InventoryIncrementalTasksRunner;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 
@@ -55,38 +56,37 @@ public final class RuleAlteredJob extends AbstractPipelineJob implements SimpleJ
         }
         setJobId(shardingContext.getJobName());
         RuleAlteredJobConfiguration jobConfig = RuleAlteredJobConfigurationSwapper.swapToObject(shardingContext.getJobParameter());
-        JobProgress initProgress = RuleAlteredJobAPIFactory.getInstance().getJobProgress(shardingContext.getJobName(), shardingContext.getShardingItem());
-        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, shardingContext.getShardingItem(), initProgress, dataSourceManager);
-        int shardingItem = jobContext.getShardingItem();
+        InventoryIncrementalJobItemProgress initProgress = RuleAlteredJobAPIFactory.getInstance().getJobItemProgress(shardingContext.getJobName(), shardingContext.getShardingItem());
+        RuleAlteredJobContext jobItemContext = new RuleAlteredJobContext(jobConfig, shardingContext.getShardingItem(), initProgress, dataSourceManager);
+        int shardingItem = jobItemContext.getShardingItem();
         if (getTasksRunnerMap().containsKey(shardingItem)) {
-            // If the following log is output, it is possible that the elasticjob task was not shutdown correctly
-            log.warn("schedulerMap contains shardingItem {}, ignore", shardingItem);
+            log.warn("tasksRunnerMap contains shardingItem {}, ignore", shardingItem);
             return;
         }
-        log.info("start RuleAlteredJobScheduler, jobId={}, shardingItem={}", getJobId(), shardingItem);
-        RuleAlteredJobScheduler jobScheduler = new RuleAlteredJobScheduler(jobContext, jobContext.getInventoryTasks(), jobContext.getIncrementalTasks(),
-                jobContext.getJobProcessContext().getInventoryDumperExecuteEngine(), jobContext.getJobProcessContext().getIncrementalDumperExecuteEngine());
+        log.info("start tasks runner, jobId={}, shardingItem={}", getJobId(), shardingItem);
+        InventoryIncrementalTasksRunner tasksRunner = new InventoryIncrementalTasksRunner(jobItemContext, jobItemContext.getInventoryTasks(), jobItemContext.getIncrementalTasks(),
+                jobItemContext.getJobProcessContext().getInventoryDumperExecuteEngine(), jobItemContext.getJobProcessContext().getIncrementalDumperExecuteEngine());
         runInBackground(() -> {
-            prepare(jobContext);
-            jobScheduler.start();
+            prepare(jobItemContext);
+            tasksRunner.start();
         });
-        getTasksRunnerMap().put(shardingItem, jobScheduler);
+        getTasksRunnerMap().put(shardingItem, tasksRunner);
         PipelineJobProgressPersistService.addJobProgressPersistContext(getJobId(), shardingItem);
     }
     
-    private void prepare(final RuleAlteredJobContext jobContext) {
+    private void prepare(final RuleAlteredJobContext jobItemContext) {
         try {
-            jobPreparer.prepare(jobContext);
+            jobPreparer.prepare(jobItemContext);
         } catch (final PipelineIgnoredException ex) {
             log.info("pipeline ignore exception: {}", ex.getMessage());
             PipelineJobCenter.stop(getJobId());
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
-            log.error("job prepare failed, {}-{}", getJobId(), jobContext.getShardingItem(), ex);
+            log.error("job prepare failed, {}-{}", getJobId(), jobItemContext.getShardingItem(), ex);
             PipelineJobCenter.stop(getJobId());
-            jobContext.setStatus(JobStatus.PREPARING_FAILURE);
-            RuleAlteredJobAPIFactory.getInstance().persistJobProgress(jobContext);
+            jobItemContext.setStatus(JobStatus.PREPARING_FAILURE);
+            RuleAlteredJobAPIFactory.getInstance().persistJobItemProgress(jobItemContext);
             throw ex;
         }
     }
@@ -104,7 +104,7 @@ public final class RuleAlteredJob extends AbstractPipelineJob implements SimpleJ
             log.info("stop, jobId is null, ignore");
             return;
         }
-        log.info("stop job scheduler, jobId={}", getJobId());
+        log.info("stop tasks runner, jobId={}", getJobId());
         for (PipelineTasksRunner each : getTasksRunnerMap().values()) {
             each.stop();
         }

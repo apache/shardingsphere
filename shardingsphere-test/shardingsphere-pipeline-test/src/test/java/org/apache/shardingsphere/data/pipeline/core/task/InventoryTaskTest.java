@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumper
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IntegerPrimaryKeyPosition;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.fixture.FixturePipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
@@ -61,7 +61,7 @@ public final class InventoryTaskTest {
     
     @Before
     public void setUp() {
-        taskConfig = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration(), 0, new JobProgress(), new PipelineDataSourceManager()).getTaskConfig();
+        taskConfig = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration(), 0, new InventoryIncrementalJobItemProgress(), new PipelineDataSourceManager()).getTaskConfig();
     }
     
     @Test(expected = IngestException.class)
@@ -89,7 +89,7 @@ public final class InventoryTaskTest {
                         PipelineContextUtil.getPipelineChannelCreator(),
                         new PipelineDataSourceManager(), dataSource, metaDataLoader, PipelineContextUtil.getExecuteEngine(), new FixturePipelineJobProgressListener())) {
             inventoryTask.start();
-            assertThat(inventoryTask.getProgress().getPosition(), instanceOf(IntegerPrimaryKeyPosition.class));
+            assertThat(inventoryTask.getTaskProgress().getPosition(), instanceOf(IntegerPrimaryKeyPosition.class));
         }
     }
     

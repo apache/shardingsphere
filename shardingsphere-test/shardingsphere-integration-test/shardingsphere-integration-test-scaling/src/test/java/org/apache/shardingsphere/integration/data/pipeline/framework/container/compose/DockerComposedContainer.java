@@ -50,10 +50,6 @@ public final class DockerComposedContainer extends BaseComposedContainer {
                 (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance("Cluster", "proxy", databaseType, storageContainer, "", "scaling");
         proxyClusterContainer.dependsOn(governanceContainer, storageContainer);
         proxyContainer = getContainers().registerContainer(proxyClusterContainer);
-        ShardingSphereProxyClusterContainer anotherProxyContainer =
-                (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance("Cluster", "proxy", databaseType, storageContainer, "", "scaling");
-        anotherProxyContainer.dependsOn(governanceContainer, storageContainer);
-        getContainers().registerContainer(anotherProxyContainer);
     }
     
     @Override

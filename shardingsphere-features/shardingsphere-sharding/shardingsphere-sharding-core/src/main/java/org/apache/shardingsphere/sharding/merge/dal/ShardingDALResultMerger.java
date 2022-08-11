@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.merge.dal;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.session.SQLSession;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.engine.merger.ResultMerger;
@@ -55,7 +56,8 @@ public final class ShardingDALResultMerger implements ResultMerger {
     private final ShardingRule shardingRule;
     
     @Override
-    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext, final ShardingSphereDatabase database) throws SQLException {
+    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext,
+                              final ShardingSphereDatabase database, final SQLSession sqlSession) throws SQLException {
         SQLStatement dalStatement = sqlStatementContext.getSqlStatement();
         String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName()));
         if (dalStatement instanceof MySQLShowDatabasesStatement) {

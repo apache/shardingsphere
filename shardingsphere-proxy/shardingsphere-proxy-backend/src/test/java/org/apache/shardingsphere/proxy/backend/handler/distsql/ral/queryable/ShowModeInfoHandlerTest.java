@@ -39,7 +39,7 @@ import static org.mockito.Mockito.when;
 public final class ShowModeInfoHandlerTest extends ProxyContextRestorer {
     
     @Test
-    public void assertExecutor() throws SQLException {
+    public void assertExecute() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         InstanceContext instanceContext = createInstanceContext();
         when(contextManager.getInstanceContext()).thenReturn(instanceContext);

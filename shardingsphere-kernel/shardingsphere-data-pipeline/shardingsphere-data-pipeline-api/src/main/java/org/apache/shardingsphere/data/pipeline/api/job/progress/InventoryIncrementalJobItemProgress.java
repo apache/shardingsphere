@@ -15,27 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.detect;
+package org.apache.shardingsphere.data.pipeline.api.job.progress;
 
 import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
-
-import java.util.Collection;
+import lombok.Setter;
+import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 
 /**
- * Rule altered job almost completed parameter.
+ * Inventory incremental job item progress.
  */
-@RequiredArgsConstructor
 @Getter
-@ToString
-// TODO now rename
-public final class RuleAlteredJobAlmostCompletedParameter {
+@Setter
+public final class InventoryIncrementalJobItemProgress implements PipelineJobItemProgress {
     
-    private final int jobShardingCount;
+    private JobStatus status = JobStatus.RUNNING;
     
-    @NonNull
-    private final Collection<InventoryIncrementalJobItemProgress> jobItemProgresses;
+    private String sourceDatabaseType;
+    
+    private boolean active;
+    
+    private JobItemInventoryTasksProgress inventory;
+    
+    private JobItemIncrementalTasksProgress incremental;
 }

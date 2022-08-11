@@ -42,7 +42,7 @@ import static org.mockito.Mockito.when;
 public final class ShowTransactionRuleHandlerTest extends ProxyContextRestorer {
     
     @Test
-    public void assertExecutorWithXA() throws SQLException {
+    public void assertExecuteWithXA() throws SQLException {
         ShowTransactionRuleHandler handler = new ShowTransactionRuleHandler();
         handler.init(new ShowTransactionRuleStatement(), null);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
@@ -61,7 +61,7 @@ public final class ShowTransactionRuleHandlerTest extends ProxyContextRestorer {
     }
     
     @Test
-    public void assertExecutorWithLocal() throws SQLException {
+    public void assertExecuteWithLocal() throws SQLException {
         ShowTransactionRuleHandler handler = new ShowTransactionRuleHandler();
         handler.init(new ShowTransactionRuleStatement(), null);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);

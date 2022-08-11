@@ -64,7 +64,7 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
     private final Collection<Importer> importers;
     
     @Getter
-    private final IncrementalTaskProgress progress;
+    private final IncrementalTaskProgress taskProgress;
     
     public IncrementalTask(final int concurrency, final DumperConfiguration dumperConfig, final ImporterConfiguration importerConfig,
                            final PipelineChannelCreator pipelineChannelCreator, final PipelineDataSourceManager dataSourceManager,
@@ -73,8 +73,8 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
         this.incrementalDumperExecuteEngine = incrementalDumperExecuteEngine;
         taskId = dumperConfig.getDataSourceName();
         IngestPosition<?> position = dumperConfig.getPosition();
-        progress = createIncrementalTaskProgress(position);
-        channel = createChannel(concurrency, pipelineChannelCreator, progress);
+        taskProgress = createIncrementalTaskProgress(position);
+        channel = createChannel(concurrency, pipelineChannelCreator, taskProgress);
         dumper = DumperFactory.createIncrementalDumper(dumperConfig, position, channel, sourceMetaDataLoader);
         importers = createImporters(concurrency, importerConfig, dataSourceManager, channel, jobProgressListener);
     }
@@ -87,7 +87,7 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
     
     @Override
     protected void doStart() {
-        progress.getIncrementalTaskDelay().setLatestActiveTimeMillis(System.currentTimeMillis());
+        taskProgress.getIncrementalTaskDelay().setLatestActiveTimeMillis(System.currentTimeMillis());
         Future<?> future = incrementalDumperExecuteEngine.submitAll(importers, getExecuteCallback());
         dumper.start();
         waitForResult(future);

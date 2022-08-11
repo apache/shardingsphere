@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfigura
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IntegerPrimaryKeyPosition;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
@@ -45,7 +45,7 @@ import static org.junit.Assert.assertThat;
 
 public final class InventoryTaskSplitterTest {
     
-    private RuleAlteredJobContext jobContext;
+    private RuleAlteredJobContext jobItemContext;
     
     private TaskConfiguration taskConfig;
     
@@ -60,17 +60,17 @@ public final class InventoryTaskSplitterTest {
     
     @Before
     public void setUp() {
-        initJobContext();
-        inventoryTaskSplitter = new InventoryTaskSplitter(jobContext.getSourceMetaDataLoader(), jobContext.getDataSourceManager(), jobContext.getJobProcessContext().getImporterExecuteEngine(),
-                jobContext.getSourceDataSource(), jobContext.getTaskConfig(), jobContext.getInitProgress());
+        initJobItemContext();
+        inventoryTaskSplitter = new InventoryTaskSplitter(jobItemContext.getSourceMetaDataLoader(), jobItemContext.getDataSourceManager(),
+                jobItemContext.getJobProcessContext().getImporterExecuteEngine(), jobItemContext.getSourceDataSource(), jobItemContext.getTaskConfig(), jobItemContext.getInitProgress());
     }
     
-    private void initJobContext() {
+    private void initJobItemContext() {
         RuleAlteredJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
-        JobProgress initProgress = RuleAlteredJobAPIFactory.getInstance().getJobProgress(jobConfig.getJobId(), 0);
-        jobContext = new RuleAlteredJobContext(jobConfig, 0, initProgress, new PipelineDataSourceManager());
-        dataSourceManager = jobContext.getDataSourceManager();
-        taskConfig = jobContext.getTaskConfig();
+        InventoryIncrementalJobItemProgress initProgress = RuleAlteredJobAPIFactory.getInstance().getJobItemProgress(jobConfig.getJobId(), 0);
+        jobItemContext = new RuleAlteredJobContext(jobConfig, 0, initProgress, new PipelineDataSourceManager());
+        dataSourceManager = jobItemContext.getDataSourceManager();
+        taskConfig = jobItemContext.getTaskConfig();
     }
     
     @After
@@ -81,46 +81,46 @@ public final class InventoryTaskSplitterTest {
     @Test
     public void assertSplitInventoryDataWithEmptyTable() throws SQLException {
         initEmptyTablePrimaryEnvironment(taskConfig.getDumperConfig());
-        List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext);
+        List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobItemContext);
         assertThat(actual.size(), is(1));
         InventoryTask task = actual.get(0);
-        assertThat(((IntegerPrimaryKeyPosition) task.getProgress().getPosition()).getBeginValue(), is(0L));
-        assertThat(((IntegerPrimaryKeyPosition) task.getProgress().getPosition()).getEndValue(), is(0L));
+        assertThat(((IntegerPrimaryKeyPosition) task.getTaskProgress().getPosition()).getBeginValue(), is(0L));
+        assertThat(((IntegerPrimaryKeyPosition) task.getTaskProgress().getPosition()).getEndValue(), is(0L));
     }
     
     @Test
     public void assertSplitInventoryDataWithIntPrimary() throws SQLException {
         initIntPrimaryEnvironment(taskConfig.getDumperConfig());
-        List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext);
+        List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobItemContext);
         assertThat(actual.size(), is(10));
         InventoryTask task = actual.get(9);
-        assertThat(((IntegerPrimaryKeyPosition) task.getProgress().getPosition()).getBeginValue(), is(91L));
-        assertThat(((IntegerPrimaryKeyPosition) task.getProgress().getPosition()).getEndValue(), is(100L));
+        assertThat(((IntegerPrimaryKeyPosition) task.getTaskProgress().getPosition()).getBeginValue(), is(91L));
+        assertThat(((IntegerPrimaryKeyPosition) task.getTaskProgress().getPosition()).getEndValue(), is(100L));
     }
     
     @Test
     public void assertSplitInventoryDataWithCharPrimary() throws SQLException {
         initCharPrimaryEnvironment(taskConfig.getDumperConfig());
-        inventoryTaskSplitter.splitInventoryData(jobContext);
+        inventoryTaskSplitter.splitInventoryData(jobItemContext);
     }
     
     @Test
     public void assertSplitInventoryDataWithoutPrimaryButWithUniqueIndex() throws SQLException {
         initUniqueIndexOnNotNullColumnEnvironment(taskConfig.getDumperConfig());
-        List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext);
+        List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobItemContext);
         assertThat(actual.size(), is(1));
     }
     
     @Test(expected = PipelineJobCreationException.class)
     public void assertSplitInventoryDataWithUnionPrimary() throws SQLException {
         initUnionPrimaryEnvironment(taskConfig.getDumperConfig());
-        inventoryTaskSplitter.splitInventoryData(jobContext);
+        inventoryTaskSplitter.splitInventoryData(jobItemContext);
     }
     
     @Test(expected = PipelineJobCreationException.class)
     public void assertSplitInventoryDataWithoutPrimaryAndUniqueIndex() throws SQLException {
         initNoPrimaryEnvironment(taskConfig.getDumperConfig());
-        inventoryTaskSplitter.splitInventoryData(jobContext);
+        inventoryTaskSplitter.splitInventoryData(jobItemContext);
     }
     
     private void initEmptyTablePrimaryEnvironment(final DumperConfiguration dumperConfig) throws SQLException {

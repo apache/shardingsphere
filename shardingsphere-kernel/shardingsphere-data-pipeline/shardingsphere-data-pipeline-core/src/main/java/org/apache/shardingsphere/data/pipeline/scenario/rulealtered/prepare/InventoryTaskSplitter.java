@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfigura
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobContext;
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineProcessContext;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
@@ -32,7 +32,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPo
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.StringPrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
@@ -76,29 +76,29 @@ public final class InventoryTaskSplitter {
     
     private final TaskConfiguration taskConfig;
     
-    private final JobProgress initProgress;
+    private final InventoryIncrementalJobItemProgress initProgress;
     
     /**
      * Split inventory data to multi-tasks.
      *
-     * @param jobContext job context
+     * @param jobItemContext job item context
      * @return split inventory data task
      */
-    public List<InventoryTask> splitInventoryData(final PipelineJobContext jobContext) {
+    public List<InventoryTask> splitInventoryData(final PipelineJobItemContext jobItemContext) {
         List<InventoryTask> result = new LinkedList<>();
-        PipelineChannelCreator pipelineChannelCreator = jobContext.getJobProcessContext().getPipelineChannelCreator();
-        DefaultPipelineJobProgressListener jobProgressListener = new DefaultPipelineJobProgressListener(jobContext.getJobId(), jobContext.getShardingItem());
-        for (InventoryDumperConfiguration each : splitDumperConfig(jobContext, taskConfig.getDumperConfig())) {
+        PipelineChannelCreator pipelineChannelCreator = jobItemContext.getJobProcessContext().getPipelineChannelCreator();
+        DefaultPipelineJobProgressListener jobProgressListener = new DefaultPipelineJobProgressListener(jobItemContext.getJobId(), jobItemContext.getShardingItem());
+        for (InventoryDumperConfiguration each : splitDumperConfig(jobItemContext, taskConfig.getDumperConfig())) {
             result.add(new InventoryTask(each, taskConfig.getImporterConfig(), pipelineChannelCreator, dataSourceManager, sourceDataSource, metaDataLoader, importerExecuteEngine,
                     jobProgressListener));
         }
         return result;
     }
     
-    private Collection<InventoryDumperConfiguration> splitDumperConfig(final PipelineJobContext jobContext, final DumperConfiguration dumperConfig) {
+    private Collection<InventoryDumperConfiguration> splitDumperConfig(final PipelineJobItemContext jobItemContext, final DumperConfiguration dumperConfig) {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
         for (InventoryDumperConfiguration each : splitByTable(dumperConfig)) {
-            result.addAll(splitByPrimaryKey(jobContext, sourceDataSource, metaDataLoader, each));
+            result.addAll(splitByPrimaryKey(jobItemContext, sourceDataSource, metaDataLoader, each));
         }
         return result;
     }
@@ -116,14 +116,14 @@ public final class InventoryTaskSplitter {
         return result;
     }
     
-    private Collection<InventoryDumperConfiguration> splitByPrimaryKey(final PipelineJobContext jobContext, final DataSource dataSource, final PipelineTableMetaDataLoader metaDataLoader,
+    private Collection<InventoryDumperConfiguration> splitByPrimaryKey(final PipelineJobItemContext jobItemContext, final DataSource dataSource, final PipelineTableMetaDataLoader metaDataLoader,
                                                                        final InventoryDumperConfiguration dumperConfig) {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
-        PipelineProcessContext ruleAlteredContext = jobContext.getJobProcessContext();
+        PipelineProcessContext ruleAlteredContext = jobItemContext.getJobProcessContext();
         PipelineInputConfiguration inputConfig = ruleAlteredContext.getPipelineProcessConfig().getInput();
         int batchSize = inputConfig.getBatchSize();
         JobRateLimitAlgorithm rateLimitAlgorithm = ruleAlteredContext.getInputRateLimitAlgorithm();
-        Collection<IngestPosition<?>> inventoryPositions = getInventoryPositions(jobContext, dumperConfig, dataSource, metaDataLoader);
+        Collection<IngestPosition<?>> inventoryPositions = getInventoryPositions(jobItemContext, dumperConfig, dataSource, metaDataLoader);
         int i = 0;
         for (IngestPosition<?> inventoryPosition : inventoryPositions) {
             InventoryDumperConfiguration splitDumperConfig = new InventoryDumperConfiguration(dumperConfig);
@@ -140,7 +140,7 @@ public final class InventoryTaskSplitter {
         return result;
     }
     
-    private Collection<IngestPosition<?>> getInventoryPositions(final PipelineJobContext jobContext, final InventoryDumperConfiguration dumperConfig,
+    private Collection<IngestPosition<?>> getInventoryPositions(final PipelineJobItemContext jobItemContext, final InventoryDumperConfiguration dumperConfig,
                                                                 final DataSource dataSource, final PipelineTableMetaDataLoader metaDataLoader) {
         String schemaName = dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName()));
         String actualTableName = dumperConfig.getActualTableName();
@@ -162,7 +162,7 @@ public final class InventoryTaskSplitter {
         int uniqueKeyDataType = uniqueKeyColumn.getDataType();
         dumperConfig.setUniqueKeyDataType(uniqueKeyDataType);
         if (PipelineJdbcUtils.isIntegerColumn(uniqueKeyDataType)) {
-            return getPositionByIntegerPrimaryKeyRange(jobContext, dataSource, dumperConfig);
+            return getPositionByIntegerPrimaryKeyRange(jobItemContext, dataSource, dumperConfig);
         } else if (PipelineJdbcUtils.isStringColumn(uniqueKeyDataType)) {
             return getPositionByStringPrimaryKeyRange();
         } else {
@@ -195,12 +195,13 @@ public final class InventoryTaskSplitter {
                 String.format("Can not split range for table %s, reason: table contains multiple unique index or unique index contains nullable/multiple column(s)", tableName));
     }
     
-    private Collection<IngestPosition<?>> getPositionByIntegerPrimaryKeyRange(final PipelineJobContext jobContext, final DataSource dataSource, final InventoryDumperConfiguration dumperConfig) {
+    private Collection<IngestPosition<?>> getPositionByIntegerPrimaryKeyRange(final PipelineJobItemContext jobItemContext, final DataSource dataSource,
+                                                                              final InventoryDumperConfiguration dumperConfig) {
         Collection<IngestPosition<?>> result = new LinkedList<>();
-        PipelineJobConfiguration jobConfig = jobContext.getJobConfig();
+        PipelineJobConfiguration jobConfig = jobItemContext.getJobConfig();
         String sql = PipelineSQLBuilderFactory.getInstance(jobConfig.getSourceDatabaseType())
                 .buildSplitByPrimaryKeyRangeSQL(dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName())), dumperConfig.getActualTableName(), dumperConfig.getUniqueKey());
-        int shardingSize = jobContext.getJobProcessContext().getPipelineProcessConfig().getInput().getShardingSize();
+        int shardingSize = jobItemContext.getJobProcessContext().getPipelineProcessConfig().getInput().getShardingSize();
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement ps = connection.prepareStatement(sql)) {

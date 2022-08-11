@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.merge.engine.merger.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.session.SQLSession;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.engine.merger.ResultMerger;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -32,7 +33,7 @@ import java.util.List;
 public final class TransparentResultMerger implements ResultMerger {
     
     @Override
-    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext, final ShardingSphereDatabase database) {
+    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext, final ShardingSphereDatabase database, final SQLSession sqlSession) {
         return new TransparentMergedResult(queryResults.get(0));
     }
 }

@@ -44,12 +44,12 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     @Override
-    public void persistJobProgress(final String jobId, final int shardingItem, final String progressValue) {
+    public void persistJobItemProgress(final String jobId, final int shardingItem, final String progressValue) {
         repository.persist(PipelineMetaDataNode.getScalingJobOffsetPath(jobId, shardingItem), progressValue);
     }
     
     @Override
-    public String getJobProgress(final String jobId, final int shardingItem) {
+    public String getJobItemProgress(final String jobId, final int shardingItem) {
         return repository.get(PipelineMetaDataNode.getScalingJobOffsetPath(jobId, shardingItem));
     }
     

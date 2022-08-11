@@ -25,10 +25,10 @@ import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobContext;
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
@@ -38,12 +38,12 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Rule altered job context.
+ * Rule altered job item context.
  */
 @Getter
 @Setter
 @Slf4j
-public final class RuleAlteredJobContext implements PipelineJobContext {
+public final class RuleAlteredJobContext implements PipelineJobItemContext {
     
     private final String jobId;
     
@@ -53,7 +53,7 @@ public final class RuleAlteredJobContext implements PipelineJobContext {
     
     private volatile JobStatus status = JobStatus.RUNNING;
     
-    private final JobProgress initProgress;
+    private final InventoryIncrementalJobItemProgress initProgress;
     
     private final TaskConfiguration taskConfig;
     
@@ -83,7 +83,7 @@ public final class RuleAlteredJobContext implements PipelineJobContext {
         }
     };
     
-    public RuleAlteredJobContext(final RuleAlteredJobConfiguration jobConfig, final int jobShardingItem, final JobProgress initProgress,
+    public RuleAlteredJobContext(final RuleAlteredJobConfiguration jobConfig, final int jobShardingItem, final InventoryIncrementalJobItemProgress initProgress,
                                  final PipelineDataSourceManager dataSourceManager) {
         jobProcessContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
         this.jobConfig = jobConfig;

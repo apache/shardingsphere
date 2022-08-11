@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction;
 import org.apache.shardingsphere.proxy.backend.communication.TransactionManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.sharding.merge.ddl.fetch.FetchOrderByValueGroupsHolder;
 import org.apache.shardingsphere.transaction.ConnectionSavepointManager;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.TransactionHolder;
@@ -84,7 +83,7 @@ public final class JDBCBackendTransactionManager implements TransactionManager<V
                 connection.getConnectionSession().getTransactionStatus().setInTransaction(false);
                 connection.getConnectionSession().getTransactionStatus().setRollbackOnly(false);
                 TransactionHolder.clear();
-                FetchOrderByValueGroupsHolder.remove();
+                connection.getConnectionSession().getSqlSession().clearCursorSQLSession();
             }
         }
         return null;
@@ -103,7 +102,7 @@ public final class JDBCBackendTransactionManager implements TransactionManager<V
                 connection.getConnectionSession().getTransactionStatus().setInTransaction(false);
                 connection.getConnectionSession().getTransactionStatus().setRollbackOnly(false);
                 TransactionHolder.clear();
-                FetchOrderByValueGroupsHolder.remove();
+                connection.getConnectionSession().getSqlSession().clearCursorSQLSession();
             }
         }
         return null;

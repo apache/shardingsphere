@@ -44,7 +44,7 @@ public final class PipelineJobProgressDetector {
         if (inventoryTasks.isEmpty()) {
             log.warn("inventoryTasks is empty");
         }
-        return inventoryTasks.stream().allMatch(each -> each.getProgress().getPosition() instanceof FinishedPosition);
+        return inventoryTasks.stream().allMatch(each -> each.getTaskProgress().getPosition() instanceof FinishedPosition);
     }
     
     /**

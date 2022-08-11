@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefreshEngine;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
+import org.apache.shardingsphere.infra.exception.RuleNotExistedException;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
@@ -43,7 +44,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchem
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.infra.exception.RuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
@@ -52,7 +52,6 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sharding.merge.ddl.fetch.FetchOrderByValueGroupsHolder;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -114,24 +113,21 @@ public abstract class DatabaseCommunicationEngine implements DatabaseBackendHand
             prepareCursorStatementContext(statementContext, connectionSession, cursorName);
         }
         if (statementContext instanceof CloseStatementContext && ((CloseStatementContext) statementContext).getSqlStatement().isCloseAll()) {
-            FetchOrderByValueGroupsHolder.remove();
-            connectionSession.getCursorDefinitions().clear();
+            connectionSession.getSqlSession().clearCursorSQLSession();
         }
     }
     
     private void prepareCursorStatementContext(final CursorAvailable statementContext, final ConnectionSession connectionSession, final String cursorName) {
         if (statementContext instanceof CursorStatementContext) {
-            connectionSession.getCursorDefinitions().put(cursorName, (CursorStatementContext) statementContext);
+            connectionSession.getSqlSession().getCursorSQLSession().getCursorDefinitions().put(cursorName, (CursorStatementContext) statementContext);
         }
         if (statementContext instanceof CursorDefinitionAware) {
-            CursorStatementContext cursorStatementContext = connectionSession.getCursorDefinitions().get(cursorName);
+            CursorStatementContext cursorStatementContext = (CursorStatementContext) connectionSession.getSqlSession().getCursorSQLSession().getCursorDefinitions().get(cursorName);
             Preconditions.checkArgument(null != cursorStatementContext, "Cursor %s does not exist.", cursorName);
             ((CursorDefinitionAware) statementContext).setUpCursorDefinition(cursorStatementContext);
         }
         if (statementContext instanceof CloseStatementContext) {
-            FetchOrderByValueGroupsHolder.getOrderByValueGroups().remove(cursorName);
-            FetchOrderByValueGroupsHolder.getMinGroupRowCounts().remove(cursorName);
-            connectionSession.getCursorDefinitions().remove(cursorName);
+            connectionSession.getSqlSession().getCursorSQLSession().removeCursorName(cursorName);
         }
     }
     

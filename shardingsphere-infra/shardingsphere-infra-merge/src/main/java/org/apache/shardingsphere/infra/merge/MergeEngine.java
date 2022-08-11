@@ -79,7 +79,7 @@ public final class MergeEngine {
             if (entry.getValue() instanceof ResultMergerEngine) {
                 ResultMerger resultMerger = ((ResultMergerEngine) entry.getValue()).newInstance(
                         database.getName(), database.getResource().getDatabaseType(), entry.getKey(), props, sqlStatementContext);
-                return Optional.of(resultMerger.merge(queryResults, sqlStatementContext, database));
+                return Optional.of(resultMerger.merge(queryResults, sqlStatementContext, database, sqlSession));
             }
         }
         return Optional.empty();

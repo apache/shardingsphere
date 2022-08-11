@@ -15,27 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.job.progress;
+package org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
+import org.apache.shardingsphere.infra.session.SQLSession;
 
 /**
- * Job progress.
+ * SQL session aware.
  */
-@Getter
-@Setter
-// TODO now rename
-public final class JobProgress implements PipelineJobItemProgress {
+public interface SQLSessionAware {
     
-    private JobStatus status = JobStatus.RUNNING;
-    
-    private String sourceDatabaseType;
-    
-    private boolean active;
-    
-    private JobItemInventoryTasksProgress inventory;
-    
-    private JobItemIncrementalTasksProgress incremental;
+    /**
+     * Set sql session.
+     *
+     * @param sqlSession sql session
+     */
+    void setSQLSession(SQLSession sqlSession);
 }

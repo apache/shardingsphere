@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.job.progress.persist;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
-import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobContext;
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 
@@ -92,9 +92,9 @@ public final class PipelineJobProgressPersistService {
                 && !persistContext.getHasNewEvents().get()) {
             return;
         }
-        Optional<PipelineJobContext> jobContext = PipelineJobCenter.getJobContext(jobId, shardingItem);
-        if (!jobContext.isPresent()) {
-            log.warn("persist, job context does not exist, jobId={}, shardingItem={}", jobId, shardingItem);
+        Optional<PipelineJobItemContext> jobItemContext = PipelineJobCenter.getJobItemContext(jobId, shardingItem);
+        if (!jobItemContext.isPresent()) {
+            log.warn("persist, job item context does not exist, jobId={}, shardingItem={}", jobId, shardingItem);
             return;
         }
         if (null == beforePersistingProgressMillis) {
@@ -102,7 +102,7 @@ public final class PipelineJobProgressPersistService {
         }
         persistContext.getHasNewEvents().set(false);
         long startTimeMillis = System.currentTimeMillis();
-        RuleAlteredJobAPIFactory.getInstance().persistJobProgress(jobContext.get());
+        RuleAlteredJobAPIFactory.getInstance().persistJobItemProgress(jobItemContext.get());
         persistContext.getBeforePersistingProgressMillis().set(null);
         if (6 == ThreadLocalRandom.current().nextInt(100)) {
             log.info("persist, jobId={}, shardingItem={}, cost time: {} ms", jobId, shardingItem, System.currentTimeMillis() - startTimeMillis);

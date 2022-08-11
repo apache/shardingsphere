@@ -36,22 +36,22 @@ public interface GovernanceRepositoryAPI {
     boolean isExisted(String key);
     
     /**
-     * Persist job progress.
+     * Persist job item progress.
      *
      * @param jobId job id
      * @param shardingItem sharding item
      * @param progressValue progress value
      */
-    void persistJobProgress(String jobId, int shardingItem, String progressValue);
+    void persistJobItemProgress(String jobId, int shardingItem, String progressValue);
     
     /**
-     * Get job progress.
+     * Get job item progress.
      *
      * @param jobId job id
      * @param shardingItem sharding item
-     * @return job progress
+     * @return job item progress
      */
-    String getJobProgress(String jobId, int shardingItem);
+    String getJobItemProgress(String jobId, int shardingItem);
     
     /**
      * Persist job check result.

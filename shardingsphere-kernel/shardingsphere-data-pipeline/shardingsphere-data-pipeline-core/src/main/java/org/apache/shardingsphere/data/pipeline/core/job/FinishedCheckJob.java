@@ -24,7 +24,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAltere
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.RuleAlteredJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.api.detect.RuleAlteredJobAlmostCompletedParameter;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
@@ -69,7 +69,7 @@ public final class FinishedCheckJob implements SimpleJob {
                     log.info("completionDetector not configured, auto switch will not be enabled. You could query job progress and switch config manually with DistSQL.");
                     continue;
                 }
-                RuleAlteredJobAlmostCompletedParameter parameter = new RuleAlteredJobAlmostCompletedParameter(jobInfo.getShardingTotalCount(), ruleAlteredJobAPI.getProgress(jobConfig).values());
+                RuleAlteredJobAlmostCompletedParameter parameter = new RuleAlteredJobAlmostCompletedParameter(jobInfo.getShardingTotalCount(), ruleAlteredJobAPI.getJobProgress(jobConfig).values());
                 if (!ruleAlteredContext.getCompletionDetectAlgorithm().isAlmostCompleted(parameter)) {
                     continue;
                 }
@@ -101,8 +101,8 @@ public final class FinishedCheckJob implements SimpleJob {
     }
     
     private boolean isNotAllowDataCheck(final String jobId) {
-        Map<Integer, JobProgress> jobProgressMap = ruleAlteredJobAPI.getProgress(jobId);
-        for (JobProgress each : jobProgressMap.values()) {
+        Map<Integer, InventoryIncrementalJobItemProgress> jobItemProgressMap = ruleAlteredJobAPI.getJobProgress(jobId);
+        for (InventoryIncrementalJobItemProgress each : jobItemProgressMap.values()) {
             if (null == each || !JobStatus.EXECUTE_INCREMENTAL_TASK.equals(each.getStatus())) {
                 return true;
             }
