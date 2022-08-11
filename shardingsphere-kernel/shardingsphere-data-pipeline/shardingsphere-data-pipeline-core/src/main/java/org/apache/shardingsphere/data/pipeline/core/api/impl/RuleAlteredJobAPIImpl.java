@@ -28,7 +28,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.job.YamlPipelineJobCon
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.RuleAlteredJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.YamlRuleAlteredJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobContext;
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
@@ -383,7 +383,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         PipelineContext.getContextManager().getInstanceContext().getEventBusContext().post(taskFinishedEvent);
         // TODO rewrite job status update after job progress structure refactor
         for (int each : repositoryAPI.getShardingItems(jobId)) {
-            PipelineJobCenter.getJobContext(jobId, each).ifPresent(jobContext -> jobContext.setStatus(JobStatus.FINISHED));
+            PipelineJobCenter.getJobItemContext(jobId, each).ifPresent(jobItemContext -> jobItemContext.setStatus(JobStatus.FINISHED));
             updateJobItemStatus(jobId, each, JobStatus.FINISHED);
         }
         PipelineJobCenter.stop(jobId);
@@ -408,31 +408,31 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     }
     
     @Override
-    public void persistJobItemProgress(final PipelineJobContext jobContext) {
-        if (!(jobContext instanceof RuleAlteredJobContext)) {
+    public void persistJobItemProgress(final PipelineJobItemContext jobItemContext) {
+        if (!(jobItemContext instanceof RuleAlteredJobContext)) {
             return;
         }
-        RuleAlteredJobContext context = (RuleAlteredJobContext) jobContext;
+        RuleAlteredJobContext context = (RuleAlteredJobContext) jobItemContext;
         InventoryIncrementalJobItemProgress jobItemProgress = new InventoryIncrementalJobItemProgress();
-        jobItemProgress.setStatus(jobContext.getStatus());
+        jobItemProgress.setStatus(jobItemContext.getStatus());
         jobItemProgress.setSourceDatabaseType(context.getJobConfig().getSourceDatabaseType());
         jobItemProgress.setIncremental(getIncrementalTasksProgress(context));
         jobItemProgress.setInventory(getInventoryTasksProgress(context));
         String value = YamlEngine.marshal(SWAPPER.swapToYamlConfiguration(jobItemProgress));
-        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobProgress(jobContext.getJobId(), jobContext.getShardingItem(), value);
+        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), value);
     }
     
-    private JobItemIncrementalTasksProgress getIncrementalTasksProgress(final RuleAlteredJobContext jobContext) {
+    private JobItemIncrementalTasksProgress getIncrementalTasksProgress(final RuleAlteredJobContext jobItemContext) {
         Map<String, IncrementalTaskProgress> incrementalTaskProgressMap = new HashMap<>();
-        for (IncrementalTask each : jobContext.getIncrementalTasks()) {
+        for (IncrementalTask each : jobItemContext.getIncrementalTasks()) {
             incrementalTaskProgressMap.put(each.getTaskId(), each.getProgress());
         }
         return new JobItemIncrementalTasksProgress(incrementalTaskProgressMap);
     }
     
-    private JobItemInventoryTasksProgress getInventoryTasksProgress(final RuleAlteredJobContext jobContext) {
+    private JobItemInventoryTasksProgress getInventoryTasksProgress(final RuleAlteredJobContext jobItemContext) {
         Map<String, InventoryTaskProgress> inventoryTaskProgressMap = new HashMap<>();
-        for (InventoryTask each : jobContext.getInventoryTasks()) {
+        for (InventoryTask each : jobItemContext.getInventoryTasks()) {
             inventoryTaskProgressMap.put(each.getTaskId(), each.getProgress());
         }
         return new JobItemInventoryTasksProgress(inventoryTaskProgressMap);

@@ -25,7 +25,7 @@ import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobContext;
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
@@ -38,12 +38,12 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Rule altered job context.
+ * Rule altered job item context.
  */
 @Getter
 @Setter
 @Slf4j
-public final class RuleAlteredJobContext implements PipelineJobContext {
+public final class RuleAlteredJobContext implements PipelineJobItemContext {
     
     private final String jobId;
     

@@ -56,36 +56,36 @@ public final class RuleAlteredJob extends AbstractPipelineJob implements SimpleJ
         setJobId(shardingContext.getJobName());
         RuleAlteredJobConfiguration jobConfig = RuleAlteredJobConfigurationSwapper.swapToObject(shardingContext.getJobParameter());
         InventoryIncrementalJobItemProgress initProgress = RuleAlteredJobAPIFactory.getInstance().getJobItemProgress(shardingContext.getJobName(), shardingContext.getShardingItem());
-        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, shardingContext.getShardingItem(), initProgress, dataSourceManager);
-        int shardingItem = jobContext.getShardingItem();
+        RuleAlteredJobContext jobItemContext = new RuleAlteredJobContext(jobConfig, shardingContext.getShardingItem(), initProgress, dataSourceManager);
+        int shardingItem = jobItemContext.getShardingItem();
         if (getTasksRunnerMap().containsKey(shardingItem)) {
             log.warn("tasksRunnerMap contains shardingItem {}, ignore", shardingItem);
             return;
         }
         log.info("start tasks runner, jobId={}, shardingItem={}", getJobId(), shardingItem);
-        InventoryIncrementalTasksRunner tasksRunner = new InventoryIncrementalTasksRunner(jobContext, jobContext.getInventoryTasks(), jobContext.getIncrementalTasks(),
-                jobContext.getJobProcessContext().getInventoryDumperExecuteEngine(), jobContext.getJobProcessContext().getIncrementalDumperExecuteEngine());
+        InventoryIncrementalTasksRunner tasksRunner = new InventoryIncrementalTasksRunner(jobItemContext, jobItemContext.getInventoryTasks(), jobItemContext.getIncrementalTasks(),
+                jobItemContext.getJobProcessContext().getInventoryDumperExecuteEngine(), jobItemContext.getJobProcessContext().getIncrementalDumperExecuteEngine());
         runInBackground(() -> {
-            prepare(jobContext);
+            prepare(jobItemContext);
             tasksRunner.start();
         });
         getTasksRunnerMap().put(shardingItem, tasksRunner);
         PipelineJobProgressPersistService.addJobProgressPersistContext(getJobId(), shardingItem);
     }
     
-    private void prepare(final RuleAlteredJobContext jobContext) {
+    private void prepare(final RuleAlteredJobContext jobItemContext) {
         try {
-            jobPreparer.prepare(jobContext);
+            jobPreparer.prepare(jobItemContext);
         } catch (final PipelineIgnoredException ex) {
             log.info("pipeline ignore exception: {}", ex.getMessage());
             PipelineJobCenter.stop(getJobId());
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
-            log.error("job prepare failed, {}-{}", getJobId(), jobContext.getShardingItem(), ex);
+            log.error("job prepare failed, {}-{}", getJobId(), jobItemContext.getShardingItem(), ex);
             PipelineJobCenter.stop(getJobId());
-            jobContext.setStatus(JobStatus.PREPARING_FAILURE);
-            RuleAlteredJobAPIFactory.getInstance().persistJobItemProgress(jobContext);
+            jobItemContext.setStatus(JobStatus.PREPARING_FAILURE);
+            RuleAlteredJobAPIFactory.getInstance().persistJobItemProgress(jobItemContext);
             throw ex;
         }
     }

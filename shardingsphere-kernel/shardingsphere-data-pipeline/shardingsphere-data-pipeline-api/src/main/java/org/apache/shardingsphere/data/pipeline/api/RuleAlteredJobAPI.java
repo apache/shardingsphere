@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.api;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobContext;
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
@@ -186,9 +186,9 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI {
     /**
      * Persist job item progress.
      *
-     * @param jobContext job context
+     * @param jobItemContext job item context
      */
-    void persistJobItemProgress(PipelineJobContext jobContext);
+    void persistJobItemProgress(PipelineJobItemContext jobItemContext);
     
     /**
      * Get job item progress.

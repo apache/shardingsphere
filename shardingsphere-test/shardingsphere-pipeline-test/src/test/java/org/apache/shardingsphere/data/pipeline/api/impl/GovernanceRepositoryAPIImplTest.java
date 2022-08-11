@@ -67,17 +67,17 @@ public final class GovernanceRepositoryAPIImplTest {
     
     @Test
     public void assertPersistJobProgress() {
-        RuleAlteredJobContext jobContext = mockJobContext();
-        governanceRepositoryAPI.persistJobProgress(jobContext.getJobId(), jobContext.getShardingItem(), "testValue");
-        String actual = governanceRepositoryAPI.getJobProgress(jobContext.getJobId(), jobContext.getShardingItem());
+        RuleAlteredJobContext jobItemContext = mockJobItemContext();
+        governanceRepositoryAPI.persistJobProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), "testValue");
+        String actual = governanceRepositoryAPI.getJobProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem());
         assertThat(actual, is("testValue"));
     }
     
     @Test
     public void assertPersistJobCheckResult() {
-        RuleAlteredJobContext jobContext = mockJobContext();
-        governanceRepositoryAPI.persistJobCheckResult(jobContext.getJobId(), true);
-        Optional<Boolean> checkResult = governanceRepositoryAPI.getJobCheckResult(jobContext.getJobId());
+        RuleAlteredJobContext jobItemContext = mockJobItemContext();
+        governanceRepositoryAPI.persistJobCheckResult(jobItemContext.getJobId(), true);
+        Optional<Boolean> checkResult = governanceRepositoryAPI.getJobCheckResult(jobItemContext.getJobId());
         assertTrue(checkResult.isPresent() && checkResult.get());
     }
     
@@ -118,14 +118,14 @@ public final class GovernanceRepositoryAPIImplTest {
     
     @Test
     public void assertGetShardingItems() {
-        RuleAlteredJobContext jobContext = mockJobContext();
-        governanceRepositoryAPI.persistJobProgress(jobContext.getJobId(), jobContext.getShardingItem(), "testValue");
-        List<Integer> shardingItems = governanceRepositoryAPI.getShardingItems(jobContext.getJobId());
+        RuleAlteredJobContext jobItemContext = mockJobItemContext();
+        governanceRepositoryAPI.persistJobProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), "testValue");
+        List<Integer> shardingItems = governanceRepositoryAPI.getShardingItems(jobItemContext.getJobId());
         assertThat(shardingItems.size(), is(1));
-        assertThat(shardingItems.get(0), is(jobContext.getShardingItem()));
+        assertThat(shardingItems.get(0), is(jobItemContext.getShardingItem()));
     }
     
-    private RuleAlteredJobContext mockJobContext() {
+    private RuleAlteredJobContext mockJobItemContext() {
         RuleAlteredJobContext result = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration(), 0, new InventoryIncrementalJobItemProgress(), new PipelineDataSourceManager());
         TaskConfiguration taskConfig = result.getTaskConfig();
         result.getInventoryTasks().add(mockInventoryTask(taskConfig));

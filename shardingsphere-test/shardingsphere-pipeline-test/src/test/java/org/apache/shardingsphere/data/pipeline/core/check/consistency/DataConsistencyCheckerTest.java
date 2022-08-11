@@ -54,11 +54,11 @@ public final class DataConsistencyCheckerTest {
     }
     
     private RuleAlteredJobConfiguration createJobConfiguration() throws SQLException {
-        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration(), 0,
+        RuleAlteredJobContext jobItemContext = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration(), 0,
                 new InventoryIncrementalJobItemProgress(), new PipelineDataSourceManager());
-        initTableData(jobContext.getTaskConfig().getDumperConfig().getDataSourceConfig());
-        initTableData(jobContext.getTaskConfig().getImporterConfig().getDataSourceConfig());
-        return jobContext.getJobConfig();
+        initTableData(jobItemContext.getTaskConfig().getDumperConfig().getDataSourceConfig());
+        initTableData(jobItemContext.getTaskConfig().getImporterConfig().getDataSourceConfig());
+        return jobItemContext.getJobConfig();
     }
     
     private void initTableData(final PipelineDataSourceConfiguration dataSourceConfig) throws SQLException {

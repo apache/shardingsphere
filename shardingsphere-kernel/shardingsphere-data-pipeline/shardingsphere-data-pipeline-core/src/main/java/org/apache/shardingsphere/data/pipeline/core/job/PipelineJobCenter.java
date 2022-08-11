@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.job;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobContext;
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 
@@ -72,18 +72,18 @@ public final class PipelineJobCenter {
     }
     
     /**
-     * Get job context.
+     * Get job item context.
      *
      * @param jobId job id
      * @param shardingItem sharding item
-     * @return job context
+     * @return job item context
      */
-    public static Optional<PipelineJobContext> getJobContext(final String jobId, final int shardingItem) {
+    public static Optional<PipelineJobItemContext> getJobItemContext(final String jobId, final int shardingItem) {
         PipelineJob job = JOB_MAP.get(jobId);
         if (null == job) {
             return Optional.empty();
         }
         Optional<PipelineTasksRunner> tasksRunner = job.getTasksRunner(shardingItem);
-        return tasksRunner.map(PipelineTasksRunner::getJobContext);
+        return tasksRunner.map(PipelineTasksRunner::getJobItemContext);
     }
 }

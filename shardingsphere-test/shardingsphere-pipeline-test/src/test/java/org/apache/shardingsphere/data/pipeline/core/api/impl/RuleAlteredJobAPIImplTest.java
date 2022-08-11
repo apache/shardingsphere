@@ -199,8 +199,8 @@ public final class RuleAlteredJobAPIImplTest {
         Optional<String> jobId = ruleAlteredJobAPI.start(jobConfig);
         assertTrue(jobId.isPresent());
         final GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
-        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, 0, new InventoryIncrementalJobItemProgress(), new PipelineDataSourceManager());
-        ruleAlteredJobAPI.persistJobItemProgress(jobContext);
+        RuleAlteredJobContext jobItemContext = new RuleAlteredJobContext(jobConfig, 0, new InventoryIncrementalJobItemProgress(), new PipelineDataSourceManager());
+        ruleAlteredJobAPI.persistJobItemProgress(jobItemContext);
         repositoryAPI.persistJobCheckResult(jobId.get(), true);
         ruleAlteredJobAPI.updateJobItemStatus(jobId.get(), 0, JobStatus.FINISHED);
         ruleAlteredJobAPI.switchClusterConfiguration(jobId.get());
@@ -212,10 +212,10 @@ public final class RuleAlteredJobAPIImplTest {
         Optional<String> jobId = ruleAlteredJobAPI.start(jobConfig);
         assertTrue(jobId.isPresent());
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
-        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, 0, new InventoryIncrementalJobItemProgress(), new PipelineDataSourceManager());
-        ruleAlteredJobAPI.persistJobItemProgress(jobContext);
+        RuleAlteredJobContext jobItemContext = new RuleAlteredJobContext(jobConfig, 0, new InventoryIncrementalJobItemProgress(), new PipelineDataSourceManager());
+        ruleAlteredJobAPI.persistJobItemProgress(jobItemContext);
         repositoryAPI.persistJobCheckResult(jobId.get(), true);
-        ruleAlteredJobAPI.updateJobItemStatus(jobId.get(), jobContext.getShardingItem(), JobStatus.EXECUTE_INVENTORY_TASK);
+        ruleAlteredJobAPI.updateJobItemStatus(jobId.get(), jobItemContext.getShardingItem(), JobStatus.EXECUTE_INVENTORY_TASK);
         ruleAlteredJobAPI.switchClusterConfiguration(jobId.get());
         Map<Integer, InventoryIncrementalJobItemProgress> progress = ruleAlteredJobAPI.getProgress(jobId.get());
         for (Entry<Integer, InventoryIncrementalJobItemProgress> entry : progress.entrySet()) {
@@ -256,10 +256,10 @@ public final class RuleAlteredJobAPIImplTest {
     @Test
     public void assertRenewJobStatus() {
         final RuleAlteredJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
-        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, 0, new InventoryIncrementalJobItemProgress(), new PipelineDataSourceManager());
-        ruleAlteredJobAPI.persistJobItemProgress(jobContext);
+        RuleAlteredJobContext jobItemContext = new RuleAlteredJobContext(jobConfig, 0, new InventoryIncrementalJobItemProgress(), new PipelineDataSourceManager());
+        ruleAlteredJobAPI.persistJobItemProgress(jobItemContext);
         ruleAlteredJobAPI.updateJobItemStatus(jobConfig.getJobId(), 0, JobStatus.FINISHED);
-        InventoryIncrementalJobItemProgress jobProgress = ruleAlteredJobAPI.getJobItemProgress(jobContext.getJobId(), jobContext.getShardingItem());
+        InventoryIncrementalJobItemProgress jobProgress = ruleAlteredJobAPI.getJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem());
         assertThat(jobProgress.getStatus(), is(JobStatus.FINISHED));
     }
 }
