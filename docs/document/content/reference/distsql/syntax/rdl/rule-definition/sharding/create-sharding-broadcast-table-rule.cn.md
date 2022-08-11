@@ -34,9 +34,9 @@ algorithmType ::=
 
 ### 补充说明
 
-- `tableName` 可使用已经存在的表或者将要创建的表
+- `tableName` 可使用已经存在的表或者将要创建的表；
 - 只能存在一个广播规则，但可包含多个广播表，因此无法重复执行 `CREATE SHARDING BROADCAST TABLE RULE`。
- 当广播规则已经存在但还需要添加广播表时，需要使用 `ALTER BROADCAST TABLE RULE` 来修改广播规则
+ 当广播规则已经存在但还需要添加广播表时，需要使用 `ALTER BROADCAST TABLE RULE` 来修改广播规则。
 
 ### 示例
 

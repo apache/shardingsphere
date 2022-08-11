@@ -28,7 +28,7 @@ algorithmType ::=
 
 ### Supplement
 
-- `algorithmType` is the sharding algorithm type. For detailed sharding algorithm type information, please refer to [Sharding Algorithm](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/)
+- `algorithmType` is the sharding algorithm type. For detailed sharding algorithm type information, please refer to [Sharding Algorithm](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/).
 
 ### Example
 
@@ -52,4 +52,4 @@ CREATE SHARDING ALGORITHM interval_algorithm (
 
 ### Related links
 
-- [Reserved word](/cn/reference/distsql/syntax/reserved-word/)
+- [Reserved word](/en/reference/distsql/syntax/reserved-word/)

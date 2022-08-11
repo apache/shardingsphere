@@ -56,9 +56,9 @@ value ::=
 - `ALTER RESOURCE`不允许改变该资源关联的真实数据源；
 - `ALTER RESOURCE`会发生连接池的切换，这个操作可能对进行中的业务造成影响，请谨慎使用；
 - 确认添加的资源是可以正常连接的， 否则将不能添加成功；
-- `dataSourceName` 区分大小写；
-- `dataSourceName` 在当前逻辑库中需要唯一；
-- `dataSourceName` 命名只允许使用字母、数字以及 `_` ，且必须以字母开头；
+- `resourceName` 区分大小写；
+- `resourceName` 在当前逻辑库中需要唯一；
+- `resourceName` 命名只允许使用字母、数字以及 `_` ，且必须以字母开头；
 - `poolProperty` 用于自定义连接池参数，`key` 必须和连接池参数名一致，`value` 支持 int 和 String 类型；
 - 当 `password` 包含特殊字符时，建议使用 string 形式；例如 `password@123`的 string 形式为 `"password@123"`。
 
