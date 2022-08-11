@@ -17,9 +17,14 @@
 
 mode:
   type: Standalone
-  repository:
-    type: H2
   overwrite: true
+  repository:
+    type: JDBC
+    props:
+      provider: H2
+      jdbc_url: jdbc:mysql://localhost:3306/demo_ds?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+      username: root
+      password: root
 
 dataSources:
   ds_0:

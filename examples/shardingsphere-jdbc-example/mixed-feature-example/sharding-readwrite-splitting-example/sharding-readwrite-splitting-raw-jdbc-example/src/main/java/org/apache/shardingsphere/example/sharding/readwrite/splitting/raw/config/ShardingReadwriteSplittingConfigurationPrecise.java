@@ -20,6 +20,7 @@ package org.apache.shardingsphere.example.sharding.readwrite.splitting.raw.confi
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
+import org.apache.shardingsphere.example.core.jdbc.StandaloneModeConfigurationUtil;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -41,7 +42,8 @@ public final class ShardingReadwriteSplittingConfigurationPrecise implements Exa
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(),
+        return ShardingSphereDataSourceFactory.createDataSource(
+                StandaloneModeConfigurationUtil.getJdbcConfiguration(true), createDataSourceMap(),
                 Arrays.asList(createShardingRuleConfiguration(), createReadwriteSplittingConfiguration()), new Properties());
     }
     

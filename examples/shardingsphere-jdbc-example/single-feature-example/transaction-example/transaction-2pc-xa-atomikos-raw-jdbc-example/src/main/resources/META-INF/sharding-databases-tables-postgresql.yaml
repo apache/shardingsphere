@@ -15,6 +15,17 @@
 # limitations under the License.
 #
 
+mode:
+  type: Standalone
+  overwrite: true
+  repository:
+    type: JDBC
+    props:
+      provider: H2
+      jdbc_url: jdbc:postgresql://localhost:5432/demo_ds_0
+      username: root
+      password: root
+
 dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource

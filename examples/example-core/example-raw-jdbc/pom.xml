@@ -39,5 +39,10 @@
             <artifactId>example-api</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-standalone-mode-repository-api</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
     </dependencies>
 </project>

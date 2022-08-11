@@ -20,6 +20,7 @@ package org.apache.shardingsphere.example.sharding.raw.jdbc.config;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
+import org.apache.shardingsphere.example.core.jdbc.StandaloneModeConfigurationUtil;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -42,7 +43,9 @@ public final class ShardingDatabasesConfigurationRange implements ExampleConfigu
         ShardingRuleConfiguration shardingRuleConfig = createShardingRuleConfiguration();
         Collection<RuleConfiguration> configs = new LinkedList<>();
         configs.add(shardingRuleConfig);
-        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), configs, new Properties());
+        return ShardingSphereDataSourceFactory.createDataSource(
+                StandaloneModeConfigurationUtil.getJdbcConfiguration(true),
+                createDataSourceMap(), configs, new Properties());
     }
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {

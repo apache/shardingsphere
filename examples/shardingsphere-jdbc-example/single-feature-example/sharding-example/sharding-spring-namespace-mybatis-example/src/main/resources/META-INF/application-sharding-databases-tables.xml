@@ -22,6 +22,7 @@
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
+       xmlns:standalone="http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd 
                            http://www.springframework.org/schema/tx 
@@ -32,6 +33,8 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/sharding
                            http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone
+                           http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository.xsd
                            ">
     <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />
     
@@ -87,8 +90,18 @@
             <sharding:broadcast-table-rule table="t_address"/>
         </sharding:broadcast-table-rules>
     </sharding:rule>
-    
+
+    <standalone:repository id="persistRepositoryConfiguration" type="JDBC">
+        <props>
+            <prop key="provider">H2</prop>
+            <prop key="jdbc_url">jdbc:mysql://localhost:3306/demo?serverTimezone=UTC&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8</prop>
+            <prop key="username">root</prop>
+            <prop key="password">root</prop>
+        </props>
+    </standalone:repository>
+
     <shardingsphere:data-source id="shardingDataSource" data-source-names="demo_ds_0, demo_ds_1" rule-refs="shardingRule">
+        <shardingsphere:mode type="Standalone" overwrite="true" repository-ref="persistRepositoryConfiguration"/>
         <props>
             <prop key="sql-show">false</prop>
         </props>

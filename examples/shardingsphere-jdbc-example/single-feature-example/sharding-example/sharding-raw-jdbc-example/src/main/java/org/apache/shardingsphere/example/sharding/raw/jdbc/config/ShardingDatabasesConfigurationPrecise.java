@@ -20,6 +20,7 @@ package org.apache.shardingsphere.example.sharding.raw.jdbc.config;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
+import org.apache.shardingsphere.example.core.jdbc.StandaloneModeConfigurationUtil;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
@@ -56,7 +57,7 @@ public final class ShardingDatabasesConfigurationPrecise implements ExampleConfi
     }
     
     private ModeConfiguration createModeConfiguration() {
-        return new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("H2", new Properties()), true);
+        return StandaloneModeConfigurationUtil.getJdbcConfiguration(true);
     }
     
     private ShardingTableRuleConfiguration getOrderTableRuleConfiguration() {

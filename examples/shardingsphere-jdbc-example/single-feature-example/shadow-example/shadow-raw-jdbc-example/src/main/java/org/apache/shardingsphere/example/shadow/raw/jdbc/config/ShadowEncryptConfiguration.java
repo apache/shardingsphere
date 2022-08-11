@@ -21,6 +21,7 @@ import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.example.core.jdbc.StandaloneModeConfigurationUtil;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -40,7 +41,9 @@ public final class ShadowEncryptConfiguration extends BaseShadowConfiguration {
     @Override
     public DataSource getDataSource() throws SQLException {
         Map<String, DataSource> dataSourceMap = createDataSourceMap();
-        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, createRuleConfigurations(), createShardingSphereProps());
+        return ShardingSphereDataSourceFactory.createDataSource(
+                StandaloneModeConfigurationUtil.getJdbcConfiguration(true),
+                dataSourceMap, createRuleConfigurations(), createShardingSphereProps());
     }
     
     private Collection<RuleConfiguration> createRuleConfigurations() {

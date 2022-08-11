@@ -22,6 +22,7 @@
        xmlns:p="http://www.springframework.org/schema/p"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
+       xmlns:standalone="http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone"
        xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
@@ -33,6 +34,8 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone
+                           http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository.xsd
                            ">
     <tx:annotation-driven/>
     <context:annotation-config/>
@@ -76,6 +79,17 @@
             <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" encrypt-algorithm-ref="pwd_encryptor"/>
         </encrypt:table>
     </encrypt:rule>
-    
-    <shardingsphere:data-source id="encryptDataSource" data-source-names="ds" rule-refs="encryptRule"/>
+
+    <standalone:repository id="persistRepositoryConfiguration" type="JDBC">
+        <props>
+            <prop key="provider">H2</prop>
+            <prop key="jdbc_url">jdbc:mysql://localhost:3306/demo?serverTimezone=UTC&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8</prop>
+            <prop key="username">root</prop>
+            <prop key="password">root</prop>
+        </props>
+    </standalone:repository>
+
+    <shardingsphere:data-source id="encryptDataSource" data-source-names="ds" rule-refs="encryptRule">
+        <shardingsphere:mode type="Standalone" overwrite="true" repository-ref="persistRepositoryConfiguration"/>
+    </shardingsphere:data-source>
 </beans>

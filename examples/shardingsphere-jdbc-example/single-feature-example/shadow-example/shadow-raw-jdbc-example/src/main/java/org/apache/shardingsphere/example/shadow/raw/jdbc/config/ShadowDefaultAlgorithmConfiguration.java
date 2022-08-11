@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.example.shadow.raw.jdbc.config;
 
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.example.core.jdbc.StandaloneModeConfigurationUtil;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
@@ -35,7 +36,9 @@ public final class ShadowDefaultAlgorithmConfiguration extends BaseShadowConfigu
     @Override
     public DataSource getDataSource() throws SQLException {
         Map<String, DataSource> dataSourceMap = createDataSourceMap();
-        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, createRuleConfigurations(), createShardingSphereProps());
+        return ShardingSphereDataSourceFactory.createDataSource(
+                StandaloneModeConfigurationUtil.getJdbcConfiguration(true),
+                dataSourceMap, createRuleConfigurations(), createShardingSphereProps());
     }
     
     private Collection<RuleConfiguration> createRuleConfigurations() {
