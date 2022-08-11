@@ -30,6 +30,7 @@ import org.apache.curator.utils.CloseableUtils;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryException;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
@@ -187,6 +188,10 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     
     @Override
     public void persistEphemeral(final String key, final String value) {
+        if (key.startsWith("/worker_id/")) {
+            persistExclusiveEphemeral(key, value);
+            return;
+        }
         try {
             if (isExisted(key)) {
                 client.delete().deletingChildrenIfNeeded().forPath(key);
@@ -197,6 +202,21 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
             // CHECKSTYLE:ON
             CuratorZookeeperExceptionHandler.handleException(ex);
         }
+    }
+    
+    private void persistExclusiveEphemeral(final String key, final String value) {
+        try {
+            client.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(key, value.getBytes(StandardCharsets.UTF_8));
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            throw new ClusterPersistRepositoryException(ex);
+        }
+    }
+    
+    @Override
+    public boolean persistLock(final String lockKey, final long timeoutMillis) {
+        return internalLockHolder.getInternalLock(lockKey).tryLock(timeoutMillis);
     }
     
     @Override
@@ -252,11 +272,6 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
             default:
                 return Type.IGNORED;
         }
-    }
-    
-    @Override
-    public boolean tryLock(final String lockKey, final long timeoutMillis) {
-        return internalLockHolder.getInternalLock(lockKey).tryLock(timeoutMillis);
     }
     
     @Override

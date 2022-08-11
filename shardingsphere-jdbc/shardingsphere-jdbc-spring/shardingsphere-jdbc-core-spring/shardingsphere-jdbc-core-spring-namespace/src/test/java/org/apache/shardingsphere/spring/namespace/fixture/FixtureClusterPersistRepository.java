@@ -70,7 +70,7 @@ public final class FixtureClusterPersistRepository implements ClusterPersistRepo
     }
     
     @Override
-    public boolean tryLock(final String lockKey, final long timeoutMillis) {
+    public boolean persistLock(final String lockKey, final long timeoutMillis) {
         return false;
     }
     
