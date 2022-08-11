@@ -32,7 +32,6 @@
     <description>Build criterion and ecosystem above multi-model databases</description>
     
     <modules>
-        <module>shardingsphere-spi</module>
         <module>shardingsphere-sql-parser</module>
         <module>shardingsphere-distsql</module>
         <module>shardingsphere-db-protocol</module>
@@ -73,7 +72,7 @@
         <annotation-api.version>1.3.2</annotation-api.version>
         <activation-api.version>1.2.0</activation-api.version>
         
-        <calcite.version>1.30.0</calcite.version>
+        <calcite.version>1.31.0</calcite.version>
         <vertx.version>4.2.3</vertx.version>
         <netty.version>4.1.73.Final</netty.version>
         
@@ -107,7 +106,7 @@
         <opengauss.version>3.0.0</opengauss.version>
         <mysql-connector-java.version>5.1.47</mysql-connector-java.version>
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
-        <h2.version>1.4.196</h2.version>
+        <h2.version>2.1.214</h2.version>
         <mssql.version>6.1.7.jre8-preview</mssql.version>
         
         <hikari-cp.version>3.4.2</hikari-cp.version>

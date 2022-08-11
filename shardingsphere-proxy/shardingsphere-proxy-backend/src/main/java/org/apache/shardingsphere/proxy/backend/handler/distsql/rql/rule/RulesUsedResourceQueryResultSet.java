@@ -22,7 +22,7 @@ import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesUsedResourceStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
+import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 /**
  * Query result set for show rules used resource.
  */
-public final class RulesUsedResourceQueryResultSet implements DistSQLResultSet {
+public final class RulesUsedResourceQueryResultSet implements DatabaseDistSQLResultSet {
     
     private static final String SHARDING = "sharding";
     

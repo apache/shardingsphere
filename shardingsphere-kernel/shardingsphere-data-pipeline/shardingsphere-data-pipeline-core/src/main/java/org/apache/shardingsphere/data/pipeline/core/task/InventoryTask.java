@@ -38,7 +38,7 @@ import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.Dumper;
 import org.apache.shardingsphere.scaling.core.job.dumper.DumperFactory;
-import org.apache.shardingsphere.scaling.core.job.importer.ImporterFactory;
+import org.apache.shardingsphere.scaling.core.job.importer.ImporterCreatorFactory;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -73,7 +73,7 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
         taskId = generateTaskId(inventoryDumperConfig);
         channel = createChannel(pipelineChannelCreator);
         dumper = DumperFactory.createInventoryDumper(inventoryDumperConfig, channel, sourceDataSource, sourceMetaDataLoader);
-        importer = ImporterFactory.createImporter(importerConfig, dataSourceManager, channel, jobProgressListener);
+        importer = ImporterCreatorFactory.getInstance(importerConfig.getDataSourceConfig().getDatabaseType().getType()).createImporter(importerConfig, dataSourceManager, channel, jobProgressListener);
         position = inventoryDumperConfig.getPosition();
     }
     

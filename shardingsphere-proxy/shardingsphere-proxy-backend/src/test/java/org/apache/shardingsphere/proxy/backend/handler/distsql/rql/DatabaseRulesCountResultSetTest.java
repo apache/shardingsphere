@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountDatabase
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
+import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.DatabaseRulesCountResultSet;
@@ -53,7 +53,7 @@ public final class DatabaseRulesCountResultSetTest {
     
     @Test
     public void assertGetRowData() {
-        DistSQLResultSet resultSet = new DatabaseRulesCountResultSet();
+        DatabaseDistSQLResultSet resultSet = new DatabaseRulesCountResultSet();
         resultSet.init(mockDatabase(), mock(CountDatabaseRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(2));
@@ -150,7 +150,7 @@ public final class DatabaseRulesCountResultSetTest {
     
     @Test
     public void assertGetRowDataWithoutConfiguration() {
-        DistSQLResultSet resultSet = new DatabaseRulesCountResultSet();
+        DatabaseDistSQLResultSet resultSet = new DatabaseRulesCountResultSet();
         resultSet.init(mockEmptyDatabase(), mock(CountDatabaseRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(2));

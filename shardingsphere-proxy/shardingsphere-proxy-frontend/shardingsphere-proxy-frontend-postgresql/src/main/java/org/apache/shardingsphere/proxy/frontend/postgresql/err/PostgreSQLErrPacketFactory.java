@@ -24,13 +24,12 @@ import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLError
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.apache.shardingsphere.infra.exception.InsertColumnsAndValuesMismatchedException;
-import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
-import org.apache.shardingsphere.proxy.backend.exception.InTransactionException;
-import org.apache.shardingsphere.proxy.backend.exception.UnsupportedUpdateOperationException;
+import org.apache.shardingsphere.infra.exception.DBCreateExistsException;
+import org.apache.shardingsphere.infra.exception.InTransactionException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.InvalidAuthorizationSpecificationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLAuthenticationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLProtocolViolationException;
-import org.apache.shardingsphere.proxy.backend.exception.InvalidParameterValueException;
+import org.apache.shardingsphere.infra.exception.InvalidParameterValueException;
 import org.postgresql.util.PSQLException;
 import org.postgresql.util.ServerErrorMessage;
 
@@ -81,10 +80,6 @@ public final class PostgreSQLErrPacketFactory {
         if (cause instanceof DBCreateExistsException) {
             return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLErrorCode.DUPLICATE_DATABASE,
                     String.format(PostgreSQLErrorCode.DUPLICATE_DATABASE.getConditionName(), ((DBCreateExistsException) cause).getDatabaseName())).build();
-        }
-        if (cause instanceof UnsupportedUpdateOperationException) {
-            UnsupportedUpdateOperationException exception = (UnsupportedUpdateOperationException) cause;
-            return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLErrorCode.MODIFYING_SQL_DATA_NOT_PERMITTED, exception.getErrorMessage()).build();
         }
         // TODO PostgreSQL need consider FrontendConnectionLimitException
         return createErrorResponsePacketForUnknownException(cause);

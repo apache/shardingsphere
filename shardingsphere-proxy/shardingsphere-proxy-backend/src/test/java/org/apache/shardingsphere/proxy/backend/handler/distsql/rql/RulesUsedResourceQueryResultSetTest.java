@@ -24,6 +24,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesUsed
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
@@ -60,7 +61,7 @@ public final class RulesUsedResourceQueryResultSetTest {
     
     @Test
     public void assertGetRowData() {
-        DistSQLResultSet resultSet = new RulesUsedResourceQueryResultSet();
+        DatabaseDistSQLResultSet resultSet = new RulesUsedResourceQueryResultSet();
         ShowRulesUsedResourceStatement sqlStatement = mock(ShowRulesUsedResourceStatement.class);
         when(sqlStatement.getResourceName()).thenReturn(Optional.of("foo_ds"));
         resultSet.init(mockDatabase(), sqlStatement);
@@ -170,7 +171,7 @@ public final class RulesUsedResourceQueryResultSetTest {
     @Test
     public void assertGetEmptyRowData() {
         ShardingSphereDatabase database = mockEmptyDatabase();
-        DistSQLResultSet resultSet = new RulesUsedResourceQueryResultSet();
+        DatabaseDistSQLResultSet resultSet = new RulesUsedResourceQueryResultSet();
         ShowRulesUsedResourceStatement sqlStatement = mock(ShowRulesUsedResourceStatement.class);
         when(sqlStatement.getResourceName()).thenReturn(Optional.of("empty_ds"));
         resultSet.init(database, sqlStatement);

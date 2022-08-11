@@ -18,15 +18,30 @@
 package org.apache.shardingsphere.data.pipeline.core.api.impl;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.api.config.job.YamlPipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.RuleAlteredJobConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.YamlRuleAlteredJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobContext;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.api.job.JobType;
+import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
+import org.apache.shardingsphere.data.pipeline.api.job.RuleAlteredJobId;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemIncrementalTasksProgress;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemInventoryTasksProgress;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
+import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
+import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCalculateAlgorithmFactory;
@@ -36,23 +51,31 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreatio
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineVerifyFailedException;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlJobProgress;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlJobProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
+import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
+import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJob;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparerFactory;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.lock.definition.LockDefinitionFactory;
+import org.apache.shardingsphere.mode.lock.ExclusiveLockDefinition;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +91,44 @@ import java.util.stream.Stream;
  */
 @Slf4j
 public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl implements RuleAlteredJobAPI {
+    
+    private static final YamlJobProgressSwapper SWAPPER = new YamlJobProgressSwapper();
+    
+    @Override
+    protected String marshalJobIdLeftPart(final PipelineJobId pipelineJobId) {
+        RuleAlteredJobId jobId = (RuleAlteredJobId) pipelineJobId;
+        String text = jobId.getFormatVersion() + "|" + jobId.getCurrentMetadataVersion() + "T" + jobId.getNewMetadataVersion() + "|" + jobId.getDatabaseName();
+        return Hex.encodeHexString(text.getBytes(StandardCharsets.UTF_8), true);
+    }
+    
+    @Override
+    public void extendJobConfiguration(final YamlPipelineJobConfiguration yamlJobConfig) {
+        YamlRuleAlteredJobConfiguration config = (YamlRuleAlteredJobConfiguration) yamlJobConfig;
+        if (null == config.getJobShardingDataNodes()) {
+            RuleAlteredJobConfigurationPreparerFactory.getInstance().extendJobConfiguration(config);
+        }
+        if (null == yamlJobConfig.getJobId()) {
+            config.setJobId(generateJobId(config));
+        }
+        if (Strings.isNullOrEmpty(config.getSourceDatabaseType())) {
+            PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(config.getSource().getType(), config.getSource().getParameter());
+            config.setSourceDatabaseType(sourceDataSourceConfig.getDatabaseType().getType());
+        }
+        if (Strings.isNullOrEmpty(config.getTargetDatabaseType())) {
+            PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(config.getTarget().getType(), config.getTarget().getParameter());
+            config.setTargetDatabaseType(targetDataSourceConfig.getDatabaseType().getType());
+        }
+    }
+    
+    private String generateJobId(final YamlRuleAlteredJobConfiguration config) {
+        RuleAlteredJobId jobId = new RuleAlteredJobId();
+        jobId.setTypeCode(JobType.MIGRATION.getTypeCode());
+        jobId.setFormatVersion(RuleAlteredJobId.CURRENT_VERSION);
+        jobId.setCurrentMetadataVersion(config.getActiveVersion());
+        jobId.setNewMetadataVersion(config.getNewVersion());
+        jobId.setDatabaseName(config.getDatabaseName());
+        return marshalJobId(jobId);
+    }
     
     @Override
     public List<JobInfo> list() {
@@ -137,7 +198,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         String jobId = jobConfig.getJobId();
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         return IntStream.range(0, jobConfig.getJobShardingCount()).boxed().collect(LinkedHashMap::new, (map, each) -> {
-            JobProgress jobProgress = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobProgress(jobId, each);
+            JobProgress jobProgress = getJobProgress(jobId, each);
             if (null != jobProgress) {
                 jobProgress.setActive(!jobConfigPOJO.isDisabled());
             }
@@ -174,7 +235,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     public void stopClusterWriteDB(final RuleAlteredJobConfiguration jobConfig) {
         String databaseName = jobConfig.getDatabaseName();
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        LockDefinition lockDefinition = LockDefinitionFactory.newDatabaseLockDefinition(databaseName);
+        LockDefinition lockDefinition = new ExclusiveLockDefinition(databaseName);
         if (lockContext.isLocked(lockDefinition)) {
             log.info("stopClusterWriteDB, already stopped");
             return;
@@ -200,7 +261,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     public void restoreClusterWriteDB(final RuleAlteredJobConfiguration jobConfig) {
         String databaseName = jobConfig.getDatabaseName();
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        LockDefinition lockDefinition = LockDefinitionFactory.newDatabaseLockDefinition(databaseName);
+        LockDefinition lockDefinition = new ExclusiveLockDefinition(databaseName);
         if (lockContext.isLocked(lockDefinition)) {
             log.info("restoreClusterWriteDB, before unlock, databaseName={}, jobId={}", databaseName, jobConfig.getJobId());
             lockContext.unlock(lockDefinition);
@@ -323,7 +384,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         // TODO rewrite job status update after job progress structure refactor
         for (int each : repositoryAPI.getShardingItems(jobId)) {
             PipelineJobCenter.getJobContext(jobId, each).ifPresent(jobContext -> jobContext.setStatus(JobStatus.FINISHED));
-            repositoryAPI.updateShardingJobStatus(jobId, each, JobStatus.FINISHED);
+            updateShardingJobStatus(jobId, each, JobStatus.FINISHED);
         }
         PipelineJobCenter.stop(jobId);
         stop(jobId);
@@ -344,5 +405,56 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     
     private RuleAlteredJobConfiguration getJobConfig(final JobConfigurationPOJO jobConfigPOJO) {
         return RuleAlteredJobConfigurationSwapper.swapToObject(jobConfigPOJO.getJobParameter());
+    }
+    
+    @Override
+    public void persistJobProgress(final PipelineJobContext jobContext) {
+        if (!(jobContext instanceof RuleAlteredJobContext)) {
+            return;
+        }
+        RuleAlteredJobContext context = (RuleAlteredJobContext) jobContext;
+        JobProgress jobProgress = new JobProgress();
+        jobProgress.setStatus(jobContext.getStatus());
+        jobProgress.setSourceDatabaseType(context.getJobConfig().getSourceDatabaseType());
+        jobProgress.setIncremental(getIncrementalTasksProgress(context));
+        jobProgress.setInventory(getInventoryTasksProgress(context));
+        String value = YamlEngine.marshal(SWAPPER.swapToYamlConfiguration(jobProgress));
+        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobProgress(jobContext.getJobId(), jobContext.getShardingItem(), value);
+    }
+    
+    private JobItemIncrementalTasksProgress getIncrementalTasksProgress(final RuleAlteredJobContext jobContext) {
+        Map<String, IncrementalTaskProgress> incrementalTaskProgressMap = new HashMap<>();
+        for (IncrementalTask each : jobContext.getIncrementalTasks()) {
+            incrementalTaskProgressMap.put(each.getTaskId(), each.getProgress());
+        }
+        return new JobItemIncrementalTasksProgress(incrementalTaskProgressMap);
+    }
+    
+    private JobItemInventoryTasksProgress getInventoryTasksProgress(final RuleAlteredJobContext jobContext) {
+        Map<String, InventoryTaskProgress> inventoryTaskProgressMap = new HashMap<>();
+        for (InventoryTask each : jobContext.getInventoryTasks()) {
+            inventoryTaskProgressMap.put(each.getTaskId(), each.getProgress());
+        }
+        return new JobItemInventoryTasksProgress(inventoryTaskProgressMap);
+    }
+    
+    @Override
+    public JobProgress getJobProgress(final String jobId, final int shardingItem) {
+        String data = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobProgress(jobId, shardingItem);
+        if (StringUtils.isBlank(data)) {
+            return null;
+        }
+        return SWAPPER.swapToObject(YamlEngine.unmarshal(data, YamlJobProgress.class));
+    }
+    
+    @Override
+    public void updateShardingJobStatus(final String jobId, final int shardingItem, final JobStatus status) {
+        JobProgress jobProgress = getJobProgress(jobId, shardingItem);
+        if (null == jobProgress) {
+            log.warn("updateShardingJobStatus, jobProgress is null, jobId={}, shardingItem={}", jobId, shardingItem);
+            return;
+        }
+        jobProgress.setStatus(status);
+        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobProgress(jobId, shardingItem, YamlEngine.marshal(SWAPPER.swapToYamlConfiguration(jobProgress)));
     }
 }

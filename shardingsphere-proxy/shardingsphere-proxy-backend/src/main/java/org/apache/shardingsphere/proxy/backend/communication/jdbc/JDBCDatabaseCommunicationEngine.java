@@ -123,13 +123,12 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
             ResultSet resultSet = doExecuteFederation(logicSQL, metaDataContexts);
             return processExecuteFederation(resultSet, metaDataContexts);
         }
-        ExecutionContext executionContext = getKernelProcessor().generateExecutionContext(
-                logicSQL, getDatabase(), metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps());
+        ExecutionContext executionContext = getKernelProcessor().generateExecutionContext(logicSQL, getDatabase(), metaDataContexts.getMetaData().getGlobalRuleMetaData(),
+                metaDataContexts.getMetaData().getProps(), backendConnection.getConnectionSession().getSqlSession());
         if (executionContext.getExecutionUnits().isEmpty()) {
             return new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement());
         }
         proxySQLExecutor.checkExecutePrerequisites(executionContext);
-        checkLockedDatabase(executionContext);
         List result = proxySQLExecutor.execute(executionContext);
         refreshMetaData(executionContext);
         Object executeResultSample = result.iterator().next();

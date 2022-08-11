@@ -39,7 +39,8 @@ import java.util.List;
 public final class ShardingSQLFederationDecider implements SQLFederationDecider<ShardingRule> {
     
     @Override
-    public void decide(final SQLFederationDeciderContext deciderContext, final LogicSQL logicSQL, final ShardingSphereDatabase database, final ShardingRule rule, final ConfigurationProperties props) {
+    public void decide(final SQLFederationDeciderContext deciderContext, final LogicSQL logicSQL,
+                       final ShardingSphereDatabase database, final ShardingRule rule, final ConfigurationProperties props) {
         SelectStatementContext select = (SelectStatementContext) logicSQL.getSqlStatementContext();
         Collection<String> tableNames = rule.getShardingLogicTableNames(select.getTablesContext().getTableNames());
         if (tableNames.isEmpty()) {

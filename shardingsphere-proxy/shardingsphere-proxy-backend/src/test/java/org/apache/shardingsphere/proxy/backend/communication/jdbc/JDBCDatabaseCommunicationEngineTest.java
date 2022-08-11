@@ -45,7 +45,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtil;
-import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -143,7 +142,6 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
         kernelProcessorField.setAccessible(true);
         KernelProcessor kernelProcessor = mock(KernelProcessor.class);
         kernelProcessorField.set(engine, kernelProcessor);
-        RouteContext routeContext = new RouteContext();
         when(backendConnection.getConnectionSession().getStatementManager()).thenReturn(new JDBCBackendStatement());
         FederationExecutor federationExecutor = mock(FederationExecutor.class);
         try (
