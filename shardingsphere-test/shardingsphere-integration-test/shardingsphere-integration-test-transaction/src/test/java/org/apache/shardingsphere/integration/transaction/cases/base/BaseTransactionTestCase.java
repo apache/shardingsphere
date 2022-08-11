@@ -50,9 +50,30 @@ public abstract class BaseTransactionTestCase {
     }
     
     /**
+     * Execute test cases.
+     */
+    public void execute() {
+        beforeTest();
+        executeTest();
+        afterTest();
+    }
+    
+    /**
      * Integration testing method with assertions.
      */
-    public abstract void executeTest();
+    protected abstract void executeTest();
+    
+    @SneakyThrows(SQLException.class)
+    protected void beforeTest() {
+        Connection conn = getDataSource().getConnection();
+        executeWithLog(conn, "delete from account;");
+        executeWithLog(conn, "delete from t_order;");
+        executeWithLog(conn, "delete from t_order_item;");
+        conn.close();
+    }
+    
+    protected void afterTest() {
+    }
     
     @SneakyThrows(SQLException.class)
     protected static void executeWithLog(final Connection connection, final String sql) {
