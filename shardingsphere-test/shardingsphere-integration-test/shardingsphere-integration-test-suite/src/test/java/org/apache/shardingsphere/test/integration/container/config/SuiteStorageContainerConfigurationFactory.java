@@ -46,6 +46,8 @@ public class SuiteStorageContainerConfigurationFactory {
                 return new DefaultPostgreSQLContainerConfiguration();
             case "openGauss":
                 return new DefaultOpenGaussContainerConfiguration();
+            case "H2":
+                return null;
             default:
                 throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
         }
