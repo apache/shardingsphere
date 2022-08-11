@@ -24,7 +24,7 @@ algorithmDefinition
     ;
 
 algorithmName
-    : IDENTIFIER
+    : STRING
     ;
 
 algorithmProperties
@@ -32,5 +32,5 @@ algorithmProperties
     ;
 
 algorithmProperty
-    : key=(IDENTIFIER | STRING) EQ value=(INT | IDENTIFIER | STRING)
+    : key=STRING EQ value=STRING
     ;

@@ -75,7 +75,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import java.util.Properties;
 
 /**
- * SQL statement visitor for migration.
+ * SQL statement visitor for migration dist SQL.
  */
 public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
     
@@ -111,11 +111,7 @@ public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStat
     
     @Override
     public ASTNode visitCheckScaling(final CheckScalingContext ctx) {
-        AlgorithmSegment typeStrategy = null;
-        if (null != ctx.algorithmDefinition()) {
-            typeStrategy = (AlgorithmSegment) visit(ctx.algorithmDefinition());
-        }
-        return new CheckMigrationStatement(getIdentifierValue(ctx.jobId()), typeStrategy);
+        return new CheckMigrationStatement(getIdentifierValue(ctx.jobId()), null == ctx.algorithmDefinition() ? null : (AlgorithmSegment) visit(ctx.algorithmDefinition()));
     }
     
     @Override
@@ -167,25 +163,19 @@ public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStat
     
     @Override
     public ASTNode visitInputDefinition(final InputDefinitionContext ctx) {
-        Integer workerThread = getWorkerThread(ctx.workerThread());
-        Integer batchSize = getBatchSize(ctx.batchSize());
-        Integer shardingSize = getShardingSize(ctx.shardingSize());
-        AlgorithmSegment rateLimiter = null;
-        if (null != ctx.rateLimiter()) {
-            rateLimiter = (AlgorithmSegment) visit(ctx.rateLimiter());
-        }
-        return new InputOrOutputSegment(workerThread, batchSize, shardingSize, rateLimiter);
+        return new InputOrOutputSegment(getWorkerThread(ctx.workerThread()), getBatchSize(ctx.batchSize()), getShardingSize(ctx.shardingSize()), getAlgorithmSegment(ctx.rateLimiter()));
     }
     
     @Override
     public ASTNode visitOutputDefinition(final OutputDefinitionContext ctx) {
-        Integer workerThread = getWorkerThread(ctx.workerThread());
-        Integer batchSize = getBatchSize(ctx.batchSize());
-        AlgorithmSegment rateLimiter = null;
-        if (null != ctx.rateLimiter()) {
-            rateLimiter = (AlgorithmSegment) visit(ctx.rateLimiter());
+        return new InputOrOutputSegment(getWorkerThread(ctx.workerThread()), getBatchSize(ctx.batchSize()), getAlgorithmSegment(ctx.rateLimiter()));
+    }
+    
+    private AlgorithmSegment getAlgorithmSegment(final RateLimiterContext ctx) {
+        if (null == ctx) {
+            return null;
         }
-        return new InputOrOutputSegment(workerThread, batchSize, rateLimiter);
+        return (AlgorithmSegment) visit(ctx);
     }
     
     private Integer getWorkerThread(final WorkerThreadContext ctx) {
