@@ -171,6 +171,10 @@ fi
 echo -e "Starting the $SERVER_NAME ...\c"
 
 function check_port() {
+  if ! type netstat >/dev/null 2>&1; then
+    return 2
+  fi
+
   if [ $PORT = -1 ]; then
     REGEXP_PORT=3307
   else
@@ -193,10 +197,9 @@ function check_port() {
 
 for((i=1;i<=10;i++)); do
   if [ "$i" = "10" ]; then
-    echo "FAILED: Address already in use"
-    exit 1
+    echo "WARNING: Address already in use"
   fi
-  sleep 1;check_port
+  sleep 1; check_port
   if [ $? -eq 0 ]; then
       echo -e ".\c"
       continue
@@ -215,21 +218,23 @@ if [ $? -eq 0 ]; then
     ;;
   esac
   if [ $? -eq 0 ]; then
-    for((i=1;i<=60;i++)); do
+    for((i=1;i<=600;i++)); do
       sleep 1; check_port
       if [ $? -eq 1 ]; then
         if ps -p "${pid}" > /dev/null 2>&1; then
           echo -e ".\c"
           continue
-        else
-          break
         fi
-      else
+
+        echo "FAILED TO START"
+        break
+      fi
+
+      if ps -p "${pid}" > /dev/null 2>&1; then
         echo "SUCCESS, PID: $pid"
         exit 0
       fi
     done
-    echo "FAILED TO START"
   else
     echo "FAILED TO GET PID"
   fi
