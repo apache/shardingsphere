@@ -15,40 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.job;
+package org.apache.shardingsphere.infra.exception;
 
-import java.util.List;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 
 /**
- * Job id.
+ * Resource does not exist exception.
  */
-public interface JobId {
+public final class ResourceNotExistedException extends ShardingSphereInsideException {
     
-    /**
-     * Get type.
-     *
-     * @return type
-     */
-    String getType();
-    
-    /**
-     * Get format version.
-     *
-     * @return format version
-     */
-    String getFormatVersion();
-    
-    /**
-     * Get sub-types.
-     *
-     * @return sub-types
-     */
-    List<String> getSubTypes();
-    
-    /**
-     * Get database name.
-     *
-     * @return database name
-     */
-    String getDatabaseName();
+    private static final long serialVersionUID = 4146100333670404924L;
 }

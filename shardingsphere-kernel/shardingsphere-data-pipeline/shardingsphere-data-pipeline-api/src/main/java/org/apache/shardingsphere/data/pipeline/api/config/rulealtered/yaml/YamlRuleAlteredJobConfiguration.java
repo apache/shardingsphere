@@ -18,20 +18,12 @@
 package org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
+import org.apache.shardingsphere.data.pipeline.api.config.job.YamlPipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.job.JobSubType;
-import org.apache.shardingsphere.data.pipeline.api.job.JobType;
-import org.apache.shardingsphere.data.pipeline.api.job.RuleAlteredJobId;
-import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparerFactory;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +33,7 @@ import java.util.Map;
 @Getter
 @Setter
 @Slf4j
-public final class YamlRuleAlteredJobConfiguration implements YamlConfiguration {
+public final class YamlRuleAlteredJobConfiguration implements YamlPipelineJobConfiguration {
     
     private String jobId;
     
@@ -110,38 +102,6 @@ public final class YamlRuleAlteredJobConfiguration implements YamlConfiguration 
         Preconditions.checkNotNull(yamlConfig);
         Preconditions.checkNotNull(yamlConfig.getType());
         Preconditions.checkNotNull(yamlConfig.getParameter());
-    }
-    
-    /**
-     * Extend configuration.
-     */
-    public void extendConfiguration() {
-        if (null == getJobShardingDataNodes()) {
-            RuleAlteredJobConfigurationPreparerFactory.getInstance().extendJobConfiguration(this);
-        }
-        if (null == jobId) {
-            jobId = generateJobId();
-        }
-        if (Strings.isNullOrEmpty(getSourceDatabaseType())) {
-            PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(source.getType(), source.getParameter());
-            setSourceDatabaseType(sourceDataSourceConfig.getDatabaseType().getType());
-        }
-        if (Strings.isNullOrEmpty(getTargetDatabaseType())) {
-            PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(target.getType(), target.getParameter());
-            setTargetDatabaseType(targetDataSourceConfig.getDatabaseType().getType());
-        }
-    }
-    
-    private String generateJobId() {
-        RuleAlteredJobId jobId = new RuleAlteredJobId();
-        // TODO type, subTypes
-        jobId.setType(JobType.RULE_ALTERED.getValue());
-        jobId.setFormatVersion(RuleAlteredJobId.CURRENT_VERSION);
-        jobId.setSubTypes(Collections.singletonList(JobSubType.SCALING.getValue()));
-        jobId.setCurrentMetadataVersion(activeVersion);
-        jobId.setNewMetadataVersion(newVersion);
-        jobId.setDatabaseName(databaseName);
-        return jobId.marshal();
     }
     
     @Override

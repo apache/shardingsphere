@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.scaling.fixture;
 
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
+import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
 
-public final class QueryableScalingFixtureQueryResultSet implements DistSQLResultSet {
+public final class QueryableScalingFixtureQueryResultSet implements DatabaseDistSQLResultSet {
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
@@ -51,6 +51,6 @@ public final class QueryableScalingFixtureQueryResultSet implements DistSQLResul
     
     @Override
     public Collection<String> getTypeAliases() {
-        return DistSQLResultSet.super.getTypeAliases();
+        return DatabaseDistSQLResultSet.super.getTypeAliases();
     }
 }

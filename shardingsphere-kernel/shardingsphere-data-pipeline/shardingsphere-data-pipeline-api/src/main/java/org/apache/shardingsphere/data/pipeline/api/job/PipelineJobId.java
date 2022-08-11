@@ -15,20 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+package org.apache.shardingsphere.data.pipeline.api.job;
 
 /**
- * In transaction exception.
+ * Job id.
  */
-@RequiredArgsConstructor
-@Getter
-public final class InTransactionException extends ShardingSphereInsideException {
+public interface PipelineJobId {
     
-    private static final long serialVersionUID = 8125852172126111520L;
+    /**
+     * Get type.
+     *
+     * @return type
+     */
+    String getTypeCode();
     
-    private final String message;
+    /**
+     * Get format version.
+     *
+     * @return format version
+     */
+    String getFormatVersion();
+    
+    /**
+     * Get database name.
+     *
+     * @return database name
+     */
+    String getDatabaseName();
 }

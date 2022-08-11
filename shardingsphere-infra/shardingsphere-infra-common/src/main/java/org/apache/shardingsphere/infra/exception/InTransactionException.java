@@ -15,32 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.job;
+package org.apache.shardingsphere.infra.exception;
 
 import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
-import lombok.ToString;
-
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 
 /**
- * Abstract job id.
+ * In transaction exception.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-@ToString
-public abstract class AbstractJobId implements JobId {
+public final class InTransactionException extends ShardingSphereInsideException {
     
-    @NonNull
-    private String type;
+    private static final long serialVersionUID = 8125852172126111520L;
     
-    @NonNull
-    private String formatVersion;
-    
-    @NonNull
-    private List<String> subTypes;
-    
-    @NonNull
-    private String databaseName;
+    private final String message;
 }

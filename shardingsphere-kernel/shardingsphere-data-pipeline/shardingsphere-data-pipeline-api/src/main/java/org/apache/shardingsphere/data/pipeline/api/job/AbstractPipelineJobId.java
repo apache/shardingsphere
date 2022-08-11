@@ -15,22 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.data.pipeline.api.job;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
- * Invalid parameter value exception.
+ * Abstract pipeline job id.
  */
-@RequiredArgsConstructor
 @Getter
-public final class InvalidParameterValueException extends ShardingSphereInsideException {
+@Setter
+@ToString
+public abstract class AbstractPipelineJobId implements PipelineJobId {
     
-    private static final long serialVersionUID = -6561119208409452172L;
+    @NonNull
+    private String typeCode;
     
-    private final String parameterName;
+    @NonNull
+    private String formatVersion;
     
-    private final String parameterValue;
+    @NonNull
+    private String databaseName;
 }

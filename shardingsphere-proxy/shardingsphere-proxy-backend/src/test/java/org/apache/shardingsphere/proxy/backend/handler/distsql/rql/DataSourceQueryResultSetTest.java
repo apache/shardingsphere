@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rql;
 
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
+import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.resource.DataSourceQueryResultSet;
@@ -62,7 +62,7 @@ public final class DataSourceQueryResultSetTest {
     
     @Test
     public void assertGetRowData() {
-        DistSQLResultSet resultSet = new DataSourceQueryResultSet();
+        DatabaseDistSQLResultSet resultSet = new DataSourceQueryResultSet();
         resultSet.init(database, mock(ShowResourcesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(12));

@@ -15,24 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.job;
+package org.apache.shardingsphere.infra.exception;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 
 /**
- * Job sub-type.
+ * Table modify in transaction exception.
  */
+@RequiredArgsConstructor
 @Getter
-public enum JobSubType {
+public final class TableModifyInTransactionException extends ShardingSphereInsideException {
     
-    SCALING("01"),
-    ENCRYPTION("02");
+    private static final long serialVersionUID = 5676889868293244575L;
     
-    private final String value;
-    
-    JobSubType(final String value) {
-        Preconditions.checkArgument(value.length() == 2, "value length is not 2");
-        this.value = value;
-    }
+    private final String tableName;
 }

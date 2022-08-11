@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
+import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CountShardingRuleStatement;
@@ -38,7 +38,7 @@ import java.util.function.Supplier;
 /**
  * Query result set for count sharding rule.
  */
-public final class CountShardingRuleQueryResultSet implements DistSQLResultSet {
+public final class CountShardingRuleQueryResultSet implements DatabaseDistSQLResultSet {
     
     private static final String SHARDING_TABLE = "sharding_table";
     

@@ -15,14 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.data.pipeline.api.config.job;
 
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
- * Resource does not exist exception.
+ * YAML pipeline job configuration.
  */
-public final class ResourceNotExistedException extends ShardingSphereInsideException {
+public interface YamlPipelineJobConfiguration extends YamlConfiguration {
     
-    private static final long serialVersionUID = 4146100333670404924L;
+    /**
+     * Get job id.
+     *
+     * @return job id
+     */
+    String getJobId();
+    
+    /**
+     * Get database name.
+     *
+     * @return database name
+     */
+    String getDatabaseName();
 }

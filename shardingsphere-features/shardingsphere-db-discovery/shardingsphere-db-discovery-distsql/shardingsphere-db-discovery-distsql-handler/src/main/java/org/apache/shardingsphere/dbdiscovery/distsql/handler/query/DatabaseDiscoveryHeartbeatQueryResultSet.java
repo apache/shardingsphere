@@ -21,7 +21,7 @@ import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleCon
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryHeartbeatsStatement;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
+import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -34,7 +34,7 @@ import java.util.Map.Entry;
 /**
  * Query result set for show database discovery heartbeat.
  */
-public final class DatabaseDiscoveryHeartbeatQueryResultSet implements DistSQLResultSet {
+public final class DatabaseDiscoveryHeartbeatQueryResultSet implements DatabaseDistSQLResultSet {
     
     private Iterator<Entry<String, DatabaseDiscoveryHeartBeatConfiguration>> data = Collections.emptyIterator();
     

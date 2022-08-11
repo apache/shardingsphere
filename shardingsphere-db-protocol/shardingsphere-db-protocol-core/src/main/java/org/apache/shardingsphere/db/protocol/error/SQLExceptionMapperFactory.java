@@ -15,20 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.db.protocol.error;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 /**
- * DB drop exists exception.
+ * SQL exception mapper.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DBDropNotExistsException extends ShardingSphereInsideException {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SQLExceptionMapperFactory {
     
-    private static final long serialVersionUID = 6088272565526510361L;
+    static {
+        ShardingSphereServiceLoader.register(SQLExceptionMapper.class);
+    }
     
-    private final String databaseName;
+    /**
+     * Convert ShardingSphere inside exception into SQLException.
+     * 
+     * @param databaseType database type
+     * @return SQLException
+     */
+    public static SQLExceptionMapper getInstance(final String databaseType) {
+        return TypedSPIRegistry.getRegisteredService(SQLExceptionMapper.class, databaseType);
+    }
 }
