@@ -47,11 +47,13 @@ public final class ShowInstanceListHandler extends QueryableRALBackendHandler<Sh
     
     private static final String MODE_TYPE = "mode_type";
     
+    private static final String WORKER_ID = "worker_id";
+    
     private static final String LABELS = "labels";
     
     @Override
     protected Collection<String> getColumnNames() {
-        return Arrays.asList(ID, HOST, PORT, STATUS, MODE_TYPE, LABELS);
+        return Arrays.asList(ID, HOST, PORT, STATUS, MODE_TYPE, WORKER_ID, LABELS);
     }
     
     @Override
@@ -70,6 +72,6 @@ public final class ShowInstanceListHandler extends QueryableRALBackendHandler<Sh
         InstanceMetaData instanceMetaData = instance.getMetaData();
         return new LocalDataQueryResultRow(instanceMetaData.getId(), instanceMetaData.getIp(),
                 instanceMetaData instanceof ProxyInstanceMetaData ? ((ProxyInstanceMetaData) instanceMetaData).getPort() : -1,
-                instance.getState().getCurrentState().name(), modeType, labels);
+                instance.getState().getCurrentState().name(), modeType, instance.getWorkerId(), labels);
     }
 }

@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceInfoStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceListStatement;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.state.StateContext;
@@ -29,6 +31,7 @@ import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.junit.Test;
 
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -38,15 +41,36 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowInstanceInfoHandlerTest extends ProxyContextRestorer {
+public final class ShowInstanceListHandlerTest extends ProxyContextRestorer {
+    
+    private final ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
     
     @Test
-    public void assertExecute() throws SQLException {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        InstanceContext instanceContext = createInstanceContext();
+    public void assertExecuteWithStandaloneMode() throws SQLException {
+        InstanceContext instanceContext = createStandaloneInstanceContext();
         when(contextManager.getInstanceContext()).thenReturn(instanceContext);
-        ShowInstanceInfoHandler handler = new ShowInstanceInfoHandler();
-        handler.init(new ShowInstanceInfoStatement(), null);
+        ShowInstanceListHandler handler = new ShowInstanceListHandler();
+        handler.init(new ShowInstanceListStatement(), null);
+        ProxyContext.init(contextManager);
+        handler.execute();
+        handler.next();
+        List<Object> data = handler.getRowData().getData();
+        assertThat(data.size(), is(7));
+        assertThat(data.get(0), is("127.0.0.1@3308"));
+        assertThat(data.get(1), is("127.0.0.1"));
+        assertThat(data.get(2), is(3308));
+        assertThat(data.get(3), is("OK"));
+        assertThat(data.get(4), is("Standalone"));
+        assertThat(data.get(5), is(0L));
+        assertThat(data.get(6), is(""));
+    }
+    
+    @Test
+    public void assertExecuteWithClusterMode() throws SQLException {
+        InstanceContext instanceContext = createClusterInstanceContext();
+        when(contextManager.getInstanceContext()).thenReturn(instanceContext);
+        ShowInstanceListHandler handler = new ShowInstanceListHandler();
+        handler.init(new ShowInstanceListStatement(), null);
         ProxyContext.init(contextManager);
         handler.execute();
         handler.next();
@@ -56,17 +80,28 @@ public final class ShowInstanceInfoHandlerTest extends ProxyContextRestorer {
         assertThat(data.get(1), is("127.0.0.1"));
         assertThat(data.get(2), is(3309));
         assertThat(data.get(3), is("OK"));
-        assertThat(data.get(4), is("Standalone"));
-        assertThat(data.get(5), is(0L));
+        assertThat(data.get(4), is("Cluster"));
+        assertThat(data.get(5), is(1L));
         assertThat(data.get(6), is(""));
     }
     
-    private InstanceContext createInstanceContext() {
+    private InstanceContext createStandaloneInstanceContext() {
         InstanceContext result = mock(InstanceContext.class, RETURNS_DEEP_STUBS);
-        when(result.getInstance().getMetaData()).thenReturn(new ProxyInstanceMetaData("127.0.0.1@3309", "127.0.0.1@3309"));
+        when(result.getInstance().getMetaData()).thenReturn(new ProxyInstanceMetaData("127.0.0.1@3308", "127.0.0.1@3308"));
         when(result.getInstance().getState()).thenReturn(new StateContext());
         when(result.getModeConfiguration()).thenReturn(new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("H2", new Properties()), true));
         when(result.getInstance().getWorkerId()).thenReturn(0L);
+        return result;
+    }
+    
+    private InstanceContext createClusterInstanceContext() {
+        InstanceContext result = mock(InstanceContext.class, RETURNS_DEEP_STUBS);
+        when(result.getModeConfiguration()).thenReturn(new ModeConfiguration("Cluster", mock(PersistRepositoryConfiguration.class), true));
+        ComputeNodeInstance computeNodeInstance = mock(ComputeNodeInstance.class, RETURNS_DEEP_STUBS);
+        when(computeNodeInstance.getMetaData()).thenReturn(new ProxyInstanceMetaData("127.0.0.1@3309", "127.0.0.1@3309"));
+        when(computeNodeInstance.getState()).thenReturn(new StateContext());
+        when(computeNodeInstance.getWorkerId()).thenReturn(1L);
+        when(result.getAllClusterInstances()).thenReturn(Collections.singleton(computeNodeInstance));
         return result;
     }
 }
