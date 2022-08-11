@@ -203,9 +203,9 @@ public abstract class BaseTransactionITCase extends BaseITCase {
     @SneakyThrows
     protected void callTestCases(final TransactionParameterized parameterized) {
         for (Class<? extends BaseTransactionTestCase> each : parameterized.getTransactionTestCaseClasses()) {
-            log.info("Transaction IT {}/{} test begin.", parameterized, each.getSimpleName());
+            log.info("Transaction IT {} -> {} test begin.", parameterized, each.getSimpleName());
             each.getConstructor(BaseTransactionITCase.class, DataSource.class).newInstance(this, getDataSource()).execute();
-            log.info("Transaction IT {}/{} test end.", parameterized, each.getSimpleName());
+            log.info("Transaction IT {} -> {} test end.", parameterized, each.getSimpleName());
             getDataSource().close();
         }
     }
