@@ -29,7 +29,7 @@ import static org.junit.Assert.assertThat;
 
 public final class YamlInventoryIncrementalJobItemProgressSwapperTest {
     
-    private static final YamlJobProgressSwapper SWAPPER = new YamlJobProgressSwapper();
+    private static final YamlInventoryIncrementalJobItemProgressSwapper SWAPPER = new YamlInventoryIncrementalJobItemProgressSwapper();
     
     @Test
     public void assertFullSwapToYamlConfiguration() {

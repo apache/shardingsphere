@@ -22,9 +22,9 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncreme
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
 /**
- * YAML Job progress swapper.
+ * YAML inventory incremental job item progress swapper.
  */
-public final class YamlJobProgressSwapper implements YamlConfigurationSwapper<YamlInventoryIncrementalJobItemProgress, InventoryIncrementalJobItemProgress> {
+public final class YamlInventoryIncrementalJobItemProgressSwapper implements YamlConfigurationSwapper<YamlInventoryIncrementalJobItemProgress, InventoryIncrementalJobItemProgress> {
     
     private static final YamlJobItemInventoryTasksProgressSwapper INVENTORY_PROGRESS_SWAPPER = new YamlJobItemInventoryTasksProgressSwapper();
     

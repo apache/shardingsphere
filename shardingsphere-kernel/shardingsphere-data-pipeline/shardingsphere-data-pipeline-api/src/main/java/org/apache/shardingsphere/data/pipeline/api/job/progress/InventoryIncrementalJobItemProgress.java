@@ -22,7 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 
 /**
- * Job progress.
+ * Inventory incremental job item progress.
  */
 @Getter
 @Setter
