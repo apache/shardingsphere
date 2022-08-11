@@ -43,7 +43,7 @@ public final class ShowScalingJobStatusQueryResultSet implements DatabaseDistSQL
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         long currentTimeMillis = System.currentTimeMillis();
-        data = RULE_ALTERED_JOB_API.getProgress(((ShowScalingStatusStatement) sqlStatement).getJobId()).entrySet().stream()
+        data = RULE_ALTERED_JOB_API.getJobProgress(((ShowScalingStatusStatement) sqlStatement).getJobId()).entrySet().stream()
                 .map(entry -> {
                     Collection<Object> result = new LinkedList<>();
                     result.add(entry.getKey());

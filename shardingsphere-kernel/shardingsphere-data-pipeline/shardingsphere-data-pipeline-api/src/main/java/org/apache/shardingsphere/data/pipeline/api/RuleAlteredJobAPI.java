@@ -58,7 +58,7 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI {
      * @param jobId job id
      * @return each sharding item progress
      */
-    Map<Integer, InventoryIncrementalJobItemProgress> getProgress(String jobId);
+    Map<Integer, InventoryIncrementalJobItemProgress> getJobProgress(String jobId);
     
     /**
      * Get job progress.
@@ -66,7 +66,7 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI {
      * @param jobConfig job configuration
      * @return each sharding item progress
      */
-    Map<Integer, InventoryIncrementalJobItemProgress> getProgress(RuleAlteredJobConfiguration jobConfig);
+    Map<Integer, InventoryIncrementalJobItemProgress> getJobProgress(RuleAlteredJobConfiguration jobConfig);
     
     /**
      * Stop cluster writing.

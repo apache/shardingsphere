@@ -74,12 +74,12 @@ public final class RuleAlteredJobAPIFixture implements RuleAlteredJobAPI {
     }
     
     @Override
-    public Map<Integer, InventoryIncrementalJobItemProgress> getProgress(final String jobId) {
+    public Map<Integer, InventoryIncrementalJobItemProgress> getJobProgress(final String jobId) {
         return null;
     }
     
     @Override
-    public Map<Integer, InventoryIncrementalJobItemProgress> getProgress(final RuleAlteredJobConfiguration jobConfig) {
+    public Map<Integer, InventoryIncrementalJobItemProgress> getJobProgress(final RuleAlteredJobConfiguration jobConfig) {
         return null;
     }
     

@@ -69,7 +69,7 @@ public final class FinishedCheckJob implements SimpleJob {
                     log.info("completionDetector not configured, auto switch will not be enabled. You could query job progress and switch config manually with DistSQL.");
                     continue;
                 }
-                RuleAlteredJobAlmostCompletedParameter parameter = new RuleAlteredJobAlmostCompletedParameter(jobInfo.getShardingTotalCount(), ruleAlteredJobAPI.getProgress(jobConfig).values());
+                RuleAlteredJobAlmostCompletedParameter parameter = new RuleAlteredJobAlmostCompletedParameter(jobInfo.getShardingTotalCount(), ruleAlteredJobAPI.getJobProgress(jobConfig).values());
                 if (!ruleAlteredContext.getCompletionDetectAlgorithm().isAlmostCompleted(parameter)) {
                     continue;
                 }
@@ -101,7 +101,7 @@ public final class FinishedCheckJob implements SimpleJob {
     }
     
     private boolean isNotAllowDataCheck(final String jobId) {
-        Map<Integer, InventoryIncrementalJobItemProgress> jobItemProgressMap = ruleAlteredJobAPI.getProgress(jobId);
+        Map<Integer, InventoryIncrementalJobItemProgress> jobItemProgressMap = ruleAlteredJobAPI.getJobProgress(jobId);
         for (InventoryIncrementalJobItemProgress each : jobItemProgressMap.values()) {
             if (null == each || !JobStatus.EXECUTE_INCREMENTAL_TASK.equals(each.getStatus())) {
                 return true;

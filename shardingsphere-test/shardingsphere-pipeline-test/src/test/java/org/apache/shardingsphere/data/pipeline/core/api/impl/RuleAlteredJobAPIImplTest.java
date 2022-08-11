@@ -115,7 +115,7 @@ public final class RuleAlteredJobAPIImplTest {
     public void assertGetProgress() {
         Optional<String> jobId = ruleAlteredJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
-        Map<Integer, InventoryIncrementalJobItemProgress> jobProgressMap = ruleAlteredJobAPI.getProgress(jobId.get());
+        Map<Integer, InventoryIncrementalJobItemProgress> jobProgressMap = ruleAlteredJobAPI.getJobProgress(jobId.get());
         assertThat(jobProgressMap.size(), is(1));
     }
     
@@ -217,7 +217,7 @@ public final class RuleAlteredJobAPIImplTest {
         repositoryAPI.persistJobCheckResult(jobId.get(), true);
         ruleAlteredJobAPI.updateJobItemStatus(jobId.get(), jobItemContext.getShardingItem(), JobStatus.EXECUTE_INVENTORY_TASK);
         ruleAlteredJobAPI.switchClusterConfiguration(jobId.get());
-        Map<Integer, InventoryIncrementalJobItemProgress> progress = ruleAlteredJobAPI.getProgress(jobId.get());
+        Map<Integer, InventoryIncrementalJobItemProgress> progress = ruleAlteredJobAPI.getJobProgress(jobId.get());
         for (Entry<Integer, InventoryIncrementalJobItemProgress> entry : progress.entrySet()) {
             assertSame(entry.getValue().getStatus(), JobStatus.FINISHED);
         }
