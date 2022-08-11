@@ -76,9 +76,6 @@ public class ScalingWatcher extends TestWatcher {
     
     private void addZookeeperData(final String key, final String parentPath, final ClusterPersistRepository zookeeperRepository, final Map<String, String> nodeMap) {
         String path = String.join("/", parentPath, key);
-        if (path.endsWith("/config")) {
-            return;
-        }
         String data = zookeeperRepository.get(path);
         nodeMap.put(path, data);
         List<String> childrenKeys = zookeeperRepository.getChildrenKeys(path);
