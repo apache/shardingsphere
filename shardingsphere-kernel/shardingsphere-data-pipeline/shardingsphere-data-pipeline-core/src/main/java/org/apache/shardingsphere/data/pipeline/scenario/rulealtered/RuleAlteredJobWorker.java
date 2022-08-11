@@ -32,6 +32,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.Shardi
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
+import org.apache.shardingsphere.data.pipeline.core.api.impl.RuleAlteredJobAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.core.execute.FinishedCheckJobExecutor;
@@ -204,7 +205,7 @@ public final class RuleAlteredJobWorker {
         result.setNewVersion(event.getNewVersion());
         result.setSource(createYamlPipelineDataSourceConfiguration(sourceRootConfig));
         result.setTarget(createYamlPipelineDataSourceConfiguration(targetRootConfig));
-        result.extendConfiguration();
+        new RuleAlteredJobAPIImpl().extendJobConfiguration(result);
         return Optional.of(new RuleAlteredJobConfigurationSwapper().swapToObject(result));
     }
     

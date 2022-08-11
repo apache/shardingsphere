@@ -44,7 +44,7 @@ import java.util.regex.Pattern;
 @Slf4j
 public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
     
-    private static final Pattern CONFIG_PATTERN = Pattern.compile(DataPipelineConstants.DATA_PIPELINE_ROOT + "/(\\d{2}[0-9a-f]+)/config");
+    private static final Pattern CONFIG_PATTERN = Pattern.compile(DataPipelineConstants.DATA_PIPELINE_ROOT + "/(j\\d{2}[0-9a-f]+)/config");
     
     private final ExecutorService executor = Executors.newFixedThreadPool(20);
     

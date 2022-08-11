@@ -17,38 +17,25 @@
 
 package org.apache.shardingsphere.data.pipeline.api.job;
 
-import java.util.List;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
- * Job id.
+ * Abstract pipeline job id.
  */
-public interface JobId {
+@Getter
+@Setter
+@ToString
+public abstract class AbstractPipelineJobId implements PipelineJobId {
     
-    /**
-     * Get type.
-     *
-     * @return type
-     */
-    String getType();
+    @NonNull
+    private String typeCode;
     
-    /**
-     * Get format version.
-     *
-     * @return format version
-     */
-    String getFormatVersion();
+    @NonNull
+    private String formatVersion;
     
-    /**
-     * Get sub-types.
-     *
-     * @return sub-types
-     */
-    List<String> getSubTypes();
-    
-    /**
-     * Get database name.
-     *
-     * @return database name
-     */
-    String getDatabaseName();
+    @NonNull
+    private String databaseName;
 }

@@ -17,10 +17,37 @@
 
 package org.apache.shardingsphere.data.pipeline.api;
 
+import org.apache.shardingsphere.data.pipeline.api.config.job.YamlPipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.job.JobType;
+import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
+
 /**
  * Pipeline job API.
  */
 public interface PipelineJobAPI {
+    
+    /**
+     * Marshal pipeline job id.
+     *
+     * @param pipelineJobId pipeline job id
+     * @return marshaled text
+     */
+    String marshalJobId(PipelineJobId pipelineJobId);
+    
+    /**
+     * Parse job type.
+     *
+     * @param jobId job id
+     * @return job type
+     */
+    JobType parseJobType(String jobId);
+    
+    /**
+     * Extend job configuration.
+     *
+     * @param yamlJobConfig yaml job configuration
+     */
+    void extendJobConfiguration(YamlPipelineJobConfiguration yamlJobConfig);
     
     /**
      * Start pipeline job by id.

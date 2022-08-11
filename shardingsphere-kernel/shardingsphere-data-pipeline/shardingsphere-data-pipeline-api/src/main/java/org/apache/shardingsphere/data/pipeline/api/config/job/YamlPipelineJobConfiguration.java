@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.job;
+package org.apache.shardingsphere.data.pipeline.api.config.job;
 
-import com.google.common.base.Preconditions;
-import lombok.Getter;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
- * Job sub-type.
+ * YAML pipeline job configuration.
  */
-@Getter
-public enum JobSubType {
+public interface YamlPipelineJobConfiguration extends YamlConfiguration {
     
-    SCALING("01"),
-    ENCRYPTION("02");
+    /**
+     * Get job id.
+     *
+     * @return job id
+     */
+    String getJobId();
     
-    private final String value;
-    
-    JobSubType(final String value) {
-        Preconditions.checkArgument(value.length() == 2, "value length is not 2");
-        this.value = value;
-    }
+    /**
+     * Get database name.
+     *
+     * @return database name
+     */
+    String getDatabaseName();
 }
