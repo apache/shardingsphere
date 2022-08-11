@@ -138,7 +138,7 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     }
     
     @Override
-    public InventoryTaskProgress getProgress() {
+    public InventoryTaskProgress getTaskProgress() {
         return new InventoryTaskProgress(position);
     }
     

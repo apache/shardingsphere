@@ -21,9 +21,9 @@ import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfigu
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 
 /**
- * Pipeline job context.
+ * Pipeline job item context.
  */
-public interface PipelineJobContext {
+public interface PipelineJobItemContext {
     
     /**
      * Get job id.

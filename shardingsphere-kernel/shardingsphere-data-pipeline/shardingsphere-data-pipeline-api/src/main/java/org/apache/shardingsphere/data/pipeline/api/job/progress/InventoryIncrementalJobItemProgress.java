@@ -22,12 +22,11 @@ import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 
 /**
- * Job progress.
+ * Inventory incremental job item progress.
  */
 @Getter
 @Setter
-// TODO now rename
-public final class JobProgress implements PipelineJobItemProgress {
+public final class InventoryIncrementalJobItemProgress implements PipelineJobItemProgress {
     
     private JobStatus status = JobStatus.RUNNING;
     

@@ -260,7 +260,7 @@ public final class RuleAlteredJobWorker {
     private boolean hasUncompletedJobOfSameDatabaseName(final String databaseName) {
         boolean result = false;
         for (JobInfo each : RuleAlteredJobAPIFactory.getInstance().list()) {
-            if (RuleAlteredJobAPIFactory.getInstance().getProgress(each.getJobId()).values().stream()
+            if (RuleAlteredJobAPIFactory.getInstance().getJobProgress(each.getJobId()).values().stream()
                     .allMatch(progress -> null != progress && progress.getStatus().equals(JobStatus.FINISHED))) {
                 continue;
             }

@@ -77,7 +77,7 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
             RuleAlteredJobConfiguration jobConfig = RuleAlteredJobConfigurationSwapper.swapToObject(jobConfigPOJO.getJobParameter());
             if (isDeleted) {
                 new RuleAlteredJobPreparer().cleanup(jobConfig);
-            } else if (PipelineJobProgressDetector.isJobSuccessful(jobConfig.getJobShardingCount(), RuleAlteredJobAPIFactory.getInstance().getProgress(jobConfig).values())) {
+            } else if (PipelineJobProgressDetector.isJobSuccessful(jobConfig.getJobShardingCount(), RuleAlteredJobAPIFactory.getInstance().getJobProgress(jobConfig).values())) {
                 log.info("isJobSuccessful=true");
                 new RuleAlteredJobPreparer().cleanup(jobConfig);
             }

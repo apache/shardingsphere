@@ -19,9 +19,9 @@ package org.apache.shardingsphere.data.pipeline.api;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobContext;
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
@@ -58,8 +58,7 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI {
      * @param jobId job id
      * @return each sharding item progress
      */
-    // TODO now update JobProgress
-    Map<Integer, JobProgress> getProgress(String jobId);
+    Map<Integer, InventoryIncrementalJobItemProgress> getJobProgress(String jobId);
     
     /**
      * Get job progress.
@@ -67,7 +66,7 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI {
      * @param jobConfig job configuration
      * @return each sharding item progress
      */
-    Map<Integer, JobProgress> getProgress(RuleAlteredJobConfiguration jobConfig);
+    Map<Integer, InventoryIncrementalJobItemProgress> getJobProgress(RuleAlteredJobConfiguration jobConfig);
     
     /**
      * Stop cluster writing.
@@ -185,27 +184,27 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI {
     RuleAlteredJobConfiguration getJobConfig(String jobId);
     
     /**
-     * Persist job progress.
+     * Persist job item progress.
      *
-     * @param jobContext job context
+     * @param jobItemContext job item context
      */
-    void persistJobProgress(PipelineJobContext jobContext);
+    void persistJobItemProgress(PipelineJobItemContext jobItemContext);
     
     /**
-     * Get job progress.
+     * Get job item progress.
      *
      * @param jobId job id
      * @param shardingItem sharding item
-     * @return job progress
+     * @return job item progress
      */
-    JobProgress getJobProgress(String jobId, int shardingItem);
+    InventoryIncrementalJobItemProgress getJobItemProgress(String jobId, int shardingItem);
     
     /**
-     * Update sharding job status.
+     * Update job item status.
      *
      * @param jobId job id
      * @param shardingItem sharding item
      * @param status status
      */
-    void updateShardingJobStatus(String jobId, int shardingItem, JobStatus status);
+    void updateJobItemStatus(String jobId, int shardingItem, JobStatus status);
 }

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfig
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemIncrementalTasksProgress;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineIgnoredException;
@@ -57,84 +57,84 @@ public final class RuleAlteredJobPreparer {
     /**
      * Do prepare work for scaling job.
      *
-     * @param jobContext job context
+     * @param jobItemContext job item context
      */
-    public void prepare(final RuleAlteredJobContext jobContext) {
-        PipelineJobPreparerUtils.checkSourceDataSource(jobContext.getJobConfig().getSourceDatabaseType(), Collections.singleton(jobContext.getSourceDataSource()));
-        if (jobContext.isStopping()) {
-            throw new PipelineIgnoredException("Job stopping, jobId=" + jobContext.getJobId());
+    public void prepare(final RuleAlteredJobContext jobItemContext) {
+        PipelineJobPreparerUtils.checkSourceDataSource(jobItemContext.getJobConfig().getSourceDatabaseType(), Collections.singleton(jobItemContext.getSourceDataSource()));
+        if (jobItemContext.isStopping()) {
+            throw new PipelineIgnoredException("Job stopping, jobId=" + jobItemContext.getJobId());
         }
-        prepareAndCheckTargetWithLock(jobContext);
-        if (jobContext.isStopping()) {
-            throw new PipelineIgnoredException("Job stopping, jobId=" + jobContext.getJobId());
+        prepareAndCheckTargetWithLock(jobItemContext);
+        if (jobItemContext.isStopping()) {
+            throw new PipelineIgnoredException("Job stopping, jobId=" + jobItemContext.getJobId());
         }
         // TODO check metadata
         try {
-            initIncrementalTasks(jobContext);
-            if (jobContext.isStopping()) {
-                throw new PipelineIgnoredException("Job stopping, jobId=" + jobContext.getJobId());
+            initIncrementalTasks(jobItemContext);
+            if (jobItemContext.isStopping()) {
+                throw new PipelineIgnoredException("Job stopping, jobId=" + jobItemContext.getJobId());
             }
-            initInventoryTasks(jobContext);
+            initInventoryTasks(jobItemContext);
             log.info("prepare, jobId={}, shardingItem={}, inventoryTasks={}, incrementalTasks={}",
-                    jobContext.getJobId(), jobContext.getShardingItem(), jobContext.getInventoryTasks(), jobContext.getIncrementalTasks());
+                    jobItemContext.getJobId(), jobItemContext.getShardingItem(), jobItemContext.getInventoryTasks(), jobItemContext.getIncrementalTasks());
         } catch (final SQLException ex) {
-            log.error("Scaling job preparing failed, jobId={}", jobContext.getJobId());
-            throw new PipelineJobPrepareFailedException("Scaling job preparing failed, jobId=" + jobContext.getJobId(), ex);
+            log.error("Scaling job preparing failed, jobId={}", jobItemContext.getJobId());
+            throw new PipelineJobPrepareFailedException("Scaling job preparing failed, jobId=" + jobItemContext.getJobId(), ex);
         }
     }
     
-    private void prepareAndCheckTargetWithLock(final RuleAlteredJobContext jobContext) {
-        RuleAlteredJobConfiguration jobConfig = jobContext.getJobConfig();
-        // TODO the lock will be replaced
+    private void prepareAndCheckTargetWithLock(final RuleAlteredJobContext jobItemContext) {
+        RuleAlteredJobConfiguration jobConfig = jobItemContext.getJobConfig();
         String lockName = "prepare-" + jobConfig.getJobId();
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
         LockDefinition lockDefinition = new ExclusiveLockDefinition(lockName);
-        RuleAlteredJobAPIFactory.getInstance().persistJobProgress(jobContext);
+        RuleAlteredJobAPIFactory.getInstance().persistJobItemProgress(jobItemContext);
         if (lockContext.tryLock(lockDefinition, 180000)) {
-            log.info("try lock success, jobId={}, shardingItem={}", jobConfig.getJobId(), jobContext.getShardingItem());
+            log.info("try lock success, jobId={}, shardingItem={}", jobConfig.getJobId(), jobItemContext.getShardingItem());
             try {
-                JobProgress jobProgress = RuleAlteredJobAPIFactory.getInstance().getJobProgress(jobContext.getJobId(), jobContext.getShardingItem());
-                boolean prepareFlag = JobStatus.PREPARING.equals(jobProgress.getStatus()) || JobStatus.RUNNING.equals(jobProgress.getStatus())
-                        || JobStatus.PREPARING_FAILURE.equals(jobProgress.getStatus());
+                InventoryIncrementalJobItemProgress jobItemProgress = RuleAlteredJobAPIFactory.getInstance().getJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem());
+                boolean prepareFlag = JobStatus.PREPARING.equals(jobItemProgress.getStatus()) || JobStatus.RUNNING.equals(jobItemProgress.getStatus())
+                        || JobStatus.PREPARING_FAILURE.equals(jobItemProgress.getStatus());
                 if (prepareFlag) {
-                    log.info("execute prepare, jobId={}, shardingItem={}", jobConfig.getJobId(), jobContext.getShardingItem());
-                    jobContext.setStatus(JobStatus.PREPARING);
-                    RuleAlteredJobAPIFactory.getInstance().updateShardingJobStatus(jobConfig.getJobId(), jobContext.getShardingItem(), JobStatus.PREPARING);
-                    prepareAndCheckTarget(jobContext);
+                    log.info("execute prepare, jobId={}, shardingItem={}", jobConfig.getJobId(), jobItemContext.getShardingItem());
+                    jobItemContext.setStatus(JobStatus.PREPARING);
+                    RuleAlteredJobAPIFactory.getInstance().updateJobItemStatus(jobConfig.getJobId(), jobItemContext.getShardingItem(), JobStatus.PREPARING);
+                    prepareAndCheckTarget(jobItemContext);
                     // TODO Loop insert zookeeper performance is not good
-                    for (int i = 0; i <= jobContext.getJobConfig().getJobShardingCount(); i++) {
-                        RuleAlteredJobAPIFactory.getInstance().updateShardingJobStatus(jobConfig.getJobId(), i, JobStatus.PREPARE_SUCCESS);
+                    for (int i = 0; i <= jobItemContext.getJobConfig().getJobShardingCount(); i++) {
+                        RuleAlteredJobAPIFactory.getInstance().updateJobItemStatus(jobConfig.getJobId(), i, JobStatus.PREPARE_SUCCESS);
                     }
                 }
             } finally {
-                log.info("unlock, jobId={}, shardingItem={}", jobConfig.getJobId(), jobContext.getShardingItem());
+                log.info("unlock, jobId={}, shardingItem={}", jobConfig.getJobId(), jobItemContext.getShardingItem());
                 lockContext.unlock(lockDefinition);
             }
         }
     }
     
-    private void prepareAndCheckTarget(final RuleAlteredJobContext jobContext) {
-        prepareTarget(jobContext);
-        JobProgress initProgress = jobContext.getInitProgress();
+    private void prepareAndCheckTarget(final RuleAlteredJobContext jobItemContext) {
+        prepareTarget(jobItemContext);
+        InventoryIncrementalJobItemProgress initProgress = jobItemContext.getInitProgress();
         if (null == initProgress || initProgress.getStatus() == JobStatus.PREPARING_FAILURE) {
-            PipelineDataSourceWrapper targetDataSource = jobContext.getDataSourceManager().getDataSource(jobContext.getTaskConfig().getImporterConfig().getDataSourceConfig());
-            PipelineJobPreparerUtils.checkTargetDataSource(jobContext.getJobConfig().getTargetDatabaseType(), jobContext.getTaskConfig().getImporterConfig(),
+            PipelineDataSourceWrapper targetDataSource = jobItemContext.getDataSourceManager().getDataSource(jobItemContext.getTaskConfig().getImporterConfig().getDataSourceConfig());
+            PipelineJobPreparerUtils.checkTargetDataSource(jobItemContext.getJobConfig().getTargetDatabaseType(), jobItemContext.getTaskConfig().getImporterConfig(),
                     Collections.singletonList(targetDataSource));
         }
     }
     
-    private void prepareTarget(final RuleAlteredJobContext jobContext) {
-        RuleAlteredJobConfiguration jobConfig = jobContext.getJobConfig();
-        TableNameSchemaNameMapping tableNameSchemaNameMapping = jobContext.getTaskConfig().getDumperConfig().getTableNameSchemaNameMapping();
+    private void prepareTarget(final RuleAlteredJobContext jobItemContext) {
+        RuleAlteredJobConfiguration jobConfig = jobItemContext.getJobConfig();
+        TableNameSchemaNameMapping tableNameSchemaNameMapping = jobItemContext.getTaskConfig().getDumperConfig().getTableNameSchemaNameMapping();
         String targetDatabaseType = jobConfig.getTargetDatabaseType();
         if (isSourceAndTargetSchemaAvailable(jobConfig)) {
             PrepareTargetSchemasParameter prepareTargetSchemasParameter = new PrepareTargetSchemasParameter(jobConfig.splitLogicTableNames(),
-                    DatabaseTypeFactory.getInstance(targetDatabaseType),
-                    jobConfig.getDatabaseName(), jobContext.getTaskConfig().getImporterConfig().getDataSourceConfig(), jobContext.getDataSourceManager(), tableNameSchemaNameMapping);
+                    DatabaseTypeFactory.getInstance(targetDatabaseType), jobConfig.getDatabaseName(),
+                    jobItemContext.getTaskConfig().getImporterConfig().getDataSourceConfig(), jobItemContext.getDataSourceManager(), tableNameSchemaNameMapping);
             PipelineJobPreparerUtils.prepareTargetSchema(targetDatabaseType, prepareTargetSchemasParameter);
         }
-        PrepareTargetTablesParameter prepareTargetTablesParameter = new PrepareTargetTablesParameter(jobConfig.getDatabaseName(), jobContext.getTaskConfig().getImporterConfig().getDataSourceConfig(),
-                jobContext.getDataSourceManager(), jobConfig.getTablesFirstDataNodes(), tableNameSchemaNameMapping);
+        PrepareTargetTablesParameter prepareTargetTablesParameter = new PrepareTargetTablesParameter(jobConfig.getDatabaseName(),
+                jobItemContext.getTaskConfig().getImporterConfig().getDataSourceConfig(),
+                jobItemContext.getDataSourceManager(), jobConfig.getTablesFirstDataNodes(), tableNameSchemaNameMapping);
         PipelineJobPreparerUtils.prepareTargetTables(targetDatabaseType, prepareTargetTablesParameter);
     }
     
@@ -148,24 +148,24 @@ public final class RuleAlteredJobPreparer {
         return true;
     }
     
-    private void initInventoryTasks(final RuleAlteredJobContext jobContext) {
-        InventoryTaskSplitter inventoryTaskSplitter = new InventoryTaskSplitter(jobContext.getSourceMetaDataLoader(), jobContext.getDataSourceManager(),
-                jobContext.getJobProcessContext().getImporterExecuteEngine(), jobContext.getSourceDataSource(), jobContext.getTaskConfig(), jobContext.getInitProgress());
-        jobContext.getInventoryTasks().addAll(inventoryTaskSplitter.splitInventoryData(jobContext));
+    private void initInventoryTasks(final RuleAlteredJobContext jobItemContext) {
+        InventoryTaskSplitter inventoryTaskSplitter = new InventoryTaskSplitter(jobItemContext.getSourceMetaDataLoader(), jobItemContext.getDataSourceManager(),
+                jobItemContext.getJobProcessContext().getImporterExecuteEngine(), jobItemContext.getSourceDataSource(), jobItemContext.getTaskConfig(), jobItemContext.getInitProgress());
+        jobItemContext.getInventoryTasks().addAll(inventoryTaskSplitter.splitInventoryData(jobItemContext));
     }
     
-    private void initIncrementalTasks(final RuleAlteredJobContext jobContext) throws SQLException {
-        PipelineChannelCreator pipelineChannelCreator = jobContext.getJobProcessContext().getPipelineChannelCreator();
-        ExecuteEngine incrementalDumperExecuteEngine = jobContext.getJobProcessContext().getIncrementalDumperExecuteEngine();
-        TaskConfiguration taskConfig = jobContext.getTaskConfig();
-        PipelineDataSourceManager dataSourceManager = jobContext.getDataSourceManager();
-        JobItemIncrementalTasksProgress incrementalTasksProgress = jobContext.getInitProgress() == null ? null : jobContext.getInitProgress().getIncremental();
+    private void initIncrementalTasks(final RuleAlteredJobContext jobItemContext) throws SQLException {
+        PipelineChannelCreator pipelineChannelCreator = jobItemContext.getJobProcessContext().getPipelineChannelCreator();
+        ExecuteEngine incrementalDumperExecuteEngine = jobItemContext.getJobProcessContext().getIncrementalDumperExecuteEngine();
+        TaskConfiguration taskConfig = jobItemContext.getTaskConfig();
+        PipelineDataSourceManager dataSourceManager = jobItemContext.getDataSourceManager();
+        JobItemIncrementalTasksProgress incrementalTasksProgress = jobItemContext.getInitProgress() == null ? null : jobItemContext.getInitProgress().getIncremental();
         taskConfig.getDumperConfig().setPosition(PipelineJobPreparerUtils.getIncrementalPosition(incrementalTasksProgress, taskConfig.getDumperConfig(), dataSourceManager));
-        PipelineTableMetaDataLoader sourceMetaDataLoader = jobContext.getSourceMetaDataLoader();
-        DefaultPipelineJobProgressListener jobProgressListener = new DefaultPipelineJobProgressListener(jobContext.getJobId(), jobContext.getShardingItem());
+        PipelineTableMetaDataLoader sourceMetaDataLoader = jobItemContext.getSourceMetaDataLoader();
+        DefaultPipelineJobProgressListener jobProgressListener = new DefaultPipelineJobProgressListener(jobItemContext.getJobId(), jobItemContext.getShardingItem());
         IncrementalTask incrementalTask = new IncrementalTask(taskConfig.getImporterConfig().getConcurrency(),
                 taskConfig.getDumperConfig(), taskConfig.getImporterConfig(), pipelineChannelCreator, dataSourceManager, sourceMetaDataLoader, incrementalDumperExecuteEngine, jobProgressListener);
-        jobContext.getIncrementalTasks().add(incrementalTask);
+        jobItemContext.getIncrementalTasks().add(incrementalTask);
     }
     
     /**

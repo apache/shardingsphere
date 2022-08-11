@@ -22,11 +22,11 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
- * YAML job progress.
+ * YAML inventory incremental job item progress.
  */
 @Getter
 @Setter
-public final class YamlJobProgress implements YamlConfiguration {
+public final class YamlInventoryIncrementalJobItemProgress implements YamlConfiguration {
     
     private String status;
     

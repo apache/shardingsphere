@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.api.task;
 
-import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobContext;
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 
 /**
  * Pipeline tasks runner.
@@ -25,11 +25,11 @@ import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobContext;
 public interface PipelineTasksRunner {
     
     /**
-     * Get job context.
+     * Get job item context.
      *
-     * @return job context.
+     * @return job item context.
      */
-    PipelineJobContext getJobContext();
+    PipelineJobItemContext getJobItemContext();
     
     /**
      * Start tasks runner.

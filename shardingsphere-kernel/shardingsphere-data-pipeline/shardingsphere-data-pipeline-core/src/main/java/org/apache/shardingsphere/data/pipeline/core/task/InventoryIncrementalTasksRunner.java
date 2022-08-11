@@ -15,33 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
+package org.apache.shardingsphere.data.pipeline.core.task;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
-import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobContext;
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
-import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
-import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 
 import java.util.Collection;
 
 /**
- * Rule altered job scheduler.
+ * Inventory incremental tasks' runner.
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class RuleAlteredJobScheduler implements PipelineTasksRunner {
+public final class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
     
     @Getter
-    private final PipelineJobContext jobContext;
+    private final PipelineJobItemContext jobItemContext;
     
     private final Collection<InventoryTask> inventoryTasks;
     
@@ -53,16 +51,16 @@ public final class RuleAlteredJobScheduler implements PipelineTasksRunner {
     
     @Override
     public void stop() {
-        jobContext.setStopping(true);
-        log.info("stop, jobId={}, shardingItem={}", jobContext.getJobId(), jobContext.getShardingItem());
+        jobItemContext.setStopping(true);
+        log.info("stop, jobId={}, shardingItem={}", jobItemContext.getJobId(), jobItemContext.getShardingItem());
         // TODO blocking stop
         for (InventoryTask each : inventoryTasks) {
-            log.info("stop inventory task {} - {}", jobContext.getJobId(), each.getTaskId());
+            log.info("stop inventory task {} - {}", jobItemContext.getJobId(), each.getTaskId());
             each.stop();
             each.close();
         }
         for (IncrementalTask each : incrementalTasks) {
-            log.info("stop incremental task {} - {}", jobContext.getJobId(), each.getTaskId());
+            log.info("stop incremental task {} - {}", jobItemContext.getJobId(), each.getTaskId());
             each.stop();
             each.close();
         }
@@ -70,13 +68,13 @@ public final class RuleAlteredJobScheduler implements PipelineTasksRunner {
     
     @Override
     public void start() {
-        if (jobContext.isStopping()) {
+        if (jobItemContext.isStopping()) {
             log.info("job stopping, ignore inventory task");
             return;
         }
-        RuleAlteredJobAPIFactory.getInstance().persistJobProgress(jobContext);
+        RuleAlteredJobAPIFactory.getInstance().persistJobItemProgress(jobItemContext);
         if (executeInventoryTask()) {
-            if (jobContext.isStopping()) {
+            if (jobItemContext.isStopping()) {
                 log.info("stopping, ignore incremental task");
                 return;
             }
@@ -90,10 +88,10 @@ public final class RuleAlteredJobScheduler implements PipelineTasksRunner {
             return true;
         }
         log.info("-------------- Start inventory task --------------");
-        jobContext.setStatus(JobStatus.EXECUTE_INVENTORY_TASK);
+        jobItemContext.setStatus(JobStatus.EXECUTE_INVENTORY_TASK);
         ExecuteCallback inventoryTaskCallback = createInventoryTaskCallback();
         for (InventoryTask each : inventoryTasks) {
-            if (each.getProgress().getPosition() instanceof FinishedPosition) {
+            if (each.getTaskProgress().getPosition() instanceof FinishedPosition) {
                 continue;
             }
             inventoryDumperExecuteEngine.submit(each, inventoryTaskCallback);
@@ -115,22 +113,22 @@ public final class RuleAlteredJobScheduler implements PipelineTasksRunner {
             @Override
             public void onFailure(final Throwable throwable) {
                 log.error("Inventory task execute failed.", throwable);
-                jobContext.setStatus(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE);
+                jobItemContext.setStatus(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE);
                 stop();
             }
         };
     }
     
     private synchronized void executeIncrementalTask() {
-        if (JobStatus.EXECUTE_INCREMENTAL_TASK == jobContext.getStatus()) {
+        if (JobStatus.EXECUTE_INCREMENTAL_TASK == jobItemContext.getStatus()) {
             log.info("job status already EXECUTE_INCREMENTAL_TASK, ignore");
             return;
         }
         log.info("-------------- Start incremental task --------------");
-        jobContext.setStatus(JobStatus.EXECUTE_INCREMENTAL_TASK);
+        jobItemContext.setStatus(JobStatus.EXECUTE_INCREMENTAL_TASK);
         ExecuteCallback incrementalTaskCallback = createIncrementalTaskCallback();
         for (IncrementalTask each : incrementalTasks) {
-            if (each.getProgress().getPosition() instanceof FinishedPosition) {
+            if (each.getTaskProgress().getPosition() instanceof FinishedPosition) {
                 continue;
             }
             incrementalDumperExecuteEngine.submit(each, incrementalTaskCallback);
@@ -147,7 +145,7 @@ public final class RuleAlteredJobScheduler implements PipelineTasksRunner {
             @Override
             public void onFailure(final Throwable throwable) {
                 log.error("Incremental task execute failed.", throwable);
-                jobContext.setStatus(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE);
+                jobItemContext.setStatus(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE);
                 stop();
             }
         };
