@@ -157,9 +157,8 @@ public final class PipelineJobPreparerUtils {
         }
         if (pipelineDataSourceConfig instanceof StandardPipelineDataSourceConfiguration) {
             StandardPipelineDataSourceConfiguration dataSourceConfig = (StandardPipelineDataSourceConfiguration) pipelineDataSourceConfig;
-            try (
-                    PipelineDataSourceWrapper dataSource = new PipelineDataSourceWrapper(
-                            DataSourcePoolCreator.create((DataSourceProperties) dataSourceConfig.getDataSourceConfiguration()), databaseType)) {
+            try (PipelineDataSourceWrapper dataSource = new PipelineDataSourceWrapper(
+                    DataSourcePoolCreator.create((DataSourceProperties) dataSourceConfig.getDataSourceConfiguration()), databaseType)) {
                 positionInitializer.destroy(dataSource);
             }
         }
