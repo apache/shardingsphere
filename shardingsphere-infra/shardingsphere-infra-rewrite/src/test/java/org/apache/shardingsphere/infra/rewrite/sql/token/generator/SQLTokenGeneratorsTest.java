@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.rewrite.sql.token.generator;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.infra.session.SQLSession;
+import org.apache.shardingsphere.infra.session.ConnectionContext;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -75,7 +75,7 @@ public final class SQLTokenGeneratorsTest {
         SQLToken expectedToken = mock(SQLToken.class);
         when(optionalSQLTokenGenerator.generateSQLToken(any(SQLStatementContext.class))).thenReturn(expectedToken);
         Collection<SQLToken> actualSqlTokens = sqlTokenGenerators.generateSQLTokens(
-                "sharding_db", Collections.singletonMap("test", mock(ShardingSphereSchema.class)), mock(SQLStatementContext.class), Collections.emptyList(), mock(SQLSession.class));
+                "sharding_db", Collections.singletonMap("test", mock(ShardingSphereSchema.class)), mock(SQLStatementContext.class), Collections.emptyList(), mock(ConnectionContext.class));
         assertThat(actualSqlTokens.size(), is(1));
         assertThat(actualSqlTokens.iterator().next(), is(expectedToken));
     }
@@ -89,7 +89,7 @@ public final class SQLTokenGeneratorsTest {
         Collection<SQLToken> expectedSQLTokens = Arrays.asList(mock(SQLToken.class), mock(SQLToken.class));
         doReturn(expectedSQLTokens).when(collectionSQLTokenGenerator).generateSQLTokens(any());
         Collection<SQLToken> actualSQLTokens = sqlTokenGenerators.generateSQLTokens(
-                "sharding_db", Collections.singletonMap("test", mock(ShardingSphereSchema.class)), mock(SQLStatementContext.class), Collections.emptyList(), mock(SQLSession.class));
+                "sharding_db", Collections.singletonMap("test", mock(ShardingSphereSchema.class)), mock(SQLStatementContext.class), Collections.emptyList(), mock(ConnectionContext.class));
         assertThat(actualSQLTokens.size(), is(2));
         assertThat(actualSQLTokens, is(expectedSQLTokens));
     }

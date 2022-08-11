@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware;
 
-import org.apache.shardingsphere.infra.session.SQLSession;
+import org.apache.shardingsphere.infra.session.ConnectionContext;
 
 /**
- * SQL session aware.
+ * Connection context aware.
  */
-public interface SQLSessionAware {
+public interface ConnectionContextAware {
     
     /**
-     * Set sql session.
+     * Set connection context.
      *
-     * @param sqlSession sql session
+     * @param connectionContext connection context
      */
-    void setSQLSession(SQLSession sqlSession);
+    void setConnectionContext(ConnectionContext connectionContext);
 }

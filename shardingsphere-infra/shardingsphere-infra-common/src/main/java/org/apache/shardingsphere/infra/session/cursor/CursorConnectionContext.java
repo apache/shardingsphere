@@ -24,10 +24,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Cursor sql session.
+ * Cursor connection context.
  */
 @Getter
-public final class CursorSQLSession implements AutoCloseable {
+public final class CursorConnectionContext implements AutoCloseable {
     
     private final Map<String, List<FetchGroup>> orderByValueGroups = new ConcurrentHashMap<>();
     
