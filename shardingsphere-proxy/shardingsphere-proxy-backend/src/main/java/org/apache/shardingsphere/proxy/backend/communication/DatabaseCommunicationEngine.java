@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefreshEngine;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
+import org.apache.shardingsphere.infra.exception.RuleNotExistedException;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
@@ -43,7 +44,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchem
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.infra.exception.RuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
@@ -127,9 +127,7 @@ public abstract class DatabaseCommunicationEngine implements DatabaseBackendHand
             ((CursorDefinitionAware) statementContext).setUpCursorDefinition(cursorStatementContext);
         }
         if (statementContext instanceof CloseStatementContext) {
-            connectionSession.getSqlSession().getCursorSQLSession().getOrderByValueGroups().remove(cursorName);
-            connectionSession.getSqlSession().getCursorSQLSession().getMinGroupRowCounts().remove(cursorName);
-            connectionSession.getSqlSession().getCursorSQLSession().getCursorDefinitions().remove(cursorName);
+            connectionSession.getSqlSession().getCursorSQLSession().removeCursorName(cursorName);
         }
     }
     

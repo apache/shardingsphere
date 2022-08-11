@@ -41,4 +41,15 @@ public final class CursorSQLSession implements AutoCloseable {
         minGroupRowCounts.clear();
         cursorDefinitions.clear();
     }
+    
+    /**
+     * Remove cursor name.
+     * 
+     * @param name cursor name
+     */
+    public void removeCursorName(final String name) {
+        orderByValueGroups.remove(name);
+        minGroupRowCounts.remove(name);
+        cursorDefinitions.remove(name);
+    }
 }
