@@ -264,7 +264,9 @@ public final class SingleTableRule implements DatabaseRule, DataNodeContainedRul
     
     @Override
     public Collection<String> getAllTables() {
-        return new HashSet<>(tableNames.values());
+        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        result.addAll(tableNames.values());
+        return result;
     }
     
     @Override
