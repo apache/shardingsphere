@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.container.compose.mode;
 
+import org.apache.shardingsphere.test.integration.container.config.SuiteStorageContainerConfigurationFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.ITContainers;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.AdapterContainer;
@@ -50,7 +51,8 @@ public final class ClusterComposedContainer implements ComposedContainer {
         // TODO support other types of governance
         governanceContainer = containers.registerContainer(GovernanceContainerFactory.newInstance("ZooKeeper"));
         // TODO add more version of databases
-        storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(parameterizedArray.getDatabaseType(), "", scenario));
+        storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(parameterizedArray.getDatabaseType(), "", scenario,
+                SuiteStorageContainerConfigurationFactory.newInstance(parameterizedArray.getDatabaseType(), scenario)));
         AdapterContainer adapterContainer = AdapterContainerFactory.newInstance(
                 parameterizedArray.getMode(), parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), storageContainer, scenario);
         if (adapterContainer instanceof DockerITContainer) {

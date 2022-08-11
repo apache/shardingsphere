@@ -19,6 +19,7 @@ package org.apache.shardingsphere.integration.data.pipeline.framework.container.
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.integration.data.pipeline.framework.comtaner.config.ScalingStorageContainerConfigurationFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.governance.GovernanceContainer;
@@ -45,7 +46,8 @@ public final class DockerComposedContainer extends BaseComposedContainer {
     public DockerComposedContainer(final DatabaseType databaseType, final String dockerImageName) {
         this.databaseType = databaseType;
         governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
-        storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, dockerImageName, ""));
+        storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, dockerImageName,
+                "", ScalingStorageContainerConfigurationFactory.newInstance(databaseType, "")));
         ShardingSphereProxyClusterContainer proxyClusterContainer =
                 (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance("Cluster", "proxy", databaseType, storageContainer, "", "scaling");
         proxyClusterContainer.dependsOn(governanceContainer, storageContainer);

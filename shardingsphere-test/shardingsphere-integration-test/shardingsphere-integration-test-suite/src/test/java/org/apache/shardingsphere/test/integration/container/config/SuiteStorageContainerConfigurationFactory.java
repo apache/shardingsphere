@@ -15,43 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.container.atomic.storage;
+package org.apache.shardingsphere.test.integration.container.config;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
-import org.apache.shardingsphere.test.integration.env.container.atomic.storage.impl.H2Container;
-import org.apache.shardingsphere.test.integration.env.container.atomic.storage.impl.MySQLContainer;
-import org.apache.shardingsphere.test.integration.env.container.atomic.storage.impl.OpenGaussContainer;
-import org.apache.shardingsphere.test.integration.env.container.atomic.storage.impl.PostgreSQLContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.mysql.DefaultMySQLContainerConfiguration;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.opengauss.DefaultOpenGaussContainerConfiguration;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.postgresql.DefaultPostgreSQLContainerConfiguration;
 
-/**
- * Storage container factory.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class StorageContainerFactory {
+public class SuiteStorageContainerConfigurationFactory {
     
     /**
      * Create new instance of storage container.
      *
      * @param databaseType database type
-     * @param dockerImageName docker image name
      * @param scenario scenario
-     * @param storageContainerConfiguration storageContainerConfiguration
      * @return created instance
      */
-    public static StorageContainer newInstance(final DatabaseType databaseType, final String dockerImageName, final String scenario,
-                                               final StorageContainerConfiguration storageContainerConfiguration) {
+    public static StorageContainerConfiguration newInstance(final DatabaseType databaseType, final String scenario) {
         switch (databaseType.getType()) {
             case "MySQL":
-                return new MySQLContainer(dockerImageName, scenario, storageContainerConfiguration);
+                if ("default".equalsIgnoreCase(scenario)) {
+                    return new DefaultMySQLContainerConfiguration();
+                }
+                return new DefaultMySQLContainerConfiguration();
             case "PostgreSQL":
-                return new PostgreSQLContainer(dockerImageName, scenario, storageContainerConfiguration);
+                if ("default".equalsIgnoreCase(scenario)) {
+                    return new DefaultPostgreSQLContainerConfiguration();
+                }
+                return new DefaultPostgreSQLContainerConfiguration();
             case "openGauss":
-                return new OpenGaussContainer(dockerImageName, scenario, storageContainerConfiguration);
+                return new DefaultOpenGaussContainerConfiguration();
             case "H2":
-                return new H2Container(scenario);
+                return null;
             default:
                 throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
         }
