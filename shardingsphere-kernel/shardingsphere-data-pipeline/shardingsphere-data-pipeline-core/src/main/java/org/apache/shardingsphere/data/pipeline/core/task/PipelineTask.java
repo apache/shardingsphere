@@ -33,9 +33,9 @@ public interface PipelineTask extends LifecycleExecutor {
     String getTaskId();
     
     /**
-     * Get Task progress.
+     * Get task progress.
      *
-     * @return Task progress
+     * @return task progress
      */
-    TaskProgress getProgress();
+    TaskProgress getTaskProgress();
 }

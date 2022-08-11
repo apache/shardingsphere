@@ -424,7 +424,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     private JobItemIncrementalTasksProgress getIncrementalTasksProgress(final RuleAlteredJobContext jobItemContext) {
         Map<String, IncrementalTaskProgress> incrementalTaskProgressMap = new HashMap<>();
         for (IncrementalTask each : jobItemContext.getIncrementalTasks()) {
-            incrementalTaskProgressMap.put(each.getTaskId(), each.getProgress());
+            incrementalTaskProgressMap.put(each.getTaskId(), each.getTaskProgress());
         }
         return new JobItemIncrementalTasksProgress(incrementalTaskProgressMap);
     }
@@ -432,7 +432,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     private JobItemInventoryTasksProgress getInventoryTasksProgress(final RuleAlteredJobContext jobItemContext) {
         Map<String, InventoryTaskProgress> inventoryTaskProgressMap = new HashMap<>();
         for (InventoryTask each : jobItemContext.getInventoryTasks()) {
-            inventoryTaskProgressMap.put(each.getTaskId(), each.getProgress());
+            inventoryTaskProgressMap.put(each.getTaskId(), each.getTaskProgress());
         }
         return new JobItemInventoryTasksProgress(inventoryTaskProgressMap);
     }

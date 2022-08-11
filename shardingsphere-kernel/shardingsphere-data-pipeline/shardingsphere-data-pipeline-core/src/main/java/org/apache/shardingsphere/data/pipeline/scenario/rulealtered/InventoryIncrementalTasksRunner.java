@@ -93,7 +93,7 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
         jobItemContext.setStatus(JobStatus.EXECUTE_INVENTORY_TASK);
         ExecuteCallback inventoryTaskCallback = createInventoryTaskCallback();
         for (InventoryTask each : inventoryTasks) {
-            if (each.getProgress().getPosition() instanceof FinishedPosition) {
+            if (each.getTaskProgress().getPosition() instanceof FinishedPosition) {
                 continue;
             }
             inventoryDumperExecuteEngine.submit(each, inventoryTaskCallback);
@@ -130,7 +130,7 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
         jobItemContext.setStatus(JobStatus.EXECUTE_INCREMENTAL_TASK);
         ExecuteCallback incrementalTaskCallback = createIncrementalTaskCallback();
         for (IncrementalTask each : incrementalTasks) {
-            if (each.getProgress().getPosition() instanceof FinishedPosition) {
+            if (each.getTaskProgress().getPosition() instanceof FinishedPosition) {
                 continue;
             }
             incrementalDumperExecuteEngine.submit(each, incrementalTaskCallback);
