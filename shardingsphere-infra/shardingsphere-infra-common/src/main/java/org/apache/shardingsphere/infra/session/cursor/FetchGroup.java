@@ -15,22 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.merge.ddl.fetch;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.session.cursor.FetchGroup;
-import org.apache.shardingsphere.sharding.merge.dql.orderby.OrderByValue;
-
-import java.util.Collection;
-import java.util.LinkedList;
+package org.apache.shardingsphere.infra.session.cursor;
 
 /**
- * Fetch order by value group.
+ * Fetch group.
  */
-@Getter
-@Setter
-public final class FetchOrderByValueGroup implements FetchGroup {
-    
-    private final Collection<OrderByValue> orderByValues = new LinkedList<>();
+public interface FetchGroup {
 }

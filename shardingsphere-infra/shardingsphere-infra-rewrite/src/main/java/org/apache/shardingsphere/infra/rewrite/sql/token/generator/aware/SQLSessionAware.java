@@ -15,31 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.merge.engine.merger;
+package org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.session.SQLSession;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-
-import java.sql.SQLException;
-import java.util.List;
 
 /**
- * Query results merger.
+ * SQL session aware.
  */
-public interface ResultMerger {
+public interface SQLSessionAware {
     
     /**
-     * Merge query results.
-     * 
-     * @param queryResults query results
-     * @param sqlStatementContext SQL statement context
-     * @param database database
+     * Set sql session.
+     *
      * @param sqlSession sql session
-     * @return merged result
-     * @throws SQLException SQL exception
      */
-    MergedResult merge(List<QueryResult> queryResults, SQLStatementContext<?> sqlStatementContext, ShardingSphereDatabase database, SQLSession sqlSession) throws SQLException;
+    void setSQLSession(SQLSession sqlSession);
 }

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem
 import org.apache.shardingsphere.infra.binder.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.session.SQLSession;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -54,7 +55,8 @@ public final class ShardingDQLResultMerger implements ResultMerger {
     private final DatabaseType databaseType;
     
     @Override
-    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext, final ShardingSphereDatabase database) throws SQLException {
+    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext,
+                              final ShardingSphereDatabase database, final SQLSession sqlSession) throws SQLException {
         if (1 == queryResults.size() && !isNeedAggregateRewrite(sqlStatementContext)) {
             return new IteratorStreamMergedResult(queryResults);
         }

@@ -15,51 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.session;
+package org.apache.shardingsphere.infra.session.cursor;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.session.cursor.CursorSQLSession;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * SQL session.
+ * Cursor sql session.
  */
-public final class SQLSession implements AutoCloseable {
+@Getter
+public final class CursorSQLSession implements AutoCloseable {
     
-    @Getter
-    private final CursorSQLSession cursorSQLSession = new CursorSQLSession();
+    private final Map<String, List<FetchGroup>> orderByValueGroups = new ConcurrentHashMap<>();
     
-    @Setter
-    private String trafficInstanceId;
+    private final Map<String, Long> minGroupRowCounts = new ConcurrentHashMap<>();
     
-    /**
-     * Get traffic instance id.
-     * 
-     * @return traffic instance id
-     */
-    public Optional<String> getTrafficInstanceId() {
-        return Optional.ofNullable(trafficInstanceId);
-    }
+    private final Map<String, CursorDefinition> cursorDefinitions = new ConcurrentHashMap<>();
     
     @Override
     public void close() {
-        clearTrafficInstance();
-        clearCursorSQLSession();
+        orderByValueGroups.clear();
+        minGroupRowCounts.clear();
+        cursorDefinitions.clear();
     }
     
     /**
-     * Clear traffic instance.
+     * Remove cursor name.
+     * 
+     * @param name cursor name
      */
-    public void clearTrafficInstance() {
-        trafficInstanceId = null;
-    }
-    
-    /**
-     * Clear cursor sql session.
-     */
-    public void clearCursorSQLSession() {
-        cursorSQLSession.close();
+    public void removeCursorName(final String name) {
+        orderByValueGroups.remove(name);
+        minGroupRowCounts.remove(name);
+        cursorDefinitions.remove(name);
     }
 }

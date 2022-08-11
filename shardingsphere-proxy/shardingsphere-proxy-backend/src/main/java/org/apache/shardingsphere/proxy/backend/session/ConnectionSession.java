@@ -21,7 +21,6 @@ import io.netty.util.AttributeMap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.session.SQLSession;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -38,9 +37,6 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionIsolationLevel;
 import org.apache.shardingsphere.transaction.core.TransactionType;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Connection session.
@@ -73,8 +69,6 @@ public final class ConnectionSession {
     private final BackendConnection backendConnection;
     
     private final ExecutorStatementManager statementManager;
-    
-    private final Map<String, CursorStatementContext> cursorDefinitions = new ConcurrentHashMap<>();
     
     private final PreparedStatementRegistry preparedStatementRegistry = new PreparedStatementRegistry();
     

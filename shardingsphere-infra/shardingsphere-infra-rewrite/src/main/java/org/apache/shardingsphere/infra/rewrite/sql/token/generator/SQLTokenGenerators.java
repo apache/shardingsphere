@@ -22,7 +22,9 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.ParametersAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SQLSessionAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.infra.session.SQLSession;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -57,14 +59,15 @@ public final class SQLTokenGenerators {
      * @param sqlStatementContext SQL statement context
      * @param parameters SQL parameters
      * @param schemas ShardingSphere schema map
+     * @param sqlSession sql session
      * @return SQL tokens
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public List<SQLToken> generateSQLTokens(final String databaseName, final Map<String, ShardingSphereSchema> schemas,
-                                            final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
+                                            final SQLStatementContext sqlStatementContext, final List<Object> parameters, final SQLSession sqlSession) {
         List<SQLToken> result = new LinkedList<>();
         for (SQLTokenGenerator each : sqlTokenGenerators.values()) {
-            setUpSQLTokenGenerator(each, parameters, databaseName, schemas, result);
+            setUpSQLTokenGenerator(each, parameters, databaseName, schemas, result, sqlSession);
             if (each instanceof OptionalSQLTokenGenerator) {
                 SQLToken sqlToken = ((OptionalSQLTokenGenerator) each).generateSQLToken(sqlStatementContext);
                 if (!result.contains(sqlToken)) {
@@ -78,7 +81,7 @@ public final class SQLTokenGenerators {
     }
     
     private void setUpSQLTokenGenerator(final SQLTokenGenerator sqlTokenGenerator, final List<Object> parameters,
-                                        final String databaseName, final Map<String, ShardingSphereSchema> schemas, final List<SQLToken> previousSQLTokens) {
+                                        final String databaseName, final Map<String, ShardingSphereSchema> schemas, final List<SQLToken> previousSQLTokens, final SQLSession sqlSession) {
         if (sqlTokenGenerator instanceof ParametersAware) {
             ((ParametersAware) sqlTokenGenerator).setParameters(parameters);
         }
@@ -88,6 +91,9 @@ public final class SQLTokenGenerators {
         }
         if (sqlTokenGenerator instanceof PreviousSQLTokensAware) {
             ((PreviousSQLTokensAware) sqlTokenGenerator).setPreviousSQLTokens(previousSQLTokens);
+        }
+        if (sqlTokenGenerator instanceof SQLSessionAware) {
+            ((SQLSessionAware) sqlTokenGenerator).setSQLSession(sqlSession);
         }
     }
 }

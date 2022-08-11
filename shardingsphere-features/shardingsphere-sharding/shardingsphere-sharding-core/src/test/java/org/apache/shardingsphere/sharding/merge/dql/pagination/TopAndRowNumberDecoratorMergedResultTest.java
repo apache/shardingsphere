@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.session.SQLSession;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
@@ -63,7 +64,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
                 Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeFactory.getInstance("SQLServer"));
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(),
-                mockQueryResult(), mockQueryResult()), selectStatementContext, mockShardingSphereDatabase());
+                mockQueryResult(), mockQueryResult()), selectStatementContext, mockShardingSphereDatabase(), mock(SQLSession.class));
         assertFalse(actual.next());
     }
     
@@ -78,7 +79,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), Collections.emptyList(),
                 sqlStatement, DefaultDatabase.LOGIC_NAME);
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(),
-                mockQueryResult(), mockQueryResult()), selectStatementContext, mockShardingSphereDatabase());
+                mockQueryResult(), mockQueryResult()), selectStatementContext, mockShardingSphereDatabase(), mock(SQLSession.class));
         for (int i = 0; i < 5; i++) {
             assertTrue(actual.next());
         }
@@ -96,7 +97,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
                 Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeFactory.getInstance("SQLServer"));
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(),
-                mockQueryResult(), mockQueryResult()), selectStatementContext, mockShardingSphereDatabase());
+                mockQueryResult(), mockQueryResult()), selectStatementContext, mockShardingSphereDatabase(), mock(SQLSession.class));
         for (int i = 0; i < 7; i++) {
             assertTrue(actual.next());
         }
@@ -114,7 +115,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database),
                 Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME);
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(),
-                mockQueryResult(), mockQueryResult()), selectStatementContext, mockShardingSphereDatabase());
+                mockQueryResult(), mockQueryResult()), selectStatementContext, mockShardingSphereDatabase(), mock(SQLSession.class));
         assertTrue(actual.next());
         assertTrue(actual.next());
         assertFalse(actual.next());
@@ -131,7 +132,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database),
                 Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME);
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(),
-                mockQueryResult(), mockQueryResult()), selectStatementContext, mockShardingSphereDatabase());
+                mockQueryResult(), mockQueryResult()), selectStatementContext, mockShardingSphereDatabase(), mock(SQLSession.class));
         assertTrue(actual.next());
         assertTrue(actual.next());
         assertTrue(actual.next());
