@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.scaling.distsql.handler.query;
 
-import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
+import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
+import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 /**
  * Query result set for show scaling job status.
  */
-public final class ShowScalingJobStatusQueryResultSet implements DistSQLResultSet {
+public final class ShowScalingJobStatusQueryResultSet implements DatabaseDistSQLResultSet {
     
     private static final RuleAlteredJobAPI RULE_ALTERED_JOB_API = RuleAlteredJobAPIFactory.getInstance();
     

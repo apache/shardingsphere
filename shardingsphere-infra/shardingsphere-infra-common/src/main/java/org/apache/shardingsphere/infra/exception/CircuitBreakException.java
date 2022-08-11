@@ -15,26 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.infra.exception;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 
 /**
- * Table modify in transaction exception.
+ * Circuit break exception.
  */
-@Getter
-public final class TableModifyInTransactionException extends ShardingSphereInsideException {
+public final class CircuitBreakException extends ShardingSphereInsideException {
     
-    private static final long serialVersionUID = 5676889868293244575L;
-    
-    private final String tableName;
-    
-    public TableModifyInTransactionException(final SQLStatementContext<?> sqlStatementContext) {
-        tableName = sqlStatementContext instanceof TableAvailable && !((TableAvailable) sqlStatementContext).getAllTables().isEmpty()
-                ? ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue()
-                : "unknown_table";
-    }
+    private static final long serialVersionUID = 6339672680026286798L;
 }

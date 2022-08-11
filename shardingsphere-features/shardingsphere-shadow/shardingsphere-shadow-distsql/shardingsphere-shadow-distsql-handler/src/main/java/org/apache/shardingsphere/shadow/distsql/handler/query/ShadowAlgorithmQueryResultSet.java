@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
+import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.props.PropertiesConverter;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -38,7 +38,7 @@ import java.util.Properties;
 /**
  * Query result set for show shadow algorithm.
  */
-public final class ShadowAlgorithmQueryResultSet implements DistSQLResultSet {
+public final class ShadowAlgorithmQueryResultSet implements DatabaseDistSQLResultSet {
     
     private Iterator<Entry<String, AlgorithmConfiguration>> data = Collections.emptyIterator();
     

@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.infra.distsql.query;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * In transaction exception.
+ * Dist SQL result set for global rule.
  */
-@RequiredArgsConstructor
-@Getter
-public final class InTransactionException extends ShardingSphereInsideException {
+public interface GlobalRuleDistSQLResultSet extends DistSQLResultSet {
     
-    private static final long serialVersionUID = 8125852172126111520L;
-    
-    private final String message;
+    /**
+     * Initialize data.
+     *
+     * @param ruleMetaData rule meta data
+     * @param sqlStatement SQL statement
+     */
+    void init(ShardingSphereRuleMetaData ruleMetaData, SQLStatement sqlStatement);
 }

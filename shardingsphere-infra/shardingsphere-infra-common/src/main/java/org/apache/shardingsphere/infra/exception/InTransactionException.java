@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.infra.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 
 /**
- * DB create exists exception.
+ * In transaction exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DBCreateExistsException extends ShardingSphereInsideException {
+public final class InTransactionException extends ShardingSphereInsideException {
     
-    private static final long serialVersionUID = 779787160167652641L;
+    private static final long serialVersionUID = 8125852172126111520L;
     
-    private final String databaseName;
+    private final String message;
 }

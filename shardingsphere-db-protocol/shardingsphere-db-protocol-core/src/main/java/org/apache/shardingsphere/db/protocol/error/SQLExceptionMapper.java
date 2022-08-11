@@ -15,14 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.db.protocol.error;
 
 import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+
+import java.sql.SQLException;
 
 /**
- * Circuit break exception.
+ * SQL exception mapper.
  */
-public final class CircuitBreakException extends ShardingSphereInsideException {
+@SingletonSPI
+public interface SQLExceptionMapper extends TypedSPI {
     
-    private static final long serialVersionUID = 6339672680026286798L;
+    /**
+     * Convert ShardingSphere inside exception into SQLException.
+     * 
+     * @param insideException ShardingSphere inside exception
+     * @return SQLException
+     */
+    SQLException convert(ShardingSphereInsideException insideException);
 }

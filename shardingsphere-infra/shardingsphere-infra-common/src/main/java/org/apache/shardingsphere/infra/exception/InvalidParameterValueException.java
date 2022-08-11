@@ -15,14 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.infra.exception;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 
 /**
- * Resource does not exist exception.
+ * Invalid parameter value exception.
  */
-public final class ResourceNotExistedException extends ShardingSphereInsideException {
+@RequiredArgsConstructor
+@Getter
+public final class InvalidParameterValueException extends ShardingSphereInsideException {
     
-    private static final long serialVersionUID = 4146100333670404924L;
+    private static final long serialVersionUID = -6561119208409452172L;
+    
+    private final String parameterName;
+    
+    private final String parameterValue;
 }

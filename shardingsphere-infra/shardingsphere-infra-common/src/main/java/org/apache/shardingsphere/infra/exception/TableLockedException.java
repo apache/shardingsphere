@@ -15,35 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.query;
+package org.apache.shardingsphere.infra.exception;
 
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-
-import java.util.Collection;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 
 /**
- * Dist SQL result set.
+ * Table locked exception.
  */
-public interface DistSQLResultSet extends TypedSPI {
+@RequiredArgsConstructor
+@Getter
+public final class TableLockedException extends ShardingSphereInsideException {
     
-    /**
-     * Get result set column names.
-     *
-     * @return result set column names
-     */
-    Collection<String> getColumnNames();
+    private static final long serialVersionUID = 2622020743612706932L;
     
-    /**
-     * Go to next data.
-     *
-     * @return true if next data exist
-     */
-    boolean next();
+    private final String schemaName;
     
-    /**
-     * Get row data.
-     *
-     * @return row data
-     */
-    Collection<Object> getRowData();
+    private final String tableName;
 }
