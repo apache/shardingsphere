@@ -15,49 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api;
-
-import org.apache.shardingsphere.data.pipeline.api.config.job.YamlPipelineJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
+package org.apache.shardingsphere.data.pipeline.api.job;
 
 /**
- * Pipeline job API.
+ * Pipeline job id utils.
  */
-public interface PipelineJobAPI {
+public final class PipelineJobIdUtils {
     
     /**
-     * Marshal pipeline job id.
+     * Marshal job id common prefix.
      *
      * @param pipelineJobId pipeline job id
-     * @return marshaled text
+     * @return job id common prefix
      */
-    String marshalJobId(PipelineJobId pipelineJobId);
+    public static String marshalJobIdCommonPrefix(final PipelineJobId pipelineJobId) {
+        return 'j' + pipelineJobId.getTypeCode();
+    }
     
     /**
-     * Extend job configuration.
-     *
-     * @param yamlJobConfig yaml job configuration
-     */
-    void extendJobConfiguration(YamlPipelineJobConfiguration yamlJobConfig);
-    
-    /**
-     * Start pipeline job by id.
+     * Parse job type.
      *
      * @param jobId job id
+     * @return job type
      */
-    void startDisabledJob(String jobId);
-    
-    /**
-     * Stop pipeline job.
-     *
-     * @param jobId job id
-     */
-    void stop(String jobId);
-    
-    /**
-     * Remove pipeline job.
-     *
-     * @param jobId job id
-     */
-    void remove(String jobId);
+    public static JobType parseJobType(final String jobId) {
+        if (jobId.length() <= 3) {
+            throw new IllegalArgumentException("Invalid jobId length, jobId=" + jobId);
+        }
+        if ('j' == jobId.charAt(0)) {
+            throw new IllegalArgumentException("Invalid jobId, first char=" + jobId.charAt(0));
+        }
+        String typeCode = jobId.substring(1, 3);
+        return JobType.valueOfByCode(typeCode);
+    }
 }

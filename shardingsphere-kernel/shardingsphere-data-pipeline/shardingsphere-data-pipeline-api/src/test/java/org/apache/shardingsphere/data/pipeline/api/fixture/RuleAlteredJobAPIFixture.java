@@ -23,7 +23,6 @@ import org.apache.shardingsphere.data.pipeline.api.config.job.YamlPipelineJobCon
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobContext;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
@@ -39,11 +38,6 @@ public final class RuleAlteredJobAPIFixture implements RuleAlteredJobAPI {
     
     @Override
     public String marshalJobId(final PipelineJobId pipelineJobId) {
-        return null;
-    }
-    
-    @Override
-    public JobType parseJobType(final String jobId) {
         return null;
     }
     
