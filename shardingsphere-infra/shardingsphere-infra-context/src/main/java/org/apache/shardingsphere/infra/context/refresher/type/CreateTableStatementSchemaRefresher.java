@@ -44,8 +44,7 @@ public final class CreateTableStatementSchemaRefresher implements MetaDataRefres
     @Override
     public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                                                     final String schemaName, final CreateTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
-        // TODO Fixme Remove table conversion to lowercase
-        String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue().toLowerCase();
+        String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         if (!containsInImmutableDataNodeContainedRule(tableName, database)) {
             database.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, tableName));
         }
