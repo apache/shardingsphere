@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.scaling.distsql.parser.core;
 
 import org.antlr.v4.runtime.CharStream;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementLexer;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingDistSQLStatementLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 
 /**
- * SQL lexer for scaling.
+ * SQL lexer for scaling dist SQL.
  */
-public final class ScalingLexer extends ScalingStatementLexer implements SQLLexer {
+public final class ScalingDistSQLLexer extends ScalingDistSQLStatementLexer implements SQLLexer {
     
-    public ScalingLexer(final CharStream input) {
+    public ScalingDistSQLLexer(final CharStream input) {
         super(input);
     }
 }

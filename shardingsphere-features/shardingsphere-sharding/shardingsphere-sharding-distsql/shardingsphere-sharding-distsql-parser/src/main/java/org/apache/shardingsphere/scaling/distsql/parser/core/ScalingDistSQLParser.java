@@ -19,17 +19,17 @@ package org.apache.shardingsphere.scaling.distsql.parser.core;
 
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingDistSQLStatementParser;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
 /**
- * SQL parser for scaling.
+ * SQL parser for scaling dist SQL.
  */
-public final class ScalingParser extends ScalingStatementParser implements SQLParser {
+public final class ScalingDistSQLParser extends ScalingDistSQLStatementParser implements SQLParser {
     
-    public ScalingParser(final TokenStream input) {
+    public ScalingDistSQLParser(final TokenStream input) {
         super(input);
     }
     

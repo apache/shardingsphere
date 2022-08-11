@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.scaling.distsql.parser.facade;
 
 import org.apache.shardingsphere.distsql.parser.engine.spi.FeaturedDistSQLStatementParserFacade;
-import org.apache.shardingsphere.scaling.distsql.parser.core.ScalingLexer;
-import org.apache.shardingsphere.scaling.distsql.parser.core.ScalingParser;
-import org.apache.shardingsphere.scaling.distsql.parser.core.ScalingSQLStatementVisitor;
+import org.apache.shardingsphere.scaling.distsql.parser.core.ScalingDistSQLLexer;
+import org.apache.shardingsphere.scaling.distsql.parser.core.ScalingDistSQLParser;
+import org.apache.shardingsphere.scaling.distsql.parser.core.ScalingDistSQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
@@ -32,17 +32,17 @@ public final class ScalingDistSQLStatementParserFacade implements FeaturedDistSQ
     
     @Override
     public Class<? extends SQLLexer> getLexerClass() {
-        return ScalingLexer.class;
+        return ScalingDistSQLLexer.class;
     }
     
     @Override
     public Class<? extends SQLParser> getParserClass() {
-        return ScalingParser.class;
+        return ScalingDistSQLParser.class;
     }
     
     @Override
     public Class<? extends SQLVisitor> getVisitorClass() {
-        return ScalingSQLStatementVisitor.class;
+        return ScalingDistSQLStatementVisitor.class;
     }
     
     @Override
