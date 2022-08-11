@@ -215,11 +215,6 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     }
     
     @Override
-    public boolean persistLock(final String lockKey, final long timeoutMillis) {
-        return internalLockHolder.getInternalLock(lockKey).tryLock(timeoutMillis);
-    }
-    
-    @Override
     public void delete(final String key) {
         try {
             if (isExisted(key)) {
@@ -272,6 +267,11 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
             default:
                 return Type.IGNORED;
         }
+    }
+    
+    @Override
+    public boolean tryLock(final String lockKey, final long timeoutMillis) {
+        return internalLockHolder.getInternalLock(lockKey).tryLock(timeoutMillis);
     }
     
     @Override
