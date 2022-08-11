@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.packet.generic;
 
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
+import org.apache.shardingsphere.error.mysql.code.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.junit.Test;
 import org.junit.runner.RunWith;

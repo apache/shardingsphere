@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.mysql.constant;
+package org.apache.shardingsphere.error.mysql.code;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.error.SQLErrorCode;
+import org.apache.shardingsphere.error.code.SQLErrorCode;
 
 /**
  * Server error code for MySQL.

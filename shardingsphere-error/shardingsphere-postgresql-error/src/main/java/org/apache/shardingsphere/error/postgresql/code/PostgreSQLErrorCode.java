@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.constant;
+package org.apache.shardingsphere.error.postgresql.code;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

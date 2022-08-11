@@ -15,30 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.error;
+package org.apache.shardingsphere.infra.exception;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import lombok.Getter;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 
 /**
- * SQL exception mapper.
+ * No such table exception.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SQLExceptionMapperFactory {
+@Getter
+public final class NoSuchTableException extends ShardingSphereInsideException {
     
-    static {
-        ShardingSphereServiceLoader.register(SQLExceptionMapper.class);
-    }
+    private static final long serialVersionUID = 8311953084941769743L;
     
-    /**
-     * Convert ShardingSphere inside exception into SQLException.
-     * 
-     * @param databaseType database type
-     * @return SQLException
-     */
-    public static SQLExceptionMapper getInstance(final String databaseType) {
-        return TypedSPIRegistry.getRegisteredService(SQLExceptionMapper.class, databaseType);
+    private final String tableName;
+    
+    public NoSuchTableException(final String tableName) {
+        super(String.format("Table '%s' doesn't exist", tableName));
+        this.tableName = tableName;
     }
 }

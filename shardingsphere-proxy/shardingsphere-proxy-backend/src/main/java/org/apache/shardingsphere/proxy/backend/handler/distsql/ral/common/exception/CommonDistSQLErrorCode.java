@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.excep
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.error.SQLErrorCode;
+import org.apache.shardingsphere.error.code.SQLErrorCode;
 
 /**
  * Common dist sql error code.

@@ -20,16 +20,14 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.err;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
-import org.apache.shardingsphere.infra.exception.InsertColumnsAndValuesMismatchedException;
-import org.apache.shardingsphere.infra.exception.DBCreateExistsException;
-import org.apache.shardingsphere.infra.exception.InTransactionException;
+import org.apache.shardingsphere.error.mapper.SQLExceptionMapperFactory;
+import org.apache.shardingsphere.error.postgresql.code.PostgreSQLErrorCode;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.InvalidAuthorizationSpecificationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLAuthenticationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLProtocolViolationException;
-import org.apache.shardingsphere.infra.exception.InvalidParameterValueException;
 import org.postgresql.util.PSQLException;
 import org.postgresql.util.ServerErrorMessage;
 
@@ -51,14 +49,11 @@ public final class PostgreSQLErrPacketFactory {
         if (cause instanceof PSQLException && null != ((PSQLException) cause).getServerErrorMessage()) {
             return createErrorResponsePacket(((PSQLException) cause).getServerErrorMessage());
         }
-        if (cause instanceof InTransactionException) {
-            return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.WARNING, PostgreSQLErrorCode.WARNING.getErrorCode(), cause.getMessage()).build();
+        if (cause instanceof ShardingSphereInsideException) {
+            return createErrorResponsePacket(SQLExceptionMapperFactory.getInstance("PostgreSQL").convert((ShardingSphereInsideException) cause));
         }
         if (cause instanceof SQLException) {
             return createErrorResponsePacket((SQLException) cause);
-        }
-        if (cause instanceof InsertColumnsAndValuesMismatchedException) {
-            return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLErrorCode.SYNTAX_ERROR, cause.getMessage()).build();
         }
         if (cause instanceof InvalidAuthorizationSpecificationException) {
             return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION, cause.getMessage()).build();
@@ -71,15 +66,6 @@ public final class PostgreSQLErrPacketFactory {
         }
         if (cause instanceof PostgreSQLAuthenticationException) {
             return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL, ((PostgreSQLAuthenticationException) cause).getErrorCode(), cause.getMessage()).build();
-        }
-        if (cause instanceof InvalidParameterValueException) {
-            InvalidParameterValueException ex = (InvalidParameterValueException) cause;
-            String message = String.format("invalid value for parameter \"%s\": \"%s\"", ex.getParameterName(), ex.getParameterValue());
-            return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLErrorCode.INVALID_PARAMETER_VALUE, message).build();
-        }
-        if (cause instanceof DBCreateExistsException) {
-            return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLErrorCode.DUPLICATE_DATABASE,
-                    String.format(PostgreSQLErrorCode.DUPLICATE_DATABASE.getConditionName(), ((DBCreateExistsException) cause).getDatabaseName())).build();
         }
         // TODO PostgreSQL need consider FrontendConnectionLimitException
         return createErrorResponsePacketForUnknownException(cause);

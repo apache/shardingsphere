@@ -15,31 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.error;
+package org.apache.shardingsphere.infra.exception;
+
+import lombok.Getter;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 
 /**
- * SQL error code.
+ * Table exists exception.
  */
-public interface SQLErrorCode {
+@Getter
+public final class TableExistsException extends ShardingSphereInsideException {
     
-    /**
-     * Get error code.
-     * 
-     * @return error code
-     */
-    int getErrorCode();
+    private static final long serialVersionUID = 6056681626545854214L;
     
-    /**
-     * Get SQL state.
-     * 
-     * @return SQL state
-     */
-    String getSqlState();
+    private final String tableName;
     
-    /**
-     * Get error message.
-     * 
-     * @return error message
-     */
-    String getErrorMessage();
+    public TableExistsException(final String tableName) {
+        super(String.format("Table '%s' already exists.", tableName));
+        this.tableName = tableName;
+    }
 }

@@ -15,25 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.error;
-
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-
-import java.sql.SQLException;
+package org.apache.shardingsphere.error.code;
 
 /**
- * SQL exception mapper.
+ * SQL error code.
  */
-@SingletonSPI
-public interface SQLExceptionMapper extends TypedSPI {
+public interface SQLErrorCode {
     
     /**
-     * Convert ShardingSphere inside exception into SQLException.
+     * Get error code.
      * 
-     * @param insideException ShardingSphere inside exception
-     * @return SQLException
+     * @return error code
      */
-    SQLException convert(ShardingSphereInsideException insideException);
+    int getErrorCode();
+    
+    /**
+     * Get SQL state.
+     * 
+     * @return SQL state
+     */
+    String getSqlState();
+    
+    /**MySQLErrPacketFactory
+     * Get error message.
+     * 
+     * @return error message
+     */
+    String getErrorMessage();
 }

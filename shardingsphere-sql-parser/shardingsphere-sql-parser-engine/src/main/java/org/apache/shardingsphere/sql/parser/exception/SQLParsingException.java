@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.exception;
 
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+
 /**
  * Throw exception when SQL parsing error.
  */
-public final class SQLParsingException extends RuntimeException {
+public final class SQLParsingException extends ShardingSphereInsideException {
     
     private static final long serialVersionUID = -6408790652103666096L;
     

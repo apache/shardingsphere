@@ -15,23 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.exception;
+package org.apache.shardingsphere.error.mapper;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+
+import java.sql.SQLException;
 
 /**
- * No such table exception.
+ * SQL exception mapper.
  */
-@Getter
-public final class NoSuchTableException extends ShardingSphereException {
+@SingletonSPI
+public interface SQLExceptionMapper extends TypedSPI {
     
-    private static final long serialVersionUID = 8311953084941769743L;
-    
-    private final String tableName;
-    
-    public NoSuchTableException(final String tableName) {
-        super(String.format("Table '%s' doesn't exist", tableName));
-        this.tableName = tableName;
-    }
+    /**
+     * Convert ShardingSphere inside exception into SQLException.
+     * 
+     * @param insideException ShardingSphere inside exception
+     * @return SQLException
+     */
+    SQLException convert(ShardingSphereInsideException insideException);
 }
