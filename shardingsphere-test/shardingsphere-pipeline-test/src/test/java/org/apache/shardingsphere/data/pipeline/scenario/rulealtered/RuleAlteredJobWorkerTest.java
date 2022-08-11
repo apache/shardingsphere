@@ -101,7 +101,7 @@ public final class RuleAlteredJobWorkerTest {
         RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, 0, new InventoryIncrementalJobItemProgress(), new PipelineDataSourceManager());
         jobContext.setStatus(JobStatus.PREPARING);
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
-        RuleAlteredJobAPIFactory.getInstance().persistJobProgress(jobContext);
+        RuleAlteredJobAPIFactory.getInstance().persistJobItemProgress(jobContext);
         URL jobConfigUrl = getClass().getClassLoader().getResource("scaling/rule_alter/scaling_job_config.yaml");
         assertNotNull(jobConfigUrl);
         repositoryAPI.persist(PipelineMetaDataNode.getJobConfigPath(jobContext.getJobId()), FileUtils.readFileToString(new File(jobConfigUrl.getFile()), StandardCharsets.UTF_8));

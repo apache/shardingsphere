@@ -88,21 +88,21 @@ public final class RuleAlteredJobPreparer {
         String lockName = "prepare-" + jobConfig.getJobId();
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
         LockDefinition lockDefinition = new ExclusiveLockDefinition(lockName);
-        RuleAlteredJobAPIFactory.getInstance().persistJobProgress(jobContext);
+        RuleAlteredJobAPIFactory.getInstance().persistJobItemProgress(jobContext);
         if (lockContext.tryLock(lockDefinition, 180000)) {
             log.info("try lock success, jobId={}, shardingItem={}", jobConfig.getJobId(), jobContext.getShardingItem());
             try {
-                InventoryIncrementalJobItemProgress jobItemProgress = RuleAlteredJobAPIFactory.getInstance().getJobProgress(jobContext.getJobId(), jobContext.getShardingItem());
+                InventoryIncrementalJobItemProgress jobItemProgress = RuleAlteredJobAPIFactory.getInstance().getJobItemProgress(jobContext.getJobId(), jobContext.getShardingItem());
                 boolean prepareFlag = JobStatus.PREPARING.equals(jobItemProgress.getStatus()) || JobStatus.RUNNING.equals(jobItemProgress.getStatus())
                         || JobStatus.PREPARING_FAILURE.equals(jobItemProgress.getStatus());
                 if (prepareFlag) {
                     log.info("execute prepare, jobId={}, shardingItem={}", jobConfig.getJobId(), jobContext.getShardingItem());
                     jobContext.setStatus(JobStatus.PREPARING);
-                    RuleAlteredJobAPIFactory.getInstance().updateShardingJobStatus(jobConfig.getJobId(), jobContext.getShardingItem(), JobStatus.PREPARING);
+                    RuleAlteredJobAPIFactory.getInstance().updateJobItemStatus(jobConfig.getJobId(), jobContext.getShardingItem(), JobStatus.PREPARING);
                     prepareAndCheckTarget(jobContext);
                     // TODO Loop insert zookeeper performance is not good
                     for (int i = 0; i <= jobContext.getJobConfig().getJobShardingCount(); i++) {
-                        RuleAlteredJobAPIFactory.getInstance().updateShardingJobStatus(jobConfig.getJobId(), i, JobStatus.PREPARE_SUCCESS);
+                        RuleAlteredJobAPIFactory.getInstance().updateJobItemStatus(jobConfig.getJobId(), i, JobStatus.PREPARE_SUCCESS);
                     }
                 }
             } finally {

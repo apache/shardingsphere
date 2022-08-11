@@ -198,11 +198,11 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         String jobId = jobConfig.getJobId();
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         return IntStream.range(0, jobConfig.getJobShardingCount()).boxed().collect(LinkedHashMap::new, (map, each) -> {
-            InventoryIncrementalJobItemProgress jobProgress = getJobProgress(jobId, each);
-            if (null != jobProgress) {
-                jobProgress.setActive(!jobConfigPOJO.isDisabled());
+            InventoryIncrementalJobItemProgress jobItemProgress = getJobItemProgress(jobId, each);
+            if (null != jobItemProgress) {
+                jobItemProgress.setActive(!jobConfigPOJO.isDisabled());
             }
-            map.put(each, jobProgress);
+            map.put(each, jobItemProgress);
         }, LinkedHashMap::putAll);
     }
     
@@ -384,7 +384,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         // TODO rewrite job status update after job progress structure refactor
         for (int each : repositoryAPI.getShardingItems(jobId)) {
             PipelineJobCenter.getJobContext(jobId, each).ifPresent(jobContext -> jobContext.setStatus(JobStatus.FINISHED));
-            updateShardingJobStatus(jobId, each, JobStatus.FINISHED);
+            updateJobItemStatus(jobId, each, JobStatus.FINISHED);
         }
         PipelineJobCenter.stop(jobId);
         stop(jobId);
@@ -408,7 +408,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     }
     
     @Override
-    public void persistJobProgress(final PipelineJobContext jobContext) {
+    public void persistJobItemProgress(final PipelineJobContext jobContext) {
         if (!(jobContext instanceof RuleAlteredJobContext)) {
             return;
         }
@@ -439,7 +439,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     }
     
     @Override
-    public InventoryIncrementalJobItemProgress getJobProgress(final String jobId, final int shardingItem) {
+    public InventoryIncrementalJobItemProgress getJobItemProgress(final String jobId, final int shardingItem) {
         String data = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobProgress(jobId, shardingItem);
         if (StringUtils.isBlank(data)) {
             return null;
@@ -448,13 +448,13 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     }
     
     @Override
-    public void updateShardingJobStatus(final String jobId, final int shardingItem, final JobStatus status) {
-        InventoryIncrementalJobItemProgress jobProgress = getJobProgress(jobId, shardingItem);
-        if (null == jobProgress) {
-            log.warn("updateShardingJobStatus, jobProgress is null, jobId={}, shardingItem={}", jobId, shardingItem);
+    public void updateJobItemStatus(final String jobId, final int shardingItem, final JobStatus status) {
+        InventoryIncrementalJobItemProgress jobItemProgress = getJobItemProgress(jobId, shardingItem);
+        if (null == jobItemProgress) {
+            log.warn("updateJobItemStatus, jobItemProgress is null, jobId={}, shardingItem={}", jobId, shardingItem);
             return;
         }
-        jobProgress.setStatus(status);
-        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobProgress(jobId, shardingItem, YamlEngine.marshal(SWAPPER.swapToYamlConfiguration(jobProgress)));
+        jobItemProgress.setStatus(status);
+        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobProgress(jobId, shardingItem, YamlEngine.marshal(SWAPPER.swapToYamlConfiguration(jobItemProgress)));
     }
 }

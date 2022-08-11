@@ -33,8 +33,8 @@ public final class YamlInventoryIncrementalJobItemProgressSwapperTest {
     
     @Test
     public void assertFullSwapToYamlConfiguration() {
-        InventoryIncrementalJobItemProgress jobProgress = SWAPPER.swapToObject(YamlEngine.unmarshal(ConfigurationFileUtil.readFile("job-progress.yaml"), YamlJobProgress.class));
-        YamlJobProgress actual = SWAPPER.swapToYamlConfiguration(jobProgress);
+        InventoryIncrementalJobItemProgress progress = SWAPPER.swapToObject(YamlEngine.unmarshal(ConfigurationFileUtil.readFile("job-progress.yaml"), YamlJobProgress.class));
+        YamlJobProgress actual = SWAPPER.swapToYamlConfiguration(progress);
         assertThat(actual.getStatus(), is("RUNNING"));
         assertThat(actual.getSourceDatabaseType(), is("H2"));
         assertThat(actual.getInventory().getFinished().length, is(2));

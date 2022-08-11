@@ -42,52 +42,52 @@ public final class InventoryIncrementalJobItemProgressTest {
     
     @Test
     public void assertInit() {
-        InventoryIncrementalJobItemProgress jobProgress = getJobProgress(ConfigurationFileUtil.readFile("job-progress.yaml"));
-        assertThat(jobProgress.getStatus(), is(JobStatus.RUNNING));
-        assertThat(jobProgress.getSourceDatabaseType(), is("H2"));
-        assertThat(jobProgress.getInventory().getInventoryTaskProgressMap().size(), is(4));
-        assertThat(jobProgress.getIncremental().getIncrementalTaskProgressMap().size(), is(1));
+        InventoryIncrementalJobItemProgress actual = getJobItemProgress(ConfigurationFileUtil.readFile("job-progress.yaml"));
+        assertThat(actual.getStatus(), is(JobStatus.RUNNING));
+        assertThat(actual.getSourceDatabaseType(), is("H2"));
+        assertThat(actual.getInventory().getInventoryTaskProgressMap().size(), is(4));
+        assertThat(actual.getIncremental().getIncrementalTaskProgressMap().size(), is(1));
     }
     
     @Test
     public void assertGetIncrementalPosition() {
-        InventoryIncrementalJobItemProgress jobProgress = getJobProgress(ConfigurationFileUtil.readFile("job-progress.yaml"));
-        Optional<IngestPosition<?>> position = jobProgress.getIncremental().getIncrementalPosition("ds0");
+        InventoryIncrementalJobItemProgress actual = getJobItemProgress(ConfigurationFileUtil.readFile("job-progress.yaml"));
+        Optional<IngestPosition<?>> position = actual.getIncremental().getIncrementalPosition("ds0");
         assertTrue(position.isPresent());
         assertThat(position.get(), instanceOf(PlaceholderPosition.class));
     }
     
     @Test
     public void assertGetInventoryPosition() {
-        InventoryIncrementalJobItemProgress jobProgress = getJobProgress(ConfigurationFileUtil.readFile("job-progress.yaml"));
-        assertThat(jobProgress.getInventory().getInventoryPosition("ds0").size(), is(2));
-        assertThat(jobProgress.getInventory().getInventoryPosition("ds0").get("ds0.t_1"), instanceOf(FinishedPosition.class));
-        assertThat(jobProgress.getInventory().getInventoryPosition("ds1").get("ds1.t_1"), instanceOf(PlaceholderPosition.class));
-        assertThat(jobProgress.getInventory().getInventoryPosition("ds1").get("ds1.t_2"), instanceOf(IntegerPrimaryKeyPosition.class));
+        InventoryIncrementalJobItemProgress actual = getJobItemProgress(ConfigurationFileUtil.readFile("job-progress.yaml"));
+        assertThat(actual.getInventory().getInventoryPosition("ds0").size(), is(2));
+        assertThat(actual.getInventory().getInventoryPosition("ds0").get("ds0.t_1"), instanceOf(FinishedPosition.class));
+        assertThat(actual.getInventory().getInventoryPosition("ds1").get("ds1.t_1"), instanceOf(PlaceholderPosition.class));
+        assertThat(actual.getInventory().getInventoryPosition("ds1").get("ds1.t_2"), instanceOf(IntegerPrimaryKeyPosition.class));
     }
     
     @Test
     public void assertGetInventoryFinishedPercentage() {
-        InventoryIncrementalJobItemProgress jobProgress = getJobProgress(ConfigurationFileUtil.readFile("job-progress.yaml"));
-        assertThat(jobProgress.getInventory().getInventoryFinishedPercentage(), is(50));
+        InventoryIncrementalJobItemProgress actual = getJobItemProgress(ConfigurationFileUtil.readFile("job-progress.yaml"));
+        assertThat(actual.getInventory().getInventoryFinishedPercentage(), is(50));
     }
     
     @Test
     public void assertGetAllFinishedInventoryFinishedPercentage() {
-        assertThat(getJobProgress(ConfigurationFileUtil.readFile("job-progress-all-finished.yaml")).getInventory().getInventoryFinishedPercentage(), is(100));
+        assertThat(getJobItemProgress(ConfigurationFileUtil.readFile("job-progress-all-finished.yaml")).getInventory().getInventoryFinishedPercentage(), is(100));
     }
     
     @Test
     public void assertGetIncrementalLatestActiveTimeMillis() {
-        assertThat(getJobProgress(ConfigurationFileUtil.readFile("job-progress.yaml")).getIncremental().getIncrementalLatestActiveTimeMillis(), is(0L));
+        assertThat(getJobItemProgress(ConfigurationFileUtil.readFile("job-progress.yaml")).getIncremental().getIncrementalLatestActiveTimeMillis(), is(0L));
     }
     
     @Test
     public void assertGetIncrementalDataLatestActiveTimeMillis() {
-        assertThat(getJobProgress(ConfigurationFileUtil.readFile("job-progress-all-finished.yaml")).getIncremental().getIncrementalLatestActiveTimeMillis(), is(50L));
+        assertThat(getJobItemProgress(ConfigurationFileUtil.readFile("job-progress-all-finished.yaml")).getIncremental().getIncrementalLatestActiveTimeMillis(), is(50L));
     }
     
-    private InventoryIncrementalJobItemProgress getJobProgress(final String data) {
+    private InventoryIncrementalJobItemProgress getJobItemProgress(final String data) {
         return SWAPPER.swapToObject(YamlEngine.unmarshal(data, YamlJobProgress.class));
     }
 }

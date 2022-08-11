@@ -101,8 +101,8 @@ public final class FinishedCheckJob implements SimpleJob {
     }
     
     private boolean isNotAllowDataCheck(final String jobId) {
-        Map<Integer, InventoryIncrementalJobItemProgress> jobProgressMap = ruleAlteredJobAPI.getProgress(jobId);
-        for (InventoryIncrementalJobItemProgress each : jobProgressMap.values()) {
+        Map<Integer, InventoryIncrementalJobItemProgress> jobItemProgressMap = ruleAlteredJobAPI.getProgress(jobId);
+        for (InventoryIncrementalJobItemProgress each : jobItemProgressMap.values()) {
             if (null == each || !JobStatus.EXECUTE_INCREMENTAL_TASK.equals(each.getStatus())) {
                 return true;
             }

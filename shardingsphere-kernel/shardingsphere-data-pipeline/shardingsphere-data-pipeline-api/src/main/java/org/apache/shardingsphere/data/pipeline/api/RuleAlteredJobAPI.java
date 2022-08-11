@@ -184,27 +184,27 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI {
     RuleAlteredJobConfiguration getJobConfig(String jobId);
     
     /**
-     * Persist job progress.
+     * Persist job item progress.
      *
      * @param jobContext job context
      */
-    void persistJobProgress(PipelineJobContext jobContext);
+    void persistJobItemProgress(PipelineJobContext jobContext);
     
     /**
-     * Get job progress.
+     * Get job item progress.
      *
      * @param jobId job id
      * @param shardingItem sharding item
      * @return job progress
      */
-    InventoryIncrementalJobItemProgress getJobProgress(String jobId, int shardingItem);
+    InventoryIncrementalJobItemProgress getJobItemProgress(String jobId, int shardingItem);
     
     /**
-     * Update sharding job status.
+     * Update job item status.
      *
      * @param jobId job id
      * @param shardingItem sharding item
      * @param status status
      */
-    void updateShardingJobStatus(String jobId, int shardingItem, JobStatus status);
+    void updateJobItemStatus(String jobId, int shardingItem, JobStatus status);
 }

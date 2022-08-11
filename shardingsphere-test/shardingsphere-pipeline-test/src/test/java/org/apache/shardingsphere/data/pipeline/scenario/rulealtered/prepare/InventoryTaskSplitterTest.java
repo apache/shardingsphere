@@ -67,7 +67,7 @@ public final class InventoryTaskSplitterTest {
     
     private void initJobContext() {
         RuleAlteredJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
-        InventoryIncrementalJobItemProgress initProgress = RuleAlteredJobAPIFactory.getInstance().getJobProgress(jobConfig.getJobId(), 0);
+        InventoryIncrementalJobItemProgress initProgress = RuleAlteredJobAPIFactory.getInstance().getJobItemProgress(jobConfig.getJobId(), 0);
         jobContext = new RuleAlteredJobContext(jobConfig, 0, initProgress, new PipelineDataSourceManager());
         dataSourceManager = jobContext.getDataSourceManager();
         taskConfig = jobContext.getTaskConfig();

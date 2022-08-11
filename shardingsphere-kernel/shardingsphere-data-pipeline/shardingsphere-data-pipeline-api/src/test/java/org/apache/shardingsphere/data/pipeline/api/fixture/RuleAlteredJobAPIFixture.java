@@ -157,15 +157,15 @@ public final class RuleAlteredJobAPIFixture implements RuleAlteredJobAPI {
     }
     
     @Override
-    public void persistJobProgress(final PipelineJobContext jobContext) {
+    public void persistJobItemProgress(final PipelineJobContext jobContext) {
     }
     
     @Override
-    public InventoryIncrementalJobItemProgress getJobProgress(final String jobId, final int shardingItem) {
+    public InventoryIncrementalJobItemProgress getJobItemProgress(final String jobId, final int shardingItem) {
         return null;
     }
     
     @Override
-    public void updateShardingJobStatus(final String jobId, final int shardingItem, final JobStatus status) {
+    public void updateJobItemStatus(final String jobId, final int shardingItem, final JobStatus status) {
     }
 }

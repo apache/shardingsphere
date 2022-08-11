@@ -74,7 +74,7 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
             log.info("job stopping, ignore inventory task");
             return;
         }
-        RuleAlteredJobAPIFactory.getInstance().persistJobProgress(jobContext);
+        RuleAlteredJobAPIFactory.getInstance().persistJobItemProgress(jobContext);
         if (executeInventoryTask()) {
             if (jobContext.isStopping()) {
                 log.info("stopping, ignore incremental task");

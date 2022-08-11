@@ -102,7 +102,7 @@ public final class PipelineJobProgressPersistService {
         }
         persistContext.getHasNewEvents().set(false);
         long startTimeMillis = System.currentTimeMillis();
-        RuleAlteredJobAPIFactory.getInstance().persistJobProgress(jobContext.get());
+        RuleAlteredJobAPIFactory.getInstance().persistJobItemProgress(jobContext.get());
         persistContext.getBeforePersistingProgressMillis().set(null);
         if (6 == ThreadLocalRandom.current().nextInt(100)) {
             log.info("persist, jobId={}, shardingItem={}, cost time: {} ms", jobId, shardingItem, System.currentTimeMillis() - startTimeMillis);

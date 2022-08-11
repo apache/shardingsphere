@@ -55,7 +55,7 @@ public final class RuleAlteredJob extends AbstractPipelineJob implements SimpleJ
         }
         setJobId(shardingContext.getJobName());
         RuleAlteredJobConfiguration jobConfig = RuleAlteredJobConfigurationSwapper.swapToObject(shardingContext.getJobParameter());
-        InventoryIncrementalJobItemProgress initProgress = RuleAlteredJobAPIFactory.getInstance().getJobProgress(shardingContext.getJobName(), shardingContext.getShardingItem());
+        InventoryIncrementalJobItemProgress initProgress = RuleAlteredJobAPIFactory.getInstance().getJobItemProgress(shardingContext.getJobName(), shardingContext.getShardingItem());
         RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, shardingContext.getShardingItem(), initProgress, dataSourceManager);
         int shardingItem = jobContext.getShardingItem();
         if (getTasksRunnerMap().containsKey(shardingItem)) {
@@ -85,7 +85,7 @@ public final class RuleAlteredJob extends AbstractPipelineJob implements SimpleJ
             log.error("job prepare failed, {}-{}", getJobId(), jobContext.getShardingItem(), ex);
             PipelineJobCenter.stop(getJobId());
             jobContext.setStatus(JobStatus.PREPARING_FAILURE);
-            RuleAlteredJobAPIFactory.getInstance().persistJobProgress(jobContext);
+            RuleAlteredJobAPIFactory.getInstance().persistJobItemProgress(jobContext);
             throw ex;
         }
     }
