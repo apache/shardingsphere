@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-grammar ScalingStatement;
+grammar ScalingDistSQLStatement;
 
 import Symbol, RALStatement, RDLStatement, RQLStatement;
 

@@ -18,36 +18,36 @@
 package org.apache.shardingsphere.scaling.distsql.parser.core;
 
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementBaseVisitor;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.AlgorithmDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ApplyScalingContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.BatchSizeContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CheckScalingContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CompletionDetectorContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.CreateShardingScalingRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.DataConsistencyCheckerContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.DisableShardingScalingRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.DropScalingContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.DropShardingScalingRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.EnableShardingScalingRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.InputDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.OutputDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.RateLimiterContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ResetScalingContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.RestoreScalingSourceWritingContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ScalingRuleDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.SchemaNameContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ShardingSizeContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ShowScalingCheckAlgorithmsContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ShowScalingListContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ShowScalingStatusContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ShowShardingScalingRulesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.StartScalingContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.StopScalingContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.StopScalingSourceWritingContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.StreamChannelContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.WorkerThreadContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingDistSQLStatementBaseVisitor;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingDistSQLStatementParser;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingDistSQLStatementParser.AlgorithmDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingDistSQLStatementParser.ApplyScalingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingDistSQLStatementParser.BatchSizeContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingDistSQLStatementParser.CheckScalingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingDistSQLStatementParser.CompletionDetectorContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingDistSQLStatementParser.CreateShardingScalingRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingDistSQLStatementParser.DataConsistencyCheckerContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingDistSQLStatementParser.DisableShardingScalingRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingDistSQLStatementParser.DropScalingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingDistSQLStatementParser.DropShardingScalingRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingDistSQLStatementParser.EnableShardingScalingRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingDistSQLStatementParser.InputDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingDistSQLStatementParser.OutputDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingDistSQLStatementParser.RateLimiterContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingDistSQLStatementParser.ResetScalingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingDistSQLStatementParser.RestoreScalingSourceWritingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingDistSQLStatementParser.ScalingRuleDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingDistSQLStatementParser.SchemaNameContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingDistSQLStatementParser.ShardingSizeContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingDistSQLStatementParser.ShowScalingCheckAlgorithmsContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingDistSQLStatementParser.ShowScalingListContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingDistSQLStatementParser.ShowScalingStatusContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingDistSQLStatementParser.ShowShardingScalingRulesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingDistSQLStatementParser.StartScalingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingDistSQLStatementParser.StopScalingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingDistSQLStatementParser.StopScalingSourceWritingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingDistSQLStatementParser.StreamChannelContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingDistSQLStatementParser.WorkerThreadContext;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.scaling.distsql.statement.ApplyScalingStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.CheckScalingStatement;
@@ -75,9 +75,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import java.util.Properties;
 
 /**
- * SQL statement visitor for scaling.
+ * SQL statement visitor for scaling dist SQL.
  */
-public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisitor<ASTNode> implements SQLVisitor {
+public final class ScalingDistSQLStatementVisitor extends ScalingDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
     
     @Override
     public ASTNode visitShowScalingList(final ShowScalingListContext ctx) {
@@ -111,11 +111,7 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     
     @Override
     public ASTNode visitCheckScaling(final CheckScalingContext ctx) {
-        AlgorithmSegment typeStrategy = null;
-        if (null != ctx.algorithmDefinition()) {
-            typeStrategy = (AlgorithmSegment) visit(ctx.algorithmDefinition());
-        }
-        return new CheckScalingStatement(getIdentifierValue(ctx.jobId()), typeStrategy);
+        return new CheckScalingStatement(getIdentifierValue(ctx.jobId()), null == ctx.algorithmDefinition() ? null : (AlgorithmSegment) visit(ctx.algorithmDefinition()));
     }
     
     @Override
@@ -167,25 +163,19 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     
     @Override
     public ASTNode visitInputDefinition(final InputDefinitionContext ctx) {
-        Integer workerThread = getWorkerThread(ctx.workerThread());
-        Integer batchSize = getBatchSize(ctx.batchSize());
-        Integer shardingSize = getShardingSize(ctx.shardingSize());
-        AlgorithmSegment rateLimiter = null;
-        if (null != ctx.rateLimiter()) {
-            rateLimiter = (AlgorithmSegment) visit(ctx.rateLimiter());
-        }
-        return new InputOrOutputSegment(workerThread, batchSize, shardingSize, rateLimiter);
+        return new InputOrOutputSegment(getWorkerThread(ctx.workerThread()), getBatchSize(ctx.batchSize()), getShardingSize(ctx.shardingSize()), getAlgorithmSegment(ctx.rateLimiter()));
     }
     
     @Override
     public ASTNode visitOutputDefinition(final OutputDefinitionContext ctx) {
-        Integer workerThread = getWorkerThread(ctx.workerThread());
-        Integer batchSize = getBatchSize(ctx.batchSize());
-        AlgorithmSegment rateLimiter = null;
-        if (null != ctx.rateLimiter()) {
-            rateLimiter = (AlgorithmSegment) visit(ctx.rateLimiter());
+        return new InputOrOutputSegment(getWorkerThread(ctx.workerThread()), getBatchSize(ctx.batchSize()), getAlgorithmSegment(ctx.rateLimiter()));
+    }
+    
+    private AlgorithmSegment getAlgorithmSegment(final RateLimiterContext ctx) {
+        if (null == ctx) {
+            return null;
         }
-        return new InputOrOutputSegment(workerThread, batchSize, rateLimiter);
+        return (AlgorithmSegment) visit(ctx);
     }
     
     private Integer getWorkerThread(final WorkerThreadContext ctx) {
@@ -259,7 +249,7 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
         if (null == ctx.algorithmProperties()) {
             return result;
         }
-        for (ScalingStatementParser.AlgorithmPropertyContext each : ctx.algorithmProperties().algorithmProperty()) {
+        for (ScalingDistSQLStatementParser.AlgorithmPropertyContext each : ctx.algorithmProperties().algorithmProperty()) {
             result.setProperty(IdentifierValue.getQuotedContent(each.key.getText()), IdentifierValue.getQuotedContent(each.value.getText()));
         }
         return result;
