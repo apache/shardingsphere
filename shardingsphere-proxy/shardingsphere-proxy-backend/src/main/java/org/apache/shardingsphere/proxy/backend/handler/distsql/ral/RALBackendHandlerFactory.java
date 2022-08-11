@@ -70,7 +70,7 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.Sho
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowVariableHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.query.QueryableMigrationRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.query.QueryableMigrationRALBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.update.UpdatableScalingRALBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.update.UpdatableMigrationRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.AlterSQLParserRuleHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.AlterTrafficRuleHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.AlterTransactionRuleHandler;
@@ -151,7 +151,7 @@ public final class RALBackendHandlerFactory {
             return new QueryableMigrationRALBackendHandler(sqlStatement, connectionSession, (DatabaseDistSQLResultSet) resultSet);
         }
         if (sqlStatement instanceof UpdatableScalingRALStatement) {
-            return new UpdatableScalingRALBackendHandler((UpdatableScalingRALStatement) sqlStatement);
+            return new UpdatableMigrationRALBackendHandler((UpdatableScalingRALStatement) sqlStatement);
         }
         return createRALBackendHandler(sqlStatement, connectionSession);
     }
