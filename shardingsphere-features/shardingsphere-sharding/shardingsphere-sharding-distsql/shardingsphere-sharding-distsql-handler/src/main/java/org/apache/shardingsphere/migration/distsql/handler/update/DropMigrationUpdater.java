@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
 import org.apache.shardingsphere.migration.distsql.statement.DropMigrationStatement;
 
 /**
- * Drop scaling updater.
+ * Drop migration updater.
  */
 public final class DropMigrationUpdater implements RALUpdater<DropMigrationStatement> {
     

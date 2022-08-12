@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import java.util.Properties;
 
 /**
- * Queryable scaling RAL backend handler factory.
+ * Queryable migration RAL backend handler factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class QueryableMigrationRALBackendHandlerFactory {
@@ -38,7 +38,7 @@ public final class QueryableMigrationRALBackendHandlerFactory {
     
     /**
      * Create new instance of queryable RAL backend handler.
-     * 
+     *
      * @param sqlStatement queryable RAL statement
      * @return created instance
      */

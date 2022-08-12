@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
 import org.apache.shardingsphere.migration.distsql.statement.StartMigrationStatement;
 
 /**
- * Start scaling updater.
+ * Start migration updater.
  */
 public final class StartMigrationUpdater implements RALUpdater<StartMigrationStatement> {
     
