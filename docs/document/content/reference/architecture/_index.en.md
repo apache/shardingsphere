@@ -1,7 +1,7 @@
 +++
-pre = "<b>7.13. </b>"
+pre = "<b>7.11. </b>"
 title = "Architecture"
-weight = 13
+weight = 11
 +++
 
 Apache ShardingSphere's pluggable architecture is designed to enable developers to customize their own unique systems by adding the desired features, just like adding building blocks.

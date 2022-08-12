@@ -32,10 +32,11 @@
     <description>Build criterion and ecosystem above multi-model databases</description>
     
     <modules>
+        <module>shardingsphere-infra</module>
+        <module>shardingsphere-error</module>
         <module>shardingsphere-sql-parser</module>
         <module>shardingsphere-distsql</module>
         <module>shardingsphere-db-protocol</module>
-        <module>shardingsphere-infra</module>
         <module>shardingsphere-mode</module>
         <module>shardingsphere-kernel</module>
         

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.fixture.DataConsistencyCalculateAlgorithmFixture;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
@@ -54,11 +54,11 @@ public final class DataConsistencyCheckerTest {
     }
     
     private RuleAlteredJobConfiguration createJobConfiguration() throws SQLException {
-        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration(), 0,
-                new JobProgress(), new PipelineDataSourceManager());
-        initTableData(jobContext.getTaskConfig().getDumperConfig().getDataSourceConfig());
-        initTableData(jobContext.getTaskConfig().getImporterConfig().getDataSourceConfig());
-        return jobContext.getJobConfig();
+        RuleAlteredJobContext jobItemContext = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration(), 0,
+                new InventoryIncrementalJobItemProgress(), new PipelineDataSourceManager());
+        initTableData(jobItemContext.getTaskConfig().getDumperConfig().getDataSourceConfig());
+        initTableData(jobItemContext.getTaskConfig().getImporterConfig().getDataSourceConfig());
+        return jobItemContext.getJobConfig();
     }
     
     private void initTableData(final PipelineDataSourceConfiguration dataSourceConfig) throws SQLException {

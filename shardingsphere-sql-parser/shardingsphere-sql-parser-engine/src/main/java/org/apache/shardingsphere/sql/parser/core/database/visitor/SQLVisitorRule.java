@@ -632,7 +632,9 @@ public enum SQLVisitorRule {
     
     CREATE_FOREIGN_TABLE("CreateForeignTable", SQLStatementType.DDL),
     
-    CREATE_GROUP("CreateGroup", SQLStatementType.DCL);
+    CREATE_GROUP("CreateGroup", SQLStatementType.DCL),
+    
+    CREATE_MATERIALIZED_VIEW("CreateMaterializedView", SQLStatementType.DDL);
     
     private final String name;
     

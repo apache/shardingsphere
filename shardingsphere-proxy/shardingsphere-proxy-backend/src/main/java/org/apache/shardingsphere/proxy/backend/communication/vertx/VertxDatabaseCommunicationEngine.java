@@ -63,7 +63,7 @@ public final class VertxDatabaseCommunicationEngine extends DatabaseCommunicatio
                 return Future.failedFuture(new UnsupportedOperationException("Executing federated query by Vert.x is not supported yet."));
             }
             ExecutionContext executionContext = getKernelProcessor().generateExecutionContext(getLogicSQL(), getDatabase(), metaData.getGlobalRuleMetaData(),
-                    metaData.getProps(), getBackendConnection().getConnectionSession().getSqlSession());
+                    metaData.getProps(), getBackendConnection().getConnectionSession().getConnectionContext());
             if (executionContext.getExecutionUnits().isEmpty()) {
                 return Future.succeededFuture(new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement()));
             }

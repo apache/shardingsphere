@@ -46,9 +46,9 @@ import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.AlterReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.DropReadwriteSplittingRuleStatement;
-import org.apache.shardingsphere.scaling.distsql.statement.ApplyScalingStatement;
-import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingCheckAlgorithmsStatement;
-import org.apache.shardingsphere.scaling.distsql.statement.StopScalingSourceWritingStatement;
+import org.apache.shardingsphere.migration.distsql.statement.ApplyMigrationStatement;
+import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationCheckAlgorithmsStatement;
+import org.apache.shardingsphere.migration.distsql.statement.StopMigrationSourceWritingStatement;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.AlterShadowAlgorithmStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.AlterShadowRuleStatement;
@@ -243,7 +243,7 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     @Test
     public void assertExecuteShowScalingCheckAlgorithmsContext() throws SQLException {
         mockScalingContext();
-        ResponseHeader response = RALBackendHandlerFactory.newInstance(mock(ShowScalingCheckAlgorithmsStatement.class), connectionSession).execute();
+        ResponseHeader response = RALBackendHandlerFactory.newInstance(mock(ShowMigrationCheckAlgorithmsStatement.class), connectionSession).execute();
         assertThat(response, instanceOf(QueryResponseHeader.class));
     }
     
@@ -252,7 +252,7 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     @Test
     public void assertExecuteStopScalingSourceWritingContext() throws SQLException {
         mockScalingContext();
-        ResponseHeader response = RALBackendHandlerFactory.newInstance(mock(StopScalingSourceWritingStatement.class), connectionSession).execute();
+        ResponseHeader response = RALBackendHandlerFactory.newInstance(mock(StopMigrationSourceWritingStatement.class), connectionSession).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     
@@ -260,7 +260,7 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     @Test
     public void assertExecuteCheckoutScalingContext() throws SQLException {
         mockScalingContext();
-        ResponseHeader response = RALBackendHandlerFactory.newInstance(mock(ApplyScalingStatement.class), connectionSession).execute();
+        ResponseHeader response = RALBackendHandlerFactory.newInstance(mock(ApplyMigrationStatement.class), connectionSession).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     

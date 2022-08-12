@@ -145,7 +145,7 @@ public final class EtcdRepository implements ClusterPersistRepository {
     }
     
     @Override
-    public boolean tryLock(final String lockKey, final long timeoutMillis) {
+    public boolean persistLock(final String lockKey, final long timeoutMillis) {
         return etcdInternalLockHolder.getInternalLock(lockKey).tryLock(timeoutMillis);
     }
     

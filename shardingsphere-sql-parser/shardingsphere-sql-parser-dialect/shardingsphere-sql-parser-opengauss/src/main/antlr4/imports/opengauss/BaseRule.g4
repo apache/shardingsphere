@@ -142,6 +142,7 @@ unreservedWord
     | BEFORE
     | BEGIN
     | BY
+    | BOX
     | CACHE
     | CALL
     | CALLED
@@ -173,6 +174,7 @@ unreservedWord
     | CURRENT
     | CURSOR
     | CYCLE
+    | CIRCLE
     | DATA
     | DATABASE
     | DAY
@@ -260,6 +262,7 @@ unreservedWord
     | LOCK
     | LOCKED
     | LOGGED
+    | LSEG
     | MAIN
     | MAPPING
     | MATCH
@@ -307,9 +310,12 @@ unreservedWord
     | PARTITION
     | PASSING
     | PASSWORD
+    | PATH
     | PLAIN
     | PLANS
     | POLICY
+    | POINT
+    | POLYGON
     | PRECEDING
     | PREPARE
     | PREPARED
@@ -689,6 +695,7 @@ columnref
 
 qualOp
     : jsonOperator
+    | geometricOperator
     | OPERATOR LP_ anyOperator RP_
     ;
 
@@ -782,6 +789,25 @@ jsonOperator
     | JSONB_PATH_DELETE_ # jsonbPathDelete
     | JSONB_PATH_CONTAIN_ANY_VALUE_ # jsonbPathContainAnyValue
     | JSONB_PATH_PREDICATE_CHECK_ # jsonbPathPredicateCheck
+    ;
+    
+geometricOperator
+    : GEOMETRIC_LENGTH
+    | GEOMETRIC_DISTANCE
+    | GEOMETRIC_EXTEND_RIGHT
+    | GEOMETRIC_EXTEND_LEFT
+    | GEOMETRIC_STRICT_BELOW
+    | GEOMETRIC_STRICT_ABOVE
+    | GEOMETRIC_EXTEND_ABOVE
+    | GEOMETRIC_EXTEND_BELOW
+    | GEOMETRIC_BELOW
+    | GEOMETRIC_ABOVE
+    | GEOMETRIC_INTERSECT
+    | GEOMETRIC_PERPENDICULAR
+    | GEOMETRIC_SAME_AS
+    | POUND_
+    | SIGNED_LEFT_SHIFT_
+    | SIGNED_RIGHT_SHIFT_
     ;
 
 qualAllOp

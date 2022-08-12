@@ -23,7 +23,7 @@ import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
 import org.apache.shardingsphere.agent.metrics.api.fixture.FixtureWrapper;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
-import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingListStatement;
+import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationListStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
@@ -98,7 +98,7 @@ public final class SQLParserEngineAdviceTest extends MetricsAdviceBaseTest {
     
     @Test
     public void assertParseRAL() {
-        assertParse(MetricIds.PARSE_DIST_SQL_RAL, new ShowScalingListStatement());
+        assertParse(MetricIds.PARSE_DIST_SQL_RAL, new ShowMigrationListStatement());
     }
     
     private void assertParse(final String metricIds, final SQLStatement sqlStatement) {

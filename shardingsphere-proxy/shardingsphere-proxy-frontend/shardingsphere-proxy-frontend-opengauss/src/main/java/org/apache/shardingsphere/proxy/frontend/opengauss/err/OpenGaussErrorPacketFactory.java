@@ -22,9 +22,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.opengauss.packet.command.generic.OpenGaussErrorResponsePacket;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
-import org.apache.shardingsphere.infra.exception.InTransactionException;
+import org.apache.shardingsphere.error.mapper.SQLExceptionMapperFactory;
+import org.apache.shardingsphere.error.postgresql.code.PostgreSQLErrorCode;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.InvalidAuthorizationSpecificationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLAuthenticationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLProtocolViolationException;
@@ -71,11 +72,11 @@ public final class OpenGaussErrorPacketFactory {
         if (existsServerErrorMessage(cause)) {
             return createErrorResponsePacket(getServerErrorMessageMap(cause));
         }
-        if (cause instanceof InTransactionException) {
-            return new OpenGaussErrorResponsePacket(PostgreSQLMessageSeverityLevel.WARNING, PostgreSQLErrorCode.WARNING.getErrorCode(), cause.getMessage());
-        }
         if (cause instanceof SQLException) {
             return createErrorResponsePacket((SQLException) cause);
+        }
+        if (cause instanceof ShardingSphereInsideException) {
+            return createErrorResponsePacket(SQLExceptionMapperFactory.getInstance("PostgreSQL").convert((ShardingSphereInsideException) cause));
         }
         if (cause instanceof InvalidAuthorizationSpecificationException) {
             return new OpenGaussErrorResponsePacket(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION.getErrorCode(), cause.getMessage());

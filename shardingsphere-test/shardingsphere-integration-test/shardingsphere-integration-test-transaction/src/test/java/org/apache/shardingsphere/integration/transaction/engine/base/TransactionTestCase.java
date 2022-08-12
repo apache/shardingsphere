@@ -51,4 +51,11 @@ public @interface TransactionTestCase {
      * @return transaction types
      */
     TransactionType[] transactionTypes() default {TransactionType.LOCAL, TransactionType.XA, TransactionType.BASE};
+    
+    /**
+     * Specifies which group the test case belongs to.
+     * 
+     * @return test group
+     */
+    String group() default "default";
 }

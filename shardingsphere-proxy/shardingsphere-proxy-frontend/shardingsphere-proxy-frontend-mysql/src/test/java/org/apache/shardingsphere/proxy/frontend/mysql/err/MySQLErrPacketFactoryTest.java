@@ -29,8 +29,8 @@ import org.apache.shardingsphere.infra.exception.TableModifyInTransactionExcepti
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.UnsupportedVariableException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedCommandException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
-import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
-import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
+import org.apache.shardingsphere.infra.exception.NoSuchTableException;
+import org.apache.shardingsphere.infra.exception.TableExistsException;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.junit.Test;
 

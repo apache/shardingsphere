@@ -62,7 +62,7 @@ public final class EtcdInternalLockHolder implements InternalLockHolder {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            log.error("EtcdRepository tryLock error, lockName:{}", lockKey, ex);
+            log.error("Create etcd internal lock failed, lockName:{}", lockKey, ex);
         }
         return null;
     }
@@ -87,7 +87,7 @@ public final class EtcdInternalLockHolder implements InternalLockHolder {
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
-                log.error("EtcdRepository tryLock error, lockName:{}", lockKey, ex);
+                log.error("Etcd internal lock try lock failed", ex);
                 return false;
             }
         }
@@ -99,7 +99,7 @@ public final class EtcdInternalLockHolder implements InternalLockHolder {
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
-                log.error("EtcdRepository unlock error, lockName:{}", lockKey, ex);
+                log.error("Etcd internal lock unlock failed", ex);
             }
         }
     }

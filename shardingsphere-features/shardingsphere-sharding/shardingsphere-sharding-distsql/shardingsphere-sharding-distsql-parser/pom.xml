@@ -69,8 +69,8 @@
                             <goal>antlr4</goal>
                         </goals>
                         <configuration>
-                            <sourceDirectory>src/main/antlr4/scaling/</sourceDirectory>
-                            <libDirectory>src/main/antlr4/imports/scaling/</libDirectory>
+                            <sourceDirectory>src/main/antlr4/migration/</sourceDirectory>
+                            <libDirectory>src/main/antlr4/imports/migration/</libDirectory>
                             <listener>false</listener>
                             <visitor>true</visitor>
                         </configuration>

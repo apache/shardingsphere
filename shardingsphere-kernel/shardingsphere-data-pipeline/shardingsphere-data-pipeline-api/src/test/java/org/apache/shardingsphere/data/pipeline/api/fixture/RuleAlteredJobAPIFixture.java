@@ -21,11 +21,11 @@ import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.job.YamlPipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobContext;
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 
@@ -74,12 +74,12 @@ public final class RuleAlteredJobAPIFixture implements RuleAlteredJobAPI {
     }
     
     @Override
-    public Map<Integer, JobProgress> getProgress(final String jobId) {
+    public Map<Integer, InventoryIncrementalJobItemProgress> getJobProgress(final String jobId) {
         return null;
     }
     
     @Override
-    public Map<Integer, JobProgress> getProgress(final RuleAlteredJobConfiguration jobConfig) {
+    public Map<Integer, InventoryIncrementalJobItemProgress> getJobProgress(final RuleAlteredJobConfiguration jobConfig) {
         return null;
     }
     
@@ -157,15 +157,15 @@ public final class RuleAlteredJobAPIFixture implements RuleAlteredJobAPI {
     }
     
     @Override
-    public void persistJobProgress(final PipelineJobContext jobContext) {
+    public void persistJobItemProgress(final PipelineJobItemContext jobItemContext) {
     }
     
     @Override
-    public JobProgress getJobProgress(final String jobId, final int shardingItem) {
+    public InventoryIncrementalJobItemProgress getJobItemProgress(final String jobId, final int shardingItem) {
         return null;
     }
     
     @Override
-    public void updateShardingJobStatus(final String jobId, final int shardingItem, final JobStatus status) {
+    public void updateJobItemStatus(final String jobId, final int shardingItem, final JobStatus status) {
     }
 }

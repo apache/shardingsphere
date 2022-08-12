@@ -33,6 +33,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSc
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -174,28 +176,22 @@ public final class ShardingSphereDatabase {
     
     /**
      * Reload rules.
-     * 
-     * @param instanceContext instance context
-     */
-    public synchronized void reloadRules(final InstanceContext instanceContext) {
-        Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(
-                name, new DataSourceProvidedDatabaseConfiguration(resource.getDataSources(), ruleMetaData.getConfigurations()), instanceContext);
-        ruleMetaData.getRules().clear();
-        ruleMetaData.getRules().addAll(databaseRules);
-    }
-    
-    /**
-     * Reload rules.
      *
      * @param ruleClass to be reloaded rule class
-     * @param instanceContext instance context
      */
-    public synchronized void reloadRules(final Class<? extends ShardingSphereRule> ruleClass, final InstanceContext instanceContext) {
+    public synchronized void reloadRules(final Class<? extends ShardingSphereRule> ruleClass) {
         Collection<? extends ShardingSphereRule> toBeReloadedRules = ruleMetaData.findRules(ruleClass);
-        Collection<RuleConfiguration> toBeReloadedRuleConfigs = toBeReloadedRules.stream().map(ShardingSphereRule::getConfiguration).collect(Collectors.toList());
-        Collection<ShardingSphereRule> reloadedDatabaseRules = DatabaseRulesBuilder.build(
-                name, new DataSourceProvidedDatabaseConfiguration(resource.getDataSources(), toBeReloadedRuleConfigs), instanceContext);
-        ruleMetaData.getRules().removeAll(toBeReloadedRules);
-        ruleMetaData.getRules().addAll(reloadedDatabaseRules);
+        RuleConfiguration config = toBeReloadedRules.stream().map(ShardingSphereRule::getConfiguration).findFirst().orElse(null);
+        toBeReloadedRules.stream().findFirst().ifPresent(optional -> {
+            ruleMetaData.getRules().removeAll(toBeReloadedRules);
+            ruleMetaData.getRules().addAll(reloadRules(config, (MutableDataNodeRule) optional));
+        });
+    }
+    
+    private Collection<ShardingSphereRule> reloadRules(final RuleConfiguration config, final MutableDataNodeRule mutableDataNodeRule) {
+        Collection<ShardingSphereRule> result = new LinkedList<>();
+        Collection<ShardingSphereRule> dataSourceContainedRules = ruleMetaData.getRules().stream().filter(each -> each instanceof DataSourceContainedRule).collect(Collectors.toList());
+        result.add(mutableDataNodeRule.reloadRule(config, name, resource.getDataSources(), dataSourceContainedRules));
+        return result;
     }
 }
