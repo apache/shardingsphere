@@ -27,7 +27,7 @@ import org.apache.shardingsphere.integration.data.pipeline.cases.entity.CreateTa
 import org.apache.shardingsphere.integration.data.pipeline.cases.entity.CreateTableSQLGeneratorOutputEntity;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
-import org.apache.shardingsphere.integration.data.pipeline.framework.comtaner.config.ScalingStorageContainerConfigurationFactory;
+import org.apache.shardingsphere.integration.data.pipeline.framework.container.config.storage.ScalingStorageContainerConfigurationFactory;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainerFactory;

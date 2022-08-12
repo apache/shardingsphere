@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.framework.comtaner.config;
+package org.apache.shardingsphere.integration.data.pipeline.framework.container.config.storage;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.framework.comtaner.config.impl.mysql.ScalingMySQLContainerConfiguration;
-import org.apache.shardingsphere.integration.data.pipeline.framework.comtaner.config.impl.postgresql.ScalingPostgreSQLContainerConfiguration;
+import org.apache.shardingsphere.integration.data.pipeline.framework.container.config.storage.impl.mysql.ScalingMySQLContainerConfiguration;
+import org.apache.shardingsphere.integration.data.pipeline.framework.container.config.storage.impl.postgresql.ScalingPostgreSQLContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.mysql.DefaultMySQLContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.opengauss.DefaultOpenGaussContainerConfiguration;
