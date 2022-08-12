@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.error.mysql.mapper;
 
-import org.apache.shardingsphere.error.code.CommonErrorCode;
+import org.apache.shardingsphere.error.code.CommonSQLErrorCode;
 import org.apache.shardingsphere.error.code.SQLErrorCode;
 import org.apache.shardingsphere.error.mapper.SQLExceptionMapper;
 import org.apache.shardingsphere.error.mysql.code.MySQLServerErrorCode;
@@ -66,7 +66,7 @@ public final class MySQLSQLExceptionMapper implements SQLExceptionMapper {
         if (dialectSQLException instanceof NoSuchTableException) {
             return toSQLException(MySQLServerErrorCode.ER_NO_SUCH_TABLE, ((NoSuchTableException) dialectSQLException).getTableName());
         }
-        return toSQLException(CommonErrorCode.UNKNOWN_EXCEPTION, dialectSQLException.getMessage());
+        return toSQLException(CommonSQLErrorCode.UNKNOWN_EXCEPTION, dialectSQLException.getMessage());
     }
     
     private SQLException toSQLException(final SQLErrorCode errorCode, final Object... messageArguments) {
