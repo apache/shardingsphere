@@ -126,7 +126,7 @@ public final class AggregationProjectionConverter implements SQLSegmentConverter
             return getInnerExpression(sqlBasicCall);
         }
         String params = sqlBasicCall.getOperandList().stream().map(SqlNode::toString).collect(Collectors.joining(", "));
-        return QuoteCharacter.PARENTHESES.wrap(selectKeyword.toString() + " " + params);
+        return QuoteCharacter.PARENTHESES.wrap(selectKeyword + " " + params);
     }
     
     private String getInnerExpression(final SqlBasicCall sqlBasicCall) {
