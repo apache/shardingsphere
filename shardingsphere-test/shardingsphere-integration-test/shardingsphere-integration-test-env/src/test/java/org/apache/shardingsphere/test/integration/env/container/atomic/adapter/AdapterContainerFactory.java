@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.env.container.atomic.adapter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfig;
+import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.impl.ShardingSphereJDBCContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.impl.ShardingSphereProxyStandaloneContainer;
@@ -44,7 +44,7 @@ public final class AdapterContainerFactory {
      * @return adapter container
      */
     public static AdapterContainer newInstance(final String mode, final String adapter, final DatabaseType databaseType,
-                                               final StorageContainer storageContainer, final String scenario, final AdaptorContainerConfig adaptorContainerConfig) {
+                                               final StorageContainer storageContainer, final String scenario, final AdaptorContainerConfiguration adaptorContainerConfig) {
         switch (adapter) {
             case "proxy":
                 if ("Cluster".equalsIgnoreCase(mode)) {

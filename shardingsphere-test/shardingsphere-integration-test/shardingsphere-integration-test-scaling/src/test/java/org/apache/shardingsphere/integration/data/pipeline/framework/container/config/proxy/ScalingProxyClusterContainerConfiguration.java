@@ -19,7 +19,7 @@ package org.apache.shardingsphere.integration.data.pipeline.framework.container.
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfig;
+import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 
 import java.util.Collections;
@@ -30,7 +30,7 @@ import java.util.Map;
  * Scaling proxy cluster container configuration.
  */
 @RequiredArgsConstructor
-public final class ScalingProxyClusterContainerConfig implements AdaptorContainerConfig {
+public final class ScalingProxyClusterContainerConfiguration implements AdaptorContainerConfiguration {
     
     private final DatabaseType databaseType;
     
