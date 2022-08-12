@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.util.exception.inside.ShardingSphereInsid
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 
 import java.sql.SQLException;
+import java.util.Optional;
 
 /**
  * SQL exception handler.
@@ -51,24 +52,28 @@ public final class SQLExceptionHandler {
         if (insideException instanceof InsideDialectSQLException) {
             return SQLExceptionMapperFactory.getInstance(databaseType).convert((InsideDialectSQLException) insideException);
         }
+        return convert(insideException).orElseGet(() -> toSQLException(CommonErrorCode.UNKNOWN_EXCEPTION, insideException.getMessage()));
+    }
+    
+    private static Optional<SQLException> convert(final ShardingSphereInsideException insideException) {
         if (insideException instanceof CircuitBreakException) {
-            return toSQLException(CommonErrorCode.CIRCUIT_BREAK_MODE);
+            return Optional.of(toSQLException(CommonErrorCode.CIRCUIT_BREAK_MODE));
         }
         if (insideException instanceof ShardingSphereConfigurationException || insideException instanceof SQLParsingException) {
-            return toSQLException(CommonErrorCode.UNSUPPORTED_SQL, insideException.getMessage());
+            return Optional.of(toSQLException(CommonErrorCode.UNSUPPORTED_SQL, insideException.getMessage()));
         }
         if (insideException instanceof RuleNotExistedException || insideException instanceof ResourceNotExistedException) {
-            return toSQLException(CommonErrorCode.NOT_EXIST_RULE);
+            return Optional.of(toSQLException(CommonErrorCode.NOT_EXIST_RULE));
         }
         if (insideException instanceof TableLockWaitTimeoutException) {
             TableLockWaitTimeoutException exception = (TableLockWaitTimeoutException) insideException;
-            return toSQLException(CommonErrorCode.TABLE_LOCK_WAIT_TIMEOUT, exception.getTableName(), exception.getSchemaName(), exception.getTimeoutMilliseconds());
+            return Optional.of(toSQLException(CommonErrorCode.TABLE_LOCK_WAIT_TIMEOUT, exception.getTableName(), exception.getSchemaName(), exception.getTimeoutMilliseconds()));
         }
         if (insideException instanceof TableLockedException) {
             TableLockedException exception = (TableLockedException) insideException;
-            return toSQLException(CommonErrorCode.TABLE_LOCKED, exception.getTableName(), exception.getSchemaName());
+            return Optional.of(toSQLException(CommonErrorCode.TABLE_LOCKED, exception.getTableName(), exception.getSchemaName()));
         }
-        return toSQLException(CommonErrorCode.UNKNOWN_EXCEPTION, insideException.getMessage());
+        return Optional.empty();
     }
     
     private static SQLException toSQLException(final SQLErrorCode errorCode, final Object... messageArguments) {
