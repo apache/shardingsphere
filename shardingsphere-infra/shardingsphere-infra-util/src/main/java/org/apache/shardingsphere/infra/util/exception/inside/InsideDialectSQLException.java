@@ -15,20 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+package org.apache.shardingsphere.infra.util.exception.inside;
 
 /**
- * DB drop exists exception.
+ * Inside dialect SQL exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DBDropNotExistsException extends ShardingSphereInsideException {
+public abstract class InsideDialectSQLException extends ShardingSphereInsideException {
     
-    private static final long serialVersionUID = 6088272565526510361L;
-    
-    private final String databaseName;
+    private static final long serialVersionUID = -5090068160364259336L;
 }

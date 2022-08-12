@@ -15,24 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception;
+package org.apache.shardingsphere.infra.exception.dialect;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.inside.ShardingSphereInsideException;
+import org.apache.shardingsphere.infra.util.exception.inside.InsideDialectSQLException;
 
 /**
- * Table lock wait timeout exception.
+ * No such table exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class TableLockWaitTimeoutException extends ShardingSphereInsideException {
+public final class NoSuchTableException extends InsideDialectSQLException {
     
-    private static final long serialVersionUID = 2599713085782288003L;
-    
-    private final String schemaName;
+    private static final long serialVersionUID = 8311953084941769743L;
     
     private final String tableName;
-    
-    private final Long timeoutMilliseconds;
 }

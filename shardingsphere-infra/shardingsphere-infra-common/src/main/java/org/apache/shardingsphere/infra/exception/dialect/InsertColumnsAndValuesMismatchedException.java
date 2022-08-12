@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception;
+package org.apache.shardingsphere.infra.exception.dialect;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+import org.apache.shardingsphere.infra.util.exception.inside.InsideDialectSQLException;
 
 /**
- * Unknown database exception.
+ * Insert columns and values mismatched exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class UnknownDatabaseException extends ShardingSphereInsideException {
+public final class InsertColumnsAndValuesMismatchedException extends InsideDialectSQLException {
     
-    private static final long serialVersionUID = 6442120909016308638L;
+    private static final long serialVersionUID = 5676889868213244575L;
     
-    private final String databaseName;
+    private final int mismatchedRowNumber;
 }

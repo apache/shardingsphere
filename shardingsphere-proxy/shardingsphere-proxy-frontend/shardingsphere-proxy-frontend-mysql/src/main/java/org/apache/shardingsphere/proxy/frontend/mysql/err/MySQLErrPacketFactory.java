@@ -22,10 +22,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobNotFoundException;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.error.SQLExceptionHandler;
 import org.apache.shardingsphere.error.code.CommonErrorCode;
-import org.apache.shardingsphere.error.mapper.SQLExceptionMapperFactory;
 import org.apache.shardingsphere.error.mysql.code.MySQLServerErrorCode;
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+import org.apache.shardingsphere.infra.util.exception.inside.ShardingSphereInsideException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.CommonDistSQLErrorCode;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.CommonDistSQLException;
 import org.apache.shardingsphere.proxy.frontend.exception.FrontendTooManyConnectionsException;
@@ -54,7 +54,7 @@ public final class MySQLErrPacketFactory {
                     : new MySQLErrPacket(1, sqlException.getErrorCode(), sqlException.getSQLState(), sqlException.getMessage());
         }
         if (cause instanceof ShardingSphereInsideException) {
-            SQLException sqlException = SQLExceptionMapperFactory.getInstance("MySQL").convert((ShardingSphereInsideException) cause);
+            SQLException sqlException = SQLExceptionHandler.toSQLException("MySQL", (ShardingSphereInsideException) cause);
             return new MySQLErrPacket(1, sqlException.getErrorCode(), sqlException.getSQLState(), sqlException.getMessage());
         }
         if (cause instanceof CommonDistSQLException) {

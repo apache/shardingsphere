@@ -15,23 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception;
+package org.apache.shardingsphere.infra.util.exception.inside;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+import lombok.NoArgsConstructor;
 
 /**
- * No such table exception.
+ * ShardingSphere inside exception.
  */
-@Getter
-public final class NoSuchTableException extends ShardingSphereInsideException {
+@NoArgsConstructor
+public abstract class ShardingSphereInsideException extends RuntimeException {
     
-    private static final long serialVersionUID = 8311953084941769743L;
+    private static final long serialVersionUID = -8238061892944243621L;
     
-    private final String tableName;
+    public ShardingSphereInsideException(final String errorMessage, final Object... args) {
+        super(String.format(errorMessage, args));
+    }
     
-    public NoSuchTableException(final String tableName) {
-        super(String.format("Table '%s' doesn't exist", tableName));
-        this.tableName = tableName;
+    public ShardingSphereInsideException(final Exception cause) {
+        super(cause);
+    }
+    
+    public ShardingSphereInsideException(final String message, final Exception cause) {
+        super(message, cause);
     }
 }

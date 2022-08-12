@@ -15,14 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception;
+package org.apache.shardingsphere.infra.exception.dialect;
 
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.exception.inside.InsideDialectSQLException;
 
 /**
- * No database selected exception.
+ * Table modify in transaction exception.
  */
-public final class NoDatabaseSelectedException extends ShardingSphereInsideException {
+@RequiredArgsConstructor
+@Getter
+public final class TableModifyInTransactionException extends InsideDialectSQLException {
     
-    private static final long serialVersionUID = 7820981156141678308L;
+    private static final long serialVersionUID = 5676889868293244575L;
+    
+    private final String tableName;
 }

@@ -15,20 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception;
+package org.apache.shardingsphere.infra.exception.dialect;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+import org.apache.shardingsphere.infra.util.exception.inside.InsideDialectSQLException;
 
 /**
- * DB create exists exception.
+ * No database selected exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DBCreateExistsException extends ShardingSphereInsideException {
+public final class NoDatabaseSelectedException extends InsideDialectSQLException {
     
-    private static final long serialVersionUID = 779787160167652641L;
-    
-    private final String databaseName;
+    private static final long serialVersionUID = 7820981156141678308L;
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.error.mapper;
 
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+import org.apache.shardingsphere.infra.util.exception.inside.InsideDialectSQLException;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
@@ -30,10 +30,10 @@ import java.sql.SQLException;
 public interface SQLExceptionMapper extends TypedSPI {
     
     /**
-     * Convert ShardingSphere inside exception into SQLException.
+     * Convert dialect SQL exception into SQL exception.
      * 
-     * @param insideException ShardingSphere inside exception
+     * @param dialectSQLException dialect SQL exception
      * @return SQLException
      */
-    SQLException convert(ShardingSphereInsideException insideException);
+    SQLException convert(InsideDialectSQLException dialectSQLException);
 }

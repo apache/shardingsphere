@@ -15,23 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception;
+package org.apache.shardingsphere.infra.exception.dialect;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.exception.inside.InsideDialectSQLException;
 
 /**
- * Table exists exception.
+ * DB create exists exception.
  */
+@RequiredArgsConstructor
 @Getter
-public final class TableExistsException extends ShardingSphereInsideException {
+public final class DBCreateExistsException extends InsideDialectSQLException {
     
-    private static final long serialVersionUID = 6056681626545854214L;
+    private static final long serialVersionUID = 779787160167652641L;
     
-    private final String tableName;
-    
-    public TableExistsException(final String tableName) {
-        super(String.format("Table '%s' already exists.", tableName));
-        this.tableName = tableName;
-    }
+    private final String databaseName;
 }

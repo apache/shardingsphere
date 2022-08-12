@@ -15,23 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.exception.fixture;
+package org.apache.shardingsphere.infra.exception.dialect;
 
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.exception.inside.InsideDialectSQLException;
 
-public final class ShardingSphereInsideExceptionFixture extends ShardingSphereInsideException {
+/**
+ * Table exists exception.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class TableExistsException extends InsideDialectSQLException {
     
-    private static final long serialVersionUID = 3759417279204541147L;
+    private static final long serialVersionUID = 6056681626545854214L;
     
-    public ShardingSphereInsideExceptionFixture(final String message) {
-        super("Fixture error message: %s", message);
-    }
-    
-    public ShardingSphereInsideExceptionFixture(final String message, final Exception cause) {
-        super(message, cause);
-    }
-    
-    public ShardingSphereInsideExceptionFixture(final Exception cause) {
-        super(cause);
-    }
+    private final String tableName;
 }

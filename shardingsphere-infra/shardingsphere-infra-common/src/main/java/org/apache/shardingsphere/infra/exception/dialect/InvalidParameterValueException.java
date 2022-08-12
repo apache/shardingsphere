@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception;
+package org.apache.shardingsphere.infra.exception.dialect;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+import org.apache.shardingsphere.infra.util.exception.inside.InsideDialectSQLException;
 
 /**
  * Invalid parameter value exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class InvalidParameterValueException extends ShardingSphereInsideException {
+public final class InvalidParameterValueException extends InsideDialectSQLException {
     
     private static final long serialVersionUID = -6561119208409452172L;
     
