@@ -38,7 +38,7 @@ public interface PipelineJobItemAPI {
      *
      * @param jobId job id
      * @param shardingItem sharding item
-     * @return job item progress
+     * @return job item progress, may be null
      */
     PipelineJobItemProgress getJobItemProgress(String jobId, int shardingItem);
     

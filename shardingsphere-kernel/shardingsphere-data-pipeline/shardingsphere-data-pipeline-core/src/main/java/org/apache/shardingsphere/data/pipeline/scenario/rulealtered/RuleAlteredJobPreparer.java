@@ -93,7 +93,7 @@ public final class RuleAlteredJobPreparer {
             log.info("try lock success, jobId={}, shardingItem={}", jobConfig.getJobId(), jobItemContext.getShardingItem());
             try {
                 InventoryIncrementalJobItemProgress jobItemProgress = RuleAlteredJobAPIFactory.getInstance().getJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem());
-                boolean prepareFlag = JobStatus.PREPARING.equals(jobItemProgress.getStatus()) || JobStatus.RUNNING.equals(jobItemProgress.getStatus())
+                boolean prepareFlag = null == jobItemProgress || JobStatus.PREPARING.equals(jobItemProgress.getStatus()) || JobStatus.RUNNING.equals(jobItemProgress.getStatus())
                         || JobStatus.PREPARING_FAILURE.equals(jobItemProgress.getStatus());
                 if (prepareFlag) {
                     log.info("execute prepare, jobId={}, shardingItem={}", jobConfig.getJobId(), jobItemContext.getShardingItem());
@@ -159,8 +159,8 @@ public final class RuleAlteredJobPreparer {
         ExecuteEngine incrementalDumperExecuteEngine = jobItemContext.getJobProcessContext().getIncrementalDumperExecuteEngine();
         TaskConfiguration taskConfig = jobItemContext.getTaskConfig();
         PipelineDataSourceManager dataSourceManager = jobItemContext.getDataSourceManager();
-        JobItemIncrementalTasksProgress incrementalTasksProgress = jobItemContext.getInitProgress() == null ? null : jobItemContext.getInitProgress().getIncremental();
-        taskConfig.getDumperConfig().setPosition(PipelineJobPreparerUtils.getIncrementalPosition(incrementalTasksProgress, taskConfig.getDumperConfig(), dataSourceManager));
+        JobItemIncrementalTasksProgress initIncremental = jobItemContext.getInitProgress() == null ? null : jobItemContext.getInitProgress().getIncremental();
+        taskConfig.getDumperConfig().setPosition(PipelineJobPreparerUtils.getIncrementalPosition(initIncremental, taskConfig.getDumperConfig(), dataSourceManager));
         PipelineTableMetaDataLoader sourceMetaDataLoader = jobItemContext.getSourceMetaDataLoader();
         DefaultPipelineJobProgressListener jobProgressListener = new DefaultPipelineJobProgressListener(jobItemContext.getJobId(), jobItemContext.getShardingItem());
         IncrementalTask incrementalTask = new IncrementalTask(taskConfig.getImporterConfig().getConcurrency(),

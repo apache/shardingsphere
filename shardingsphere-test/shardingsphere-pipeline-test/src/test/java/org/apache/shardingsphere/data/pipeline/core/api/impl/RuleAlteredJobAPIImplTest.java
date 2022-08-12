@@ -55,6 +55,7 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -259,7 +260,8 @@ public final class RuleAlteredJobAPIImplTest {
         RuleAlteredJobContext jobItemContext = new RuleAlteredJobContext(jobConfig, 0, new InventoryIncrementalJobItemProgress(), new PipelineDataSourceManager());
         ruleAlteredJobAPI.persistJobItemProgress(jobItemContext);
         ruleAlteredJobAPI.updateJobItemStatus(jobConfig.getJobId(), 0, JobStatus.FINISHED);
-        InventoryIncrementalJobItemProgress jobProgress = ruleAlteredJobAPI.getJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem());
-        assertThat(jobProgress.getStatus(), is(JobStatus.FINISHED));
+        InventoryIncrementalJobItemProgress actual = ruleAlteredJobAPI.getJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem());
+        assertNotNull(actual);
+        assertThat(actual.getStatus(), is(JobStatus.FINISHED));
     }
 }
