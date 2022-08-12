@@ -281,4 +281,7 @@
             </limit>
         </select>
     </describe>
+    
+    <describe sql-case-id="explain_create_materialized_view_with_data"/>
+    <describe sql-case-id="explain_create_materialized_view_with_no_data"/>
 </sql-parser-test-cases>

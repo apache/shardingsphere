@@ -973,7 +973,7 @@ createMaterializedView
     ;
 
 createMvTarget
-    : qualifiedName optColumnList? tableAccessMethodClause (WITH reloptions)? (TABLESPACE name)?
+    : qualifiedName optColumnList? tableAccessMethodClause? (WITH reloptions)? (TABLESPACE name)?
     ;
 
 alterPolicy
