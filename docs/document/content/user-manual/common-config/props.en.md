@@ -1,6 +1,6 @@
 +++
 title = "Properties Configuration"
-weight = 6
+weight = 1
 chapter = true
 +++
 

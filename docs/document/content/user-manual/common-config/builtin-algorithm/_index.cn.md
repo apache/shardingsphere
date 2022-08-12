@@ -1,6 +1,6 @@
 +++
 title = "内置算法"
-weight = 7
+weight = 2
 chapter = true
 +++
 
