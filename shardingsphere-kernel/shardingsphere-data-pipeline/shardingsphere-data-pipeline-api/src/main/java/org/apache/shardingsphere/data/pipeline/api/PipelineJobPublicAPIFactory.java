@@ -34,7 +34,7 @@ public final class PipelineJobPublicAPIFactory {
      *
      * @return got instance
      */
-    public static MigrationJobPublicAPI getInstance() {
+    public static MigrationJobPublicAPI getMigrationJobPublicAPI() {
         return RequiredSPIRegistry.getRegisteredService(MigrationJobPublicAPI.class);
     }
 }

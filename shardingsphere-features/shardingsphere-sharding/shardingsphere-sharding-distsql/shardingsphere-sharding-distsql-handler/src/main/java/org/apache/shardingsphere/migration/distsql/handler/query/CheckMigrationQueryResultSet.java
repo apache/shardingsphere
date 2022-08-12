@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
  */
 public final class CheckMigrationQueryResultSet implements DatabaseDistSQLResultSet {
     
-    private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getInstance();
+    private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
     
     private Iterator<Collection<Object>> data;
     

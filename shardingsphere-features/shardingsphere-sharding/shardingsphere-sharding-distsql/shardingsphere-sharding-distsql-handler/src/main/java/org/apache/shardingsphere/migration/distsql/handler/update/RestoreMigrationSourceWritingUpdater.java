@@ -27,7 +27,7 @@ import org.apache.shardingsphere.migration.distsql.statement.RestoreMigrationSou
  */
 public final class RestoreMigrationSourceWritingUpdater implements RALUpdater<RestoreMigrationSourceWritingStatement> {
     
-    private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getInstance();
+    private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
     
     @Override
     public void executeUpdate(final RestoreMigrationSourceWritingStatement sqlStatement) {

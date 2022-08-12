@@ -27,7 +27,7 @@ import org.apache.shardingsphere.migration.distsql.statement.ResetMigrationState
  */
 public final class ResetMigrationUpdater implements RALUpdater<ResetMigrationStatement> {
     
-    private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getInstance();
+    private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
     
     @Override
     public void executeUpdate(final ResetMigrationStatement sqlStatement) {
