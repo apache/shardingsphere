@@ -153,8 +153,7 @@ public final class RALBackendHandlerFactory {
             return new UpdatableMigrationRALBackendHandler((UpdatableScalingRALStatement) sqlStatement);
         }
         if (sqlStatement instanceof QueryableGlobalRuleRALStatement) {
-            DistSQLResultSet resultSet = QueryableGlobalRuleRALBackendHandlerFactory.newInstance((QueryableGlobalRuleRALStatement) sqlStatement);
-            return new QueryableGlobalRuleRALBackendHandler(sqlStatement, (GlobalRuleDistSQLResultSet) resultSet);
+            return QueryableGlobalRuleRALBackendHandlerFactory.newInstance((QueryableGlobalRuleRALStatement) sqlStatement);
         }
         return createRALBackendHandler(sqlStatement, connectionSession);
     }

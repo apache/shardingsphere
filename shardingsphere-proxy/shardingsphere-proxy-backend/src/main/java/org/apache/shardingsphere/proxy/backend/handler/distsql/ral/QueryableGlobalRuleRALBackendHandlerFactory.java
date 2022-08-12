@@ -21,8 +21,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableGlobalRuleRALStatement;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
+import org.apache.shardingsphere.infra.distsql.query.GlobalRuleDistSQLResultSet;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 
 import java.util.Properties;
 
@@ -42,7 +44,8 @@ public final class QueryableGlobalRuleRALBackendHandlerFactory {
      * @param sqlStatement queryable RAL statement for global rule
      * @return created instance
      */
-    public static DistSQLResultSet newInstance(final QueryableGlobalRuleRALStatement sqlStatement) {
-        return TypedSPIRegistry.getRegisteredService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName(), new Properties());
+    public static ProxyBackendHandler newInstance(final QueryableGlobalRuleRALStatement sqlStatement) {
+        DistSQLResultSet resultSet = TypedSPIRegistry.getRegisteredService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName(), new Properties());
+        return new QueryableGlobalRuleRALBackendHandler(sqlStatement, (GlobalRuleDistSQLResultSet) resultSet);
     }
 }
