@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.api.job;
 
 /**
- * Job id.
+ * Pipeline job id.
  */
 public interface PipelineJobId {
     

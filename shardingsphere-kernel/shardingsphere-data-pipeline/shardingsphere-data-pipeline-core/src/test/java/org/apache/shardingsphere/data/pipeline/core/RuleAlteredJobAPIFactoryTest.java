@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api;
+package org.apache.shardingsphere.data.pipeline.core;
 
-import org.apache.shardingsphere.data.pipeline.api.fixture.RuleAlteredJobAPIFixture;
+import org.apache.shardingsphere.data.pipeline.core.api.RuleAlteredJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.core.fixture.RuleAlteredJobAPIFixture;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;

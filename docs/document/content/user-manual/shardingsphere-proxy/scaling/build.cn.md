@@ -18,7 +18,7 @@ mvn clean install -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Drat.skip=tr
 
 或者通过[下载页面]( https://shardingsphere.apache.org/document/current/cn/downloads/ )获取安装包。
 
-> Scaling还是实验性质的功能，建议使用master分支最新版本，点击此处[下载每日构建版本]( https://github.com/apache/shardingsphere#nightly-builds )
+> Scaling 还是实验性质的功能，建议使用 master 分支最新版本，点击此处[下载每日构建版本]( https://github.com/apache/shardingsphere#nightly-builds )
 
 2. 解压缩 proxy 发布包，修改配置文件 `conf/config-sharding.yaml`。详情请参见 [proxy 启动手册](/cn/user-manual/shardingsphere-proxy/startup/bin/)。
 
@@ -152,9 +152,9 @@ OUTPUT(
   WORKER_THREAD=40,
   BATCH_SIZE=1000
 ),
-STREAM_CHANNEL(TYPE(NAME=MEMORY, PROPERTIES("block-queue-size"=10000))),
-COMPLETION_DETECTOR(TYPE(NAME=IDLE, PROPERTIES("incremental-task-idle-seconds-threshold"=1800))),
-DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH, PROPERTIES("chunk-size"=1000)))
+STREAM_CHANNEL(TYPE(NAME="MEMORY", PROPERTIES("block-queue-size"="10000"))),
+COMPLETION_DETECTOR(TYPE(NAME="IDLE", PROPERTIES("incremental-task-idle-seconds-threshold"="1800"))),
+DATA_CONSISTENCY_CHECKER(TYPE(NAME="DATA_MATCH", PROPERTIES("chunk-size"="1000")))
 );
 ```
 
@@ -169,8 +169,8 @@ OUTPUT(
   WORKER_THREAD=40,
   BATCH_SIZE=1000
 ),
-STREAM_CHANNEL(TYPE(NAME=MEMORY, PROPERTIES("block-queue-size"=10000))),
-DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH, PROPERTIES("chunk-size"=1000)))
+STREAM_CHANNEL(TYPE(NAME="MEMORY", PROPERTIES("block-queue-size"="10000"))),
+DATA_CONSISTENCY_CHECKER(TYPE(NAME="DATA_MATCH", PROPERTIES("chunk-size"="1000")))
 );
 ```
 

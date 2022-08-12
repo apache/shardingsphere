@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.api.fixture.RuleAlteredJobAPIFixture
+org.apache.shardingsphere.data.pipeline.core.api.impl.RuleAlteredJobAPIImpl
