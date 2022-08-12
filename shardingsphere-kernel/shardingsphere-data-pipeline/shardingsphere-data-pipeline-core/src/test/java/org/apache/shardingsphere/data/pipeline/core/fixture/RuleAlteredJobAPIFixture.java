@@ -42,7 +42,7 @@ public final class RuleAlteredJobAPIFixture implements RuleAlteredJobAPI {
     }
     
     @Override
-    public void extendJobConfiguration(final YamlPipelineJobConfiguration yamlJobConfig) {
+    public void extendYamlJobConfiguration(final YamlPipelineJobConfiguration yamlJobConfig) {
     }
     
     @Override
@@ -141,7 +141,7 @@ public final class RuleAlteredJobAPIFixture implements RuleAlteredJobAPI {
     }
     
     @Override
-    public RuleAlteredJobConfiguration getJobConfig(final String jobId) {
+    public RuleAlteredJobConfiguration getJobConfiguration(final String jobId) {
         return null;
     }
     

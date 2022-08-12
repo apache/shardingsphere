@@ -33,6 +33,9 @@ import java.util.Optional;
 @SingletonSPI
 public interface RuleAlteredJobAPI extends PipelineJobAPI, MigrationJobPublicAPI, RequiredSPI {
     
+    @Override
+    RuleAlteredJobConfiguration getJobConfiguration(String jobId);
+    
     /**
      * Start scaling job by config.
      *
@@ -97,7 +100,4 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, MigrationJobPublicAPI
      * @param jobConfig job configuration
      */
     void switchClusterConfiguration(RuleAlteredJobConfiguration jobConfig);
-    
-    @Override
-    RuleAlteredJobConfiguration getJobConfig(String jobId);
 }

@@ -39,11 +39,11 @@ public interface PipelineJobAPI extends PipelineJobPublicAPI, PipelineJobItemAPI
     String marshalJobId(PipelineJobId pipelineJobId);
     
     /**
-     * Extend job configuration.
+     * Extend YAML job configuration.
      *
-     * @param yamlJobConfig yaml job configuration
+     * @param yamlJobConfig YAML job configuration
      */
-    void extendJobConfiguration(YamlPipelineJobConfiguration yamlJobConfig);
+    void extendYamlJobConfiguration(YamlPipelineJobConfiguration yamlJobConfig);
     
     /**
      * Get job configuration.
@@ -51,6 +51,5 @@ public interface PipelineJobAPI extends PipelineJobPublicAPI, PipelineJobItemAPI
      * @param jobId job id
      * @return job configuration
      */
-    // TODO rename
-    PipelineJobConfiguration getJobConfig(String jobId);
+    PipelineJobConfiguration getJobConfiguration(String jobId);
 }

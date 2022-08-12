@@ -131,7 +131,7 @@ public final class RuleAlteredJobAPIImplTest {
     public void assertDataConsistencyCheck() {
         Optional<String> jobId = ruleAlteredJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
-        RuleAlteredJobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
+        RuleAlteredJobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfiguration(jobId.get());
         if (null == jobConfig.getSource()) {
             log.error("source is null, jobConfig={}", YamlEngine.marshal(jobConfig));
         }
@@ -146,7 +146,7 @@ public final class RuleAlteredJobAPIImplTest {
     public void assertDataConsistencyCheckWithAlgorithm() {
         Optional<String> jobId = ruleAlteredJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
-        RuleAlteredJobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
+        RuleAlteredJobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfiguration(jobId.get());
         initTableData(jobConfig);
         ruleAlteredJobAPI.stopClusterWriteDB(jobConfig);
         Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobId.get(), "FIXTURE", null);
@@ -228,7 +228,7 @@ public final class RuleAlteredJobAPIImplTest {
     public void assertResetTargetTable() {
         Optional<String> jobId = ruleAlteredJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
-        RuleAlteredJobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
+        RuleAlteredJobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfiguration(jobId.get());
         initTableData(jobConfig);
         ruleAlteredJobAPI.stop(jobId.get());
         ruleAlteredJobAPI.reset(jobId.get());
