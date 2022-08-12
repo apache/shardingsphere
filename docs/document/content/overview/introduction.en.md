@@ -22,11 +22,8 @@ You are welcome to check out the mailing list and discuss via [mail](mailto:dev@
 
 ### ShardingSphere-JDBC
 
-As the community's first product and the predecessor of Apache ShardingSphere, ShardingSphere-JDBC is a lightweight Java framework that provides additional services at Java's JDBC layer. With the client connecting directly to the database, it provides services in the form of jar and requires no extra deployment and dependence. It can be considered as an enhanced version of the JDBC driver, which is fully compatible with JDBC and all kinds of ORM frameworks.
-
-- Applicable in any ORM framework based on JDBC, such as JPA, Hibernate, Mybatis, Spring JDBC Template, or direct use of JDBC;
-- Support any third-party database connection pool, such as DBCP, C3P0, BoneCP, HikariCP;
-- Support any kind of JDBC standard database: MySQL, PostgreSQL, Oracle, SQLServer and any JDBC adapted databases.
+As the community's first product and the predecessor of Apache ShardingSphere, ShardingSphere-JDBC is a lightweight Java framework that provides additional services at Java's JDBC layer.
+With the client connecting directly to the database, it provides services in the form of jar and requires no extra deployment and dependence. It can be considered as an enhanced version of the JDBC driver, which is fully compatible with JDBC and all kinds of ORM frameworks.
 
 ShardingSphere-JDBC is suitable for java applications.
 
@@ -38,21 +35,7 @@ It is a transparent database proxy, providing a database server that encapsulate
 Currently, MySQL and PostgreSQL (compatible with PostgreSQL-based databases, such as openGauss) versions are provided.
 It can use any kind of terminal (such as MySQL Command Client, MySQL Workbench, etc.) that is compatible with MySQL or PostgreSQL protocol to operate data, which is more friendly to DBAs.
 
-- Transparent to applications, it can be used directly as MySQL/PostgreSQL;
-- Applicable to any kind of client that is compatible with MySQL/PostgreSQL protocol.
-
 The advantages of ShardingSphere-Proxy lie in supporting heterogeneous languages and providing operational entries for DBA.
-
-### Comparison
-
-|                        | ShardingSphere-JDBC | ShardingSphere-Proxy |
-| ---------------------- | ------------------- | -------------------- |
-| Database               | Any                 | MySQL/PostgreSQL     |
-| Connections Count Cost | More                | Less                 |
-| Heterogeneous language | Java Only           | Any                  |
-| Performance            | Low loss            | Relatively High loss |
-| Decentralization       | Yes                 | No                   |
-| Static entry           | No                  | Yes                  |
 
 ## Positioning
 
