@@ -52,9 +52,11 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetVaria
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.UnlabelInstanceStatement;
 import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.distsql.query.GlobalRuleDistSQLResultSet;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.HintRALBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.query.QueryableMigrationRALBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.query.QueryableMigrationRALBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.update.UpdatableMigrationRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ConvertYamlConfigurationHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ExportDatabaseConfigurationHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowAllVariableHandler;
@@ -68,9 +70,6 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.Sho
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowTrafficRulesHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowTransactionRuleHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowVariableHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.query.QueryableMigrationRALBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.query.QueryableMigrationRALBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.update.UpdatableMigrationRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.AlterSQLParserRuleHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.AlterTrafficRuleHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.AlterTransactionRuleHandler;
