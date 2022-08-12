@@ -101,7 +101,7 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.LOCAL));
         JDBCBackendStatement backendStatement = new JDBCBackendStatement();
-        backendStatement.setDatabaseName(connectionSession.getDatabaseName());
+        backendStatement.setDatabaseType(connectionSession.getDatabaseType());
         when(connectionSession.getStatementManager()).thenReturn(backendStatement);
         when(connectionSession.getRequiredSessionVariableRecorder()).thenReturn(new RequiredSessionVariableRecorder());
     }
