@@ -27,17 +27,17 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum CommonErrorCode implements SQLErrorCode {
     
-    CIRCUIT_BREAK_MODE(1000, "C1000", "Circuit break mode is ON."),
+    CIRCUIT_BREAK_MODE(1000, "C1000", "Circuit break mode is ON"),
     
-    SCALING_JOB_NOT_EXIST(1201, "C1201", "Scaling job %s does not exist."),
+    SCALING_JOB_NOT_EXIST(1201, "C1201", "Scaling job `%s` does not exist"),
     
-    SCALING_OPERATE_FAILED(1209, "C1209", "Scaling Operate Failed: [%s]"),
+    SCALING_OPERATE_FAILED(1209, "C1209", "Scaling Operate Failed: `%s`"),
     
-    DATABASE_WRITE_LOCKED(1300, "C1300", "The database %s is read-only"),
+    DATABASE_WRITE_LOCKED(1300, "C1300", "The database `%s` is read-only"),
     
-    TABLE_LOCK_WAIT_TIMEOUT(1301, "C1301", "The table %s of schema %s lock wait timeout of %s ms exceeded"),
+    TABLE_LOCK_WAIT_TIMEOUT(1301, "C1301", "The table `%s` of schema `%s` lock wait timeout of %s ms exceeded"),
     
-    TABLE_LOCKED(1302, "C1302", "The table %s of schema %s is locked"),
+    TABLE_LOCKED(1302, "C1302", "The table `%s` of schema `%s` is locked"),
     
     TOO_MANY_CONNECTIONS(1040, "08004", "Too many connections"),
     
@@ -45,11 +45,9 @@ public enum CommonErrorCode implements SQLErrorCode {
     
     UNSUPPORTED_SQL(1235, "42000", "Unsupported SQL: %s"),
     
-    UNSUPPORTED_COMMAND(1998, "C1998", "Unsupported command: [%s]"),
+    UNSUPPORTED_COMMAND(1998, "C1998", "Unsupported command: %s"),
     
-    RUNTIME_EXCEPTION(1997, "C1997", "Runtime exception: [%s]"),
-    
-    UNKNOWN_EXCEPTION(1999, "C1999", "Unknown exception: [%s]");
+    UNKNOWN_EXCEPTION(1999, "C1999", "Unknown exception: %s");
     
     private final int errorCode;
     

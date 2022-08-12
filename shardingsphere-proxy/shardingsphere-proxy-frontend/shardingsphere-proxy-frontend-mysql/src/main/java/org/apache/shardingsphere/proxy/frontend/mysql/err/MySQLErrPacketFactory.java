@@ -76,9 +76,6 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof UnsupportedCharsetException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_UNKNOWN_CHARACTER_SET, cause.getMessage());
         }
-        if (cause instanceof RuntimeException) {
-            return new MySQLErrPacket(1, CommonErrorCode.RUNTIME_EXCEPTION, cause.getMessage());
-        }
         return new MySQLErrPacket(1, CommonErrorCode.UNKNOWN_EXCEPTION, cause.getMessage());
     }
     
