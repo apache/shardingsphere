@@ -45,19 +45,16 @@ public final class ShardingSphereProxyClusterContainer extends DockerITContainer
     
     private final String scenario;
     
-    private final AdaptorContainerConfiguration adaptorContainerConfiguration;
-    
-    private final StorageContainer storageContainer;
+    private final AdaptorContainerConfiguration config;
     
     private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
     
     public ShardingSphereProxyClusterContainer(final DatabaseType databaseType, final String scenario, final StorageContainer storageContainer,
-                                               final AdaptorContainerConfiguration adaptorContainerConfiguration) {
+                                               final AdaptorContainerConfiguration config) {
         super("ShardingSphere-Proxy", "apache/shardingsphere-proxy-test");
         this.databaseType = databaseType;
         this.scenario = scenario;
-        this.adaptorContainerConfiguration = adaptorContainerConfiguration;
-        this.storageContainer = storageContainer;
+        this.config = config;
     }
     
     /**
@@ -75,14 +72,13 @@ public final class ShardingSphereProxyClusterContainer extends DockerITContainer
     @Override
     protected void configure() {
         withExposedPorts(3307);
-        mapConfigurationFiles();
-        // TODO in suite, dataSourceName should be scenario
+        mountConfigurationFiles();
         setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType,
-                getHost(), getMappedPort(3307), adaptorContainerConfiguration.getWaitStrategyInfo().get("dataSourceName")), "proxy", "Proxy@123")));
+                getHost(), getMappedPort(3307), config.getWaitStrategyInfo().get("dataSourceName")), "proxy", "Proxy@123")));
     }
     
-    private void mapConfigurationFiles() {
-        adaptorContainerConfiguration.getResourceMappings(scenario, databaseType).forEach((key, value) -> withClasspathResourceMapping(key, value, BindMode.READ_ONLY));
+    private void mountConfigurationFiles() {
+        config.getResourceMappings(scenario, databaseType).forEach((key, value) -> withClasspathResourceMapping(key, value, BindMode.READ_ONLY));
     }
     
     @Override

@@ -29,7 +29,7 @@ public interface AdaptorContainerConfiguration {
     /**
      * Get wait strategy info.
      * 
-     * @return waitStrategy
+     * @return wait strategy info
      */
     Map<String, String> getWaitStrategyInfo();
     

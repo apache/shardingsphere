@@ -43,7 +43,7 @@ public final class ScalingProxyClusterContainerConfiguration implements AdaptorC
     
     @Override
     public Map<String, String> getResourceMappings(final String scenario, final DatabaseType databaseType) {
-        Map<String, String> result = new HashMap<>(4);
+        Map<String, String> result = new HashMap<>(2, 1);
         result.put("/env/logback.xml", "/opt/shardingsphere-proxy/conf/logback.xml");
         if (DatabaseTypeUtil.isMySQL(databaseType)) {
             String majorVersion = DatabaseTypeUtil.parseMajorVersion(dockerImageName);
