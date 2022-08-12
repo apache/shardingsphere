@@ -44,6 +44,8 @@ import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.ex
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.expression.impl.LiteralExpressionConverter;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.expression.impl.ParameterMarkerExpressionConverter;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.expression.impl.SubqueryExpressionConverter;
+import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.projection.impl.AggregationProjectionConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
@@ -56,6 +58,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 
 import java.util.Optional;
 
@@ -92,6 +95,8 @@ public final class ExpressionConverter implements SQLSegmentConverter<Expression
             return new ParameterMarkerExpressionConverter().convertToSQLNode((ParameterMarkerExpressionSegment) segment).map(optional -> optional);
         } else if (segment instanceof FunctionSegment) {
             return new FunctionConverter().convertToSQLNode((FunctionSegment) segment).map(optional -> optional);
+        } else if (segment instanceof AggregationProjectionSegment) {
+            return new AggregationProjectionConverter().convertToSQLNode((AggregationProjectionSegment) segment).map(optional -> optional);
         }
         throw new UnsupportedOperationException("unsupported TableSegment type: " + segment.getClass());
     }
@@ -141,6 +146,9 @@ public final class ExpressionConverter implements SQLSegmentConverter<Expression
         }
         if (operator instanceof SqlBinaryOperator || operator instanceof SqlLikeOperator) {
             return new BinaryOperationExpressionConverter().convertToSQLSegment(sqlBasicCall).map(optional -> optional);
+        }
+        if (AggregationType.isAggregationType(operator.getName())) {
+            return new AggregationProjectionConverter().convertToSQLSegment(sqlBasicCall).map(optional -> optional);
         }
         if (operator instanceof SqlPositionFunction || operator instanceof SqlCastFunction || operator instanceof SqlUnresolvedFunction) {
             return new FunctionConverter().convertToSQLSegment(sqlBasicCall).map(optional -> optional);
