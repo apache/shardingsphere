@@ -43,7 +43,7 @@ public enum CommonErrorCode implements SQLErrorCode {
     
     RESOURCE_OR_RULE_NOT_EXIST(1305, "42000", "Data source or rule does not exist"),
     
-    UNSUPPORTED_SQL(1235, "42000", "This version of ShardingSphere-Proxy doesn't yet support this SQL. '%s'"),
+    UNSUPPORTED_SQL(1235, "42000", "Unsupported SQL: %s"),
     
     UNSUPPORTED_COMMAND(1998, "C1998", "Unsupported command: [%s]"),
     
