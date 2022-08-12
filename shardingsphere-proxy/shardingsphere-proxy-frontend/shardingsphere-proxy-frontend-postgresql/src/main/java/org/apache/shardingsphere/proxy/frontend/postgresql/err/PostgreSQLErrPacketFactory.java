@@ -50,7 +50,7 @@ public final class PostgreSQLErrPacketFactory {
             return createErrorResponsePacket(((PSQLException) cause).getServerErrorMessage());
         }
         if (cause instanceof ShardingSphereInsideException) {
-            return createErrorResponsePacket(SQLExceptionHandler.toSQLException("PostgreSQL", (ShardingSphereInsideException) cause));
+            return createErrorResponsePacket(SQLExceptionHandler.convert("PostgreSQL", (ShardingSphereInsideException) cause));
         }
         if (cause instanceof SQLException) {
             return createErrorResponsePacket((SQLException) cause);

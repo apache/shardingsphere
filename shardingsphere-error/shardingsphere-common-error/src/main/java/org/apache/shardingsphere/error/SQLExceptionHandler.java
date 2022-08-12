@@ -41,13 +41,13 @@ import java.sql.SQLException;
 public final class SQLExceptionHandler {
     
     /**
-     * To SQL exception.
+     * Convert to SQL exception.
      * 
      * @param databaseType database type
      * @param insideException inside exception
      * @return SQL exception
      */
-    public static SQLException toSQLException(final String databaseType, final ShardingSphereInsideException insideException) {
+    public static SQLException convert(final String databaseType, final ShardingSphereInsideException insideException) {
         if (insideException instanceof InsideDialectSQLException) {
             return SQLExceptionMapperFactory.getInstance(databaseType).convert((InsideDialectSQLException) insideException);
         }

@@ -76,7 +76,7 @@ public final class OpenGaussErrorPacketFactory {
             return createErrorResponsePacket((SQLException) cause);
         }
         if (cause instanceof ShardingSphereInsideException) {
-            return createErrorResponsePacket(SQLExceptionHandler.toSQLException("PostgreSQL", (ShardingSphereInsideException) cause));
+            return createErrorResponsePacket(SQLExceptionHandler.convert("PostgreSQL", (ShardingSphereInsideException) cause));
         }
         if (cause instanceof InvalidAuthorizationSpecificationException) {
             return new OpenGaussErrorResponsePacket(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION.getErrorCode(), cause.getMessage());

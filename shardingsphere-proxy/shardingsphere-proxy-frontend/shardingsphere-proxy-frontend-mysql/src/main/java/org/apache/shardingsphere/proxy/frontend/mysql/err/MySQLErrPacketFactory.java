@@ -54,7 +54,7 @@ public final class MySQLErrPacketFactory {
                     : new MySQLErrPacket(1, sqlException.getErrorCode(), sqlException.getSQLState(), sqlException.getMessage());
         }
         if (cause instanceof ShardingSphereInsideException) {
-            SQLException sqlException = SQLExceptionHandler.toSQLException("MySQL", (ShardingSphereInsideException) cause);
+            SQLException sqlException = SQLExceptionHandler.convert("MySQL", (ShardingSphereInsideException) cause);
             return new MySQLErrPacket(1, sqlException.getErrorCode(), sqlException.getSQLState(), sqlException.getMessage());
         }
         if (cause instanceof CommonDistSQLException) {
