@@ -49,6 +49,8 @@ public final class XAShardingSphereTransactionManagerTest {
     
     private final XAShardingSphereTransactionManager xaTransactionManager = new XAShardingSphereTransactionManager();
     
+    private final String databaseName = "sharding_db";
+    
     @Before
     public void setUp() {
         Collection<ResourceDataSource> resourceDataSources = createResourceDataSources(DatabaseTypeFactory.getInstance("H2"));
@@ -82,9 +84,9 @@ public final class XAShardingSphereTransactionManagerTest {
     @Test
     public void assertGetConnection() throws SQLException {
         xaTransactionManager.begin();
-        Connection actual1 = xaTransactionManager.getConnection("ds1");
-        Connection actual2 = xaTransactionManager.getConnection("ds2");
-        Connection actual3 = xaTransactionManager.getConnection("ds3");
+        Connection actual1 = xaTransactionManager.getConnection(databaseName, "ds1");
+        Connection actual2 = xaTransactionManager.getConnection(databaseName, "ds2");
+        Connection actual3 = xaTransactionManager.getConnection(databaseName, "ds3");
         assertThat(actual1, instanceOf(Connection.class));
         assertThat(actual2, instanceOf(Connection.class));
         assertThat(actual3, instanceOf(Connection.class));
@@ -96,7 +98,7 @@ public final class XAShardingSphereTransactionManagerTest {
         ThreadLocal<Map<Transaction, Connection>> transactions = getEnlistedTransactions(getCachedDataSources().get("ds1"));
         xaTransactionManager.begin();
         assertTrue(transactions.get().isEmpty());
-        xaTransactionManager.getConnection("ds1");
+        xaTransactionManager.getConnection(databaseName, "ds1");
         assertThat(transactions.get().size(), is(1));
         executeNestedTransaction(transactions);
         assertThat(transactions.get().size(), is(1));
@@ -106,7 +108,7 @@ public final class XAShardingSphereTransactionManagerTest {
     
     private void executeNestedTransaction(final ThreadLocal<Map<Transaction, Connection>> transactions) throws SQLException {
         xaTransactionManager.begin();
-        xaTransactionManager.getConnection("ds1");
+        xaTransactionManager.getConnection(databaseName, "ds1");
         assertThat(transactions.get().size(), is(2));
         xaTransactionManager.commit(false);
         assertThat(transactions.get().size(), is(1));
