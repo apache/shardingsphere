@@ -16,21 +16,17 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-sql-translator</artifactId>
-        <version>5.1.3-SNAPSHOT</version>
-    </parent>
-    <artifactId>shardingsphere-sql-translator-spring</artifactId>
-    <packaging>pom</packaging>
-    <name>${project.artifactId}</name>
+<xsd:schema xmlns="http://shardingsphere.apache.org/schema/shardingsphere/sql-translator"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://shardingsphere.apache.org/schema/shardingsphere/sql-translator"
+            elementFormDefault="qualified">
+    <xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd" />
     
-    <modules>
-        <module>shardingsphere-sql-translator-spring-boot-starter</module>
-        <module>shardingsphere-sql-translator-spring-namespace</module>
-    </modules>
-    
-</project>
+    <xsd:element name="rule">
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="type" type="xsd:string" use="required" />
+            <xsd:attribute name="use-original-sql-when-translating-failed" type="xsd:boolean" default="true" />
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>

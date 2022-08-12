@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -16,21 +16,18 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-sql-translator</artifactId>
-        <version>5.1.3-SNAPSHOT</version>
-    </parent>
-    <artifactId>shardingsphere-sql-translator-spring</artifactId>
-    <packaging>pom</packaging>
-    <name>${project.artifactId}</name>
+<configuration>
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="org.apache.shardingsphere" level="warn" additivity="false">
+        <appender-ref ref="console" />
+    </logger>
     
-    <modules>
-        <module>shardingsphere-sql-translator-spring-boot-starter</module>
-        <module>shardingsphere-sql-translator-spring-namespace</module>
-    </modules>
-    
-</project>
+    <root>
+        <level value="error" />
+        <appender-ref ref="console" />
+    </root>
+</configuration> 
