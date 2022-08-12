@@ -53,10 +53,10 @@ public final class PostgresSQLAutoCommitTestCase extends BaseTransactionTestCase
     private void assertAutoCommit() throws SQLException {
         Connection conn1 = getDataSource().getConnection();
         Connection conn2 = getDataSource().getConnection();
-        executeWithLog(conn1, "set transaction isolation level read committed;");
-        executeWithLog(conn2, "set transaction isolation level read committed;");
         executeWithLog(conn1, "begin;");
+        executeWithLog(conn1, "set transaction isolation level read committed;");
         executeWithLog(conn2, "begin;");
+        executeWithLog(conn2, "set transaction isolation level read committed;");
         executeWithLog(conn1, "insert into account(id, balance, transaction_id) values(1, 100, 1)");
         ResultSet emptyResultSet = executeQueryWithLog(conn2, "select * from account;");
         if (emptyResultSet.next()) {
@@ -68,5 +68,6 @@ public final class PostgresSQLAutoCommitTestCase extends BaseTransactionTestCase
         if (!notEmptyResultSet.next()) {
             fail("There should be result.");
         }
+        executeWithLog(conn2, "commit;");
     }
 }
