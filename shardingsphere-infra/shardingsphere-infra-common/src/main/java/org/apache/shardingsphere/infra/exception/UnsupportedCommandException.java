@@ -15,17 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.exception;
+package org.apache.shardingsphere.infra.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.exception.inside.ShardingSphereInsideException;
 
 /**
  * Unsupported command exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class UnsupportedCommandException extends FrontendException {
+public final class UnsupportedCommandException extends ShardingSphereInsideException {
     
     private static final long serialVersionUID = 8010680371699936338L;
     

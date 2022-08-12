@@ -19,8 +19,8 @@ package org.apache.shardingsphere.error;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.error.code.StandardSQLErrorCode;
 import org.apache.shardingsphere.error.code.SQLErrorCode;
+import org.apache.shardingsphere.error.code.StandardSQLErrorCode;
 import org.apache.shardingsphere.error.mapper.SQLExceptionMapperFactory;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.exception.CircuitBreakException;
@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.infra.exception.RuleNotExistedException;
 import org.apache.shardingsphere.infra.exception.TableLockWaitTimeoutException;
 import org.apache.shardingsphere.infra.exception.TableLockedException;
+import org.apache.shardingsphere.infra.exception.UnsupportedCommandException;
 import org.apache.shardingsphere.infra.util.exception.inside.InsideDialectSQLException;
 import org.apache.shardingsphere.infra.util.exception.inside.ShardingSphereInsideException;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
@@ -59,12 +60,6 @@ public final class SQLExceptionHandler {
         if (insideException instanceof CircuitBreakException) {
             return Optional.of(toSQLException(StandardSQLErrorCode.CIRCUIT_BREAK_MODE));
         }
-        if (insideException instanceof ShardingSphereConfigurationException || insideException instanceof SQLParsingException) {
-            return Optional.of(toSQLException(StandardSQLErrorCode.UNSUPPORTED_SQL, insideException.getMessage()));
-        }
-        if (insideException instanceof RuleNotExistedException || insideException instanceof ResourceNotExistedException) {
-            return Optional.of(toSQLException(StandardSQLErrorCode.RESOURCE_OR_RULE_NOT_EXIST));
-        }
         if (insideException instanceof TableLockWaitTimeoutException) {
             TableLockWaitTimeoutException exception = (TableLockWaitTimeoutException) insideException;
             return Optional.of(toSQLException(StandardSQLErrorCode.TABLE_LOCK_WAIT_TIMEOUT, exception.getTableName(), exception.getSchemaName(), exception.getTimeoutMilliseconds()));
@@ -72,6 +67,15 @@ public final class SQLExceptionHandler {
         if (insideException instanceof TableLockedException) {
             TableLockedException exception = (TableLockedException) insideException;
             return Optional.of(toSQLException(StandardSQLErrorCode.TABLE_LOCKED, exception.getTableName(), exception.getSchemaName()));
+        }
+        if (insideException instanceof RuleNotExistedException || insideException instanceof ResourceNotExistedException) {
+            return Optional.of(toSQLException(StandardSQLErrorCode.RESOURCE_OR_RULE_NOT_EXIST));
+        }
+        if (insideException instanceof ShardingSphereConfigurationException || insideException instanceof SQLParsingException) {
+            return Optional.of(toSQLException(StandardSQLErrorCode.UNSUPPORTED_SQL, insideException.getMessage()));
+        }
+        if (insideException instanceof UnsupportedCommandException) {
+            return Optional.of(toSQLException(StandardSQLErrorCode.UNSUPPORTED_COMMAND, ((UnsupportedCommandException) insideException).getCommandType()));
         }
         return Optional.empty();
     }

@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.util.exception.inside.ShardingSphereInsid
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.CommonDistSQLErrorCode;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.CommonDistSQLException;
 import org.apache.shardingsphere.proxy.frontend.exception.FrontendTooManyConnectionsException;
-import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedCommandException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
 
 import java.nio.charset.UnsupportedCharsetException;
@@ -60,9 +59,6 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof CommonDistSQLException) {
             CommonDistSQLException commonDistSQLException = (CommonDistSQLException) cause;
             return new MySQLErrPacket(1, CommonDistSQLErrorCode.valueOf(commonDistSQLException), commonDistSQLException.getVariable());
-        }
-        if (cause instanceof UnsupportedCommandException) {
-            return new MySQLErrPacket(1, StandardSQLErrorCode.UNSUPPORTED_COMMAND, ((UnsupportedCommandException) cause).getCommandType());
         }
         if (cause instanceof UnsupportedPreparedStatementException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_UNSUPPORTED_PS);
