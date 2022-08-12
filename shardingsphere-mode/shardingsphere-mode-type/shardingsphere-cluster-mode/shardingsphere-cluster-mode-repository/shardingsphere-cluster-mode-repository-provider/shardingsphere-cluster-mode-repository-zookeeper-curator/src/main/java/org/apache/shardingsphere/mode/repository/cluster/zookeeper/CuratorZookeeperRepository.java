@@ -30,6 +30,7 @@ import org.apache.curator.utils.CloseableUtils;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryException;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
@@ -40,6 +41,7 @@ import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.Zookeep
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperPropertyKey;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException.OperationTimeoutException;
+import org.apache.zookeeper.KeeperException.NodeExistsException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
 
@@ -188,13 +190,13 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     @Override
     public void persistEphemeral(final String key, final String value) {
         try {
-            if (isExisted(key)) {
-                client.delete().deletingChildrenIfNeeded().forPath(key);
-            }
             client.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(key, value.getBytes(StandardCharsets.UTF_8));
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
+            if (ex instanceof NodeExistsException) {
+                throw new ClusterPersistRepositoryException(ex);
+            }
             CuratorZookeeperExceptionHandler.handleException(ex);
         }
     }
