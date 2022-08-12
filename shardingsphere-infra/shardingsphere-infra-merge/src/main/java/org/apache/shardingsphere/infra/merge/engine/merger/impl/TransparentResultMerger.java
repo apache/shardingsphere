@@ -33,7 +33,7 @@ import java.util.List;
 public final class TransparentResultMerger implements ResultMerger {
     
     @Override
-    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext, 
+    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext,
                               final ShardingSphereDatabase database, final ConnectionContext connectionContext) {
         return new TransparentMergedResult(queryResults.get(0));
     }
