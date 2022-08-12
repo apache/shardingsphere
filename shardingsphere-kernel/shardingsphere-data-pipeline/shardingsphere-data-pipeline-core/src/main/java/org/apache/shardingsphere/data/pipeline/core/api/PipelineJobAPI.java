@@ -24,6 +24,8 @@ import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
+import java.util.Optional;
+
 /**
  * Pipeline job API.
  */
@@ -44,6 +46,14 @@ public interface PipelineJobAPI extends PipelineJobPublicAPI, PipelineJobItemAPI
      * @param yamlJobConfig YAML job configuration
      */
     void extendYamlJobConfiguration(YamlPipelineJobConfiguration yamlJobConfig);
+    
+    /**
+     * Start job.
+     *
+     * @param jobConfig job configuration
+     * @return job id
+     */
+    Optional<String> start(PipelineJobConfiguration jobConfig);
     
     /**
      * Get job configuration.

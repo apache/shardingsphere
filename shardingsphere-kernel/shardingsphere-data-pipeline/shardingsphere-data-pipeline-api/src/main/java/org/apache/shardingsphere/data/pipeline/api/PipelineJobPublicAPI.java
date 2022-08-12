@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 public interface PipelineJobPublicAPI extends TypedSPI {
     
     /**
-     * Start pipeline job by id.
+     * Start disabled job.
      *
      * @param jobId job id
      */
