@@ -15,22 +15,30 @@
  * limitations under the License.
  */
 
-grammar BaseRule;
+package org.apache.shardingsphere.data.pipeline.core.context;
 
-import Symbol, Keyword, Literals;
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
+import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
+import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 
-algorithmDefinition
-    : TYPE LP NAME EQ algorithmTypeName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
-    ;
+import java.util.Collection;
 
-algorithmTypeName
-    : STRING
-    ;
-
-algorithmProperties
-    : algorithmProperty (COMMA algorithmProperty)*
-    ;
-
-algorithmProperty
-    : key=STRING EQ value=STRING
-    ;
+/**
+ * Inventory incremental job item context.
+ */
+public interface InventoryIncrementalJobItemContext extends PipelineJobItemContext {
+    
+    /**
+     * Get inventory tasks.
+     *
+     * @return inventory tasks
+     */
+    Collection<InventoryTask> getInventoryTasks();
+    
+    /**
+     * Get incremental tasks.
+     *
+     * @return incremental tasks
+     */
+    Collection<IncrementalTask> getIncrementalTasks();
+}

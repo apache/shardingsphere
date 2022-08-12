@@ -48,6 +48,7 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXB;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -55,6 +56,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -176,11 +178,12 @@ public abstract class BaseITCase {
     
     private static void addParametersByVersions(final List<String> databaseVersion, final Collection<TransactionParameterized> result, final TransactionTestCaseRegistry currentTestCaseInfo) {
         for (String each : databaseVersion) {
-            addParametersByTestCaseClasses(result, each, currentTestCaseInfo);
+            result.addAll(addParametersByTestCaseClasses(each, currentTestCaseInfo));
         }
     }
     
-    private static void addParametersByTestCaseClasses(final Collection<TransactionParameterized> result, final String version, final TransactionTestCaseRegistry currentTestCaseInfo) {
+    private static Collection<TransactionParameterized> addParametersByTestCaseClasses(final String version, final TransactionTestCaseRegistry currentTestCaseInfo) {
+        Map<String, TransactionParameterized> parameterizedMap = new LinkedHashMap<>();
         for (Class<? extends BaseTransactionTestCase> caseClass : TEST_CASES) {
             if (!ENV.getNeedToRunTestCases().isEmpty() && !ENV.getNeedToRunTestCases().contains(caseClass.getSimpleName())) {
                 log.info("Collect transaction test case, need to run cases don't contain this, skip: {}.", caseClass.getName());
@@ -201,42 +204,54 @@ public abstract class BaseITCase {
                 log.info("Collect transaction test case, runAdapter is not matched, skip: {}.", caseClass.getName());
                 continue;
             }
-            addParametersByTransactionTypes(result, version, currentTestCaseInfo, caseClass, annotation);
+            String group = annotation.group();
+            addParametersByTransactionTypes(version, currentTestCaseInfo, caseClass, annotation, parameterizedMap, group);
         }
+        
+        return parameterizedMap.values();
     }
     
-    private static void addParametersByTransactionTypes(final Collection<TransactionParameterized> result, final String version, final TransactionTestCaseRegistry currentTestCaseInfo,
-                                                        final Class<? extends BaseTransactionTestCase> caseClass, final TransactionTestCase annotation) {
+    private static void addParametersByTransactionTypes(final String version, final TransactionTestCaseRegistry currentTestCaseInfo,
+                                                        final Class<? extends BaseTransactionTestCase> caseClass, final TransactionTestCase annotation,
+                                                        final Map<String, TransactionParameterized> parameterizedMap, final String group) {
         for (TransactionType each : annotation.transactionTypes()) {
             if (!ENV.getAllowTransactionTypes().isEmpty() && !ENV.getAllowTransactionTypes().contains(each.toString())) {
                 log.info("Collect transaction test case, need to run transaction types don't contain this, skip: {}-{}.", caseClass.getName(), each);
                 continue;
             }
-            addParametersByTransactionProviders(result, version, currentTestCaseInfo, caseClass, each);
+            addParametersByTransactionProviders(version, currentTestCaseInfo, caseClass, each, parameterizedMap, group);
         }
     }
     
-    private static void addParametersByTransactionProviders(final Collection<TransactionParameterized> result, final String version, final TransactionTestCaseRegistry currentTestCaseInfo,
-                                                            final Class<? extends BaseTransactionTestCase> caseClass, final TransactionType each) {
+    private static void addParametersByTransactionProviders(final String version, final TransactionTestCaseRegistry currentTestCaseInfo,
+                                                            final Class<? extends BaseTransactionTestCase> caseClass, final TransactionType each,
+                                                            final Map<String, TransactionParameterized> parameterizedMap, final String group) {
         if (TransactionType.LOCAL.equals(each)) {
-            result.add(createTransactionParameter(version, currentTestCaseInfo, caseClass, each, ""));
+            addTestParameters(version, currentTestCaseInfo, caseClass, each, "", parameterizedMap, group);
         } else if (TransactionType.XA.equals(each)) {
             if (ENV.getAllowXAProviders().isEmpty()) {
                 for (String provider : ALL_XA_PROVIDERS) {
-                    result.add(createTransactionParameter(version, currentTestCaseInfo, caseClass, each, provider));
+                    addTestParameters(version, currentTestCaseInfo, caseClass, each, provider, parameterizedMap, group);
                 }
             } else {
                 for (String provider : ENV.getAllowXAProviders()) {
-                    result.add(createTransactionParameter(version, currentTestCaseInfo, caseClass, each, provider));
+                    addTestParameters(version, currentTestCaseInfo, caseClass, each, provider, parameterizedMap, group);
                 }
             }
         }
     }
     
-    private static TransactionParameterized createTransactionParameter(final String version, final TransactionTestCaseRegistry currentTestCaseInfo,
-                                                                       final Class<? extends BaseTransactionTestCase> caseClass, final TransactionType transactionType, final String provider) {
-        return new TransactionParameterized(getSqlDatabaseType(currentTestCaseInfo.getDbType()), currentTestCaseInfo.getRunningAdaptor(), transactionType, provider,
-                getDockerImageName(currentTestCaseInfo.getDbType(), version), caseClass);
+    private static void addTestParameters(final String version, final TransactionTestCaseRegistry currentTestCaseInfo,
+                                          final Class<? extends BaseTransactionTestCase> caseClass, final TransactionType transactionType, final String provider,
+                                          final Map<String, TransactionParameterized> parameterizedMap, final String group) {
+        String uniqueKey = getUniqueKey(currentTestCaseInfo.getDbType(), currentTestCaseInfo.getRunningAdaptor(), transactionType, provider, group);
+        parameterizedMap.putIfAbsent(uniqueKey, new TransactionParameterized(getSqlDatabaseType(currentTestCaseInfo.getDbType()), currentTestCaseInfo.getRunningAdaptor(), transactionType, provider,
+                getDockerImageName(currentTestCaseInfo.getDbType(), version), group, new LinkedList<>()));
+        parameterizedMap.get(uniqueKey).getTransactionTestCaseClasses().add(caseClass);
+    }
+    
+    private static String getUniqueKey(final String dbType, final String runningAdapter, final TransactionType transactionType, final String provider, final String group) {
+        return dbType + File.separator + runningAdapter + File.separator + transactionType + File.separator + provider + File.separator + group;
     }
     
     private static DatabaseType getSqlDatabaseType(final String databaseType) {
@@ -362,8 +377,7 @@ public abstract class BaseITCase {
     }
     
     protected AutoDataSource getProxyDataSource(final String databaseName) {
-        AutoDataSource result = new ProxyDataSource(composedContainer, databaseName, ENV.getProxyUserName(), ENV.getProxyPassword());
-        return result;
+        return new ProxyDataSource(composedContainer, databaseName, ENV.getProxyUserName(), ENV.getProxyPassword());
     }
     
     protected boolean waitShardingAlgorithmEffect(final int maxWaitTimes) {
@@ -411,7 +425,7 @@ public abstract class BaseITCase {
     
     /**
      * Add ds_2 resource to proxy.
-     * 
+     *
      * @param connection connection
      */
     @SneakyThrows({SQLException.class, InterruptedException.class})
@@ -428,7 +442,7 @@ public abstract class BaseITCase {
     
     /**
      * Drop previous account table rule and create the table rule with three data sources.
-     * 
+     *
      * @param connection connection
      */
     @SneakyThrows(SQLException.class)
@@ -441,7 +455,7 @@ public abstract class BaseITCase {
     
     /**
      * Create the account table rule with one data source.
-     * 
+     *
      * @param connection connection
      */
     @SneakyThrows(SQLException.class)

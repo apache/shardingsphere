@@ -15,22 +15,33 @@
  * limitations under the License.
  */
 
-grammar BaseRule;
+package org.apache.shardingsphere.data.pipeline.api;
 
-import Symbol, Keyword, Literals;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
-algorithmDefinition
-    : TYPE LP NAME EQ algorithmTypeName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
-    ;
-
-algorithmTypeName
-    : STRING
-    ;
-
-algorithmProperties
-    : algorithmProperty (COMMA algorithmProperty)*
-    ;
-
-algorithmProperty
-    : key=STRING EQ value=STRING
-    ;
+/**
+ * Pipeline job public API.
+ */
+public interface PipelineJobPublicAPI extends TypedSPI {
+    
+    /**
+     * Start pipeline job by id.
+     *
+     * @param jobId job id
+     */
+    void startDisabledJob(String jobId);
+    
+    /**
+     * Stop pipeline job.
+     *
+     * @param jobId job id
+     */
+    void stop(String jobId);
+    
+    /**
+     * Remove pipeline job.
+     *
+     * @param jobId job id
+     */
+    void remove(String jobId);
+}

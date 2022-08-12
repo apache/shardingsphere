@@ -15,22 +15,26 @@
  * limitations under the License.
  */
 
-grammar BaseRule;
+package org.apache.shardingsphere.data.pipeline.core.api;
 
-import Symbol, Keyword, Literals;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 
-algorithmDefinition
-    : TYPE LP NAME EQ algorithmTypeName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
-    ;
-
-algorithmTypeName
-    : STRING
-    ;
-
-algorithmProperties
-    : algorithmProperty (COMMA algorithmProperty)*
-    ;
-
-algorithmProperty
-    : key=STRING EQ value=STRING
-    ;
+/**
+ * Rule altered job API factory.
+ */
+public final class RuleAlteredJobAPIFactory {
+    
+    static {
+        ShardingSphereServiceLoader.register(RuleAlteredJobAPI.class);
+    }
+    
+    /**
+     * Get instance of rule altered job API.
+     *
+     * @return got instance
+     */
+    public static RuleAlteredJobAPI getInstance() {
+        return RequiredSPIRegistry.getRegisteredService(RuleAlteredJobAPI.class);
+    }
+}

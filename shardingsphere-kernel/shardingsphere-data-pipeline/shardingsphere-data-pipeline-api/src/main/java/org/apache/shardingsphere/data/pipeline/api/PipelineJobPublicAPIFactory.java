@@ -21,20 +21,20 @@ import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 
 /**
- * Rule altered job API factory.
+ * Pipeline job public API factory.
  */
-public final class RuleAlteredJobAPIFactory {
+public final class PipelineJobPublicAPIFactory {
     
     static {
-        ShardingSphereServiceLoader.register(RuleAlteredJobAPI.class);
+        ShardingSphereServiceLoader.register(MigrationJobPublicAPI.class);
     }
     
     /**
-     * Get instance of rule altered job API.
+     * Get instance of migration job public API.
      *
      * @return got instance
      */
-    public static RuleAlteredJobAPI getInstance() {
-        return RequiredSPIRegistry.getRegisteredService(RuleAlteredJobAPI.class);
+    public static MigrationJobPublicAPI getMigrationJobPublicAPI() {
+        return RequiredSPIRegistry.getRegisteredService(MigrationJobPublicAPI.class);
     }
 }
