@@ -54,6 +54,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -118,7 +119,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         try (Connection conn = dataSource.getConnection()) {
             int round = 1;
             Optional<Object> maxUniqueKeyValue;
-            while ((maxUniqueKeyValue = dump0(conn, 1 == round ? firstSQL : laterSQL, uniqueKeyDataType, startUniqueKeyValue, round++)).isPresent()) {
+            while ((maxUniqueKeyValue = dump0(conn, 1 == round ? firstSQL : laterSQL, dumperConfig.getUniqueKey(), uniqueKeyDataType, startUniqueKeyValue, round++)).isPresent()) {
                 startUniqueKeyValue = maxUniqueKeyValue.get();
                 if (!isRunning()) {
                     log.info("inventory dump, running is false, break");
@@ -140,7 +141,8 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         return tableMetaDataLazyInitializer.get();
     }
     
-    private Optional<Object> dump0(final Connection conn, final String sql, final int uniqueKeyDataType, final Object startUniqueKeyValue, final int round) throws SQLException {
+    private Optional<Object> dump0(final Connection conn, final String sql, final String uniqueKey, final int uniqueKeyDataType, final Object startUniqueKeyValue, final int round)
+            throws SQLException {
         if (null != rateLimitAlgorithm) {
             rateLimitAlgorithm.intercept(JobOperationType.SELECT, 1);
         }
@@ -167,11 +169,12 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
                     record.setType(IngestDataChangeType.INSERT);
                     record.setTableName(logicTableName);
                     for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                        boolean isUniqueKey = tableMetaData.isUniqueKey(i - 1);
                         Object value = readValue(resultSet, i);
-                        if (tableMetaData.isPrimaryKey(i - 1)) {
+                        if (Objects.equals(tableMetaData.getColumnMetaData(uniqueKey).getName(), metaData.getColumnName(i))) {
                             maxUniqueKeyValue = value;
                         }
-                        record.addColumn(new Column(metaData.getColumnName(i), value, true, tableMetaData.isUniqueKey(i - 1)));
+                        record.addColumn(new Column(metaData.getColumnName(i), value, true, isUniqueKey));
                     }
                     pushRecord(record);
                     rowCount++;

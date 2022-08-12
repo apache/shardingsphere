@@ -36,7 +36,16 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public final class ScalingCaseHelper {
     
-    public static final SnowflakeKeyGenerateAlgorithm SNOWFLAKE_KEY_GENERATE_ALGORITHM = new SnowflakeKeyGenerateAlgorithm();
+    private static final SnowflakeKeyGenerateAlgorithm SNOWFLAKE_KEY_GENERATE_ALGORITHM = new SnowflakeKeyGenerateAlgorithm();
+    
+    /**
+     * Generate snowflake key.
+     *
+     * @return snowflake key
+     */
+    public static long generateSnowflakeKey() {
+        return SNOWFLAKE_KEY_GENERATE_ALGORITHM.generateKey();
+    }
     
     /**
      * Generate MySQL insert data, contains full fields.
@@ -53,7 +62,7 @@ public final class ScalingCaseHelper {
         List<Object[]> orderData = new ArrayList<>(insertRows);
         List<Object[]> orderItemData = new ArrayList<>(insertRows);
         for (int i = 0; i < insertRows; i++) {
-            long orderId = SNOWFLAKE_KEY_GENERATE_ALGORITHM.generateKey();
+            long orderId = generateSnowflakeKey();
             int userId = generateInt(0, 6);
             LocalDateTime now = LocalDateTime.now();
             int randomInt = generateInt(-100, 100);
