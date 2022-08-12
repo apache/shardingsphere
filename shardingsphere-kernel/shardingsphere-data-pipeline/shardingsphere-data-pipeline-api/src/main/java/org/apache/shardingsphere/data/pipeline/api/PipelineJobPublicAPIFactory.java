@@ -15,27 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.migration.distsql.handler.update;
+package org.apache.shardingsphere.data.pipeline.api;
 
-import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
-import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
-import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
-import org.apache.shardingsphere.migration.distsql.statement.ResetMigrationStatement;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 
 /**
- * Reset scaling updater.
+ * Pipeline job public API factory.
  */
-public final class ResetMigrationUpdater implements RALUpdater<ResetMigrationStatement> {
+public final class PipelineJobPublicAPIFactory {
     
-    private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getInstance();
-    
-    @Override
-    public void executeUpdate(final ResetMigrationStatement sqlStatement) {
-        JOB_API.reset(sqlStatement.getJobId());
+    static {
+        ShardingSphereServiceLoader.register(MigrationJobPublicAPI.class);
     }
     
-    @Override
-    public String getType() {
-        return ResetMigrationStatement.class.getName();
+    /**
+     * Get instance of migration job public API.
+     *
+     * @return got instance
+     */
+    public static MigrationJobPublicAPI getInstance() {
+        return RequiredSPIRegistry.getRegisteredService(MigrationJobPublicAPI.class);
     }
 }

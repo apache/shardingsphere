@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 /**
  * Pipeline job API.
  */
-public interface PipelineJobAPI extends TypedSPI {
+public interface PipelineJobAPI extends PipelineJobPublicAPI, TypedSPI {
     
     /**
      * Marshal pipeline job id.
@@ -77,25 +77,4 @@ public interface PipelineJobAPI extends TypedSPI {
      * @param status status
      */
     void updateJobItemStatus(String jobId, int shardingItem, JobStatus status);
-    
-    /**
-     * Start pipeline job by id.
-     *
-     * @param jobId job id
-     */
-    void startDisabledJob(String jobId);
-    
-    /**
-     * Stop pipeline job.
-     *
-     * @param jobId job id
-     */
-    void stop(String jobId);
-    
-    /**
-     * Remove pipeline job.
-     *
-     * @param jobId job id
-     */
-    void remove(String jobId);
 }
