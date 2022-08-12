@@ -1,7 +1,7 @@
 +++
-pre = "<b>7.13. </b>"
+pre = "<b>7.11. </b>"
 title = "基础架构"
-weight = 13
+weight = 11
 +++
 
 让开发者能够像使用积木一样定制属于自己的独特系统，是 Apache ShardingSphere 可插拔架构的设计目标。
