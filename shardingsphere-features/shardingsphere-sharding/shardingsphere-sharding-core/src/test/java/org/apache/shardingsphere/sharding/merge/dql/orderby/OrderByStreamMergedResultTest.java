@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.session.SQLSession;
+import org.apache.shardingsphere.infra.session.ConnectionContext;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
@@ -79,7 +79,7 @@ public final class OrderByStreamMergedResultTest {
     public void assertNextForResultSetsAllEmpty() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS));
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeFactory.getInstance("MySQL"));
-        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, createDatabase(), mock(SQLSession.class));
+        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, createDatabase(), mock(ConnectionContext.class));
         assertFalse(actual.next());
     }
     
@@ -97,7 +97,7 @@ public final class OrderByStreamMergedResultTest {
         when(queryResults.get(0).getValue(1, Object.class)).thenReturn("2");
         when(queryResults.get(2).next()).thenReturn(true, true, false);
         when(queryResults.get(2).getValue(1, Object.class)).thenReturn("1", "1", "3", "3");
-        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, createDatabase(), mock(SQLSession.class));
+        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, createDatabase(), mock(ConnectionContext.class));
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("1"));
         assertTrue(actual.next());
@@ -123,7 +123,7 @@ public final class OrderByStreamMergedResultTest {
         when(queryResults.get(1).getValue(1, Object.class)).thenReturn("2", "2", "3", "3", "4", "4");
         when(queryResults.get(2).next()).thenReturn(true, true, false);
         when(queryResults.get(2).getValue(1, Object.class)).thenReturn("1", "1", "3", "3");
-        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, createDatabase(), mock(SQLSession.class));
+        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, createDatabase(), mock(ConnectionContext.class));
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("1"));
         assertTrue(actual.next());
@@ -155,7 +155,7 @@ public final class OrderByStreamMergedResultTest {
         when(queryResults.get(2).next()).thenReturn(true, false);
         when(queryResults.get(2).getValue(1, Object.class)).thenReturn("A");
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeFactory.getInstance("MySQL"));
-        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, createDatabase(), mock(SQLSession.class));
+        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, createDatabase(), mock(ConnectionContext.class));
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("A"));
         assertTrue(actual.next());
@@ -183,7 +183,7 @@ public final class OrderByStreamMergedResultTest {
         when(queryResults.get(2).next()).thenReturn(true, false);
         when(queryResults.get(2).getValue(2, Object.class)).thenReturn("A");
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeFactory.getInstance("MySQL"));
-        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, createDatabase(), mock(SQLSession.class));
+        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, createDatabase(), mock(ConnectionContext.class));
         assertTrue(actual.next());
         assertThat(actual.getValue(2, Object.class).toString(), is("a"));
         assertTrue(actual.next());

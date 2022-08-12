@@ -33,7 +33,7 @@ import org.apache.shardingsphere.encrypt.distsql.parser.statement.CountEncryptRu
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.ShowEncryptRulesStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CountReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingRulesStatement;
-import org.apache.shardingsphere.scaling.distsql.statement.ShowShardingScalingRulesStatement;
+import org.apache.shardingsphere.migration.distsql.statement.ShowShardingScalingRulesStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CountShadowRuleStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowAlgorithmsStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowRulesStatement;

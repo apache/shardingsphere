@@ -257,13 +257,13 @@ public abstract class BaseITCase {
                 List<Map<String, Object>> scalingList = jdbcTemplate.queryForList("SHOW SCALING LIST");
                 for (Map<String, Object> each : scalingList) {
                     String id = each.get("id").toString();
-                    executeWithLog(String.format("DROP SCALING %s", id), 0);
+                    executeWithLog(String.format("DROP SCALING '%s'", id), 0);
                 }
             } catch (final DataAccessException ex) {
                 log.error("Failed to show scaling list. {}", ex.getMessage());
             }
         }
-        executeWithLog("CREATE SHARDING SCALING RULE scaling_manual (INPUT(SHARDING_SIZE=1000), DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH)))");
+        executeWithLog("CREATE SHARDING SCALING RULE scaling_manual (INPUT(SHARDING_SIZE=1000), DATA_CONSISTENCY_CHECKER(TYPE(NAME='DATA_MATCH')))");
     }
     
     protected void createSchema(final String schemaName) {
@@ -321,20 +321,20 @@ public abstract class BaseITCase {
     }
     
     protected void stopScalingSourceWriting(final String jobId) {
-        executeWithLog(String.format("STOP SCALING SOURCE WRITING %s", jobId));
+        executeWithLog(String.format("STOP SCALING SOURCE WRITING '%s'", jobId));
     }
     
     protected void stopScaling(final String jobId) {
-        executeWithLog(String.format("STOP SCALING %s", jobId), 5);
+        executeWithLog(String.format("STOP SCALING '%s'", jobId), 5);
     }
     
     protected void startScaling(final String jobId) {
-        executeWithLog(String.format("START SCALING %s", jobId), 10);
+        executeWithLog(String.format("START SCALING '%s'", jobId), 10);
     }
     
     protected void applyScaling(final String jobId) {
         assertBeforeApplyScalingMetadataCorrectly();
-        executeWithLog(String.format("APPLY SCALING %s", jobId));
+        executeWithLog(String.format("APPLY SCALING '%s'", jobId));
     }
     
     protected void assertBeforeApplyScalingMetadataCorrectly() {
@@ -379,7 +379,7 @@ public abstract class BaseITCase {
     }
     
     protected List<Map<String, Object>> showScalingStatus(final String jobId) {
-        return queryForListWithLog(String.format("SHOW SCALING STATUS %s", jobId));
+        return queryForListWithLog(String.format("SHOW SCALING STATUS '%s'", jobId));
     }
     
     protected void assertCheckScalingSuccess(final String jobId) {
@@ -392,7 +392,7 @@ public abstract class BaseITCase {
         boolean secondCheckJobResult = checkJobIncrementTaskFinished(jobId);
         log.info("second check job result: {}", secondCheckJobResult);
         stopScalingSourceWriting(jobId);
-        List<Map<String, Object>> checkScalingResults = queryForListWithLog(String.format("CHECK SCALING %s BY TYPE (NAME=DATA_MATCH)", jobId));
+        List<Map<String, Object>> checkScalingResults = queryForListWithLog(String.format("CHECK SCALING '%s' BY TYPE (NAME='DATA_MATCH')", jobId));
         log.info("checkScalingResults: {}", checkScalingResults);
         for (Map<String, Object> entry : checkScalingResults) {
             assertTrue(Boolean.parseBoolean(entry.get("records_content_matched").toString()));

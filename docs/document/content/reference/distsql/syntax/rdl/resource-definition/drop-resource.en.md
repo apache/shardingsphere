@@ -20,11 +20,11 @@ resourceName ::=
 ### Supplement
 
 - `DROP RESOURCE` will only drop resources in Proxy, the real data source corresponding to the resource will not be
-  dropped
+  dropped;
 - Unable to drop resources already used by rules. `Resources are still in used.` will be prompted when removing
-  resources used by rules
+  resources used by rules;
 - The resource need to be removed only contains `SINGLE TABLE RULE`, and when the user confirms that this restriction
-  can be ignored, the `IGNORE SINGLE TABLES` keyword can be added to remove the resource
+  can be ignored, the `IGNORE SINGLE TABLES` keyword can be added to remove the resource.
 
 ### Example
 

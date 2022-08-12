@@ -20,9 +20,9 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.scaling.distsql.statement.CreateShardingScalingRuleStatement;
-import org.apache.shardingsphere.scaling.distsql.statement.segment.InputOrOutputSegment;
-import org.apache.shardingsphere.scaling.distsql.statement.segment.ShardingScalingRuleConfigurationSegment;
+import org.apache.shardingsphere.migration.distsql.statement.CreateShardingScalingRuleStatement;
+import org.apache.shardingsphere.migration.distsql.statement.segment.InputOrOutputSegment;
+import org.apache.shardingsphere.migration.distsql.statement.segment.ShardingScalingRuleConfigurationSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.distsql.PropertiesAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedAlgorithm;

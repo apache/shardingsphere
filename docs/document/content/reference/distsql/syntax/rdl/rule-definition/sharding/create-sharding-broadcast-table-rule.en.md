@@ -20,10 +20,10 @@ tableName ::=
 
 ### Supplement
 
-- `tableName` can use an existing table or a table that will be created
+- `tableName` can use an existing table or a table that will be created;
 - Only one broadcast rule can exist, but can contain multiple broadcast tables, so can not
   execute `CREATE SHARDING BROADCAST TABLE RULE` more than one time. When the broadcast table rule already exists but
-  the broadcast table needs to be added, you need to use `ALTER BROADCAST TABLE RULE` to modify the broadcast table rule
+  the broadcast table needs to be added, you need to use `ALTER BROADCAST TABLE RULE` to modify the broadcast table rule.
 
 ### Example
 

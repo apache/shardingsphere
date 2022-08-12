@@ -113,21 +113,21 @@ public abstract class DatabaseCommunicationEngine implements DatabaseBackendHand
             prepareCursorStatementContext(statementContext, connectionSession, cursorName);
         }
         if (statementContext instanceof CloseStatementContext && ((CloseStatementContext) statementContext).getSqlStatement().isCloseAll()) {
-            connectionSession.getSqlSession().clearCursorSQLSession();
+            connectionSession.getConnectionContext().clearCursorConnectionContext();
         }
     }
     
     private void prepareCursorStatementContext(final CursorAvailable statementContext, final ConnectionSession connectionSession, final String cursorName) {
         if (statementContext instanceof CursorStatementContext) {
-            connectionSession.getSqlSession().getCursorSQLSession().getCursorDefinitions().put(cursorName, (CursorStatementContext) statementContext);
+            connectionSession.getConnectionContext().getCursorConnectionContext().getCursorDefinitions().put(cursorName, (CursorStatementContext) statementContext);
         }
         if (statementContext instanceof CursorDefinitionAware) {
-            CursorStatementContext cursorStatementContext = (CursorStatementContext) connectionSession.getSqlSession().getCursorSQLSession().getCursorDefinitions().get(cursorName);
+            CursorStatementContext cursorStatementContext = (CursorStatementContext) connectionSession.getConnectionContext().getCursorConnectionContext().getCursorDefinitions().get(cursorName);
             Preconditions.checkArgument(null != cursorStatementContext, "Cursor %s does not exist.", cursorName);
             ((CursorDefinitionAware) statementContext).setUpCursorDefinition(cursorStatementContext);
         }
         if (statementContext instanceof CloseStatementContext) {
-            connectionSession.getSqlSession().getCursorSQLSession().removeCursorName(cursorName);
+            connectionSession.getConnectionContext().getCursorConnectionContext().removeCursorName(cursorName);
         }
     }
     
@@ -173,7 +173,7 @@ public abstract class DatabaseCommunicationEngine implements DatabaseBackendHand
     
     protected MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         MergeEngine mergeEngine = new MergeEngine(database, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps(),
-                getBackendConnection().getConnectionSession().getSqlSession());
+                getBackendConnection().getConnectionSession().getConnectionContext());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     

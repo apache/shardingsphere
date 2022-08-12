@@ -35,6 +35,7 @@ import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.exception.NoDatabaseSelectedException;
+import org.apache.shardingsphere.infra.exception.RuleNotExistedException;
 import org.apache.shardingsphere.infra.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
@@ -64,7 +65,6 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDB
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.infra.exception.RuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.SQLRULBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
@@ -118,7 +118,7 @@ public final class PreviewHandler extends SQLRULBackendHandler<PreviewStatement>
         ConfigurationProperties props = metaDataContexts.getMetaData().getProps();
         SQLFederationDeciderContext deciderContext = decide(logicSQL, props, metaDataContexts.getMetaData().getDatabase(getConnectionSession().getDatabaseName()));
         Collection<ExecutionUnit> executionUnits = deciderContext.isUseSQLFederation() ? getFederationExecutionUnits(logicSQL, databaseName, metaDataContexts)
-                : kernelProcessor.generateExecutionContext(logicSQL, database, globalRuleMetaData, props, getConnectionSession().getSqlSession()).getExecutionUnits();
+                : kernelProcessor.generateExecutionContext(logicSQL, database, globalRuleMetaData, props, getConnectionSession().getConnectionContext()).getExecutionUnits();
         return executionUnits.stream().map(this::buildRow).collect(Collectors.toList());
     }
     
@@ -132,7 +132,7 @@ public final class PreviewHandler extends SQLRULBackendHandler<PreviewStatement>
             return;
         }
         String cursorName = ((CursorAvailable) sqlStatementContext).getCursorName().get().getIdentifier().getValue().toLowerCase();
-        CursorStatementContext cursorStatementContext = (CursorStatementContext) getConnectionSession().getSqlSession().getCursorSQLSession().getCursorDefinitions().get(cursorName);
+        CursorStatementContext cursorStatementContext = (CursorStatementContext) getConnectionSession().getConnectionContext().getCursorConnectionContext().getCursorDefinitions().get(cursorName);
         Preconditions.checkArgument(null != cursorStatementContext, "Cursor %s does not exist.", cursorName);
         ((CursorDefinitionAware) sqlStatementContext).setUpCursorDefinition(cursorStatementContext);
     }

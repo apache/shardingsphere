@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.env.container.atomic.storage.
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
-import org.testcontainers.containers.BindMode;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
 
 import java.util.Optional;
 
@@ -29,17 +29,18 @@ import java.util.Optional;
  */
 public final class MySQLContainer extends DockerStorageContainer {
     
-    public MySQLContainer(final String dockerImageName, final String scenario) {
+    private final StorageContainerConfiguration storageContainerConfiguration;
+    
+    public MySQLContainer(final String dockerImageName, final String scenario, final StorageContainerConfiguration storageContainerConfiguration) {
         super(DatabaseTypeFactory.getInstance("MySQL"), Strings.isNullOrEmpty(dockerImageName) ? "mysql/mysql-server:5.7" : dockerImageName, scenario);
+        this.storageContainerConfiguration = storageContainerConfiguration;
     }
     
     @Override
     protected void configure() {
-        // TODO need auto set server-id by generator, now always set server-id to 1
-        setCommand("--server-id=1");
-        addEnv("LANG", "C.UTF-8");
-        addEnv("MYSQL_RANDOM_ROOT_PASSWORD", "yes");
-        withClasspathResourceMapping("/env/mysql/my.cnf", "/etc/mysql/my.cnf", BindMode.READ_ONLY);
+        setCommands(storageContainerConfiguration.getCommands());
+        addEnvs(storageContainerConfiguration.getEnvs());
+        mapResources(storageContainerConfiguration.getResourceMappings());
         super.configure();
     }
     

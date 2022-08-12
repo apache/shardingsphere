@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.generator.SQLTokenGener
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.SQLTokenGenerators;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.builder.DefaultTokenGeneratorBuilder;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.infra.session.SQLSession;
+import org.apache.shardingsphere.infra.session.ConnectionContext;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -59,16 +59,16 @@ public final class SQLRewriteContext {
     @Getter(AccessLevel.NONE)
     private final SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
     
-    private final SQLSession sqlSession;
+    private final ConnectionContext connectionContext;
     
     public SQLRewriteContext(final String databaseName, final Map<String, ShardingSphereSchema> schemas,
-                             final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> parameters, final SQLSession sqlSession) {
+                             final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> parameters, final ConnectionContext connectionContext) {
         this.databaseName = databaseName;
         this.schemas = schemas;
         this.sqlStatementContext = sqlStatementContext;
         this.sql = sql;
         this.parameters = parameters;
-        this.sqlSession = sqlSession;
+        this.connectionContext = connectionContext;
         addSQLTokenGenerators(new DefaultTokenGeneratorBuilder(sqlStatementContext).getSQLTokenGenerators());
         parameterBuilder = ((sqlStatementContext instanceof InsertStatementContext) && (null == ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()))
                 ? new GroupedParameterBuilder(
@@ -89,6 +89,6 @@ public final class SQLRewriteContext {
      * Generate SQL tokens.
      */
     public void generateSQLTokens() {
-        sqlTokens.addAll(sqlTokenGenerators.generateSQLTokens(databaseName, schemas, sqlStatementContext, parameters, sqlSession));
+        sqlTokens.addAll(sqlTokenGenerators.generateSQLTokens(databaseName, schemas, sqlStatementContext, parameters, connectionContext));
     }
 }

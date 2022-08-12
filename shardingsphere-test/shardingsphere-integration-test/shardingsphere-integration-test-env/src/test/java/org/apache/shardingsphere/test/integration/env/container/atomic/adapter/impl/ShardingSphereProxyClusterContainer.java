@@ -109,12 +109,12 @@ public final class ShardingSphereProxyClusterContainer extends DockerITContainer
     private void mapScalingConfigurationFiles() {
         if (DatabaseTypeUtil.isMySQL(databaseType)) {
             String majorVersion = DatabaseTypeUtil.parseMajorVersion(((GenericContainer<?>) storageContainer).getDockerImageName());
-            withClasspathResourceMapping(String.format("/env/%s/%s/server-%s.yaml", module, databaseType.getType().toLowerCase(), majorVersion),
+            withClasspathResourceMapping(String.format("/env/%s/server-%s.yaml", databaseType.getType().toLowerCase(), majorVersion),
                     "/opt/shardingsphere-proxy/conf/server.yaml", BindMode.READ_ONLY);
         } else {
-            withClasspathResourceMapping(String.format("/env/%s/%s/server.yaml", module, databaseType.getType().toLowerCase()), "/opt/shardingsphere-proxy/conf/server.yaml", BindMode.READ_ONLY);
+            withClasspathResourceMapping(String.format("/env/%s/server.yaml", databaseType.getType().toLowerCase()), "/opt/shardingsphere-proxy/conf/server.yaml", BindMode.READ_ONLY);
         }
-        withClasspathResourceMapping(String.format("/env/%s/logback.xml", module), "/opt/shardingsphere-proxy/conf/logback.xml", BindMode.READ_ONLY);
+        withClasspathResourceMapping("/env/logback.xml", "/opt/shardingsphere-proxy/conf/logback.xml", BindMode.READ_ONLY);
     }
     
     @Override

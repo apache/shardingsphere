@@ -47,20 +47,20 @@ algorithmName ::=
 ### 补充说明
 
 - `tableDefinition` 为标准分片规则定义；`autoTableDefinition`
-  为自动分片规则定义。标准分片规则和自动分片规则可参考[数据分片](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/sharding/)。
+  为自动分片规则定义。标准分片规则和自动分片规则可参考[数据分片](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/sharding/)；
 - 当使用标准分片时：
-    - `DATANODES` 只能使用已经添加到当前逻辑库的资源，且只能使用 INLINE 表达式指定需要的资源
-    - `DATABASE_STRATEGY`、`TABLE_STRATEGY` 表示分库和分表策略，均为可选项，未配置时使用默认策略
+    - `DATANODES` 只能使用已经添加到当前逻辑库的资源，且只能使用 INLINE 表达式指定需要的资源；
+    - `DATABASE_STRATEGY`、`TABLE_STRATEGY` 表示分库和分表策略，均为可选项，未配置时使用默认策略；
     - `strategyDefinition` 中属性 `TYPE` 用于指定[分片算法](/cn/features/sharding/concept/sharding/#自定义分片算法)的类型，目前仅支持 `STANDARD`
       、`COMPLEX`。使用 `COMPLEX` 时需要用 `SHARDING_COLUMNS` 指定多个分片键。
 - 当使用自动分片时：
-    - `RESOURCES` 只能使用已经添加到当前逻辑库的资源，可通过枚举或 INLINE 表达式指定需要的资源
-    - 只能使用自动分片算法，可参考[自动分片算法](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/#自动分片算法)
-- `algorithmType` 为分片算法类型，分片算法类型请参考[分片算法](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/)
-- 自动生成的算法命名规则为  `tableName` _ `strategyType` _ `algorithmType`
-- 自动生成的主键策略命名规则为 `tableName` _ `strategyType`
+    - `RESOURCES` 只能使用已经添加到当前逻辑库的资源，可通过枚举或 INLINE 表达式指定需要的资源；
+    - 只能使用自动分片算法，可参考[自动分片算法](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/#自动分片算法)。
+- `algorithmType` 为分片算法类型，分片算法类型请参考[分片算法](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/)；
+- 自动生成的算法命名规则为  `tableName` _ `strategyType` _ `algorithmType`；
+- 自动生成的主键策略命名规则为 `tableName` _ `strategyType；
 - `KEY_GENERATE_STRATEGY`
-  用于指定主键生成策略，为可选项，关于主键生成策略可参考[分布式主键](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen/)
+  用于指定主键生成策略，为可选项，关于主键生成策略可参考[分布式主键](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen/)。
 
 ### 示例
 
