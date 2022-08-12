@@ -21,11 +21,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Common SQL error code.
+ * Standard SQL error code.
  */
 @RequiredArgsConstructor
 @Getter
-public enum CommonSQLErrorCode implements SQLErrorCode {
+public enum StandardSQLErrorCode implements SQLErrorCode {
     
     CIRCUIT_BREAK_MODE(1000, "C1000", "Circuit break mode is ON"),
     

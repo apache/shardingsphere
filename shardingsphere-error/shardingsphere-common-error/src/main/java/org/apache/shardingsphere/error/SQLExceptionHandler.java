@@ -19,7 +19,7 @@ package org.apache.shardingsphere.error;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.error.code.CommonSQLErrorCode;
+import org.apache.shardingsphere.error.code.StandardSQLErrorCode;
 import org.apache.shardingsphere.error.code.SQLErrorCode;
 import org.apache.shardingsphere.error.mapper.SQLExceptionMapperFactory;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
@@ -52,26 +52,26 @@ public final class SQLExceptionHandler {
         if (insideException instanceof InsideDialectSQLException) {
             return SQLExceptionMapperFactory.getInstance(databaseType).convert((InsideDialectSQLException) insideException);
         }
-        return convert(insideException).orElseGet(() -> toSQLException(CommonSQLErrorCode.UNKNOWN_EXCEPTION, insideException.getMessage()));
+        return convert(insideException).orElseGet(() -> toSQLException(StandardSQLErrorCode.UNKNOWN_EXCEPTION, insideException.getMessage()));
     }
     
     private static Optional<SQLException> convert(final ShardingSphereInsideException insideException) {
         if (insideException instanceof CircuitBreakException) {
-            return Optional.of(toSQLException(CommonSQLErrorCode.CIRCUIT_BREAK_MODE));
+            return Optional.of(toSQLException(StandardSQLErrorCode.CIRCUIT_BREAK_MODE));
         }
         if (insideException instanceof ShardingSphereConfigurationException || insideException instanceof SQLParsingException) {
-            return Optional.of(toSQLException(CommonSQLErrorCode.UNSUPPORTED_SQL, insideException.getMessage()));
+            return Optional.of(toSQLException(StandardSQLErrorCode.UNSUPPORTED_SQL, insideException.getMessage()));
         }
         if (insideException instanceof RuleNotExistedException || insideException instanceof ResourceNotExistedException) {
-            return Optional.of(toSQLException(CommonSQLErrorCode.RESOURCE_OR_RULE_NOT_EXIST));
+            return Optional.of(toSQLException(StandardSQLErrorCode.RESOURCE_OR_RULE_NOT_EXIST));
         }
         if (insideException instanceof TableLockWaitTimeoutException) {
             TableLockWaitTimeoutException exception = (TableLockWaitTimeoutException) insideException;
-            return Optional.of(toSQLException(CommonSQLErrorCode.TABLE_LOCK_WAIT_TIMEOUT, exception.getTableName(), exception.getSchemaName(), exception.getTimeoutMilliseconds()));
+            return Optional.of(toSQLException(StandardSQLErrorCode.TABLE_LOCK_WAIT_TIMEOUT, exception.getTableName(), exception.getSchemaName(), exception.getTimeoutMilliseconds()));
         }
         if (insideException instanceof TableLockedException) {
             TableLockedException exception = (TableLockedException) insideException;
-            return Optional.of(toSQLException(CommonSQLErrorCode.TABLE_LOCKED, exception.getTableName(), exception.getSchemaName()));
+            return Optional.of(toSQLException(StandardSQLErrorCode.TABLE_LOCKED, exception.getTableName(), exception.getSchemaName()));
         }
         return Optional.empty();
     }
