@@ -36,7 +36,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public final class ScalingCaseHelper {
     
-    private static final SnowflakeKeyGenerateAlgorithm SNOWFLAKE_KEY_GENERATE_ALGORITHM = new SnowflakeKeyGenerateAlgorithm();
+    public static final SnowflakeKeyGenerateAlgorithm SNOWFLAKE_KEY_GENERATE_ALGORITHM = new SnowflakeKeyGenerateAlgorithm();
     
     /**
      * Generate MySQL insert data, contains full fields.
