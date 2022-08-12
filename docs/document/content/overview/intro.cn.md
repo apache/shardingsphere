@@ -18,18 +18,25 @@ ShardingSphere 已于 2020 年 4 月 16 日成为 [Apache 软件基金会](https
 
 ### ShardingSphere-JDBC
 
+[![Maven Status](https://img.shields.io/maven-central/v/org.apache.shardingsphere/shardingsphere-jdbc.svg?color=green)](https://mvnrepository.com/artifact/org.apache.shardingsphere/shardingsphere-jdbc)
+
 ShardingSphere-JDBC 是 Apache ShardingSphere 的第一个产品，也是 Apache ShardingSphere 的前身。
-定位为轻量级 Java 框架，在 Java 的 JDBC 层提供的额外服务。
+它定位为轻量级 Java 框架，在 Java 的 JDBC 层提供的额外服务。
 它使用客户端直连数据库，以 jar 包形式提供服务，无需额外部署和依赖，可理解为增强版的 JDBC 驱动，完全兼容 JDBC 和各种 ORM 框架。
 
 ShardingSphere-JDBC 的优势在于极致性能和对 Java 应用的友好度。
 
 ### ShardingSphere-Proxy
 
-ShardingSphere-Proxy 是 Apache ShardingSphere 的第二个产品。它定位为透明化的数据库代理端，提供封装了数据库二进制协议的服务端版本，用于完成对异构语言的支持。
-目前提供 MySQL 和 PostgreSQL（兼容 openGauss 等基于 PostgreSQL 的数据库）版本，它可以使用任何兼容 MySQL/PostgreSQL 协议的访问客户端（如：MySQL Command Client, MySQL Workbench, Navicat 等）操作数据，对 DBA 更加友好。
+[![Nightly-Download](https://img.shields.io/badge/nightly--builds-download-orange.svg)](https://nightlies.apache.org/shardingsphere/)
+[![Download](https://img.shields.io/badge/release-download-orange.svg)](/cn/downloads/)
+[![Docker Pulls](https://img.shields.io/docker/pulls/apache/shardingsphere-proxy.svg)](https://hub.docker.com/r/apache/shardingsphere-proxy)
 
-ShardingSphere-Proxy 的优势在于异构语言的支持和对 DBA 的友好度。
+ShardingSphere-Proxy 是 Apache ShardingSphere 的第二个产品。
+它定位为透明化的数据库代理端，通过实现数据库二进制协议，对异构语言提供支持。
+目前提供 MySQL 和 PostgreSQL 协议，透明化数据库操作，对 DBA 更加友好。
+
+ShardingSphere-Proxy 的优势在于对异构语言的支持，以及为 DBA 提供可操作入口。
 
 ## 产品定位
 
