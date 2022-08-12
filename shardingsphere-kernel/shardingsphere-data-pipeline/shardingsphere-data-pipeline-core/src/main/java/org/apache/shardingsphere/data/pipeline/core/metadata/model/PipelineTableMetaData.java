@@ -87,22 +87,6 @@ public final class PipelineTableMetaData {
     }
     
     /**
-     * Get ordinal position.
-     * TODO ordinal position is equal to column index(which in the definition of the java.sql.ResultSet), but the methods in this file, column index is being at 0, this may cause confusion
-     *
-     * @param columnName column name
-     * @return ordinal position
-     */
-    public int getOrdinalPosition(final String columnName) {
-        PipelineColumnMetaData result = columnMetaDataMap.get(columnName);
-        if (null == result) {
-            log.warn("getColumnMetaData, can not get column metadata for column name '{}', columnNames={}", columnName, columnNames);
-            throw new IllegalArgumentException("can not get column metadata for column name '" + columnName + "'");
-        }
-        return result.getOrdinalPosition();
-    }
-    
-    /**
      * Judge whether column is unique key or not.
      *
      * @param columnIndex column index

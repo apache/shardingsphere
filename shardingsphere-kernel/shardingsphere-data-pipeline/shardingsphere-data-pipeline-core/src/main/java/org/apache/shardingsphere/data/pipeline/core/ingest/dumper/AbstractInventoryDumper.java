@@ -167,7 +167,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
                     DataRecord record = new DataRecord(newPosition(resultSet), metaData.getColumnCount());
                     record.setType(IngestDataChangeType.INSERT);
                     record.setTableName(logicTableName);
-                    maxUniqueKeyValue = readValue(resultSet, tableMetaData.getOrdinalPosition(uniqueKey));
+                    maxUniqueKeyValue = readValue(resultSet, tableMetaData.getColumnMetaData(uniqueKey).getOrdinalPosition());
                     for (int i = 1; i <= metaData.getColumnCount(); i++) {
                         boolean isUniqueKey = tableMetaData.isUniqueKey(i - 1);
                         record.addColumn(new Column(metaData.getColumnName(i), readValue(resultSet, i), true, isUniqueKey));
