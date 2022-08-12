@@ -15,23 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.exception;
+package org.apache.shardingsphere.error.mapper;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 /**
- * Table exists exception.
+ * SQL exception mapper.
  */
-@Getter
-public final class TableExistsException extends ShardingSphereException {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SQLExceptionMapperFactory {
     
-    private static final long serialVersionUID = 6056681626545854214L;
+    static {
+        ShardingSphereServiceLoader.register(SQLExceptionMapper.class);
+    }
     
-    private final String tableName;
-    
-    public TableExistsException(final String tableName) {
-        super(String.format("Table '%s' already exists.", tableName));
-        this.tableName = tableName;
+    /**
+     * Convert ShardingSphere inside exception into SQLException.
+     * 
+     * @param databaseType database type
+     * @return SQLException
+     */
+    public static SQLExceptionMapper getInstance(final String databaseType) {
+        return TypedSPIRegistry.getRegisteredService(SQLExceptionMapper.class, databaseType);
     }
 }

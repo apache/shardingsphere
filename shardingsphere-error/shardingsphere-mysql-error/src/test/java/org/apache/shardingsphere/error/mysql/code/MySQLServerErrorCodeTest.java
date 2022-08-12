@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.mysql.constant;
+package org.apache.shardingsphere.error.mysql.code;
 
 import org.junit.Test;
 

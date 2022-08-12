@@ -20,9 +20,9 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.generic;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.error.SQLErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.error.code.SQLErrorCode;
 
 /**
  * ERR packet protocol for MySQL.

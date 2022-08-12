@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.infra.exception;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 
 /**
  * Insert columns and values mismatched exception.
  */
 @Getter
-public final class InsertColumnsAndValuesMismatchedException extends ShardingSphereException {
+public final class InsertColumnsAndValuesMismatchedException extends ShardingSphereInsideException {
     
     private static final long serialVersionUID = 5676889868213244575L;
     
