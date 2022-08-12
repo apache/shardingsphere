@@ -61,14 +61,14 @@ public final class MySQLIncrementTask extends BaseIncrementTask {
     private Object insertOrder() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         String status = random.nextInt() % 2 == 0 ? null : "NOT-NULL";
-        Object[] orderInsertDate = new Object[]{keyGenerateAlgorithm.generateKey(), random.nextInt(0, 6), random.nextInt(0, 6), random.nextInt(1, 99), status};
+        Object[] orderInsertDate = new Object[]{keyGenerateAlgorithm.generateKey(), System.currentTimeMillis(), random.nextInt(0, 6), random.nextInt(1, 99), status};
         jdbcTemplate.update("INSERT INTO t_order (id,order_id,user_id,t_unsigned_int,status) VALUES (?, ?, ?, ?, ?)", orderInsertDate);
         return orderInsertDate[0];
     }
     
     private Object insertOrderItem() {
         String status = ThreadLocalRandom.current().nextInt() % 2 == 0 ? null : "NOT-NULL";
-        Object[] orderInsertItemDate = new Object[]{keyGenerateAlgorithm.generateKey(), ThreadLocalRandom.current().nextInt(0, 6), ThreadLocalRandom.current().nextInt(0, 6), status};
+        Object[] orderInsertItemDate = new Object[]{keyGenerateAlgorithm.generateKey(), System.currentTimeMillis(), ThreadLocalRandom.current().nextInt(0, 6), status};
         jdbcTemplate.update("INSERT INTO t_order_item(item_id,order_id,user_id,status) VALUES(?,?,?,?)", orderInsertItemDate);
         return orderInsertItemDate[0];
     }
