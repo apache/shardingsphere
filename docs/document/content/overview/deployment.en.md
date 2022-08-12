@@ -9,12 +9,11 @@ chapter = true
 
 Apache ShardingSphere includes two independent clients: ShardingSphere-JDBC & ShardingSphere-Proxy. They all provide functions of data scale-out, distributed transaction and distributed governance, applicable in a variety of scenarios such as Java isomorphism, heterogeneous languages, and a cloud-native environment.
 
-### ShardingSphere-JDBC
+### Independent ShardingSphere-JDBC
 
-[![Maven Status](https://img.shields.io/maven-central/v/org.apache.shardingsphere/shardingsphere-jdbc.svg?color=green)](https://mvnrepository.com/artifact/org.apache.shardingsphere/shardingsphere-jdbc)
-
-As the community's first product and the predecessor of Apache ShardingSphere, ShardingSphere-JDBC is a lightweight Java framework that provides additional services at Java's JDBC layer.
-With the client connecting directly to the database, it provides services in the form of jar and requires no extra deployment and dependence. It can be considered as an enhanced version of the JDBC driver, which is fully compatible with JDBC and all kinds of ORM frameworks.
+ShardingSphere-JDBC is a lightweight Java framework that provides additional services at Java's JDBC layer.
+With the client connecting directly to the database, it provides services in the form of jar and requires no extra deployment and dependence.
+It can be considered as an enhanced version of the JDBC driver, which is fully compatible with JDBC and all kinds of ORM frameworks.
 
 - Applicable in any ORM framework based on JDBC, such as JPA, Hibernate, Mybatis, Spring JDBC Template, or direct use of JDBC;
 - Support any third-party database connection pool, such as DBCP, C3P0, BoneCP, HikariCP;
@@ -31,22 +30,15 @@ With the client connecting directly to the database, it provides services in the
 | Decentralization       | `Yes`               | No                   |
 | Static entry           | `No`                | Yes                  |
 
-ShardingSphere-JDBC is suitable for java applications.
+### Independent ShardingSphere-Proxy
 
-### ShardingSphere-Proxy
-
-[![Nightly-Release](https://img.shields.io/badge/nightly--builds-download-orange.svg)](https://nightlies.apache.org/shardingsphere/)
-[![Download](https://img.shields.io/badge/release-download-orange.svg)](/cn/downloads/)
-[![Docker Pulls](https://img.shields.io/docker/pulls/apache/shardingsphere-proxy.svg)](https://hub.docker.com/r/apache/shardingsphere-proxy)
-
-ShardingSphere-Proxy is Apache ShardingSphere's second product.
-It is a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages. 
-
-Currently, MySQL and PostgreSQL (compatible with PostgreSQL-based databases, such as openGauss) versions are provided.
-It can use any kind of terminal (such as MySQL Command Client, MySQL Workbench, etc.) that is compatible with MySQL or PostgreSQL protocol to operate data, which is more friendly to DBAs.
+ShardingSphere-Proxy is a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages.
+Currently, MySQL and PostgreSQL protocols are provided.
+It can use any kind of terminal that is compatible with MySQL or PostgreSQL protocol to operate data, which is more friendly to DBAs.
 
 - Transparent to applications, it can be used directly as MySQL/PostgreSQL;
-- Applicable to any kind of client that is compatible with MySQL/PostgreSQL protocol.
+- Compatible with MySQL-based databases, such as MariaDB, and PostgreSQL-based databases, such as openGauss;
+- Applicable to any kind of client that is compatible with MySQL/PostgreSQL protocol, such as MySQL Command Client, MySQL Workbench, etc.
 
 ![ShardingSphere-Proxy Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-proxy_v2.png)
 
@@ -58,8 +50,6 @@ It can use any kind of terminal (such as MySQL Command Client, MySQL Workbench, 
 | Performance            | Low loss            | `Relatively High loss` |
 | Decentralization       | Yes                 | `No`                   |
 | Static entry           | No                  | `Yes`                  |
-
-The advantages of ShardingSphere-Proxy lie in supporting heterogeneous languages and providing operational entries for DBA.
 
 ### Hybrid Architecture
 

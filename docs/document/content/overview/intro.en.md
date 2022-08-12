@@ -22,6 +22,8 @@ You are welcome to check out the mailing list and discuss via [mail](mailto:dev@
 
 ### ShardingSphere-JDBC
 
+[![Maven Status](https://img.shields.io/maven-central/v/org.apache.shardingsphere/shardingsphere-jdbc.svg?color=green)](https://mvnrepository.com/artifact/org.apache.shardingsphere/shardingsphere-jdbc)
+
 As the community's first product and the predecessor of Apache ShardingSphere, ShardingSphere-JDBC is a lightweight Java framework that provides additional services at Java's JDBC layer.
 With the client connecting directly to the database, it provides services in the form of jar and requires no extra deployment and dependence. It can be considered as an enhanced version of the JDBC driver, which is fully compatible with JDBC and all kinds of ORM frameworks.
 
@@ -29,11 +31,14 @@ ShardingSphere-JDBC is suitable for java applications.
 
 ### ShardingSphere-Proxy
 
+[![Nightly-Download](https://img.shields.io/badge/nightly--builds-download-orange.svg)](https://nightlies.apache.org/shardingsphere/)
+[![Download](https://img.shields.io/badge/release-download-orange.svg)](/cn/downloads/)
+[![Docker Pulls](https://img.shields.io/docker/pulls/apache/shardingsphere-proxy.svg)](https://hub.docker.com/r/apache/shardingsphere-proxy)
+
 ShardingSphere-Proxy is Apache ShardingSphere's second product.
 It is a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages. 
-
-Currently, MySQL and PostgreSQL (compatible with PostgreSQL-based databases, such as openGauss) versions are provided.
-It can use any kind of terminal (such as MySQL Command Client, MySQL Workbench, etc.) that is compatible with MySQL or PostgreSQL protocol to operate data, which is more friendly to DBAs.
+Currently, MySQL and PostgreSQL protocols are provided.
+It can use any kind of terminal that is compatible with MySQL or PostgreSQL protocol to operate data, which is more friendly to DBAs.
 
 The advantages of ShardingSphere-Proxy lie in supporting heterogeneous languages and providing operational entries for DBA.
 
