@@ -7,7 +7,7 @@ chapter = true
 
 ## 定义
 
-Apache ShardingSphere 是一款开源的分布式数据库生态项目，由 JDBC 和 Proxy 这两款产品组成。
+Apache ShardingSphere 是一款开源的分布式数据库生态项目，由 JDBC 和 Proxy 两款产品组成。
 其核心采用可插拔架构，通过组件扩展功能。
 对上以数据库协议及 SQL 方式提供诸多增强功能，包括数据分片、访问路由、数据安全等；对下原生支持 MySQL、PostgreSQL、SQL Server、Oracle 等多种数据存储引擎。 
 Apache ShardingSphere 项目理念，是提供数据库增强计算服务平台，进而围绕其上构建生态。
@@ -18,40 +18,36 @@ ShardingSphere 已于 2020 年 4 月 16 日成为 [Apache 软件基金会](https
 
 ### ShardingSphere-JDBC
 
-ShardingSphere-JDBC 是 Apache ShardingSphere 的第一个产品，也是 Apache ShardingSphere 的前身。定位为轻量级 Java 框架，在 Java 的 JDBC 层提供的额外服务。
+ShardingSphere-JDBC 是 Apache ShardingSphere 的第一个产品，也是 Apache ShardingSphere 的前身。
+定位为轻量级 Java 框架，在 Java 的 JDBC 层提供的额外服务。
 它使用客户端直连数据库，以 jar 包形式提供服务，无需额外部署和依赖，可理解为增强版的 JDBC 驱动，完全兼容 JDBC 和各种 ORM 框架。
 
-* 适用于任何基于 JDBC 的 ORM 框架，如：JPA, Hibernate, Mybatis, Spring JDBC Template 或直接使用 JDBC；
-* 支持任何第三方的数据库连接池，如：DBCP, C3P0, BoneCP, HikariCP 等；
-* 支持任意实现 JDBC 规范的数据库，目前支持 MySQL，PostgreSQL，Oracle，SQLServer 以及任何可使用 JDBC 访问的数据库。
+- 适用于任何基于 JDBC 的 ORM 框架，如：JPA, Hibernate, Mybatis, Spring JDBC Template 或直接使用 JDBC；
+- 支持任何第三方的数据库连接池，如：DBCP, C3P0, BoneCP, HikariCP 等；
+- 支持任意实现 JDBC 规范的数据库，目前支持 MySQL，PostgreSQL，Oracle，SQLServer 以及任何可使用 JDBC 访问的数据库。
 
-|           | ShardingSphere-JDBC | ShardingSphere-Proxy |
-| --------- | ------------------- | -------------------- |
-| 数据库     | `任意`               | MySQL/PostgreSQL     |
-| 连接消耗数  | `高`                | 低                    |
-| 异构语言   | `仅 Java`            | 任意                  |
-| 性能      | `损耗低`              | 损耗略高               |
-| 无中心化   | `是`                 | 否                    |
-| 静态入口   | `无`                 | 有                    |
-
-ShardingSphere-JDBC 的优势在于对 Java 应用的友好度。
+ShardingSphere-JDBC 的优势在于极致性能和对 Java 应用的友好度。
 
 ### ShardingSphere-Proxy
 
 ShardingSphere-Proxy 是 Apache ShardingSphere 的第二个产品。它定位为透明化的数据库代理端，提供封装了数据库二进制协议的服务端版本，用于完成对异构语言的支持。
 目前提供 MySQL 和 PostgreSQL（兼容 openGauss 等基于 PostgreSQL 的数据库）版本，它可以使用任何兼容 MySQL/PostgreSQL 协议的访问客户端（如：MySQL Command Client, MySQL Workbench, Navicat 等）操作数据，对 DBA 更加友好。
 
-* 向应用程序完全透明，可直接当做 MySQL/PostgreSQL 使用；
-* 适用于任何兼容 MySQL/PostgreSQL 协议的的客户端。
+- 向应用程序完全透明，可直接当做 MySQL/PostgreSQL 使用；
+- 适用于任何兼容 MySQL/PostgreSQL 协议的的客户端。
+
+ShardingSphere-Proxy 的优势在于异构语言的支持和对 DBA 的友好度。
+
+### 对比
 
 |           | ShardingSphere-JDBC | ShardingSphere-Proxy |
 | --------- | ------------------- | -------------------- |
-| 数据库     | 任意                 | `MySQL/PostgreSQL`   |
-| 连接消耗数  | 高                  | `低`                  |
-| 异构语言   | 仅 Java              | `任意`                |
-| 性能      | 损耗低                | `损耗略高`             |
-| 无中心化   | 是                   | `否`                  |
-| 静态入口   | 无                   | `有`                  |
+| 数据库     | 任意                 | MySQL/PostgreSQL     |
+| 连接消耗数  | 高                  | 低                    |
+| 异构语言   | 仅 Java              | 任意                  |
+| 性能      | 损耗低                | 损耗略高               |
+| 无中心化   | 是                   | 否                    |
+| 静态入口   | 无                   | 有                    |
 
 ## 产品定位
 
