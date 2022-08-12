@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.integration.env.container.atomic.adapter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.impl.ShardingSphereJDBCContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.impl.ShardingSphereProxyStandaloneContainer;
@@ -39,29 +40,15 @@ public final class AdapterContainerFactory {
      * @param databaseType database type
      * @param storageContainer storage container
      * @param scenario scenario
-     * @return created instance
-     */
-    public static AdapterContainer newInstance(final String mode, final String adapter, final DatabaseType databaseType, final StorageContainer storageContainer, final String scenario) {
-        return newInstance(mode, adapter, databaseType, storageContainer, scenario, "");
-    }
-    
-    /**
-     * Create new instance of adapter container.
-     *
-     * @param mode mode
-     * @param adapter adapter
-     * @param databaseType database type
-     * @param storageContainer storage container
-     * @param scenario scenario
-     * @param module module
-     * @return created instance
+     * @param adaptorContainerConfig adaptor container configuration
+     * @return adapter container
      */
     public static AdapterContainer newInstance(final String mode, final String adapter, final DatabaseType databaseType,
-                                               final StorageContainer storageContainer, final String scenario, final String module) {
+                                               final StorageContainer storageContainer, final String scenario, final AdaptorContainerConfiguration adaptorContainerConfig) {
         switch (adapter) {
             case "proxy":
                 if ("Cluster".equalsIgnoreCase(mode)) {
-                    return new ShardingSphereProxyClusterContainer(databaseType, scenario, storageContainer, module);
+                    return new ShardingSphereProxyClusterContainer(databaseType, scenario, storageContainer, adaptorContainerConfig);
                 }
                 return new ShardingSphereProxyStandaloneContainer(databaseType, scenario);
             case "jdbc":

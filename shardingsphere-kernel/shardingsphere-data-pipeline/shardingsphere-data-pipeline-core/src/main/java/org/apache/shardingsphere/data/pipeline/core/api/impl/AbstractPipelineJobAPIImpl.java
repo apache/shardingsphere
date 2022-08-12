@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.data.pipeline.core.api.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPI;
-import org.apache.shardingsphere.data.pipeline.api.job.JobType;
+import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
+import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobNotFoundException;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineVerifyFailedException;
@@ -39,22 +39,10 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     
     @Override
     public final String marshalJobId(final PipelineJobId pipelineJobId) {
-        return 'j' + pipelineJobId.getTypeCode() + marshalJobIdLeftPart(pipelineJobId);
+        return PipelineJobIdUtils.marshalJobIdCommonPrefix(pipelineJobId) + marshalJobIdLeftPart(pipelineJobId);
     }
     
     protected abstract String marshalJobIdLeftPart(PipelineJobId pipelineJobId);
-    
-    @Override
-    public JobType parseJobType(final String jobId) {
-        if (jobId.length() <= 3) {
-            throw new IllegalArgumentException("Invalid jobId length, jobId=" + jobId);
-        }
-        if ('j' == jobId.charAt(0)) {
-            throw new IllegalArgumentException("Invalid jobId, first char=" + jobId.charAt(0));
-        }
-        String typeCode = jobId.substring(1, 3);
-        return JobType.valueOfByCode(typeCode);
-    }
     
     @Override
     public void startDisabledJob(final String jobId) {

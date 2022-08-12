@@ -20,10 +20,10 @@ grammar BaseRule;
 import Symbol, Keyword, Literals;
 
 algorithmDefinition
-    : TYPE LP NAME EQ algorithmName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
+    : TYPE LP NAME EQ algorithmTypeName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
     ;
 
-algorithmName
+algorithmTypeName
     : STRING
     ;
 
