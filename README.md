@@ -130,9 +130,8 @@ They all provide functions of data scale-out, distributed transaction and distri
 
 [![Maven Status](https://img.shields.io/maven-central/v/org.apache.shardingsphere/shardingsphere-jdbc.svg?color=green)](https://mvnrepository.com/artifact/org.apache.shardingsphere/shardingsphere-jdbc)
 
-A lightweight Java framework that provides additional services at Java's JDBC layer.
-With the client connecting directly to the database, it provides services in the form of jar and requires no extra deployment and dependence.
-It can be considered as an enhanced version of the JDBC driver, which is fully compatible with JDBC and all kinds of ORM frameworks.
+A lightweight Java framework providing extra services at the Java JDBC layer. 
+With the client end connecting directly to the database, it provides services in the form of a jar and requires no extra deployment and dependence.
 
 :link: For more details, follow this [link to the official website](https://shardingsphere.apache.org/document/current/en/overview/#shardingsphere-jdbc).
 
@@ -144,9 +143,8 @@ It can be considered as an enhanced version of the JDBC driver, which is fully c
 [![Download](https://img.shields.io/badge/release-download-orange.svg)](https://www.apache.org/dyn/closer.lua/shardingsphere/5.1.2/apache-shardingsphere-5.1.2-shardingsphere-proxy-bin.tar.gz)
 [![Docker Pulls](https://img.shields.io/docker/pulls/apache/shardingsphere-proxy.svg)](https://store.docker.com/community/images/apache/shardingsphere-proxy)
 
-A transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages.
-Currently, MySQL and PostgreSQL protocols are provided.
-It can use any kind of terminal that is compatible with MySQL or PostgreSQL protocol to operate data, which is more friendly to DBAs.
+A transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages. 
+Friendlier to DBAs, the MySQL and PostgreSQL version now provided can use any kind of terminal.
 
 :link: For more details, follow this [link to the official website](https://shardingsphere.apache.org/document/current/en/overview/#shardingsphere-proxy).
 
