@@ -23,11 +23,12 @@ import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContex
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.PipelineJobItemProgress;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
  * Pipeline job API.
  */
-public interface PipelineJobAPI {
+public interface PipelineJobAPI extends TypedSPI {
     
     /**
      * Marshal pipeline job id.

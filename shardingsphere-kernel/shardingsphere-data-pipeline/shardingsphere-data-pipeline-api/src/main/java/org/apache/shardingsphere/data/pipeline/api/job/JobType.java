@@ -52,7 +52,7 @@ public enum JobType {
      * Value of by code.
      *
      * @param typeCode type code
-     * @return job type
+     * @return job type, might be null
      */
     public static JobType valueOfByCode(final String typeCode) {
         return CODE_JOB_TYPE_MAP.get(typeCode);

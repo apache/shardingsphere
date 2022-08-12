@@ -37,6 +37,7 @@ public final class PipelineJobIdUtils {
      *
      * @param jobId job id
      * @return job type
+     * @throws IllegalArgumentException if job id is invalid
      */
     public static JobType parseJobType(final String jobId) {
         if (jobId.length() <= 3) {
@@ -46,6 +47,10 @@ public final class PipelineJobIdUtils {
             throw new IllegalArgumentException("Invalid jobId, first char=" + jobId.charAt(0));
         }
         String typeCode = jobId.substring(1, 3);
-        return JobType.valueOfByCode(typeCode);
+        JobType result = JobType.valueOfByCode(typeCode);
+        if (null == result) {
+            throw new IllegalArgumentException("Could not get JobType by '" + typeCode + "', jobId: " + jobId);
+        }
+        return result;
     }
 }

@@ -453,4 +453,9 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         jobItemProgress.setStatus(status);
         PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobItemProgress(jobId, shardingItem, YamlEngine.marshal(SWAPPER.swapToYamlConfiguration(jobItemProgress)));
     }
+    
+    @Override
+    public String getType() {
+        return JobType.MIGRATION.getTypeName();
+    }
 }
