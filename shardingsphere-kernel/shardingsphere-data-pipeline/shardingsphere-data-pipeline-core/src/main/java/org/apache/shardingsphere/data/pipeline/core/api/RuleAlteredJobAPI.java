@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api;
+package org.apache.shardingsphere.data.pipeline.core.api;
 
+import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
 
 import java.util.Map;
 import java.util.Optional;
@@ -29,7 +31,7 @@ import java.util.Optional;
  * Rule altered job API.
  */
 @SingletonSPI
-public interface RuleAlteredJobAPI extends PipelineJobAPI, MigrationJobPublicAPI {
+public interface RuleAlteredJobAPI extends PipelineJobAPI, MigrationJobPublicAPI, RequiredSPI {
     
     /**
      * Start scaling job by config.

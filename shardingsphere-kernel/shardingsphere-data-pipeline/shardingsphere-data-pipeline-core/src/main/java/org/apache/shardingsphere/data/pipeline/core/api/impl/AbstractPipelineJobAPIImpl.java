@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.api.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPI;
+import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;

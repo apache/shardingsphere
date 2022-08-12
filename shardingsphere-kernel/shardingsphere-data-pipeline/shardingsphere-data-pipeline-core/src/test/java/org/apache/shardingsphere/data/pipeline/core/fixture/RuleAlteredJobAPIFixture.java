@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.fixture;
+package org.apache.shardingsphere.data.pipeline.core.fixture;
 
-import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
+import org.apache.shardingsphere.data.pipeline.core.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.job.YamlPipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
@@ -25,7 +25,6 @@ import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContex
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.PipelineJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 
@@ -156,7 +155,7 @@ public final class RuleAlteredJobAPIFixture implements RuleAlteredJobAPI {
     }
     
     @Override
-    public PipelineJobItemProgress getJobItemProgress(final String jobId, final int shardingItem) {
+    public InventoryIncrementalJobItemProgress getJobItemProgress(final String jobId, final int shardingItem) {
         return null;
     }
     

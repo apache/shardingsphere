@@ -15,18 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api;
+package org.apache.shardingsphere.data.pipeline.core.api;
 
-import org.apache.shardingsphere.data.pipeline.api.fixture.RuleAlteredJobAPIFixture;
-import org.junit.Test;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-
-public final class RuleAlteredJobAPIFactoryTest {
+/**
+ * Rule altered job API factory.
+ */
+public final class RuleAlteredJobAPIFactory {
     
-    @Test
-    public void assertGetInstance() {
-        assertThat(RuleAlteredJobAPIFactory.getInstance(), instanceOf(RuleAlteredJobAPIFixture.class));
+    static {
+        ShardingSphereServiceLoader.register(RuleAlteredJobAPI.class);
+    }
+    
+    /**
+     * Get instance of rule altered job API.
+     *
+     * @return got instance
+     */
+    public static RuleAlteredJobAPI getInstance() {
+        return RequiredSPIRegistry.getRegisteredService(RuleAlteredJobAPI.class);
     }
 }
