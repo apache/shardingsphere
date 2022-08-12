@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.exception;
+package org.apache.shardingsphere.infra.exception.dialect;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.exception.inside.InsideDialectSQLException;
 
 /**
- * Unsupported command exception.
+ * Table exists exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class UnsupportedCommandException extends FrontendException {
+public final class TableExistsException extends InsideDialectSQLException {
     
-    private static final long serialVersionUID = 8010680371699936338L;
+    private static final long serialVersionUID = 6056681626545854214L;
     
-    private final String commandType;
+    private final String tableName;
 }

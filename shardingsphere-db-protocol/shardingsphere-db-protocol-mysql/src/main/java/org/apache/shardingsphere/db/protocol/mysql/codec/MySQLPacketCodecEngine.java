@@ -25,7 +25,7 @@ import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-import org.apache.shardingsphere.error.code.CommonErrorCode;
+import org.apache.shardingsphere.error.code.StandardSQLErrorCode;
 
 import java.nio.charset.Charset;
 import java.util.Iterator;
@@ -91,7 +91,7 @@ public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine<M
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             out.resetWriterIndex();
-            new MySQLErrPacket(1, CommonErrorCode.UNKNOWN_EXCEPTION, ex.getMessage()).write(payload);
+            new MySQLErrPacket(1, StandardSQLErrorCode.UNKNOWN_EXCEPTION, ex.getMessage()).write(payload);
         } finally {
             updateMessageHeader(out, message.getSequenceId());
         }

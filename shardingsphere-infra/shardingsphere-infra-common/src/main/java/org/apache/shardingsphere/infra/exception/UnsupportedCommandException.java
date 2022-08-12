@@ -19,16 +19,16 @@ package org.apache.shardingsphere.infra.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+import org.apache.shardingsphere.infra.util.exception.inside.ShardingSphereInsideException;
 
 /**
- * DB drop exists exception.
+ * Unsupported command exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DBDropNotExistsException extends ShardingSphereInsideException {
+public final class UnsupportedCommandException extends ShardingSphereInsideException {
     
-    private static final long serialVersionUID = 6088272565526510361L;
+    private static final long serialVersionUID = 8010680371699936338L;
     
-    private final String databaseName;
+    private final String commandType;
 }

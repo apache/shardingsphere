@@ -23,9 +23,9 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.opengauss.packet.command.generic.OpenGaussErrorResponsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
-import org.apache.shardingsphere.error.mapper.SQLExceptionMapperFactory;
+import org.apache.shardingsphere.error.SQLExceptionHandler;
 import org.apache.shardingsphere.error.postgresql.code.PostgreSQLErrorCode;
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+import org.apache.shardingsphere.infra.util.exception.inside.ShardingSphereInsideException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.InvalidAuthorizationSpecificationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLAuthenticationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLProtocolViolationException;
@@ -76,7 +76,7 @@ public final class OpenGaussErrorPacketFactory {
             return createErrorResponsePacket((SQLException) cause);
         }
         if (cause instanceof ShardingSphereInsideException) {
-            return createErrorResponsePacket(SQLExceptionMapperFactory.getInstance("PostgreSQL").convert((ShardingSphereInsideException) cause));
+            return createErrorResponsePacket(SQLExceptionHandler.convert("PostgreSQL", (ShardingSphereInsideException) cause));
         }
         if (cause instanceof InvalidAuthorizationSpecificationException) {
             return new OpenGaussErrorResponsePacket(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION.getErrorCode(), cause.getMessage());

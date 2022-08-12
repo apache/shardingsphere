@@ -15,23 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception;
-
-import lombok.Getter;
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+package org.apache.shardingsphere.infra.util.exception.inside;
 
 /**
- * No such table exception.
+ * Inside dialect SQL exception.
  */
-@Getter
-public final class NoSuchTableException extends ShardingSphereInsideException {
+public abstract class InsideDialectSQLException extends ShardingSphereInsideException {
     
-    private static final long serialVersionUID = 8311953084941769743L;
-    
-    private final String tableName;
-    
-    public NoSuchTableException(final String tableName) {
-        super(String.format("Table '%s' doesn't exist", tableName));
-        this.tableName = tableName;
-    }
+    private static final long serialVersionUID = -5090068160364259336L;
 }

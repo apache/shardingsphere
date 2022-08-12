@@ -20,17 +20,17 @@ package org.apache.shardingsphere.proxy.frontend.mysql.err;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
-import org.apache.shardingsphere.infra.exception.NoDatabaseSelectedException;
-import org.apache.shardingsphere.infra.exception.UnknownDatabaseException;
+import org.apache.shardingsphere.infra.exception.dialect.NoDatabaseSelectedException;
+import org.apache.shardingsphere.infra.exception.dialect.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.exception.CircuitBreakException;
-import org.apache.shardingsphere.infra.exception.DBCreateExistsException;
-import org.apache.shardingsphere.infra.exception.DBDropNotExistsException;
-import org.apache.shardingsphere.infra.exception.TableModifyInTransactionException;
+import org.apache.shardingsphere.infra.exception.dialect.DBCreateExistsException;
+import org.apache.shardingsphere.infra.exception.dialect.DBDropNotExistsException;
+import org.apache.shardingsphere.infra.exception.dialect.TableModifyInTransactionException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.UnsupportedVariableException;
-import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedCommandException;
+import org.apache.shardingsphere.infra.exception.UnsupportedCommandException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
-import org.apache.shardingsphere.infra.exception.NoSuchTableException;
-import org.apache.shardingsphere.infra.exception.TableExistsException;
+import org.apache.shardingsphere.infra.exception.dialect.NoSuchTableException;
+import org.apache.shardingsphere.infra.exception.dialect.TableExistsException;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.junit.Test;
 
@@ -160,7 +160,7 @@ public final class MySQLErrPacketFactoryTest {
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(1235));
         assertThat(actual.getSqlState(), is("42000"));
-        assertThat(actual.getErrorMessage(), is("This version of ShardingSphere-Proxy doesn't yet support this SQL. 'No reason'"));
+        assertThat(actual.getErrorMessage(), is("Unsupported SQL: No reason"));
     }
     
     @Test
@@ -178,7 +178,7 @@ public final class MySQLErrPacketFactoryTest {
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(1000));
         assertThat(actual.getSqlState(), is("C1000"));
-        assertThat(actual.getErrorMessage(), is("Circuit break mode is ON."));
+        assertThat(actual.getErrorMessage(), is("Circuit break mode is ON"));
     }
     
     @Test
@@ -200,7 +200,7 @@ public final class MySQLErrPacketFactoryTest {
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(1998));
         assertThat(actual.getSqlState(), is("C1998"));
-        assertThat(actual.getErrorMessage(), is("Unsupported command: [No reason]"));
+        assertThat(actual.getErrorMessage(), is("Unsupported command: No reason"));
     }
     
     @Test
@@ -209,15 +209,6 @@ public final class MySQLErrPacketFactoryTest {
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(1999));
         assertThat(actual.getSqlState(), is("C1999"));
-        assertThat(actual.getErrorMessage(), is("Unknown exception: [No reason]"));
-    }
-    
-    @Test
-    public void assertNewInstanceWithRuntimeException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new RuntimeException("No reason"));
-        assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getErrorCode(), is(1997));
-        assertThat(actual.getSqlState(), is("C1997"));
-        assertThat(actual.getErrorMessage(), is("Runtime exception: [No reason]"));
+        assertThat(actual.getErrorMessage(), is("Unknown exception: No reason"));
     }
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.exception;
 
+import org.apache.shardingsphere.infra.exception.UnsupportedCommandException;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

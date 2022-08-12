@@ -15,20 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+package org.apache.shardingsphere.infra.util.exception.inside;
 
 /**
- * In transaction exception.
+ * Inside SQL exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class InTransactionException extends ShardingSphereInsideException {
+public abstract class InsideSQLException extends ShardingSphereInsideException {
     
-    private static final long serialVersionUID = 8125852172126111520L;
-    
-    private final String message;
+    private static final long serialVersionUID = 7714986207341294016L;
 }

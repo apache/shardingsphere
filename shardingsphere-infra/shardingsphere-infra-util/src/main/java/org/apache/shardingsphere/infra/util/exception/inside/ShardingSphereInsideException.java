@@ -15,25 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception;
+package org.apache.shardingsphere.infra.util.exception.inside;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+import lombok.NoArgsConstructor;
 
 /**
- * Insert columns and values mismatched exception.
+ * ShardingSphere inside exception.
  */
-@Getter
-public final class InsertColumnsAndValuesMismatchedException extends ShardingSphereInsideException {
+@NoArgsConstructor
+public abstract class ShardingSphereInsideException extends RuntimeException {
     
-    private static final long serialVersionUID = 5676889868213244575L;
+    private static final long serialVersionUID = -8238061892944243621L;
     
-    private static final String ERROR_MESSAGE = "The count columns and values are mismatched in INSERT statement.";
+    public ShardingSphereInsideException(final String errorMessage, final Object... args) {
+        super(String.format(errorMessage, args));
+    }
     
-    private final int mismatchedRowNumber;
+    public ShardingSphereInsideException(final Exception cause) {
+        super(cause);
+    }
     
-    public InsertColumnsAndValuesMismatchedException(final int mismatchedRowNumber) {
-        super(ERROR_MESSAGE);
-        this.mismatchedRowNumber = mismatchedRowNumber;
+    public ShardingSphereInsideException(final String message, final Exception cause) {
+        super(message, cause);
     }
 }

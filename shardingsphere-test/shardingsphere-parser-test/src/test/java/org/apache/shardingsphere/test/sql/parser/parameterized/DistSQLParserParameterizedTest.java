@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.engine.api.DistSQLStatementParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
@@ -34,6 +35,7 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.Collection;
 
 @RunWith(Parameterized.class)
+@RequiredArgsConstructor
 public final class DistSQLParserParameterizedTest {
     
     private static final DistSQLCasesLoader DIST_SQL_CASES_LOADER = CasesRegistry.getInstance().getDistSQLCasesLoader();
@@ -43,10 +45,6 @@ public final class DistSQLParserParameterizedTest {
     private static final DistSQLStatementParserEngine ENGINE = new DistSQLStatementParserEngine();
     
     private final String sqlCaseId;
-    
-    public DistSQLParserParameterizedTest(final String sqlCaseId) {
-        this.sqlCaseId = sqlCaseId;
-    }
     
     @Parameters(name = "{0}")
     public static Collection<Object[]> getTestParameters() {

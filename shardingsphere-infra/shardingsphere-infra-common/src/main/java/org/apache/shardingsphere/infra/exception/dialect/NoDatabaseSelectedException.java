@@ -15,23 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.exception.fixture;
+package org.apache.shardingsphere.infra.exception.dialect;
 
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+import org.apache.shardingsphere.infra.util.exception.inside.InsideDialectSQLException;
 
-public final class ShardingSphereInsideExceptionFixture extends ShardingSphereInsideException {
+/**
+ * No database selected exception.
+ */
+public final class NoDatabaseSelectedException extends InsideDialectSQLException {
     
-    private static final long serialVersionUID = 3759417279204541147L;
-    
-    public ShardingSphereInsideExceptionFixture(final String message) {
-        super("Fixture error message: %s", message);
-    }
-    
-    public ShardingSphereInsideExceptionFixture(final String message, final Exception cause) {
-        super(message, cause);
-    }
-    
-    public ShardingSphereInsideExceptionFixture(final Exception cause) {
-        super(cause);
-    }
+    private static final long serialVersionUID = 7820981156141678308L;
 }
