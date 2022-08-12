@@ -22,11 +22,11 @@ import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatemen
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 
 /**
- * SQL lexer for migration.
+ * SQL lexer for migration dist SQL.
  */
-public final class MigrationDistSQLDistSQLLexer extends MigrationDistSQLStatementLexer implements SQLLexer {
+public final class MigrationDistSQLLexer extends MigrationDistSQLStatementLexer implements SQLLexer {
     
-    public MigrationDistSQLDistSQLLexer(final CharStream input) {
+    public MigrationDistSQLLexer(final CharStream input) {
         super(input);
     }
 }

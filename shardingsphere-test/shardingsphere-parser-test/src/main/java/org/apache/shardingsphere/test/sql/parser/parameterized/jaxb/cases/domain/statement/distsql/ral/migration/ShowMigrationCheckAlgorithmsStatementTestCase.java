@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Show scaling check algorithms statement test case.
+ * Show migration check algorithms statement test case.
  */
 public final class ShowMigrationCheckAlgorithmsStatementTestCase extends SQLParserTestCase {
 }

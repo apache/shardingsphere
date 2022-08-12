@@ -20,7 +20,7 @@ package org.apache.shardingsphere.migration.distsql.statement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
 
 /**
- * Show scaling check migration statement.
+ * Show migration check algorithms statement.
  */
 public final class ShowMigrationCheckAlgorithmsStatement extends QueryableScalingRALStatement {
 }
