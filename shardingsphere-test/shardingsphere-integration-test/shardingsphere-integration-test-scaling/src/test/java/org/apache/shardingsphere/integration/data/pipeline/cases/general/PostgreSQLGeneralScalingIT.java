@@ -93,7 +93,8 @@ public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
         String jobId = getScalingJobId();
         waitScalingFinished(jobId);
         stopScaling(jobId);
-        executeWithLog(String.format("INSERT INTO test.t_order (id,order_id,user_id,status) VALUES (%s, %s, %s, '%s')", keyGenerateAlgorithm.generateKey(), 1, 1, "afterStopScaling"));
+        executeWithLog(String.format("INSERT INTO test.t_order (id,order_id,user_id,status) VALUES (%s, %s, %s, '%s')", keyGenerateAlgorithm.generateKey(), System.currentTimeMillis(),
+                1, "afterStopScaling"));
         startScaling(jobId);
         assertCheckScalingSuccess(jobId);
         assertGreaterThanInitTableInitRows(TABLE_INIT_ROW_COUNT, "test");
