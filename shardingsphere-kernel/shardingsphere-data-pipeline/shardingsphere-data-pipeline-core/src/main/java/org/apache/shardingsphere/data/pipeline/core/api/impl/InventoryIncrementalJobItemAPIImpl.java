@@ -26,7 +26,6 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemIncrement
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemInventoryTasksProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
-import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobItemAPI;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalJobItemContext;
@@ -48,8 +47,6 @@ public final class InventoryIncrementalJobItemAPIImpl implements PipelineJobItem
     
     private static final YamlInventoryIncrementalJobItemProgressSwapper SWAPPER = new YamlInventoryIncrementalJobItemProgressSwapper();
     
-    private static final GovernanceRepositoryAPI REPOSITORY_API = PipelineAPIFactory.getGovernanceRepositoryAPI();
-    
     @Override
     public void persistJobItemProgress(final PipelineJobItemContext jobItemContext) {
         InventoryIncrementalJobItemContext context = (InventoryIncrementalJobItemContext) jobItemContext;
@@ -59,7 +56,7 @@ public final class InventoryIncrementalJobItemAPIImpl implements PipelineJobItem
         jobItemProgress.setIncremental(getIncrementalTasksProgress(context.getIncrementalTasks()));
         jobItemProgress.setInventory(getInventoryTasksProgress(context.getInventoryTasks()));
         String value = YamlEngine.marshal(SWAPPER.swapToYamlConfiguration(jobItemProgress));
-        REPOSITORY_API.persistJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), value);
+        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), value);
     }
     
     private JobItemIncrementalTasksProgress getIncrementalTasksProgress(final Collection<IncrementalTask> incrementalTasks) {
@@ -80,7 +77,7 @@ public final class InventoryIncrementalJobItemAPIImpl implements PipelineJobItem
     
     @Override
     public InventoryIncrementalJobItemProgress getJobItemProgress(final String jobId, final int shardingItem) {
-        String data = REPOSITORY_API.getJobItemProgress(jobId, shardingItem);
+        String data = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobItemProgress(jobId, shardingItem);
         if (StringUtils.isBlank(data)) {
             return null;
         }
@@ -95,6 +92,6 @@ public final class InventoryIncrementalJobItemAPIImpl implements PipelineJobItem
             return;
         }
         jobItemProgress.setStatus(status);
-        REPOSITORY_API.persistJobItemProgress(jobId, shardingItem, YamlEngine.marshal(SWAPPER.swapToYamlConfiguration(jobItemProgress)));
+        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobItemProgress(jobId, shardingItem, YamlEngine.marshal(SWAPPER.swapToYamlConfiguration(jobItemProgress)));
     }
 }
