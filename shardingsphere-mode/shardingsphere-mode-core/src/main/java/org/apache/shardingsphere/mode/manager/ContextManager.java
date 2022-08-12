@@ -464,7 +464,7 @@ public final class ContextManager implements AutoCloseable {
     }
     
     @Override
-    public void close() {
+    public void close() throws Exception {
         executorEngine.close();
         metaDataContexts.close();
     }
