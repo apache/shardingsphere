@@ -43,7 +43,7 @@ public final class PipelineJobIdUtils {
         if (jobId.length() <= 3) {
             throw new IllegalArgumentException("Invalid jobId length, jobId=" + jobId);
         }
-        if ('j' == jobId.charAt(0)) {
+        if ('j' != jobId.charAt(0)) {
             throw new IllegalArgumentException("Invalid jobId, first char=" + jobId.charAt(0));
         }
         String typeCode = jobId.substring(1, 3);
