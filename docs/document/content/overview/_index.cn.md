@@ -6,3 +6,5 @@ chapter = true
 +++
 
 本章介绍了什么是 Apache ShardingSphere，其及设计哲学和部署形态。
+
+更多常见问题，请参考 [FAQ](https://github.com/apache/shardingsphere/wiki/FAQ)。
