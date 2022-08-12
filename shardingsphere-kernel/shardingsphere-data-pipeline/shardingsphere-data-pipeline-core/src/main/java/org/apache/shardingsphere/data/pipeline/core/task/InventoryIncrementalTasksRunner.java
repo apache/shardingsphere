@@ -20,11 +20,12 @@ package org.apache.shardingsphere.data.pipeline.core.task;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
+import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
@@ -72,7 +73,7 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
             log.info("job stopping, ignore inventory task");
             return;
         }
-        RuleAlteredJobAPIFactory.getInstance().persistJobItemProgress(jobItemContext);
+        PipelineAPIFactory.getPipelineJobAPI(PipelineJobIdUtils.parseJobType(jobItemContext.getJobId())).persistJobItemProgress(jobItemContext);
         if (executeInventoryTask()) {
             if (jobItemContext.isStopping()) {
                 log.info("stopping, ignore incremental task");

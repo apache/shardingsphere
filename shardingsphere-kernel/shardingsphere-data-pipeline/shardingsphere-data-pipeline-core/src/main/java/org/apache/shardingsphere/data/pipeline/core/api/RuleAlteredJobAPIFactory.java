@@ -15,31 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.job;
+package org.apache.shardingsphere.data.pipeline.core.api;
+
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 
 /**
- * Pipeline job id.
+ * Rule altered job API factory.
  */
-public interface PipelineJobId {
+public final class RuleAlteredJobAPIFactory {
+    
+    static {
+        ShardingSphereServiceLoader.register(RuleAlteredJobAPI.class);
+    }
     
     /**
-     * Get type.
+     * Get instance of rule altered job API.
      *
-     * @return type
+     * @return got instance
      */
-    String getTypeCode();
-    
-    /**
-     * Get format version.
-     *
-     * @return format version
-     */
-    String getFormatVersion();
-    
-    /**
-     * Get database name.
-     *
-     * @return database name
-     */
-    String getDatabaseName();
+    public static RuleAlteredJobAPI getInstance() {
+        return RequiredSPIRegistry.getRegisteredService(RuleAlteredJobAPI.class);
+    }
 }

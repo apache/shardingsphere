@@ -15,31 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.job;
+package org.apache.shardingsphere.data.pipeline.core.context;
+
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
+import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
+import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
+
+import java.util.Collection;
 
 /**
- * Pipeline job id.
+ * Inventory incremental job item context.
  */
-public interface PipelineJobId {
+public interface InventoryIncrementalJobItemContext extends PipelineJobItemContext {
     
     /**
-     * Get type.
+     * Get inventory tasks.
      *
-     * @return type
+     * @return inventory tasks
      */
-    String getTypeCode();
+    Collection<InventoryTask> getInventoryTasks();
     
     /**
-     * Get format version.
+     * Get incremental tasks.
      *
-     * @return format version
+     * @return incremental tasks
      */
-    String getFormatVersion();
-    
-    /**
-     * Get database name.
-     *
-     * @return database name
-     */
-    String getDatabaseName();
+    Collection<IncrementalTask> getIncrementalTasks();
 }

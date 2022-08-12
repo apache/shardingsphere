@@ -15,31 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.job;
+package org.apache.shardingsphere.data.pipeline.api;
+
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
- * Pipeline job id.
+ * Pipeline job public API.
  */
-public interface PipelineJobId {
+public interface PipelineJobPublicAPI extends TypedSPI {
     
     /**
-     * Get type.
+     * Start pipeline job by id.
      *
-     * @return type
+     * @param jobId job id
      */
-    String getTypeCode();
+    void startDisabledJob(String jobId);
     
     /**
-     * Get format version.
+     * Stop pipeline job.
      *
-     * @return format version
+     * @param jobId job id
      */
-    String getFormatVersion();
+    void stop(String jobId);
     
     /**
-     * Get database name.
+     * Remove pipeline job.
      *
-     * @return database name
+     * @param jobId job id
      */
-    String getDatabaseName();
+    void remove(String jobId);
 }
