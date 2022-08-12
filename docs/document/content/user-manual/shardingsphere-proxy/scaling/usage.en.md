@@ -129,19 +129,19 @@ Example:
 ```sql
 ADD RESOURCE ds_2 (
     URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_2?serverTimezone=UTC&useSSL=false",
-    USER=root,
-    PASSWORD=root,
-    PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000")
+    USER="root",
+    PASSWORD="root",
+    PROPERTIES("maximumPoolSize"="10","idleTimeout"="30000")
 ), ds_3 (
     URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_3?serverTimezone=UTC&useSSL=false",
-    USER=root,
-    PASSWORD=root,
-    PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000")
+    USER="root",
+    PASSWORD="root",
+    PROPERTIES("maximumPoolSize"="10","idleTimeout"="30000")
 ), ds_4 (
     URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_4?serverTimezone=UTC&useSSL=false",
-    USER=root,
-    PASSWORD=root,
-    PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000")
+    USER="root",
+    PASSWORD="root",
+    PROPERTIES("maximumPoolSize"="10","idleTimeout"="30000")
 );
 ```
 
@@ -315,14 +315,14 @@ Add source database resource:
 ```sql
 ADD RESOURCE ds_0 (
     URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_0?serverTimezone=UTC&useSSL=false",
-    USER=root,
-    PASSWORD=root,
-    PROPERTIES("maximumPoolSize"=50,"idleTimeout"="60000")
+    USER="root",
+    PASSWORD="root",
+    PROPERTIES("maximumPoolSize"="50","idleTimeout"="60000")
 ), ds_1 (
     URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_1?serverTimezone=UTC&useSSL=false",
-    USER=root,
-    PASSWORD=root,
-    PROPERTIES("maximumPoolSize"=50,"idleTimeout"="60000")
+    USER="root",
+    PASSWORD="root",
+    PROPERTIES("maximumPoolSize"="50","idleTimeout"="60000")
 );
 ```
 
@@ -352,7 +352,7 @@ KEY_GENERATE_STRATEGY(COLUMN=order_item_id,TYPE(NAME=snowflake))
 );
 
 CREATE SHARDING SCALING RULE scaling_manual2 (
-DATA_CONSISTENCY_CHECKER(TYPE(NAME=CRC32_MATCH))
+DATA_CONSISTENCY_CHECKER(TYPE(NAME="CRC32_MATCH"))
 );
 ```
 
@@ -398,19 +398,19 @@ Add target database resource:
 ```sql
 ADD RESOURCE ds_2 (
     URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_10?serverTimezone=UTC&useSSL=false",
-    USER=root,
-    PASSWORD=root,
-    PROPERTIES("maximumPoolSize"=50,"idleTimeout"="60000")
+    USER="root",
+    PASSWORD="root",
+    PROPERTIES("maximumPoolSize"="50","idleTimeout"="60000")
 ), ds_3 (
     URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_11?serverTimezone=UTC&useSSL=false",
-    USER=root,
-    PASSWORD=root,
-    PROPERTIES("maximumPoolSize"=50,"idleTimeout"="60000")
+    USER="root",
+    PASSWORD="root",
+    PROPERTIES("maximumPoolSize"="50","idleTimeout"="60000")
 ), ds_4 (
     URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_12?serverTimezone=UTC&useSSL=false",
-    USER=root,
-    PASSWORD=root,
-    PROPERTIES("maximumPoolSize"=50,"idleTimeout"="60000")
+    USER="root",
+    PASSWORD="root",
+    PROPERTIES("maximumPoolSize"="50","idleTimeout"="60000")
 );
 ```
 
@@ -443,7 +443,7 @@ mysql> SHOW SCALING LIST;
 +--------------------------------------------+----------------------+----------------------+--------+---------------------+-----------+
 1 row in set (0.34 sec)
 
-mysql> SHOW SCALING STATUS 0130317c30317c3054317c7363616c696e675f6462;
+mysql> SHOW SCALING STATUS "0130317c30317c3054317c7363616c696e675f6462";
 +------+-------------+--------------------------+--------+-------------------------------+--------------------------+
 | item | data_source | status                   | active | inventory_finished_percentage | incremental_idle_seconds |
 +------+-------------+--------------------------+--------+-------------------------------+--------------------------+
@@ -458,13 +458,13 @@ Choose an idle time of business system, stop source database writing or stop upp
 
 Stop source writing in proxy:
 ```sql
-mysql> STOP SCALING SOURCE WRITING 0130317c30317c3054317c7363616c696e675f6462;
+mysql> STOP SCALING SOURCE WRITING "0130317c30317c3054317c7363616c696e675f6462";
 Query OK, 0 rows affected (0.07 sec)
 ```
 
 Data consistency check:
 ```sql
-mysql> CHECK SCALING 0130317c30317c3054317c7363616c696e675f6462 BY TYPE (NAME=CRC32_MATCH);
+mysql> CHECK SCALING "0130317c30317c3054317c7363616c696e675f6462" BY TYPE (NAME="CRC32_MATCH");
 +--------------+----------------------+----------------------+-----------------------+-------------------------+
 | table_name   | source_records_count | target_records_count | records_count_matched | records_content_matched |
 +--------------+----------------------+----------------------+-----------------------+-------------------------+
@@ -476,7 +476,7 @@ mysql> CHECK SCALING 0130317c30317c3054317c7363616c696e675f6462 BY TYPE (NAME=CR
 
 Apply metadata:
 ```sql
-mysql> APPLY SCALING 0130317c30317c3054317c7363616c696e675f6462;
+mysql> APPLY SCALING "0130317c30317c3054317c7363616c696e675f6462";
 Query OK, 0 rows affected (0.22 sec)
 ```
 

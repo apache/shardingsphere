@@ -241,7 +241,7 @@ public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStat
     
     @Override
     public ASTNode visitAlgorithmDefinition(final AlgorithmDefinitionContext ctx) {
-        return new AlgorithmSegment(getIdentifierValue(ctx.algorithmName()), getAlgorithmProperties(ctx));
+        return new AlgorithmSegment(getIdentifierValue(ctx.algorithmTypeName()), getAlgorithmProperties(ctx));
     }
     
     private Properties getAlgorithmProperties(final AlgorithmDefinitionContext ctx) {
