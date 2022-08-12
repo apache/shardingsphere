@@ -96,8 +96,18 @@ public final class PipelineTableMetaData {
         if (columnIndex >= columnNames.size()) {
             return false;
         }
+        return isPrimaryKey(columnIndex) || (columnNames.get(columnIndex).equals(uniqueIndexes.iterator().next().getColumns().get(0).getName()));
+    }
+    
+    /**
+     * Judge whether column is primary key or not.
+     *
+     * @param columnIndex column index
+     * @return true if the column is primary key, otherwise false
+     */
+    public boolean isPrimaryKey(final int columnIndex) {
         String columnName = columnNames.get(columnIndex);
-        return columnMetaDataMap.get(columnName).isPrimaryKey() || (columnName.equals(uniqueIndexes.iterator().next().getColumns().get(0).getName()));
+        return columnMetaDataMap.get(columnName).isPrimaryKey();
     }
     
     @Override
