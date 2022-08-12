@@ -63,7 +63,7 @@ public final class SQLExceptionHandler {
             return Optional.of(toSQLException(CommonErrorCode.UNSUPPORTED_SQL, insideException.getMessage()));
         }
         if (insideException instanceof RuleNotExistedException || insideException instanceof ResourceNotExistedException) {
-            return Optional.of(toSQLException(CommonErrorCode.NOT_EXIST_RULE));
+            return Optional.of(toSQLException(CommonErrorCode.RESOURCE_OR_RULE_NOT_EXIST));
         }
         if (insideException instanceof TableLockWaitTimeoutException) {
             TableLockWaitTimeoutException exception = (TableLockWaitTimeoutException) insideException;
