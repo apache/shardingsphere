@@ -54,7 +54,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -168,13 +167,10 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
                     DataRecord record = new DataRecord(newPosition(resultSet), metaData.getColumnCount());
                     record.setType(IngestDataChangeType.INSERT);
                     record.setTableName(logicTableName);
+                    maxUniqueKeyValue = readValue(resultSet, tableMetaData.getOrdinalPosition(uniqueKey));
                     for (int i = 1; i <= metaData.getColumnCount(); i++) {
                         boolean isUniqueKey = tableMetaData.isUniqueKey(i - 1);
-                        Object value = readValue(resultSet, i);
-                        if (Objects.equals(tableMetaData.getColumnMetaData(uniqueKey).getName(), metaData.getColumnName(i))) {
-                            maxUniqueKeyValue = value;
-                        }
-                        record.addColumn(new Column(metaData.getColumnName(i), value, true, isUniqueKey));
+                        record.addColumn(new Column(metaData.getColumnName(i), readValue(resultSet, i), true, isUniqueKey));
                     }
                     pushRecord(record);
                     rowCount++;
