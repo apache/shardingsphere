@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * Adaptor container configuration.
  */
-public interface AdaptorContainerConfiguration {
+public interface AdaptorContainerConfig {
     
     /**
      * Get wait strategy info.
