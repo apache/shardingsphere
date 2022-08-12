@@ -140,8 +140,8 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         return tableMetaDataLazyInitializer.get();
     }
     
-    private Optional<Object> dump0(final Connection conn, final String sql, final String uniqueKey, final int uniqueKeyDataType, final Object startUniqueKeyValue, final int round)
-            throws SQLException {
+    private Optional<Object> dump0(final Connection conn, final String sql, final String uniqueKey, final int uniqueKeyDataType, final Object startUniqueKeyValue,
+                                   final int round) throws SQLException {
         if (null != rateLimitAlgorithm) {
             rateLimitAlgorithm.intercept(JobOperationType.SELECT, 1);
         }
