@@ -29,10 +29,11 @@ import java.util.Map;
 public final class SuiteProxyClusterContainerConfigurationFactory {
     
     /**
-     * Creator adaptor container config.
+     * Create instance of adaptor container configuration.
+     * 
      * @param scenario scenario
      * @param databaseType database type
-     * @return adaptor container config
+     * @return adaptor container configuration
      */
     public static AdaptorContainerConfiguration newInstance(final String scenario, final DatabaseType databaseType) {
         return new AdaptorContainerConfiguration(scenario, getMountedResources(scenario, databaseType));

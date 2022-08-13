@@ -26,7 +26,7 @@ import java.util.Map;
 public final class ProxyClusterContainerConfigurationFactory {
 
     /**
-     * Create adaptor container configuration.
+     * Create new instance of adaptor container configuration.
      *
      * @return adaptor container configuration
      */

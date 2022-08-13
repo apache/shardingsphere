@@ -30,10 +30,11 @@ import java.util.Map;
 public final class ScalingProxyClusterContainerConfigurationFactory {
     
     /**
-     * Create adaptor container config.
+     * Create instance of adaptor container configuration.
+     * 
      * @param databaseType database type
      * @param dockerImageName docker image name
-     * @return adaptor container config
+     * @return adaptor container configuration
      */
     public static AdaptorContainerConfiguration newInstance(final DatabaseType databaseType, final String dockerImageName) {
         return new AdaptorContainerConfiguration(getProxyDatasourceName(databaseType), getMountedResource(databaseType, dockerImageName));
