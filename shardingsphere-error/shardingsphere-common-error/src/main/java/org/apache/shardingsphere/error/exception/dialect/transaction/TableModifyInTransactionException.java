@@ -19,7 +19,7 @@ package org.apache.shardingsphere.error.exception.dialect.transaction;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.inside.SQLDialectException;
+import org.apache.shardingsphere.error.exception.dialect.SQLDialectException;
 
 /**
  * Table modify in transaction exception.

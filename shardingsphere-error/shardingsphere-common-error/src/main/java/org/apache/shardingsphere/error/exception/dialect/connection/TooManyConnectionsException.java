@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.error.exception.dialect.connection;
 
-import org.apache.shardingsphere.infra.util.exception.inside.SQLDialectException;
+import org.apache.shardingsphere.error.exception.dialect.SQLDialectException;
 
 /**
  * Too many connections exception.

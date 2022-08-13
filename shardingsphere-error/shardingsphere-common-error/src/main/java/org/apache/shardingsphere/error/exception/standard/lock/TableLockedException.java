@@ -15,14 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.exception.standard;
+package org.apache.shardingsphere.error.exception.standard.lock;
 
-import org.apache.shardingsphere.infra.util.exception.inside.ShardingSphereInsideException;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.error.exception.standard.SQLStandardException;
 
 /**
- * Resource does not exist exception.
+ * Table locked exception.
  */
-public final class ResourceNotExistedException extends ShardingSphereInsideException {
+@RequiredArgsConstructor
+@Getter
+public final class TableLockedException extends SQLStandardException {
     
-    private static final long serialVersionUID = 4146100333670404924L;
+    private static final long serialVersionUID = 2622020743612706932L;
+    
+    private final String schemaName;
+    
+    private final String tableName;
 }

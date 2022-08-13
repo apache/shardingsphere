@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.exception.inside;
+package org.apache.shardingsphere.error.exception.standard;
+
+import org.apache.shardingsphere.infra.util.exception.inside.ShardingSphereInsideException;
 
 /**
- * Inside SQL exception.
+ * SQL standard exception.
  */
-public abstract class InsideSQLException extends ShardingSphereInsideException {
+public abstract class SQLStandardException extends ShardingSphereInsideException {
     
-    private static final long serialVersionUID = 7714986207341294016L;
+    private static final long serialVersionUID = -8238061892944243621L;
 }

@@ -30,7 +30,7 @@ import org.apache.shardingsphere.error.exception.dialect.syntax.database.Unknown
 import org.apache.shardingsphere.error.exception.dialect.syntax.table.NoSuchTableException;
 import org.apache.shardingsphere.error.exception.dialect.syntax.table.TableExistsException;
 import org.apache.shardingsphere.error.exception.dialect.transaction.TableModifyInTransactionException;
-import org.apache.shardingsphere.infra.util.exception.inside.SQLDialectException;
+import org.apache.shardingsphere.error.exception.dialect.SQLDialectException;
 
 import java.sql.SQLException;
 

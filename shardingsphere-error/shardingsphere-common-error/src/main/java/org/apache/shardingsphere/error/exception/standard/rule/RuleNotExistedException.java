@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.exception.standard;
+package org.apache.shardingsphere.error.exception.standard.rule;
 
-import org.apache.shardingsphere.infra.util.exception.inside.ShardingSphereInsideException;
+import org.apache.shardingsphere.error.exception.standard.SQLStandardException;
 
 /**
- * Circuit break exception.
+ * Rule does not exist exception.
  */
-public final class CircuitBreakException extends ShardingSphereInsideException {
+public final class RuleNotExistedException extends SQLStandardException {
     
-    private static final long serialVersionUID = 6339672680026286798L;
+    private static final long serialVersionUID = -4150905802300104824L;
 }

@@ -15,14 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.exception.standard;
+package org.apache.shardingsphere.error.exception.standard.command;
 
-import org.apache.shardingsphere.infra.util.exception.inside.ShardingSphereInsideException;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.error.exception.standard.SQLStandardException;
 
 /**
- * Rule does not exist exception.
+ * Unsupported command exception.
  */
-public final class RuleNotExistedException extends ShardingSphereInsideException {
+@RequiredArgsConstructor
+@Getter
+public final class UnsupportedCommandException extends SQLStandardException {
     
-    private static final long serialVersionUID = -4150905802300104824L;
+    private static final long serialVersionUID = 8010680371699936338L;
+    
+    private final String commandType;
 }

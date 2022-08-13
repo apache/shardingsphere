@@ -15,20 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.exception.standard;
+package org.apache.shardingsphere.error.exception.standard.connection;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.inside.ShardingSphereInsideException;
+import org.apache.shardingsphere.error.exception.standard.SQLStandardException;
 
 /**
- * Unsupported command exception.
+ * Circuit break exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class UnsupportedCommandException extends ShardingSphereInsideException {
+public final class CircuitBreakException extends SQLStandardException {
     
-    private static final long serialVersionUID = 8010680371699936338L;
-    
-    private final String commandType;
+    private static final long serialVersionUID = 6339672680026286798L;
 }

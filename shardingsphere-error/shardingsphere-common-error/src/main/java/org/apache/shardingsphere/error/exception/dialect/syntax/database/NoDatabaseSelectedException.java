@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.error.exception.dialect.syntax.database;
 
-import org.apache.shardingsphere.infra.util.exception.inside.SQLDialectException;
+import org.apache.shardingsphere.error.exception.dialect.SQLDialectException;
 
 /**
  * No database selected exception.

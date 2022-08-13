@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.exception.inside;
+package org.apache.shardingsphere.error.exception.dialect;
+
+import org.apache.shardingsphere.infra.util.exception.inside.ShardingSphereInsideException;
 
 /**
  * SQL dialect exception.
