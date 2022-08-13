@@ -39,18 +39,18 @@ public enum DistSQLErrorCode implements SQLErrorCode {
     private final String errorMessage;
     
     /**
-     * Value of Dist SQL error code.
+     * Value of dist SQL error code.
      * 
-     * @param exception exception
-     * @return Dist SQL error code
+     * @param distSQLException dist SQL exception
+     * @return dist SQL error code
      */
-    public static DistSQLErrorCode valueOf(final CommonDistSQLException exception) {
-        if (exception instanceof UnsupportedVariableException) {
+    public static DistSQLErrorCode valueOf(final DistSQLException distSQLException) {
+        if (distSQLException instanceof UnsupportedVariableException) {
             return UNSUPPORTED_VARIABLE;
         }
-        if (exception instanceof InvalidValueException) {
+        if (distSQLException instanceof InvalidValueException) {
             return INVALID_VALUE;
         }
-        throw new UnsupportedOperationException("Can not find Dist SQL error code from exception: %s", exception);
+        throw new UnsupportedOperationException("Can not find DistSQL error code from exception: %s", distSQLException);
     }
 }

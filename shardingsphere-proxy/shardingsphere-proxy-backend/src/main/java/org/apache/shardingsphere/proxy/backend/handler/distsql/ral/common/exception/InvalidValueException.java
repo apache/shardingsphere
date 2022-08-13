@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.excep
 /**
  * Invalid value exception.
  */
-public final class InvalidValueException extends CommonDistSQLException {
+public final class InvalidValueException extends DistSQLException {
     
     private static final long serialVersionUID = 1840341880422454371L;
     
