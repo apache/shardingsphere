@@ -27,6 +27,7 @@ public final class ProxyClusterContainerConfigurationFactory {
     
     /**
      * Create adaptor container configuration.
+     * 
      * @return adaptor container configuration
      */
     public static AdaptorContainerConfiguration newInstance() {
