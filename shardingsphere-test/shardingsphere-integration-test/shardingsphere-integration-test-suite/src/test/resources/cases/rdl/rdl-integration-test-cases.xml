@@ -127,7 +127,7 @@
 <!--    <test-case sql="SHOW ENCRYPT TABLE RULE t_user">-->
 <!--        <assertion expected-data-file="create_encrypt_rule.xml">-->
 <!--            <initial-sql sql="CREATE ENCRYPT RULE t_user (COLUMNS ((-->
-<!--                NAME=pwd, PLAIN=pwd_plain, CIPHER=pwd_cipher, TYPE(NAME=AES,-->
+<!--                NAME=pwd, PLAIN=pwd_plain, CIPHER=pwd_cipher, TYPE(NAME="AES",-->
 <!--                PROPERTIES(&quot;aes-key-value&quot;='123456abc')))))"/>-->
 <!--            <destroy-sql sql="DROP ENCRYPT RULE t_user" />-->
 <!--        </assertion>-->
@@ -136,9 +136,9 @@
 <!--    <test-case sql="SHOW ENCRYPT TABLE RULE t_user">-->
 <!--        <assertion expected-data-file="alter_encrypt_rule.xml">-->
 <!--            <initial-sql sql="CREATE ENCRYPT RULE t_user (COLUMNS ((-->
-<!--                NAME=pwd, PLAIN=pwd_plain, CIPHER=pwd_cipher, TYPE(NAME=AES, PROPERTIES(&quot;aes-key-value&quot;='123456abc')))));-->
+<!--                NAME=pwd, PLAIN=pwd_plain, CIPHER=pwd_cipher, TYPE(NAME="AES", PROPERTIES(&quot;aes-key-value&quot;='123456abc')))));-->
 <!--                CREATE SHARDING SCALING RULE default_scaling;-->
-<!--                ALTER ENCRYPT RULE t_user (COLUMNS ((NAME=pwd, PLAIN=pwd_plain, CIPHER=pwd_cipher, TYPE(NAME=AES,-->
+<!--                ALTER ENCRYPT RULE t_user (COLUMNS ((NAME=pwd, PLAIN=pwd_plain, CIPHER=pwd_cipher, TYPE(NAME="AES",-->
 <!--                PROPERTIES(&quot;aes-key-value&quot;='123abc')))))"/>-->
 <!--            <destroy-sql sql="DROP ENCRYPT RULE t_user;DROP SHARDING SCALING RULE default_scaling" />-->
 <!--        </assertion>-->
@@ -147,7 +147,7 @@
 <!--    <test-case sql="SHOW ENCRYPT RULES">-->
 <!--        <assertion expected-data-file="drop_encrypt_rule.xml">-->
 <!--            <initial-sql sql="CREATE ENCRYPT RULE t_user (COLUMNS ((-->
-<!--                NAME=pwd, PLAIN=pwd_plain, CIPHER=pwd_cipher, TYPE(NAME=AES,-->
+<!--                NAME=pwd, PLAIN=pwd_plain, CIPHER=pwd_cipher, TYPE(NAME="AES",-->
 <!--                PROPERTIES(&quot;aes-key-value&quot;='123456abc')))));-->
 <!--                DROP ENCRYPT RULE t_user"/>-->
 <!--        </assertion>-->

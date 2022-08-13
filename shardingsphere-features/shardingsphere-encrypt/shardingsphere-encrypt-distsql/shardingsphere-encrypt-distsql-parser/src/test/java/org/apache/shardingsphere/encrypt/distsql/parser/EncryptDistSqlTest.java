@@ -42,8 +42,8 @@ public final class EncryptDistSqlTest {
     @Test
     public void createEncryptRuleTest() {
         String sql = "CREATE ENCRYPT RULE t_encrypt (COLUMNS("
-                + " (NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc')))"
-                + ",(NAME=order_id, CIPHER =order_cipher,TYPE(NAME=MD5)))"
+                + " (NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=\"AES\",PROPERTIES('aes-key-value'='123456abc')))"
+                + ",(NAME=order_id, CIPHER =order_cipher,TYPE(NAME=\"MD5\")))"
                 + ",QUERY_WITH_CIPHER_COLUMN=true)";
         CreateEncryptRuleStatement createEncryptRuleStatement = (CreateEncryptRuleStatement) getEncryptDistSQLStatement(sql);
         assertThat(createEncryptRuleStatement.getRules().size(), is(1));
