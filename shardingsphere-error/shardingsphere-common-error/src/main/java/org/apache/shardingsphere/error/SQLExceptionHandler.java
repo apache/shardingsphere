@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.error.code.SQLErrorCode;
 import org.apache.shardingsphere.error.code.StandardSQLErrorCode;
-import org.apache.shardingsphere.error.mapper.SQLExceptionMapperFactory;
+import org.apache.shardingsphere.error.mapper.DialectSQLExceptionMapperFactory;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.exception.CircuitBreakException;
 import org.apache.shardingsphere.infra.exception.ResourceNotExistedException;
@@ -51,7 +51,7 @@ public final class SQLExceptionHandler {
      */
     public static SQLException convert(final String databaseType, final ShardingSphereInsideException insideException) {
         if (insideException instanceof InsideDialectSQLException) {
-            return SQLExceptionMapperFactory.getInstance(databaseType).convert((InsideDialectSQLException) insideException);
+            return DialectSQLExceptionMapperFactory.getInstance(databaseType).convert((InsideDialectSQLException) insideException);
         }
         return convert(insideException).orElseGet(() -> toSQLException(StandardSQLErrorCode.UNKNOWN_EXCEPTION, insideException.getMessage()));
     }

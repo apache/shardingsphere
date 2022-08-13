@@ -19,7 +19,7 @@ package org.apache.shardingsphere.error.mysql.mapper;
 
 import org.apache.shardingsphere.error.code.SQLErrorCode;
 import org.apache.shardingsphere.error.code.StandardSQLErrorCode;
-import org.apache.shardingsphere.error.mapper.SQLExceptionMapper;
+import org.apache.shardingsphere.error.mapper.DialectSQLExceptionMapper;
 import org.apache.shardingsphere.error.mysql.code.MySQLServerErrorCode;
 import org.apache.shardingsphere.infra.exception.dialect.DBCreateExistsException;
 import org.apache.shardingsphere.infra.exception.dialect.DBDropNotExistsException;
@@ -35,9 +35,9 @@ import org.apache.shardingsphere.infra.util.exception.inside.InsideDialectSQLExc
 import java.sql.SQLException;
 
 /**
- * SQL exception mapper for MySQL.
+ * MySQL exception mapper.
  */
-public final class MySQLSQLExceptionMapper implements SQLExceptionMapper {
+public final class MySQLExceptionMapper implements DialectSQLExceptionMapper {
     
     @Override
     public SQLException convert(final InsideDialectSQLException dialectSQLException) {
