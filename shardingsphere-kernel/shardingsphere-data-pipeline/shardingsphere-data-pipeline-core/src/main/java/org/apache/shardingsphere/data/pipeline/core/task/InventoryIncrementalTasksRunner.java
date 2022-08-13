@@ -26,6 +26,8 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobItemAPI;
+import org.apache.shardingsphere.data.pipeline.core.api.impl.InventoryIncrementalJobItemAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
@@ -38,6 +40,8 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @Slf4j
 public final class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
+    
+    private final PipelineJobItemAPI jobItemAPI = new InventoryIncrementalJobItemAPIImpl();
     
     @Getter
     private final PipelineJobItemContext jobItemContext;
@@ -89,7 +93,7 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
             return true;
         }
         log.info("-------------- Start inventory task --------------");
-        jobItemContext.setStatus(JobStatus.EXECUTE_INVENTORY_TASK);
+        updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INVENTORY_TASK);
         ExecuteCallback inventoryTaskCallback = createInventoryTaskCallback();
         for (InventoryTask each : inventoryTasks) {
             if (each.getTaskProgress().getPosition() instanceof FinishedPosition) {
@@ -98,6 +102,11 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
             inventoryDumperExecuteEngine.submit(each, inventoryTaskCallback);
         }
         return false;
+    }
+    
+    private void updateLocalAndRemoteJobItemStatus(final JobStatus jobStatus) {
+        jobItemContext.setStatus(jobStatus);
+        jobItemAPI.updateJobItemStatus(jobItemContext.getJobId(), jobItemContext.getShardingItem(), jobStatus);
     }
     
     private ExecuteCallback createInventoryTaskCallback() {
@@ -114,7 +123,7 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
             @Override
             public void onFailure(final Throwable throwable) {
                 log.error("Inventory task execute failed.", throwable);
-                jobItemContext.setStatus(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE);
+                updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE);
                 stop();
             }
         };
@@ -126,7 +135,7 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
             return;
         }
         log.info("-------------- Start incremental task --------------");
-        jobItemContext.setStatus(JobStatus.EXECUTE_INCREMENTAL_TASK);
+        updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INCREMENTAL_TASK);
         ExecuteCallback incrementalTaskCallback = createIncrementalTaskCallback();
         for (IncrementalTask each : incrementalTasks) {
             if (each.getTaskProgress().getPosition() instanceof FinishedPosition) {
@@ -146,7 +155,7 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
             @Override
             public void onFailure(final Throwable throwable) {
                 log.error("Incremental task execute failed.", throwable);
-                jobItemContext.setStatus(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE);
+                updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE);
                 stop();
             }
         };

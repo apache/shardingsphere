@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
 
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Rule altered job API.
@@ -33,13 +32,8 @@ import java.util.Optional;
 @SingletonSPI
 public interface RuleAlteredJobAPI extends PipelineJobAPI, MigrationJobPublicAPI, RequiredSPI {
     
-    /**
-     * Start scaling job by config.
-     *
-     * @param jobConfig job config
-     * @return job id
-     */
-    Optional<String> start(RuleAlteredJobConfiguration jobConfig);
+    @Override
+    RuleAlteredJobConfiguration getJobConfiguration(String jobId);
     
     /**
      * Get job progress.
@@ -97,7 +91,4 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, MigrationJobPublicAPI
      * @param jobConfig job configuration
      */
     void switchClusterConfiguration(RuleAlteredJobConfiguration jobConfig);
-    
-    @Override
-    RuleAlteredJobConfiguration getJobConfig(String jobId);
 }

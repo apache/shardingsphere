@@ -19,10 +19,12 @@ package org.apache.shardingsphere.data.pipeline.core.api;
 
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.job.YamlPipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlPipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+
+import java.util.Optional;
 
 /**
  * Pipeline job API.
@@ -39,11 +41,19 @@ public interface PipelineJobAPI extends PipelineJobPublicAPI, PipelineJobItemAPI
     String marshalJobId(PipelineJobId pipelineJobId);
     
     /**
-     * Extend job configuration.
+     * Extend YAML job configuration.
      *
-     * @param yamlJobConfig yaml job configuration
+     * @param yamlJobConfig YAML job configuration
      */
-    void extendJobConfiguration(YamlPipelineJobConfiguration yamlJobConfig);
+    void extendYamlJobConfiguration(YamlPipelineJobConfiguration yamlJobConfig);
+    
+    /**
+     * Start job.
+     *
+     * @param jobConfig job configuration
+     * @return job id
+     */
+    Optional<String> start(PipelineJobConfiguration jobConfig);
     
     /**
      * Get job configuration.
@@ -51,6 +61,5 @@ public interface PipelineJobAPI extends PipelineJobPublicAPI, PipelineJobItemAPI
      * @param jobId job id
      * @return job configuration
      */
-    // TODO rename
-    PipelineJobConfiguration getJobConfig(String jobId);
+    PipelineJobConfiguration getJobConfiguration(String jobId);
 }

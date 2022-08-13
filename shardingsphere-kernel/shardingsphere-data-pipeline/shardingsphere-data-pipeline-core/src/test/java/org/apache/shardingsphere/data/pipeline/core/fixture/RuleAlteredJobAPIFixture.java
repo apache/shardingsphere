@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.core.fixture;
 
-import org.apache.shardingsphere.data.pipeline.core.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.api.config.job.YamlPipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlPipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
@@ -27,6 +27,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
+import org.apache.shardingsphere.data.pipeline.core.api.RuleAlteredJobAPI;
 
 import java.util.Collection;
 import java.util.List;
@@ -42,7 +43,7 @@ public final class RuleAlteredJobAPIFixture implements RuleAlteredJobAPI {
     }
     
     @Override
-    public void extendJobConfiguration(final YamlPipelineJobConfiguration yamlJobConfig) {
+    public void extendYamlJobConfiguration(final YamlPipelineJobConfiguration yamlJobConfig) {
     }
     
     @Override
@@ -63,7 +64,7 @@ public final class RuleAlteredJobAPIFixture implements RuleAlteredJobAPI {
     }
     
     @Override
-    public Optional<String> start(final RuleAlteredJobConfiguration jobConfig) {
+    public Optional<String> start(final PipelineJobConfiguration jobConfig) {
         return Optional.empty();
     }
     
@@ -141,7 +142,7 @@ public final class RuleAlteredJobAPIFixture implements RuleAlteredJobAPI {
     }
     
     @Override
-    public RuleAlteredJobConfiguration getJobConfig(final String jobId) {
+    public RuleAlteredJobConfiguration getJobConfiguration(final String jobId) {
         return null;
     }
     
