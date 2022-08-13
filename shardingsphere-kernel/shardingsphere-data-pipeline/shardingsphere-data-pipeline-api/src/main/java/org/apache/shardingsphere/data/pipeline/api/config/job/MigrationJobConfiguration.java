@@ -15,25 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config.rulealtered;
+package org.apache.shardingsphere.data.pipeline.api.config.job;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * Rule altered job configuration.
+ * Migration job configuration.
  */
 @RequiredArgsConstructor
 @Getter
 @Slf4j
-public final class RuleAlteredJobConfiguration implements PipelineJobConfiguration {
+public final class MigrationJobConfiguration implements PipelineJobConfiguration {
     
     private final String jobId;
     
@@ -98,7 +97,7 @@ public final class RuleAlteredJobConfiguration implements PipelineJobConfigurati
     
     @Override
     public String toString() {
-        return "RuleAlteredJobConfiguration{"
+        return "MigrationJobConfiguration{"
                 + "jobId='" + jobId + '\'' + ", databaseName='" + databaseName + '\''
                 + ", activeVersion=" + activeVersion + ", newVersion=" + newVersion
                 + ", sourceDatabaseType='" + sourceDatabaseType + '\'' + ", targetDatabaseType='" + targetDatabaseType + '\''

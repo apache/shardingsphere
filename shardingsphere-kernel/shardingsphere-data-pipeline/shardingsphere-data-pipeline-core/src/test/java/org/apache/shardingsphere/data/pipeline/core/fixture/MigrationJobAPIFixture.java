@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.data.pipeline.core.fixture;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlPipelineJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
-import org.apache.shardingsphere.data.pipeline.core.api.RuleAlteredJobAPI;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPI;
 
 import java.util.Collection;
 import java.util.List;
@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
-public final class RuleAlteredJobAPIFixture implements RuleAlteredJobAPI {
+public final class MigrationJobAPIFixture implements MigrationJobAPI {
     
     @Override
     public String marshalJobId(final PipelineJobId pipelineJobId) {
@@ -74,7 +74,7 @@ public final class RuleAlteredJobAPIFixture implements RuleAlteredJobAPI {
     }
     
     @Override
-    public Map<Integer, InventoryIncrementalJobItemProgress> getJobProgress(final RuleAlteredJobConfiguration jobConfig) {
+    public Map<Integer, InventoryIncrementalJobItemProgress> getJobProgress(final MigrationJobConfiguration jobConfig) {
         return null;
     }
     
@@ -83,7 +83,7 @@ public final class RuleAlteredJobAPIFixture implements RuleAlteredJobAPI {
     }
     
     @Override
-    public void stopClusterWriteDB(final RuleAlteredJobConfiguration jobConfig) {
+    public void stopClusterWriteDB(final MigrationJobConfiguration jobConfig) {
     }
     
     @Override
@@ -91,7 +91,7 @@ public final class RuleAlteredJobAPIFixture implements RuleAlteredJobAPI {
     }
     
     @Override
-    public void restoreClusterWriteDB(final RuleAlteredJobConfiguration jobConfig) {
+    public void restoreClusterWriteDB(final MigrationJobConfiguration jobConfig) {
     }
     
     @Override
@@ -105,7 +105,7 @@ public final class RuleAlteredJobAPIFixture implements RuleAlteredJobAPI {
     }
     
     @Override
-    public boolean isDataConsistencyCheckNeeded(final RuleAlteredJobConfiguration jobConfig) {
+    public boolean isDataConsistencyCheckNeeded(final MigrationJobConfiguration jobConfig) {
         return false;
     }
     
@@ -115,7 +115,7 @@ public final class RuleAlteredJobAPIFixture implements RuleAlteredJobAPI {
     }
     
     @Override
-    public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final RuleAlteredJobConfiguration jobConfig) {
+    public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final MigrationJobConfiguration jobConfig) {
         return null;
     }
     
@@ -134,7 +134,7 @@ public final class RuleAlteredJobAPIFixture implements RuleAlteredJobAPI {
     }
     
     @Override
-    public void switchClusterConfiguration(final RuleAlteredJobConfiguration jobConfig) {
+    public void switchClusterConfiguration(final MigrationJobConfiguration jobConfig) {
     }
     
     @Override
@@ -142,13 +142,13 @@ public final class RuleAlteredJobAPIFixture implements RuleAlteredJobAPI {
     }
     
     @Override
-    public RuleAlteredJobConfiguration getJobConfiguration(final String jobId) {
+    public MigrationJobConfiguration getJobConfiguration(final String jobId) {
         return null;
     }
     
     @Override
     public boolean isDefault() {
-        return RuleAlteredJobAPI.super.isDefault();
+        return MigrationJobAPI.super.isDefault();
     }
     
     @Override

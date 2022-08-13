@@ -15,18 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
+package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.RuleAlteredJobConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
-import org.apache.shardingsphere.data.pipeline.core.api.RuleAlteredJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineIgnoredException;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
@@ -37,16 +36,16 @@ import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 
 /**
- * Rule altered job.
+ * Migration job.
  */
 @Slf4j
 @RequiredArgsConstructor
-public final class RuleAlteredJob extends AbstractPipelineJob implements SimpleJob, PipelineJob {
+public final class MigrationJob extends AbstractPipelineJob implements SimpleJob, PipelineJob {
     
     private final PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
     
     // Shared by all sharding items
-    private final RuleAlteredJobPreparer jobPreparer = new RuleAlteredJobPreparer();
+    private final MigrationJobPreparer jobPreparer = new MigrationJobPreparer();
     
     @Override
     public void execute(final ShardingContext shardingContext) {
@@ -56,9 +55,9 @@ public final class RuleAlteredJob extends AbstractPipelineJob implements SimpleJ
             return;
         }
         setJobId(shardingContext.getJobName());
-        RuleAlteredJobConfiguration jobConfig = RuleAlteredJobConfigurationSwapper.swapToObject(shardingContext.getJobParameter());
-        InventoryIncrementalJobItemProgress initProgress = RuleAlteredJobAPIFactory.getInstance().getJobItemProgress(shardingContext.getJobName(), shardingContext.getShardingItem());
-        RuleAlteredJobContext jobItemContext = new RuleAlteredJobContext(jobConfig, shardingContext.getShardingItem(), initProgress, dataSourceManager);
+        MigrationJobConfiguration jobConfig = YamlMigrationJobConfigurationSwapper.swapToObject(shardingContext.getJobParameter());
+        InventoryIncrementalJobItemProgress initProgress = MigrationJobAPIFactory.getInstance().getJobItemProgress(shardingContext.getJobName(), shardingContext.getShardingItem());
+        MigrationJobItemContext jobItemContext = new MigrationJobItemContext(jobConfig, shardingContext.getShardingItem(), initProgress, dataSourceManager);
         int shardingItem = jobItemContext.getShardingItem();
         if (getTasksRunnerMap().containsKey(shardingItem)) {
             log.warn("tasksRunnerMap contains shardingItem {}, ignore", shardingItem);
@@ -75,7 +74,7 @@ public final class RuleAlteredJob extends AbstractPipelineJob implements SimpleJ
         PipelineJobProgressPersistService.addJobProgressPersistContext(getJobId(), shardingItem);
     }
     
-    private void prepare(final RuleAlteredJobContext jobItemContext) {
+    private void prepare(final MigrationJobItemContext jobItemContext) {
         try {
             jobPreparer.prepare(jobItemContext);
         } catch (final PipelineIgnoredException ex) {
@@ -87,7 +86,7 @@ public final class RuleAlteredJob extends AbstractPipelineJob implements SimpleJ
             log.error("job prepare failed, {}-{}", getJobId(), jobItemContext.getShardingItem(), ex);
             PipelineJobCenter.stop(getJobId());
             jobItemContext.setStatus(JobStatus.PREPARING_FAILURE);
-            RuleAlteredJobAPIFactory.getInstance().persistJobItemProgress(jobItemContext);
+            MigrationJobAPIFactory.getInstance().persistJobItemProgress(jobItemContext);
             throw ex;
         }
     }

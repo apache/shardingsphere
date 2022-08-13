@@ -15,26 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml;
+package org.apache.shardingsphere.data.pipeline.api.config.job.yaml;
 
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfigurationSwapper;
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
 /**
- * Rule altered job configuration swapper.
+ * YAML migration job configuration swapper.
  */
-// TODO add RuleAlteredJobConfigurationSwapper test
-public final class RuleAlteredJobConfigurationSwapper implements YamlConfigurationSwapper<YamlRuleAlteredJobConfiguration, RuleAlteredJobConfiguration> {
+// TODO add test
+public final class YamlMigrationJobConfigurationSwapper implements YamlConfigurationSwapper<YamlMigrationJobConfiguration, MigrationJobConfiguration> {
     
-    private static final RuleAlteredJobConfigurationSwapper JOB_CONFIG_SWAPPER = new RuleAlteredJobConfigurationSwapper();
+    private static final YamlMigrationJobConfigurationSwapper JOB_CONFIG_SWAPPER = new YamlMigrationJobConfigurationSwapper();
     
     private final YamlPipelineDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlPipelineDataSourceConfigurationSwapper();
     
     @Override
-    public YamlRuleAlteredJobConfiguration swapToYamlConfiguration(final RuleAlteredJobConfiguration data) {
-        YamlRuleAlteredJobConfiguration result = new YamlRuleAlteredJobConfiguration();
+    public YamlMigrationJobConfiguration swapToYamlConfiguration(final MigrationJobConfiguration data) {
+        YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
         result.setJobId(data.getJobId());
         result.setDatabaseName(data.getDatabaseName());
         result.setActiveVersion(data.getActiveVersion());
@@ -54,8 +54,8 @@ public final class RuleAlteredJobConfigurationSwapper implements YamlConfigurati
     }
     
     @Override
-    public RuleAlteredJobConfiguration swapToObject(final YamlRuleAlteredJobConfiguration yamlConfig) {
-        return new RuleAlteredJobConfiguration(yamlConfig.getJobId(), yamlConfig.getDatabaseName(),
+    public MigrationJobConfiguration swapToObject(final YamlMigrationJobConfiguration yamlConfig) {
+        return new MigrationJobConfiguration(yamlConfig.getJobId(), yamlConfig.getDatabaseName(),
                 yamlConfig.getActiveVersion(), yamlConfig.getNewVersion(),
                 yamlConfig.getSourceDatabaseType(), yamlConfig.getTargetDatabaseType(),
                 dataSourceConfigSwapper.swapToObject(yamlConfig.getSource()), dataSourceConfigSwapper.swapToObject(yamlConfig.getTarget()),
@@ -70,8 +70,8 @@ public final class RuleAlteredJobConfigurationSwapper implements YamlConfigurati
      * @param jobParameter job parameter
      * @return job configuration
      */
-    public static RuleAlteredJobConfiguration swapToObject(final String jobParameter) {
-        YamlRuleAlteredJobConfiguration yamlJobConfig = YamlEngine.unmarshal(jobParameter, YamlRuleAlteredJobConfiguration.class, true);
+    public static MigrationJobConfiguration swapToObject(final String jobParameter) {
+        YamlMigrationJobConfiguration yamlJobConfig = YamlEngine.unmarshal(jobParameter, YamlMigrationJobConfiguration.class, true);
         return JOB_CONFIG_SWAPPER.swapToObject(yamlJobConfig);
     }
 }

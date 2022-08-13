@@ -15,8 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
+package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
-public final class RuleAlteredJobPreparerTest {
-    // TODO simple unit test can't cover prepare() method, it's a combination method
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJobId;
+
+/**
+ * Migration job id.
+ */
+@Getter
+@Setter
+@ToString(callSuper = true)
+public final class MigrationJobId extends AbstractPipelineJobId {
+    
+    public static final String CURRENT_VERSION = "01";
+    
+    @NonNull
+    private Integer currentMetadataVersion;
+    
+    @NonNull
+    private Integer newMetadataVersion;
 }

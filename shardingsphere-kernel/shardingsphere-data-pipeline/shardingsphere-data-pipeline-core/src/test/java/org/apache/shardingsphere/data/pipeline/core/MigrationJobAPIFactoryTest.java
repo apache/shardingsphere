@@ -15,28 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.migration;
+package org.apache.shardingsphere.data.pipeline.core;
 
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJobId;
+import org.apache.shardingsphere.data.pipeline.core.fixture.MigrationJobAPIFixture;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPIFactory;
+import org.junit.Test;
 
-/**
- * Job id.
- */
-@Getter
-@Setter
-@ToString(callSuper = true)
-// TODO rename and change fields
-public final class RuleAlteredJobId extends AbstractPipelineJobId {
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
+
+public final class MigrationJobAPIFactoryTest {
     
-    public static final String CURRENT_VERSION = "01";
-    
-    @NonNull
-    private Integer currentMetadataVersion;
-    
-    @NonNull
-    private Integer newMetadataVersion;
+    @Test
+    public void assertGetInstance() {
+        assertThat(MigrationJobAPIFactory.getInstance(), instanceOf(MigrationJobAPIFixture.class));
+    }
 }
