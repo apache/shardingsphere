@@ -15,22 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.exception;
+package org.apache.shardingsphere.error.exception.standard;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.exception.inside.ShardingSphereInsideException;
 
 /**
- * Table locked exception.
+ * Circuit break exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class TableLockedException extends ShardingSphereInsideException {
+public final class CircuitBreakException extends ShardingSphereInsideException {
     
-    private static final long serialVersionUID = 2622020743612706932L;
-    
-    private final String schemaName;
-    
-    private final String tableName;
+    private static final long serialVersionUID = 6339672680026286798L;
 }

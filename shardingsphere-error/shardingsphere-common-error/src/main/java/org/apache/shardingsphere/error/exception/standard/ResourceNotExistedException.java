@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.exception;
+package org.apache.shardingsphere.error.exception.standard;
 
 import org.apache.shardingsphere.infra.util.exception.inside.ShardingSphereInsideException;
 
 /**
- * Rule does not exist exception.
+ * Resource does not exist exception.
  */
-public final class RuleNotExistedException extends ShardingSphereInsideException {
+public final class ResourceNotExistedException extends ShardingSphereInsideException {
     
-    private static final long serialVersionUID = -4150905802300104824L;
+    private static final long serialVersionUID = 4146100333670404924L;
 }

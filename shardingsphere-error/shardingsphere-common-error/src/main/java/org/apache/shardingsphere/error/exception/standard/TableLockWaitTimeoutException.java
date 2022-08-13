@@ -15,20 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.exception;
+package org.apache.shardingsphere.error.exception.standard;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.exception.inside.ShardingSphereInsideException;
 
 /**
- * Unsupported command exception.
+ * Table lock wait timeout exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class UnsupportedCommandException extends ShardingSphereInsideException {
+public final class TableLockWaitTimeoutException extends ShardingSphereInsideException {
     
-    private static final long serialVersionUID = 8010680371699936338L;
+    private static final long serialVersionUID = 2599713085782288003L;
     
-    private final String commandType;
+    private final String schemaName;
+    
+    private final String tableName;
+    
+    private final long timeoutMilliseconds;
 }
