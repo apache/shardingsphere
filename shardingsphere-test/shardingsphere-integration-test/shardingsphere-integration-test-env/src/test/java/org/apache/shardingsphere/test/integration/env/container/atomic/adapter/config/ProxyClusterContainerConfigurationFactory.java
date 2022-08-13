@@ -31,11 +31,7 @@ public final class ProxyClusterContainerConfigurationFactory {
      * @return adaptor container configuration
      */
     public static AdaptorContainerConfiguration newInstance() {
-        return new AdaptorContainerConfiguration(getProxyDatasourceName(), getMountedResource());
-    }
-    
-    private static String getProxyDatasourceName() {
-        return "";
+        return new AdaptorContainerConfiguration("", getMountedResource());
     }
     
     private static Map<String, String> getMountedResource() {
