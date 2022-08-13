@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.apache.shardingsphere.encrypt.distsql.parser;
 
 import lombok.SneakyThrows;
@@ -21,13 +38,13 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public final class EncryptDistSqlTest {
-
+    
     @Test
     public void createEncryptRuleTest() {
-        String sql = "CREATE ENCRYPT RULE t_encrypt (COLUMNS(" +
-                " (NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc')))" +
-                ",(NAME=order_id, CIPHER =order_cipher,TYPE(NAME=MD5)))" +
-                ",QUERY_WITH_CIPHER_COLUMN=true)";
+        String sql = "CREATE ENCRYPT RULE t_encrypt (COLUMNS("
+                + " (NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc')))"
+                + ",(NAME=order_id, CIPHER =order_cipher,TYPE(NAME=MD5)))"
+                + ",QUERY_WITH_CIPHER_COLUMN=true)";
         CreateEncryptRuleStatement createEncryptRuleStatement = (CreateEncryptRuleStatement) getEncryptDistSQLStatement(sql);
         assertThat(createEncryptRuleStatement.getRules().size(), is(1));
         EncryptRuleSegment encryptRuleSegment = createEncryptRuleStatement.getRules().iterator().next();
@@ -49,12 +66,12 @@ public final class EncryptDistSqlTest {
         assertThat(orderEncryptColumn.getCipherColumn(), is("order_cipher"));
         assertThat(orderEncryptColumn.getEncryptor().getName(), is("MD5"));
         assertThat(orderEncryptColumn.getEncryptor().getProps().size(), is(0));
-
+        
     }
-
+    
     @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("rawtypes")
-    private DistSQLStatement getEncryptDistSQLStatement(String sql) {
+    private DistSQLStatement getEncryptDistSQLStatement(final String sql) {
         EncryptDistSQLStatementParserFacade facade = new EncryptDistSQLStatementParserFacade();
         ParseASTNode parseASTNode = (ParseASTNode) SQLParserFactory.newInstance(sql, facade.getLexerClass(), facade.getParserClass()).parse();
         SQLVisitor visitor = FeaturedDistSQLStatementParserFacadeFactory.getInstance(facade.getType()).getVisitorClass().getDeclaredConstructor().newInstance();
