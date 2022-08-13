@@ -29,6 +29,8 @@ public enum XOpenSQLState implements SQLState {
     
     SUCCESSFUL_COMPLETION("00000"),
     
+    GENERAL_WARNING("01000"),
+    
     PRIVILEGE_NOT_GRANTED("01007"),
     
     DATA_SOURCE_REJECTED_CONNECTION_ATTEMPT("08004"),
