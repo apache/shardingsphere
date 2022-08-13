@@ -22,15 +22,15 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.error.code.SQLErrorCode;
 
 /**
- * Common dist sql error code.
+ * Dist SQL error code.
  */
 @RequiredArgsConstructor
 @Getter
-public enum CommonDistSQLErrorCode implements SQLErrorCode {
+public enum DistSQLErrorCode implements SQLErrorCode {
     
-    UNSUPPORTED_VARIABLE(11001, "11001", "Could not support variable [%s]."),
+    UNSUPPORTED_VARIABLE(11001, "11001", "Could not support variable `%s`."),
     
-    INVALID_VALUE(11002, "11002", "Invalid value [%s].");
+    INVALID_VALUE(11002, "11002", "Invalid value `%s`.");
     
     private final int errorCode;
     
@@ -39,18 +39,18 @@ public enum CommonDistSQLErrorCode implements SQLErrorCode {
     private final String errorMessage;
     
     /**
-     * Value of common dist sql error code.
+     * Value of Dist SQL error code.
      * 
      * @param exception exception
-     * @return common dist sql error code
+     * @return Dist SQL error code
      */
-    public static CommonDistSQLErrorCode valueOf(final CommonDistSQLException exception) {
+    public static DistSQLErrorCode valueOf(final CommonDistSQLException exception) {
         if (exception instanceof UnsupportedVariableException) {
             return UNSUPPORTED_VARIABLE;
         }
         if (exception instanceof InvalidValueException) {
             return INVALID_VALUE;
         }
-        throw new UnsupportedOperationException("Cannot find common dist sql error code from exception: %s", exception);
+        throw new UnsupportedOperationException("Can not find Dist SQL error code from exception: %s", exception);
     }
 }

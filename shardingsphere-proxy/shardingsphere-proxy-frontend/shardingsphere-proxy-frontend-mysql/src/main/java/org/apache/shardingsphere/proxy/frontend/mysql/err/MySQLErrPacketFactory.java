@@ -26,7 +26,7 @@ import org.apache.shardingsphere.error.SQLExceptionHandler;
 import org.apache.shardingsphere.error.code.StandardSQLErrorCode;
 import org.apache.shardingsphere.error.mysql.code.MySQLServerErrorCode;
 import org.apache.shardingsphere.infra.util.exception.inside.ShardingSphereInsideException;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.CommonDistSQLErrorCode;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.DistSQLErrorCode;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.CommonDistSQLException;
 import org.apache.shardingsphere.proxy.frontend.exception.FrontendTooManyConnectionsException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
@@ -58,7 +58,7 @@ public final class MySQLErrPacketFactory {
         }
         if (cause instanceof CommonDistSQLException) {
             CommonDistSQLException commonDistSQLException = (CommonDistSQLException) cause;
-            return new MySQLErrPacket(1, CommonDistSQLErrorCode.valueOf(commonDistSQLException), commonDistSQLException.getVariable());
+            return new MySQLErrPacket(1, DistSQLErrorCode.valueOf(commonDistSQLException), commonDistSQLException.getVariable());
         }
         if (cause instanceof UnsupportedPreparedStatementException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_UNSUPPORTED_PS);
