@@ -40,7 +40,7 @@ public final class MySQLErrPacketTest {
         MySQLErrPacket actual = new MySQLErrPacket(1, MySQLErrorCode.ER_ACCESS_DENIED_ERROR, "root", "localhost", "root");
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(MySQLErrorCode.ER_ACCESS_DENIED_ERROR.getVendorCode()));
-        assertThat(actual.getSqlState(), is(MySQLErrorCode.ER_ACCESS_DENIED_ERROR.getSqlState()));
+        assertThat(actual.getSqlState(), is(MySQLErrorCode.ER_ACCESS_DENIED_ERROR.getSqlState().getValue()));
         assertThat(actual.getErrorMessage(), is(String.format(MySQLErrorCode.ER_ACCESS_DENIED_ERROR.getReason(), "root", "localhost", "root")));
     }
     
@@ -54,7 +54,7 @@ public final class MySQLErrPacketTest {
         MySQLErrPacket actual = new MySQLErrPacket(payload);
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(MySQLErrorCode.ER_ACCESS_DENIED_ERROR.getVendorCode()));
-        assertThat(actual.getSqlState(), is(MySQLErrorCode.ER_ACCESS_DENIED_ERROR.getSqlState()));
+        assertThat(actual.getSqlState(), is(MySQLErrorCode.ER_ACCESS_DENIED_ERROR.getSqlState().getValue()));
         assertThat(actual.getErrorMessage(), is(String.format(MySQLErrorCode.ER_ACCESS_DENIED_ERROR.getReason(), "root", "localhost", "root")));
     }
     
