@@ -39,23 +39,23 @@ public final class MySQLErrPacketTest {
     public void assertNewErrPacketWithServerErrorCode() {
         MySQLErrPacket actual = new MySQLErrPacket(1, MySQLErrorCode.ER_ACCESS_DENIED_ERROR, "root", "localhost", "root");
         assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getErrorCode(), is(MySQLErrorCode.ER_ACCESS_DENIED_ERROR.getErrorCode()));
+        assertThat(actual.getErrorCode(), is(MySQLErrorCode.ER_ACCESS_DENIED_ERROR.getVendorCode()));
         assertThat(actual.getSqlState(), is(MySQLErrorCode.ER_ACCESS_DENIED_ERROR.getSqlState()));
-        assertThat(actual.getErrorMessage(), is(String.format(MySQLErrorCode.ER_ACCESS_DENIED_ERROR.getErrorMessage(), "root", "localhost", "root")));
+        assertThat(actual.getErrorMessage(), is(String.format(MySQLErrorCode.ER_ACCESS_DENIED_ERROR.getReason(), "root", "localhost", "root")));
     }
     
     @Test
     public void assertNewErrPacketWithPayload() {
         when(payload.readInt1()).thenReturn(1, MySQLErrPacket.HEADER);
-        when(payload.readInt2()).thenReturn(MySQLErrorCode.ER_ACCESS_DENIED_ERROR.getErrorCode());
+        when(payload.readInt2()).thenReturn(MySQLErrorCode.ER_ACCESS_DENIED_ERROR.getVendorCode());
         when(payload.readStringFix(1)).thenReturn("#");
         when(payload.readStringFix(5)).thenReturn(MySQLErrorCode.ER_ACCESS_DENIED_ERROR.getSqlState());
-        when(payload.readStringEOF()).thenReturn(String.format(MySQLErrorCode.ER_ACCESS_DENIED_ERROR.getErrorMessage(), "root", "localhost", "root"));
+        when(payload.readStringEOF()).thenReturn(String.format(MySQLErrorCode.ER_ACCESS_DENIED_ERROR.getReason(), "root", "localhost", "root"));
         MySQLErrPacket actual = new MySQLErrPacket(payload);
         assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getErrorCode(), is(MySQLErrorCode.ER_ACCESS_DENIED_ERROR.getErrorCode()));
+        assertThat(actual.getErrorCode(), is(MySQLErrorCode.ER_ACCESS_DENIED_ERROR.getVendorCode()));
         assertThat(actual.getSqlState(), is(MySQLErrorCode.ER_ACCESS_DENIED_ERROR.getSqlState()));
-        assertThat(actual.getErrorMessage(), is(String.format(MySQLErrorCode.ER_ACCESS_DENIED_ERROR.getErrorMessage(), "root", "localhost", "root")));
+        assertThat(actual.getErrorMessage(), is(String.format(MySQLErrorCode.ER_ACCESS_DENIED_ERROR.getReason(), "root", "localhost", "root")));
     }
     
     @Test

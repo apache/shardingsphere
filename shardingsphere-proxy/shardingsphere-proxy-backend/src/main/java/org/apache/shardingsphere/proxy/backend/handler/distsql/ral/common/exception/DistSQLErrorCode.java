@@ -28,15 +28,15 @@ import org.apache.shardingsphere.error.code.SQLErrorCode;
 @Getter
 public enum DistSQLErrorCode implements SQLErrorCode {
     
-    UNSUPPORTED_VARIABLE(11001, "11001", "Could not support variable `%s`."),
+    UNSUPPORTED_VARIABLE("11001", 11001, "Could not support variable `%s`."),
     
-    INVALID_VALUE(11002, "11002", "Invalid value `%s`.");
-    
-    private final int errorCode;
+    INVALID_VALUE("11002", 11002, "Invalid value `%s`.");
     
     private final String sqlState;
     
-    private final String errorMessage;
+    private final int vendorCode;
+    
+    private final String reason;
     
     /**
      * Value of dist SQL error code.

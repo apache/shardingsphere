@@ -23,23 +23,23 @@ package org.apache.shardingsphere.error.code;
 public interface SQLErrorCode {
     
     /**
-     * Get error code.
-     * 
-     * @return error code
-     */
-    int getErrorCode();
-    
-    /**
      * Get SQL state.
      * 
      * @return SQL state
      */
     String getSqlState();
     
-    /**MySQLErrPacketFactory
-     * Get error message.
-     * 
-     * @return error message
+    /**
+     * Get database vendor code.
+     *
+     * @return vendor code
      */
-    String getErrorMessage();
+    int getVendorCode();
+    
+    /**
+     * Get reason.
+     *
+     * @return reason
+     */
+    String getReason();
 }
