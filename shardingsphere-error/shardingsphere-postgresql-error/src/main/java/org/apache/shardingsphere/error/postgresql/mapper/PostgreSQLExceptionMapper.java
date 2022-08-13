@@ -49,10 +49,10 @@ public final class PostgreSQLExceptionMapper implements DialectSQLExceptionMappe
             return new PSQLException(message, PSQLState.INVALID_PARAMETER_VALUE);
         }
         if (dialectSQLException instanceof DBCreateExistsException) {
-            return new PSQLException(PostgreSQLVendorError.DUPLICATE_DATABASE.getConditionName(), null);
+            return new PSQLException(PostgreSQLVendorError.DUPLICATE_DATABASE.getReason(), null);
         }
         if (dialectSQLException instanceof TooManyConnectionsException) {
-            return new PSQLException(PostgreSQLVendorError.TOO_MANY_CONNECTIONS.getConditionName(), null);
+            return new PSQLException(PostgreSQLVendorError.TOO_MANY_CONNECTIONS.getReason(), null);
         }
         return new PSQLException(dialectSQLException.getMessage(), null);
     }

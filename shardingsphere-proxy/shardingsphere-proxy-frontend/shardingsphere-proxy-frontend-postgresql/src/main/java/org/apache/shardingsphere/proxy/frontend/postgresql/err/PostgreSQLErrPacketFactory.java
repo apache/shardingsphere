@@ -73,7 +73,7 @@ public final class PostgreSQLErrPacketFactory {
     
     private static PostgreSQLErrorResponsePacket createErrorResponsePacket(final SQLException cause) {
         // TODO consider what severity to use
-        String sqlState = Strings.isNullOrEmpty(cause.getSQLState()) ? PostgreSQLVendorError.SYSTEM_ERROR.getErrorCode() : cause.getSQLState();
+        String sqlState = Strings.isNullOrEmpty(cause.getSQLState()) ? PostgreSQLVendorError.SYSTEM_ERROR.getSqlState().getValue() : cause.getSQLState();
         String message = Strings.isNullOrEmpty(cause.getMessage()) ? cause.toString() : cause.getMessage();
         return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, sqlState, message).build();
     }

@@ -23,10 +23,10 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobNotFoundException;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.error.SQLExceptionHandler;
-import org.apache.shardingsphere.error.vendor.StandardVendorError;
-import org.apache.shardingsphere.error.mysql.code.MyVendorError;
+import org.apache.shardingsphere.error.vendor.ShardingSphereVendorError;
+import org.apache.shardingsphere.error.mysql.code.MySQLVendorError;
 import org.apache.shardingsphere.infra.util.exception.inside.ShardingSphereInsideException;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.DistVendorError;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.DistSQLVendorError;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.DistSQLException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
 
@@ -48,7 +48,7 @@ public final class MySQLErrPacketFactory {
     public static MySQLErrPacket newInstance(final Exception cause) {
         if (cause instanceof SQLException) {
             SQLException sqlException = (SQLException) cause;
-            return null == sqlException.getSQLState() ? new MySQLErrPacket(1, MyVendorError.ER_INTERNAL_ERROR, getErrorMessage(sqlException))
+            return null == sqlException.getSQLState() ? new MySQLErrPacket(1, MySQLVendorError.ER_INTERNAL_ERROR, getErrorMessage(sqlException))
                     : new MySQLErrPacket(1, sqlException.getErrorCode(), sqlException.getSQLState(), sqlException.getMessage());
         }
         if (cause instanceof ShardingSphereInsideException) {
@@ -57,18 +57,18 @@ public final class MySQLErrPacketFactory {
         }
         if (cause instanceof DistSQLException) {
             DistSQLException distSQLException = (DistSQLException) cause;
-            return new MySQLErrPacket(1, DistVendorError.valueOf(distSQLException), distSQLException.getVariable());
+            return new MySQLErrPacket(1, DistSQLVendorError.valueOf(distSQLException), distSQLException.getVariable());
         }
         if (cause instanceof UnsupportedPreparedStatementException) {
-            return new MySQLErrPacket(1, MyVendorError.ER_UNSUPPORTED_PS);
+            return new MySQLErrPacket(1, MySQLVendorError.ER_UNSUPPORTED_PS);
         }
         if (cause instanceof PipelineJobNotFoundException) {
-            return new MySQLErrPacket(1, StandardVendorError.SCALING_JOB_NOT_EXIST, ((PipelineJobNotFoundException) cause).getJobId());
+            return new MySQLErrPacket(1, ShardingSphereVendorError.SCALING_JOB_NOT_EXIST, ((PipelineJobNotFoundException) cause).getJobId());
         }
         if (cause instanceof UnsupportedCharsetException) {
-            return new MySQLErrPacket(1, MyVendorError.ER_UNKNOWN_CHARACTER_SET, cause.getMessage());
+            return new MySQLErrPacket(1, MySQLVendorError.ER_UNKNOWN_CHARACTER_SET, cause.getMessage());
         }
-        return new MySQLErrPacket(1, StandardVendorError.UNKNOWN_EXCEPTION, cause.getMessage());
+        return new MySQLErrPacket(1, ShardingSphereVendorError.UNKNOWN_EXCEPTION, cause.getMessage());
     }
     
     private static String getErrorMessage(final SQLException cause) {

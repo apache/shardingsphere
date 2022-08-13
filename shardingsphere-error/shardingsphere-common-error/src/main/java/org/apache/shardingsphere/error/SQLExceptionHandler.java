@@ -20,7 +20,7 @@ package org.apache.shardingsphere.error;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.error.vendor.VendorError;
-import org.apache.shardingsphere.error.vendor.StandardVendorError;
+import org.apache.shardingsphere.error.vendor.ShardingSphereVendorError;
 import org.apache.shardingsphere.error.mapper.DialectSQLExceptionMapperFactory;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.exception.CircuitBreakException;
@@ -53,29 +53,29 @@ public final class SQLExceptionHandler {
         if (insideException instanceof InsideDialectSQLException) {
             return DialectSQLExceptionMapperFactory.getInstance(databaseType).convert((InsideDialectSQLException) insideException);
         }
-        return convert(insideException).orElseGet(() -> toSQLException(StandardVendorError.UNKNOWN_EXCEPTION, insideException.getMessage()));
+        return convert(insideException).orElseGet(() -> toSQLException(ShardingSphereVendorError.UNKNOWN_EXCEPTION, insideException.getMessage()));
     }
     
     private static Optional<SQLException> convert(final ShardingSphereInsideException insideException) {
         if (insideException instanceof CircuitBreakException) {
-            return Optional.of(toSQLException(StandardVendorError.CIRCUIT_BREAK_MODE));
+            return Optional.of(toSQLException(ShardingSphereVendorError.CIRCUIT_BREAK_MODE));
         }
         if (insideException instanceof TableLockWaitTimeoutException) {
             TableLockWaitTimeoutException exception = (TableLockWaitTimeoutException) insideException;
-            return Optional.of(toSQLException(StandardVendorError.TABLE_LOCK_WAIT_TIMEOUT, exception.getTableName(), exception.getSchemaName(), exception.getTimeoutMilliseconds()));
+            return Optional.of(toSQLException(ShardingSphereVendorError.TABLE_LOCK_WAIT_TIMEOUT, exception.getTableName(), exception.getSchemaName(), exception.getTimeoutMilliseconds()));
         }
         if (insideException instanceof TableLockedException) {
             TableLockedException exception = (TableLockedException) insideException;
-            return Optional.of(toSQLException(StandardVendorError.TABLE_LOCKED, exception.getTableName(), exception.getSchemaName()));
+            return Optional.of(toSQLException(ShardingSphereVendorError.TABLE_LOCKED, exception.getTableName(), exception.getSchemaName()));
         }
         if (insideException instanceof RuleNotExistedException || insideException instanceof ResourceNotExistedException) {
-            return Optional.of(toSQLException(StandardVendorError.RESOURCE_OR_RULE_NOT_EXIST));
+            return Optional.of(toSQLException(ShardingSphereVendorError.RESOURCE_OR_RULE_NOT_EXIST));
         }
         if (insideException instanceof ShardingSphereConfigurationException || insideException instanceof SQLParsingException) {
-            return Optional.of(toSQLException(StandardVendorError.UNSUPPORTED_SQL, insideException.getMessage()));
+            return Optional.of(toSQLException(ShardingSphereVendorError.UNSUPPORTED_SQL, insideException.getMessage()));
         }
         if (insideException instanceof UnsupportedCommandException) {
-            return Optional.of(toSQLException(StandardVendorError.UNSUPPORTED_COMMAND, ((UnsupportedCommandException) insideException).getCommandType()));
+            return Optional.of(toSQLException(ShardingSphereVendorError.UNSUPPORTED_COMMAND, ((UnsupportedCommandException) insideException).getCommandType()));
         }
         return Optional.empty();
     }

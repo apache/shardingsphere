@@ -233,7 +233,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
         } catch (final SQLException ex) {
             actual = ex;
         }
-        assertThat(actual.getSQLState(), is(PostgreSQLVendorError.UNDEFINED_COLUMN.getErrorCode()));
+        assertThat(actual.getSQLState(), is(PostgreSQLVendorError.UNDEFINED_COLUMN.getSqlState().getValue()));
         assertThat(actual.getMessage(), is("Column \"undefined_column\" of relation \"t_order\" does not exist. Please check the SQL or execute REFRESH TABLE METADATA."));
     }
     

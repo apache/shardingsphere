@@ -23,11 +23,11 @@ import org.apache.shardingsphere.error.sqlstate.SQLState;
 import org.apache.shardingsphere.error.sqlstate.XOpenSQLState;
 
 /**
- * Standard vendor error.
+ * ShardingSphere vendor error.
  */
 @RequiredArgsConstructor
 @Getter
-public enum StandardVendorError implements VendorError {
+public enum ShardingSphereVendorError implements VendorError {
     
     CIRCUIT_BREAK_MODE(XOpenSQLState.GENERAL_WARNING, 1000, "Circuit break open, the request has been ignored"),
     

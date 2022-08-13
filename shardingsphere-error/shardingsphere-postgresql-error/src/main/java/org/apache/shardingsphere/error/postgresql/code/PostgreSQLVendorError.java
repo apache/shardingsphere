@@ -19,6 +19,10 @@ package org.apache.shardingsphere.error.postgresql.code;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.error.postgresql.sqlstate.PostgreSQLState;
+import org.apache.shardingsphere.error.sqlstate.SQLState;
+import org.apache.shardingsphere.error.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.error.vendor.VendorError;
 
 /**
  * PostgreSQL vendor error.
@@ -27,31 +31,36 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public enum PostgreSQLVendorError {
+public enum PostgreSQLVendorError implements VendorError {
     
-    SUCCESSFUL_COMPLETION("00000", "successful_completion"),
+    SUCCESSFUL_COMPLETION(XOpenSQLState.SUCCESSFUL_COMPLETION, "successful_completion"),
     
-    PRIVILEGE_NOT_GRANTED("01007", "privilege_not_granted"),
+    PRIVILEGE_NOT_GRANTED(XOpenSQLState.PRIVILEGE_NOT_GRANTED, "privilege_not_granted"),
     
-    PROTOCOL_VIOLATION("08P01", "protocol_violation"),
+    PROTOCOL_VIOLATION(PostgreSQLState.PROTOCOL_VIOLATION, "protocol_violation"),
     
-    FEATURE_NOT_SUPPORTED("0A000", "feature_not_supported"),
+    FEATURE_NOT_SUPPORTED(XOpenSQLState.FEATURE_NOT_SUPPORTED, "feature_not_supported"),
     
-    DUPLICATE_DATABASE("42P04", "Database '%s' already exists"),
+    DUPLICATE_DATABASE(PostgreSQLState.DUPLICATE_DATABASE, "Database '%s' already exists"),
     
-    INVALID_AUTHORIZATION_SPECIFICATION("28000", "invalid_authorization_specification"),
+    INVALID_AUTHORIZATION_SPECIFICATION(XOpenSQLState.INVALID_AUTHORIZATION_SPECIFICATION, "invalid_authorization_specification"),
     
-    INVALID_PASSWORD("28P01", "invalid_password"),
+    INVALID_PASSWORD(PostgreSQLState.INVALID_PASSWORD, "invalid_password"),
     
-    INVALID_CATALOG_NAME("3D000", "invalid_catalog_name"),
+    INVALID_CATALOG_NAME(XOpenSQLState.INVALID_CATALOG_NAME, "invalid_catalog_name"),
     
-    UNDEFINED_COLUMN("42703", "undefined_column"),
+    UNDEFINED_COLUMN(PostgreSQLState.UNDEFINED_COLUMN, "undefined_column"),
     
-    TOO_MANY_CONNECTIONS("53300", "too_many_connections"),
+    TOO_MANY_CONNECTIONS(PostgreSQLState.TOO_MANY_CONNECTIONS, "too_many_connections"),
     
-    SYSTEM_ERROR("58000", "system_error");
+    SYSTEM_ERROR(PostgreSQLState.SYSTEM_ERROR, "system_error");
     
-    private final String errorCode;
+    private final SQLState sqlState;
     
-    private final String conditionName;
+    private final String reason;
+    
+    @Override
+    public int getVendorCode() {
+        return 0;
+    }
 }

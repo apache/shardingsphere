@@ -84,7 +84,7 @@ public final class OpenGaussErrorResponsePacketTest {
     private OpenGaussErrorResponsePacket createErrorResponsePacket() {
         Map<Character, String> serverErrorMessages = new LinkedHashMap<>();
         serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_SEVERITY, PostgreSQLMessageSeverityLevel.FATAL);
-        serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_CODE, PostgreSQLVendorError.INVALID_CATALOG_NAME.getErrorCode());
+        serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_CODE, PostgreSQLVendorError.INVALID_CATALOG_NAME.getSqlState().getValue());
         serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_MESSAGE, "database \"test\" does not exist");
         serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_ERRORCODE, "-1");
         serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_DETAIL, "detail");
