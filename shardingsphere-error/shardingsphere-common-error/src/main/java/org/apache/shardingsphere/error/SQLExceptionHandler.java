@@ -19,17 +19,18 @@ package org.apache.shardingsphere.error;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.error.vendor.VendorError;
-import org.apache.shardingsphere.error.vendor.ShardingSphereVendorError;
-import org.apache.shardingsphere.error.mapper.SQLDialectExceptionMapperFactory;
-import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.error.exception.ShardingSphereSQLException;
+import org.apache.shardingsphere.error.exception.dialect.SQLDialectException;
+import org.apache.shardingsphere.error.exception.standard.command.UnsupportedCommandException;
 import org.apache.shardingsphere.error.exception.standard.connection.CircuitBreakException;
-import org.apache.shardingsphere.error.exception.standard.rule.ResourceNotExistedException;
-import org.apache.shardingsphere.error.exception.standard.rule.RuleNotExistedException;
 import org.apache.shardingsphere.error.exception.standard.lock.TableLockWaitTimeoutException;
 import org.apache.shardingsphere.error.exception.standard.lock.TableLockedException;
-import org.apache.shardingsphere.error.exception.standard.command.UnsupportedCommandException;
-import org.apache.shardingsphere.error.exception.dialect.SQLDialectException;
+import org.apache.shardingsphere.error.exception.standard.rule.ResourceNotExistedException;
+import org.apache.shardingsphere.error.exception.standard.rule.RuleNotExistedException;
+import org.apache.shardingsphere.error.mapper.SQLDialectExceptionMapperFactory;
+import org.apache.shardingsphere.error.vendor.ShardingSphereVendorError;
+import org.apache.shardingsphere.error.vendor.VendorError;
+import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 
@@ -49,7 +50,7 @@ public final class SQLExceptionHandler {
      * @param insideException inside exception
      * @return SQL exception
      */
-    public static SQLException convert(final String databaseType, final ShardingSphereInsideException insideException) {
+    public static SQLException convert(final String databaseType, final ShardingSphereSQLException insideException) {
         if (insideException instanceof SQLDialectException) {
             return SQLDialectExceptionMapperFactory.getInstance(databaseType).convert((SQLDialectException) insideException);
         }
