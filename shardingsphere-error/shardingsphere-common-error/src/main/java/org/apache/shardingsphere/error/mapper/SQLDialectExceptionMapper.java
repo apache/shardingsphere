@@ -17,28 +17,23 @@
 
 package org.apache.shardingsphere.error.mapper;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.exception.inside.SQLDialectException;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+
+import java.sql.SQLException;
 
 /**
- * Dialect SQL exception mapper.
+ * SQL dialect exception mapper.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DialectSQLExceptionMapperFactory {
-    
-    static {
-        ShardingSphereServiceLoader.register(DialectSQLExceptionMapper.class);
-    }
+@SingletonSPI
+public interface SQLDialectExceptionMapper extends TypedSPI {
     
     /**
-     * Convert ShardingSphere inside exception into SQLException.
+     * Convert SQL dialect exception into SQL exception.
      * 
-     * @param databaseType database type
+     * @param sqlDialectException SQL dialect exception
      * @return SQLException
      */
-    public static DialectSQLExceptionMapper getInstance(final String databaseType) {
-        return TypedSPIRegistry.getRegisteredService(DialectSQLExceptionMapper.class, databaseType);
-    }
+    SQLException convert(SQLDialectException sqlDialectException);
 }

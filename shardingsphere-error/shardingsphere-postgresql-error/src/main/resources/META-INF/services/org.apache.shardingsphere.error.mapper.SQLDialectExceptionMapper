@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.error.mysql.mapper.MySQLExceptionMapper
+org.apache.shardingsphere.error.postgresql.mapper.PostgreSQLDialectExceptionMapper

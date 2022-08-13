@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.infra.exception.dialect;
 
-import org.apache.shardingsphere.infra.util.exception.inside.InsideDialectSQLException;
+import org.apache.shardingsphere.infra.util.exception.inside.SQLDialectException;
 
 /**
  * Too many connections exception.
  */
-public final class TooManyConnectionsException extends InsideDialectSQLException {
+public final class TooManyConnectionsException extends SQLDialectException {
     
     private static final long serialVersionUID = -4397915988239251541L;
 }

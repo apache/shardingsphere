@@ -19,14 +19,14 @@ package org.apache.shardingsphere.infra.exception.dialect;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.inside.InsideDialectSQLException;
+import org.apache.shardingsphere.infra.util.exception.inside.SQLDialectException;
 
 /**
  * Unknown database exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class UnknownDatabaseException extends InsideDialectSQLException {
+public final class UnknownDatabaseException extends SQLDialectException {
     
     private static final long serialVersionUID = 6442120909016308638L;
     

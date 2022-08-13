@@ -19,14 +19,14 @@ package org.apache.shardingsphere.infra.exception.dialect;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.inside.InsideDialectSQLException;
+import org.apache.shardingsphere.infra.util.exception.inside.SQLDialectException;
 
 /**
  * No such table exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class NoSuchTableException extends InsideDialectSQLException {
+public final class NoSuchTableException extends SQLDialectException {
     
     private static final long serialVersionUID = 8311953084941769743L;
     
