@@ -35,7 +35,7 @@ public final class ResourceDataSource {
     private final DataSource dataSource;
     
     public ResourceDataSource(final String originalName, final DataSource dataSource) {
-        final String[] databaseAndDataSourceName = originalName.split("\\.");
+        String[] databaseAndDataSourceName = originalName.split("\\.");
         Preconditions.checkState(2 == databaseAndDataSourceName.length, String.format("Database and data source name must be provided,`%s`.", originalName));
         this.originalName = originalName;
         this.dataSource = dataSource;
