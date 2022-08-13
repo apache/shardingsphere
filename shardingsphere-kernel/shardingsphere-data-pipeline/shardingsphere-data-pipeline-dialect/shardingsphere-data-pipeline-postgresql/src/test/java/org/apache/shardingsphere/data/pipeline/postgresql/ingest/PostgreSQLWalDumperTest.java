@@ -24,6 +24,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.Standa
 import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.MultiplexMemoryPipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
@@ -72,7 +73,7 @@ public final class PostgreSQLWalDumperTest {
     
     private MultiplexMemoryPipelineChannel channel;
     
-    private final PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
+    private final PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
     
     @Before
     public void setUp() {

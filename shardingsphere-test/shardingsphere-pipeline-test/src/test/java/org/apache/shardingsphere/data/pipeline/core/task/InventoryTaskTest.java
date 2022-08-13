@@ -24,6 +24,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSource
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IntegerPrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.fixture.FixturePipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
@@ -45,7 +46,7 @@ import static org.junit.Assert.assertThat;
 
 public final class InventoryTaskTest {
     
-    private static final PipelineDataSourceManager DATA_SOURCE_MANAGER = new PipelineDataSourceManager();
+    private static final PipelineDataSourceManager DATA_SOURCE_MANAGER = new DefaultPipelineDataSourceManager();
     
     private TaskConfiguration taskConfig;
     
@@ -61,7 +62,7 @@ public final class InventoryTaskTest {
     
     @Before
     public void setUp() {
-        taskConfig = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration(), 0, new InventoryIncrementalJobItemProgress(), new PipelineDataSourceManager()).getTaskConfig();
+        taskConfig = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration(), 0, new InventoryIncrementalJobItemProgress(), new DefaultPipelineDataSourceManager()).getTaskConfig();
     }
     
     @Test(expected = IngestException.class)
@@ -87,7 +88,7 @@ public final class InventoryTaskTest {
         try (
                 InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(),
                         PipelineContextUtil.getPipelineChannelCreator(),
-                        new PipelineDataSourceManager(), dataSource, metaDataLoader, PipelineContextUtil.getExecuteEngine(), new FixturePipelineJobProgressListener())) {
+                        new DefaultPipelineDataSourceManager(), dataSource, metaDataLoader, PipelineContextUtil.getExecuteEngine(), new FixturePipelineJobProgressListener())) {
             inventoryTask.start();
             assertThat(inventoryTask.getTaskProgress().getPosition(), instanceOf(IntegerPrimaryKeyPosition.class));
         }
@@ -95,7 +96,7 @@ public final class InventoryTaskTest {
     
     private void initTableData(final DumperConfiguration dumperConfig) throws SQLException {
         try (
-                PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
+                PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
                 PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {

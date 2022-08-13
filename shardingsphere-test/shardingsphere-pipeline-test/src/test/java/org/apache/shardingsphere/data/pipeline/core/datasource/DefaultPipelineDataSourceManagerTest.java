@@ -36,7 +36,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class PipelineDataSourceManagerTest {
+public final class DefaultPipelineDataSourceManagerTest {
     
     private RuleAlteredJobConfiguration jobConfig;
     
@@ -52,7 +52,7 @@ public final class PipelineDataSourceManagerTest {
     
     @Test
     public void assertGetDataSource() {
-        PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
+        PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
         DataSource actual = dataSourceManager.getDataSource(
                 PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getSource().getType(), jobConfig.getSource().getParameter()));
         assertThat(actual, instanceOf(PipelineDataSourceWrapper.class));
@@ -60,7 +60,9 @@ public final class PipelineDataSourceManagerTest {
     
     @Test
     public void assertClose() throws NoSuchFieldException, IllegalAccessException {
-        try (PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager()) {
+        PipelineDataSourceManager dataSourceManager = null;
+        try {
+            dataSourceManager = new DefaultPipelineDataSourceManager();
             dataSourceManager.getDataSource(
                     PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getSource().getType(), jobConfig.getSource().getParameter()));
             dataSourceManager.getDataSource(
@@ -70,6 +72,10 @@ public final class PipelineDataSourceManagerTest {
             assertThat(cachedDataSources.size(), is(2));
             dataSourceManager.close();
             assertTrue(cachedDataSources.isEmpty());
+        } finally {
+            if (null != dataSourceManager) {
+                dataSourceManager.close();
+            }
         }
     }
 }

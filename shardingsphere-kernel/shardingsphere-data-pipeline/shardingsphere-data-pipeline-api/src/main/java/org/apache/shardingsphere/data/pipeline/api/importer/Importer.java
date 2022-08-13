@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.importer;
+package org.apache.shardingsphere.data.pipeline.api.importer;
 
 import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
 

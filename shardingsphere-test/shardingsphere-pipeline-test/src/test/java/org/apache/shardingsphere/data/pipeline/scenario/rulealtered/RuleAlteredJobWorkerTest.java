@@ -28,6 +28,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncreme
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.util.ConfigurationFileUtil;
@@ -98,7 +99,7 @@ public final class RuleAlteredJobWorkerTest {
     // @Test
     public void assertHasUncompletedJob() throws InvocationTargetException, NoSuchMethodException, IllegalAccessException, IOException {
         final RuleAlteredJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
-        RuleAlteredJobContext jobItemContext = new RuleAlteredJobContext(jobConfig, 0, new InventoryIncrementalJobItemProgress(), new PipelineDataSourceManager());
+        RuleAlteredJobContext jobItemContext = new RuleAlteredJobContext(jobConfig, 0, new InventoryIncrementalJobItemProgress(), new DefaultPipelineDataSourceManager());
         jobItemContext.setStatus(JobStatus.PREPARING);
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
         RuleAlteredJobAPIFactory.getInstance().persistJobItemProgress(jobItemContext);
