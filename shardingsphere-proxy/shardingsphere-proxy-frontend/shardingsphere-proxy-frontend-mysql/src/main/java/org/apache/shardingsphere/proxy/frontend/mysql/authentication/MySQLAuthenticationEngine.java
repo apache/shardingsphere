@@ -82,8 +82,8 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         } else if (MySQLConnectionPhase.AUTHENTICATION_METHOD_MISMATCH == connectionPhase) {
             authenticationMethodMismatch((MySQLPacketPayload) payload);
         }
-        Optional<MySQLVendorError> errorCode = authenticationHandler.login(currentAuthResult.getUsername(), getHostAddress(context), authResponse, currentAuthResult.getDatabase());
-        context.writeAndFlush(errorCode.isPresent() ? createErrorPacket(errorCode.get(), context) : new MySQLOKPacket(++sequenceId, DEFAULT_STATUS_FLAG));
+        Optional<MySQLVendorError> vendorError = authenticationHandler.login(currentAuthResult.getUsername(), getHostAddress(context), authResponse, currentAuthResult.getDatabase());
+        context.writeAndFlush(vendorError.isPresent() ? createErrorPacket(vendorError.get(), context) : new MySQLOKPacket(++sequenceId, DEFAULT_STATUS_FLAG));
         return AuthenticationResultBuilder.finished(currentAuthResult.getUsername(), getHostAddress(context), currentAuthResult.getDatabase());
     }
     
