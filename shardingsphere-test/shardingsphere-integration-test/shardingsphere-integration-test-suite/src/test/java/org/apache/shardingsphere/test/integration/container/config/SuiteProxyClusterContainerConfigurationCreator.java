@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.test.integration.container.config;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
-import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.ProxyClusterContainerConfigurationCreator;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Suite proxy cluster container configuration creator.
@@ -28,9 +31,18 @@ public final class SuiteProxyClusterContainerConfigurationCreator {
     /**
      * Creator adaptor container config.
      * @param scenario scenario
+     * @param databaseType database type
      * @return adaptor container config
      */
-    public static AdaptorContainerConfiguration create(final String scenario) {
-        return new AdaptorContainerConfiguration(scenario, ProxyClusterContainerConfigurationCreator.create().getMountedResource());
+    public static AdaptorContainerConfiguration create(final String scenario, final DatabaseType databaseType) {
+        return new AdaptorContainerConfiguration("", getMountedResources(scenario, databaseType));
+    }
+    
+    private static Map<String, String> getMountedResources(final String scenario, final DatabaseType databaseType) {
+        Map<String, String> result = new HashMap<>(2, 1);
+        String pathInContainer = "/opt/shardingsphere-proxy/conf";
+        result.put("/env/common/standalone/proxy/conf/", pathInContainer);
+        result.put("/env/scenario/" + scenario + "/proxy/conf/" + databaseType.getType().toLowerCase(), pathInContainer);
+        return result;
     }
 }

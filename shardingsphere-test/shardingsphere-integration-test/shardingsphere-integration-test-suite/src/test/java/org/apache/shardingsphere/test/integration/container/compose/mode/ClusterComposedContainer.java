@@ -55,7 +55,7 @@ public final class ClusterComposedContainer implements ComposedContainer {
         // TODO add more version of databases
         storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(parameterizedArray.getDatabaseType(), "", scenario,
                 SuiteStorageContainerConfigurationFactory.newInstance(parameterizedArray.getDatabaseType(), scenario)));
-        AdaptorContainerConfiguration containerConfig = SuiteProxyClusterContainerConfigurationCreator.create(scenario);
+        AdaptorContainerConfiguration containerConfig = SuiteProxyClusterContainerConfigurationCreator.create(scenario, parameterizedArray.getDatabaseType());
         AdapterContainer adapterContainer = AdapterContainerFactory.newInstance(
                 parameterizedArray.getMode(), parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), storageContainer, scenario, containerConfig);
         if (adapterContainer instanceof DockerITContainer) {
