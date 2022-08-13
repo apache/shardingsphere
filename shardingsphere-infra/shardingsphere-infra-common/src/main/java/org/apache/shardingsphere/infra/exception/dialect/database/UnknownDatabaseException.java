@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.dialect;
+package org.apache.shardingsphere.infra.exception.dialect.database;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

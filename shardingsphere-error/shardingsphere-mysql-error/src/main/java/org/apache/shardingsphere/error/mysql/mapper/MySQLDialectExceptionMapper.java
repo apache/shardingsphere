@@ -21,15 +21,15 @@ import org.apache.shardingsphere.error.vendor.VendorError;
 import org.apache.shardingsphere.error.vendor.ShardingSphereVendorError;
 import org.apache.shardingsphere.error.mapper.SQLDialectExceptionMapper;
 import org.apache.shardingsphere.error.mysql.code.MySQLVendorError;
-import org.apache.shardingsphere.infra.exception.dialect.DBCreateExistsException;
-import org.apache.shardingsphere.infra.exception.dialect.DBDropNotExistsException;
+import org.apache.shardingsphere.infra.exception.dialect.database.DatabaseCreateExistsException;
+import org.apache.shardingsphere.infra.exception.dialect.database.DatabaseDropNotExistsException;
 import org.apache.shardingsphere.infra.exception.dialect.InsertColumnsAndValuesMismatchedException;
-import org.apache.shardingsphere.infra.exception.dialect.NoDatabaseSelectedException;
+import org.apache.shardingsphere.infra.exception.dialect.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.infra.exception.dialect.NoSuchTableException;
 import org.apache.shardingsphere.infra.exception.dialect.TableExistsException;
 import org.apache.shardingsphere.infra.exception.dialect.TableModifyInTransactionException;
 import org.apache.shardingsphere.infra.exception.dialect.TooManyConnectionsException;
-import org.apache.shardingsphere.infra.exception.dialect.UnknownDatabaseException;
+import org.apache.shardingsphere.infra.exception.dialect.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.util.exception.inside.SQLDialectException;
 
 import java.sql.SQLException;
@@ -55,11 +55,11 @@ public final class MySQLDialectExceptionMapper implements SQLDialectExceptionMap
         if (sqlDialectException instanceof NoDatabaseSelectedException) {
             return toSQLException(MySQLVendorError.ER_NO_DB_ERROR);
         }
-        if (sqlDialectException instanceof DBCreateExistsException) {
-            return toSQLException(MySQLVendorError.ER_DB_CREATE_EXISTS_ERROR, ((DBCreateExistsException) sqlDialectException).getDatabaseName());
+        if (sqlDialectException instanceof DatabaseCreateExistsException) {
+            return toSQLException(MySQLVendorError.ER_DB_CREATE_EXISTS_ERROR, ((DatabaseCreateExistsException) sqlDialectException).getDatabaseName());
         }
-        if (sqlDialectException instanceof DBDropNotExistsException) {
-            return toSQLException(MySQLVendorError.ER_DB_DROP_NOT_EXISTS_ERROR, ((DBDropNotExistsException) sqlDialectException).getDatabaseName());
+        if (sqlDialectException instanceof DatabaseDropNotExistsException) {
+            return toSQLException(MySQLVendorError.ER_DB_DROP_NOT_EXISTS_ERROR, ((DatabaseDropNotExistsException) sqlDialectException).getDatabaseName());
         }
         if (sqlDialectException instanceof TableExistsException) {
             return toSQLException(MySQLVendorError.ER_TABLE_EXISTS_ERROR, ((TableExistsException) sqlDialectException).getTableName());

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.error.postgresql.mapper;
 
 import org.apache.shardingsphere.error.mapper.SQLDialectExceptionMapper;
 import org.apache.shardingsphere.error.postgresql.code.PostgreSQLVendorError;
-import org.apache.shardingsphere.infra.exception.dialect.DBCreateExistsException;
+import org.apache.shardingsphere.infra.exception.dialect.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.infra.exception.dialect.InTransactionException;
 import org.apache.shardingsphere.infra.exception.dialect.InsertColumnsAndValuesMismatchedException;
 import org.apache.shardingsphere.infra.exception.dialect.InvalidParameterValueException;
@@ -48,7 +48,7 @@ public final class PostgreSQLDialectExceptionMapper implements SQLDialectExcepti
             String message = String.format("invalid value for parameter \"%s\": \"%s\"", invalidParameterValueException.getParameterName(), invalidParameterValueException.getParameterValue());
             return new PSQLException(message, PSQLState.INVALID_PARAMETER_VALUE);
         }
-        if (sqlDialectException instanceof DBCreateExistsException) {
+        if (sqlDialectException instanceof DatabaseCreateExistsException) {
             return new PSQLException(PostgreSQLVendorError.DUPLICATE_DATABASE.getReason(), null);
         }
         if (sqlDialectException instanceof TooManyConnectionsException) {
