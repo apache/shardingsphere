@@ -15,30 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.importer;
+package org.apache.shardingsphere.data.pipeline.api.datasource;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 
 /**
- * Importer creator factory.
+ * Pipeline data source manager.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ImporterCreatorFactory {
-    
-    static {
-        ShardingSphereServiceLoader.register(ImporterCreator.class);
-    }
+public interface PipelineDataSourceManager {
     
     /**
-     * Get importer creator instance.
+     * Get cached data source.
      *
-     * @param databaseType database type
-     * @return importer creator
+     * @param dataSourceConfig data source configuration
+     * @return data source
      */
-    public static ImporterCreator getInstance(final String databaseType) {
-        return TypedSPIRegistry.getRegisteredService(ImporterCreator.class, databaseType);
-    }
+    PipelineDataSourceWrapper getDataSource(PipelineDataSourceConfiguration dataSourceConfig);
+    
+    /**
+     * Close, close cached data source.
+     */
+    void close();
 }
