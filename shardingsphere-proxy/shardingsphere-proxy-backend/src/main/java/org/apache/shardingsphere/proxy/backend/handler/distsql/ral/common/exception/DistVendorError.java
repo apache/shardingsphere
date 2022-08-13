@@ -19,16 +19,16 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.excep
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.error.code.SQLErrorCode;
+import org.apache.shardingsphere.error.vendor.VendorError;
 import org.apache.shardingsphere.error.sqlstate.SQLState;
 import org.apache.shardingsphere.error.sqlstate.XOpenSQLState;
 
 /**
- * Dist SQL error code.
+ * Dist SQL vendor error.
  */
 @RequiredArgsConstructor
 @Getter
-public enum DistSQLErrorCode implements SQLErrorCode {
+public enum DistVendorError implements VendorError {
     
     UNSUPPORTED_VARIABLE(XOpenSQLState.GENERAL_ERROR, 11001, "Could not support variable `%s`"),
     
@@ -46,7 +46,7 @@ public enum DistSQLErrorCode implements SQLErrorCode {
      * @param distSQLException dist SQL exception
      * @return dist SQL error code
      */
-    public static DistSQLErrorCode valueOf(final DistSQLException distSQLException) {
+    public static DistVendorError valueOf(final DistSQLException distSQLException) {
         if (distSQLException instanceof UnsupportedVariableException) {
             return UNSUPPORTED_VARIABLE;
         }

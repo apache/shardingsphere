@@ -21,13 +21,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * PostgreSQL error code.
+ * PostgreSQL vendor error.
  *
  * @see <a href="https://www.postgresql.org/docs/12/errcodes-appendix.html">Appendix A. PostgreSQL Error Codes</a>
  */
 @RequiredArgsConstructor
 @Getter
-public enum PostgreSQLErrorCode {
+public enum PostgreSQLVendorError {
     
     SUCCESSFUL_COMPLETION("00000", "successful_completion"),
     

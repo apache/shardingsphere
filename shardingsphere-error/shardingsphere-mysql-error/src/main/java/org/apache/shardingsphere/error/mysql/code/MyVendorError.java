@@ -19,18 +19,18 @@ package org.apache.shardingsphere.error.mysql.code;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.error.code.SQLErrorCode;
+import org.apache.shardingsphere.error.vendor.VendorError;
 import org.apache.shardingsphere.error.sqlstate.SQLState;
 import org.apache.shardingsphere.error.sqlstate.XOpenSQLState;
 
 /**
- * Server error code for MySQL.
+ * MySQL vendor error.
  * 
  * @see <a href="https://dev.mysql.com/doc/mysql-errors/8.0/en/server-error-reference.html">Server Error Message Reference</a>
  */
 @RequiredArgsConstructor
 @Getter
-public enum MySQLErrorCode implements SQLErrorCode {
+public enum MyVendorError implements VendorError {
     
     ER_DBACCESS_DENIED_ERROR(XOpenSQLState.SYNTAX_ERROR, 1044, "Access denied for user '%s'@'%s' to database '%s'"),
     
