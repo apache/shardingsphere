@@ -19,7 +19,7 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.error.postgresql.code.PostgreSQLErrorCode;
+import org.apache.shardingsphere.error.postgresql.code.PostgreSQLVendorError;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
@@ -106,13 +106,13 @@ public final class PostgreSQLErrorResponsePacket implements PostgreSQLIdentifier
      * Create PostgreSQL error response packet builder with required arguments.
      *
      * @param severity severity
-     * @param postgreSQLErrorCode PostgreSQL error code
+     * @param postgreSQLvendorError PostgreSQL error code
      * @param message message
      * @return PostgreSQL error response packet builder
      * @see <a href="https://www.postgresql.org/docs/12/protocol-error-fields.html">52.8. Error and Notice Message Fields</a>
      */
-    public static Builder newBuilder(final String severity, final PostgreSQLErrorCode postgreSQLErrorCode, final String message) {
-        return newBuilder(severity, postgreSQLErrorCode.getErrorCode(), message);
+    public static Builder newBuilder(final String severity, final PostgreSQLVendorError postgreSQLvendorError, final String message) {
+        return newBuilder(severity, postgreSQLvendorError.getErrorCode(), message);
     }
     
     /**

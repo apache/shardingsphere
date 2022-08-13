@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.code;
+package org.apache.shardingsphere.error.vendor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +23,11 @@ import org.apache.shardingsphere.error.sqlstate.SQLState;
 import org.apache.shardingsphere.error.sqlstate.XOpenSQLState;
 
 /**
- * Standard SQL error code.
+ * Standard vendor error.
  */
 @RequiredArgsConstructor
 @Getter
-public enum StandardSQLErrorCode implements SQLErrorCode {
+public enum StandardVendorError implements VendorError {
     
     CIRCUIT_BREAK_MODE(XOpenSQLState.GENERAL_WARNING, 1000, "Circuit break open, the request has been ignored"),
     

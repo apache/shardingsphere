@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.code;
+package org.apache.shardingsphere.error.vendor;
 
 import org.apache.shardingsphere.error.sqlstate.SQLState;
 
 /**
- * SQL error code.
+ * Vendor error.
  */
-public interface SQLErrorCode {
+public interface VendorError {
     
     /**
      * Get SQL state.

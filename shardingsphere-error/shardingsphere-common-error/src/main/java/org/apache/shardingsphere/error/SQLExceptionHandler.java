@@ -19,8 +19,8 @@ package org.apache.shardingsphere.error;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.error.code.SQLErrorCode;
-import org.apache.shardingsphere.error.code.StandardSQLErrorCode;
+import org.apache.shardingsphere.error.vendor.VendorError;
+import org.apache.shardingsphere.error.vendor.StandardVendorError;
 import org.apache.shardingsphere.error.mapper.DialectSQLExceptionMapperFactory;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.exception.CircuitBreakException;
@@ -53,34 +53,34 @@ public final class SQLExceptionHandler {
         if (insideException instanceof InsideDialectSQLException) {
             return DialectSQLExceptionMapperFactory.getInstance(databaseType).convert((InsideDialectSQLException) insideException);
         }
-        return convert(insideException).orElseGet(() -> toSQLException(StandardSQLErrorCode.UNKNOWN_EXCEPTION, insideException.getMessage()));
+        return convert(insideException).orElseGet(() -> toSQLException(StandardVendorError.UNKNOWN_EXCEPTION, insideException.getMessage()));
     }
     
     private static Optional<SQLException> convert(final ShardingSphereInsideException insideException) {
         if (insideException instanceof CircuitBreakException) {
-            return Optional.of(toSQLException(StandardSQLErrorCode.CIRCUIT_BREAK_MODE));
+            return Optional.of(toSQLException(StandardVendorError.CIRCUIT_BREAK_MODE));
         }
         if (insideException instanceof TableLockWaitTimeoutException) {
             TableLockWaitTimeoutException exception = (TableLockWaitTimeoutException) insideException;
-            return Optional.of(toSQLException(StandardSQLErrorCode.TABLE_LOCK_WAIT_TIMEOUT, exception.getTableName(), exception.getSchemaName(), exception.getTimeoutMilliseconds()));
+            return Optional.of(toSQLException(StandardVendorError.TABLE_LOCK_WAIT_TIMEOUT, exception.getTableName(), exception.getSchemaName(), exception.getTimeoutMilliseconds()));
         }
         if (insideException instanceof TableLockedException) {
             TableLockedException exception = (TableLockedException) insideException;
-            return Optional.of(toSQLException(StandardSQLErrorCode.TABLE_LOCKED, exception.getTableName(), exception.getSchemaName()));
+            return Optional.of(toSQLException(StandardVendorError.TABLE_LOCKED, exception.getTableName(), exception.getSchemaName()));
         }
         if (insideException instanceof RuleNotExistedException || insideException instanceof ResourceNotExistedException) {
-            return Optional.of(toSQLException(StandardSQLErrorCode.RESOURCE_OR_RULE_NOT_EXIST));
+            return Optional.of(toSQLException(StandardVendorError.RESOURCE_OR_RULE_NOT_EXIST));
         }
         if (insideException instanceof ShardingSphereConfigurationException || insideException instanceof SQLParsingException) {
-            return Optional.of(toSQLException(StandardSQLErrorCode.UNSUPPORTED_SQL, insideException.getMessage()));
+            return Optional.of(toSQLException(StandardVendorError.UNSUPPORTED_SQL, insideException.getMessage()));
         }
         if (insideException instanceof UnsupportedCommandException) {
-            return Optional.of(toSQLException(StandardSQLErrorCode.UNSUPPORTED_COMMAND, ((UnsupportedCommandException) insideException).getCommandType()));
+            return Optional.of(toSQLException(StandardVendorError.UNSUPPORTED_COMMAND, ((UnsupportedCommandException) insideException).getCommandType()));
         }
         return Optional.empty();
     }
     
-    private static SQLException toSQLException(final SQLErrorCode errorCode, final Object... messageArguments) {
-        return new SQLException(String.format(errorCode.getReason(), messageArguments), errorCode.getSqlState().getValue(), errorCode.getVendorCode());
+    private static SQLException toSQLException(final VendorError vendorError, final Object... messageArguments) {
+        return new SQLException(String.format(vendorError.getReason(), messageArguments), vendorError.getSqlState().getValue(), vendorError.getVendorCode());
     }
 }

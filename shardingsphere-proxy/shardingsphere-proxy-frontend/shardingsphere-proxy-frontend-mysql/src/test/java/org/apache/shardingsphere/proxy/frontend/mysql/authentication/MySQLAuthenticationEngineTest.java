@@ -25,7 +25,7 @@ import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCapabilityFlag;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConnectionPhase;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
-import org.apache.shardingsphere.error.mysql.code.MySQLErrorCode;
+import org.apache.shardingsphere.error.mysql.code.MyVendorError;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
@@ -135,7 +135,7 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
         ChannelHandlerContext context = getContext();
         setMetaDataContexts();
-        when(authenticationHandler.login(anyString(), any(), any(), anyString())).thenReturn(Optional.of(MySQLErrorCode.ER_ACCESS_DENIED_ERROR));
+        when(authenticationHandler.login(anyString(), any(), any(), anyString())).thenReturn(Optional.of(MyVendorError.ER_ACCESS_DENIED_ERROR));
         authenticationEngine.authenticate(context, getPayload("root", "sharding_db", authResponse));
         verify(context).writeAndFlush(any(MySQLErrPacket.class));
     }

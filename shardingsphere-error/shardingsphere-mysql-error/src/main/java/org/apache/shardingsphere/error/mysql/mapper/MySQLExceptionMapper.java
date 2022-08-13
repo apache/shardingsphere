@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.error.mysql.mapper;
 
-import org.apache.shardingsphere.error.code.SQLErrorCode;
-import org.apache.shardingsphere.error.code.StandardSQLErrorCode;
+import org.apache.shardingsphere.error.vendor.VendorError;
+import org.apache.shardingsphere.error.vendor.StandardVendorError;
 import org.apache.shardingsphere.error.mapper.DialectSQLExceptionMapper;
-import org.apache.shardingsphere.error.mysql.code.MySQLErrorCode;
+import org.apache.shardingsphere.error.mysql.code.MyVendorError;
 import org.apache.shardingsphere.infra.exception.dialect.DBCreateExistsException;
 import org.apache.shardingsphere.infra.exception.dialect.DBDropNotExistsException;
 import org.apache.shardingsphere.infra.exception.dialect.InsertColumnsAndValuesMismatchedException;
@@ -42,39 +42,39 @@ public final class MySQLExceptionMapper implements DialectSQLExceptionMapper {
     @Override
     public SQLException convert(final InsideDialectSQLException dialectSQLException) {
         if (dialectSQLException instanceof TableModifyInTransactionException) {
-            return toSQLException(MySQLErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, ((TableModifyInTransactionException) dialectSQLException).getTableName());
+            return toSQLException(MyVendorError.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, ((TableModifyInTransactionException) dialectSQLException).getTableName());
         }
         if (dialectSQLException instanceof InsertColumnsAndValuesMismatchedException) {
-            return toSQLException(MySQLErrorCode.ER_WRONG_VALUE_COUNT_ON_ROW, ((InsertColumnsAndValuesMismatchedException) dialectSQLException).getMismatchedRowNumber());
+            return toSQLException(MyVendorError.ER_WRONG_VALUE_COUNT_ON_ROW, ((InsertColumnsAndValuesMismatchedException) dialectSQLException).getMismatchedRowNumber());
         }
         if (dialectSQLException instanceof UnknownDatabaseException) {
             return null != ((UnknownDatabaseException) dialectSQLException).getDatabaseName()
-                    ? toSQLException(MySQLErrorCode.ER_BAD_DB_ERROR, ((UnknownDatabaseException) dialectSQLException).getDatabaseName())
-                    : toSQLException(MySQLErrorCode.ER_NO_DB_ERROR);
+                    ? toSQLException(MyVendorError.ER_BAD_DB_ERROR, ((UnknownDatabaseException) dialectSQLException).getDatabaseName())
+                    : toSQLException(MyVendorError.ER_NO_DB_ERROR);
         }
         if (dialectSQLException instanceof NoDatabaseSelectedException) {
-            return toSQLException(MySQLErrorCode.ER_NO_DB_ERROR);
+            return toSQLException(MyVendorError.ER_NO_DB_ERROR);
         }
         if (dialectSQLException instanceof DBCreateExistsException) {
-            return toSQLException(MySQLErrorCode.ER_DB_CREATE_EXISTS_ERROR, ((DBCreateExistsException) dialectSQLException).getDatabaseName());
+            return toSQLException(MyVendorError.ER_DB_CREATE_EXISTS_ERROR, ((DBCreateExistsException) dialectSQLException).getDatabaseName());
         }
         if (dialectSQLException instanceof DBDropNotExistsException) {
-            return toSQLException(MySQLErrorCode.ER_DB_DROP_NOT_EXISTS_ERROR, ((DBDropNotExistsException) dialectSQLException).getDatabaseName());
+            return toSQLException(MyVendorError.ER_DB_DROP_NOT_EXISTS_ERROR, ((DBDropNotExistsException) dialectSQLException).getDatabaseName());
         }
         if (dialectSQLException instanceof TableExistsException) {
-            return toSQLException(MySQLErrorCode.ER_TABLE_EXISTS_ERROR, ((TableExistsException) dialectSQLException).getTableName());
+            return toSQLException(MyVendorError.ER_TABLE_EXISTS_ERROR, ((TableExistsException) dialectSQLException).getTableName());
         }
         if (dialectSQLException instanceof NoSuchTableException) {
-            return toSQLException(MySQLErrorCode.ER_NO_SUCH_TABLE, ((NoSuchTableException) dialectSQLException).getTableName());
+            return toSQLException(MyVendorError.ER_NO_SUCH_TABLE, ((NoSuchTableException) dialectSQLException).getTableName());
         }
         if (dialectSQLException instanceof TooManyConnectionsException) {
-            return toSQLException(MySQLErrorCode.ER_CON_COUNT_ERROR);
+            return toSQLException(MyVendorError.ER_CON_COUNT_ERROR);
         }
-        return toSQLException(StandardSQLErrorCode.UNKNOWN_EXCEPTION, dialectSQLException.getMessage());
+        return toSQLException(StandardVendorError.UNKNOWN_EXCEPTION, dialectSQLException.getMessage());
     }
     
-    private SQLException toSQLException(final SQLErrorCode errorCode, final Object... messageArguments) {
-        return new SQLException(String.format(errorCode.getReason(), messageArguments), errorCode.getSqlState().getValue(), errorCode.getVendorCode());
+    private SQLException toSQLException(final VendorError vendorError, final Object... messageArguments) {
+        return new SQLException(String.format(vendorError.getReason(), messageArguments), vendorError.getSqlState().getValue(), vendorError.getVendorCode());
     }
     
     @Override

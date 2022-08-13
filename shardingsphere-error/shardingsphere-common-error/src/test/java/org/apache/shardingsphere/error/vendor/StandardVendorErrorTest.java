@@ -15,33 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.code;
+package org.apache.shardingsphere.error.vendor;
 
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class StandardSQLErrorCodeTest {
+public final class StandardVendorErrorTest {
     
     @Test
     public void assertCircuitBreakMode() {
-        assertThat(StandardSQLErrorCode.CIRCUIT_BREAK_MODE.getSqlState().getValue(), is("01000"));
-        assertThat(StandardSQLErrorCode.CIRCUIT_BREAK_MODE.getVendorCode(), is(1000));
-        assertThat(StandardSQLErrorCode.CIRCUIT_BREAK_MODE.getReason(), is("Circuit break open, the request has been ignored"));
+        assertThat(StandardVendorError.CIRCUIT_BREAK_MODE.getSqlState().getValue(), is("01000"));
+        assertThat(StandardVendorError.CIRCUIT_BREAK_MODE.getVendorCode(), is(1000));
+        assertThat(StandardVendorError.CIRCUIT_BREAK_MODE.getReason(), is("Circuit break open, the request has been ignored"));
     }
     
     @Test
     public void assertUnsupportedCommand() {
-        assertThat(StandardSQLErrorCode.UNSUPPORTED_COMMAND.getSqlState().getValue(), is("42000"));
-        assertThat(StandardSQLErrorCode.UNSUPPORTED_COMMAND.getVendorCode(), is(1998));
-        assertThat(StandardSQLErrorCode.UNSUPPORTED_COMMAND.getReason(), is("Unsupported command: %s"));
+        assertThat(StandardVendorError.UNSUPPORTED_COMMAND.getSqlState().getValue(), is("42000"));
+        assertThat(StandardVendorError.UNSUPPORTED_COMMAND.getVendorCode(), is(1998));
+        assertThat(StandardVendorError.UNSUPPORTED_COMMAND.getReason(), is("Unsupported command: %s"));
     }
     
     @Test
     public void assertUnknownException() {
-        assertThat(StandardSQLErrorCode.UNKNOWN_EXCEPTION.getSqlState().getValue(), is("42000"));
-        assertThat(StandardSQLErrorCode.UNKNOWN_EXCEPTION.getVendorCode(), is(1999));
-        assertThat(StandardSQLErrorCode.UNKNOWN_EXCEPTION.getReason(), is("Unknown exception: %s"));
+        assertThat(StandardVendorError.UNKNOWN_EXCEPTION.getSqlState().getValue(), is("42000"));
+        assertThat(StandardVendorError.UNKNOWN_EXCEPTION.getVendorCode(), is(1999));
+        assertThat(StandardVendorError.UNKNOWN_EXCEPTION.getReason(), is("Unknown exception: %s"));
     }
 }
