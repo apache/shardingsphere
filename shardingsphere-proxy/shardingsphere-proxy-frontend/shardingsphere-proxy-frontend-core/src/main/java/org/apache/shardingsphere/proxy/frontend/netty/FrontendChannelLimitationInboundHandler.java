@@ -22,7 +22,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionLimitContext;
-import org.apache.shardingsphere.infra.exception.dialect.TooManyConnectionsException;
+import org.apache.shardingsphere.infra.exception.dialect.connection.TooManyConnectionsException;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 
 /**

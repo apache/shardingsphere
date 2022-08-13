@@ -15,20 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.dialect;
+package org.apache.shardingsphere.infra.exception.dialect.connection;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.exception.inside.SQLDialectException;
 
 /**
- * In transaction exception.
+ * Too many connections exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class InTransactionException extends SQLDialectException {
+public final class TooManyConnectionsException extends SQLDialectException {
     
-    private static final long serialVersionUID = 8125852172126111520L;
-    
-    private final String message;
+    private static final long serialVersionUID = -4397915988239251541L;
 }

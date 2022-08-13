@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.dialect;
+package org.apache.shardingsphere.infra.exception.dialect.transaction;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.exception.inside.SQLDialectException;
 
 /**
- * Table modify in transaction exception.
+ * In transaction exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class TableModifyInTransactionException extends SQLDialectException {
+public final class InTransactionException extends SQLDialectException {
     
-    private static final long serialVersionUID = 5676889868293244575L;
+    private static final long serialVersionUID = 8125852172126111520L;
     
-    private final String tableName;
+    private final String message;
 }

@@ -20,17 +20,17 @@ package org.apache.shardingsphere.proxy.frontend.mysql.err;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
-import org.apache.shardingsphere.infra.exception.dialect.NoDatabaseSelectedException;
-import org.apache.shardingsphere.infra.exception.dialect.UnknownDatabaseException;
+import org.apache.shardingsphere.infra.exception.dialect.syntax.database.NoDatabaseSelectedException;
+import org.apache.shardingsphere.infra.exception.dialect.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.exception.CircuitBreakException;
-import org.apache.shardingsphere.infra.exception.dialect.DBCreateExistsException;
-import org.apache.shardingsphere.infra.exception.dialect.DBDropNotExistsException;
-import org.apache.shardingsphere.infra.exception.dialect.TableModifyInTransactionException;
+import org.apache.shardingsphere.infra.exception.dialect.syntax.database.DatabaseCreateExistsException;
+import org.apache.shardingsphere.infra.exception.dialect.syntax.database.DatabaseDropNotExistsException;
+import org.apache.shardingsphere.infra.exception.dialect.transaction.TableModifyInTransactionException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.UnsupportedVariableException;
 import org.apache.shardingsphere.infra.exception.UnsupportedCommandException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
-import org.apache.shardingsphere.infra.exception.dialect.NoSuchTableException;
-import org.apache.shardingsphere.infra.exception.dialect.TableExistsException;
+import org.apache.shardingsphere.infra.exception.dialect.syntax.table.NoSuchTableException;
+import org.apache.shardingsphere.infra.exception.dialect.syntax.table.TableExistsException;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.junit.Test;
 
@@ -112,7 +112,7 @@ public final class MySQLErrPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithDBCreateExistsException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new DBCreateExistsException("No reason"));
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new DatabaseCreateExistsException("No reason"));
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(1007));
         assertThat(actual.getSqlState(), is("HY000"));
@@ -121,7 +121,7 @@ public final class MySQLErrPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithDBDropExistsException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new DBDropNotExistsException("No reason"));
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new DatabaseDropNotExistsException("No reason"));
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(1008));
         assertThat(actual.getSqlState(), is("HY000"));

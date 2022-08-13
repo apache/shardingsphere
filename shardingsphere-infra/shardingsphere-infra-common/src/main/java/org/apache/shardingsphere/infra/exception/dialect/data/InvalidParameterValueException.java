@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.dialect;
+package org.apache.shardingsphere.infra.exception.dialect.data;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.exception.inside.SQLDialectException;
 
 /**
- * No such table exception.
+ * Invalid parameter value exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class NoSuchTableException extends SQLDialectException {
+public final class InvalidParameterValueException extends SQLDialectException {
     
-    private static final long serialVersionUID = 8311953084941769743L;
+    private static final long serialVersionUID = -6561119208409452172L;
     
-    private final String tableName;
+    private final String parameterName;
+    
+    private final String parameterValue;
 }

@@ -19,11 +19,11 @@ package org.apache.shardingsphere.error.postgresql.mapper;
 
 import org.apache.shardingsphere.error.mapper.SQLDialectExceptionMapper;
 import org.apache.shardingsphere.error.postgresql.code.PostgreSQLVendorError;
-import org.apache.shardingsphere.infra.exception.dialect.DBCreateExistsException;
-import org.apache.shardingsphere.infra.exception.dialect.InTransactionException;
-import org.apache.shardingsphere.infra.exception.dialect.InsertColumnsAndValuesMismatchedException;
-import org.apache.shardingsphere.infra.exception.dialect.InvalidParameterValueException;
-import org.apache.shardingsphere.infra.exception.dialect.TooManyConnectionsException;
+import org.apache.shardingsphere.infra.exception.dialect.transaction.InTransactionException;
+import org.apache.shardingsphere.infra.exception.dialect.data.InsertColumnsAndValuesMismatchedException;
+import org.apache.shardingsphere.infra.exception.dialect.data.InvalidParameterValueException;
+import org.apache.shardingsphere.infra.exception.dialect.connection.TooManyConnectionsException;
+import org.apache.shardingsphere.infra.exception.dialect.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.infra.util.exception.inside.SQLDialectException;
 import org.postgresql.util.PSQLException;
 import org.postgresql.util.PSQLState;
@@ -37,6 +37,9 @@ public final class PostgreSQLDialectExceptionMapper implements SQLDialectExcepti
     
     @Override
     public SQLException convert(final SQLDialectException sqlDialectException) {
+        if (sqlDialectException instanceof DatabaseCreateExistsException) {
+            return new PSQLException(PostgreSQLVendorError.DUPLICATE_DATABASE.getReason(), null);
+        }
         if (sqlDialectException instanceof InTransactionException) {
             return new PSQLException(sqlDialectException.getMessage(), PSQLState.TRANSACTION_STATE_INVALID);
         }
@@ -48,13 +51,10 @@ public final class PostgreSQLDialectExceptionMapper implements SQLDialectExcepti
             String message = String.format("invalid value for parameter \"%s\": \"%s\"", invalidParameterValueException.getParameterName(), invalidParameterValueException.getParameterValue());
             return new PSQLException(message, PSQLState.INVALID_PARAMETER_VALUE);
         }
-        if (sqlDialectException instanceof DBCreateExistsException) {
-            return new PSQLException(PostgreSQLVendorError.DUPLICATE_DATABASE.getReason(), null);
-        }
         if (sqlDialectException instanceof TooManyConnectionsException) {
-            return new PSQLException(PostgreSQLVendorError.TOO_MANY_CONNECTIONS.getReason(), null);
+            return new PSQLException(PostgreSQLVendorError.DATA_SOURCE_REJECTED_CONNECTION_ATTEMPT.getReason(), null);
         }
-        return new PSQLException(sqlDialectException.getMessage(), null);
+        return new PSQLException(sqlDialectException.getMessage(), PSQLState.UNEXPECTED_ERROR);
     }
     
     @Override

@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.dialect;
+package org.apache.shardingsphere.infra.exception.dialect.syntax.database;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.exception.inside.SQLDialectException;
 
 /**
- * DB create exists exception.
+ * Database drop exists exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DBCreateExistsException extends SQLDialectException {
+public final class DatabaseDropNotExistsException extends SQLDialectException {
     
-    private static final long serialVersionUID = 779787160167652641L;
+    private static final long serialVersionUID = 6088272565526510361L;
     
     private final String databaseName;
 }
