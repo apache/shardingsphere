@@ -26,22 +26,22 @@ public final class StandardSQLErrorCodeTest {
     
     @Test
     public void assertCircuitBreakMode() {
+        assertThat(StandardSQLErrorCode.CIRCUIT_BREAK_MODE.getSqlState().getValue(), is("01000"));
         assertThat(StandardSQLErrorCode.CIRCUIT_BREAK_MODE.getVendorCode(), is(1000));
-        assertThat(StandardSQLErrorCode.CIRCUIT_BREAK_MODE.getSqlState().getValue(), is("C1000"));
-        assertThat(StandardSQLErrorCode.CIRCUIT_BREAK_MODE.getReason(), is("Circuit break mode is ON"));
+        assertThat(StandardSQLErrorCode.CIRCUIT_BREAK_MODE.getReason(), is("Circuit break open, the request has been ignored"));
     }
     
     @Test
     public void assertUnsupportedCommand() {
+        assertThat(StandardSQLErrorCode.UNSUPPORTED_COMMAND.getSqlState().getValue(), is("42000"));
         assertThat(StandardSQLErrorCode.UNSUPPORTED_COMMAND.getVendorCode(), is(1998));
-        assertThat(StandardSQLErrorCode.UNSUPPORTED_COMMAND.getSqlState().getValue(), is("C1998"));
         assertThat(StandardSQLErrorCode.UNSUPPORTED_COMMAND.getReason(), is("Unsupported command: %s"));
     }
     
     @Test
     public void assertUnknownException() {
+        assertThat(StandardSQLErrorCode.UNKNOWN_EXCEPTION.getSqlState().getValue(), is("42000"));
         assertThat(StandardSQLErrorCode.UNKNOWN_EXCEPTION.getVendorCode(), is(1999));
-        assertThat(StandardSQLErrorCode.UNKNOWN_EXCEPTION.getSqlState().getValue(), is("C1999"));
         assertThat(StandardSQLErrorCode.UNKNOWN_EXCEPTION.getReason(), is("Unknown exception: %s"));
     }
 }

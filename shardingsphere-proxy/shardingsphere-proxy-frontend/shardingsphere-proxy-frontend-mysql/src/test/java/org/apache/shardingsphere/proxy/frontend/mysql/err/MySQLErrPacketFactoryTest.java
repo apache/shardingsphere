@@ -177,8 +177,8 @@ public final class MySQLErrPacketFactoryTest {
         MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new CircuitBreakException());
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(1000));
-        assertThat(actual.getSqlState(), is("C1000"));
-        assertThat(actual.getErrorMessage(), is("Circuit break mode is ON"));
+        assertThat(actual.getSqlState(), is("01000"));
+        assertThat(actual.getErrorMessage(), is("Circuit break open, the request has been ignored"));
     }
     
     @Test
@@ -199,7 +199,7 @@ public final class MySQLErrPacketFactoryTest {
         MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new UnsupportedCommandException("No reason"));
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(1998));
-        assertThat(actual.getSqlState(), is("C1998"));
+        assertThat(actual.getSqlState(), is("42000"));
         assertThat(actual.getErrorMessage(), is("Unsupported command: No reason"));
     }
     
@@ -208,7 +208,7 @@ public final class MySQLErrPacketFactoryTest {
         MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new ReflectiveOperationException("No reason"));
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(1999));
-        assertThat(actual.getSqlState(), is("C1999"));
+        assertThat(actual.getSqlState(), is("42000"));
         assertThat(actual.getErrorMessage(), is("Unknown exception: No reason"));
     }
 }
