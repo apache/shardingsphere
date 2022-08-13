@@ -49,7 +49,7 @@ public final class MySQLErrPacket implements MySQLPacket {
     private final String errorMessage;
     
     public MySQLErrPacket(final int sequenceId, final SQLErrorCode sqlErrorCode, final Object... errorMessageArguments) {
-        this(sequenceId, sqlErrorCode.getErrorCode(), sqlErrorCode.getSqlState(), String.format(sqlErrorCode.getErrorMessage(), errorMessageArguments));
+        this(sequenceId, sqlErrorCode.getVendorCode(), sqlErrorCode.getSqlState(), String.format(sqlErrorCode.getReason(), errorMessageArguments));
     }
     
     public MySQLErrPacket(final MySQLPacketPayload payload) {
