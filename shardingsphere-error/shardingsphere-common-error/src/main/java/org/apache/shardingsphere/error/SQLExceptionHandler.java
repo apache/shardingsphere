@@ -19,7 +19,6 @@ package org.apache.shardingsphere.error;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.error.exception.ShardingSphereSQLException;
 import org.apache.shardingsphere.error.exception.dialect.SQLDialectException;
 import org.apache.shardingsphere.error.exception.standard.command.UnsupportedCommandException;
 import org.apache.shardingsphere.error.exception.standard.connection.CircuitBreakException;
@@ -50,7 +49,7 @@ public final class SQLExceptionHandler {
      * @param insideException inside exception
      * @return SQL exception
      */
-    public static SQLException convert(final String databaseType, final ShardingSphereSQLException insideException) {
+    public static SQLException convert(final String databaseType, final ShardingSphereInsideException insideException) {
         if (insideException instanceof SQLDialectException) {
             return SQLDialectExceptionMapperFactory.getInstance(databaseType).convert((SQLDialectException) insideException);
         }
