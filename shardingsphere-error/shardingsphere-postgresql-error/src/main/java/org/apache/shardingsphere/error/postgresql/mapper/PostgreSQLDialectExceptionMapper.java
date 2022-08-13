@@ -19,12 +19,12 @@ package org.apache.shardingsphere.error.postgresql.mapper;
 
 import org.apache.shardingsphere.error.mapper.SQLDialectExceptionMapper;
 import org.apache.shardingsphere.error.postgresql.code.PostgreSQLVendorError;
-import org.apache.shardingsphere.infra.exception.dialect.transaction.InTransactionException;
-import org.apache.shardingsphere.infra.exception.dialect.data.InsertColumnsAndValuesMismatchedException;
-import org.apache.shardingsphere.infra.exception.dialect.data.InvalidParameterValueException;
-import org.apache.shardingsphere.infra.exception.dialect.connection.TooManyConnectionsException;
-import org.apache.shardingsphere.infra.exception.dialect.syntax.database.DatabaseCreateExistsException;
-import org.apache.shardingsphere.infra.util.exception.inside.SQLDialectException;
+import org.apache.shardingsphere.error.exception.dialect.transaction.InTransactionException;
+import org.apache.shardingsphere.error.exception.dialect.data.InsertColumnsAndValuesMismatchedException;
+import org.apache.shardingsphere.error.exception.dialect.data.InvalidParameterValueException;
+import org.apache.shardingsphere.error.exception.dialect.connection.TooManyConnectionsException;
+import org.apache.shardingsphere.error.exception.dialect.syntax.database.DatabaseCreateExistsException;
+import org.apache.shardingsphere.error.exception.dialect.SQLDialectException;
 import org.postgresql.util.PSQLException;
 import org.postgresql.util.PSQLState;
 
