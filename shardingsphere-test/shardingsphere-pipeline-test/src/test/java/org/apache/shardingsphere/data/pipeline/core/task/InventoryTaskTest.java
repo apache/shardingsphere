@@ -62,7 +62,8 @@ public final class InventoryTaskTest {
     
     @Before
     public void setUp() {
-        taskConfig = new MigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration(), 0, new InventoryIncrementalJobItemProgress(), new DefaultPipelineDataSourceManager()).getTaskConfig();
+        taskConfig = new MigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration(), 0,
+                new InventoryIncrementalJobItemProgress(), new DefaultPipelineDataSourceManager()).getTaskConfig();
     }
     
     @Test(expected = IngestException.class)
