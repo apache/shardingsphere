@@ -50,10 +50,6 @@ public enum MySQLErrorCode implements SQLErrorCode {
     
     ER_NO_SUCH_TABLE("42S02", 1146, "Table '%s' doesn't exist"),
     
-    ER_NOT_SUPPORTED_YET("42000", 1235, "This version of ShardingSphere-Proxy doesn't yet support this SQL. '%s'"),
-    
-    ER_SP_DOES_NOT_EXIST("42000", 1305, "Message: Data Source or ShardingSphere rule does not exist"),
-    
     ER_CON_COUNT_ERROR("HY000", 1040, "Too many connections"),
     
     ER_UNKNOWN_CHARACTER_SET("42000", 1115, "Unknown character set: '%s'"),
