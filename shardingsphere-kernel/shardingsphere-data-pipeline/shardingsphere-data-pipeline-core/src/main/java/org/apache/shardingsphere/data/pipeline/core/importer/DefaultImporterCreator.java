@@ -15,21 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.importer;
+package org.apache.shardingsphere.data.pipeline.core.importer;
 
-import java.util.Collection;
-import java.util.LinkedList;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.importer.DefaultImporter;
-import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
+import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreator;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Default importer creator.
  */
 public final class DefaultImporterCreator implements ImporterCreator {
+    
+    private static final Collection<String> TYPE_ALIASES = Collections.unmodifiableList(Arrays.asList("PostgreSQL", "openGauss"));
     
     @Override
     public Importer createImporter(final ImporterConfiguration importerConfig,
@@ -45,9 +49,6 @@ public final class DefaultImporterCreator implements ImporterCreator {
     
     @Override
     public Collection<String> getTypeAliases() {
-        Collection<String> aliases = new LinkedList<>();
-        aliases.add("PostgreSQL");
-        aliases.add("openGauss");
-        return aliases;
+        return TYPE_ALIASES;
     }
 }

@@ -15,12 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.importer;
+package org.apache.shardingsphere.data.pipeline.core.fixture;
 
-import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
-/**
- * Importer.
- */
-public interface Importer extends LifecycleExecutor {
+@RequiredArgsConstructor
+public final class FixturePipelineDataSourceConfiguration implements PipelineDataSourceConfiguration {
+    
+    private final DatabaseType databaseType;
+    
+    @Override
+    public String getParameter() {
+        return null;
+    }
+    
+    @Override
+    public Object getDataSourceConfiguration() {
+        return null;
+    }
+    
+    @Override
+    public DatabaseType getDatabaseType() {
+        return databaseType;
+    }
+    
+    @Override
+    public String getType() {
+        return "FIXTURE";
+    }
 }

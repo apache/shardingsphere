@@ -15,29 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.importer;
+package org.apache.shardingsphere.data.pipeline.api.importer;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
 
 /**
- * Importer factory.
+ * Importer.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ImporterCreatorFactory {
-    
-    static {
-        ShardingSphereServiceLoader.register(ImporterCreator.class);
-    }
-    
-    /**
-     * Get ImporterCreator.
-     * @param databaseType databaseType
-     * @return ImporterCreator
-     */
-    public static ImporterCreator getInstance(final String databaseType) {
-        return TypedSPIRegistry.getRegisteredService(ImporterCreator.class, databaseType);
-    }
+public interface Importer extends LifecycleExecutor {
 }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.datasource;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 
@@ -26,10 +27,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Pipeline data source manager.
+ * Default pipeline data source manager.
  */
 @Slf4j
-public final class PipelineDataSourceManager implements AutoCloseable {
+public final class DefaultPipelineDataSourceManager implements PipelineDataSourceManager {
     
     private final Map<PipelineDataSourceConfiguration, PipelineDataSourceWrapper> cachedDataSources = new ConcurrentHashMap<>();
     

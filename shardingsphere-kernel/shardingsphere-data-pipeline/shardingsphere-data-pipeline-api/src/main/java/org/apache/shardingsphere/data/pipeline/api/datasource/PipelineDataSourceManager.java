@@ -15,33 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
+package org.apache.shardingsphere.data.pipeline.api.datasource;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
-import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-
-import java.util.List;
 
 /**
- * Prepare target schemas parameter.
+ * Pipeline data source manager.
  */
-@RequiredArgsConstructor
-@Getter
-public final class PrepareTargetSchemasParameter {
+public interface PipelineDataSourceManager {
     
-    private final List<String> logicTableNames;
+    /**
+     * Get cached data source.
+     *
+     * @param dataSourceConfig data source configuration
+     * @return data source
+     */
+    PipelineDataSourceWrapper getDataSource(PipelineDataSourceConfiguration dataSourceConfig);
     
-    private final DatabaseType targetDatabaseType;
-    
-    private final String databaseName;
-    
-    private final PipelineDataSourceConfiguration dataSourceConfig;
-    
-    private final PipelineDataSourceManager dataSourceManager;
-    
-    private final TableNameSchemaNameMapping tableNameSchemaNameMapping;
+    /**
+     * Close, close cached data source.
+     */
+    void close();
 }
