@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.error.exception.standard;
 
-import org.apache.shardingsphere.infra.util.exception.inside.ShardingSphereInsideException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 
 /**
  * SQL standard exception.

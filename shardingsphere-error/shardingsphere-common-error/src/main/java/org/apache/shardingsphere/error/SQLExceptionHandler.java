@@ -30,7 +30,7 @@ import org.apache.shardingsphere.error.exception.standard.lock.TableLockWaitTime
 import org.apache.shardingsphere.error.exception.standard.lock.TableLockedException;
 import org.apache.shardingsphere.error.exception.standard.command.UnsupportedCommandException;
 import org.apache.shardingsphere.error.exception.dialect.SQLDialectException;
-import org.apache.shardingsphere.infra.util.exception.inside.ShardingSphereInsideException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 
 import java.sql.SQLException;
