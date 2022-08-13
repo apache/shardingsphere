@@ -27,21 +27,21 @@ public final class MySQLErrorCodeTest {
     @Test
     public void assertAccessDeniedError() {
         assertThat(MySQLErrorCode.ER_ACCESS_DENIED_ERROR.getVendorCode(), is(1045));
-        assertThat(MySQLErrorCode.ER_ACCESS_DENIED_ERROR.getSqlState(), is("28000"));
+        assertThat(MySQLErrorCode.ER_ACCESS_DENIED_ERROR.getSqlState().getValue(), is("28000"));
         assertThat(MySQLErrorCode.ER_ACCESS_DENIED_ERROR.getReason(), is("Access denied for user '%s'@'%s' (using password: %s)"));
     }
     
     @Test
     public void assertBadDbError() {
         assertThat(MySQLErrorCode.ER_BAD_DB_ERROR.getVendorCode(), is(1049));
-        assertThat(MySQLErrorCode.ER_BAD_DB_ERROR.getSqlState(), is("42000"));
+        assertThat(MySQLErrorCode.ER_BAD_DB_ERROR.getSqlState().getValue(), is("42000"));
         assertThat(MySQLErrorCode.ER_BAD_DB_ERROR.getReason(), is("Unknown database '%s'"));
     }
     
     @Test
     public void assertErrorOnModifyingGtidExecutedTable() {
         assertThat(MySQLErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE.getVendorCode(), is(3176));
-        assertThat(MySQLErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE.getSqlState(), is("HY000"));
+        assertThat(MySQLErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE.getSqlState().getValue(), is("HY000"));
         assertThat(MySQLErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE.getReason(), is("Please do not modify the %s table with an XA transaction. "
                 + "This is an internal system table used to store GTIDs for committed transactions. "
                 + "Although modifying it can lead to an inconsistent GTID state, if necessary you can modify it with a non-XA transaction."));

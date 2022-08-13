@@ -15,33 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.code;
-
-import org.apache.shardingsphere.error.sqlstate.SQLState;
+package org.apache.shardingsphere.error.sqlstate;
 
 /**
- * SQL error code.
+ * SQL state.
  */
-public interface SQLErrorCode {
+public interface SQLState {
     
     /**
-     * Get SQL state.
+     * Get value.
      * 
-     * @return SQL state
+     * @return value
      */
-    SQLState getSqlState();
-    
-    /**
-     * Get database vendor code.
-     *
-     * @return vendor code
-     */
-    int getVendorCode();
-    
-    /**
-     * Get reason.
-     *
-     * @return reason
-     */
-    String getReason();
+    String getValue();
 }

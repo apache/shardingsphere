@@ -15,33 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.code;
+package org.apache.shardingsphere.error.sqlstate;
 
-import org.apache.shardingsphere.error.sqlstate.SQLState;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * SQL error code.
+ * ShardingSphere SQL state.
  */
-public interface SQLErrorCode {
+@RequiredArgsConstructor
+@Getter
+public enum ShardingSphereSQLState implements SQLState {
     
-    /**
-     * Get SQL state.
-     * 
-     * @return SQL state
-     */
-    SQLState getSqlState();
+    CIRCUIT_BREAK_MODE("C1000"),
     
-    /**
-     * Get database vendor code.
-     *
-     * @return vendor code
-     */
-    int getVendorCode();
+    SCALING_JOB_NOT_EXIST("C1201"),
     
-    /**
-     * Get reason.
-     *
-     * @return reason
-     */
-    String getReason();
+    SCALING_OPERATE_FAILED("C1209"),
+    
+    DATABASE_WRITE_LOCKED("C1300"),
+    
+    TABLE_LOCK_WAIT_TIMEOUT("C1301"),
+    
+    TABLE_LOCKED("C1302"),
+    
+    UNSUPPORTED_COMMAND("C1998"),
+    
+    UNKNOWN_EXCEPTION("C1999");
+    
+    private final String value;
 }

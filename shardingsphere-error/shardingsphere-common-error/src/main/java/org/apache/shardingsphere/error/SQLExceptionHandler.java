@@ -81,6 +81,6 @@ public final class SQLExceptionHandler {
     }
     
     private static SQLException toSQLException(final SQLErrorCode errorCode, final Object... messageArguments) {
-        return new SQLException(String.format(errorCode.getReason(), messageArguments), errorCode.getSqlState(), errorCode.getVendorCode());
+        return new SQLException(String.format(errorCode.getReason(), messageArguments), errorCode.getSqlState().getValue(), errorCode.getVendorCode());
     }
 }

@@ -15,33 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.code;
+package org.apache.shardingsphere.error.postgresql.sqlstate;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.error.sqlstate.SQLState;
 
 /**
- * SQL error code.
+ * PostgreSQL SQL state.
  */
-public interface SQLErrorCode {
+@RequiredArgsConstructor
+@Getter
+public enum PostgreSQLState implements SQLState {
     
-    /**
-     * Get SQL state.
-     * 
-     * @return SQL state
-     */
-    SQLState getSqlState();
+    PROTOCOL_VIOLATION("08P01"),
     
-    /**
-     * Get database vendor code.
-     *
-     * @return vendor code
-     */
-    int getVendorCode();
+    DUPLICATE_DATABASE("42P04"),
     
-    /**
-     * Get reason.
-     *
-     * @return reason
-     */
-    String getReason();
+    INVALID_PASSWORD("28P01"),
+    
+    UNDEFINED_COLUMN("42703"),
+    
+    TOO_MANY_CONNECTIONS("53300"),
+    
+    SYSTEM_ERROR("58000");
+    
+    private final String value;
 }

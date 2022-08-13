@@ -15,33 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.code;
+package org.apache.shardingsphere.error.sqlstate;
 
-import org.apache.shardingsphere.error.sqlstate.SQLState;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * SQL error code.
+ * XOpen standard SQL state.
  */
-public interface SQLErrorCode {
+@RequiredArgsConstructor
+@Getter
+public enum XOpenSQLState implements SQLState {
     
-    /**
-     * Get SQL state.
-     * 
-     * @return SQL state
-     */
-    SQLState getSqlState();
+    SUCCESSFUL_COMPLETION("00000"),
     
-    /**
-     * Get database vendor code.
-     *
-     * @return vendor code
-     */
-    int getVendorCode();
+    PRIVILEGE_NOT_GRANTED("01007"),
     
-    /**
-     * Get reason.
-     *
-     * @return reason
-     */
-    String getReason();
+    DATA_SOURCE_REJECTED_CONNECTION_ATTEMPT("08004"),
+    
+    FEATURE_NOT_SUPPORTED("0A000"),
+    
+    MISMATCH_INSERT_VALUES_AND_COLUMNS("21S01"),
+    
+    INVALID_AUTHORIZATION_SPECIFICATION("28000"),
+    
+    INVALID_CATALOG_NAME("3D000"),
+    
+    SYNTAX_ERROR("42000"),
+    
+    DUPLICATE("42S01"),
+    
+    NOT_FOUND("42S02"),
+    
+    GENERAL_ERROR("HY000");
+    
+    private final String value;
 }
