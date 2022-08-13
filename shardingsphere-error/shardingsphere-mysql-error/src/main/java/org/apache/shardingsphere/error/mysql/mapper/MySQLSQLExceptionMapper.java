@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.error.mysql.mapper;
 
-import org.apache.shardingsphere.error.code.StandardSQLErrorCode;
 import org.apache.shardingsphere.error.code.SQLErrorCode;
+import org.apache.shardingsphere.error.code.StandardSQLErrorCode;
 import org.apache.shardingsphere.error.mapper.SQLExceptionMapper;
 import org.apache.shardingsphere.error.mysql.code.MySQLServerErrorCode;
 import org.apache.shardingsphere.infra.exception.dialect.DBCreateExistsException;
@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.exception.dialect.NoDatabaseSelectedExcep
 import org.apache.shardingsphere.infra.exception.dialect.NoSuchTableException;
 import org.apache.shardingsphere.infra.exception.dialect.TableExistsException;
 import org.apache.shardingsphere.infra.exception.dialect.TableModifyInTransactionException;
+import org.apache.shardingsphere.infra.exception.dialect.TooManyConnectionsException;
 import org.apache.shardingsphere.infra.exception.dialect.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.util.exception.inside.InsideDialectSQLException;
 
@@ -65,6 +66,9 @@ public final class MySQLSQLExceptionMapper implements SQLExceptionMapper {
         }
         if (dialectSQLException instanceof NoSuchTableException) {
             return toSQLException(MySQLServerErrorCode.ER_NO_SUCH_TABLE, ((NoSuchTableException) dialectSQLException).getTableName());
+        }
+        if (dialectSQLException instanceof TooManyConnectionsException) {
+            return toSQLException(MySQLServerErrorCode.ER_CON_COUNT_ERROR);
         }
         return toSQLException(StandardSQLErrorCode.UNKNOWN_EXCEPTION, dialectSQLException.getMessage());
     }

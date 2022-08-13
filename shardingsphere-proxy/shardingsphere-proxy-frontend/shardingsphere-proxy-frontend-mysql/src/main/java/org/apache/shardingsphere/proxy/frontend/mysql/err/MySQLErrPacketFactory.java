@@ -28,7 +28,6 @@ import org.apache.shardingsphere.error.mysql.code.MySQLServerErrorCode;
 import org.apache.shardingsphere.infra.util.exception.inside.ShardingSphereInsideException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.DistSQLErrorCode;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.DistSQLException;
-import org.apache.shardingsphere.proxy.frontend.exception.FrontendTooManyConnectionsException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
 
 import java.nio.charset.UnsupportedCharsetException;
@@ -65,9 +64,6 @@ public final class MySQLErrPacketFactory {
         }
         if (cause instanceof PipelineJobNotFoundException) {
             return new MySQLErrPacket(1, StandardSQLErrorCode.SCALING_JOB_NOT_EXIST, ((PipelineJobNotFoundException) cause).getJobId());
-        }
-        if (cause instanceof FrontendTooManyConnectionsException) {
-            return new MySQLErrPacket(0, MySQLServerErrorCode.ER_CON_COUNT_ERROR, MySQLServerErrorCode.ER_CON_COUNT_ERROR.getErrorMessage());
         }
         if (cause instanceof UnsupportedCharsetException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_UNKNOWN_CHARACTER_SET, cause.getMessage());

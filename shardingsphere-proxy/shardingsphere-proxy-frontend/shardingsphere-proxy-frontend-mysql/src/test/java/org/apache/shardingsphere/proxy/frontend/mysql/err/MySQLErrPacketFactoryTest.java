@@ -78,7 +78,7 @@ public final class MySQLErrPacketFactoryTest {
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(11001));
         assertThat(actual.getSqlState(), is("11001"));
-        assertThat(actual.getErrorMessage(), is("Could not support variable [test]."));
+        assertThat(actual.getErrorMessage(), is("Could not support variable `test`."));
     }
     
     @Test
