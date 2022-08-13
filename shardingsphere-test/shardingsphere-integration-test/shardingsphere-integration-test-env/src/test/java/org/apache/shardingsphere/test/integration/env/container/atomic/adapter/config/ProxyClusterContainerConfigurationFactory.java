@@ -39,7 +39,7 @@ public final class ProxyClusterContainerConfigurationFactory {
     }
     
     private static Map<String, String> getMountedResources() {
-        Map<String ,String> result = new HashMap<>(1, 1);
+        Map<String, String> result = new HashMap<>(1, 1);
         result.put("/env/logback.xml", "/opt/shardingsphere-proxy/conf/logback.xml");
         return result;
     }
