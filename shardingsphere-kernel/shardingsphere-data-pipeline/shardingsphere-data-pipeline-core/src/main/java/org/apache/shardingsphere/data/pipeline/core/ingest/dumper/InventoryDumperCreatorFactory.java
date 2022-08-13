@@ -15,22 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.spi;
+package org.apache.shardingsphere.data.pipeline.core.ingest.dumper;
 
-import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumper;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 /**
- * Scaling entry.
+ * InventoryDumper creator factory.
  */
-@SingletonSPI
-public interface ScalingEntry extends TypedSPI {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class InventoryDumperCreatorFactory {
+    
+    static {
+        ShardingSphereServiceLoader.register(InventoryDumperCreator.class);
+    }
     
     /**
-     * Get incremental dumper type.
-     *
-     * @return incremental dumper type
+     * Get inventoryDumper creator instance.
+     * @param databaseType databaseType
+     * @return InventoryDumperCreator
      */
-    Class<? extends IncrementalDumper> getIncrementalDumperClass();
+    public static InventoryDumperCreator getInstance(final String databaseType) {
+        return TypedSPIRegistry.getRegisteredService(InventoryDumperCreator.class, databaseType);
+    }
 }
