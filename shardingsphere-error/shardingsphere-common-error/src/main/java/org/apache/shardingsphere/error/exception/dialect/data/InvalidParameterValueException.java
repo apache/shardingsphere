@@ -15,14 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception;
+package org.apache.shardingsphere.error.exception.dialect.data;
 
-import org.apache.shardingsphere.infra.util.exception.inside.ShardingSphereInsideException;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.exception.inside.SQLDialectException;
 
 /**
- * Rule does not exist exception.
+ * Invalid parameter value exception.
  */
-public final class RuleNotExistedException extends ShardingSphereInsideException {
+@RequiredArgsConstructor
+@Getter
+public final class InvalidParameterValueException extends SQLDialectException {
     
-    private static final long serialVersionUID = -4150905802300104824L;
+    private static final long serialVersionUID = -6561119208409452172L;
+    
+    private final String parameterName;
+    
+    private final String parameterValue;
 }

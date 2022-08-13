@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.dialect.syntax.database;
+package org.apache.shardingsphere.error.exception;
 
-import org.apache.shardingsphere.infra.util.exception.inside.SQLDialectException;
+import org.apache.shardingsphere.infra.util.exception.inside.ShardingSphereInsideException;
 
 /**
- * No database selected exception.
+ * Rule does not exist exception.
  */
-public final class NoDatabaseSelectedException extends SQLDialectException {
+public final class RuleNotExistedException extends ShardingSphereInsideException {
     
-    private static final long serialVersionUID = 7820981156141678308L;
+    private static final long serialVersionUID = -4150905802300104824L;
 }

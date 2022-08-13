@@ -15,14 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception;
+package org.apache.shardingsphere.error.exception;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.exception.inside.ShardingSphereInsideException;
 
 /**
- * Circuit break exception.
+ * Unsupported command exception.
  */
-public final class CircuitBreakException extends ShardingSphereInsideException {
+@RequiredArgsConstructor
+@Getter
+public final class UnsupportedCommandException extends ShardingSphereInsideException {
     
-    private static final long serialVersionUID = 6339672680026286798L;
+    private static final long serialVersionUID = 8010680371699936338L;
+    
+    private final String commandType;
 }

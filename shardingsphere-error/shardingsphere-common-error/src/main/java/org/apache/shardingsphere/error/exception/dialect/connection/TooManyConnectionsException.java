@@ -15,20 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.dialect.syntax.database;
+package org.apache.shardingsphere.error.exception.dialect.connection;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.exception.inside.SQLDialectException;
 
 /**
- * Unknown database exception.
+ * Too many connections exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class UnknownDatabaseException extends SQLDialectException {
+public final class TooManyConnectionsException extends SQLDialectException {
     
-    private static final long serialVersionUID = 6442120909016308638L;
-    
-    private final String databaseName;
+    private static final long serialVersionUID = -4397915988239251541L;
 }

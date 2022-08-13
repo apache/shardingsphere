@@ -15,20 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.dialect.transaction;
+package org.apache.shardingsphere.error.exception;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.inside.SQLDialectException;
+import org.apache.shardingsphere.infra.util.exception.inside.ShardingSphereInsideException;
 
 /**
- * In transaction exception.
+ * Circuit break exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class InTransactionException extends SQLDialectException {
+public final class CircuitBreakException extends ShardingSphereInsideException {
     
-    private static final long serialVersionUID = 8125852172126111520L;
-    
-    private final String message;
+    private static final long serialVersionUID = 6339672680026286798L;
 }

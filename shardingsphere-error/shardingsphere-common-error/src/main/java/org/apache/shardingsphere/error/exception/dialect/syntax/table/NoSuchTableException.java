@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception;
+package org.apache.shardingsphere.error.exception.dialect.syntax.table;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.inside.ShardingSphereInsideException;
+import org.apache.shardingsphere.infra.util.exception.inside.SQLDialectException;
 
 /**
- * Unsupported command exception.
+ * No such table exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class UnsupportedCommandException extends ShardingSphereInsideException {
+public final class NoSuchTableException extends SQLDialectException {
     
-    private static final long serialVersionUID = 8010680371699936338L;
+    private static final long serialVersionUID = 8311953084941769743L;
     
-    private final String commandType;
+    private final String tableName;
 }

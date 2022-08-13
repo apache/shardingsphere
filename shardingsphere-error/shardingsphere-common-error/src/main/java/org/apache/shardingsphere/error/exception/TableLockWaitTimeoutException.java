@@ -15,22 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.dialect.data;
+package org.apache.shardingsphere.error.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.inside.SQLDialectException;
+import org.apache.shardingsphere.infra.util.exception.inside.ShardingSphereInsideException;
 
 /**
- * Invalid parameter value exception.
+ * Table lock wait timeout exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class InvalidParameterValueException extends SQLDialectException {
+public final class TableLockWaitTimeoutException extends ShardingSphereInsideException {
     
-    private static final long serialVersionUID = -6561119208409452172L;
+    private static final long serialVersionUID = 2599713085782288003L;
     
-    private final String parameterName;
+    private final String schemaName;
     
-    private final String parameterValue;
+    private final String tableName;
+    
+    private final long timeoutMilliseconds;
 }

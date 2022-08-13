@@ -15,20 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.dialect.syntax.table;
+package org.apache.shardingsphere.error.exception;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.inside.SQLDialectException;
+import org.apache.shardingsphere.infra.util.exception.inside.ShardingSphereInsideException;
 
 /**
- * Table exists exception.
+ * Resource does not exist exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class TableExistsException extends SQLDialectException {
+public final class ResourceNotExistedException extends ShardingSphereInsideException {
     
-    private static final long serialVersionUID = 6056681626545854214L;
-    
-    private final String tableName;
+    private static final long serialVersionUID = 4146100333670404924L;
 }
