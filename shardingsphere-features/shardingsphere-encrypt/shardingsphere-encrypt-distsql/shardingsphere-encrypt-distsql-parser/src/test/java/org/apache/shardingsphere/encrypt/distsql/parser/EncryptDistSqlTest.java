@@ -62,7 +62,7 @@ public final class EncryptDistSqlTest {
         assertEncryptRule(alterEncryptRule.getRules().iterator().next());
     }
 
-    private void assertEncryptRule(EncryptRuleSegment encryptRuleSegment) {
+    private void assertEncryptRule(final EncryptRuleSegment encryptRuleSegment) {
         assertThat(encryptRuleSegment.getTableName(), is("t_encrypt"));
         assertThat(encryptRuleSegment.getColumns().size(), is(2));
         assertThat(encryptRuleSegment.getQueryWithCipherColumn(), is(true));
