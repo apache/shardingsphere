@@ -24,7 +24,7 @@ import io.netty.util.concurrent.Promise;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.ServerInfo;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
-import org.apache.shardingsphere.error.mysql.code.MyVendorError;
+import org.apache.shardingsphere.error.mysql.code.MySQLVendorError;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
@@ -96,7 +96,7 @@ public final class MySQLNegotiateHandlerTest {
     
     @Test(expected = RuntimeException.class)
     public void assertChannelReadErrorPacket() {
-        MySQLErrPacket errorPacket = new MySQLErrPacket(0, MyVendorError.ER_NO_DB_ERROR);
+        MySQLErrPacket errorPacket = new MySQLErrPacket(0, MySQLVendorError.ER_NO_DB_ERROR);
         mysqlNegotiateHandler.channelRead(channelHandlerContext, errorPacket);
     }
 }

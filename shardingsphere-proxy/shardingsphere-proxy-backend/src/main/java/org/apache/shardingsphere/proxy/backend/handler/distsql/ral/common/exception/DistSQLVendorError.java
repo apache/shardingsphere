@@ -28,7 +28,7 @@ import org.apache.shardingsphere.error.sqlstate.XOpenSQLState;
  */
 @RequiredArgsConstructor
 @Getter
-public enum DistVendorError implements VendorError {
+public enum DistSQLVendorError implements VendorError {
     
     UNSUPPORTED_VARIABLE(XOpenSQLState.GENERAL_ERROR, 11001, "Could not support variable `%s`"),
     
@@ -46,7 +46,7 @@ public enum DistVendorError implements VendorError {
      * @param distSQLException dist SQL exception
      * @return dist SQL error code
      */
-    public static DistVendorError valueOf(final DistSQLException distSQLException) {
+    public static DistSQLVendorError valueOf(final DistSQLException distSQLException) {
         if (distSQLException instanceof UnsupportedVariableException) {
             return UNSUPPORTED_VARIABLE;
         }

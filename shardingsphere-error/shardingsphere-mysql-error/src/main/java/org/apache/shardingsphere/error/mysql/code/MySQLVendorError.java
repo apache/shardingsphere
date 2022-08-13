@@ -30,7 +30,7 @@ import org.apache.shardingsphere.error.sqlstate.XOpenSQLState;
  */
 @RequiredArgsConstructor
 @Getter
-public enum MyVendorError implements VendorError {
+public enum MySQLVendorError implements VendorError {
     
     ER_DBACCESS_DENIED_ERROR(XOpenSQLState.SYNTAX_ERROR, 1044, "Access denied for user '%s'@'%s' to database '%s'"),
     

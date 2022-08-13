@@ -22,26 +22,26 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class StandardVendorErrorTest {
+public final class ShardingSphereVendorErrorTest {
     
     @Test
     public void assertCircuitBreakMode() {
-        assertThat(StandardVendorError.CIRCUIT_BREAK_MODE.getSqlState().getValue(), is("01000"));
-        assertThat(StandardVendorError.CIRCUIT_BREAK_MODE.getVendorCode(), is(1000));
-        assertThat(StandardVendorError.CIRCUIT_BREAK_MODE.getReason(), is("Circuit break open, the request has been ignored"));
+        assertThat(ShardingSphereVendorError.CIRCUIT_BREAK_MODE.getSqlState().getValue(), is("01000"));
+        assertThat(ShardingSphereVendorError.CIRCUIT_BREAK_MODE.getVendorCode(), is(1000));
+        assertThat(ShardingSphereVendorError.CIRCUIT_BREAK_MODE.getReason(), is("Circuit break open, the request has been ignored"));
     }
     
     @Test
     public void assertUnsupportedCommand() {
-        assertThat(StandardVendorError.UNSUPPORTED_COMMAND.getSqlState().getValue(), is("42000"));
-        assertThat(StandardVendorError.UNSUPPORTED_COMMAND.getVendorCode(), is(1998));
-        assertThat(StandardVendorError.UNSUPPORTED_COMMAND.getReason(), is("Unsupported command: %s"));
+        assertThat(ShardingSphereVendorError.UNSUPPORTED_COMMAND.getSqlState().getValue(), is("42000"));
+        assertThat(ShardingSphereVendorError.UNSUPPORTED_COMMAND.getVendorCode(), is(1998));
+        assertThat(ShardingSphereVendorError.UNSUPPORTED_COMMAND.getReason(), is("Unsupported command: %s"));
     }
     
     @Test
     public void assertUnknownException() {
-        assertThat(StandardVendorError.UNKNOWN_EXCEPTION.getSqlState().getValue(), is("42000"));
-        assertThat(StandardVendorError.UNKNOWN_EXCEPTION.getVendorCode(), is(1999));
-        assertThat(StandardVendorError.UNKNOWN_EXCEPTION.getReason(), is("Unknown exception: %s"));
+        assertThat(ShardingSphereVendorError.UNKNOWN_EXCEPTION.getSqlState().getValue(), is("42000"));
+        assertThat(ShardingSphereVendorError.UNKNOWN_EXCEPTION.getVendorCode(), is(1999));
+        assertThat(ShardingSphereVendorError.UNKNOWN_EXCEPTION.getReason(), is("Unknown exception: %s"));
     }
 }
