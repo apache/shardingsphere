@@ -39,8 +39,6 @@ public enum StandardSQLErrorCode implements SQLErrorCode {
     
     TABLE_LOCKED(1302, "C1302", "The table `%s` of schema `%s` is locked"),
     
-    TOO_MANY_CONNECTIONS(1040, "08004", "Too many connections"),
-    
     RESOURCE_OR_RULE_NOT_EXIST(1305, "42000", "Data source or rule does not exist"),
     
     UNSUPPORTED_SQL(1235, "42000", "Unsupported SQL: %s"),
