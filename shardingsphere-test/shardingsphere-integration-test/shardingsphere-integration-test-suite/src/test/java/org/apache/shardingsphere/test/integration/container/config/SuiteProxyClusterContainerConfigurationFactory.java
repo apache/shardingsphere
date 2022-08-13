@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.integration.container.config;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 
@@ -24,8 +26,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Suite proxy cluster container configuration creator.
+ * Suite proxy cluster container configuration factory.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SuiteProxyClusterContainerConfigurationFactory {
     
     /**

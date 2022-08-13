@@ -17,24 +17,28 @@
 
 package org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.util.Collections;
 import java.util.Map;
 
 /**
- * Proxy cluster container configuration creator.
+ * Proxy cluster container configuration factory.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ProxyClusterContainerConfigurationFactory {
-
+    
     /**
      * Create new instance of adaptor container configuration.
      *
      * @return adaptor container configuration
      */
     public static AdaptorContainerConfiguration newInstance() {
-        return new AdaptorContainerConfiguration("", getMountedResource());
+        return new AdaptorContainerConfiguration("", getMountedResources());
     }
     
-    private static Map<String, String> getMountedResource() {
+    private static Map<String, String> getMountedResources() {
         return Collections.singletonMap("/env/logback.xml", "/opt/shardingsphere-proxy/conf/logback.xml");
     }
 }
