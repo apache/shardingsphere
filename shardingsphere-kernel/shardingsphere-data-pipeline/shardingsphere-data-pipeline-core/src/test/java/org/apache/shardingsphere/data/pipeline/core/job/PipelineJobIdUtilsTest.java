@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.job;
 
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
-import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobIdUtils;
-import org.apache.shardingsphere.data.pipeline.api.job.RuleAlteredJobId;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.RuleAlteredJobId;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

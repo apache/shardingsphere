@@ -15,27 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.job;
+package org.apache.shardingsphere.data.pipeline.core.job;
 
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
 
 /**
- * Job id.
+ * Abstract pipeline job id.
  */
 @Getter
 @Setter
-@ToString(callSuper = true)
-// TODO rename and change fields
-public final class RuleAlteredJobId extends AbstractPipelineJobId {
-    
-    public static final String CURRENT_VERSION = "01";
+@ToString
+public abstract class AbstractPipelineJobId implements PipelineJobId {
     
     @NonNull
-    private Integer currentMetadataVersion;
+    private String typeCode;
     
     @NonNull
-    private Integer newMetadataVersion;
+    private String formatVersion;
+    
+    @NonNull
+    private String databaseName;
 }
