@@ -28,7 +28,7 @@ import org.apache.shardingsphere.error.code.SQLErrorCode;
  */
 @RequiredArgsConstructor
 @Getter
-public enum MySQLServerErrorCode implements SQLErrorCode {
+public enum MySQLErrorCode implements SQLErrorCode {
     
     ER_DBACCESS_DENIED_ERROR(1044, "42000", "Access denied for user '%s'@'%s' to database '%s'"),
     

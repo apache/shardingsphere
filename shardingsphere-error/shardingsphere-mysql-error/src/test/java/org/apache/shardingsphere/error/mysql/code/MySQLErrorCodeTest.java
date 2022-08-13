@@ -22,27 +22,27 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class MySQLServerErrorCodeTest {
+public final class MySQLErrorCodeTest {
     
     @Test
     public void assertAccessDeniedError() {
-        assertThat(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR.getErrorCode(), is(1045));
-        assertThat(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR.getSqlState(), is("28000"));
-        assertThat(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR.getErrorMessage(), is("Access denied for user '%s'@'%s' (using password: %s)"));
+        assertThat(MySQLErrorCode.ER_ACCESS_DENIED_ERROR.getErrorCode(), is(1045));
+        assertThat(MySQLErrorCode.ER_ACCESS_DENIED_ERROR.getSqlState(), is("28000"));
+        assertThat(MySQLErrorCode.ER_ACCESS_DENIED_ERROR.getErrorMessage(), is("Access denied for user '%s'@'%s' (using password: %s)"));
     }
     
     @Test
     public void assertBadDbError() {
-        assertThat(MySQLServerErrorCode.ER_BAD_DB_ERROR.getErrorCode(), is(1049));
-        assertThat(MySQLServerErrorCode.ER_BAD_DB_ERROR.getSqlState(), is("42000"));
-        assertThat(MySQLServerErrorCode.ER_BAD_DB_ERROR.getErrorMessage(), is("Unknown database '%s'"));
+        assertThat(MySQLErrorCode.ER_BAD_DB_ERROR.getErrorCode(), is(1049));
+        assertThat(MySQLErrorCode.ER_BAD_DB_ERROR.getSqlState(), is("42000"));
+        assertThat(MySQLErrorCode.ER_BAD_DB_ERROR.getErrorMessage(), is("Unknown database '%s'"));
     }
     
     @Test
     public void assertErrorOnModifyingGtidExecutedTable() {
-        assertThat(MySQLServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE.getErrorCode(), is(3176));
-        assertThat(MySQLServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE.getSqlState(), is("HY000"));
-        assertThat(MySQLServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE.getErrorMessage(), is("Please do not modify the %s table with an XA transaction. "
+        assertThat(MySQLErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE.getErrorCode(), is(3176));
+        assertThat(MySQLErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE.getSqlState(), is("HY000"));
+        assertThat(MySQLErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE.getErrorMessage(), is("Please do not modify the %s table with an XA transaction. "
                 + "This is an internal system table used to store GTIDs for committed transactions. "
                 + "Although modifying it can lead to an inconsistent GTID state, if necessary you can modify it with a non-XA transaction."));
     }

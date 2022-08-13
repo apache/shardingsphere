@@ -24,7 +24,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobNotFoun
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.error.SQLExceptionHandler;
 import org.apache.shardingsphere.error.code.StandardSQLErrorCode;
-import org.apache.shardingsphere.error.mysql.code.MySQLServerErrorCode;
+import org.apache.shardingsphere.error.mysql.code.MySQLErrorCode;
 import org.apache.shardingsphere.infra.util.exception.inside.ShardingSphereInsideException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.DistSQLErrorCode;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.DistSQLException;
@@ -48,7 +48,7 @@ public final class MySQLErrPacketFactory {
     public static MySQLErrPacket newInstance(final Exception cause) {
         if (cause instanceof SQLException) {
             SQLException sqlException = (SQLException) cause;
-            return null == sqlException.getSQLState() ? new MySQLErrPacket(1, MySQLServerErrorCode.ER_INTERNAL_ERROR, getErrorMessage(sqlException))
+            return null == sqlException.getSQLState() ? new MySQLErrPacket(1, MySQLErrorCode.ER_INTERNAL_ERROR, getErrorMessage(sqlException))
                     : new MySQLErrPacket(1, sqlException.getErrorCode(), sqlException.getSQLState(), sqlException.getMessage());
         }
         if (cause instanceof ShardingSphereInsideException) {
@@ -60,13 +60,13 @@ public final class MySQLErrPacketFactory {
             return new MySQLErrPacket(1, DistSQLErrorCode.valueOf(distSQLException), distSQLException.getVariable());
         }
         if (cause instanceof UnsupportedPreparedStatementException) {
-            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_UNSUPPORTED_PS);
+            return new MySQLErrPacket(1, MySQLErrorCode.ER_UNSUPPORTED_PS);
         }
         if (cause instanceof PipelineJobNotFoundException) {
             return new MySQLErrPacket(1, StandardSQLErrorCode.SCALING_JOB_NOT_EXIST, ((PipelineJobNotFoundException) cause).getJobId());
         }
         if (cause instanceof UnsupportedCharsetException) {
-            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_UNKNOWN_CHARACTER_SET, cause.getMessage());
+            return new MySQLErrPacket(1, MySQLErrorCode.ER_UNKNOWN_CHARACTER_SET, cause.getMessage());
         }
         return new MySQLErrPacket(1, StandardSQLErrorCode.UNKNOWN_EXCEPTION, cause.getMessage());
     }
