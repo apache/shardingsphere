@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.error.postgresql.mapper;
 
-import org.apache.shardingsphere.error.mapper.SQLExceptionMapper;
+import org.apache.shardingsphere.error.mapper.DialectSQLExceptionMapper;
 import org.apache.shardingsphere.error.postgresql.code.PostgreSQLErrorCode;
 import org.apache.shardingsphere.infra.exception.dialect.DBCreateExistsException;
 import org.apache.shardingsphere.infra.exception.dialect.InTransactionException;
@@ -31,9 +31,9 @@ import org.postgresql.util.PSQLState;
 import java.sql.SQLException;
 
 /**
- * SQL exception mapper for PostgreSQL.
+ * PostgreSQL exception mapper.
  */
-public final class PostgreSQLSQLExceptionMapper implements SQLExceptionMapper {
+public final class PostgreSQLExceptionMapper implements DialectSQLExceptionMapper {
     
     @Override
     public SQLException convert(final InsideDialectSQLException dialectSQLException) {
