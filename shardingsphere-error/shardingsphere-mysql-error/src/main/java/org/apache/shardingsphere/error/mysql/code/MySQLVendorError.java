@@ -52,7 +52,7 @@ public enum MySQLVendorError implements VendorError {
     
     ER_NO_SUCH_TABLE(XOpenSQLState.NOT_FOUND, 1146, "Table '%s' doesn't exist"),
     
-    ER_CON_COUNT_ERROR(XOpenSQLState.GENERAL_ERROR, 1040, "Too many connections"),
+    ER_CON_COUNT_ERROR(XOpenSQLState.DATA_SOURCE_REJECTED_CONNECTION_ATTEMPT, 1040, "Too many connections"),
     
     ER_UNKNOWN_CHARACTER_SET(XOpenSQLState.SYNTAX_ERROR, 1115, "Unknown character set: '%s'"),
     

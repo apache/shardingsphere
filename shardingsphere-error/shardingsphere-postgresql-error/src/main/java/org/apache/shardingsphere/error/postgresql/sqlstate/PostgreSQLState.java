@@ -36,8 +36,6 @@ public enum PostgreSQLState implements SQLState {
     
     UNDEFINED_COLUMN("42703"),
     
-    TOO_MANY_CONNECTIONS("53300"),
-    
     SYSTEM_ERROR("58000");
     
     private final String value;

@@ -51,7 +51,7 @@ public enum PostgreSQLVendorError implements VendorError {
     
     UNDEFINED_COLUMN(PostgreSQLState.UNDEFINED_COLUMN, "undefined_column"),
     
-    TOO_MANY_CONNECTIONS(PostgreSQLState.TOO_MANY_CONNECTIONS, "too_many_connections"),
+    DATA_SOURCE_REJECTED_CONNECTION_ATTEMPT(XOpenSQLState.DATA_SOURCE_REJECTED_CONNECTION_ATTEMPT, "sqlserver_rejected_establishment_of_sqlconnection"),
     
     SYSTEM_ERROR(PostgreSQLState.SYSTEM_ERROR, "system_error");
     
