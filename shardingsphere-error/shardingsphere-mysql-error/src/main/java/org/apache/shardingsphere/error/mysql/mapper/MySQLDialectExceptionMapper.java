@@ -21,15 +21,15 @@ import org.apache.shardingsphere.error.mapper.SQLDialectExceptionMapper;
 import org.apache.shardingsphere.error.mysql.code.MySQLVendorError;
 import org.apache.shardingsphere.error.vendor.ShardingSphereVendorError;
 import org.apache.shardingsphere.error.vendor.VendorError;
-import org.apache.shardingsphere.infra.exception.dialect.data.InsertColumnsAndValuesMismatchedException;
-import org.apache.shardingsphere.infra.exception.dialect.syntax.table.NoSuchTableException;
-import org.apache.shardingsphere.infra.exception.dialect.syntax.table.TableExistsException;
-import org.apache.shardingsphere.infra.exception.dialect.transaction.TableModifyInTransactionException;
 import org.apache.shardingsphere.infra.exception.dialect.connection.TooManyConnectionsException;
+import org.apache.shardingsphere.infra.exception.dialect.data.InsertColumnsAndValuesMismatchedException;
 import org.apache.shardingsphere.infra.exception.dialect.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.infra.exception.dialect.syntax.database.DatabaseDropNotExistsException;
 import org.apache.shardingsphere.infra.exception.dialect.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.infra.exception.dialect.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.infra.exception.dialect.syntax.table.NoSuchTableException;
+import org.apache.shardingsphere.infra.exception.dialect.syntax.table.TableExistsException;
+import org.apache.shardingsphere.infra.exception.dialect.transaction.TableModifyInTransactionException;
 import org.apache.shardingsphere.infra.util.exception.inside.SQLDialectException;
 
 import java.sql.SQLException;
@@ -41,9 +41,6 @@ public final class MySQLDialectExceptionMapper implements SQLDialectExceptionMap
     
     @Override
     public SQLException convert(final SQLDialectException sqlDialectException) {
-        if (sqlDialectException instanceof InsertColumnsAndValuesMismatchedException) {
-            return toSQLException(MySQLVendorError.ER_WRONG_VALUE_COUNT_ON_ROW, ((InsertColumnsAndValuesMismatchedException) sqlDialectException).getMismatchedRowNumber());
-        }
         if (sqlDialectException instanceof UnknownDatabaseException) {
             return null != ((UnknownDatabaseException) sqlDialectException).getDatabaseName()
                     ? toSQLException(MySQLVendorError.ER_BAD_DB_ERROR, ((UnknownDatabaseException) sqlDialectException).getDatabaseName())
@@ -63,6 +60,9 @@ public final class MySQLDialectExceptionMapper implements SQLDialectExceptionMap
         }
         if (sqlDialectException instanceof NoSuchTableException) {
             return toSQLException(MySQLVendorError.ER_NO_SUCH_TABLE, ((NoSuchTableException) sqlDialectException).getTableName());
+        }
+        if (sqlDialectException instanceof InsertColumnsAndValuesMismatchedException) {
+            return toSQLException(MySQLVendorError.ER_WRONG_VALUE_COUNT_ON_ROW, ((InsertColumnsAndValuesMismatchedException) sqlDialectException).getMismatchedRowNumber());
         }
         if (sqlDialectException instanceof TableModifyInTransactionException) {
             return toSQLException(MySQLVendorError.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, ((TableModifyInTransactionException) sqlDialectException).getTableName());
