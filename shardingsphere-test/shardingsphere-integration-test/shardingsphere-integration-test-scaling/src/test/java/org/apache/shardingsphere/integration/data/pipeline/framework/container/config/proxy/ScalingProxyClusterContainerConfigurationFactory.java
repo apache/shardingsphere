@@ -20,7 +20,7 @@ package org.apache.shardingsphere.integration.data.pipeline.framework.container.
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
-import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.ProxyClusterContainerConfigurationCreator;
+import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.ProxyClusterContainerConfigurationFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 
 import java.util.Map;
@@ -29,7 +29,7 @@ import java.util.Map;
  * Scaling proxy cluster container configuration creator.
  */
 @RequiredArgsConstructor
-public final class ScalingProxyClusterContainerConfigurationCreator {
+public final class ScalingProxyClusterContainerConfigurationFactory {
     
     /**
      * Create adaptor container config.
@@ -37,7 +37,7 @@ public final class ScalingProxyClusterContainerConfigurationCreator {
      * @param dockerImageName docker image name
      * @return adaptor container config
      */
-    public static AdaptorContainerConfiguration create(final DatabaseType databaseType, final String dockerImageName) {
+    public static AdaptorContainerConfiguration newInstance(final DatabaseType databaseType, final String dockerImageName) {
         return new AdaptorContainerConfiguration(getProxyDatasourceName(databaseType), getMountedResource(databaseType, dockerImageName));
     }
     
@@ -46,7 +46,7 @@ public final class ScalingProxyClusterContainerConfigurationCreator {
     }
     
     private static Map<String, String> getMountedResource(final DatabaseType databaseType, final String dockerImageName) {
-        Map<String, String> result = ProxyClusterContainerConfigurationCreator.create().getMountedResource();
+        Map<String, String> result = ProxyClusterContainerConfigurationFactory.newInstance().getMountedResource();
         if (DatabaseTypeUtil.isMySQL(databaseType)) {
             String majorVersion = DatabaseTypeUtil.parseMajorVersion(dockerImageName);
             result.put(String.format("/env/%s/server-%s.yaml", databaseType.getType().toLowerCase(), majorVersion), "/opt/shardingsphere-proxy/conf/server.yaml");

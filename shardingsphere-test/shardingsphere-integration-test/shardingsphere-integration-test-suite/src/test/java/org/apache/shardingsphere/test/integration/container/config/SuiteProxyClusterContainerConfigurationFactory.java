@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  * Suite proxy cluster container configuration creator.
  */
-public final class SuiteProxyClusterContainerConfigurationCreator {
+public final class SuiteProxyClusterContainerConfigurationFactory {
     
     /**
      * Creator adaptor container config.
@@ -34,7 +34,7 @@ public final class SuiteProxyClusterContainerConfigurationCreator {
      * @param databaseType database type
      * @return adaptor container config
      */
-    public static AdaptorContainerConfiguration create(final String scenario, final DatabaseType databaseType) {
+    public static AdaptorContainerConfiguration newInstance(final String scenario, final DatabaseType databaseType) {
         return new AdaptorContainerConfiguration(scenario, getMountedResources(scenario, databaseType));
     }
     

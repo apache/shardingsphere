@@ -26,11 +26,10 @@ import java.util.Map;
  * Adaptor container configuration.
  */
 @RequiredArgsConstructor
+@Getter
 public final class AdaptorContainerConfiguration {
     
-    @Getter
     private final String proxyDataSourceName;
     
-    @Getter
     private final Map<String, String> mountedResource;
 }
