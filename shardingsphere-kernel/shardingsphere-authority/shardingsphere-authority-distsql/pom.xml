@@ -27,7 +27,7 @@
     <artifactId>shardingsphere-authority-distsql</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
-
+    
     <modules>
         <module>shardingsphere-authority-distsql-statement</module>
         <module>shardingsphere-authority-distsql-parser</module>

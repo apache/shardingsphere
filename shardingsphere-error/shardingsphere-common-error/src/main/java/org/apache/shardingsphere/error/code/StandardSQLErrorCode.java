@@ -33,8 +33,6 @@ public enum StandardSQLErrorCode implements SQLErrorCode {
     
     SCALING_JOB_NOT_EXIST(XOpenSQLState.GENERAL_ERROR, 1201, "Scaling job `%s` does not exist"),
     
-    SCALING_OPERATE_FAILED(XOpenSQLState.GENERAL_ERROR, 1209, "Scaling operation failed: %s"),
-    
     DATABASE_WRITE_LOCKED(XOpenSQLState.GENERAL_ERROR, 1300, "The database `%s` is read-only"),
     
     TABLE_LOCK_WAIT_TIMEOUT(XOpenSQLState.GENERAL_ERROR, 1301, "The table `%s` of schema `%s` lock wait timeout of %s ms exceeded"),
