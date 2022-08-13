@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.error.code;
 
+import org.apache.shardingsphere.error.sqlstate.SQLState;
+
 /**
  * SQL error code.
  */
@@ -27,7 +29,7 @@ public interface SQLErrorCode {
      * 
      * @return SQL state
      */
-    String getSqlState();
+    SQLState getSqlState();
     
     /**
      * Get database vendor code.

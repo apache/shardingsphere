@@ -19,39 +19,18 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.excep
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.error.code.SQLErrorCode;
 import org.apache.shardingsphere.error.sqlstate.SQLState;
 
 /**
- * Dist SQL error code.
+ * Dist SQL state.
  */
 @RequiredArgsConstructor
 @Getter
-public enum DistSQLErrorCode implements SQLErrorCode {
+public enum DistSQLState implements SQLState {
     
-    UNSUPPORTED_VARIABLE(DistSQLState.UNSUPPORTED_VARIABLE, 11001, "Could not support variable `%s`."),
+    UNSUPPORTED_VARIABLE("11001"),
     
-    INVALID_VALUE(DistSQLState.INVALID_VALUE, 11002, "Invalid value `%s`.");
+    INVALID_VALUE("11002");
     
-    private final SQLState sqlState;
-    
-    private final int vendorCode;
-    
-    private final String reason;
-    
-    /**
-     * Value of dist SQL error code.
-     * 
-     * @param distSQLException dist SQL exception
-     * @return dist SQL error code
-     */
-    public static DistSQLErrorCode valueOf(final DistSQLException distSQLException) {
-        if (distSQLException instanceof UnsupportedVariableException) {
-            return UNSUPPORTED_VARIABLE;
-        }
-        if (distSQLException instanceof InvalidValueException) {
-            return INVALID_VALUE;
-        }
-        throw new UnsupportedOperationException("Can not find DistSQL error code from exception: %s", distSQLException);
-    }
+    private final String value;
 }
