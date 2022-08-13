@@ -56,7 +56,7 @@ public enum MySQLErrorCode implements SQLErrorCode {
     
     ER_WRONG_VALUE_COUNT_ON_ROW("21S01", 1136, "Column count doesn't match value count at row %d"),
     
-    ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE("HY000", 3176, 
+    ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE("HY000", 3176,
             "Please do not modify the %s table with an XA transaction. This is an internal system table used to store GTIDs for committed transactions. "
                     + "Although modifying it can lead to an inconsistent GTID state, if necessary you can modify it with a non-XA transaction.");
     
