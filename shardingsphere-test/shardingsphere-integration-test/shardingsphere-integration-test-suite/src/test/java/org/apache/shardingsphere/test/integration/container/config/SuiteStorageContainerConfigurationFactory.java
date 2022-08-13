@@ -32,7 +32,7 @@ import org.apache.shardingsphere.test.integration.env.container.atomic.storage.c
 public final class SuiteStorageContainerConfigurationFactory {
     
     /**
-     * Create new instance of suite storage container configuration.
+     * Create new instance of storage container configuration.
      *
      * @param databaseType database type
      * @param scenario scenario

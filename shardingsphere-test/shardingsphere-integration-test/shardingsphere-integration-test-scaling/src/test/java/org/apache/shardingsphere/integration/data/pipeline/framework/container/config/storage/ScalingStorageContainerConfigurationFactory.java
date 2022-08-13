@@ -34,7 +34,7 @@ import org.apache.shardingsphere.test.integration.env.container.atomic.storage.c
 public final class ScalingStorageContainerConfigurationFactory {
     
     /**
-     * Create new instance of scaling storage container configuration.
+     * Create new instance of storage container configuration.
      *
      * @param databaseType database type
      * @param scenario scenario
