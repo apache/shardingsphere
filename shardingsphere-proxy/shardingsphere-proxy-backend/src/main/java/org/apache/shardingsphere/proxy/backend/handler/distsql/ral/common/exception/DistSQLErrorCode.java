@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.error.code.SQLErrorCode;
 import org.apache.shardingsphere.error.sqlstate.SQLState;
+import org.apache.shardingsphere.error.sqlstate.XOpenSQLState;
 
 /**
  * Dist SQL error code.
@@ -29,9 +30,9 @@ import org.apache.shardingsphere.error.sqlstate.SQLState;
 @Getter
 public enum DistSQLErrorCode implements SQLErrorCode {
     
-    UNSUPPORTED_VARIABLE(DistSQLState.UNSUPPORTED_VARIABLE, 11001, "Could not support variable `%s`."),
+    UNSUPPORTED_VARIABLE(XOpenSQLState.GENERAL_ERROR, 11001, "Could not support variable `%s`"),
     
-    INVALID_VALUE(DistSQLState.INVALID_VALUE, 11002, "Invalid value `%s`.");
+    INVALID_VALUE(XOpenSQLState.INVALID_DATA_TYPE, 11002, "Invalid value `%s`");
     
     private final SQLState sqlState;
     
