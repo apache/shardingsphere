@@ -78,7 +78,7 @@ public final class ShardingSphereProxyClusterContainer extends DockerITContainer
     }
     
     private void mountConfigurationFiles() {
-        config.getMountedResource().forEach((key, value) -> withClasspathResourceMapping(key, value, BindMode.READ_ONLY));
+        config.getMountedResources().forEach((key, value) -> withClasspathResourceMapping(key, value, BindMode.READ_ONLY));
     }
     
     @Override

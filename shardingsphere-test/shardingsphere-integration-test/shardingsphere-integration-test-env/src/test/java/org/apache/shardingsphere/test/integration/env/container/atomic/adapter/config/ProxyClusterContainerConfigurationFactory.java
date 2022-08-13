@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 
 /**
  * Proxy cluster container configuration creator.
  */
 public final class ProxyClusterContainerConfigurationFactory {
-    
+
     /**
      * Create adaptor container configuration.
-     * 
+     *
      * @return adaptor container configuration
      */
     public static AdaptorContainerConfiguration newInstance() {
@@ -35,8 +35,6 @@ public final class ProxyClusterContainerConfigurationFactory {
     }
     
     private static Map<String, String> getMountedResource() {
-        Map<String, String> result = new HashMap<>(1, 1);
-        result.put("/env/logback.xml", "/opt/shardingsphere-proxy/conf/logback.xml");
-        return result;
+        return Collections.singletonMap("/env/logback.xml", "/opt/shardingsphere-proxy/conf/logback.xml");
     }
 }

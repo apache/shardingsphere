@@ -31,5 +31,5 @@ public final class AdaptorContainerConfiguration {
     
     private final String proxyDataSourceName;
     
-    private final Map<String, String> mountedResource;
+    private final Map<String, String> mountedResources;
 }
