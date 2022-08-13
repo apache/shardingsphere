@@ -17,34 +17,40 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.framework.container.config.proxy;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
+import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.ProxyClusterContainerConfigurationFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Scaling proxy cluster container configuration.
+ * Scaling proxy cluster container configuration factory.
  */
-@RequiredArgsConstructor
-public final class ScalingProxyClusterContainerConfiguration implements AdaptorContainerConfiguration {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ScalingProxyClusterContainerConfigurationFactory {
     
-    private final DatabaseType databaseType;
-    
-    private final String dockerImageName;
-    
-    @Override
-    public Map<String, String> getWaitStrategyInfo() {
-        return Collections.singletonMap("dataSourceName", DatabaseTypeUtil.isPostgreSQL(databaseType) ? "postgres" : "");
+    /**
+     * Create instance of adaptor container configuration.
+     * 
+     * @param databaseType database type
+     * @param dockerImageName docker image name
+     * @return created instance
+     */
+    public static AdaptorContainerConfiguration newInstance(final DatabaseType databaseType, final String dockerImageName) {
+        return new AdaptorContainerConfiguration(getProxyDatasourceName(databaseType), getMountedResource(databaseType, dockerImageName));
     }
     
-    @Override
-    public Map<String, String> getResourceMappings(final String scenario, final DatabaseType databaseType) {
+    private static String getProxyDatasourceName(final DatabaseType databaseType) {
+        return DatabaseTypeUtil.isPostgreSQL(databaseType) ? "postgres" : "";
+    }
+    
+    private static Map<String, String> getMountedResource(final DatabaseType databaseType, final String dockerImageName) {
         Map<String, String> result = new HashMap<>(2, 1);
-        result.put("/env/logback.xml", "/opt/shardingsphere-proxy/conf/logback.xml");
+        result.putAll(ProxyClusterContainerConfigurationFactory.newInstance().getMountedResources());
         if (DatabaseTypeUtil.isMySQL(databaseType)) {
             String majorVersion = DatabaseTypeUtil.parseMajorVersion(dockerImageName);
             result.put(String.format("/env/%s/server-%s.yaml", databaseType.getType().toLowerCase(), majorVersion), "/opt/shardingsphere-proxy/conf/server.yaml");

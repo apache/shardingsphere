@@ -74,11 +74,11 @@ public final class ShardingSphereProxyClusterContainer extends DockerITContainer
         withExposedPorts(3307);
         mountConfigurationFiles();
         setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType,
-                getHost(), getMappedPort(3307), config.getWaitStrategyInfo().get("dataSourceName")), "proxy", "Proxy@123")));
+                getHost(), getMappedPort(3307), config.getProxyDataSourceName()), "proxy", "Proxy@123")));
     }
     
     private void mountConfigurationFiles() {
-        config.getResourceMappings(scenario, databaseType).forEach((key, value) -> withClasspathResourceMapping(key, value, BindMode.READ_ONLY));
+        config.getMountedResources().forEach((key, value) -> withClasspathResourceMapping(key, value, BindMode.READ_ONLY));
     }
     
     @Override

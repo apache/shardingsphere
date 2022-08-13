@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.framework.container.config.storage;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.config.storage.impl.mysql.ScalingMySQLContainerConfiguration;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.config.storage.impl.postgresql.ScalingPostgreSQLContainerConfiguration;
@@ -25,10 +27,14 @@ import org.apache.shardingsphere.test.integration.env.container.atomic.storage.c
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.opengauss.DefaultOpenGaussContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.postgresql.DefaultPostgreSQLContainerConfiguration;
 
+/**
+ * Scaling storage container configuration factory.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ScalingStorageContainerConfigurationFactory {
     
     /**
-     * Create new instance of storage container.
+     * Create new instance of storage container configuration.
      *
      * @param databaseType database type
      * @param scenario scenario

@@ -15,27 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.impl;
+package org.apache.shardingsphere.test.integration.container.config;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Proxy cluster container configuration.
+ * Suite proxy cluster container configuration factory.
  */
-public final class DefaultProxyClusterContainerConfiguration implements AdaptorContainerConfiguration {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SuiteProxyClusterContainerConfigurationFactory {
     
-    @Override
-    public Map<String, String> getWaitStrategyInfo() {
-        return Collections.singletonMap("dataSourceName", "");
+    /**
+     * Create instance of adaptor container configuration.
+     * 
+     * @param scenario scenario
+     * @param databaseType database type
+     * @return created instance
+     */
+    public static AdaptorContainerConfiguration newInstance(final String scenario, final DatabaseType databaseType) {
+        return new AdaptorContainerConfiguration(scenario, getMountedResources(scenario, databaseType));
     }
     
-    @Override
-    public Map<String, String> getResourceMappings(final String scenario, final DatabaseType databaseType) {
+    private static Map<String, String> getMountedResources(final String scenario, final DatabaseType databaseType) {
         Map<String, String> result = new HashMap<>(2, 1);
         String pathInContainer = "/opt/shardingsphere-proxy/conf";
         result.put("/env/common/standalone/proxy/conf/", pathInContainer);

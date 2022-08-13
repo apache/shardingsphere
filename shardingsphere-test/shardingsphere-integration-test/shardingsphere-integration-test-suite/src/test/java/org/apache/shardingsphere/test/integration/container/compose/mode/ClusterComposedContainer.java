@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.test.integration.container.compose.mode;
 
 import org.apache.shardingsphere.test.integration.container.compose.ComposedContainer;
+import org.apache.shardingsphere.test.integration.container.config.SuiteProxyClusterContainerConfigurationFactory;
 import org.apache.shardingsphere.test.integration.container.config.SuiteStorageContainerConfigurationFactory;
-import org.apache.shardingsphere.test.integration.container.config.proxy.SuiteProxyClusterContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.ITContainers;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.AdapterContainerFactory;
+import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.container.atomic.governance.GovernanceContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.governance.GovernanceContainerFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainer;
@@ -54,9 +55,9 @@ public final class ClusterComposedContainer implements ComposedContainer {
         // TODO add more version of databases
         storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(parameterizedArray.getDatabaseType(), "", scenario,
                 SuiteStorageContainerConfigurationFactory.newInstance(parameterizedArray.getDatabaseType(), scenario)));
-        SuiteProxyClusterContainerConfiguration suiteProxyClusterContainerConfiguration = new SuiteProxyClusterContainerConfiguration(scenario);
+        AdaptorContainerConfiguration containerConfig = SuiteProxyClusterContainerConfigurationFactory.newInstance(scenario, parameterizedArray.getDatabaseType());
         AdapterContainer adapterContainer = AdapterContainerFactory.newInstance(
-                parameterizedArray.getMode(), parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), storageContainer, scenario, suiteProxyClusterContainerConfiguration);
+                parameterizedArray.getMode(), parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), storageContainer, scenario, containerConfig);
         if (adapterContainer instanceof DockerITContainer) {
             ((DockerITContainer) adapterContainer).dependsOn(governanceContainer, storageContainer);
         }

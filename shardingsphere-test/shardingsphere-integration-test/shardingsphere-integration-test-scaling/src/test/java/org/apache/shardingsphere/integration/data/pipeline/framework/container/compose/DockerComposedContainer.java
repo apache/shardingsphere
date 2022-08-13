@@ -19,9 +19,10 @@ package org.apache.shardingsphere.integration.data.pipeline.framework.container.
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.framework.container.config.proxy.ScalingProxyClusterContainerConfiguration;
+import org.apache.shardingsphere.integration.data.pipeline.framework.container.config.proxy.ScalingProxyClusterContainerConfigurationFactory;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.config.storage.ScalingStorageContainerConfigurationFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.AdapterContainerFactory;
+import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.governance.GovernanceContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.governance.impl.ZookeeperContainer;
@@ -49,9 +50,9 @@ public final class DockerComposedContainer extends BaseComposedContainer {
         governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
         storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, dockerImageName,
                 "", ScalingStorageContainerConfigurationFactory.newInstance(databaseType, "")));
-        ScalingProxyClusterContainerConfiguration scalingProxyClusterContainerConfiguration = new ScalingProxyClusterContainerConfiguration(databaseType, dockerImageName);
+        AdaptorContainerConfiguration containerConfig = ScalingProxyClusterContainerConfigurationFactory.newInstance(databaseType, dockerImageName);
         ShardingSphereProxyClusterContainer proxyClusterContainer =
-                (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance("Cluster", "proxy", databaseType, storageContainer, "", scalingProxyClusterContainerConfiguration);
+                (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance("Cluster", "proxy", databaseType, storageContainer, "", containerConfig);
         proxyClusterContainer.dependsOn(governanceContainer, storageContainer);
         proxyContainer = getContainers().registerContainer(proxyClusterContainer);
     }

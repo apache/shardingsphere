@@ -17,16 +17,22 @@
 
 package org.apache.shardingsphere.test.integration.container.config;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.mysql.DefaultMySQLContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.opengauss.DefaultOpenGaussContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.postgresql.DefaultPostgreSQLContainerConfiguration;
 
-public class SuiteStorageContainerConfigurationFactory {
+/**
+ * Suite storage container configuration factory.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SuiteStorageContainerConfigurationFactory {
     
     /**
-     * Create new instance of storage container.
+     * Create new instance of storage container configuration.
      *
      * @param databaseType database type
      * @param scenario scenario
