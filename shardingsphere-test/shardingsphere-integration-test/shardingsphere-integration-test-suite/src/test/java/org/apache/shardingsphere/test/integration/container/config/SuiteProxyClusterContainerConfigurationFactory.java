@@ -36,7 +36,7 @@ public final class SuiteProxyClusterContainerConfigurationFactory {
      * 
      * @param scenario scenario
      * @param databaseType database type
-     * @return adaptor container configuration
+     * @return created instance
      */
     public static AdaptorContainerConfiguration newInstance(final String scenario, final DatabaseType databaseType) {
         return new AdaptorContainerConfiguration(scenario, getMountedResources(scenario, databaseType));

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.c
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.ProxyClusterContainerConfigurationFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -37,7 +38,7 @@ public final class ScalingProxyClusterContainerConfigurationFactory {
      * 
      * @param databaseType database type
      * @param dockerImageName docker image name
-     * @return adaptor container configuration
+     * @return created instance
      */
     public static AdaptorContainerConfiguration newInstance(final DatabaseType databaseType, final String dockerImageName) {
         return new AdaptorContainerConfiguration(getProxyDatasourceName(databaseType), getMountedResource(databaseType, dockerImageName));
@@ -48,7 +49,8 @@ public final class ScalingProxyClusterContainerConfigurationFactory {
     }
     
     private static Map<String, String> getMountedResource(final DatabaseType databaseType, final String dockerImageName) {
-        Map<String, String> result = ProxyClusterContainerConfigurationFactory.newInstance().getMountedResources();
+        Map<String, String> result = new HashMap<>(2, 1);
+        result.putAll(ProxyClusterContainerConfigurationFactory.newInstance().getMountedResources());
         if (DatabaseTypeUtil.isMySQL(databaseType)) {
             String majorVersion = DatabaseTypeUtil.parseMajorVersion(dockerImageName);
             result.put(String.format("/env/%s/server-%s.yaml", databaseType.getType().toLowerCase(), majorVersion), "/opt/shardingsphere-proxy/conf/server.yaml");
