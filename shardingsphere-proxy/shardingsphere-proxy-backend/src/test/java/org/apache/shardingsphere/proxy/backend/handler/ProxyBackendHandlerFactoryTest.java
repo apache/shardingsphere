@@ -111,7 +111,7 @@ public final class ProxyBackendHandlerFactoryTest extends ProxyContextRestorer {
     }
     
     @Test
-    public void assertNewInstanceWithCommonDistSQL() throws SQLException {
+    public void assertNewInstanceWithDistSQL() throws SQLException {
         String sql = "set variable transaction_type='LOCAL'";
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(SetVariableHandler.class));
