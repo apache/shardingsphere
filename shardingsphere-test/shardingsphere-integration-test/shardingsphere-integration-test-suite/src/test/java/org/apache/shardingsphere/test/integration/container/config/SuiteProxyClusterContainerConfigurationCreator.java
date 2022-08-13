@@ -35,7 +35,7 @@ public final class SuiteProxyClusterContainerConfigurationCreator {
      * @return adaptor container config
      */
     public static AdaptorContainerConfiguration create(final String scenario, final DatabaseType databaseType) {
-        return new AdaptorContainerConfiguration("", getMountedResources(scenario, databaseType));
+        return new AdaptorContainerConfiguration(scenario, getMountedResources(scenario, databaseType));
     }
     
     private static Map<String, String> getMountedResources(final String scenario, final DatabaseType databaseType) {
