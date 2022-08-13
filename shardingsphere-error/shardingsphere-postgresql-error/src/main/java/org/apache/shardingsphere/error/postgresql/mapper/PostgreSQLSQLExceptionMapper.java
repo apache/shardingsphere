@@ -21,8 +21,9 @@ import org.apache.shardingsphere.error.mapper.SQLExceptionMapper;
 import org.apache.shardingsphere.error.postgresql.code.PostgreSQLErrorCode;
 import org.apache.shardingsphere.infra.exception.dialect.DBCreateExistsException;
 import org.apache.shardingsphere.infra.exception.dialect.InTransactionException;
-import org.apache.shardingsphere.infra.exception.dialect.InvalidParameterValueException;
 import org.apache.shardingsphere.infra.exception.dialect.InsertColumnsAndValuesMismatchedException;
+import org.apache.shardingsphere.infra.exception.dialect.InvalidParameterValueException;
+import org.apache.shardingsphere.infra.exception.dialect.TooManyConnectionsException;
 import org.apache.shardingsphere.infra.util.exception.inside.InsideDialectSQLException;
 import org.postgresql.util.PSQLException;
 import org.postgresql.util.PSQLState;
@@ -49,6 +50,9 @@ public final class PostgreSQLSQLExceptionMapper implements SQLExceptionMapper {
         }
         if (dialectSQLException instanceof DBCreateExistsException) {
             return new PSQLException(PostgreSQLErrorCode.DUPLICATE_DATABASE.getConditionName(), null);
+        }
+        if (dialectSQLException instanceof TooManyConnectionsException) {
+            return new PSQLException(PostgreSQLErrorCode.TOO_MANY_CONNECTIONS.getConditionName(), null);
         }
         return new PSQLException(dialectSQLException.getMessage(), null);
     }

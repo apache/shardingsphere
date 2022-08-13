@@ -81,6 +81,8 @@ public enum PostgreSQLErrorCode {
     
     UNDEFINED_COLUMN("42703", "undefined_column"),
     
+    TOO_MANY_CONNECTIONS("53300", "too_many_connections"),
+    
     SYSTEM_ERROR("58000", "system_error");
     
     private final String errorCode;
