@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config;
+package org.apache.shardingsphere.test.integration.container.config;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.Map;
+import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
+import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.ProxyClusterContainerConfigurationCreator;
 
 /**
- * Adaptor container configuration.
+ * Suite proxy cluster container configuration creator.
  */
-@RequiredArgsConstructor
-public final class AdaptorContainerConfiguration {
+public final class SuiteProxyClusterContainerConfigurationCreator {
     
-    @Getter
-    private final String proxyDataSourceName;
-    
-    @Getter
-    private final Map<String, String> mountedResource;
+    /**
+     * Creator adaptor container config.
+     * @param scenario scenario
+     * @return adaptor container config
+     */
+    public static AdaptorContainerConfiguration create(final String scenario) {
+        return new AdaptorContainerConfiguration(scenario, ProxyClusterContainerConfigurationCreator.create().getMountedResource());
+    }
 }
