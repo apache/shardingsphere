@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChanne
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
-import org.apache.shardingsphere.scaling.core.job.importer.ImporterCreator;
+import org.apache.shardingsphere.data.pipeline.core.importer.ImporterCreator;
 
 /**
  * Fixture importer creator.

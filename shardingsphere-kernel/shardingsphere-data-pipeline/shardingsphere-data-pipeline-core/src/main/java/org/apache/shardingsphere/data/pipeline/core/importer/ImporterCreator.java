@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.importer;
+package org.apache.shardingsphere.data.pipeline.core.importer;
 
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
@@ -25,15 +25,19 @@ import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
+/**
+ * Importer creator.
+ */
 @SingletonSPI
 public interface ImporterCreator extends TypedSPI {
     
     /**
      * Create importer.
-     * @param importerConfig importerConfig
-     * @param dataSourceManager dataSourceManager
+     *
+     * @param importerConfig importer configuration
+     * @param dataSourceManager data source manager
      * @param channel channel
-     * @param jobProgressListener jobProgressListener
+     * @param jobProgressListener job progress listener
      * @return importer
      */
     Importer createImporter(ImporterConfiguration importerConfig, PipelineDataSourceManager dataSourceManager, PipelineChannel channel,

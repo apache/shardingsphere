@@ -38,7 +38,7 @@ import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.Dumper;
 import org.apache.shardingsphere.scaling.core.job.dumper.DumperFactory;
-import org.apache.shardingsphere.scaling.core.job.importer.ImporterCreatorFactory;
+import org.apache.shardingsphere.data.pipeline.core.importer.ImporterCreatorFactory;
 
 import javax.sql.DataSource;
 import java.util.List;

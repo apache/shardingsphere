@@ -38,7 +38,7 @@ import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.Dumper;
 import org.apache.shardingsphere.scaling.core.job.dumper.DumperFactory;
-import org.apache.shardingsphere.scaling.core.job.importer.ImporterCreatorFactory;
+import org.apache.shardingsphere.data.pipeline.core.importer.ImporterCreatorFactory;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -49,7 +49,7 @@ import java.util.concurrent.Future;
  * Incremental task.
  */
 @Slf4j
-@ToString(exclude = {"incrementalDumperExecuteEngine", "channel", "dumper", "importers", "progress"})
+@ToString(exclude = {"incrementalDumperExecuteEngine", "channel", "dumper", "importers", "taskProgress"})
 public final class IncrementalTask extends AbstractLifecycleExecutor implements PipelineTask, AutoCloseable {
     
     @Getter
