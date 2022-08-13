@@ -33,10 +33,10 @@ public final class SQLDialectExceptionMapperFactory {
     }
     
     /**
-     * Convert ShardingSphere inside exception into SQLException.
+     * Get instance of SQL dialect exception mapper.
      * 
      * @param databaseType database type
-     * @return SQLException
+     * @return SQL dialect exception mapper
      */
     public static SQLDialectExceptionMapper getInstance(final String databaseType) {
         return TypedSPIRegistry.getRegisteredService(SQLDialectExceptionMapper.class, databaseType);
