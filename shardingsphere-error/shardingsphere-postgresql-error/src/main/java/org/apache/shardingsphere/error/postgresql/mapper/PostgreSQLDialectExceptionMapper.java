@@ -17,44 +17,44 @@
 
 package org.apache.shardingsphere.error.postgresql.mapper;
 
-import org.apache.shardingsphere.error.mapper.DialectSQLExceptionMapper;
+import org.apache.shardingsphere.error.mapper.SQLDialectExceptionMapper;
 import org.apache.shardingsphere.error.postgresql.code.PostgreSQLVendorError;
 import org.apache.shardingsphere.infra.exception.dialect.DBCreateExistsException;
 import org.apache.shardingsphere.infra.exception.dialect.InTransactionException;
 import org.apache.shardingsphere.infra.exception.dialect.InsertColumnsAndValuesMismatchedException;
 import org.apache.shardingsphere.infra.exception.dialect.InvalidParameterValueException;
 import org.apache.shardingsphere.infra.exception.dialect.TooManyConnectionsException;
-import org.apache.shardingsphere.infra.util.exception.inside.InsideDialectSQLException;
+import org.apache.shardingsphere.infra.util.exception.inside.SQLDialectException;
 import org.postgresql.util.PSQLException;
 import org.postgresql.util.PSQLState;
 
 import java.sql.SQLException;
 
 /**
- * PostgreSQL exception mapper.
+ * PostgreSQL dialect exception mapper.
  */
-public final class PostgreSQLExceptionMapper implements DialectSQLExceptionMapper {
+public final class PostgreSQLDialectExceptionMapper implements SQLDialectExceptionMapper {
     
     @Override
-    public SQLException convert(final InsideDialectSQLException dialectSQLException) {
-        if (dialectSQLException instanceof InTransactionException) {
-            return new PSQLException(dialectSQLException.getMessage(), PSQLState.TRANSACTION_STATE_INVALID);
+    public SQLException convert(final SQLDialectException sqlDialectException) {
+        if (sqlDialectException instanceof InTransactionException) {
+            return new PSQLException(sqlDialectException.getMessage(), PSQLState.TRANSACTION_STATE_INVALID);
         }
-        if (dialectSQLException instanceof InsertColumnsAndValuesMismatchedException) {
-            return new PSQLException(dialectSQLException.getMessage(), PSQLState.SYNTAX_ERROR);
+        if (sqlDialectException instanceof InsertColumnsAndValuesMismatchedException) {
+            return new PSQLException(sqlDialectException.getMessage(), PSQLState.SYNTAX_ERROR);
         }
-        if (dialectSQLException instanceof InvalidParameterValueException) {
-            InvalidParameterValueException invalidParameterValueException = (InvalidParameterValueException) dialectSQLException;
+        if (sqlDialectException instanceof InvalidParameterValueException) {
+            InvalidParameterValueException invalidParameterValueException = (InvalidParameterValueException) sqlDialectException;
             String message = String.format("invalid value for parameter \"%s\": \"%s\"", invalidParameterValueException.getParameterName(), invalidParameterValueException.getParameterValue());
             return new PSQLException(message, PSQLState.INVALID_PARAMETER_VALUE);
         }
-        if (dialectSQLException instanceof DBCreateExistsException) {
+        if (sqlDialectException instanceof DBCreateExistsException) {
             return new PSQLException(PostgreSQLVendorError.DUPLICATE_DATABASE.getReason(), null);
         }
-        if (dialectSQLException instanceof TooManyConnectionsException) {
+        if (sqlDialectException instanceof TooManyConnectionsException) {
             return new PSQLException(PostgreSQLVendorError.TOO_MANY_CONNECTIONS.getReason(), null);
         }
-        return new PSQLException(dialectSQLException.getMessage(), null);
+        return new PSQLException(sqlDialectException.getMessage(), null);
     }
     
     @Override

@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.infra.exception.dialect;
 
-import org.apache.shardingsphere.infra.util.exception.inside.InsideDialectSQLException;
+import org.apache.shardingsphere.infra.util.exception.inside.SQLDialectException;
 
 /**
  * No database selected exception.
  */
-public final class NoDatabaseSelectedException extends InsideDialectSQLException {
+public final class NoDatabaseSelectedException extends SQLDialectException {
     
     private static final long serialVersionUID = 7820981156141678308L;
 }

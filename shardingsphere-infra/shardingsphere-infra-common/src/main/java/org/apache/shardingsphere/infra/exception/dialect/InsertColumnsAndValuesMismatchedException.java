@@ -19,14 +19,14 @@ package org.apache.shardingsphere.infra.exception.dialect;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.inside.InsideDialectSQLException;
+import org.apache.shardingsphere.infra.util.exception.inside.SQLDialectException;
 
 /**
  * Insert columns and values mismatched exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class InsertColumnsAndValuesMismatchedException extends InsideDialectSQLException {
+public final class InsertColumnsAndValuesMismatchedException extends SQLDialectException {
     
     private static final long serialVersionUID = 5676889868213244575L;
     

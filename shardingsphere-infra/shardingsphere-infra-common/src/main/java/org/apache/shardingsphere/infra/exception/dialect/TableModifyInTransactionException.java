@@ -19,14 +19,14 @@ package org.apache.shardingsphere.infra.exception.dialect;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.inside.InsideDialectSQLException;
+import org.apache.shardingsphere.infra.util.exception.inside.SQLDialectException;
 
 /**
  * Table modify in transaction exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class TableModifyInTransactionException extends InsideDialectSQLException {
+public final class TableModifyInTransactionException extends SQLDialectException {
     
     private static final long serialVersionUID = 5676889868293244575L;
     

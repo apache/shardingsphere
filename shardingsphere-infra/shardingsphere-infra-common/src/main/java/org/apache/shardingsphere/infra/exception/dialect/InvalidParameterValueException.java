@@ -19,14 +19,14 @@ package org.apache.shardingsphere.infra.exception.dialect;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.inside.InsideDialectSQLException;
+import org.apache.shardingsphere.infra.util.exception.inside.SQLDialectException;
 
 /**
  * Invalid parameter value exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class InvalidParameterValueException extends InsideDialectSQLException {
+public final class InvalidParameterValueException extends SQLDialectException {
     
     private static final long serialVersionUID = -6561119208409452172L;
     
