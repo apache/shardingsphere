@@ -39,7 +39,7 @@ public enum StandardSQLErrorCode implements SQLErrorCode {
     
     TABLE_LOCKED("C1302", 1302, "The table `%s` of schema `%s` is locked"),
     
-    RESOURCE_OR_RULE_NOT_EXIST("42000", 1305,  "Data source or rule does not exist"),
+    RESOURCE_OR_RULE_NOT_EXIST("42000", 1305, "Data source or rule does not exist"),
     
     UNSUPPORTED_SQL("42000", 1235, "Unsupported SQL: %s"),
     
