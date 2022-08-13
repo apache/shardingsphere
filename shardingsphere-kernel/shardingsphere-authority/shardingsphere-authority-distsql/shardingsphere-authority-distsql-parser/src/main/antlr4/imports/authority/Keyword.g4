@@ -15,12 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.queryable;
+lexer grammar Keyword;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
+import Alphabet;
 
-/**
- * Show authority rule statement.
- */
-public final class ShowAuthorityRuleStatement extends QueryableRALStatement {
-}
+WS
+    : [ \t\r\n] + ->skip
+    ;
+
+SHOW
+    : S H O W
+    ;
+
+RULE
+    : R U L E
+    ;
+
+AUTHORITY
+    : A U T H O R I T Y
+    ;

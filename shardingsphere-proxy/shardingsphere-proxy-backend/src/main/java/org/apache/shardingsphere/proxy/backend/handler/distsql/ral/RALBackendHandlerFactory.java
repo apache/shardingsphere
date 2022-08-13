@@ -20,11 +20,11 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.HintRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableGlobalRuleRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertYamlConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowAllVariableStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowAuthorityRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceInfoStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceListStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowModeInfoStatement;
@@ -54,10 +54,12 @@ import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.HintRALBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.query.QueryableMigrationRALBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.query.QueryableMigrationRALBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.update.UpdatableMigrationRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ConvertYamlConfigurationHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ExportDatabaseConfigurationHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowAllVariableHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowAuthorityRuleHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowInstanceInfoHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowInstanceListHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowModeInfoHandler;
@@ -68,9 +70,6 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.Sho
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowTrafficRulesHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowTransactionRuleHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowVariableHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.query.QueryableMigrationRALBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.query.QueryableMigrationRALBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.update.UpdatableMigrationRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.AlterSQLParserRuleHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.AlterTrafficRuleHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.AlterTransactionRuleHandler;
@@ -122,7 +121,6 @@ public final class RALBackendHandlerFactory {
         HANDLERS.put(ShowVariableStatement.class, ShowVariableHandler.class);
         HANDLERS.put(ShowAllVariableStatement.class, ShowAllVariableHandler.class);
         HANDLERS.put(ShowReadwriteSplittingReadResourcesStatement.class, ShowReadwriteSplittingReadResourcesHandler.class);
-        HANDLERS.put(ShowAuthorityRuleStatement.class, ShowAuthorityRuleHandler.class);
         HANDLERS.put(ShowSQLParserRuleStatement.class, ShowSQLParserRuleHandler.class);
         HANDLERS.put(ShowTableMetadataStatement.class, ShowTableMetadataHandler.class);
         HANDLERS.put(ShowTrafficRulesStatement.class, ShowTrafficRulesHandler.class);
@@ -152,6 +150,9 @@ public final class RALBackendHandlerFactory {
         }
         if (sqlStatement instanceof UpdatableScalingRALStatement) {
             return new UpdatableMigrationRALBackendHandler((UpdatableScalingRALStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof QueryableGlobalRuleRALStatement) {
+            return QueryableGlobalRuleRALBackendHandlerFactory.newInstance((QueryableGlobalRuleRALStatement) sqlStatement);
         }
         return createRALBackendHandler(sqlStatement, connectionSession);
     }
