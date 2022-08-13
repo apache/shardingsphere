@@ -120,7 +120,7 @@ public final class OpenGaussPacketCodecEngine implements DatabasePacketCodecEngi
             payload.getByteBuf().resetWriterIndex();
             // TODO consider what severity to use
             OpenGaussErrorResponsePacket errorResponsePacket = new OpenGaussErrorResponsePacket(
-                    PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLVendorError.SYSTEM_ERROR.getErrorCode(), ex.getMessage());
+                    PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLVendorError.SYSTEM_ERROR.getSqlState().getValue(), ex.getMessage());
             isPostgreSQLIdentifierPacket = true;
             prepareMessageHeader(out, errorResponsePacket.getIdentifier().getValue());
             errorResponsePacket.write(payload);

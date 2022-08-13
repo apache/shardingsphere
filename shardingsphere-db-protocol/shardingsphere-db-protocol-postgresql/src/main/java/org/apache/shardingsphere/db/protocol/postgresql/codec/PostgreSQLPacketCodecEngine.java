@@ -117,8 +117,8 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
             // CHECKSTYLE:ON
             payload.getByteBuf().resetWriterIndex();
             // TODO consider what severity to use
-            PostgreSQLErrorResponsePacket errorResponsePacket = PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLVendorError.SYSTEM_ERROR, ex.getMessage())
-                    .build();
+            PostgreSQLErrorResponsePacket errorResponsePacket = PostgreSQLErrorResponsePacket.newBuilder(
+                    PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLVendorError.SYSTEM_ERROR, ex.getMessage()).build();
             isPostgreSQLIdentifierPacket = true;
             prepareMessageHeader(out, errorResponsePacket.getIdentifier().getValue());
             errorResponsePacket.write(payload);

@@ -37,7 +37,7 @@ public final class PostgreSQLUnsupportedCommandExecutor implements CommandExecut
     public Collection<DatabasePacket<?>> execute() {
         // TODO consider what severity and error code to use
         PostgreSQLErrorResponsePacket packet = PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLVendorError.FEATURE_NOT_SUPPORTED,
-                PostgreSQLVendorError.FEATURE_NOT_SUPPORTED.getConditionName()).build();
+                PostgreSQLVendorError.FEATURE_NOT_SUPPORTED.getReason()).build();
         return Collections.singletonList(packet);
     }
 }

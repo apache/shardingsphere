@@ -164,7 +164,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
                 }
                 if (null == column) {
                     String reason = String.format("Column \"%s\" of relation \"%s\" does not exist. Please check the SQL or execute REFRESH TABLE METADATA.", columnName, logicTableName);
-                    throw new SQLException(reason, PostgreSQLVendorError.UNDEFINED_COLUMN.getErrorCode());
+                    throw new SQLException(reason, PostgreSQLVendorError.UNDEFINED_COLUMN.getSqlState().getValue());
                 }
                 PostgreSQLColumnType parameterType = PostgreSQLColumnType.valueOfJDBCType(column.getDataType());
                 preparedStatement.getParameterTypes().set(parameterMarkerIndex++, parameterType);

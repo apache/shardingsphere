@@ -79,15 +79,15 @@ public final class OpenGaussErrorPacketFactory {
             return createErrorResponsePacket(SQLExceptionHandler.convert("PostgreSQL", (ShardingSphereInsideException) cause));
         }
         if (cause instanceof InvalidAuthorizationSpecificationException) {
-            return new OpenGaussErrorResponsePacket(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLVendorError.INVALID_AUTHORIZATION_SPECIFICATION.getErrorCode(), cause.getMessage());
+            return new OpenGaussErrorResponsePacket(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLVendorError.INVALID_AUTHORIZATION_SPECIFICATION.getSqlState().getValue(), cause.getMessage());
         }
         if (cause instanceof PostgreSQLProtocolViolationException) {
-            return new OpenGaussErrorResponsePacket(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLVendorError.PROTOCOL_VIOLATION.getErrorCode(),
+            return new OpenGaussErrorResponsePacket(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLVendorError.PROTOCOL_VIOLATION.getSqlState().getValue(),
                     String.format("expected %s response, got message type %s", ((PostgreSQLProtocolViolationException) cause).getExpectedMessageType(),
                             ((PostgreSQLProtocolViolationException) cause).getActualMessageType()));
         }
         if (cause instanceof PostgreSQLAuthenticationException) {
-            return new OpenGaussErrorResponsePacket(PostgreSQLMessageSeverityLevel.FATAL, ((PostgreSQLAuthenticationException) cause).getVendorError().getErrorCode(), cause.getMessage());
+            return new OpenGaussErrorResponsePacket(PostgreSQLMessageSeverityLevel.FATAL, ((PostgreSQLAuthenticationException) cause).getVendorError().getSqlState().getValue(), cause.getMessage());
         }
         // TODO OpenGauss need consider FrontendConnectionLimitException
         return createErrorResponsePacketForUnknownException(cause);
@@ -106,7 +106,7 @@ public final class OpenGaussErrorPacketFactory {
     
     private static OpenGaussErrorResponsePacket createErrorResponsePacket(final SQLException cause) {
         // TODO consider what severity to use
-        String sqlState = Strings.isNullOrEmpty(cause.getSQLState()) ? PostgreSQLVendorError.SYSTEM_ERROR.getErrorCode() : cause.getSQLState();
+        String sqlState = Strings.isNullOrEmpty(cause.getSQLState()) ? PostgreSQLVendorError.SYSTEM_ERROR.getSqlState().getValue() : cause.getSQLState();
         String message = Strings.isNullOrEmpty(cause.getMessage()) ? cause.toString() : cause.getMessage();
         return new OpenGaussErrorResponsePacket(PostgreSQLMessageSeverityLevel.ERROR, sqlState, message);
     }
@@ -118,6 +118,6 @@ public final class OpenGaussErrorPacketFactory {
     private static OpenGaussErrorResponsePacket createErrorResponsePacketForUnknownException(final Exception cause) {
         // TODO add FIELD_TYPE_CODE for common error and consider what severity to use
         String message = Strings.isNullOrEmpty(cause.getLocalizedMessage()) ? cause.toString() : cause.getLocalizedMessage();
-        return new OpenGaussErrorResponsePacket(PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLVendorError.SYSTEM_ERROR.getErrorCode(), message);
+        return new OpenGaussErrorResponsePacket(PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLVendorError.SYSTEM_ERROR.getSqlState().getValue(), message);
     }
 }
