@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum StandardSQLErrorCode implements SQLErrorCode {
     
-    CIRCUIT_BREAK_MODE("C1000", 1000,"Circuit break mode is ON"),
+    CIRCUIT_BREAK_MODE("C1000", 1000, "Circuit break mode is ON"),
     
     SCALING_JOB_NOT_EXIST("C1201", 1201, "Scaling job `%s` does not exist"),
     
