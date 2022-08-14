@@ -31,12 +31,6 @@ public enum ShardingSphereVendorError implements VendorError {
     
     SCALING_JOB_NOT_EXIST(XOpenSQLState.GENERAL_ERROR, 1201, "Scaling job `%s` does not exist"),
     
-    DATABASE_WRITE_LOCKED(XOpenSQLState.GENERAL_ERROR, 1300, "The database `%s` is read-only"),
-    
-    TABLE_LOCK_WAIT_TIMEOUT(XOpenSQLState.GENERAL_ERROR, 1301, "The table `%s` of schema `%s` lock wait timeout of %s ms exceeded"),
-    
-    TABLE_LOCKED(XOpenSQLState.GENERAL_ERROR, 1302, "The table `%s` of schema `%s` is locked"),
-    
     UNKNOWN_EXCEPTION(XOpenSQLState.SYNTAX_ERROR, 1999, "Unknown exception: %s"),
     
     UNSUPPORTED_SQL(XOpenSQLState.SYNTAX_ERROR, 1235, "Unsupported SQL: %s");
