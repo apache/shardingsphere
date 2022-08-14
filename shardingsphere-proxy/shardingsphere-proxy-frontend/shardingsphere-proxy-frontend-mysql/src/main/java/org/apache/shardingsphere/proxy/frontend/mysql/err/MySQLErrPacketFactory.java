@@ -20,14 +20,13 @@ package org.apache.shardingsphere.proxy.frontend.mysql.err;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobNotFoundException;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.error.SQLExceptionHandler;
-import org.apache.shardingsphere.infra.util.exception.sql.vendor.ShardingSphereVendorError;
 import org.apache.shardingsphere.error.mysql.code.MySQLVendorError;
 import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.DistSQLVendorError;
+import org.apache.shardingsphere.infra.util.exception.sql.vendor.ShardingSphereVendorError;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.DistSQLException;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.DistSQLVendorError;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
 
 import java.nio.charset.UnsupportedCharsetException;
@@ -61,9 +60,6 @@ public final class MySQLErrPacketFactory {
         }
         if (cause instanceof UnsupportedPreparedStatementException) {
             return new MySQLErrPacket(1, MySQLVendorError.ER_UNSUPPORTED_PS);
-        }
-        if (cause instanceof PipelineJobNotFoundException) {
-            return new MySQLErrPacket(1, ShardingSphereVendorError.SCALING_JOB_NOT_EXIST, ((PipelineJobNotFoundException) cause).getJobId());
         }
         if (cause instanceof UnsupportedCharsetException) {
             return new MySQLErrPacket(1, MySQLVendorError.ER_UNKNOWN_CHARACTER_SET, cause.getMessage());
