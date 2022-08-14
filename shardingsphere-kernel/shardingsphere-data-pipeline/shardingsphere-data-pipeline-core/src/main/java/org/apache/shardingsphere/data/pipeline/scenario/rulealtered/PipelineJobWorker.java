@@ -29,7 +29,7 @@ import org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobExecutor;
 @Slf4j
 public final class PipelineJobWorker {
     
-    private static final PipelineJobWorker INSTANCE = new PipelineJobWorker();
+    private static final RuleAlteredJobWorker INSTANCE = new RuleAlteredJobWorker();
     
     private static final AtomicBoolean WORKER_INITIALIZED = new AtomicBoolean(false);
     
