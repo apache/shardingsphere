@@ -52,13 +52,13 @@ public final class ShowShardingTableRulesUsedAlgorithmQueryResultSetTest {
         when(database.getRuleMetaData().findSingleRule(ShardingRule.class)).thenReturn(Optional.of(rule));
         DatabaseDistSQLResultSet resultSet = new ShardingTableRulesUsedAlgorithmQueryResultSet();
         ShowShardingTableRulesUsedAlgorithmStatement statement = mock(ShowShardingTableRulesUsedAlgorithmStatement.class);
-        when(statement.getAlgorithmName()).thenReturn(Optional.of("t_order_inline"));
+        when(statement.getShardingAlgorithmName()).thenReturn(Optional.of("t_order_inline"));
         resultSet.init(database, statement);
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0), is("table"));
         assertThat(actual.get(1), is("t_order"));
-        when(statement.getAlgorithmName()).thenReturn(Optional.of("auto_mod"));
+        when(statement.getShardingAlgorithmName()).thenReturn(Optional.of("auto_mod"));
         resultSet.init(database, statement);
         actual = new ArrayList<>(resultSet.getRowData());
         assertThat(actual.size(), is(2));

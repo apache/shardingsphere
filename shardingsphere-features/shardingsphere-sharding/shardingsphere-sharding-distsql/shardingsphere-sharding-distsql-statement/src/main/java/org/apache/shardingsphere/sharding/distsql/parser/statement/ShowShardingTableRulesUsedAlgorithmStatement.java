@@ -27,11 +27,11 @@ import java.util.Optional;
  */
 public final class ShowShardingTableRulesUsedAlgorithmStatement extends ShowRulesStatement {
     
-    private final String algorithmName;
+    private final String shardingAlgorithmName;
     
-    public ShowShardingTableRulesUsedAlgorithmStatement(final String algorithmName, final DatabaseSegment database) {
+    public ShowShardingTableRulesUsedAlgorithmStatement(final String shardingAlgorithmName, final DatabaseSegment database) {
         super(database);
-        this.algorithmName = algorithmName;
+        this.shardingAlgorithmName = shardingAlgorithmName;
     }
     
     /**
@@ -39,7 +39,7 @@ public final class ShowShardingTableRulesUsedAlgorithmStatement extends ShowRule
      *
      * @return algorithm name.
      */
-    public Optional<String> getAlgorithmName() {
-        return Optional.ofNullable(algorithmName);
+    public Optional<String> getShardingAlgorithmName() {
+        return Optional.ofNullable(shardingAlgorithmName);
     }
 }
