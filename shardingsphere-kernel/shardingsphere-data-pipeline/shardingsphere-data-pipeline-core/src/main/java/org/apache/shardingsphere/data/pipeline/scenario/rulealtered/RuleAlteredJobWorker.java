@@ -67,7 +67,18 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class RuleAlteredJobWorker {
     
+    private static final RuleAlteredJobWorker INSTANCE = new RuleAlteredJobWorker();
+    
     private static final YamlRuleConfigurationSwapperEngine SWAPPER_ENGINE = new YamlRuleConfigurationSwapperEngine();
+    
+    /**
+     * Get instance.
+     *
+     * @return instance
+     */
+    public static RuleAlteredJobWorker getInstance() {
+        return INSTANCE;
+    }
     
     /**
      * Is on rule altered action enabled.
