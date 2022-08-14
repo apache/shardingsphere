@@ -20,36 +20,35 @@ package org.apache.shardingsphere.shadow.algorithm.shadow.column;
 import com.google.common.base.Preconditions;
 
 import java.util.Properties;
-import java.util.regex.Pattern;
 
 /**
- * Column regex match shadow algorithm.
+ * Column value matched shadow algorithm.
  */
-public final class ColumnRegexMatchShadowAlgorithm extends AbstractColumnMatchShadowAlgorithm {
+public final class ColumnValueMatchedShadowAlgorithm extends AbstractColumnMatchedShadowAlgorithm {
     
-    private static final String REGEX_PROPS_KEY = "regex";
+    private static final String VALUE_PROPS_KEY = "value";
     
-    private Pattern regex;
+    private String shadowValue;
     
     @Override
     public void init(final Properties props) {
         super.init(props);
-        regex = getRegex(props);
+        shadowValue = getShadowValue(props);
     }
     
-    private Pattern getRegex(final Properties props) {
-        String regex = props.getProperty(REGEX_PROPS_KEY);
-        Preconditions.checkNotNull(regex, "Column regex match shadow algorithm regex cannot be null.");
-        return Pattern.compile(regex);
+    private String getShadowValue(final Properties props) {
+        String result = props.getProperty(VALUE_PROPS_KEY);
+        Preconditions.checkNotNull(result, "Column value match shadow algorithm value cannot be null.");
+        return result;
     }
     
     @Override
-    protected boolean isMatchValue(final Comparable<?> value) {
-        return regex.matcher(String.valueOf(value)).matches();
+    protected boolean matchesShadowValue(final Comparable<?> value) {
+        return shadowValue.equals(String.valueOf(value));
     }
     
     @Override
     public String getType() {
-        return "REGEX_MATCH";
+        return "VALUE_MATCH";
     }
 }
