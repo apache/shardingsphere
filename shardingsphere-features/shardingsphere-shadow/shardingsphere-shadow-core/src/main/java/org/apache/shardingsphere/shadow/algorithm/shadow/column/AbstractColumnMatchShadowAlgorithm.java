@@ -20,14 +20,10 @@ package org.apache.shardingsphere.shadow.algorithm.shadow.column;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.shadow.algorithm.shadow.validator.ShadowValueValidator;
-import org.apache.shardingsphere.shadow.algorithm.shadow.validator.column.ShadowDateValueValidator;
-import org.apache.shardingsphere.shadow.algorithm.shadow.validator.column.ShadowEnumValueValidator;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.column.PreciseColumnShadowValue;
 
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -39,8 +35,6 @@ public abstract class AbstractColumnMatchShadowAlgorithm implements ColumnShadow
     private static final String COLUMN_PROPS_KEY = "column";
     
     private static final String OPERATION_PROPS_KEY = "operation";
-    
-    private static final Collection<ShadowValueValidator> SHADOW_VALUE_VALIDATORS = new LinkedList<>();
     
     @Getter
     private Properties props;
@@ -54,7 +48,6 @@ public abstract class AbstractColumnMatchShadowAlgorithm implements ColumnShadow
         this.props = props;
         shadowColumn = getShadowColumn(props);
         shadowOperationType = getShadowOperationType(props);
-        initShadowValueValidator();
     }
     
     private String getShadowColumn(final Properties props) {
@@ -71,18 +64,13 @@ public abstract class AbstractColumnMatchShadowAlgorithm implements ColumnShadow
         return result.get();
     }
     
-    private void initShadowValueValidator() {
-        SHADOW_VALUE_VALIDATORS.add(new ShadowDateValueValidator());
-        SHADOW_VALUE_VALIDATORS.add(new ShadowEnumValueValidator());
-    }
-    
     @Override
     public boolean isShadow(final PreciseColumnShadowValue<Comparable<?>> shadowValue) {
         String table = shadowValue.getLogicTableName();
         String column = shadowValue.getColumnName();
         Comparable<?> value = shadowValue.getValue();
         if (shadowOperationType == shadowValue.getShadowOperationType() && shadowColumn.equals(column)) {
-            SHADOW_VALUE_VALIDATORS.forEach(each -> each.preValidate(table, column, value));
+            ShadowValueValidator.validate(table, column, value);
             return isMatchValue(value);
         }
         return false;

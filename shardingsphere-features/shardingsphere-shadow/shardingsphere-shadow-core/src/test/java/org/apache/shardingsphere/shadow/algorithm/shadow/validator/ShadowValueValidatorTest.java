@@ -15,20 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.algorithm.shadow.validator.column;
+package org.apache.shardingsphere.shadow.algorithm.shadow.validator;
 
 import org.apache.shardingsphere.shadow.algorithm.shadow.ShadowAlgorithmException;
-import org.apache.shardingsphere.shadow.algorithm.shadow.validator.ShadowValueValidator;
+import org.junit.Test;
 
-/**
- * Shadow value validator of enum.
- */
-public final class ShadowEnumValueValidator implements ShadowValueValidator {
+import java.util.Date;
+
+import static org.mockito.Mockito.mock;
+
+public final class ShadowValueValidatorTest {
     
-    @Override
-    public void preValidate(final String table, final String column, final Comparable<?> shadowValue) {
-        if (shadowValue instanceof Enum) {
-            throw new ShadowAlgorithmException("Shadow column `%s` data of shadow table `%s` matching does not support type: `%s`.", column, table, Enum.class);
-        }
+    @Test(expected = ShadowAlgorithmException.class)
+    public void assertValidateDateType() {
+        ShadowValueValidator.validate("tbl", "col", new Date());
+    }
+    
+    @Test(expected = ShadowAlgorithmException.class)
+    public void assertValidateEnumType() {
+        ShadowValueValidator.validate("tbl", "col", mock(Enum.class));
+    }
+    
+    @Test
+    public void assertValidateAcceptedType() {
+        ShadowValueValidator.validate("tbl", "col", "");
     }
 }
