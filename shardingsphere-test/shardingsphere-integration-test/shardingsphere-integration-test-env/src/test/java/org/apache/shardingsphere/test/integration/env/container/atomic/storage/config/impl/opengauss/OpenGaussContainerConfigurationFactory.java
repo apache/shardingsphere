@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.integration.env.container.atomic.storage.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,15 +36,15 @@ public final class OpenGaussContainerConfigurationFactory {
      * 
      * @return created instance
      */
-    public static OpenGaussContainerConfiguration newInstance() {
-        return new OpenGaussContainerConfiguration(getCommands(), getContainerEnvs(), getMountedResources());
+    public static StorageContainerConfiguration newInstance() {
+        return new StorageContainerConfiguration(getCommands(), getContainerEnvironments(), getMountedResources());
     }
     
     private static String[] getCommands() {
         return new String[0];
     }
     
-    private static Map<String, String> getContainerEnvs() {
+    private static Map<String, String> getContainerEnvironments() {
         return Collections.singletonMap("GS_PASSWORD", "Test@123");
     }
     

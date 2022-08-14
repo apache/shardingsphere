@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.integration.env.container.atomic.storage.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,19 +36,19 @@ public final class MySQLContainerConfigurationFactory {
      * 
      * @return created instance
      */
-    public static MySQLContainerConfiguration newInstance() {
-        return new MySQLContainerConfiguration(getCommands(), getContainerEnvs(), getMountedResources());
+    public static StorageContainerConfiguration newInstance() {
+        return new StorageContainerConfiguration(getCommands(), getContainerEnvironments(), getMountedResources());
     }
     
     private static String[] getCommands() {
         // TODO need auto set server-id by generator, now always set server-id to 1
-        String[] commands = new String[1];
-        commands[0] = "--server-id=1";
-        return commands;
+        String[] result = new String[1];
+        result[0] = "--server-id=1";
+        return result;
     }
     
-    private static Map<String, String> getContainerEnvs() {
-        Map<String, String> result = new HashMap<>();
+    private static Map<String, String> getContainerEnvironments() {
+        Map<String, String> result = new HashMap<>(2, 1);
         result.put("LANG", "C.UTF-8");
         result.put("MYSQL_RANDOM_ROOT_PASSWORD", "yes");
         return result;

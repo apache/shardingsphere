@@ -19,6 +19,8 @@ package org.apache.shardingsphere.test.integration.env.container.atomic.storage.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
+
 import java.util.Collections;
 import java.util.Map;
 
@@ -33,17 +35,17 @@ public final class PostgreSQLContainerConfigurationFactory {
      * 
      * @return created instance
      */
-    public static PostgreSQLContainerConfiguration newInstance() {
-        return new PostgreSQLContainerConfiguration(getCommands(), getContainerEnvs(), getMountedResources());
+    public static StorageContainerConfiguration newInstance() {
+        return new StorageContainerConfiguration(getCommands(), getContainerEnvironments(), getMountedResources());
     }
     
     private static String[] getCommands() {
-        String[] commands = new String[1];
-        commands[0] = "-c config_file=/etc/postgresql/postgresql.conf";
-        return commands;
+        String[] result = new String[1];
+        result[0] = "-c config_file=/etc/postgresql/postgresql.conf";
+        return result;
     }
     
-    private static Map<String, String> getContainerEnvs() {
+    private static Map<String, String> getContainerEnvironments() {
         return Collections.singletonMap("POSTGRES_PASSWORD", "Test@123");
     }
     
