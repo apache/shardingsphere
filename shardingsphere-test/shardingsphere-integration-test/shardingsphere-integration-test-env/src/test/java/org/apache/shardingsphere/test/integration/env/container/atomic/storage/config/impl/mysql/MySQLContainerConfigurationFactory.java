@@ -36,7 +36,7 @@ public final class MySQLContainerConfigurationFactory {
      * @return created instance
      */
     public static MySQLContainerConfiguration newInstance() {
-        return new MySQLContainerConfiguration(getCommands(), getContainerEnvs(), getResourceMappings());
+        return new MySQLContainerConfiguration(getCommands(), getContainerEnvs(), getMountedResources());
     }
     
     private static String[] getCommands() {
@@ -53,7 +53,7 @@ public final class MySQLContainerConfigurationFactory {
         return result;
     }
     
-    private static Map<String, String> getResourceMappings() {
+    private static Map<String, String> getMountedResources() {
         return Collections.singletonMap("/env/mysql/my.cnf", "/etc/mysql/my.cnf");
     }
 }
