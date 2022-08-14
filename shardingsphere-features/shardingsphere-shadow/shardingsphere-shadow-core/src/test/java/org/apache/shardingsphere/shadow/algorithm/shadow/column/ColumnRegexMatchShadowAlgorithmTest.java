@@ -31,19 +31,19 @@ public final class ColumnRegexMatchShadowAlgorithmTest extends AbstractColumnSha
     
     @Test
     public void assertIsShadow() {
-        ColumnRegexMatchShadowAlgorithm shadowAlgorithm = createShadowAlgorithm();
+        ColumnRegexMatchedShadowAlgorithm shadowAlgorithm = createShadowAlgorithm();
         createPreciseColumnShadowValuesFalseCase().forEach(each -> assertFalse(shadowAlgorithm.isShadow(each)));
         createPreciseColumnShadowValuesTrueCase().forEach(each -> assertTrue(shadowAlgorithm.isShadow(each)));
     }
     
     @Test(expected = ShadowAlgorithmException.class)
     public void assertExceptionCase() {
-        ColumnRegexMatchShadowAlgorithm shadowAlgorithm = createShadowAlgorithm();
+        ColumnRegexMatchedShadowAlgorithm shadowAlgorithm = createShadowAlgorithm();
         createPreciseColumnShadowValuesExceptionCase().forEach(each -> assertFalse(shadowAlgorithm.isShadow(each)));
     }
     
-    private ColumnRegexMatchShadowAlgorithm createShadowAlgorithm() {
-        return (ColumnRegexMatchShadowAlgorithm) ShadowAlgorithmFactory.newInstance(new AlgorithmConfiguration("REGEX_MATCH", createProperties()));
+    private ColumnRegexMatchedShadowAlgorithm createShadowAlgorithm() {
+        return (ColumnRegexMatchedShadowAlgorithm) ShadowAlgorithmFactory.newInstance(new AlgorithmConfiguration("REGEX_MATCH", createProperties()));
     }
     
     private Properties createProperties() {

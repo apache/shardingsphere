@@ -28,9 +28,9 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Abstract column match shadow algorithm.
+ * Abstract column matched shadow algorithm.
  */
-public abstract class AbstractColumnMatchShadowAlgorithm implements ColumnShadowAlgorithm<Comparable<?>> {
+public abstract class AbstractColumnMatchedShadowAlgorithm implements ColumnShadowAlgorithm<Comparable<?>> {
     
     private static final String COLUMN_PROPS_KEY = "column";
     
@@ -65,16 +65,16 @@ public abstract class AbstractColumnMatchShadowAlgorithm implements ColumnShadow
     }
     
     @Override
-    public boolean isShadow(final PreciseColumnShadowValue<Comparable<?>> shadowValue) {
+    public final boolean isShadow(final PreciseColumnShadowValue<Comparable<?>> shadowValue) {
         String table = shadowValue.getLogicTableName();
         String column = shadowValue.getColumnName();
         Comparable<?> value = shadowValue.getValue();
         if (shadowOperationType == shadowValue.getShadowOperationType() && shadowColumn.equals(column)) {
             ShadowValueValidator.validate(table, column, value);
-            return isMatchValue(value);
+            return matchesShadowValue(value);
         }
         return false;
     }
     
-    protected abstract boolean isMatchValue(Comparable<?> value);
+    protected abstract boolean matchesShadowValue(Comparable<?> value);
 }
