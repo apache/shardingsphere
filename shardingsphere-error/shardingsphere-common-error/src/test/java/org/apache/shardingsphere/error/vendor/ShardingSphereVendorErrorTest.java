@@ -26,20 +26,6 @@ import static org.junit.Assert.assertThat;
 public final class ShardingSphereVendorErrorTest {
     
     @Test
-    public void assertCircuitBreakMode() {
-        assertThat(ShardingSphereVendorError.CIRCUIT_BREAK_MODE.getSqlState().getValue(), is("01000"));
-        assertThat(ShardingSphereVendorError.CIRCUIT_BREAK_MODE.getVendorCode(), is(1000));
-        assertThat(ShardingSphereVendorError.CIRCUIT_BREAK_MODE.getReason(), is("Circuit break open, the request has been ignored"));
-    }
-    
-    @Test
-    public void assertUnsupportedCommand() {
-        assertThat(ShardingSphereVendorError.UNSUPPORTED_COMMAND.getSqlState().getValue(), is("42000"));
-        assertThat(ShardingSphereVendorError.UNSUPPORTED_COMMAND.getVendorCode(), is(1998));
-        assertThat(ShardingSphereVendorError.UNSUPPORTED_COMMAND.getReason(), is("Unsupported command: %s"));
-    }
-    
-    @Test
     public void assertUnknownException() {
         assertThat(ShardingSphereVendorError.UNKNOWN_EXCEPTION.getSqlState().getValue(), is("42000"));
         assertThat(ShardingSphereVendorError.UNKNOWN_EXCEPTION.getVendorCode(), is(1999));

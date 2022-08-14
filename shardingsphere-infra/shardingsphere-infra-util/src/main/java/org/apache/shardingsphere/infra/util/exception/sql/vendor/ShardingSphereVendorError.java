@@ -29,8 +29,6 @@ import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState
 @Getter
 public enum ShardingSphereVendorError implements VendorError {
     
-    CIRCUIT_BREAK_MODE(XOpenSQLState.GENERAL_WARNING, 1000, "Circuit break open, the request has been ignored"),
-    
     SCALING_JOB_NOT_EXIST(XOpenSQLState.GENERAL_ERROR, 1201, "Scaling job `%s` does not exist"),
     
     DATABASE_WRITE_LOCKED(XOpenSQLState.GENERAL_ERROR, 1300, "The database `%s` is read-only"),
@@ -39,11 +37,7 @@ public enum ShardingSphereVendorError implements VendorError {
     
     TABLE_LOCKED(XOpenSQLState.GENERAL_ERROR, 1302, "The table `%s` of schema `%s` is locked"),
     
-    UNSUPPORTED_COMMAND(XOpenSQLState.SYNTAX_ERROR, 1998, "Unsupported command: %s"),
-    
     UNKNOWN_EXCEPTION(XOpenSQLState.SYNTAX_ERROR, 1999, "Unknown exception: %s"),
-    
-    RESOURCE_OR_RULE_NOT_EXIST(XOpenSQLState.SYNTAX_ERROR, 1305, "Data source or rule does not exist"),
     
     UNSUPPORTED_SQL(XOpenSQLState.SYNTAX_ERROR, 1235, "Unsupported SQL: %s");
     
