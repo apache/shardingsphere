@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.exception.dialect.syntax.database;
+package org.apache.shardingsphere.infra.lock.exception;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.error.exception.dialect.SQLDialectException;
+import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
 
 /**
- * Database create exists exception.
+ * Table locked exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DatabaseCreateExistsException extends SQLDialectException {
+public final class TableLockedException extends ShardingSphereSQLException {
     
-    private static final long serialVersionUID = 779787160167652641L;
+    private static final long serialVersionUID = 2622020743612706932L;
     
-    private final String databaseName;
+    public TableLockedException(final String schemaName, final String tableName) {
+        super(XOpenSQLState.GENERAL_ERROR, 1302, "The table `%s` of schema `%s` is locked", tableName, schemaName);
+    }
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.error.vendor;
 
+import org.apache.shardingsphere.infra.util.exception.sql.vendor.ShardingSphereVendorError;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

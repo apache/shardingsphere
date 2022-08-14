@@ -15,19 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.exception.lock;
+package org.apache.shardingsphere.error.dialect;
 
-import org.apache.shardingsphere.error.exception.ShardingSphereSQLException;
-import org.apache.shardingsphere.error.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 
 /**
- * Table lock wait timeout exception.
+ * SQL dialect exception.
  */
-public final class TableLockWaitTimeoutException extends ShardingSphereSQLException {
+public abstract class SQLDialectException extends ShardingSphereInsideException {
     
-    private static final long serialVersionUID = 2599713085782288003L;
-    
-    public TableLockWaitTimeoutException(final String schemaName, final String tableName, final long timeoutMilliseconds) {
-        super(XOpenSQLState.GENERAL_ERROR, 1301, "The table `%s` of schema `%s` lock wait timeout of %s ms exceeded", tableName, schemaName, String.valueOf(timeoutMilliseconds));
-    }
+    private static final long serialVersionUID = -5090068160364259336L;
 }

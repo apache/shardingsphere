@@ -15,17 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.sqlstate;
+package org.apache.shardingsphere.error.dialect.data;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.error.dialect.SQLDialectException;
 
 /**
- * SQL state.
+ * Insert columns and values mismatched exception.
  */
-public interface SQLState {
+@RequiredArgsConstructor
+@Getter
+public final class InsertColumnsAndValuesMismatchedException extends SQLDialectException {
     
-    /**
-     * Get value.
-     * 
-     * @return value
-     */
-    String getValue();
+    private static final long serialVersionUID = 5676889868213244575L;
+    
+    private final int mismatchedRowNumber;
 }

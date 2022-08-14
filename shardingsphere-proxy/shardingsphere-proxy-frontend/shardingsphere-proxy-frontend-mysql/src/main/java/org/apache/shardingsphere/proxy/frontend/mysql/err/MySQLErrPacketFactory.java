@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobNotFoundException;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.error.SQLExceptionHandler;
-import org.apache.shardingsphere.error.vendor.ShardingSphereVendorError;
+import org.apache.shardingsphere.infra.util.exception.sql.vendor.ShardingSphereVendorError;
 import org.apache.shardingsphere.error.mysql.code.MySQLVendorError;
 import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.DistSQLVendorError;

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.error.postgresql.sqlstate;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.error.sqlstate.SQLState;
+import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.SQLState;
 
 /**
  * PostgreSQL SQL state.

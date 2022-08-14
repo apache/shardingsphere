@@ -19,11 +19,11 @@ package org.apache.shardingsphere.error;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.error.exception.dialect.SQLDialectException;
-import org.apache.shardingsphere.error.exception.ShardingSphereSQLException;
+import org.apache.shardingsphere.error.dialect.SQLDialectException;
+import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.error.mapper.SQLDialectExceptionMapperFactory;
-import org.apache.shardingsphere.error.vendor.ShardingSphereVendorError;
-import org.apache.shardingsphere.error.vendor.VendorError;
+import org.apache.shardingsphere.infra.util.exception.sql.vendor.ShardingSphereVendorError;
+import org.apache.shardingsphere.infra.util.exception.sql.vendor.VendorError;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;

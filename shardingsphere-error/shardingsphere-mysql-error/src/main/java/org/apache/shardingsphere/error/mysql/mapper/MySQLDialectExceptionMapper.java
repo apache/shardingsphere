@@ -19,18 +19,18 @@ package org.apache.shardingsphere.error.mysql.mapper;
 
 import org.apache.shardingsphere.error.mapper.SQLDialectExceptionMapper;
 import org.apache.shardingsphere.error.mysql.code.MySQLVendorError;
-import org.apache.shardingsphere.error.vendor.ShardingSphereVendorError;
-import org.apache.shardingsphere.error.vendor.VendorError;
-import org.apache.shardingsphere.error.exception.dialect.connection.TooManyConnectionsException;
-import org.apache.shardingsphere.error.exception.dialect.data.InsertColumnsAndValuesMismatchedException;
-import org.apache.shardingsphere.error.exception.dialect.syntax.database.DatabaseCreateExistsException;
-import org.apache.shardingsphere.error.exception.dialect.syntax.database.DatabaseDropNotExistsException;
-import org.apache.shardingsphere.error.exception.dialect.syntax.database.NoDatabaseSelectedException;
-import org.apache.shardingsphere.error.exception.dialect.syntax.database.UnknownDatabaseException;
-import org.apache.shardingsphere.error.exception.dialect.syntax.table.NoSuchTableException;
-import org.apache.shardingsphere.error.exception.dialect.syntax.table.TableExistsException;
-import org.apache.shardingsphere.error.exception.dialect.transaction.TableModifyInTransactionException;
-import org.apache.shardingsphere.error.exception.dialect.SQLDialectException;
+import org.apache.shardingsphere.infra.util.exception.sql.vendor.ShardingSphereVendorError;
+import org.apache.shardingsphere.infra.util.exception.sql.vendor.VendorError;
+import org.apache.shardingsphere.error.dialect.connection.TooManyConnectionsException;
+import org.apache.shardingsphere.error.dialect.data.InsertColumnsAndValuesMismatchedException;
+import org.apache.shardingsphere.error.dialect.syntax.database.DatabaseCreateExistsException;
+import org.apache.shardingsphere.error.dialect.syntax.database.DatabaseDropNotExistsException;
+import org.apache.shardingsphere.error.dialect.syntax.database.NoDatabaseSelectedException;
+import org.apache.shardingsphere.error.dialect.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.error.dialect.syntax.table.NoSuchTableException;
+import org.apache.shardingsphere.error.dialect.syntax.table.TableExistsException;
+import org.apache.shardingsphere.error.dialect.transaction.TableModifyInTransactionException;
+import org.apache.shardingsphere.error.dialect.SQLDialectException;
 
 import java.sql.SQLException;
 

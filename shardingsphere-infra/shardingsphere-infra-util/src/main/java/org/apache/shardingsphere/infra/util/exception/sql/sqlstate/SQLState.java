@@ -15,19 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.exception.lock;
-
-import org.apache.shardingsphere.error.exception.ShardingSphereSQLException;
-import org.apache.shardingsphere.error.sqlstate.XOpenSQLState;
+package org.apache.shardingsphere.infra.util.exception.sql.sqlstate;
 
 /**
- * Table locked exception.
+ * SQL state.
  */
-public final class TableLockedException extends ShardingSphereSQLException {
+public interface SQLState {
     
-    private static final long serialVersionUID = 2622020743612706932L;
-    
-    public TableLockedException(final String schemaName, final String tableName) {
-        super(XOpenSQLState.GENERAL_ERROR, 1302, "The table `%s` of schema `%s` is locked", tableName, schemaName);
-    }
+    /**
+     * Get value.
+     * 
+     * @return value
+     */
+    String getValue();
 }

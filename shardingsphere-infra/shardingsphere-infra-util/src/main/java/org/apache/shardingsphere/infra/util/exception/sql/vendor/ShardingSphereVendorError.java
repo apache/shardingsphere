@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.vendor;
+package org.apache.shardingsphere.infra.util.exception.sql.vendor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.error.sqlstate.SQLState;
-import org.apache.shardingsphere.error.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.SQLState;
+import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
 
 /**
  * ShardingSphere vendor error.
