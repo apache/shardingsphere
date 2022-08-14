@@ -45,6 +45,8 @@ public final class StorageContainerConfigurationFactory {
                 return PostgreSQLContainerConfigurationFactory.newInstance();
             case "openGauss":
                 return OpenGaussContainerConfigurationFactory.newInstance();
+            case "H2":
+                return null;    
             default:
                 throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
         }
