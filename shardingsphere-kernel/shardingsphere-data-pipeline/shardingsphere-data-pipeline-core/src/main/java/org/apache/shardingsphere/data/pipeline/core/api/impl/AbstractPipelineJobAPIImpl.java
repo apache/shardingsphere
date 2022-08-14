@@ -117,7 +117,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     protected final JobConfigurationPOJO getElasticJobConfigPOJO(final String jobId) {
         JobConfigurationPOJO result = PipelineAPIFactory.getJobConfigurationAPI().getJobConfiguration(jobId);
         if (null == result) {
-            throw new PipelineJobNotFoundException(String.format("Can not find scaling job %s", jobId), jobId);
+            throw new PipelineJobNotFoundException(jobId);
         }
         return result;
     }

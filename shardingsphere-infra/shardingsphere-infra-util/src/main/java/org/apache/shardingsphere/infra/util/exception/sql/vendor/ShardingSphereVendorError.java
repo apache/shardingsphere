@@ -29,8 +29,6 @@ import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState
 @Getter
 public enum ShardingSphereVendorError implements VendorError {
     
-    SCALING_JOB_NOT_EXIST(XOpenSQLState.GENERAL_ERROR, 1201, "Scaling job `%s` does not exist"),
-    
     UNKNOWN_EXCEPTION(XOpenSQLState.SYNTAX_ERROR, 1999, "Unknown exception: %s"),
     
     UNSUPPORTED_SQL(XOpenSQLState.SYNTAX_ERROR, 1235, "Unsupported SQL: %s");
