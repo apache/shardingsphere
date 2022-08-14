@@ -52,10 +52,10 @@ public final class ShowShardingTableRulesUsedAlgorithmStatementAssert {
             assertFalse(assertContext.getText("Actual database should not exist."), actual.getDatabase().isPresent());
         }
         if (!Strings.isNullOrEmpty(expected.getAlgorithmName())) {
-            assertTrue(assertContext.getText("Actual algorithmName should exist."), actual.getAlgorithmName().isPresent());
-            assertThat(assertContext.getText("algorithmName assertion error:"), actual.getAlgorithmName().get(), is(expected.getAlgorithmName()));
+            assertTrue(assertContext.getText("Actual algorithmName should exist."), actual.getShardingAlgorithmName().isPresent());
+            assertThat(assertContext.getText("algorithmName assertion error:"), actual.getShardingAlgorithmName().get(), is(expected.getAlgorithmName()));
         } else {
-            assertFalse(assertContext.getText("Actual algorithmName should not exist."), actual.getAlgorithmName().isPresent());
+            assertFalse(assertContext.getText("Actual algorithmName should not exist."), actual.getShardingAlgorithmName().isPresent());
         }
     }
 }
