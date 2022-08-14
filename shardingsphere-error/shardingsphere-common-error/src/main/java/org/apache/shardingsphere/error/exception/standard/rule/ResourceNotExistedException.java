@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.error.exception.standard.rule;
 
-import org.apache.shardingsphere.error.exception.standard.SQLStandardException;
+import org.apache.shardingsphere.error.exception.standard.ShardingSphereSQLException;
 
 /**
  * Resource does not exist exception.
  */
-public final class ResourceNotExistedException extends SQLStandardException {
+public final class ResourceNotExistedException extends ShardingSphereSQLException {
     
     private static final long serialVersionUID = 4146100333670404924L;
 }

@@ -19,14 +19,14 @@ package org.apache.shardingsphere.error.exception.standard.lock;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.error.exception.standard.SQLStandardException;
+import org.apache.shardingsphere.error.exception.standard.ShardingSphereSQLException;
 
 /**
  * Table lock wait timeout exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class TableLockWaitTimeoutException extends SQLStandardException {
+public final class TableLockWaitTimeoutException extends ShardingSphereSQLException {
     
     private static final long serialVersionUID = 2599713085782288003L;
     
