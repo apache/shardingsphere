@@ -15,30 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
+package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.TaskConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemIncrementalTasksProgress;
-import org.apache.shardingsphere.data.pipeline.core.api.RuleAlteredJobAPI;
-import org.apache.shardingsphere.data.pipeline.core.api.RuleAlteredJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineIgnoredException;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.DefaultPipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.core.prepare.InventoryTaskSplitter;
+import org.apache.shardingsphere.data.pipeline.core.prepare.PipelineJobPreparerUtils;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetSchemasParameter;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
-import org.apache.shardingsphere.data.pipeline.core.util.PipelineJobPreparerUtils;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.prepare.InventoryTaskSplitter;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
@@ -50,19 +48,19 @@ import java.sql.SQLException;
 import java.util.Collections;
 
 /**
- * Rule altered job preparer.
+ * Migration job preparer.
  */
 @Slf4j
-public final class RuleAlteredJobPreparer {
+public final class MigrationJobPreparer {
     
-    private static final RuleAlteredJobAPI JOB_API = RuleAlteredJobAPIFactory.getInstance();
+    private static final MigrationJobAPI JOB_API = MigrationJobAPIFactory.getInstance();
     
     /**
      * Do prepare work for scaling job.
      *
      * @param jobItemContext job item context
      */
-    public void prepare(final RuleAlteredJobContext jobItemContext) {
+    public void prepare(final MigrationJobItemContext jobItemContext) {
         PipelineJobPreparerUtils.checkSourceDataSource(jobItemContext.getJobConfig().getSourceDatabaseType(), Collections.singleton(jobItemContext.getSourceDataSource()));
         if (jobItemContext.isStopping()) {
             throw new PipelineIgnoredException("Job stopping, jobId=" + jobItemContext.getJobId());
@@ -86,8 +84,8 @@ public final class RuleAlteredJobPreparer {
         }
     }
     
-    private void prepareAndCheckTargetWithLock(final RuleAlteredJobContext jobItemContext) {
-        RuleAlteredJobConfiguration jobConfig = jobItemContext.getJobConfig();
+    private void prepareAndCheckTargetWithLock(final MigrationJobItemContext jobItemContext) {
+        MigrationJobConfiguration jobConfig = jobItemContext.getJobConfig();
         String lockName = "prepare-" + jobConfig.getJobId();
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
         LockDefinition lockDefinition = new ExclusiveLockDefinition(lockName);
@@ -115,7 +113,7 @@ public final class RuleAlteredJobPreparer {
         }
     }
     
-    private void prepareAndCheckTarget(final RuleAlteredJobContext jobItemContext) {
+    private void prepareAndCheckTarget(final MigrationJobItemContext jobItemContext) {
         prepareTarget(jobItemContext);
         InventoryIncrementalJobItemProgress initProgress = jobItemContext.getInitProgress();
         if (null == initProgress || initProgress.getStatus() == JobStatus.PREPARING_FAILURE) {
@@ -125,8 +123,8 @@ public final class RuleAlteredJobPreparer {
         }
     }
     
-    private void prepareTarget(final RuleAlteredJobContext jobItemContext) {
-        RuleAlteredJobConfiguration jobConfig = jobItemContext.getJobConfig();
+    private void prepareTarget(final MigrationJobItemContext jobItemContext) {
+        MigrationJobConfiguration jobConfig = jobItemContext.getJobConfig();
         TableNameSchemaNameMapping tableNameSchemaNameMapping = jobItemContext.getTaskConfig().getDumperConfig().getTableNameSchemaNameMapping();
         String targetDatabaseType = jobConfig.getTargetDatabaseType();
         if (isSourceAndTargetSchemaAvailable(jobConfig)) {
@@ -141,7 +139,7 @@ public final class RuleAlteredJobPreparer {
         PipelineJobPreparerUtils.prepareTargetTables(targetDatabaseType, prepareTargetTablesParameter);
     }
     
-    private boolean isSourceAndTargetSchemaAvailable(final RuleAlteredJobConfiguration jobConfig) {
+    private boolean isSourceAndTargetSchemaAvailable(final MigrationJobConfiguration jobConfig) {
         DatabaseType sourceDatabaseType = DatabaseTypeFactory.getInstance(jobConfig.getSourceDatabaseType());
         DatabaseType targetDatabaseType = DatabaseTypeFactory.getInstance(jobConfig.getTargetDatabaseType());
         if (!sourceDatabaseType.isSchemaAvailable() || !targetDatabaseType.isSchemaAvailable()) {
@@ -151,13 +149,13 @@ public final class RuleAlteredJobPreparer {
         return true;
     }
     
-    private void initInventoryTasks(final RuleAlteredJobContext jobItemContext) {
+    private void initInventoryTasks(final MigrationJobItemContext jobItemContext) {
         InventoryTaskSplitter inventoryTaskSplitter = new InventoryTaskSplitter(jobItemContext.getSourceMetaDataLoader(), jobItemContext.getDataSourceManager(),
                 jobItemContext.getJobProcessContext().getImporterExecuteEngine(), jobItemContext.getSourceDataSource(), jobItemContext.getTaskConfig(), jobItemContext.getInitProgress());
         jobItemContext.getInventoryTasks().addAll(inventoryTaskSplitter.splitInventoryData(jobItemContext));
     }
     
-    private void initIncrementalTasks(final RuleAlteredJobContext jobItemContext) throws SQLException {
+    private void initIncrementalTasks(final MigrationJobItemContext jobItemContext) throws SQLException {
         PipelineChannelCreator pipelineChannelCreator = jobItemContext.getJobProcessContext().getPipelineChannelCreator();
         ExecuteEngine incrementalDumperExecuteEngine = jobItemContext.getJobProcessContext().getIncrementalDumperExecuteEngine();
         TaskConfiguration taskConfig = jobItemContext.getTaskConfig();
@@ -176,7 +174,7 @@ public final class RuleAlteredJobPreparer {
      *
      * @param jobConfig job configuration
      */
-    public void cleanup(final RuleAlteredJobConfiguration jobConfig) {
+    public void cleanup(final MigrationJobConfiguration jobConfig) {
         try {
             PipelineJobPreparerUtils.destroyPosition(jobConfig.getSource());
         } catch (final SQLException ex) {

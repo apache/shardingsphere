@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.rulealtered;
 
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.YamlRuleAlteredJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.TaskConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlMigrationJobConfiguration;
 import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
 
@@ -33,7 +33,7 @@ public interface RuleAlteredJobConfigurationPreparer extends RequiredSPI {
      *
      * @param yamlJobConfig YAML job configuration
      */
-    void extendJobConfiguration(YamlRuleAlteredJobConfiguration yamlJobConfig);
+    void extendJobConfiguration(YamlMigrationJobConfiguration yamlJobConfig);
     
     /**
      * Create task configuration, used by underlying scheduler.
@@ -43,5 +43,5 @@ public interface RuleAlteredJobConfigurationPreparer extends RequiredSPI {
      * @param pipelineProcessConfig pipeline process configuration
      * @return task configuration
      */
-    TaskConfiguration createTaskConfiguration(RuleAlteredJobConfiguration jobConfig, int jobShardingItem, PipelineProcessConfiguration pipelineProcessConfig);
+    TaskConfiguration createTaskConfiguration(MigrationJobConfiguration jobConfig, int jobShardingItem, PipelineProcessConfiguration pipelineProcessConfig);
 }

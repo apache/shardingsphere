@@ -15,19 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core;
+package org.apache.shardingsphere.data.pipeline.api.config;
 
-import org.apache.shardingsphere.data.pipeline.core.api.RuleAlteredJobAPIFactory;
-import org.apache.shardingsphere.data.pipeline.core.fixture.RuleAlteredJobAPIFixture;
-import org.junit.Test;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-
-public final class RuleAlteredJobAPIFactoryTest {
+/**
+ * Task configuration.
+ */
+@Getter
+@RequiredArgsConstructor
+@ToString
+public final class TaskConfiguration {
     
-    @Test
-    public void assertGetInstance() {
-        assertThat(RuleAlteredJobAPIFactory.getInstance(), instanceOf(RuleAlteredJobAPIFixture.class));
-    }
+    private final DumperConfiguration dumperConfig;
+    
+    private final ImporterConfiguration importerConfig;
 }

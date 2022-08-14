@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
+package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,8 +23,8 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.TaskConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
@@ -33,17 +33,18 @@ import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncremental
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Rule altered job item context.
+ * Migration job item context.
  */
 @Getter
 @Setter
 @Slf4j
-public final class RuleAlteredJobContext implements InventoryIncrementalJobItemContext {
+public final class MigrationJobItemContext implements InventoryIncrementalJobItemContext {
     
     private final String jobId;
     
@@ -61,9 +62,9 @@ public final class RuleAlteredJobContext implements InventoryIncrementalJobItemC
     
     private final Collection<IncrementalTask> incrementalTasks = new LinkedList<>();
     
-    private final RuleAlteredJobConfiguration jobConfig;
+    private final MigrationJobConfiguration jobConfig;
     
-    private final RuleAlteredContext jobProcessContext;
+    private final MigrationContext jobProcessContext;
     
     private final PipelineDataSourceManager dataSourceManager;
     
@@ -83,8 +84,9 @@ public final class RuleAlteredJobContext implements InventoryIncrementalJobItemC
         }
     };
     
-    public RuleAlteredJobContext(final RuleAlteredJobConfiguration jobConfig, final int jobShardingItem, final InventoryIncrementalJobItemProgress initProgress,
-                                 final PipelineDataSourceManager dataSourceManager) {
+    public MigrationJobItemContext(final MigrationJobConfiguration jobConfig, final int jobShardingItem, final InventoryIncrementalJobItemProgress initProgress,
+                                   final PipelineDataSourceManager dataSourceManager) {
+        // TODO refactor RuleAlteredJobWorker
         jobProcessContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
         this.jobConfig = jobConfig;
         jobId = jobConfig.getJobId();

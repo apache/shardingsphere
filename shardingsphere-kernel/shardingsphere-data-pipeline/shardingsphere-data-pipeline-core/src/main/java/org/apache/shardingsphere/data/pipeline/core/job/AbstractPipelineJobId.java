@@ -15,8 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
+package org.apache.shardingsphere.data.pipeline.core.job;
 
-public final class RuleAlteredJobPreparerTest {
-    // TODO simple unit test can't cover prepare() method, it's a combination method
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
+
+/**
+ * Abstract pipeline job id.
+ */
+@Getter
+@Setter
+@ToString
+public abstract class AbstractPipelineJobId implements PipelineJobId {
+    
+    @NonNull
+    private String typeCode;
+    
+    @NonNull
+    private String formatVersion;
+    
+    @NonNull
+    private String databaseName;
 }

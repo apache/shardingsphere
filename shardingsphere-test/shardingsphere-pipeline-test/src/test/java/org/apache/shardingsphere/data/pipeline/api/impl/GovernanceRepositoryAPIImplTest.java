@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.api.impl;
 
+import org.apache.shardingsphere.data.pipeline.api.config.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
@@ -33,7 +33,7 @@ import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobItemContext;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.junit.BeforeClass;
@@ -67,7 +67,7 @@ public final class GovernanceRepositoryAPIImplTest {
     
     @Test
     public void assertPersistJobProgress() {
-        RuleAlteredJobContext jobItemContext = mockJobItemContext();
+        MigrationJobItemContext jobItemContext = mockJobItemContext();
         governanceRepositoryAPI.persistJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), "testValue");
         String actual = governanceRepositoryAPI.getJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem());
         assertThat(actual, is("testValue"));
@@ -75,7 +75,7 @@ public final class GovernanceRepositoryAPIImplTest {
     
     @Test
     public void assertPersistJobCheckResult() {
-        RuleAlteredJobContext jobItemContext = mockJobItemContext();
+        MigrationJobItemContext jobItemContext = mockJobItemContext();
         governanceRepositoryAPI.persistJobCheckResult(jobItemContext.getJobId(), true);
         Optional<Boolean> checkResult = governanceRepositoryAPI.getJobCheckResult(jobItemContext.getJobId());
         assertTrue(checkResult.isPresent() && checkResult.get());
@@ -118,15 +118,15 @@ public final class GovernanceRepositoryAPIImplTest {
     
     @Test
     public void assertGetShardingItems() {
-        RuleAlteredJobContext jobItemContext = mockJobItemContext();
+        MigrationJobItemContext jobItemContext = mockJobItemContext();
         governanceRepositoryAPI.persistJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), "testValue");
         List<Integer> shardingItems = governanceRepositoryAPI.getShardingItems(jobItemContext.getJobId());
         assertThat(shardingItems.size(), is(1));
         assertThat(shardingItems.get(0), is(jobItemContext.getShardingItem()));
     }
     
-    private RuleAlteredJobContext mockJobItemContext() {
-        RuleAlteredJobContext result = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration(),
+    private MigrationJobItemContext mockJobItemContext() {
+        MigrationJobItemContext result = new MigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration(),
                 0, new InventoryIncrementalJobItemProgress(), new DefaultPipelineDataSourceManager());
         TaskConfiguration taskConfig = result.getTaskConfig();
         result.getInventoryTasks().add(mockInventoryTask(taskConfig));

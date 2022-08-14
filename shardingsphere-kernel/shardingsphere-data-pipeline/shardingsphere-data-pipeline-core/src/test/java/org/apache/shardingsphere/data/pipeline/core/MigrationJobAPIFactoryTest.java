@@ -15,27 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.job;
+package org.apache.shardingsphere.data.pipeline.core;
 
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
-import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.core.fixture.MigrationJobAPIFixture;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPIFactory;
+import org.junit.Test;
 
-/**
- * Abstract pipeline job id.
- */
-@Getter
-@Setter
-@ToString
-public abstract class AbstractPipelineJobId implements PipelineJobId {
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
+
+public final class MigrationJobAPIFactoryTest {
     
-    @NonNull
-    private String typeCode;
-    
-    @NonNull
-    private String formatVersion;
-    
-    @NonNull
-    private String databaseName;
+    @Test
+    public void assertGetInstance() {
+        assertThat(MigrationJobAPIFactory.getInstance(), instanceOf(MigrationJobAPIFixture.class));
+    }
 }

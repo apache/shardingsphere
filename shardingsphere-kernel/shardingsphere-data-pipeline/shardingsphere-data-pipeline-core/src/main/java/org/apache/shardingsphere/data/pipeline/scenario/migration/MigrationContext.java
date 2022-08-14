@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
+package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -31,11 +31,11 @@ import org.apache.shardingsphere.infra.config.rule.rulealtered.OnRuleAlteredActi
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.rulealtered.YamlOnRuleAlteredActionConfigurationSwapper;
 
 /**
- * Rule altered context.
+ * Migration context.
  */
 @Getter
 @Slf4j
-public final class RuleAlteredContext extends AbstractPipelineProcessContext {
+public final class MigrationContext extends AbstractPipelineProcessContext {
     
     private static final YamlOnRuleAlteredActionConfigurationSwapper SWAPPER = new YamlOnRuleAlteredActionConfigurationSwapper();
     
@@ -44,7 +44,7 @@ public final class RuleAlteredContext extends AbstractPipelineProcessContext {
     private final DataConsistencyCalculateAlgorithm dataConsistencyCalculateAlgorithm;
     
     @SuppressWarnings("unchecked")
-    public RuleAlteredContext(final String jobId, final OnRuleAlteredActionConfiguration actionConfig) {
+    public MigrationContext(final String jobId, final OnRuleAlteredActionConfiguration actionConfig) {
         super(jobId, new PipelineProcessConfiguration(actionConfig.getInput(), actionConfig.getOutput(), actionConfig.getStreamChannel()));
         AlgorithmConfiguration completionDetector = actionConfig.getCompletionDetector();
         completionDetectAlgorithm = null != completionDetector ? JobCompletionDetectAlgorithmFactory.newInstance(completionDetector) : null;

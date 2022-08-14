@@ -15,26 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.api;
+package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJobId;
 
 /**
- * Rule altered job API factory.
+ * Migration job id.
  */
-public final class RuleAlteredJobAPIFactory {
+@Getter
+@Setter
+@ToString(callSuper = true)
+public final class MigrationJobId extends AbstractPipelineJobId {
     
-    static {
-        ShardingSphereServiceLoader.register(RuleAlteredJobAPI.class);
-    }
+    public static final String CURRENT_VERSION = "01";
     
-    /**
-     * Get instance of rule altered job API.
-     *
-     * @return got instance
-     */
-    public static RuleAlteredJobAPI getInstance() {
-        return RequiredSPIRegistry.getRegisteredService(RuleAlteredJobAPI.class);
-    }
+    @NonNull
+    private Integer currentMetadataVersion;
+    
+    @NonNull
+    private Integer newMetadataVersion;
 }

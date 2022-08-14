@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.job;
 
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
-import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobIdUtils;
-import org.apache.shardingsphere.data.pipeline.api.job.RuleAlteredJobId;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobId;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -29,9 +28,9 @@ public final class PipelineJobIdUtilsTest {
     
     @Test
     public void assertCodec() {
-        RuleAlteredJobId pipelineJobId = new RuleAlteredJobId();
+        MigrationJobId pipelineJobId = new MigrationJobId();
         pipelineJobId.setTypeCode(JobType.MIGRATION.getTypeCode());
-        pipelineJobId.setFormatVersion(RuleAlteredJobId.CURRENT_VERSION);
+        pipelineJobId.setFormatVersion(MigrationJobId.CURRENT_VERSION);
         pipelineJobId.setDatabaseName("sharding_db");
         pipelineJobId.setCurrentMetadataVersion(0);
         pipelineJobId.setNewMetadataVersion(1);

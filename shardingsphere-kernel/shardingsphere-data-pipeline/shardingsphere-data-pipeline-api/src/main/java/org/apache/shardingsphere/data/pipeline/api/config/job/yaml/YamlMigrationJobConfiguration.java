@@ -15,25 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml;
+package org.apache.shardingsphere.data.pipeline.api.config.job.yaml;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlPipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * Rule altered job configuration for YAML.
+ * Migration job configuration for YAML.
  */
 @Getter
 @Setter
 @Slf4j
-public final class YamlRuleAlteredJobConfiguration implements YamlPipelineJobConfiguration {
+public final class YamlMigrationJobConfiguration implements YamlPipelineJobConfiguration {
     
     private String jobId;
     
@@ -106,7 +105,7 @@ public final class YamlRuleAlteredJobConfiguration implements YamlPipelineJobCon
     
     @Override
     public String toString() {
-        return "YamlRuleAlteredJobConfiguration{"
+        return "YamlMigrationJobConfiguration{"
                 + "jobId='" + jobId + '\'' + ", databaseName='" + databaseName + '\''
                 + ", activeVersion=" + activeVersion + ", newVersion=" + newVersion
                 + ", sourceDatabaseType='" + sourceDatabaseType + '\'' + ", targetDatabaseType='" + targetDatabaseType + '\''

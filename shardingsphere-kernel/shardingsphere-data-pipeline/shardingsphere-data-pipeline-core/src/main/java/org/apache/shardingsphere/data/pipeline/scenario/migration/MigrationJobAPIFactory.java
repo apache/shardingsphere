@@ -15,22 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config.rulealtered;
+package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 
 /**
- * Task configuration.
+ * Migration job API factory.
  */
-@Getter
-@RequiredArgsConstructor
-@ToString
-public final class TaskConfiguration {
+public final class MigrationJobAPIFactory {
     
-    private final DumperConfiguration dumperConfig;
+    static {
+        ShardingSphereServiceLoader.register(MigrationJobAPI.class);
+    }
     
-    private final ImporterConfiguration importerConfig;
+    /**
+     * Get instance of migration job API.
+     *
+     * @return got instance
+     */
+    public static MigrationJobAPI getInstance() {
+        return RequiredSPIRegistry.getRegisteredService(MigrationJobAPI.class);
+    }
 }

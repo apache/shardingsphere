@@ -15,25 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.api;
+package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
 import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
 
 import java.util.Map;
 
 /**
- * Rule altered job API.
+ * Migration job API.
  */
 @SingletonSPI
-public interface RuleAlteredJobAPI extends PipelineJobAPI, MigrationJobPublicAPI, RequiredSPI {
+public interface MigrationJobAPI extends PipelineJobAPI, MigrationJobPublicAPI, RequiredSPI {
     
     @Override
-    RuleAlteredJobConfiguration getJobConfiguration(String jobId);
+    MigrationJobConfiguration getJobConfiguration(String jobId);
     
     /**
      * Get job progress.
@@ -41,7 +42,7 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, MigrationJobPublicAPI
      * @param jobConfig job configuration
      * @return each sharding item progress
      */
-    Map<Integer, InventoryIncrementalJobItemProgress> getJobProgress(RuleAlteredJobConfiguration jobConfig);
+    Map<Integer, InventoryIncrementalJobItemProgress> getJobProgress(MigrationJobConfiguration jobConfig);
     
     @Override
     InventoryIncrementalJobItemProgress getJobItemProgress(String jobId, int shardingItem);
@@ -51,14 +52,14 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, MigrationJobPublicAPI
      *
      * @param jobConfig job configuration
      */
-    void stopClusterWriteDB(RuleAlteredJobConfiguration jobConfig);
+    void stopClusterWriteDB(MigrationJobConfiguration jobConfig);
     
     /**
      * Restore cluster writing.
      *
      * @param jobConfig job configuration
      */
-    void restoreClusterWriteDB(RuleAlteredJobConfiguration jobConfig);
+    void restoreClusterWriteDB(MigrationJobConfiguration jobConfig);
     
     /**
      * Is data consistency check needed.
@@ -66,7 +67,7 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, MigrationJobPublicAPI
      * @param jobConfig job configuration
      * @return data consistency check needed or not
      */
-    boolean isDataConsistencyCheckNeeded(RuleAlteredJobConfiguration jobConfig);
+    boolean isDataConsistencyCheckNeeded(MigrationJobConfiguration jobConfig);
     
     /**
      * Do data consistency check.
@@ -74,7 +75,7 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, MigrationJobPublicAPI
      * @param jobConfig job configuration
      * @return each logic table check result
      */
-    Map<String, DataConsistencyCheckResult> dataConsistencyCheck(RuleAlteredJobConfiguration jobConfig);
+    Map<String, DataConsistencyCheckResult> dataConsistencyCheck(MigrationJobConfiguration jobConfig);
     
     /**
      * Aggregate data consistency check results.
@@ -90,5 +91,5 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, MigrationJobPublicAPI
      *
      * @param jobConfig job configuration
      */
-    void switchClusterConfiguration(RuleAlteredJobConfiguration jobConfig);
+    void switchClusterConfiguration(MigrationJobConfiguration jobConfig);
 }
