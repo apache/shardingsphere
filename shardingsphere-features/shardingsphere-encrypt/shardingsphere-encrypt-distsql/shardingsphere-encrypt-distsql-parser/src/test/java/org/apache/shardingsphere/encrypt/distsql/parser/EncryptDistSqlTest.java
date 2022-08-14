@@ -49,9 +49,8 @@ public final class EncryptDistSqlTest {
         CreateEncryptRuleStatement createEncryptRuleStatement = (CreateEncryptRuleStatement) getEncryptDistSQLStatement(sql);
         assertThat(createEncryptRuleStatement.getRules().size(), is(1));
         assertEncryptRule(createEncryptRuleStatement.getRules().iterator().next());
-
     }
-
+    
     @Test
     public void assertAlterEncryptRule() {
         String sql = "ALTER ENCRYPT RULE t_encrypt (COLUMNS("
@@ -61,7 +60,7 @@ public final class EncryptDistSqlTest {
         assertThat(alterEncryptRule.getRules().size(), is(1));
         assertEncryptRule(alterEncryptRule.getRules().iterator().next());
     }
-
+    
     private void assertEncryptRule(final EncryptRuleSegment encryptRuleSegment) {
         assertThat(encryptRuleSegment.getTableName(), is("t_encrypt"));
         assertThat(encryptRuleSegment.getColumns().size(), is(2));
@@ -82,7 +81,7 @@ public final class EncryptDistSqlTest {
         assertThat(orderEncryptColumn.getEncryptor().getName(), is("MD5"));
         assertThat(orderEncryptColumn.getEncryptor().getProps().size(), is(0));
     }
-
+    
     @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("rawtypes")
     private DistSQLStatement getEncryptDistSQLStatement(final String sql) {

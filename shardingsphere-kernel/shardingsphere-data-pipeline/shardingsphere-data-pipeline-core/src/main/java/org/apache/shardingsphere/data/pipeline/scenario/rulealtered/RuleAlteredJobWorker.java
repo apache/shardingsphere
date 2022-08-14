@@ -66,9 +66,9 @@ import java.util.stream.Collectors;
 @SuppressWarnings("UnstableApiUsage")
 @Slf4j
 public final class RuleAlteredJobWorker {
-
+    
     private static final YamlRuleConfigurationSwapperEngine SWAPPER_ENGINE = new YamlRuleConfigurationSwapperEngine();
-
+    
     /**
      * Is on rule altered action enabled.
      *
@@ -82,7 +82,7 @@ public final class RuleAlteredJobWorker {
         Optional<RuleAlteredDetector> detector = RuleAlteredDetectorFactory.findInstance(ruleConfig);
         return detector.isPresent() && detector.get().getOnRuleAlteredActionConfig(ruleConfig).isPresent();
     }
-
+    
     /**
      * Create rule altered context.
      *
