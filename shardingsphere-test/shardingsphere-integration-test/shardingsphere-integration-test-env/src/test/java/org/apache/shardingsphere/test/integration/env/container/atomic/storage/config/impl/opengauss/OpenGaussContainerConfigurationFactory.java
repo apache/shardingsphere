@@ -28,15 +28,15 @@ import java.util.Map;
  * OpenGauss container configuration factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class OpenGaussSQLContainerConfigurationFactory {
+public final class OpenGaussContainerConfigurationFactory {
     
     /**
      * Create new instance of opengauss container configuration.
      * 
      * @return created instance
      */
-    public static OpenGaussSQLContainerConfiguration newInstance() {
-        return new OpenGaussSQLContainerConfiguration(getCommands(), getContainerEnvs(), getMountedResources());
+    public static OpenGaussContainerConfiguration newInstance() {
+        return new OpenGaussContainerConfiguration(getCommands(), getContainerEnvs(), getMountedResources());
     }
     
     private static String[] getCommands() {

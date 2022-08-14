@@ -28,7 +28,7 @@ import java.util.Map;
  */
 @Getter
 @RequiredArgsConstructor
-public final class OpenGaussSQLContainerConfiguration implements StorageContainerConfiguration {
+public final class OpenGaussContainerConfiguration implements StorageContainerConfiguration {
     
     private final String[] commands;
     

@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.mysql.MySQLContainerConfigurationFactory;
-import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.opengauss.OpenGaussSQLContainerConfigurationFactory;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.opengauss.OpenGaussContainerConfigurationFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.postgresql.PostgreSQLContainerConfigurationFactory;
 
 /**
@@ -44,7 +44,7 @@ public final class StorageContainerConfigurationFactory {
             case "PostgreSQL":
                 return PostgreSQLContainerConfigurationFactory.newInstance();
             case "openGauss":
-                return OpenGaussSQLContainerConfigurationFactory.newInstance();
+                return OpenGaussContainerConfigurationFactory.newInstance();
             default:
                 throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
         }
