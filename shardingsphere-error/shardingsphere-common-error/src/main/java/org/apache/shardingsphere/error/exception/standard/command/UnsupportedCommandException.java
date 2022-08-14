@@ -19,14 +19,14 @@ package org.apache.shardingsphere.error.exception.standard.command;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.error.exception.standard.SQLStandardException;
+import org.apache.shardingsphere.error.exception.standard.ShardingSphereSQLException;
 
 /**
  * Unsupported command exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class UnsupportedCommandException extends SQLStandardException {
+public final class UnsupportedCommandException extends ShardingSphereSQLException {
     
     private static final long serialVersionUID = 8010680371699936338L;
     

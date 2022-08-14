@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.error.exception.standard.connection;
 
-import org.apache.shardingsphere.error.exception.standard.SQLStandardException;
+import org.apache.shardingsphere.error.exception.standard.ShardingSphereSQLException;
 
 /**
  * Circuit break exception.
  */
-public final class CircuitBreakException extends SQLStandardException {
+public final class CircuitBreakException extends ShardingSphereSQLException {
     
     private static final long serialVersionUID = 6339672680026286798L;
 }
