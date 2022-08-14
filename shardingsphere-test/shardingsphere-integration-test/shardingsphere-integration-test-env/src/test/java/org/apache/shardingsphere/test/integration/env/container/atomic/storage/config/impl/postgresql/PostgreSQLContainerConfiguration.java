@@ -15,29 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.opengauss;
+package org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.postgresql;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
-import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 
 import java.util.Map;
 
-public class DefaultOpenGaussContainerConfiguration implements StorageContainerConfiguration {
+/**
+ * PostgreSQL container configuration.
+ */
+@Getter
+@RequiredArgsConstructor
+public final class PostgreSQLContainerConfiguration implements StorageContainerConfiguration {
     
-    @Override
-    public String[] getCommands() {
-        return new String[0];
-    }
+    private final String[] commands;
     
-    @Override
-    public Map<String, String> getEnvs() {
-        return ImmutableMap.<String, String>builder().put("GS_PASSWORD", "Test@123").build();
-    }
+    private final Map<String, String> containerEnvs;
     
-    @Override
-    public Map<String, String> getResourceMappings() {
-        return ImmutableMap.<String, String>builder()
-                .put("/env/postgresql/postgresql.conf", "/usr/local/opengauss/share/postgresql/postgresql.conf.sample")
-                .put("/env/opengauss/pg_hba.conf", "/usr/local/opengauss/share/postgresql/pg_hba.conf.sample").build();
-    }
+    private final Map<String, String> mountedResources;
 }

@@ -15,31 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.framework.container.config.storage.impl.postgresql;
+package org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.mysql;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
-import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.postgresql.DefaultPostgreSQLContainerConfiguration;
 
-import java.util.Collections;
 import java.util.Map;
 
 /**
- * Scaling postgresql container configuration.
+ * MySQL container configuration.
  */
-public final class ScalingPostgreSQLContainerConfiguration implements StorageContainerConfiguration {
+@Getter
+@RequiredArgsConstructor
+public final class MySQLContainerConfiguration implements StorageContainerConfiguration {
     
-    @Override
-    public String[] getCommands() {
-        return new DefaultPostgreSQLContainerConfiguration().getCommands();
-    }
+    private final String[] commands;
     
-    @Override
-    public Map<String, String> getEnvs() {
-        return new DefaultPostgreSQLContainerConfiguration().getEnvs();
-    }
+    private final Map<String, String> containerEnvs;
     
-    @Override
-    public Map<String, String> getResourceMappings() {
-        return Collections.singletonMap("/env/postgresql/postgresql.conf", "/etc/postgresql/postgresql.conf");
-    }
+    private final Map<String, String> mountedResources;
 }

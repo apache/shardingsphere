@@ -25,8 +25,8 @@ import java.util.Map;
 /**
  * Adaptor container configuration.
  */
-@RequiredArgsConstructor
 @Getter
+@RequiredArgsConstructor
 public final class AdaptorContainerConfiguration {
     
     private final String proxyDataSourceName;

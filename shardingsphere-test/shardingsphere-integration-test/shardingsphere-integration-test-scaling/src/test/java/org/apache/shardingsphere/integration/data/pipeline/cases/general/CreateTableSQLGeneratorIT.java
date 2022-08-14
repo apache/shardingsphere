@@ -27,10 +27,10 @@ import org.apache.shardingsphere.integration.data.pipeline.cases.entity.CreateTa
 import org.apache.shardingsphere.integration.data.pipeline.cases.entity.CreateTableSQLGeneratorOutputEntity;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
-import org.apache.shardingsphere.integration.data.pipeline.framework.container.config.storage.ScalingStorageContainerConfigurationFactory;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainerFactory;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.StorageContainerConfigurationFactory;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -81,7 +81,7 @@ public final class CreateTableSQLGeneratorIT {
         rootEntity = JAXB.unmarshal(
                 Objects.requireNonNull(CreateTableSQLGeneratorIT.class.getClassLoader().getResource(parameterized.getScenario())), CreateTableSQLGeneratorAssertionsRootEntity.class);
         storageContainer = (DockerStorageContainer) StorageContainerFactory.newInstance(parameterized.getDatabaseType(), parameterized.getDockerImageName(), "",
-                ScalingStorageContainerConfigurationFactory.newInstance(parameterized.getDatabaseType(), ""));
+                StorageContainerConfigurationFactory.newInstance(parameterized.getDatabaseType()));
         storageContainer.start();
     }
     

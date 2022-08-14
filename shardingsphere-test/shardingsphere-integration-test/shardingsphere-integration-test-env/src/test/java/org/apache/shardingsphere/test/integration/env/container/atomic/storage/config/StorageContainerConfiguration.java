@@ -36,12 +36,12 @@ public interface StorageContainerConfiguration {
      * 
      * @return docker container environments
      */
-    Map<String, String> getEnvs();
+    Map<String, String> getContainerEnvs();
     
     /**
      * get docker container mapping resources.
      * 
      * @return docker container resource mapping
      */
-    Map<String, String> getResourceMappings();
+    Map<String, String> getMountedResources();
 }

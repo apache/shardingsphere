@@ -15,31 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.framework.container.config.storage.impl.mysql;
+package org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.opengauss;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
-import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.mysql.DefaultMySQLContainerConfiguration;
 
-import java.util.Collections;
 import java.util.Map;
 
 /**
- * Scaling mysql container configuration.
+ * OpenGauss container configuration.
  */
-public final class ScalingMySQLContainerConfiguration implements StorageContainerConfiguration {
+@Getter
+@RequiredArgsConstructor
+public final class OpenGaussSQLContainerConfiguration implements StorageContainerConfiguration {
     
-    @Override
-    public String[] getCommands() {
-        return new DefaultMySQLContainerConfiguration().getCommands();
-    }
+    private final String[] commands;
     
-    @Override
-    public Map<String, String> getEnvs() {
-        return new DefaultMySQLContainerConfiguration().getEnvs();
-    }
+    private final Map<String, String> containerEnvs;
     
-    @Override
-    public Map<String, String> getResourceMappings() {
-        return Collections.singletonMap("/env/mysql/my.cnf", "/etc/mysql/my.cnf");
-    }
+    private final Map<String, String> mountedResources;
 }

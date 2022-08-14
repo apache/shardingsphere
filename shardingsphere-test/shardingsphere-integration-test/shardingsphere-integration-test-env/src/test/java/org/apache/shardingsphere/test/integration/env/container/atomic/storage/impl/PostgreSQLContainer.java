@@ -39,8 +39,8 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
     @Override
     protected void configure() {
         setCommands(storageContainerConfiguration.getCommands());
-        addEnvs(storageContainerConfiguration.getEnvs());
-        mapResources(storageContainerConfiguration.getResourceMappings());
+        addEnvs(storageContainerConfiguration.getContainerEnvs());
+        mapResources(storageContainerConfiguration.getMountedResources());
         super.configure();
     }
     
