@@ -17,18 +17,17 @@
 
 package org.apache.shardingsphere.error.exception.standard.command;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.error.exception.standard.ShardingSphereSQLException;
+import org.apache.shardingsphere.error.sqlstate.XOpenSQLState;
 
 /**
  * Unsupported command exception.
  */
-@RequiredArgsConstructor
-@Getter
 public final class UnsupportedCommandException extends ShardingSphereSQLException {
     
     private static final long serialVersionUID = 8010680371699936338L;
     
-    private final String commandType;
+    public UnsupportedCommandException(final String commandType) {
+        super(XOpenSQLState.SYNTAX_ERROR, 1998, "Unsupported command: %s", commandType);
+    }
 }
