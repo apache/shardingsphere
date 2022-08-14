@@ -17,7 +17,10 @@
 
 package org.apache.shardingsphere.error.exception.standard;
 
+import org.apache.shardingsphere.error.sqlstate.SQLState;
 import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+
+import java.sql.SQLException;
 
 /**
  * ShardingSphere SQL exception.
@@ -25,4 +28,26 @@ import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideExcept
 public abstract class ShardingSphereSQLException extends ShardingSphereInsideException {
     
     private static final long serialVersionUID = -8238061892944243621L;
+    
+    private final SQLState sqlState;
+    
+    private final int vendorCode;
+    
+    private final String reason;
+    
+    @SuppressWarnings("ConfusingArgumentToVarargsMethod")
+    public ShardingSphereSQLException(final SQLState sqlState, final int vendorCode, final String reason, final String... messageArguments) {
+        this.sqlState = sqlState;
+        this.vendorCode = vendorCode;
+        this.reason = String.format(reason, messageArguments);
+    }
+    
+    /**
+     * To SQL exception.
+     * 
+     * @return SQL exception
+     */
+    public final SQLException toSQLException() {
+        return new SQLException(reason, sqlState.getValue(), vendorCode);
+    }
 }

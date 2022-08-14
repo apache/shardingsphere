@@ -20,12 +20,7 @@ package org.apache.shardingsphere.error;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.error.exception.dialect.SQLDialectException;
-import org.apache.shardingsphere.error.exception.standard.command.UnsupportedCommandException;
-import org.apache.shardingsphere.error.exception.standard.connection.CircuitBreakException;
-import org.apache.shardingsphere.error.exception.standard.lock.TableLockWaitTimeoutException;
-import org.apache.shardingsphere.error.exception.standard.lock.TableLockedException;
-import org.apache.shardingsphere.error.exception.standard.rule.ResourceNotExistedException;
-import org.apache.shardingsphere.error.exception.standard.rule.RuleNotExistedException;
+import org.apache.shardingsphere.error.exception.standard.ShardingSphereSQLException;
 import org.apache.shardingsphere.error.mapper.SQLDialectExceptionMapperFactory;
 import org.apache.shardingsphere.error.vendor.ShardingSphereVendorError;
 import org.apache.shardingsphere.error.vendor.VendorError;
@@ -34,7 +29,6 @@ import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideExcept
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 
 import java.sql.SQLException;
-import java.util.Optional;
 
 /**
  * SQL exception handler.
@@ -53,34 +47,16 @@ public final class SQLExceptionHandler {
         if (insideException instanceof SQLDialectException) {
             return SQLDialectExceptionMapperFactory.getInstance(databaseType).convert((SQLDialectException) insideException);
         }
-        return convert(insideException).orElseGet(() -> toSQLException(ShardingSphereVendorError.UNKNOWN_EXCEPTION, insideException.getMessage()));
-    }
-    
-    private static Optional<SQLException> convert(final ShardingSphereInsideException insideException) {
-        if (insideException instanceof CircuitBreakException) {
-            return Optional.of(toSQLException(ShardingSphereVendorError.CIRCUIT_BREAK_MODE));
-        }
-        if (insideException instanceof TableLockWaitTimeoutException) {
-            TableLockWaitTimeoutException exception = (TableLockWaitTimeoutException) insideException;
-            return Optional.of(toSQLException(ShardingSphereVendorError.TABLE_LOCK_WAIT_TIMEOUT, exception.getTableName(), exception.getSchemaName(), exception.getTimeoutMilliseconds()));
-        }
-        if (insideException instanceof TableLockedException) {
-            TableLockedException exception = (TableLockedException) insideException;
-            return Optional.of(toSQLException(ShardingSphereVendorError.TABLE_LOCKED, exception.getTableName(), exception.getSchemaName()));
-        }
-        if (insideException instanceof RuleNotExistedException || insideException instanceof ResourceNotExistedException) {
-            return Optional.of(toSQLException(ShardingSphereVendorError.RESOURCE_OR_RULE_NOT_EXIST));
+        if (insideException instanceof ShardingSphereSQLException) {
+            return ((ShardingSphereSQLException) insideException).toSQLException();
         }
         if (insideException instanceof ShardingSphereConfigurationException || insideException instanceof SQLParsingException) {
-            return Optional.of(toSQLException(ShardingSphereVendorError.UNSUPPORTED_SQL, insideException.getMessage()));
+            return toSQLException(ShardingSphereVendorError.UNSUPPORTED_SQL, insideException);
         }
-        if (insideException instanceof UnsupportedCommandException) {
-            return Optional.of(toSQLException(ShardingSphereVendorError.UNSUPPORTED_COMMAND, ((UnsupportedCommandException) insideException).getCommandType()));
-        }
-        return Optional.empty();
+        return toSQLException(ShardingSphereVendorError.UNKNOWN_EXCEPTION, insideException);
     }
     
-    private static SQLException toSQLException(final VendorError vendorError, final Object... messageArguments) {
-        return new SQLException(String.format(vendorError.getReason(), messageArguments), vendorError.getSqlState().getValue(), vendorError.getVendorCode());
+    private static SQLException toSQLException(final VendorError vendorError, final ShardingSphereInsideException insideException) {
+        return new SQLException(String.format(vendorError.getReason(), insideException.getMessage()), vendorError.getSqlState().getValue(), vendorError.getVendorCode());
     }
 }

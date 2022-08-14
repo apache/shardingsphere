@@ -17,22 +17,17 @@
 
 package org.apache.shardingsphere.error.exception.standard.lock;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.error.exception.standard.ShardingSphereSQLException;
+import org.apache.shardingsphere.error.sqlstate.XOpenSQLState;
 
 /**
  * Table lock wait timeout exception.
  */
-@RequiredArgsConstructor
-@Getter
 public final class TableLockWaitTimeoutException extends ShardingSphereSQLException {
     
     private static final long serialVersionUID = 2599713085782288003L;
     
-    private final String schemaName;
-    
-    private final String tableName;
-    
-    private final long timeoutMilliseconds;
+    public TableLockWaitTimeoutException(final String schemaName, final String tableName, final long timeoutMilliseconds) {
+        super(XOpenSQLState.GENERAL_ERROR, 1301, "The table `%s` of schema `%s` lock wait timeout of %s ms exceeded", tableName, schemaName, String.valueOf(timeoutMilliseconds));
+    }
 }

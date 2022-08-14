@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.error.exception.standard.rule;
 
 import org.apache.shardingsphere.error.exception.standard.ShardingSphereSQLException;
+import org.apache.shardingsphere.error.sqlstate.XOpenSQLState;
 
 /**
  * Resource does not exist exception.
@@ -25,4 +26,8 @@ import org.apache.shardingsphere.error.exception.standard.ShardingSphereSQLExcep
 public final class ResourceNotExistedException extends ShardingSphereSQLException {
     
     private static final long serialVersionUID = 4146100333670404924L;
+    
+    public ResourceNotExistedException() {
+        super(XOpenSQLState.SYNTAX_ERROR, 1305, "Data source or rule does not exist");
+    }
 }

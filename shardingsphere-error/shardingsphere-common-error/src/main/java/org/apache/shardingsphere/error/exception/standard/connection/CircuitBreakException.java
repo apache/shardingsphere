@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.error.exception.standard.connection;
 
 import org.apache.shardingsphere.error.exception.standard.ShardingSphereSQLException;
+import org.apache.shardingsphere.error.sqlstate.XOpenSQLState;
 
 /**
  * Circuit break exception.
@@ -25,4 +26,8 @@ import org.apache.shardingsphere.error.exception.standard.ShardingSphereSQLExcep
 public final class CircuitBreakException extends ShardingSphereSQLException {
     
     private static final long serialVersionUID = 6339672680026286798L;
+    
+    public CircuitBreakException() {
+        super(XOpenSQLState.GENERAL_WARNING, 1000, "Circuit break open, the request has been ignored");
+    }
 }
