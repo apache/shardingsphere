@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.rulealtered.spi;
+package org.apache.shardingsphere.data.pipeline.core.listener;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.PipelineJobWorker;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
 
 /**
- * Rule altered context manager lifecycle listener.
+ * Pipeline context manager lifecycle listener.
  */
 @Slf4j
-public final class RuleAlteredContextManagerLifecycleListener implements ContextManagerLifecycleListener {
+public final class PipelineContextManagerLifecycleListener implements ContextManagerLifecycleListener {
     
     @Override
     public void onInitialized(final ModeConfiguration modeConfig, final ContextManager contextManager) {
@@ -42,6 +42,6 @@ public final class RuleAlteredContextManagerLifecycleListener implements Context
         PipelineContext.initModeConfig(modeConfig);
         PipelineContext.initContextManager(contextManager);
         // TODO init worker only if necessary, e.g. 1) rule altered action configured, 2) enabled job exists, 3) stopped job restarted
-        RuleAlteredJobWorker.initWorkerIfNecessary();
+        PipelineJobWorker.initWorkerIfNecessary();
     }
 }

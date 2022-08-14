@@ -35,8 +35,6 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
-import org.apache.shardingsphere.data.pipeline.core.execute.FinishedCheckJobExecutor;
-import org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobExecutor;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationContext;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetector;
@@ -59,7 +57,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -69,13 +66,9 @@ import java.util.stream.Collectors;
 @SuppressWarnings("UnstableApiUsage")
 @Slf4j
 public final class RuleAlteredJobWorker {
-    
-    private static final RuleAlteredJobWorker INSTANCE = new RuleAlteredJobWorker();
-    
+
     private static final YamlRuleConfigurationSwapperEngine SWAPPER_ENGINE = new YamlRuleConfigurationSwapperEngine();
-    
-    private static final AtomicBoolean WORKER_INITIALIZED = new AtomicBoolean(false);
-    
+
     /**
      * Is on rule altered action enabled.
      *
@@ -89,27 +82,7 @@ public final class RuleAlteredJobWorker {
         Optional<RuleAlteredDetector> detector = RuleAlteredDetectorFactory.findInstance(ruleConfig);
         return detector.isPresent() && detector.get().getOnRuleAlteredActionConfig(ruleConfig).isPresent();
     }
-    
-    /**
-     * Initialize job worker if necessary.
-     */
-    public static void initWorkerIfNecessary() {
-        if (WORKER_INITIALIZED.get()) {
-            return;
-        }
-        synchronized (WORKER_INITIALIZED) {
-            if (WORKER_INITIALIZED.get()) {
-                return;
-            }
-            log.info("start worker initialization");
-            PipelineContext.getContextManager().getInstanceContext().getEventBusContext().register(INSTANCE);
-            new FinishedCheckJobExecutor().start();
-            new PipelineJobExecutor().start();
-            WORKER_INITIALIZED.set(true);
-            log.info("worker initialization done");
-        }
-    }
-    
+
     /**
      * Create rule altered context.
      *
