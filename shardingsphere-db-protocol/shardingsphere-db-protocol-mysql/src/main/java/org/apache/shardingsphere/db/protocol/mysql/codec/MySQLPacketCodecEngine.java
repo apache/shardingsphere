@@ -25,7 +25,7 @@ import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-import org.apache.shardingsphere.error.vendor.ShardingSphereVendorError;
+import org.apache.shardingsphere.infra.util.exception.sql.vendor.ShardingSphereVendorError;
 
 import java.nio.charset.Charset;
 import java.util.Iterator;

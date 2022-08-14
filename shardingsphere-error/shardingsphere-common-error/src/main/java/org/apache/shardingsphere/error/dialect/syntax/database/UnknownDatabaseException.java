@@ -15,14 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.exception.dialect.syntax.database;
+package org.apache.shardingsphere.error.dialect.syntax.database;
 
-import org.apache.shardingsphere.error.exception.dialect.SQLDialectException;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.error.dialect.SQLDialectException;
 
 /**
- * No database selected exception.
+ * Unknown database exception.
  */
-public final class NoDatabaseSelectedException extends SQLDialectException {
+@RequiredArgsConstructor
+@Getter
+public final class UnknownDatabaseException extends SQLDialectException {
     
-    private static final long serialVersionUID = 7820981156141678308L;
+    private static final long serialVersionUID = 6442120909016308638L;
+    
+    private final String databaseName;
 }

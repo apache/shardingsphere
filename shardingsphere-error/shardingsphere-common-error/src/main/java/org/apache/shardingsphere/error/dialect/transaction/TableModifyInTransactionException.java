@@ -15,43 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.sqlstate;
+package org.apache.shardingsphere.error.dialect.transaction;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.error.dialect.SQLDialectException;
 
 /**
- * XOpen standard SQL state.
+ * Table modify in transaction exception.
  */
 @RequiredArgsConstructor
 @Getter
-public enum XOpenSQLState implements SQLState {
+public final class TableModifyInTransactionException extends SQLDialectException {
     
-    SUCCESSFUL_COMPLETION("00000"),
+    private static final long serialVersionUID = 5676889868293244575L;
     
-    GENERAL_WARNING("01000"),
-    
-    PRIVILEGE_NOT_GRANTED("01007"),
-    
-    DATA_SOURCE_REJECTED_CONNECTION_ATTEMPT("08004"),
-    
-    FEATURE_NOT_SUPPORTED("0A000"),
-    
-    MISMATCH_INSERT_VALUES_AND_COLUMNS("21S01"),
-    
-    INVALID_AUTHORIZATION_SPECIFICATION("28000"),
-    
-    INVALID_CATALOG_NAME("3D000"),
-    
-    SYNTAX_ERROR("42000"),
-    
-    DUPLICATE("42S01"),
-    
-    NOT_FOUND("42S02"),
-    
-    GENERAL_ERROR("HY000"),
-    
-    INVALID_DATA_TYPE("HY004");
-    
-    private final String value;
+    private final String tableName;
 }

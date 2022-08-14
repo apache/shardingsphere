@@ -15,14 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.exception.dialect.connection;
+package org.apache.shardingsphere.infra.util.exception.sql.vendor;
 
-import org.apache.shardingsphere.error.exception.dialect.SQLDialectException;
+import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.SQLState;
 
 /**
- * Too many connections exception.
+ * Vendor error.
  */
-public final class TooManyConnectionsException extends SQLDialectException {
+public interface VendorError {
     
-    private static final long serialVersionUID = -4397915988239251541L;
+    /**
+     * Get SQL state.
+     * 
+     * @return SQL state
+     */
+    SQLState getSqlState();
+    
+    /**
+     * Get database vendor code.
+     *
+     * @return vendor code
+     */
+    int getVendorCode();
+    
+    /**
+     * Get reason.
+     *
+     * @return reason
+     */
+    String getReason();
 }

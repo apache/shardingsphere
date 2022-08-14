@@ -20,9 +20,9 @@ package org.apache.shardingsphere.error.postgresql.code;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.error.postgresql.sqlstate.PostgreSQLState;
-import org.apache.shardingsphere.error.sqlstate.SQLState;
-import org.apache.shardingsphere.error.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.error.vendor.VendorError;
+import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.SQLState;
+import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.util.exception.sql.vendor.VendorError;
 
 /**
  * PostgreSQL vendor error.

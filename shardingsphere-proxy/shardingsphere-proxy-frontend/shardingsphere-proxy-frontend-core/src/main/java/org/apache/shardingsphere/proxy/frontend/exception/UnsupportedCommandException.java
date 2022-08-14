@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.frontend.exception;
 
-import org.apache.shardingsphere.error.exception.ShardingSphereSQLException;
-import org.apache.shardingsphere.error.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
 
 /**
  * Unsupported command exception.

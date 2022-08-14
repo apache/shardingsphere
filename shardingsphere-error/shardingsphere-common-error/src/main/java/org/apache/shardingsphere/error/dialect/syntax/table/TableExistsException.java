@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.exception.dialect.syntax.table;
+package org.apache.shardingsphere.error.dialect.syntax.table;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.error.exception.dialect.SQLDialectException;
+import org.apache.shardingsphere.error.dialect.SQLDialectException;
 
 /**
  * Table exists exception.

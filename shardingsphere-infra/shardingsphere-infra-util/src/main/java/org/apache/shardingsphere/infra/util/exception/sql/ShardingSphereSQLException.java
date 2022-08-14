@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.exception;
+package org.apache.shardingsphere.infra.util.exception.sql;
 
-import org.apache.shardingsphere.error.sqlstate.SQLState;
+import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.SQLState;
 import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 
 import java.sql.SQLException;

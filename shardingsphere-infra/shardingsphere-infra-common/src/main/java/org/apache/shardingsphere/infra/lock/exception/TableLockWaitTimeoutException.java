@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.exception.dialect.data;
+package org.apache.shardingsphere.infra.lock.exception;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.error.exception.dialect.SQLDialectException;
+import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
 
 /**
- * Insert columns and values mismatched exception.
+ * Table lock wait timeout exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class InsertColumnsAndValuesMismatchedException extends SQLDialectException {
+public final class TableLockWaitTimeoutException extends ShardingSphereSQLException {
     
-    private static final long serialVersionUID = 5676889868213244575L;
+    private static final long serialVersionUID = 2599713085782288003L;
     
-    private final int mismatchedRowNumber;
+    public TableLockWaitTimeoutException(final String schemaName, final String tableName, final long timeoutMilliseconds) {
+        super(XOpenSQLState.GENERAL_ERROR, 1301, "The table `%s` of schema `%s` lock wait timeout of %s ms exceeded", tableName, schemaName, String.valueOf(timeoutMilliseconds));
+    }
 }
