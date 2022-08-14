@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.exception.standard.command;
+package org.apache.shardingsphere.proxy.frontend.exception;
 
-import org.apache.shardingsphere.error.exception.standard.ShardingSphereSQLException;
+import org.apache.shardingsphere.error.exception.ShardingSphereSQLException;
 import org.apache.shardingsphere.error.sqlstate.XOpenSQLState;
 
 /**

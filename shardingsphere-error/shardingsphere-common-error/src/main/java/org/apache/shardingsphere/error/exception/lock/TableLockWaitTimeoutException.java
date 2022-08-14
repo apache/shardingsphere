@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.exception.standard.connection;
+package org.apache.shardingsphere.error.exception.lock;
 
-import org.apache.shardingsphere.error.exception.standard.ShardingSphereSQLException;
+import org.apache.shardingsphere.error.exception.ShardingSphereSQLException;
 import org.apache.shardingsphere.error.sqlstate.XOpenSQLState;
 
 /**
- * Circuit break exception.
+ * Table lock wait timeout exception.
  */
-public final class CircuitBreakException extends ShardingSphereSQLException {
+public final class TableLockWaitTimeoutException extends ShardingSphereSQLException {
     
-    private static final long serialVersionUID = 6339672680026286798L;
+    private static final long serialVersionUID = 2599713085782288003L;
     
-    public CircuitBreakException() {
-        super(XOpenSQLState.GENERAL_WARNING, 1000, "Circuit break open, the request has been ignored");
+    public TableLockWaitTimeoutException(final String schemaName, final String tableName, final long timeoutMilliseconds) {
+        super(XOpenSQLState.GENERAL_ERROR, 1301, "The table `%s` of schema `%s` lock wait timeout of %s ms exceeded", tableName, schemaName, String.valueOf(timeoutMilliseconds));
     }
 }

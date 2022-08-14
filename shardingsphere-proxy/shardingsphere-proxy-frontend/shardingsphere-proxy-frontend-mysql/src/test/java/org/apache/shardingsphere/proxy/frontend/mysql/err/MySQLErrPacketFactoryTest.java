@@ -22,12 +22,12 @@ import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurat
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.error.exception.dialect.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.error.exception.dialect.syntax.database.UnknownDatabaseException;
-import org.apache.shardingsphere.error.exception.standard.connection.CircuitBreakException;
+import org.apache.shardingsphere.proxy.frontend.exception.CircuitBreakException;
 import org.apache.shardingsphere.error.exception.dialect.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.error.exception.dialect.syntax.database.DatabaseDropNotExistsException;
 import org.apache.shardingsphere.error.exception.dialect.transaction.TableModifyInTransactionException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.UnsupportedVariableException;
-import org.apache.shardingsphere.error.exception.standard.command.UnsupportedCommandException;
+import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedCommandException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.error.exception.dialect.syntax.table.NoSuchTableException;
 import org.apache.shardingsphere.error.exception.dialect.syntax.table.TableExistsException;

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.error;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.error.exception.dialect.SQLDialectException;
-import org.apache.shardingsphere.error.exception.standard.ShardingSphereSQLException;
+import org.apache.shardingsphere.error.exception.ShardingSphereSQLException;
 import org.apache.shardingsphere.error.mapper.SQLDialectExceptionMapperFactory;
 import org.apache.shardingsphere.error.vendor.ShardingSphereVendorError;
 import org.apache.shardingsphere.error.vendor.VendorError;
