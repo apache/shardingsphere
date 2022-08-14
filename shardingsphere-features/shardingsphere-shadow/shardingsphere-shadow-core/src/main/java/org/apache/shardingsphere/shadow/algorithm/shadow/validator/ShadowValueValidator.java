@@ -31,7 +31,7 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShadowValueValidator {
     
-    private final static Set<Class<?>> UNSUPPORTED_TYPES = new HashSet<>();
+    private static final Set<Class<?>> UNSUPPORTED_TYPES = new HashSet<>();
     
     static {
         UNSUPPORTED_TYPES.add(Date.class);
