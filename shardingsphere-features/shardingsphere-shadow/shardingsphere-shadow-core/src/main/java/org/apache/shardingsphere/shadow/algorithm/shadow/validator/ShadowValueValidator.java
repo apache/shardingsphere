@@ -31,7 +31,7 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShadowValueValidator {
     
-    private final static Set<Class<?>> UNSUPPORTED_TYPES = new HashSet<>();
+    private static final Set<Class<?>> UNSUPPORTED_TYPES = new HashSet<>();
     
     static {
         UNSUPPORTED_TYPES.add(Date.class);
@@ -45,7 +45,7 @@ public final class ShadowValueValidator {
      * @param column column name
      * @param shadowValue shadow value
      */
-    public static void validate(String table, String column, Comparable<?> shadowValue) {
+    public static void validate(final String table, final String column, final Comparable<?> shadowValue) {
         for (Class<?> each : UNSUPPORTED_TYPES) {
             if (each.isAssignableFrom(shadowValue.getClass())) {
                 throw new ShadowAlgorithmException("Shadow column `%s` of table `%s` does not support `%s` type", column, table, each);
