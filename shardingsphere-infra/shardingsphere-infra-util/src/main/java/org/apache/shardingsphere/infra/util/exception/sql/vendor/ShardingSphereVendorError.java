@@ -29,9 +29,7 @@ import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState
 @Getter
 public enum ShardingSphereVendorError implements VendorError {
     
-    UNKNOWN_EXCEPTION(XOpenSQLState.SYNTAX_ERROR, 1999, "Unknown exception: %s"),
-    
-    UNSUPPORTED_SQL(XOpenSQLState.SYNTAX_ERROR, 1235, "Unsupported SQL: %s");
+    UNKNOWN_EXCEPTION(XOpenSQLState.SYNTAX_ERROR, 1999, "Unknown exception: %s");
     
     private final SQLState sqlState;
     
