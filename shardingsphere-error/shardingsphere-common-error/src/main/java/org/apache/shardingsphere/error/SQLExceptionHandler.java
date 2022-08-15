@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.error.dialect.SQLDialectException;
 import org.apache.shardingsphere.error.mapper.SQLDialectExceptionMapperFactory;
-import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.sql.vendor.ShardingSphereVendorError;
@@ -48,9 +47,6 @@ public final class SQLExceptionHandler {
         }
         if (insideException instanceof ShardingSphereSQLException) {
             return ((ShardingSphereSQLException) insideException).toSQLException();
-        }
-        if (insideException instanceof ShardingSphereConfigurationException) {
-            return toSQLException(ShardingSphereVendorError.UNSUPPORTED_SQL, insideException);
         }
         return toSQLException(ShardingSphereVendorError.UNKNOWN_EXCEPTION, insideException);
     }
