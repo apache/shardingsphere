@@ -23,6 +23,10 @@ Apache ShardingSphere 需要自动感知多样化的存储节点高可用方案�
 
 尽可能的保证 7*24 小时不间断的数据库服务，是 Apache ShardingSphere 高可用模块的主要设计目标。
 
+## 应用场景
+
+在大多数情况下，高可用搭配读写分离功能一起使用。当用户写库或读库关系发生变化时，ShardingSphere 可动态的感知并纠正内部的主从关系，进而保证读流量和写流量的正确路由。同时当从库宕机时，ShardingSphere 也可动态纠正存储节点的状态，保证读流量分发正确。
+
 ## 相关参考
 
 [Java API](/cn/user-manual/shardingsphere-jdbc/java-api/rules/ha)\
