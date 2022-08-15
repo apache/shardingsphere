@@ -155,7 +155,7 @@ public final class MySQLErrPacketFactoryTest {
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(1235));
         assertThat(actual.getSqlState(), is("42000"));
-        assertThat(actual.getErrorMessage(), is("Unsupported SQL: No reason"));
+        assertThat(actual.getErrorMessage(), is("No reason"));
     }
     
     @Test
