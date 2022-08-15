@@ -110,7 +110,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     public DataSource createAccessDataSource(final String dataSourceName) {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
-        result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(getPort()), dataSourceName));
+        result.setJdbcUrl(getJdbcUrl(dataSourceName));
         result.setUsername(getUsername());
         result.setPassword(getUnifiedPassword());
         result.setMaximumPoolSize(4);
@@ -119,15 +119,21 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     }
     
     /**
+     * Get jdbc url.
+     * 
+     * @param dataSourceName datasource name.
+     * @return jdbc url
+     */
+    public final String getJdbcUrl(final String dataSourceName) {
+        return DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(getPort()), dataSourceName);
+    }
+    
+    /**
      * Get username.
      * 
      * @return username
      */
     public final String getUsername() {
-        return getNormalUsername();
-    }
-    
-    protected final String getNormalUsername() {
         return "test_user";
     }
     
