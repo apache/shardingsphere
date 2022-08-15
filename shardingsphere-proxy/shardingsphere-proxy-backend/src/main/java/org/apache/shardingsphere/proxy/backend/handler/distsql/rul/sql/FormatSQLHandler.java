@@ -61,7 +61,7 @@ public final class FormatSQLHandler extends SQLRULBackendHandler<FormatStatement
         try {
             return new SQLParserEngine(databaseType, new CacheOption(1, 1L)).parse(sql, false);
         } catch (final SQLParsingException ex) {
-            throw new SQLParsingException("You have a syntax error in your formatted statement");
+            throw new SQLParsingException();
         }
     }
 }
