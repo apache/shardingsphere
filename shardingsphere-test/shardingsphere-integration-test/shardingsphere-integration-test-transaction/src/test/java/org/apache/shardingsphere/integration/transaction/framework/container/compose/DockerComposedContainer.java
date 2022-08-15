@@ -97,5 +97,4 @@ public final class DockerComposedContainer extends BaseComposedContainer {
     public String getProxyJdbcUrl(final String databaseName) {
         return DataSourceEnvironment.getURL(databaseType, proxyContainer.getHost(), proxyContainer.getFirstMappedPort(), databaseName);
     }
-    
 }
