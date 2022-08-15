@@ -41,6 +41,7 @@ import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.Zookeep
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperPropertyKey;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.KeeperException.NodeExistsException;
 import org.apache.zookeeper.KeeperException.OperationTimeoutException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
@@ -208,7 +209,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            if (ex instanceof KeeperException.NodeExistsException) {
+            if (ex instanceof NodeExistsException) {
                 throw new ClusterPersistRepositoryException(ex);
             }
             CuratorZookeeperExceptionHandler.handleException(ex);
