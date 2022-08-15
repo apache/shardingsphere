@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.integration.env.container.atomic.storage.
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
+import org.apache.shardingsphere.test.integration.env.container.atomic.util.MySQLContainerUtil;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -41,9 +42,8 @@ public final class MySQLContainerConfigurationFactory {
     }
     
     private static String[] getCommands() {
-        // TODO need auto set server-id by generator, now always set server-id to 1
         String[] result = new String[1];
-        result[0] = "--server-id=1";
+        result[0] = "--server-id=" + MySQLContainerUtil.generateServerId();
         return result;
     }
     
