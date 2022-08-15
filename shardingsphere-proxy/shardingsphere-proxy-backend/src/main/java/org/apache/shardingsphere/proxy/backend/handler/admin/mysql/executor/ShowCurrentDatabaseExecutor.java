@@ -36,7 +36,7 @@ import java.util.Collections;
 @Getter
 public final class ShowCurrentDatabaseExecutor implements DatabaseAdminQueryExecutor {
     
-    public static final String FUNCTION_NAME = "DATABASE()";
+    public static final String FUNCTION_NAME = "database()";
     
     private MergedResult mergedResult;
     
