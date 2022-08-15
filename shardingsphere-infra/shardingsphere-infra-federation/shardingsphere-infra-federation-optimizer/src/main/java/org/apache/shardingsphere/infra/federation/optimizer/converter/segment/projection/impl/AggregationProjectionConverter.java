@@ -22,20 +22,15 @@ import com.google.common.base.Splitter;
 import org.apache.calcite.sql.SqlAggFunction;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlIdentifier;
-import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlSelectKeyword;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.SQLSegmentConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -43,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 /**
  * Aggregation projection converter. 
@@ -66,7 +60,7 @@ public final class AggregationProjectionConverter implements SQLSegmentConverter
     }
     
     @Override
-    public Optional<SqlBasicCall> convertToSQLNode(final AggregationProjectionSegment segment) {
+    public Optional<SqlBasicCall> convert(final AggregationProjectionSegment segment) {
         if (null == segment) {
             return Optional.empty();
         }
@@ -85,69 +79,9 @@ public final class AggregationProjectionConverter implements SQLSegmentConverter
                 Collections.singletonList(createParametersSqlNode(parameters)), SqlParserPos.ZERO, functionQuantifier).withExpanded(false));
     }
     
-    @Override
-    public Optional<AggregationProjectionSegment> convertToSQLSegment(final SqlBasicCall sqlBasicCall) {
-        if (null == sqlBasicCall) {
-            return Optional.empty();
-        }
-        if (isAsOperatorAggregationType(sqlBasicCall)) {
-            SqlBasicCall subSqlBasicCall = (SqlBasicCall) sqlBasicCall.getOperandList().get(0);
-            AggregationType aggregationType = AggregationType.valueOf(subSqlBasicCall.getOperator().getName().toUpperCase());
-            String innerExpression = getInnerExpression(subSqlBasicCall);
-            AliasSegment aliasSegment = new AliasSegment(getStartIndex(sqlBasicCall.getOperandList().get(1)), getStopIndex(sqlBasicCall.getOperandList().get(1)),
-                    new IdentifierValue(((SqlIdentifier) sqlBasicCall.getOperandList().get(1)).names.get(0)));
-            if (null != subSqlBasicCall.getFunctionQuantifier() && SqlSelectKeyword.DISTINCT == subSqlBasicCall.getFunctionQuantifier().getValue()) {
-                return Optional.of(getAggregationDistinctProjectionSegment(subSqlBasicCall, aggregationType, aliasSegment));
-            }
-            AggregationProjectionSegment aggregationProjectionSegment = new AggregationProjectionSegment(getStartIndex(subSqlBasicCall), getStopIndex(subSqlBasicCall),
-                    aggregationType, innerExpression);
-            aggregationProjectionSegment.setAlias(aliasSegment);
-            return Optional.of(aggregationProjectionSegment);
-        }
-        AggregationType aggregationType = AggregationType.valueOf(sqlBasicCall.getOperator().getName());
-        if (null != sqlBasicCall.getFunctionQuantifier() && SqlSelectKeyword.DISTINCT == sqlBasicCall.getFunctionQuantifier().getValue()) {
-            return Optional.of(getAggregationDistinctProjectionSegment(sqlBasicCall, aggregationType, null));
-        }
-        String innerExpression = getInnerExpression(sqlBasicCall);
-        return Optional.of(new AggregationProjectionSegment(getStartIndex(sqlBasicCall), getStopIndex(sqlBasicCall), aggregationType, innerExpression));
-    }
-    
-    private AggregationDistinctProjectionSegment getAggregationDistinctProjectionSegment(final SqlBasicCall sqlBasicCall, final AggregationType aggregationType, final AliasSegment aliasSegment) {
-        String innerExpression = getInnerExpression(sqlBasicCall, SqlSelectKeyword.DISTINCT);
-        String distinctParams = sqlBasicCall.getOperandList().stream().map(SqlNode::toString).collect(Collectors.joining(", "));
-        AggregationDistinctProjectionSegment aggregationDistinctProjectionSegment = new AggregationDistinctProjectionSegment(getStartIndex(sqlBasicCall), getStopIndex(sqlBasicCall),
-                aggregationType, innerExpression, distinctParams);
-        aggregationDistinctProjectionSegment.setAlias(aliasSegment);
-        return aggregationDistinctProjectionSegment;
-    }
-    
-    private String getInnerExpression(final SqlBasicCall sqlBasicCall, final SqlSelectKeyword selectKeyword) {
-        if (selectKeyword == null) {
-            return getInnerExpression(sqlBasicCall);
-        }
-        String params = sqlBasicCall.getOperandList().stream().map(SqlNode::toString).collect(Collectors.joining(", "));
-        return QuoteCharacter.PARENTHESES.wrap(selectKeyword + " " + params);
-    }
-    
-    private String getInnerExpression(final SqlBasicCall sqlBasicCall) {
-        String params = sqlBasicCall.getOperandList().stream().map(SqlNode::toString).collect(Collectors.joining(", "));
-        return QuoteCharacter.PARENTHESES.wrap(params);
-    }
-    
     private SqlAggFunction convertOperator(final String operator) {
         Preconditions.checkState(REGISTRY.containsKey(operator), "Unsupported SQL operator: `%s`", operator);
         return REGISTRY.get(operator);
-    }
-    
-    /**
-     * Judge whether sqlBasicCall is as operator aggregation type or not.
-     * @param sqlBasicCall sqlBasicCall 
-     * @return whether sqlBasicCall is as operator aggregation type or not
-     */
-    public static boolean isAsOperatorAggregationType(final SqlBasicCall sqlBasicCall) {
-        return null != sqlBasicCall.getOperator() && SqlKind.AS == sqlBasicCall.getOperator().getKind()
-                && sqlBasicCall.getOperandList().get(0) instanceof SqlBasicCall
-                && AggregationType.isAggregationType(((SqlBasicCall) sqlBasicCall.getOperandList().get(0)).getOperator().getName());
     }
     
     private SqlNode createParametersSqlNode(final List<String> parameters) {
