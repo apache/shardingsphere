@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.prepare.datasource;
 
+import java.util.Map;
+import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
@@ -25,12 +27,15 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepare
 import org.apache.shardingsphere.data.pipeline.core.metadata.generator.PipelineDDLGenerator;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.AbstractDataSourcePreparer;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
 
 /**
  * Data source preparer for MySQL.
@@ -52,11 +57,19 @@ public final class MySQLDataSourcePreparer extends AbstractDataSourcePreparer {
     }
     
     private List<String> getCreateTableSQL(final PrepareTargetTablesParameter parameter) {
-        PipelineDDLGenerator generator = new PipelineDDLGenerator(PipelineContext.getContextManager());
+        PipelineDDLGenerator generator = new PipelineDDLGenerator();
+        DataSource dataSource = parameter.getDataSourceManager().getDataSource(parameter.getDataSourceConfig());
+        ShardingSphereMetaData metaData = PipelineContext.getContextManager().getMetaDataContexts().getMetaData();
+        Map<String, ShardingSphereDatabase> databases = metaData.getDatabases();
+        ShardingSphereDatabase sphereDatabase = databases.get(parameter.getDatabaseName());
+        ShardingSphereSQLParserEngine sqlParserEngine =
+                metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class)
+                        .getSQLParserEngine(sphereDatabase.getProtocolType().getType());
         List<String> result = new LinkedList<>();
         for (JobDataNodeEntry each : parameter.getTablesFirstDataNodes().getEntries()) {
             String schemaName = parameter.getTableNameSchemaNameMapping().getSchemaName(each.getLogicTableName());
-            result.add(generator.generateLogicDDLSQL(new MySQLDatabaseType(), parameter.getDatabaseName(), schemaName, each.getLogicTableName()));
+            result.add(generator.generateLogicDDLSQL(dataSource, parameter.getDatabaseName(), schemaName, each.getLogicTableName(),
+                    getActualTable(sphereDatabase, each.getLogicTableName()), databases, sqlParserEngine));
         }
         return result;
     }
