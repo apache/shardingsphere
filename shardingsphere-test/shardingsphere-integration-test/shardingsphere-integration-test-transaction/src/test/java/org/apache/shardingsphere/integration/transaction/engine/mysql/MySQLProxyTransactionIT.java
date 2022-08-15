@@ -78,5 +78,4 @@ public final class MySQLProxyTransactionIT extends BaseTransactionITCase {
     public void assertTransaction() {
         callTestCases(parameterized);
     }
-    
 }
