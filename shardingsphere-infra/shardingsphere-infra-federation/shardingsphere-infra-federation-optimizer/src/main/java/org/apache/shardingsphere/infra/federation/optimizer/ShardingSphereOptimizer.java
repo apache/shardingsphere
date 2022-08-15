@@ -45,7 +45,7 @@ public final class ShardingSphereOptimizer {
      */
     public RelNode optimize(final SQLStatement sqlStatement) {
         try {
-            SqlNode sqlNode = SQLNodeConverterEngine.convertToSQLNode(sqlStatement);
+            SqlNode sqlNode = SQLNodeConverterEngine.convert(sqlStatement);
             RelNode logicPlan = converter.convertQuery(sqlNode, true, true).rel;
             RelNode bestPlan = optimizeWithRBO(logicPlan, hepPlanner);
             return optimizeWithCBO(bestPlan, converter);

@@ -22,8 +22,6 @@ import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -34,24 +32,11 @@ import java.util.Optional;
 public final class ShorthandProjectionConverter implements SQLSegmentConverter<ShorthandProjectionSegment, SqlIdentifier> {
     
     @Override
-    public Optional<SqlIdentifier> convertToSQLNode(final ShorthandProjectionSegment segment) {
+    public Optional<SqlIdentifier> convert(final ShorthandProjectionSegment segment) {
         if (null == segment) {
             return Optional.empty();
         }
         return segment.getOwner().map(optional -> Optional.of(SqlIdentifier.star(Arrays.asList(optional.getIdentifier().getValue(), ""),
                 SqlParserPos.ZERO, ImmutableList.of(SqlParserPos.ZERO)))).orElseGet(() -> Optional.of(SqlIdentifier.star(SqlParserPos.ZERO)));
-    }
-    
-    @Override
-    public Optional<ShorthandProjectionSegment> convertToSQLSegment(final SqlIdentifier sqlIdentifier) {
-        if (null == sqlIdentifier) {
-            return Optional.empty();
-        }
-        ShorthandProjectionSegment result = new ShorthandProjectionSegment(getStartIndex(sqlIdentifier), getStopIndex(sqlIdentifier));
-        if (sqlIdentifier.names.size() > 1) {
-            SqlIdentifier owner = sqlIdentifier.getComponent(0);
-            result.setOwner(new OwnerSegment(getStartIndex(owner), getStopIndex(owner), new IdentifierValue(sqlIdentifier.names.get(0))));
-        }
-        return Optional.of(result);
     }
 }

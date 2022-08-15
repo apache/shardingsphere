@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.SQ
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.expression.ExpressionConverter;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.from.TableConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 
 import java.util.Optional;
 
@@ -45,26 +44,13 @@ public final class JoinTableConverter implements SQLSegmentConverter<JoinTableSe
     private static final String JOIN_TYPE_FULL = "FULL";
     
     @Override
-    public Optional<SqlJoin> convertToSQLNode(final JoinTableSegment segment) {
-        SqlNode left = new TableConverter().convertToSQLNode(segment.getLeft()).orElseThrow(IllegalStateException::new);
-        SqlNode right = new TableConverter().convertToSQLNode(segment.getRight()).orElseThrow(IllegalStateException::new);
-        Optional<SqlNode> condition = new ExpressionConverter().convertToSQLNode(segment.getCondition());
+    public Optional<SqlJoin> convert(final JoinTableSegment segment) {
+        SqlNode left = new TableConverter().convert(segment.getLeft()).orElseThrow(IllegalStateException::new);
+        SqlNode right = new TableConverter().convert(segment.getRight()).orElseThrow(IllegalStateException::new);
+        Optional<SqlNode> condition = new ExpressionConverter().convert(segment.getCondition());
         SqlLiteral conditionType = condition.isPresent() ? JoinConditionType.ON.symbol(SqlParserPos.ZERO) : JoinConditionType.NONE.symbol(SqlParserPos.ZERO);
         return Optional.of(
                 new SqlJoin(SqlParserPos.ZERO, left, SqlLiteral.createBoolean(false, SqlParserPos.ZERO), convertJoinType(segment.getJoinType()), right, conditionType, condition.orElse(null)));
-    }
-    
-    @Override
-    public Optional<JoinTableSegment> convertToSQLSegment(final SqlJoin sqlJoin) {
-        TableSegment left = new TableConverter().convertToSQLSegment(sqlJoin.getLeft()).orElseThrow(IllegalStateException::new);
-        TableSegment right = new TableConverter().convertToSQLSegment(sqlJoin.getRight()).orElseThrow(IllegalStateException::new);
-        JoinTableSegment result = new JoinTableSegment();
-        result.setStartIndex(getStartIndex(sqlJoin));
-        result.setStartIndex(getStopIndex(sqlJoin));
-        result.setLeft(left);
-        result.setRight(right);
-        new ExpressionConverter().convertToSQLSegment(sqlJoin.getCondition()).ifPresent(result::setCondition);
-        return Optional.of(result);
     }
     
     private SqlLiteral convertJoinType(final String joinType) {
