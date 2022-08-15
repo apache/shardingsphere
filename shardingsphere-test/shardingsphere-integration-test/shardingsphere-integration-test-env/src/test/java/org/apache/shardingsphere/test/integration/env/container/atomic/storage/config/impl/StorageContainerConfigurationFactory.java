@@ -15,45 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.container.config;
+package org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
-import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.mysql.DefaultMySQLContainerConfiguration;
-import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.opengauss.DefaultOpenGaussContainerConfiguration;
-import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.postgresql.DefaultPostgreSQLContainerConfiguration;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.h2.H2ContainerConfigurationFactory;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.mysql.MySQLContainerConfigurationFactory;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.opengauss.OpenGaussContainerConfigurationFactory;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.postgresql.PostgreSQLContainerConfigurationFactory;
 
 /**
- * Suite storage container configuration factory.
+ * Storage container configuration factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SuiteStorageContainerConfigurationFactory {
+public final class StorageContainerConfigurationFactory {
     
     /**
      * Create new instance of storage container configuration.
-     *
+     * 
      * @param databaseType database type
-     * @param scenario scenario
      * @return created instance
      */
-    public static StorageContainerConfiguration newInstance(final DatabaseType databaseType, final String scenario) {
+    public static StorageContainerConfiguration newInstance(final DatabaseType databaseType) {
         switch (databaseType.getType()) {
             case "MySQL":
-                if ("default".equalsIgnoreCase(scenario)) {
-                    return new DefaultMySQLContainerConfiguration();
-                }
-                return new DefaultMySQLContainerConfiguration();
+                return MySQLContainerConfigurationFactory.newInstance();
             case "PostgreSQL":
-                if ("default".equalsIgnoreCase(scenario)) {
-                    return new DefaultPostgreSQLContainerConfiguration();
-                }
-                return new DefaultPostgreSQLContainerConfiguration();
+                return PostgreSQLContainerConfigurationFactory.newInstance();
             case "openGauss":
-                return new DefaultOpenGaussContainerConfiguration();
+                return OpenGaussContainerConfigurationFactory.newInstance();
             case "H2":
-                return null;
+                return H2ContainerConfigurationFactory.newInstance();
             default:
                 throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
         }

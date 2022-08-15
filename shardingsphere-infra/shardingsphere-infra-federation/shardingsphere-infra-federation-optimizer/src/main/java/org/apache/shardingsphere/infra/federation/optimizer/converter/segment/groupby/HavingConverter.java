@@ -32,16 +32,7 @@ public final class HavingConverter implements SQLSegmentConverter<HavingSegment,
     private static final int HAVING_SEGMENT_LENGTH = 7;
     
     @Override
-    public Optional<SqlNode> convertToSQLNode(final HavingSegment segment) {
-        return null == segment ? Optional.empty() : new ExpressionConverter().convertToSQLNode(segment.getExpr());
-    }
-    
-    @Override
-    public Optional<HavingSegment> convertToSQLSegment(final SqlNode sqlNode) {
-        if (null == sqlNode) {
-            return Optional.empty();
-        }
-        // FIXME Now sqlNode position returned by the calcite parser does not contain HAVING and requires manual calculation
-        return new ExpressionConverter().convertToSQLSegment(sqlNode).map(optional -> new HavingSegment(getStartIndex(sqlNode) - HAVING_SEGMENT_LENGTH, getStopIndex(sqlNode), optional));
+    public Optional<SqlNode> convert(final HavingSegment segment) {
+        return null == segment ? Optional.empty() : new ExpressionConverter().convert(segment.getExpr());
     }
 }

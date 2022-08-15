@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.test.integration.container.compose.mode;
 
 import org.apache.shardingsphere.test.integration.container.compose.ComposedContainer;
-import org.apache.shardingsphere.test.integration.container.config.SuiteStorageContainerConfigurationFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.ITContainers;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainerFactory;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.StorageContainerConfigurationFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
 import javax.sql.DataSource;
@@ -46,7 +46,7 @@ public final class StandaloneComposedContainer implements ComposedContainer {
         containers = new ITContainers(scenario);
         // TODO add more version of databases
         storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(parameterizedArray.getDatabaseType(), "", scenario,
-                SuiteStorageContainerConfigurationFactory.newInstance(parameterizedArray.getDatabaseType(), scenario)));
+                StorageContainerConfigurationFactory.newInstance(parameterizedArray.getDatabaseType())));
         adapterContainer = containers.registerContainer(
                 AdapterContainerFactory.newInstance(parameterizedArray.getMode(), parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), storageContainer, scenario, null));
         if (adapterContainer instanceof DockerITContainer) {

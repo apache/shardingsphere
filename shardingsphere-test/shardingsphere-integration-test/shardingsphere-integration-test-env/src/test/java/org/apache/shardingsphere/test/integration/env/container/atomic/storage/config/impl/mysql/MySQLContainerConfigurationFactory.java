@@ -17,32 +17,44 @@
 
 package org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.mysql;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DefaultMySQLContainerConfiguration implements StorageContainerConfiguration {
+/**
+ * MySQL container configuration factory.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class MySQLContainerConfigurationFactory {
     
-    @Override
-    public String[] getCommands() {
-        // TODO need auto set server-id by generator, now always set server-id to 1
-        String[] commands = new String[1];
-        commands[0] = "--server-id=1";
-        return commands;
+    /**
+     * Create new instance of mysql container configuration.
+     * 
+     * @return created instance
+     */
+    public static StorageContainerConfiguration newInstance() {
+        return new StorageContainerConfiguration(getCommands(), getContainerEnvironments(), getMountedResources());
     }
     
-    @Override
-    public Map<String, String> getEnvs() {
-        Map<String, String> result = new HashMap<>();
+    private static String[] getCommands() {
+        // TODO need auto set server-id by generator, now always set server-id to 1
+        String[] result = new String[1];
+        result[0] = "--server-id=1";
+        return result;
+    }
+    
+    private static Map<String, String> getContainerEnvironments() {
+        Map<String, String> result = new HashMap<>(2, 1);
         result.put("LANG", "C.UTF-8");
         result.put("MYSQL_RANDOM_ROOT_PASSWORD", "yes");
         return result;
     }
     
-    @Override
-    public Map<String, String> getResourceMappings() {
+    private static Map<String, String> getMountedResources() {
         return Collections.singletonMap("/env/mysql/my.cnf", "/etc/mysql/my.cnf");
     }
 }

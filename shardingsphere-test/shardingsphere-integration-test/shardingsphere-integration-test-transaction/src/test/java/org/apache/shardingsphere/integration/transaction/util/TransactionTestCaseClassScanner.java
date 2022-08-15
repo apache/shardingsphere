@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.integration.transaction.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
 
@@ -37,7 +39,8 @@ import java.util.jar.JarFile;
 /**
  * Scan the transaction test classes to be tested.
  */
-public class TransactionTestCaseClassScanner {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class TransactionTestCaseClassScanner {
     
     private static final String TEST_CASE_PACKAGE_NAME = "org.apache.shardingsphere.integration.transaction.cases";
     
@@ -130,5 +133,4 @@ public class TransactionTestCaseClassScanner {
             }
         }
     }
-    
 }

@@ -16,7 +16,7 @@ SHOW UNUSED SHARDING ALGORITHMS [FROM databaseName]
     
 SHOW SHARDING AUDITORS [FROM databaseName]
 
-SHOW SHARDING TABLE RULES USED ALGORITHM algorithmName [FROM databaseName]
+SHOW SHARDING TABLE RULES USED ALGORITHM shardingAlgorithmName [FROM databaseName]
 
 SHOW SHARDING KEY GENERATORS [FROM databaseName]
 
@@ -216,7 +216,7 @@ mysql> SHOW SHARDING AUDITORS;
 2 row in set (0.01 sec)
 ```
 
-*SHOW SHARDING TABLE RULES USED ALGORITHM algorithmName*
+*SHOW SHARDING TABLE RULES USED ALGORITHM shardingAlgorithmName*
 ```sql
 mysql> SHOW SHARDING TABLE RULES USED ALGORITHM t_order_inline;
 +-------+---------+
