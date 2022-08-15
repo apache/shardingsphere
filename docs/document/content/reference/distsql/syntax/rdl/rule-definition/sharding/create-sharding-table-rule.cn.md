@@ -71,16 +71,16 @@ algorithmName ::=
 ```sql
 -- 创建分片算法
 CREATE SHARDING ALGORITHM database_inline (
-    TYPE(NAME=inline, PROPERTIES("algorithm-expression"="t_order_${user_id % 2}"))
+    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${user_id % 2}"))
 ), table_inline (
-    TYPE(NAME=inline, PROPERTIES("algorithm-expression"="t_order_${order_id % 2}"))
+    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${order_id % 2}"))
 ); 
 
 -- 指定分片算法创建分片规则
 CREATE SHARDING TABLE RULE t_order (
     DATANODES("ds_${0..1}.t_order_${0..1}"),
-    DATABASE_STRATEGY(TYPE=standard, SHARDING_COLUMN=user_id, SHARDING_ALGORITHM=database_inline),
-    TABLE_STRATEGY(TYPE=standard, SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=table_inline)
+    DATABASE_STRATEGY(TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM=database_inline),
+    TABLE_STRATEGY(TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=table_inline)
 );
 ```
 
@@ -89,20 +89,20 @@ CREATE SHARDING TABLE RULE t_order (
 ```sql
 -- 创建分片算法
 CREATE SHARDING ALGORITHM database_inline (
-    TYPE(NAME=inline, PROPERTIES("algorithm-expression"="t_order_${user_id % 2}"))
+    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${user_id % 2}"))
 ), table_inline (
-    TYPE(NAME=inline, PROPERTIES("algorithm-expression"="t_order_${order_id % 2}"))
+    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${order_id % 2}"))
 ); 
 
 -- 创建默认分库策略
 CREATE DEFAULT SHARDING DATABASE STRATEGY (
-    TYPE = standard, SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=database_inline
+    TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=database_inline
 );
 
 -- 指定分片算法创建分片规则
 CREATE SHARDING TABLE RULE t_order (
     DATANODES("ds_${0..1}.t_order_${0..1}"),
-    TABLE_STRATEGY(TYPE=standard, SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=table_inline)
+    TABLE_STRATEGY(TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=table_inline)
 );
 ```
 
@@ -111,19 +111,19 @@ CREATE SHARDING TABLE RULE t_order (
 ```sql
 -- 创建分片算法
 CREATE SHARDING ALGORITHM database_inline (
-    TYPE(NAME=inline, PROPERTIES("algorithm-expression"="t_order_${user_id % 2}"))
+    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${user_id % 2}"))
 ), table_inline (
-    TYPE(NAME=inline, PROPERTIES("algorithm-expression"="t_order_${order_id % 2}"))
+    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${order_id % 2}"))
 ); 
 
 -- 创建默认分库策略
 CREATE DEFAULT SHARDING DATABASE STRATEGY (
-    TYPE = standard, SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=database_inline
+    TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=database_inline
 );
 
 -- 创建默认分表策略
 CREATE DEFAULT SHARDING TABLE STRATEGY (
-    TYPE = standard, SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=table_inline
+    TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=table_inline
 );
 
 -- 创建分片规则
@@ -137,8 +137,8 @@ CREATE SHARDING TABLE RULE t_order (
 ```sql
 CREATE SHARDING TABLE RULE t_order (
     DATANODES("ds_${0..1}.t_order_${0..1}"),
-    DATABASE_STRATEGY(TYPE=standard, SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME=inline, PROPERTIES("algorithm-expression"="ds_${user_id % 2}")))),
-    TABLE_STRATEGY(TYPE=standard, SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME=inline, PROPERTIES("algorithm-expression"="ds_${order_id % 2}"))))
+    DATABASE_STRATEGY(TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME="inline", PROPERTIES("algorithm-expression"="ds_${user_id % 2}")))),
+    TABLE_STRATEGY(TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME="inline", PROPERTIES("algorithm-expression"="ds_${order_id % 2}"))))
 );
 ```
 
@@ -149,7 +149,7 @@ CREATE SHARDING TABLE RULE t_order (
 ```sql
 CREATE SHARDING TABLE RULE t_order (
     RESOURCES(ds_0, ds_1),
-    SHARDING_COLUMN=order_id, TYPE(NAME=MOD, PROPERTIES("sharding-count"=4))
+    SHARDING_COLUMN=order_id, TYPE(NAME="MOD", PROPERTIES("sharding-count"="4"))
 );
 ```
 

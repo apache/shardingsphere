@@ -56,7 +56,7 @@ public final class ParseDistSQLHandler extends SQLRULBackendHandler<ParseStateme
         try {
             return sqlParserRule.getSQLParserEngine(databaseType).parse(getSqlStatement().getSql(), false);
         } catch (final SQLParsingException ex) {
-            throw new SQLParsingException("You have a syntax error in your parsed statement");
+            throw new SQLParsingException();
         }
     }
 }

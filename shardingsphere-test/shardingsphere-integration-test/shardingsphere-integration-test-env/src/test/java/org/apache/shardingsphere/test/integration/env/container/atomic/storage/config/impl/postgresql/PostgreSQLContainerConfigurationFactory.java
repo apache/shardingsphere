@@ -17,27 +17,39 @@
 
 package org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.postgresql;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
 
 import java.util.Collections;
 import java.util.Map;
 
-public class DefaultPostgreSQLContainerConfiguration implements StorageContainerConfiguration {
+/**
+ * PostgreSQL container configuration factory.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class PostgreSQLContainerConfigurationFactory {
     
-    @Override
-    public String[] getCommands() {
-        String[] commands = new String[1];
-        commands[0] = "-c config_file=/etc/postgresql/postgresql.conf";
-        return commands;
+    /**
+     * Create new instance of postgresql container configuration.
+     * 
+     * @return created instance
+     */
+    public static StorageContainerConfiguration newInstance() {
+        return new StorageContainerConfiguration(getCommands(), getContainerEnvironments(), getMountedResources());
     }
     
-    @Override
-    public Map<String, String> getEnvs() {
+    private static String[] getCommands() {
+        String[] result = new String[1];
+        result[0] = "-c config_file=/etc/postgresql/postgresql.conf";
+        return result;
+    }
+    
+    private static Map<String, String> getContainerEnvironments() {
         return Collections.singletonMap("POSTGRES_PASSWORD", "Test@123");
     }
     
-    @Override
-    public Map<String, String> getResourceMappings() {
+    private static Map<String, String> getMountedResources() {
         return Collections.singletonMap("/env/postgresql/postgresql.conf", "/etc/postgresql/postgresql.conf");
     }
 }

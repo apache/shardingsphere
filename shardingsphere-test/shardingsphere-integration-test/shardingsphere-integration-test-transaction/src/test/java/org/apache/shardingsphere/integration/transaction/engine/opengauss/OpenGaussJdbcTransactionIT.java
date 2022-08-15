@@ -67,5 +67,4 @@ public final class OpenGaussJdbcTransactionIT extends BaseTransactionITCase {
     private void callTestCases() {
         callTestCases(parameterized);
     }
-    
 }

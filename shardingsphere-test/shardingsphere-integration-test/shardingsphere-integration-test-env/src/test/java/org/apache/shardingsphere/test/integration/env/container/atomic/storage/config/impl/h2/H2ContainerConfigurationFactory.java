@@ -15,31 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.framework.container.config.storage.impl.postgresql;
+package org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.h2;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
-import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.postgresql.DefaultPostgreSQLContainerConfiguration;
 
 import java.util.Collections;
-import java.util.Map;
 
 /**
- * Scaling postgresql container configuration.
+ * H2 container configuration factory.
  */
-public final class ScalingPostgreSQLContainerConfiguration implements StorageContainerConfiguration {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class H2ContainerConfigurationFactory {
     
-    @Override
-    public String[] getCommands() {
-        return new DefaultPostgreSQLContainerConfiguration().getCommands();
-    }
-    
-    @Override
-    public Map<String, String> getEnvs() {
-        return new DefaultPostgreSQLContainerConfiguration().getEnvs();
-    }
-    
-    @Override
-    public Map<String, String> getResourceMappings() {
-        return Collections.singletonMap("/env/postgresql/postgresql.conf", "/etc/postgresql/postgresql.conf");
+    /**
+     * Create new instance of h2 container configuration.
+     *
+     * @return created instance
+     */
+    public static StorageContainerConfiguration newInstance() {
+        return new StorageContainerConfiguration(new String[0], Collections.emptyMap(), Collections.emptyMap());
     }
 }
