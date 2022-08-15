@@ -17,20 +17,20 @@
 
 package org.apache.shardingsphere.infra.federation.optimizer.executor;
 
-import org.apache.calcite.linq4j.Enumerable;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.calcite.DataContext;
 
 /**
- * Table scan executor.
+ * Table scan executor context.
  */
-public interface TableScanExecutor {
+@RequiredArgsConstructor
+@Getter
+public final class TranslatableScanNodeExecutorContext implements ScanNodeExecutorContext {
     
-    /**
-     * Execute.
-     *
-     * @param table table meta data
-     * @param scanContext filterable table scan context
-     * @return query results
-     */
-    Enumerable<Object[]> execute(ShardingSphereTable table, ScanNodeExecutorContext scanContext);
+    private final DataContext root;
+    
+    private final String[] filterValues;
+    
+    private final int[] projects;
 }

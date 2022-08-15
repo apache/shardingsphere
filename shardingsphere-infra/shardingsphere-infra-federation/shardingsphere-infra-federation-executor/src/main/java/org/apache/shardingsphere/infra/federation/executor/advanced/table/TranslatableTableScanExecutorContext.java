@@ -15,22 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.optimizer.executor;
+package org.apache.shardingsphere.infra.federation.executor.advanced.table;
 
-import org.apache.calcite.linq4j.Enumerable;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.federation.executor.FederationContext;
 
 /**
- * Table scan executor.
+ * Translatable table scan executor context.
  */
-public interface TableScanExecutor {
+@RequiredArgsConstructor
+@Getter
+public final class TranslatableTableScanExecutorContext {
     
-    /**
-     * Execute.
-     *
-     * @param table table meta data
-     * @param scanContext filterable table scan context
-     * @return query results
-     */
-    Enumerable<Object[]> execute(ShardingSphereTable table, ScanNodeExecutorContext scanContext);
+    private final String databaseName;
+    
+    private final String schemaName;
+    
+    private final ConfigurationProperties props;
+    
+    private final FederationContext federationContext;
 }

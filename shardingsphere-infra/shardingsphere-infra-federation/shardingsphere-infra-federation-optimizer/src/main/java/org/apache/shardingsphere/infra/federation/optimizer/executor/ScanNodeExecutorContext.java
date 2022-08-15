@@ -17,23 +17,5 @@
 
 package org.apache.shardingsphere.infra.federation.optimizer.executor;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.calcite.DataContext;
-import org.apache.calcite.rex.RexNode;
-
-import java.util.List;
-
-/**
- * Table scan executor context.
- */
-@RequiredArgsConstructor
-@Getter
-public final class TableScanExecutorContext {
-    
-    private final DataContext root;
-    
-    private final List<RexNode> filters;
-    
-    private final int[] projects;
+public interface ScanNodeExecutorContext {
 }
