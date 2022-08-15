@@ -50,6 +50,7 @@ public final class ConnectionContext implements AutoCloseable {
     public void close() {
         clearTrafficInstance();
         clearCursorConnectionContext();
+        clearTransactionConnectionContext();
     }
     
     /**
