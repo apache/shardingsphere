@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.engine.impl.AllSQLRouteExecutor;
+import org.apache.shardingsphere.infra.session.ConnectionContext;
 import org.junit.Test;
 
 import java.util.stream.Collectors;
@@ -42,7 +43,7 @@ public final class AllSQLRouteExecutorTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResource().getDataSources().keySet()).thenReturn(Stream.of(name).collect(Collectors.toSet()));
         AllSQLRouteExecutor allSQLRouteExecutor = new AllSQLRouteExecutor();
-        RouteContext actual = allSQLRouteExecutor.route(mock(LogicSQL.class), database);
+        RouteContext actual = allSQLRouteExecutor.route(mock(LogicSQL.class), database, new ConnectionContext());
         assertThat(actual.getRouteUnits().size(), is(1));
         RouteUnit routeUnit = actual.getRouteUnits().iterator().next();
         assertThat(routeUnit.getDataSourceMapper().getLogicName(), is(name));

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.session.ConnectionContext;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 import org.apache.shardingsphere.shadow.route.engine.ShadowRouteEngineFactory;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
@@ -32,14 +33,15 @@ import org.apache.shardingsphere.shadow.rule.ShadowRule;
 public final class ShadowSQLRouter implements SQLRouter<ShadowRule> {
     
     @Override
-    public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereDatabase database, final ShadowRule rule, final ConfigurationProperties props) {
+    public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereDatabase database,
+                                           final ShadowRule rule, final ConfigurationProperties props, final ConnectionContext connectionContext) {
         // TODO
         return new RouteContext();
     }
     
     @Override
-    public void decorateRouteContext(final RouteContext routeContext,
-                                     final LogicSQL logicSQL, final ShardingSphereDatabase database, final ShadowRule rule, final ConfigurationProperties props) {
+    public void decorateRouteContext(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereDatabase database,
+                                     final ShadowRule rule, final ConfigurationProperties props, final ConnectionContext connectionContext) {
         ShadowRouteEngineFactory.newInstance(logicSQL).route(routeContext, rule);
     }
     

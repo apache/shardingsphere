@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.session.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
-import org.apache.shardingsphere.transaction.TransactionHolder;
 
 import java.util.List;
 import java.util.Properties;
@@ -39,12 +39,12 @@ public final class FixedReplicaRandomReadQueryLoadBalanceAlgorithm implements Re
     }
     
     @Override
-    public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
-        if (TransactionHolder.isTransaction()) {
-            if (null == TransactionHolder.getReadWriteSplitRoutedReplica()) {
-                TransactionHolder.setReadWriteSplitRoutedReplica(readDataSourceNames.get(ThreadLocalRandom.current().nextInt(readDataSourceNames.size())));
+    public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames, final TransactionConnectionContext context) {
+        if (context.isInTransaction()) {
+            if (null == context.getReadWriteSplitReplicaRoute()) {
+                context.setReadWriteSplitReplicaRoute(readDataSourceNames.get(ThreadLocalRandom.current().nextInt(readDataSourceNames.size())));
             }
-            return TransactionHolder.getReadWriteSplitRoutedReplica();
+            return context.getReadWriteSplitReplicaRoute();
         }
         return readDataSourceNames.get(ThreadLocalRandom.current().nextInt(readDataSourceNames.size()));
     }
