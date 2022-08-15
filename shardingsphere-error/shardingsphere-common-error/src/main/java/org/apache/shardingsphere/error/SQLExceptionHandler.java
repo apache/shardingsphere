@@ -23,8 +23,7 @@ import org.apache.shardingsphere.error.dialect.SQLDialectException;
 import org.apache.shardingsphere.error.mapper.SQLDialectExceptionMapperFactory;
 import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
-import org.apache.shardingsphere.infra.util.exception.sql.vendor.ShardingSphereVendorError;
-import org.apache.shardingsphere.infra.util.exception.sql.vendor.VendorError;
+import org.apache.shardingsphere.infra.util.exception.sql.UnknownSQLException;
 
 import java.sql.SQLException;
 
@@ -48,10 +47,6 @@ public final class SQLExceptionHandler {
         if (insideException instanceof ShardingSphereSQLException) {
             return ((ShardingSphereSQLException) insideException).toSQLException();
         }
-        return toSQLException(ShardingSphereVendorError.UNKNOWN_EXCEPTION, insideException);
-    }
-    
-    private static SQLException toSQLException(final VendorError vendorError, final ShardingSphereInsideException insideException) {
-        return new SQLException(String.format(vendorError.getReason(), insideException.getMessage()), vendorError.getSqlState().getValue(), vendorError.getVendorCode());
+        return new UnknownSQLException(insideException).toSQLException();
     }
 }

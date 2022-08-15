@@ -25,9 +25,10 @@ import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-import org.apache.shardingsphere.infra.util.exception.sql.vendor.ShardingSphereVendorError;
+import org.apache.shardingsphere.infra.util.exception.sql.UnknownSQLException;
 
 import java.nio.charset.Charset;
+import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -91,7 +92,8 @@ public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine<M
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             out.resetWriterIndex();
-            new MySQLErrPacket(1, ShardingSphereVendorError.UNKNOWN_EXCEPTION, ex.getMessage()).write(payload);
+            SQLException unknownSQLException = new UnknownSQLException(ex).toSQLException();
+            new MySQLErrPacket(1, unknownSQLException.getErrorCode(), unknownSQLException.getSQLState(), unknownSQLException.getMessage()).write(payload);
         } finally {
             updateMessageHeader(out, message.getSequenceId());
         }
