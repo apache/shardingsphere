@@ -90,7 +90,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -470,7 +469,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         }
         if (sqlStatementContext instanceof TableAvailable) {
             ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().ifPresent(databaseName -> {
-                if (!Objects.equals(databaseName, connectionDatabaseName)) {
+                if (!databaseName.equals(connectionDatabaseName)) {
                     throw new ShardingSphereException("JDBC does not support operations across multiple logical databases in transaction.");
                 }
             });
