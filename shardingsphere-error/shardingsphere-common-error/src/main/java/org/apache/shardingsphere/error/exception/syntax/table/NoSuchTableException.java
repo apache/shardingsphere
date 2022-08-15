@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.dialect.data;
+package org.apache.shardingsphere.error.exception.syntax.table;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.error.dialect.SQLDialectException;
+import org.apache.shardingsphere.error.exception.SQLDialectException;
 
 /**
- * Insert columns and values mismatched exception.
+ * No such table exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class InsertColumnsAndValuesMismatchedException extends SQLDialectException {
+public final class NoSuchTableException extends SQLDialectException {
     
-    private static final long serialVersionUID = 5676889868213244575L;
+    private static final long serialVersionUID = 8311953084941769743L;
     
-    private final int mismatchedRowNumber;
+    private final String tableName;
 }

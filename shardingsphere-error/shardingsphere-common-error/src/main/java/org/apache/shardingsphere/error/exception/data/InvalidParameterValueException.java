@@ -15,14 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.dialect.syntax.database;
+package org.apache.shardingsphere.error.exception.data;
 
-import org.apache.shardingsphere.error.dialect.SQLDialectException;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.error.exception.SQLDialectException;
 
 /**
- * No database selected exception.
+ * Invalid parameter value exception.
  */
-public final class NoDatabaseSelectedException extends SQLDialectException {
+@RequiredArgsConstructor
+@Getter
+public final class InvalidParameterValueException extends SQLDialectException {
     
-    private static final long serialVersionUID = 7820981156141678308L;
+    private static final long serialVersionUID = -6561119208409452172L;
+    
+    private final String parameterName;
+    
+    private final String parameterValue;
 }
