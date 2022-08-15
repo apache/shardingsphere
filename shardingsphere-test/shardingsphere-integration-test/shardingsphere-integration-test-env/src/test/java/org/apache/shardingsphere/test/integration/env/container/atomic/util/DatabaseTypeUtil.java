@@ -17,19 +17,22 @@
 
 package org.apache.shardingsphere.test.integration.env.container.atomic.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseTypeUtil {
     
     /**
      * Check MySQL database type.
      *
      * @param databaseType database type
-     * @return true if database type is MySQL, false otherwise
+     * @return true if database type isDatabaseTypeUtil.java MySQL, false otherwise
      */
     public static boolean isMySQL(final DatabaseType databaseType) {
         return databaseType instanceof MySQLDatabaseType;
