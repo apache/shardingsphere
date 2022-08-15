@@ -27,9 +27,9 @@ import lombok.Setter;
 @Setter
 public final class TransactionConnectionContext implements AutoCloseable {
     
-    private boolean inTransaction;
+    private volatile boolean inTransaction;
     
-    private String readWriteSplitReplicaRoute;
+    private volatile String readWriteSplitReplicaRoute;
     
     @Override
     public void close() {
