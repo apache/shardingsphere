@@ -32,7 +32,7 @@ public final class DatabaseTypeUtil {
      * Check MySQL database type.
      *
      * @param databaseType database type
-     * @return true if database type isDatabaseTypeUtil.java MySQL, false otherwise
+     * @return true if database type MySQL, false otherwise
      */
     public static boolean isMySQL(final DatabaseType databaseType) {
         return databaseType instanceof MySQLDatabaseType;
