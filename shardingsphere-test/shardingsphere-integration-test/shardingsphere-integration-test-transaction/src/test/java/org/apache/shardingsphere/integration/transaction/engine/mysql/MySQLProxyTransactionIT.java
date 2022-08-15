@@ -49,7 +49,7 @@ public final class MySQLProxyTransactionIT extends BaseTransactionITCase {
         log.info("Parameterized:{}", parameterized);
     }
     
-    @Parameters(name = "{0}")DatabaseTypeUtil
+    @Parameters(name = "{0}")
     public static Collection<TransactionParameterized> getParameters() {
         return getTransactionParameterizedList(MySQLProxyTransactionIT.class);
     }
