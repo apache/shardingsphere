@@ -133,7 +133,6 @@ if [[ $1 == -a ]] || [[ $1 == -p ]] || [[ $1 == -c ]] ; then
         ?)
           print_usage;;
         esac
-
     done
 
 elif [ $# == 1 ]; then
@@ -158,10 +157,8 @@ fi
 CLASS_PATH=${CONF_PATH}:${CLASS_PATH}
 MAIN_CLASS="${MAIN_CLASS} ${PORT} ${CONF_PATH} ${ADDRESSES}"
 
-
 echo "The classpath is ${CLASS_PATH}"
 echo "main class ${MAIN_CLASS}"
-echo "STDOUT log file: $STDOUT_FILE"
 
 if [ "${IS_DOCKER}" ]; then
   exec $JAVA ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} ${MAIN_CLASS}
@@ -169,43 +166,6 @@ if [ "${IS_DOCKER}" ]; then
 fi
 
 echo -e "Starting the $SERVER_NAME ...\c"
-
-function check_port() {
-  if ! type netstat >/dev/null 2>&1; then
-    return 2
-  fi
-
-  if [ $PORT = -1 ]; then
-    REGEXP_PORT=3307
-  else
-    REGEXP_PORT=$PORT
-  fi
-
-  if [ -n "$ADDRESSES" ]; then
-    REGEXP_ADDRESSES="(0.0.0.0|::|${ADDRESSES//,/|})"
-  else
-    REGEXP_ADDRESSES="(0.0.0.0|::)"
-  fi
-
-  GREP_REGEXP="$REGEXP_ADDRESSES:$REGEXP_PORT\s.*LISTEN"
-  PORT_STATUS=$(netstat -ant |$GREP -E "$GREP_REGEXP")
-  if [ -n "$PORT_STATUS" ]; then
-    return 0
-  fi
-  return 1
-}
-
-for((i=1;i<=10;i++)); do
-  if [ "$i" = "10" ]; then
-    echo "WARNING: Address already in use"
-  fi
-  sleep 1; check_port
-  if [ $? -eq 0 ]; then
-      echo -e ".\c"
-      continue
-  fi
-  break
-done
 
 nohup $JAVA ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} ${MAIN_CLASS} >> ${STDOUT_FILE} 2>&1 &
 if [ $? -eq 0 ]; then
@@ -218,27 +178,17 @@ if [ $? -eq 0 ]; then
     ;;
   esac
   if [ $? -eq 0 ]; then
-    for((i=1;i<=600;i++)); do
-      sleep 1; check_port
-      if [ $? -eq 1 ]; then
-        if ps -p "${pid}" > /dev/null 2>&1; then
-          echo -e ".\c"
-          continue
-        fi
-
-        echo " FAILED TO START"
-        break
-      fi
-
+      sleep 1;
       if ps -p "${pid}" > /dev/null 2>&1; then
-        echo " SUCCESS, PID: $pid"
+        echo " PID: $pid"
+        echo "Please check the STDOUT file: $STDOUT_FILE"
         exit 0
       fi
-    done
   else
     echo " FAILED TO GET PID"
   fi
 else
   echo " SERVER DID NOT START"
 fi
+echo "Please check the STDOUT file: $STDOUT_FILE"
 exit 1
