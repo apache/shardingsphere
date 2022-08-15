@@ -148,19 +148,26 @@ public final class MySQLErrPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithShardingSphereConfigurationException() {
-        assertCommonException(MySQLErrPacketFactory.newInstance(new ShardingSphereConfigurationException("No reason")));
+        assertShardingSphereConfigurationException(MySQLErrPacketFactory.newInstance(new ShardingSphereConfigurationException("No reason")));
     }
     
-    @Test
-    public void assertNewInstanceWithSQLParsingException() {
-        assertCommonException(MySQLErrPacketFactory.newInstance(new SQLParsingException("No reason")));
-    }
-    
-    private void assertCommonException(final MySQLErrPacket actual) {
+    private void assertShardingSphereConfigurationException(final MySQLErrPacket actual) {
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(1235));
         assertThat(actual.getSqlState(), is("42000"));
         assertThat(actual.getErrorMessage(), is("Unsupported SQL: No reason"));
+    }
+    
+    @Test
+    public void assertNewInstanceWithSQLParsingException() {
+        assertSQLParsingException(MySQLErrPacketFactory.newInstance(new SQLParsingException()));
+    }
+    
+    private void assertSQLParsingException(final MySQLErrPacket actual) {
+        assertThat(actual.getSequenceId(), is(1));
+        assertThat(actual.getErrorCode(), is(1235));
+        assertThat(actual.getSqlState(), is("42000"));
+        assertThat(actual.getErrorMessage(), is("You have an error in your SQL syntax"));
     }
     
     @Test
