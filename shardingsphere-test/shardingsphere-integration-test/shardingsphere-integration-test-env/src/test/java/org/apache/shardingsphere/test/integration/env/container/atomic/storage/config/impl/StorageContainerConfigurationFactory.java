@@ -25,6 +25,8 @@ import org.apache.shardingsphere.test.integration.env.container.atomic.storage.c
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.opengauss.OpenGaussContainerConfigurationFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.postgresql.PostgreSQLContainerConfigurationFactory;
 
+import java.util.Collections;
+
 /**
  * Storage container configuration factory.
  */
@@ -46,7 +48,7 @@ public final class StorageContainerConfigurationFactory {
             case "openGauss":
                 return OpenGaussContainerConfigurationFactory.newInstance();
             case "H2":
-                return null;
+                return new StorageContainerConfiguration(new String[0], Collections.emptyMap(), Collections.emptyMap());
             default:
                 throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
         }
