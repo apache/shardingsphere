@@ -17,16 +17,17 @@
 
 package org.apache.shardingsphere.shadow.algorithm.shadow;
 
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
 
 /**
- * Shadow algorithm exception.
+ * Unsupported shadow column type exception.
  */
-public final class ShadowAlgorithmException extends ShardingSphereException {
+public final class UnsupportedShadowColumnTypeException extends ShardingSphereSQLException {
     
     private static final long serialVersionUID = 8144277065388645946L;
     
-    public ShadowAlgorithmException(final String errorMessage, final Object... args) {
-        super(errorMessage, args);
+    public UnsupportedShadowColumnTypeException(final String tableName, final String columnName, final Class<?> type) {
+        super(XOpenSQLState.INVALID_DATA_TYPE, 1501, "Shadow column `%s` of table `%s` does not support `%s` type", columnName, tableName, type.getName());
     }
 }
