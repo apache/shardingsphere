@@ -58,6 +58,10 @@ public final class TestClusterPersistRepository implements ClusterPersistReposit
     }
     
     @Override
+    public void persistExclusiveEphemeral(final String key, final String value) {
+    }
+    
+    @Override
     public void delete(final String key) {
     }
     

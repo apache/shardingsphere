@@ -40,8 +40,8 @@ import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.Zookeepe
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperProperties;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperPropertyKey;
 import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.KeeperException.OperationTimeoutException;
-import org.apache.zookeeper.KeeperException.NodeExistsException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
 
@@ -190,11 +190,25 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     @Override
     public void persistEphemeral(final String key, final String value) {
         try {
+            if (isExisted(key)) {
+                client.delete().deletingChildrenIfNeeded().forPath(key);
+            }
             client.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(key, value.getBytes(StandardCharsets.UTF_8));
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            if (ex instanceof NodeExistsException) {
+            CuratorZookeeperExceptionHandler.handleException(ex);
+        }
+    }
+    
+    @Override
+    public void persistExclusiveEphemeral(final String key, final String value) {
+        try {
+            client.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(key, value.getBytes(StandardCharsets.UTF_8));
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            if (ex instanceof KeeperException.NodeExistsException) {
                 throw new ClusterPersistRepositoryException(ex);
             }
             CuratorZookeeperExceptionHandler.handleException(ex);

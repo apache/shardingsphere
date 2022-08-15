@@ -106,6 +106,11 @@ public final class EtcdRepository implements ClusterPersistRepository {
     }
     
     @Override
+    public void persistExclusiveEphemeral(final String key, final String value) {
+        persistEphemeral(key, value);
+    }
+    
+    @Override
     public void delete(final String key) {
         client.getKVClient().delete(ByteSequence.from(key, StandardCharsets.UTF_8), DeleteOption.newBuilder().withPrefix(ByteSequence.from(key, StandardCharsets.UTF_8)).build());
     }

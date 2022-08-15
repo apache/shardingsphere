@@ -42,6 +42,14 @@ public interface ClusterPersistRepository extends PersistRepository {
     void persistEphemeral(String key, String value);
     
     /**
+     * Persist exclusive ephemeral data.
+     *
+     * @param key key of data
+     * @param value is persisted or not
+     */
+    void persistExclusiveEphemeral(String key, String value);
+    
+    /**
      * Persist lock.
      *
      * @param lockKey lock key
