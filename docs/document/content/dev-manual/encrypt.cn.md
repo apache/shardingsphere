@@ -5,20 +5,22 @@ weight = 12
 chapter = true
 +++
 
-## SPI 接口
+## EncryptAlgorithm
 
-| SPI 名称         | 详细说明     |
-| ---------------- | ------------ |
-| EncryptAlgorithm | 数据加密算法 |
+### 全限定类名
 
-## 示例
+[`org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-encrypt/shardingsphere-encrypt-api/src/main/java/org/apache/shardingsphere/encrypt/spi/EncryptAlgorithm.java)
 
-### EncryptAlgorithm
+### 定义
 
-| *已知实现类*         | *详细说明*             |
-| ------------------- | --------------------- |
-| MD5EncryptAlgorithm | 基于 MD5 的数据加密算法 |
-| AESEncryptAlgorithm | 基于 AES 的数据加密算法 |
-| RC4EncryptAlgorithm | 基于 RC4 的数据加密算法 |
-| SM4EncryptAlgorithm | 基于 SM4 的数据加密算法 |
-| SM3EncryptAlgorithm | 基于 SM3 的数据加密算法 |
+数据加密算法
+
+### 已知实现
+
+| *配置标识* | *详细说明*              | *全限定类名* |
+| -------------------- | -------------------------- | ---------------------------- |
+| MD5                  | 基于 MD5 的数据加密算法 | [`org.apache.shardingsphere.encryption.algorithm.MD5Encrypt`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-encrypt/shardingsphere-encrypt-core/src/main/java/org/apache/shardingsphere/encrypt/algorithm/MD5EncryptAlgorithm.java) |
+| AES                  | 基于 AES 的数据加密算法 | [`org.apache.shardingsphere.encryption.algorithm.AESEncrypt`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-encrypt/shardingsphere-encrypt-core/src/main/java/org/apache/shardingsphere/encrypt/algorithm/AESEncryptAlgorithm.java) |
+| RC4                  | 基于 RC4 的数据加密算法 | [`org.apache.shardingsphere.encryption.algorithm.RC4Encrypt`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-encrypt/shardingsphere-encrypt-core/src/main/java/org/apache/shardingsphere/encrypt/algorithm/RC4EncryptAlgorithm.java) |
+| SM3                  | 基于 SM4 的数据加密算法 | [`org.apache.shardingsphere.encryption.algorithm.SM3Encrypt`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-encrypt/shardingsphere-encrypt-plugin/shardingsphere-encrypt-sm/src/main/java/org/apache/shardingsphere/encrypt/sm/algorithm/SM3EncryptAlgorithm.java) |
+| SM4                  | 基于 SM3 的数据加密算法 | [`org.apache.shardingsphere.encryption.algorithm.SM4Encrypt`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-encrypt/shardingsphere-encrypt-plugin/shardingsphere-encrypt-sm/src/main/java/org/apache/shardingsphere/encrypt/sm/algorithm/SM4EncryptAlgorithm.java) |
