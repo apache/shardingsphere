@@ -17,26 +17,14 @@
 
 package org.apache.shardingsphere.scaling.core.spi.fixture;
 
-import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumper;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.InventoryDumper;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 
 public final class ScalingEntryFixture implements ScalingEntry {
     
     @Override
-    public Class<? extends InventoryDumper> getInventoryDumperClass() {
-        return InventoryDumper.class;
-    }
-    
-    @Override
     public Class<? extends IncrementalDumper> getIncrementalDumperClass() {
         return IncrementalDumper.class;
-    }
-    
-    @Override
-    public Class<? extends Importer> getImporterClass() {
-        return Importer.class;
     }
     
     @Override

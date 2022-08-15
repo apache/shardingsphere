@@ -59,10 +59,6 @@ showTableMetadata
     : SHOW TABLE METADATA tableName (COMMA tableName*)? (FROM databaseName)?
     ;
 
-showAuthorityRule
-    : SHOW AUTHORITY RULE
-    ;
-
 showTransactionRule
     : SHOW TRANSACTION RULE
     ;
@@ -128,7 +124,7 @@ loadBalancerDefinition
     ;
 
 algorithmDefinition
-    : TYPE LP NAME EQ typeName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
+    : TYPE LP NAME EQ typeName (COMMA propertiesDefinition)? RP
     ;
 
 typeName
@@ -160,7 +156,7 @@ transactionRuleDefinition
     ;
 
 providerDefinition
-    : TYPE LP NAME EQ providerName propertiesDefinition? RP
+    : TYPE LP NAME EQ providerName (COMMA propertiesDefinition)? RP
     ;
 
 defaultType
@@ -184,7 +180,7 @@ variableValues
     ;
 
 variableValue
-    : IDENTIFIER | STRING | (MINUS)? INT | TRUE | FALSE
+    : STRING | (MINUS)? INT | TRUE | FALSE
     ;
 
 instanceId
@@ -233,14 +229,6 @@ ruleName
 
 label
     : IDENTIFIER
-    ;
-
-algorithmProperties
-    : algorithmProperty (COMMA algorithmProperty)*
-    ;
-
-algorithmProperty
-    : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | IDENTIFIER | STRING)
     ;
 
 ifExists

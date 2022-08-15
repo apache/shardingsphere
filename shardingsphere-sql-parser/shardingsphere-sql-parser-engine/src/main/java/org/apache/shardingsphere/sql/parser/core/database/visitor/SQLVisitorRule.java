@@ -94,6 +94,8 @@ public enum SQLVisitorRule {
     
     ALTER_PUBLICATION("AlterPublication", SQLStatementType.DDL),
     
+    ALTER_SUBSCRIPTION("AlterSubscription", SQLStatementType.DDL),
+    
     ALTER_PROCEDURE("AlterProcedure", SQLStatementType.DDL),
     
     ALTER_STATEMENT("AlterStatement", SQLStatementType.DDL),
@@ -630,7 +632,9 @@ public enum SQLVisitorRule {
     
     CREATE_FOREIGN_TABLE("CreateForeignTable", SQLStatementType.DDL),
     
-    CREATE_GROUP("CreateGroup", SQLStatementType.DCL);
+    CREATE_GROUP("CreateGroup", SQLStatementType.DCL),
+    
+    CREATE_MATERIALIZED_VIEW("CreateMaterializedView", SQLStatementType.DDL);
     
     private final String name;
     

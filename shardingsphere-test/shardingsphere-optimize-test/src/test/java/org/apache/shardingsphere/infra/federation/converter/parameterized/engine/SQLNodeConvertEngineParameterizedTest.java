@@ -90,13 +90,14 @@ public final class SQLNodeConvertEngineParameterizedTest {
         SUPPORTED_SQL_CASE_IDS.add("select_distinct_with_single_count_group_by");
         SUPPORTED_SQL_CASE_IDS.add("select_bit_xor");
         SUPPORTED_SQL_CASE_IDS.add("select_position");
-        SUPPORTED_SQL_CASE_IDS.add("select_constant_without_table");
         SUPPORTED_SQL_CASE_IDS.add("select_with_schema");
         SUPPORTED_SQL_CASE_IDS.add("select_with_union");
         SUPPORTED_SQL_CASE_IDS.add("select_with_union_all");
         SUPPORTED_SQL_CASE_IDS.add("select_cast_function");
         SUPPORTED_SQL_CASE_IDS.add("select_with_same_table_name_and_alias");
         SUPPORTED_SQL_CASE_IDS.add("select_count_like_concat");
+        SUPPORTED_SQL_CASE_IDS.add("select_order_by_asc_and_index_desc");
+        SUPPORTED_SQL_CASE_IDS.add("select_group_by_with_having_count");
     }
     
     private final String sqlCaseId;
@@ -107,7 +108,7 @@ public final class SQLNodeConvertEngineParameterizedTest {
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        return getTestParameters("MySQL");
+        return getTestParameters("MySQL", "PostgreSQL", "openGauss");
     }
     
     private static Collection<Object[]> getTestParameters(final String... databaseTypes) {

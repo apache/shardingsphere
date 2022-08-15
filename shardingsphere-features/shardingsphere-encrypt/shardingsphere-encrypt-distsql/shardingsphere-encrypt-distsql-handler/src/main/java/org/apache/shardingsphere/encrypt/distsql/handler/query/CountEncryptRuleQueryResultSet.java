@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.distsql.handler.query;
 
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.CountEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
+import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -37,7 +37,7 @@ import java.util.function.Supplier;
 /**
  * Query result set for count encrypt rule.
  */
-public final class CountEncryptRuleQueryResultSet implements DistSQLResultSet {
+public final class CountEncryptRuleQueryResultSet implements DatabaseDistSQLResultSet {
     
     private static final String ENCRYPT = "encrypt";
     

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
+import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CountReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
@@ -37,7 +37,7 @@ import java.util.function.Supplier;
 /**
  * Query result set for count readwrite splitting rule.
  */
-public final class CountReadwriteSplittingRuleQueryResultSet implements DistSQLResultSet {
+public final class CountReadwriteSplittingRuleQueryResultSet implements DatabaseDistSQLResultSet {
     
     private static final String READWRITE_SPLITTING = "readwrite_splitting";
     

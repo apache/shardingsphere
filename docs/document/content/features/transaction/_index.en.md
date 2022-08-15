@@ -5,16 +5,30 @@ weight = 2
 chapter = true
 +++
 
-## Definition
+## Background
 
-Four properties of transactions: ACID （Atomicity、Consistency、Isolation、Durability).
+Database transactions should satisfy the features of ACID (atomicity, consistency, isolation and durability).
 
 - Atomicity: transactions are executed as a whole, and either all or none is executed.
 - Consistency: transactions should ensure that the state of data remains consistent after the transition.
 - Isolation: when multiple transactions execute concurrently, the execution of one transaction should not affect the execution of others.
 - Durability: when a transaction committed modifies data, the operation will be saved persistently.
 
-Distributed transactions guarantee the ACID properties in distributed scenarios, where a single transaction involves operations on multiple data nodes.
+In single data node, transactions are only restricted to the access and control of single database resources, called local transactions. Almost all the mature relational databases have provided native support for local transactions. But in distributed application situations based on micro-services, more and more of them require to include multiple accesses to services and the corresponding database resources in the same transaction. As a result, distributed transactions appear.
+
+Though the relational database has provided perfect native ACID support, it can become an obstacle to the system performance under distributed situations. How to make databases satisfy ACID features under distributed situations or find a corresponding substitute solution, is the priority work of distributed transactions.
+
+## Challenge
+
+For different application situations, developers need to reasonably weight the performance and the function between all kinds of distributed transactions.
+
+Highly consistent transactions do not have totally the same API and functions as soft transactions, and they cannot switch between each other freely and invisibly. The choice between highly consistent transactions and soft transactions as early as development decision-making phase has sharply increased the design and development cost.
+
+Highly consistent transactions based on XA is relatively easy to use, but is not good at dealing with long transaction and high concurrency situation of the Internet. With a high access cost, soft transactions require developers to transform the application and realize resources lock and backward compensation.
+
+## Goal
+
+The main design goal of the distributed transaction modular of Apache ShardingSphere is to integrate existing mature transaction cases to provide an unified distributed transaction interface for local transactions, 2PC transactions and soft transactions; compensate for the deficiencies of current solutions to provide a one-stop distributed transaction solution.
 
 ## How it works
 
@@ -66,6 +80,24 @@ The following table can be used for comparison to help developers choose the sui
 | Isolation    | Not supported        | Supported           | Business side guaranteed  |
 | Concurrent performance | no loss        | severe loss          | slight loss       |
 | Applied scenarios  | Inconsistent processing by the business side | short transaction & low-level concurrency | long transaction & high concurrency |
+
+## Application Scenarios
+
+The database's transactions can meet ACID business requirements in a standalone application scenario. However, in distributed scenarios, traditional database solutions cannot manage and control global transactions, and users may find data inconsistency on multiple database nodes.
+
+ShardingSphere distributed transaction makes it easier to process distributed transactions and provides flexible and diverse solutions. Users can select the distributed transaction solutions that best fit their business scenarios among LOCAL, XA, and BASE modes.
+
+### Application Scenarios for ShardingSphere XA Transactions
+
+Strong data consistency is guaranteed in a distributed environment in terms of XA transactions. However, its performance may be degraded due to the synchronous blocking problem. It applies to business scenarios that require strong data consistency and low concurrency performance.
+
+### Application Scenarios for ShardingSphere BASE Transaction
+
+In terms of BASE transactions, final data consistency is guaranteed in a distributed environment. Unlike XA transactions, resources are not locked during the whole transaction process, so its performance is relatively higher.
+
+### Application Scenarios for ShardingSphere LOCAL Transaction
+
+In terms of LOCAL transactions, the data consistency and isolation among database nodes are not guaranteed in a distributed environment. Therefore, the business sides need to handle the inconsistencies by themselves. This applies to business scenarios where users would like to handle data inconsistency in a distributed environment by themselves.
 
 ## Related references
 - [YAML distributed transaction configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/transaction/)

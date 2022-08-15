@@ -47,7 +47,7 @@ import static org.mockito.Mockito.when;
 public final class ShowTableMetadataHandlerTest extends ProxyContextRestorer {
     
     @Test
-    public void assertExecutor() throws SQLException {
+    public void assertExecute() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema("db_name")).thenReturn(new ShardingSphereSchema(createTableMap()));

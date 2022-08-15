@@ -11,48 +11,59 @@ The `ALTER RESOURCE` syntax is used to alter resources for the currently selecte
 
 ```sql
 AlterResource ::=
-  'ALTER' 'RESOURCE' dataSource (',' dataSource)*
+  'ALTER' 'RESOURCE' resourceDefinition (',' resourceDefinition)*
 
-dataSource ::=
-  dataSourceName '(' ( 'HOST' '=' hostName ',' 'PORT' '=' port ',' 'DB' '=' dbName  |  'URL' '=' url  ) ',' 'USER' '=' user (',' 'PASSWORD' '=' password )?  (',' 'PROPERTIES'  '(' ( key  '=' value ) ( ',' key  '=' value )* ')'  )?')'
+resourceDefinition ::=
+  resourceName '(' ( 'HOST' '=' hostName ',' 'PORT' '=' port ',' 'DB' '=' dbName  |  'URL' '=' url  ) ',' 'USER' '=' user (',' 'PASSWORD' '=' password )?  (',' proerties)?')'
 
-dataSourceName ::=
+resourceName ::=
   identifier
 
 hostname ::=
-  identifier | ip
-
-dbName ::=
-  identifier
-
+  string
+    
 port ::=
   int
 
-password ::=
-  identifier | int | string 
-
-user ::=
-  identifier
+dbName ::=
+  string
 
 url ::=
-  identifier | string
+  string
 
+user ::=
+  string
+
+password ::=
+  string
+
+proerties ::=
+  PROPERTIES '(' property ( ',' property )* ')'
+
+property ::=
+  key '=' value
+
+key ::=
+  string
+
+value ::=
+  string
 ```
 
 ### Supplement
 
 - Before altering the resources, please confirm that a database exists in Proxy, and execute the `use` command to
-  successfully select a database
-- `ALTER RESOURCE` is not allowed to change the real data source associated with this resource
+  successfully select a database;
+- `ALTER RESOURCE` is not allowed to change the real data source associated with this resource;
 - `ALTER RESOURCE` will switch the connection pool. This operation may affect the ongoing business, please use it with
-  caution
-- `dataSourceName` is case-sensitive
-- `dataSourceName` needs to be unique within the current database
-- `dataSourceName` name only allows letters, numbers and `_`, and must start with a letter
+  caution;
+- `resourceName` is case-sensitive;
+- `resourceName` needs to be unique within the current database;
+- `resourceName` name only allows letters, numbers and `_`, and must start with a letter;
 - `poolProperty` is used to customize connection pool parameters, `key` must be the same as the connection pool
-  parameter name, `value` supports int and String types
+  parameter name, `value` supports int and String types;
 - When `password` contains special characters, it is recommended to use the string form; for example, the string form
-  of `password@123` is `"password@123"`
+  of `password@123` is `"password@123"`.
 
 ### Example
 

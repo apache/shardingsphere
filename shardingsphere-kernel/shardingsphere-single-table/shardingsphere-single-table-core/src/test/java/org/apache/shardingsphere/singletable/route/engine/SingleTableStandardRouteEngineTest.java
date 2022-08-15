@@ -42,9 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -55,8 +53,8 @@ public final class SingleTableStandardRouteEngineTest {
     public void assertRouteInSameDataSource() throws SQLException {
         SingleTableStandardRouteEngine engine = new SingleTableStandardRouteEngine(mockQualifiedTables(), null);
         SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, createDataSourceMap(), Collections.emptyList());
-        singleTableRule.getSingleTableDataNodes().put("t_order", Collections.singletonList(mockDataNode("ds_0", "t_order")));
-        singleTableRule.getSingleTableDataNodes().put("t_order_item", Collections.singletonList(mockDataNode("ds_0", "t_order_item")));
+        singleTableRule.getSingleTableDataNodes().put("t_order", Collections.singletonList(mockDataNode("t_order")));
+        singleTableRule.getSingleTableDataNodes().put("t_order_item", Collections.singletonList(mockDataNode("t_order_item")));
         RouteContext routeContext = new RouteContext();
         engine.route(routeContext, singleTableRule);
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
@@ -70,40 +68,16 @@ public final class SingleTableStandardRouteEngineTest {
         RouteMapper tableMapper1 = tableMappers.next();
         assertThat(tableMapper1.getActualName(), is("t_order_item"));
         assertThat(tableMapper1.getLogicName(), is("t_order_item"));
-        assertFalse(routeContext.isFederated());
     }
     
-    private DataNode mockDataNode(final String dataSourceName, final String tableName) {
-        DataNode result = new DataNode(dataSourceName, tableName);
+    private DataNode mockDataNode(final String tableName) {
+        DataNode result = new DataNode("ds_0", tableName);
         result.setSchemaName(DefaultDatabase.LOGIC_NAME);
         return result;
     }
     
     private Collection<QualifiedTable> mockQualifiedTables() {
         return Arrays.asList(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order"), new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order_item"));
-    }
-    
-    @Test
-    public void assertRouteInDifferentDataSource() throws SQLException {
-        SingleTableStandardRouteEngine engine = new SingleTableStandardRouteEngine(mockQualifiedTables(), null);
-        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, createDataSourceMap(), Collections.emptyList());
-        singleTableRule.getSingleTableDataNodes().put("t_order", Collections.singletonList(mockDataNode("ds_0", "t_order")));
-        singleTableRule.getSingleTableDataNodes().put("t_order_item", Collections.singletonList(mockDataNode("ds_1", "t_order_item")));
-        RouteContext routeContext = new RouteContext();
-        engine.route(routeContext, singleTableRule);
-        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
-        assertThat(routeContext.getRouteUnits().size(), is(2));
-        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
-        assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
-        RouteMapper tableMapper0 = routeUnits.get(0).getTableMappers().iterator().next();
-        assertThat(tableMapper0.getActualName(), is("t_order"));
-        assertThat(tableMapper0.getLogicName(), is("t_order"));
-        assertThat(routeUnits.get(1).getDataSourceMapper().getActualName(), is("ds_1"));
-        assertThat(routeUnits.get(1).getTableMappers().size(), is(1));
-        RouteMapper tableMapper1 = routeUnits.get(1).getTableMappers().iterator().next();
-        assertThat(tableMapper1.getActualName(), is("t_order_item"));
-        assertThat(tableMapper1.getLogicName(), is("t_order_item"));
-        assertTrue(routeContext.isFederated());
     }
     
     @Test

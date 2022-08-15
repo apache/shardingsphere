@@ -30,7 +30,7 @@ RAL (Resource & Rule Administration Language) responsible for hint, circuit brea
 | RESET SCALING jobId                                  | reset progress, xx: jobId                                         | RESET SCALING 1234                       |
 | CHECK SCALING jobId                                  | Data consistency check with algorithm in `server.yaml`, xx: jobId | CHECK SCALING 1234                       |
 | SHOW SCALING CHECK ALGORITHMS                        | Show available consistency check algorithms                       | SHOW SCALING CHECK ALGORITHMS            |
-| CHECK SCALING {jobId} by type(name={algorithmType})  | Data consistency check with defined algorithm                     | CHECK SCALING 1234 by type(name=DEFAULT) |
+| CHECK SCALING jobId (by type(name=algorithmTypeName)?    | Data consistency check with defined algorithm                     | CHECK SCALING 1234 by type(name="DEFAULT") |
 | STOP SCALING SOURCE WRITING jobId                    | The source ShardingSphere data source is discontinued, xx: jobId  | STOP SCALING SOURCE WRITING 1234         |
 | RESTORE SCALING SOURCE WRITING jobId                 | Restore source data source writing, xx: jobId                     | RESTORE SCALING SOURCE WRITING 1234      |
 | APPLY SCALING jobId                                  | Switch to target ShardingSphere metadata, xx: jobId               | APPLY SCALING 1234                       |

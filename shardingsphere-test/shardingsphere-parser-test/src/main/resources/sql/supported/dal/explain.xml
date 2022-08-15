@@ -36,4 +36,6 @@
     <sql-case id="describe_table_with_col_name" value="DESCRIBE tableName colName" db-types="MySQL" />
     <sql-case id="describe_table_with_placeholder" value="DESC tableName ___" db-types="MySQL" />
     <sql-case id="describe_table_with_wild" value="DESC tableName `u%`" db-types="MySQL" />
+    <sql-case id="explain_create_materialized_view_with_data" value="EXPLAIN (ANALYZE, COSTS OFF, SUMMARY OFF, TIMING OFF) CREATE MATERIALIZED VIEW matview_schema.mv_withdata2 (a) AS SELECT generate_series(1, 10) WITH DATA;" db-types="PostgreSQL" />
+    <sql-case id="explain_create_materialized_view_with_no_data" value="EXPLAIN (ANALYZE, COSTS OFF, SUMMARY OFF, TIMING OFF) CREATE MATERIALIZED VIEW matview_schema.mv_nodata2 (a) AS SELECT generate_series(1, 10) WITH NO DATA;" db-types="PostgreSQL" />
 </sql-cases>

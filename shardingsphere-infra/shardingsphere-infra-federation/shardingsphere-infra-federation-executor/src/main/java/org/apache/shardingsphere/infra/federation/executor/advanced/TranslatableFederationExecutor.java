@@ -58,6 +58,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Advanced federation executor.
@@ -99,9 +102,19 @@ public final class TranslatableFederationExecutor implements FederationExecutor 
         Preconditions.checkArgument(sqlStatementContext instanceof SelectStatementContext, "SQL statement context must be select statement context.");
         ShardingSphereSchema schema = federationContext.getDatabases().get(databaseName.toLowerCase()).getSchema(schemaName);
         TranslatableSchema translatableSchema = createTranslatableSchema(prepareEngine, schema, callback, federationContext);
-        Enumerator<Object[]> enumerator = execute(sqlStatementContext.getSqlStatement(), translatableSchema).enumerator();
+        Map<String, Object> parameters = createParameters(federationContext.getLogicSQL().getParameters());
+        Enumerator<Object[]> enumerator = execute(sqlStatementContext.getSqlStatement(), translatableSchema, parameters).enumerator();
         resultSet = new FederationResultSet(enumerator, schema, translatableSchema, sqlStatementContext);
         return resultSet;
+    }
+    
+    private Map<String, Object> createParameters(final List<Object> parameters) {
+        Map<String, Object> result = new HashMap<>(parameters.size(), 1);
+        int index = 0;
+        for (Object each : parameters) {
+            result.put("?" + index++, each);
+        }
+        return result;
     }
     
     private TranslatableSchema createTranslatableSchema(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final ShardingSphereSchema schema,
@@ -112,7 +125,7 @@ public final class TranslatableFederationExecutor implements FederationExecutor 
     }
     
     @SuppressWarnings("unchecked")
-    private Enumerable<Object[]> execute(final SQLStatement sqlStatement, final TranslatableSchema translatableSchema) {
+    private Enumerable<Object[]> execute(final SQLStatement sqlStatement, final TranslatableSchema translatableSchema, final Map<String, Object> parameters) {
         // TODO remove OptimizerPlannerContextFactory call and use setup executor to handle this logic
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(OptimizerPlannerContextFactory.createConnectionProperties());
         RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
@@ -121,7 +134,7 @@ public final class TranslatableFederationExecutor implements FederationExecutor 
         SqlToRelConverter converter = OptimizerPlannerContextFactory.createConverter(catalogReader, validator, relDataTypeFactory);
         RelNode bestPlan = new ShardingSphereOptimizer(converter, QueryOptimizePlannerFactory.createHepPlanner()).optimize(sqlStatement);
         Bindable<Object[]> executablePlan = EnumerableInterpretable.toBindable(Collections.emptyMap(), null, (EnumerableRel) bestPlan, EnumerableRel.Prefer.ARRAY);
-        return executablePlan.bind(new AdvancedExecuteDataContext(validator, converter));
+        return executablePlan.bind(new AdvancedExecuteDataContext(validator, converter, parameters));
     }
     
     @Override

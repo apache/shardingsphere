@@ -38,8 +38,8 @@ import org.apache.shardingsphere.integration.data.pipeline.framework.container.c
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.NativeComposedContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.integration.data.pipeline.framework.watcher.ScalingWatcher;
-import org.apache.shardingsphere.integration.data.pipeline.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.junit.Rule;
 import org.opengauss.util.PSQLException;
@@ -146,7 +146,7 @@ public abstract class BaseITCase {
             defaultDatabaseName = "postgres";
         }
         String jdbcUrl = composedContainer.getProxyJdbcUrl(defaultDatabaseName);
-        try (Connection connection = DriverManager.getConnection(jdbcUrl, "root", "Root@123")) {
+        try (Connection connection = DriverManager.getConnection(jdbcUrl, "proxy", "Proxy@123")) {
             if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NATIVE) {
                 try {
                     executeWithLog(connection, "DROP DATABASE sharding_db");
@@ -165,8 +165,8 @@ public abstract class BaseITCase {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(getDatabaseType()));
         result.setJdbcUrl(composedContainer.getProxyJdbcUrl(databaseName));
-        result.setUsername("root");
-        result.setPassword("Root@123");
+        result.setUsername("proxy");
+        result.setPassword("Proxy@123");
         result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return result;
@@ -191,12 +191,12 @@ public abstract class BaseITCase {
     protected void addSourceResource() {
         // TODO if mysql can append database firstly, they can be combined
         if (databaseType instanceof MySQLDatabaseType) {
-            try (Connection connection = DriverManager.getConnection(getComposedContainer().getProxyJdbcUrl(""), "root", "Root@123")) {
+            try (Connection connection = DriverManager.getConnection(getComposedContainer().getProxyJdbcUrl(""), "proxy", "Proxy@123")) {
                 connection.createStatement().execute("USE sharding_db");
                 addSourceResource0(connection);
             }
         } else {
-            try (Connection connection = DriverManager.getConnection(getComposedContainer().getProxyJdbcUrl("sharding_db"), "root", "Root@123")) {
+            try (Connection connection = DriverManager.getConnection(getComposedContainer().getProxyJdbcUrl("sharding_db"), "proxy", "Proxy@123")) {
                 addSourceResource0(connection);
             }
         }
@@ -257,13 +257,13 @@ public abstract class BaseITCase {
                 List<Map<String, Object>> scalingList = jdbcTemplate.queryForList("SHOW SCALING LIST");
                 for (Map<String, Object> each : scalingList) {
                     String id = each.get("id").toString();
-                    executeWithLog(String.format("DROP SCALING %s", id), 0);
+                    executeWithLog(String.format("DROP SCALING '%s'", id), 0);
                 }
             } catch (final DataAccessException ex) {
                 log.error("Failed to show scaling list. {}", ex.getMessage());
             }
         }
-        executeWithLog("CREATE SHARDING SCALING RULE scaling_manual (INPUT(SHARDING_SIZE=1000), DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH)))");
+        executeWithLog("CREATE SHARDING SCALING RULE scaling_manual (INPUT(SHARDING_SIZE=1000), DATA_CONSISTENCY_CHECKER(TYPE(NAME='DATA_MATCH')))");
     }
     
     protected void createSchema(final String schemaName) {
@@ -321,20 +321,20 @@ public abstract class BaseITCase {
     }
     
     protected void stopScalingSourceWriting(final String jobId) {
-        executeWithLog(String.format("STOP SCALING SOURCE WRITING %s", jobId));
+        executeWithLog(String.format("STOP SCALING SOURCE WRITING '%s'", jobId));
     }
     
     protected void stopScaling(final String jobId) {
-        executeWithLog(String.format("STOP SCALING %s", jobId), 5);
+        executeWithLog(String.format("STOP SCALING '%s'", jobId), 5);
     }
     
     protected void startScaling(final String jobId) {
-        executeWithLog(String.format("START SCALING %s", jobId), 10);
+        executeWithLog(String.format("START SCALING '%s'", jobId), 10);
     }
     
     protected void applyScaling(final String jobId) {
         assertBeforeApplyScalingMetadataCorrectly();
-        executeWithLog(String.format("APPLY SCALING %s", jobId));
+        executeWithLog(String.format("APPLY SCALING '%s'", jobId));
     }
     
     protected void assertBeforeApplyScalingMetadataCorrectly() {
@@ -365,8 +365,7 @@ public abstract class BaseITCase {
             if (actualStatus.size() == 1 && actualStatus.contains(JobStatus.EXECUTE_INCREMENTAL_TASK.name())) {
                 break;
             } else if (actualStatus.size() >= 1 && actualStatus.containsAll(new HashSet<>(Arrays.asList("", JobStatus.EXECUTE_INCREMENTAL_TASK.name())))) {
-                log.error("one of the shardingItem was not started correctly");
-                break;
+                log.warn("one of the shardingItem was not started correctly");
             }
             ThreadUtil.sleep(2, TimeUnit.SECONDS);
         }
@@ -380,7 +379,7 @@ public abstract class BaseITCase {
     }
     
     protected List<Map<String, Object>> showScalingStatus(final String jobId) {
-        return queryForListWithLog(String.format("SHOW SCALING STATUS %s", jobId));
+        return queryForListWithLog(String.format("SHOW SCALING STATUS '%s'", jobId));
     }
     
     protected void assertCheckScalingSuccess(final String jobId) {
@@ -393,8 +392,7 @@ public abstract class BaseITCase {
         boolean secondCheckJobResult = checkJobIncrementTaskFinished(jobId);
         log.info("second check job result: {}", secondCheckJobResult);
         stopScalingSourceWriting(jobId);
-        assertStopScalingSourceWriting();
-        List<Map<String, Object>> checkScalingResults = queryForListWithLog(String.format("CHECK SCALING %s BY TYPE (NAME=DATA_MATCH)", jobId));
+        List<Map<String, Object>> checkScalingResults = queryForListWithLog(String.format("CHECK SCALING '%s' BY TYPE (NAME='DATA_MATCH')", jobId));
         log.info("checkScalingResults: {}", checkScalingResults);
         for (Map<String, Object> entry : checkScalingResults) {
             assertTrue(Boolean.parseBoolean(entry.get("records_content_matched").toString()));
@@ -422,12 +420,4 @@ public abstract class BaseITCase {
         Collections.sort(expect);
         assertThat(dataSourceNames, is(expect));
     }
-    
-    protected void restoreScalingSourceWriting(final String jobId) {
-        executeWithLog(String.format("RESTORE SCALING SOURCE WRITING %s", jobId));
-    }
-    
-    protected abstract void assertStopScalingSourceWriting();
-    
-    protected abstract void assertRestoreScalingSourceWriting();
 }

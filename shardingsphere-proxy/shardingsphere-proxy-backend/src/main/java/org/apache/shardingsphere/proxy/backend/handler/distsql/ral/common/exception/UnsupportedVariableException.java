@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.excep
 /**
  * Unsupported variable exception.
  */
-public final class UnsupportedVariableException extends CommonDistSQLException {
+public final class UnsupportedVariableException extends DistSQLException {
     
     private static final long serialVersionUID = 1955281568807066737L;
     

@@ -30,6 +30,7 @@
     
     <modules>
         <module>shardingsphere-sql-translator-spring-boot-starter</module>
+        <module>shardingsphere-sql-translator-spring-namespace</module>
     </modules>
     
 </project>

@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.api;
 
-import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
 import java.util.List;
@@ -39,20 +36,22 @@ public interface GovernanceRepositoryAPI {
     boolean isExisted(String key);
     
     /**
-     * Persist job progress.
-     *
-     * @param jobContext job context
-     */
-    void persistJobProgress(RuleAlteredJobContext jobContext);
-    
-    /**
-     * Get job progress.
+     * Persist job item progress.
      *
      * @param jobId job id
      * @param shardingItem sharding item
-     * @return job progress
+     * @param progressValue progress value
      */
-    JobProgress getJobProgress(String jobId, int shardingItem);
+    void persistJobItemProgress(String jobId, int shardingItem, String progressValue);
+    
+    /**
+     * Get job item progress.
+     *
+     * @param jobId job id
+     * @param shardingItem sharding item
+     * @return job item progress
+     */
+    String getJobItemProgress(String jobId, int shardingItem);
     
     /**
      * Persist job check result.
@@ -108,13 +107,4 @@ public interface GovernanceRepositoryAPI {
      * @return sharding items
      */
     List<Integer> getShardingItems(String jobId);
-    
-    /**
-     * Update sharding job status.
-     *
-     * @param jobId job id
-     * @param shardingItem sharding item
-     * @param status status
-     */
-    void updateShardingJobStatus(String jobId, int shardingItem, JobStatus status);
 }

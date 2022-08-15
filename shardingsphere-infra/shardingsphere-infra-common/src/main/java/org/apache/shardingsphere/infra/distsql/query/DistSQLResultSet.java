@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.infra.distsql.query;
 
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import java.util.Collection;
 
@@ -29,30 +27,22 @@ import java.util.Collection;
 public interface DistSQLResultSet extends TypedSPI {
     
     /**
-     * Initialize data.
-     * 
-     * @param database database
-     * @param sqlStatement SQL statement
-     */
-    void init(ShardingSphereDatabase database, SQLStatement sqlStatement);
-    
-    /**
      * Get result set column names.
-     * 
+     *
      * @return result set column names
      */
     Collection<String> getColumnNames();
     
     /**
      * Go to next data.
-     * 
+     *
      * @return true if next data exist
      */
     boolean next();
     
     /**
      * Get row data.
-     * 
+     *
      * @return row data
      */
     Collection<Object> getRowData();

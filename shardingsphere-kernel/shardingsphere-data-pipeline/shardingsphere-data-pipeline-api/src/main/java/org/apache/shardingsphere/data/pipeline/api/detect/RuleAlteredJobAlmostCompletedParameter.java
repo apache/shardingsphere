@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 
 import java.util.Collection;
 
@@ -37,5 +37,5 @@ public final class RuleAlteredJobAlmostCompletedParameter {
     private final int jobShardingCount;
     
     @NonNull
-    private final Collection<JobProgress> jobProgresses;
+    private final Collection<InventoryIncrementalJobItemProgress> jobItemProgresses;
 }

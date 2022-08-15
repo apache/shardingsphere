@@ -32,7 +32,7 @@ import java.sql.SQLException;
  * Integration test of add resource.
  */
 @Slf4j
-@TransactionTestCase(adapters = TransactionTestConstants.PROXY)
+@TransactionTestCase(adapters = TransactionTestConstants.PROXY, group = "addResource")
 public final class AddResourceTestCase extends BaseTransactionTestCase {
     
     public AddResourceTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {

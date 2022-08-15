@@ -23,9 +23,8 @@ import org.apache.shardingsphere.driver.jdbc.context.JDBCContext;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
+import org.apache.shardingsphere.infra.session.ConnectionContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.sharding.merge.ddl.fetch.FetchOrderByValueGroupsHolder;
-import org.apache.shardingsphere.traffic.context.TrafficContextHolder;
 import org.apache.shardingsphere.transaction.TransactionHolder;
 
 import java.sql.Array;
@@ -60,11 +59,15 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     private volatile boolean closed;
     
+    @Getter
+    private final ConnectionContext connectionContext;
+    
     public ShardingSphereConnection(final String databaseName, final ContextManager contextManager, final JDBCContext jdbcContext) {
         this.databaseName = databaseName;
         this.contextManager = contextManager;
         this.jdbcContext = jdbcContext;
         connectionManager = new ConnectionManager(databaseName, contextManager);
+        connectionContext = new ConnectionContext();
     }
     
     /**
@@ -170,8 +173,8 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         } finally {
             connectionManager.getConnectionTransaction().setRollbackOnly(false);
             TransactionHolder.clear();
-            TrafficContextHolder.remove();
-            FetchOrderByValueGroupsHolder.remove();
+            connectionContext.clearTrafficInstance();
+            connectionContext.clearCursorConnectionContext();
         }
     }
     
@@ -182,8 +185,8 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         } finally {
             connectionManager.getConnectionTransaction().setRollbackOnly(false);
             TransactionHolder.clear();
-            TrafficContextHolder.remove();
-            FetchOrderByValueGroupsHolder.remove();
+            connectionContext.clearTrafficInstance();
+            connectionContext.clearCursorConnectionContext();
         }
     }
     

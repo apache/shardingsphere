@@ -316,7 +316,7 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
         List<Connection> fetchedConnections = backendConnection.getConnections("ds1", 1, null);
         assertThat(fetchedConnections.size(), is(1));
         assertTrue(fetchedConnections.contains(connections.get(0)));
-        assertConnectionsCached("ds1", connections);
+        assertConnectionsCached(connectionSession.getDatabaseName() + ".ds1", connections);
     }
     
     @SuppressWarnings("unchecked")

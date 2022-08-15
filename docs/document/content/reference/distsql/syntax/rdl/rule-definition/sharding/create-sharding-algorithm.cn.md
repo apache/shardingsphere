@@ -1,6 +1,6 @@
 +++
 title = "CREATE SHARDING ALGORITHM"
-weight = 2
+weight = 4
 +++
 
 ## 描述
@@ -28,7 +28,7 @@ algorithmType ::=
 
 ### 补充说明
 
-- `algorithmType` 为分片算法类型，详细的分片算法类型信息请参考[分片算法](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/)
+- `algorithmType` 为分片算法类型，详细的分片算法类型信息请参考[分片算法](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/)。
 
 ### 示例
 

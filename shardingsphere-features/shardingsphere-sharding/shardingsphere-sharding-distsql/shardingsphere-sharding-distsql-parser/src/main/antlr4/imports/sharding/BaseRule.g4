@@ -23,7 +23,7 @@ tableName
     : IDENTIFIER
     ;
 
-algorithmName
+shardingAlgorithmName
     : IDENTIFIER
     ;
 

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule;
 
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableRulesStatement;
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
+import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -31,7 +31,7 @@ import java.util.Iterator;
 /**
  * Query result set for show single table rules.
  */
-public final class SingleTableRulesQueryResultSet implements DistSQLResultSet {
+public final class SingleTableRulesQueryResultSet implements DatabaseDistSQLResultSet {
     
     private Iterator<String> data = Collections.emptyIterator();
     

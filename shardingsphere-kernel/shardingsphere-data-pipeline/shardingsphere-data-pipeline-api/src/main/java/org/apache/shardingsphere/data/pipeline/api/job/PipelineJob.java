@@ -17,8 +17,25 @@
 
 package org.apache.shardingsphere.data.pipeline.api.job;
 
+import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
+
+import java.util.Optional;
+
 /**
  * Pipeline job.
  */
 public interface PipelineJob {
+    
+    /**
+     * Get tasks runner.
+     *
+     * @param shardingItem sharding item
+     * @return tasks runner
+     */
+    Optional<PipelineTasksRunner> getTasksRunner(int shardingItem);
+    
+    /**
+     * Stop job.
+     */
+    void stop();
 }

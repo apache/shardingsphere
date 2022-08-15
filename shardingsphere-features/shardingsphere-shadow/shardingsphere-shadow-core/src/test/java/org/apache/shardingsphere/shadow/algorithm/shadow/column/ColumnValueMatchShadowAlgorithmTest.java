@@ -31,19 +31,19 @@ public final class ColumnValueMatchShadowAlgorithmTest extends AbstractColumnSha
     
     @Test
     public void assertIsShadow() {
-        ColumnValueMatchShadowAlgorithm shadowAlgorithm = createShadowAlgorithm();
+        ColumnValueMatchedShadowAlgorithm shadowAlgorithm = createShadowAlgorithm();
         createPreciseColumnShadowValuesTrueCase().forEach(each -> assertTrue(shadowAlgorithm.isShadow(each)));
         createPreciseColumnShadowValuesFalseCase().forEach(each -> assertFalse(shadowAlgorithm.isShadow(each)));
     }
     
     @Test(expected = ShadowAlgorithmException.class)
     public void assertExceptionCase() {
-        ColumnValueMatchShadowAlgorithm shadowAlgorithm = createShadowAlgorithm();
+        ColumnValueMatchedShadowAlgorithm shadowAlgorithm = createShadowAlgorithm();
         createPreciseColumnShadowValuesExceptionCase().forEach(each -> assertFalse(shadowAlgorithm.isShadow(each)));
     }
     
-    private ColumnValueMatchShadowAlgorithm createShadowAlgorithm() {
-        return (ColumnValueMatchShadowAlgorithm) ShadowAlgorithmFactory.newInstance(new AlgorithmConfiguration("VALUE_MATCH", createProperties()));
+    private ColumnValueMatchedShadowAlgorithm createShadowAlgorithm() {
+        return (ColumnValueMatchedShadowAlgorithm) ShadowAlgorithmFactory.newInstance(new AlgorithmConfiguration("VALUE_MATCH", createProperties()));
     }
     
     private Properties createProperties() {

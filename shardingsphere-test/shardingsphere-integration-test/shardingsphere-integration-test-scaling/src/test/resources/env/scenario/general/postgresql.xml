@@ -18,7 +18,7 @@
     <create-table-order>
         CREATE TABLE test.t_order (
         id int8 NOT NULL,
-        order_id int4 NOT NULL,
+        order_id int8 NOT NULL,
         user_id int4 NOT NULL,
         status varchar ( 50 ) NULL,
         t_int2 int2 NULL,
@@ -47,8 +47,8 @@
     <create-table-order-item>
         CREATE TABLE test.t_order_item (
         item_id int8 NOT NULL,
-        order_id int4 NOT NULL,
-        user_id int8 NOT NULL,
+        order_id int8 NOT NULL,
+        user_id int4 NOT NULL,
         status varchar(50),
         PRIMARY KEY (item_id)
         )

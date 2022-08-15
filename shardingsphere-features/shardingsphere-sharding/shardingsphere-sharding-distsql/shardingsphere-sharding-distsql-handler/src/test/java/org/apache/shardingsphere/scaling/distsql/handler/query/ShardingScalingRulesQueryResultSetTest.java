@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineInputCo
 import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineOutputConfiguration;
 import org.apache.shardingsphere.infra.config.rule.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.migration.distsql.handler.query.ShardingScalingRulesQueryResultSet;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.query.ShardingAlgorithmsQueryResultSet;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingAlgorithmsStatement;

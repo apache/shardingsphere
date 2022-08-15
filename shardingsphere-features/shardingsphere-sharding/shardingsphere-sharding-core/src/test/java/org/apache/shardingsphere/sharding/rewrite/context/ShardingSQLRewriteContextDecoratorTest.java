@@ -26,7 +26,6 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -34,28 +33,13 @@ import static org.mockito.Mockito.when;
 public final class ShardingSQLRewriteContextDecoratorTest {
     
     @Test
-    public void assertDecorateForRouteContextWhenIsFederated() {
+    public void assertDecorate() {
+        List<Object> parameters = new ArrayList<>();
+        parameters.add(new Object());
         ShardingSQLRewriteContextDecorator decorator = new ShardingSQLRewriteContextDecorator();
         SQLRewriteContext sqlRewriteContext = mock(SQLRewriteContext.class);
+        when(sqlRewriteContext.getParameters()).thenReturn(parameters);
         RouteContext routeContext = mock(RouteContext.class);
-        when(routeContext.isFederated()).thenReturn(true);
-        decorator.decorate(mock(ShardingRule.class), mock(ConfigurationProperties.class), sqlRewriteContext, routeContext);
-        assertTrue(sqlRewriteContext.getSchemas().isEmpty());
-        assertNull(sqlRewriteContext.getSqlStatementContext());
-        assertTrue(sqlRewriteContext.getParameters().isEmpty());
-        assertNull(sqlRewriteContext.getParameterBuilder());
-        assertTrue(sqlRewriteContext.getSqlTokens().isEmpty());
-    }
-    
-    @Test
-    public void assertDecorateForRouteContextWhenNotFederated() {
-        List<Object> dummy = new ArrayList<>();
-        dummy.add(new Object());
-        ShardingSQLRewriteContextDecorator decorator = new ShardingSQLRewriteContextDecorator();
-        SQLRewriteContext sqlRewriteContext = mock(SQLRewriteContext.class);
-        when(sqlRewriteContext.getParameters()).thenReturn(dummy);
-        RouteContext routeContext = mock(RouteContext.class);
-        when(routeContext.isFederated()).thenReturn(false);
         decorator.decorate(mock(ShardingRule.class), mock(ConfigurationProperties.class), sqlRewriteContext, routeContext);
         assertTrue(sqlRewriteContext.getSqlTokens().isEmpty());
     }

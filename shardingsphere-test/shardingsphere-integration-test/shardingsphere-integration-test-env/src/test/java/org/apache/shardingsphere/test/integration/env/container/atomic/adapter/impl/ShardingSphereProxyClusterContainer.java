@@ -19,10 +19,12 @@ package org.apache.shardingsphere.test.integration.env.container.atomic.adapter.
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.AdapterContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.wait.JDBCConnectionWaitStrategy;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
-import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
 import org.testcontainers.containers.BindMode;
 
 import javax.sql.DataSource;
@@ -43,12 +45,16 @@ public final class ShardingSphereProxyClusterContainer extends DockerITContainer
     
     private final String scenario;
     
+    private final AdaptorContainerConfiguration config;
+    
     private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
     
-    public ShardingSphereProxyClusterContainer(final DatabaseType databaseType, final String scenario) {
+    public ShardingSphereProxyClusterContainer(final DatabaseType databaseType, final String scenario, final StorageContainer storageContainer,
+                                               final AdaptorContainerConfiguration config) {
         super("ShardingSphere-Proxy", "apache/shardingsphere-proxy-test");
         this.databaseType = databaseType;
         this.scenario = scenario;
+        this.config = config;
     }
     
     /**
@@ -66,14 +72,13 @@ public final class ShardingSphereProxyClusterContainer extends DockerITContainer
     @Override
     protected void configure() {
         withExposedPorts(3307);
-        mapConfigurationFiles();
-        setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), scenario), "proxy", "Proxy@123")));
+        mountConfigurationFiles();
+        setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType,
+                getHost(), getMappedPort(3307), config.getProxyDataSourceName()), "proxy", "Proxy@123")));
     }
     
-    private void mapConfigurationFiles() {
-        String containerPath = "/opt/shardingsphere-proxy/conf";
-        withClasspathResourceMapping("/env/common/cluster/proxy/conf/", containerPath, BindMode.READ_ONLY);
-        withClasspathResourceMapping("/env/scenario/" + scenario + "/proxy/conf/" + databaseType.getType().toLowerCase(), containerPath, BindMode.READ_ONLY);
+    private void mountConfigurationFiles() {
+        config.getMountedResources().forEach((key, value) -> withClasspathResourceMapping(key, value, BindMode.READ_ONLY));
     }
     
     @Override

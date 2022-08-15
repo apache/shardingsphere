@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.integration.env.container.atomic.adapter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.impl.ShardingSphereJDBCContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.impl.ShardingSphereProxyStandaloneContainer;
@@ -39,15 +40,15 @@ public final class AdapterContainerFactory {
      * @param databaseType database type
      * @param storageContainer storage container
      * @param scenario scenario
+     * @param containerConfig adaptor container configuration
      * @return created instance
      */
-    public static AdapterContainer newInstance(final String mode, final String adapter, final DatabaseType databaseType, final StorageContainer storageContainer, final String scenario) {
+    public static AdapterContainer newInstance(final String mode, final String adapter, final DatabaseType databaseType,
+                                               final StorageContainer storageContainer, final String scenario, final AdaptorContainerConfiguration containerConfig) {
         switch (adapter) {
             case "proxy":
-                if ("Cluster".equalsIgnoreCase(mode)) {
-                    return new ShardingSphereProxyClusterContainer(databaseType, scenario);
-                }
-                return new ShardingSphereProxyStandaloneContainer(databaseType, scenario);
+                return "Cluster".equalsIgnoreCase(mode) ? new ShardingSphereProxyClusterContainer(databaseType, scenario, storageContainer, containerConfig)
+                        : new ShardingSphereProxyStandaloneContainer(databaseType, scenario);
             case "jdbc":
                 return new ShardingSphereJDBCContainer(storageContainer, scenario);
             default:

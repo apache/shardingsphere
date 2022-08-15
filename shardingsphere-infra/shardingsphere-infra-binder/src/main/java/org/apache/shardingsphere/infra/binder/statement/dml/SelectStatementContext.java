@@ -39,8 +39,8 @@ import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
-import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
-import org.apache.shardingsphere.infra.exception.NoDatabaseException;
+import org.apache.shardingsphere.error.dialect.syntax.database.NoDatabaseSelectedException;
+import org.apache.shardingsphere.error.dialect.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
@@ -132,13 +132,12 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         if (null == databaseName) {
             if (tablesContext.getTables().isEmpty()) {
                 return Collections.emptyMap();
-            } else {
-                throw new NoDatabaseException();
             }
+            throw new NoDatabaseSelectedException();
         }
         ShardingSphereDatabase database = databases.get(databaseName.toLowerCase());
         if (null == database) {
-            throw new DatabaseNotExistedException(databaseName);
+            throw new UnknownDatabaseException(databaseName);
         }
         return database.getSchemas();
     }

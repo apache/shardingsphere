@@ -21,12 +21,12 @@ import io.netty.util.AttributeMap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.session.ConnectionContext;
 import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.SQLStatementDatabaseHolder;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
@@ -37,9 +37,6 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionIsolationLevel;
 import org.apache.shardingsphere.transaction.core.TransactionType;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Connection session.
@@ -73,9 +70,9 @@ public final class ConnectionSession {
     
     private final ExecutorStatementManager statementManager;
     
-    private final Map<String, CursorStatementContext> cursorDefinitions = new ConcurrentHashMap<>();
-    
     private final PreparedStatementRegistry preparedStatementRegistry = new PreparedStatementRegistry();
+    
+    private final ConnectionContext connectionContext;
     
     private final RequiredSessionVariableRecorder requiredSessionVariableRecorder = new RequiredSessionVariableRecorder();
     
@@ -85,6 +82,7 @@ public final class ConnectionSession {
         this.attributeMap = attributeMap;
         backendConnection = determineBackendConnection();
         statementManager = determineStatementManager();
+        connectionContext = new ConnectionContext();
     }
     
     private BackendConnection determineBackendConnection() {

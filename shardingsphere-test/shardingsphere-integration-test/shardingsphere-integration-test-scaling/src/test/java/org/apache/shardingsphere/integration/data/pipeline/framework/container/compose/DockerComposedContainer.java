@@ -19,7 +19,11 @@ package org.apache.shardingsphere.integration.data.pipeline.framework.container.
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.framework.container.proxy.ShardingSphereProxyDockerContainer;
+import org.apache.shardingsphere.integration.data.pipeline.framework.container.config.proxy.ScalingProxyClusterContainerConfigurationFactory;
+import org.apache.shardingsphere.integration.data.pipeline.framework.container.config.storage.ScalingStorageContainerConfigurationFactory;
+import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.AdapterContainerFactory;
+import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
+import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.governance.GovernanceContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.governance.impl.ZookeeperContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
@@ -33,19 +37,24 @@ public final class DockerComposedContainer extends BaseComposedContainer {
     
     private final DatabaseType databaseType;
     
-    private final ShardingSphereProxyDockerContainer proxyContainer;
+    private final ShardingSphereProxyClusterContainer proxyContainer;
     
     @Getter
     private final DockerStorageContainer storageContainer;
     
+    @Getter
+    private final GovernanceContainer governanceContainer;
+    
     public DockerComposedContainer(final DatabaseType databaseType, final String dockerImageName) {
         this.databaseType = databaseType;
-        GovernanceContainer governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
-        storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, dockerImageName, ""));
-        ShardingSphereProxyDockerContainer proxyContainer = new ShardingSphereProxyDockerContainer(databaseType, dockerImageName);
-        proxyContainer.dependsOn(governanceContainer, storageContainer);
-        // TODO use proxy cluster will cause error sometimes, need to fix it.
-        this.proxyContainer = getContainers().registerContainer(proxyContainer);
+        governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
+        storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, dockerImageName,
+                "", ScalingStorageContainerConfigurationFactory.newInstance(databaseType, "")));
+        AdaptorContainerConfiguration containerConfig = ScalingProxyClusterContainerConfigurationFactory.newInstance(databaseType, dockerImageName);
+        ShardingSphereProxyClusterContainer proxyClusterContainer =
+                (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance("Cluster", "proxy", databaseType, storageContainer, "", containerConfig);
+        proxyClusterContainer.dependsOn(governanceContainer, storageContainer);
+        proxyContainer = getContainers().registerContainer(proxyClusterContainer);
     }
     
     @Override

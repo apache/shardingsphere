@@ -43,7 +43,7 @@ public class DatabaseDiscoverySpringBootStarterTest {
     private AlgorithmProvidedDatabaseDiscoveryRuleConfiguration config;
     
     @Test
-    public void assertHARuleConfiguration() {
+    public void assertDatabaseDiscoveryRuleConfiguration() {
         assertThat(config.getDataSources().size(), is(1));
         assertTrue(config.getDataSources().stream().findFirst().isPresent());
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = config.getDataSources().stream().findFirst().get();
