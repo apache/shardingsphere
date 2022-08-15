@@ -18,16 +18,24 @@
 package org.apache.shardingsphere.data.pipeline.core.api.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.PipelineJobAPI;
-import org.apache.shardingsphere.data.pipeline.api.job.JobType;
+import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlPipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
+import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobNotFoundException;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineVerifyFailedException;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJob;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 /**
  * Abstract pipeline job API impl.
@@ -39,22 +47,40 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     
     @Override
     public final String marshalJobId(final PipelineJobId pipelineJobId) {
-        return 'j' + pipelineJobId.getTypeCode() + marshalJobIdLeftPart(pipelineJobId);
+        return PipelineJobIdUtils.marshalJobIdCommonPrefix(pipelineJobId) + marshalJobIdLeftPart(pipelineJobId);
     }
     
     protected abstract String marshalJobIdLeftPart(PipelineJobId pipelineJobId);
     
     @Override
-    public JobType parseJobType(final String jobId) {
-        if (jobId.length() <= 3) {
-            throw new IllegalArgumentException("Invalid jobId length, jobId=" + jobId);
+    public Optional<String> start(final PipelineJobConfiguration jobConfig) {
+        String jobId = jobConfig.getJobId();
+        if (0 == jobConfig.getJobShardingCount()) {
+            log.warn("Invalid job config since job sharding count is 0, jobId={}", jobId);
+            throw new PipelineJobCreationException("job sharding count is 0, jobId: " + jobId);
         }
-        if ('j' == jobId.charAt(0)) {
-            throw new IllegalArgumentException("Invalid jobId, first char=" + jobId.charAt(0));
+        log.info("Start job by {}", jobConfig);
+        GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
+        String jobConfigKey = PipelineMetaDataNode.getScalingJobConfigPath(jobId);
+        if (repositoryAPI.isExisted(jobConfigKey)) {
+            log.warn("jobId already exists in registry center, ignore, jobConfigKey={}", jobConfigKey);
+            return Optional.of(jobId);
         }
-        String typeCode = jobId.substring(1, 3);
-        return JobType.valueOfByCode(typeCode);
+        repositoryAPI.persist(PipelineMetaDataNode.getScalingJobPath(jobId), MigrationJob.class.getName());
+        repositoryAPI.persist(jobConfigKey, convertJobConfigurationToText(jobConfig));
+        return Optional.of(jobId);
     }
+    
+    private String convertJobConfigurationToText(final PipelineJobConfiguration jobConfig) {
+        JobConfigurationPOJO jobConfigPOJO = new JobConfigurationPOJO();
+        jobConfigPOJO.setJobName(jobConfig.getJobId());
+        jobConfigPOJO.setShardingTotalCount(jobConfig.getJobShardingCount());
+        jobConfigPOJO.setJobParameter(YamlEngine.marshal(swapToYamlJobConfiguration(jobConfig)));
+        jobConfigPOJO.getProps().setProperty("create_time", LocalDateTime.now().format(DATE_TIME_FORMATTER));
+        return YamlEngine.marshal(jobConfigPOJO);
+    }
+    
+    protected abstract YamlPipelineJobConfiguration swapToYamlJobConfiguration(PipelineJobConfiguration jobConfig);
     
     @Override
     public void startDisabledJob(final String jobId) {
@@ -91,7 +117,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     protected final JobConfigurationPOJO getElasticJobConfigPOJO(final String jobId) {
         JobConfigurationPOJO result = PipelineAPIFactory.getJobConfigurationAPI().getJobConfiguration(jobId);
         if (null == result) {
-            throw new PipelineJobNotFoundException(String.format("Can not find scaling job %s", jobId), jobId);
+            throw new PipelineJobNotFoundException(jobId);
         }
         return result;
     }

@@ -111,7 +111,7 @@ public final class ProxyBackendHandlerFactoryTest extends ProxyContextRestorer {
     }
     
     @Test
-    public void assertNewInstanceWithCommonDistSQL() throws SQLException {
+    public void assertNewInstanceWithDistSQL() throws SQLException {
         String sql = "set variable transaction_type='LOCAL'";
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(SetVariableHandler.class));
@@ -242,7 +242,7 @@ public final class ProxyBackendHandlerFactoryTest extends ProxyContextRestorer {
     @Test(expected = UnsupportedOperationException.class)
     public void assertUnsupportedNonQueryDistSQLInTransaction() throws SQLException {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
-        String sql = "CREATE SHARDING KEY GENERATOR snowflake_key_generator (TYPE(NAME=SNOWFLAKE, PROPERTIES(\"max-vibration-offset\"=3)));";
+        String sql = "CREATE SHARDING KEY GENERATOR snowflake_key_generator (TYPE(NAME='SNOWFLAKE', PROPERTIES('max-vibration-offset'='3')));";
         ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
     }
     

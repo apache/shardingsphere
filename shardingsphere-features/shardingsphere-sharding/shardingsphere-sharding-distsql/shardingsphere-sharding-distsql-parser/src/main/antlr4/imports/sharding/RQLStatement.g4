@@ -60,7 +60,7 @@ showUnusedShardingKeyGenerators
     ;
 
 showShardingTableRulesUsedAlgorithm
-    : SHOW SHARDING TABLE RULES USED ALGORITHM algorithmName (FROM databaseName)?
+    : SHOW SHARDING TABLE RULES USED ALGORITHM shardingAlgorithmName (FROM databaseName)?
     ;
 
 showShardingTableRulesUsedKeyGenerator

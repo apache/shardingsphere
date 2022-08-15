@@ -18,7 +18,7 @@
     <create-table-order>
         CREATE TABLE `t_order` (
         `id` bigint NOT NULL COMMENT 'pk id',
-        `order_id` int NOT NULL,
+        `order_id` bigint NOT NULL,
         `user_id` int NOT NULL,
         `status` varchar ( 255 ) NULL,
         `t_mediumint` mediumint NULL,
@@ -48,14 +48,14 @@
         `t_set` set ('1', '2', '3') NULL,
         `t_json` json NULL COMMENT 'json test',
         PRIMARY KEY ( `id` ),
-        INDEX ( `order_id` )
+        UNIQUE KEY `unique_key_order_id` (`order_id`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     </create-table-order>
     
     <create-table-order-item>
         CREATE TABLE t_order_item (
         item_id bigint NOT NULL,
-        order_id int NOT NULL,
+        order_id bigint NOT NULL,
         user_id int NOT NULL,
         status varchar(50) DEFAULT NULL,
         PRIMARY KEY (item_id)

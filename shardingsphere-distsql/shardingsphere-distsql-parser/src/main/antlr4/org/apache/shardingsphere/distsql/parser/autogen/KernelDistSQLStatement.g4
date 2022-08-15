@@ -51,7 +51,6 @@ execute
     | showTableMetadata
     | showSQLParserRule
     | alterSQLParserRule
-    | showAuthorityRule
     | showTransactionRule
     | alterTransactionRule
     | showTrafficRules

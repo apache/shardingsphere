@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsist
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyContentCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCountCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
@@ -68,13 +68,13 @@ import java.util.concurrent.TimeUnit;
 public final class DataConsistencyChecker {
     
     // TODO remove jobConfig for common usage
-    private final RuleAlteredJobConfiguration jobConfig;
+    private final MigrationJobConfiguration jobConfig;
     
     private final Collection<String> logicTableNames;
     
     private final TableNameSchemaNameMapping tableNameSchemaNameMapping;
     
-    public DataConsistencyChecker(final RuleAlteredJobConfiguration jobConfig) {
+    public DataConsistencyChecker(final MigrationJobConfiguration jobConfig) {
         this.jobConfig = jobConfig;
         logicTableNames = jobConfig.splitLogicTableNames();
         tableNameSchemaNameMapping = new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(jobConfig.getSchemaTablesMap()));

@@ -83,5 +83,4 @@ public final class OpenGaussProxyTransactionIT extends BaseTransactionITCase {
     private void callTestCases() {
         callTestCases(parameterized);
     }
-    
 }

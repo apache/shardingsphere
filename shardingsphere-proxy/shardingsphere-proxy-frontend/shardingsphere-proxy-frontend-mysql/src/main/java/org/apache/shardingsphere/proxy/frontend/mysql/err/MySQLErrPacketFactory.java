@@ -20,16 +20,13 @@ package org.apache.shardingsphere.proxy.frontend.mysql.err;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobNotFoundException;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
-import org.apache.shardingsphere.error.code.CommonErrorCode;
-import org.apache.shardingsphere.error.mapper.SQLExceptionMapperFactory;
-import org.apache.shardingsphere.error.mysql.code.MySQLServerErrorCode;
+import org.apache.shardingsphere.error.SQLExceptionHandler;
+import org.apache.shardingsphere.error.mysql.code.MySQLVendorError;
 import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.CommonDistSQLErrorCode;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.CommonDistSQLException;
-import org.apache.shardingsphere.proxy.frontend.exception.FrontendTooManyConnectionsException;
-import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedCommandException;
+import org.apache.shardingsphere.infra.util.exception.sql.vendor.ShardingSphereVendorError;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.DistSQLException;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.DistSQLVendorError;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
 
 import java.nio.charset.UnsupportedCharsetException;
@@ -50,36 +47,24 @@ public final class MySQLErrPacketFactory {
     public static MySQLErrPacket newInstance(final Exception cause) {
         if (cause instanceof SQLException) {
             SQLException sqlException = (SQLException) cause;
-            return null == sqlException.getSQLState() ? new MySQLErrPacket(1, MySQLServerErrorCode.ER_INTERNAL_ERROR, getErrorMessage(sqlException))
+            return null == sqlException.getSQLState() ? new MySQLErrPacket(1, MySQLVendorError.ER_INTERNAL_ERROR, getErrorMessage(sqlException))
                     : new MySQLErrPacket(1, sqlException.getErrorCode(), sqlException.getSQLState(), sqlException.getMessage());
         }
         if (cause instanceof ShardingSphereInsideException) {
-            SQLException sqlException = SQLExceptionMapperFactory.getInstance("MySQL").convert((ShardingSphereInsideException) cause);
+            SQLException sqlException = SQLExceptionHandler.convert("MySQL", (ShardingSphereInsideException) cause);
             return new MySQLErrPacket(1, sqlException.getErrorCode(), sqlException.getSQLState(), sqlException.getMessage());
         }
-        if (cause instanceof CommonDistSQLException) {
-            CommonDistSQLException commonDistSQLException = (CommonDistSQLException) cause;
-            return new MySQLErrPacket(1, CommonDistSQLErrorCode.valueOf(commonDistSQLException), commonDistSQLException.getVariable());
-        }
-        if (cause instanceof UnsupportedCommandException) {
-            return new MySQLErrPacket(1, CommonErrorCode.UNSUPPORTED_COMMAND, ((UnsupportedCommandException) cause).getCommandType());
+        if (cause instanceof DistSQLException) {
+            DistSQLException distSQLException = (DistSQLException) cause;
+            return new MySQLErrPacket(1, DistSQLVendorError.valueOf(distSQLException), distSQLException.getVariable());
         }
         if (cause instanceof UnsupportedPreparedStatementException) {
-            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_UNSUPPORTED_PS);
-        }
-        if (cause instanceof PipelineJobNotFoundException) {
-            return new MySQLErrPacket(1, CommonErrorCode.SCALING_JOB_NOT_EXIST, ((PipelineJobNotFoundException) cause).getJobId());
-        }
-        if (cause instanceof FrontendTooManyConnectionsException) {
-            return new MySQLErrPacket(0, MySQLServerErrorCode.ER_CON_COUNT_ERROR, MySQLServerErrorCode.ER_CON_COUNT_ERROR.getErrorMessage());
+            return new MySQLErrPacket(1, MySQLVendorError.ER_UNSUPPORTED_PS);
         }
         if (cause instanceof UnsupportedCharsetException) {
-            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_UNKNOWN_CHARACTER_SET, cause.getMessage());
+            return new MySQLErrPacket(1, MySQLVendorError.ER_UNKNOWN_CHARACTER_SET, cause.getMessage());
         }
-        if (cause instanceof RuntimeException) {
-            return new MySQLErrPacket(1, CommonErrorCode.RUNTIME_EXCEPTION, cause.getMessage());
-        }
-        return new MySQLErrPacket(1, CommonErrorCode.UNKNOWN_EXCEPTION, cause.getMessage());
+        return new MySQLErrPacket(1, ShardingSphereVendorError.UNKNOWN_EXCEPTION, cause.getMessage());
     }
     
     private static String getErrorMessage(final SQLException cause) {

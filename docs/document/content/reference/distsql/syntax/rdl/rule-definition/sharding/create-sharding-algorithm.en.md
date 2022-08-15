@@ -37,12 +37,12 @@ algorithmType ::=
 ```SQL
 -- create a sharding algorithm of type INLINE
 CREATE SHARDING ALGORITHM inline_algorithm (
-    TYPE(NAME=inline, PROPERTIES("algorithm-expression"="t_order_${user_id % 2}"))
+    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${user_id % 2}"))
 );
 
 -- create a sharding algorithm of type AUTO_INTERVAL
 CREATE SHARDING ALGORITHM interval_algorithm (
-    TYPE(NAME=auto_interval, PROPERTIES("datetime-lower"="2022-01-01 00:00:00", "datetime-upper"="2022-01-03 00:00:00", "sharding-seconds"="86400"))
+    TYPE(NAME="auto_interval", PROPERTIES("datetime-lower"="2022-01-01 00:00:00", "datetime-upper"="2022-01-03 00:00:00", "sharding-seconds"="86400"))
 );
 ```
 

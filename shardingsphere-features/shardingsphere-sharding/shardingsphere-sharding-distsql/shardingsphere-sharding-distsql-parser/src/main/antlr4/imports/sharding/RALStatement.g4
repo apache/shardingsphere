@@ -40,5 +40,5 @@ clearShardingHint
     ;
 
 shardingValue
-    : INT | IDENTIFIER | STRING
+    : INT | STRING
     ;

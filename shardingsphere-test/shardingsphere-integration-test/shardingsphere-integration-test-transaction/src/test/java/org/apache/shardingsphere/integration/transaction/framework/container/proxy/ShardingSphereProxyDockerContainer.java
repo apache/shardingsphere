@@ -43,7 +43,7 @@ public final class ShardingSphereProxyDockerContainer extends DockerITContainer 
     @Override
     protected void configure() {
         withExposedPorts(3307);
-        mapConfigurationFiles();
+        mountConfigurationFiles();
         if (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) {
             setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), "postgres"), "root", "root")));
         } else {
@@ -51,7 +51,7 @@ public final class ShardingSphereProxyDockerContainer extends DockerITContainer 
         }
     }
     
-    private void mapConfigurationFiles() {
+    private void mountConfigurationFiles() {
         withClasspathResourceMapping(String.format("/env/%s/server.yaml", databaseType.getType().toLowerCase()), "/opt/shardingsphere-proxy/conf/server.yaml", BindMode.READ_ONLY);
         withClasspathResourceMapping("/logback-test.xml", "/opt/shardingsphere-proxy/conf/logback-test.xml", BindMode.READ_ONLY);
     }

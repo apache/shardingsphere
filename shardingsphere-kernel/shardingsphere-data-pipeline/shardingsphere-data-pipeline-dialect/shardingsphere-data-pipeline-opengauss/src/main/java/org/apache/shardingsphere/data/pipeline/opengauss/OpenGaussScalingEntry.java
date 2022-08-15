@@ -18,18 +18,12 @@
 package org.apache.shardingsphere.data.pipeline.opengauss;
 
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.OpenGaussWalDumper;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLInventoryDumper;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 
 /**
  * Scaling entry of openGauss.
  */
 public final class OpenGaussScalingEntry implements ScalingEntry {
-    
-    @Override
-    public Class<PostgreSQLInventoryDumper> getInventoryDumperClass() {
-        return PostgreSQLInventoryDumper.class;
-    }
     
     @Override
     public Class<OpenGaussWalDumper> getIncrementalDumperClass() {

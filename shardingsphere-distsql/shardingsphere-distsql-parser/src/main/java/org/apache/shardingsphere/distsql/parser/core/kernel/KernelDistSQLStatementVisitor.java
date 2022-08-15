@@ -58,7 +58,6 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ResourceDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.SetVariableContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowAllVariablesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowAuthorityRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowInstanceInfoContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowInstanceListContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowModeInfoContext;
@@ -88,7 +87,6 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.hint.ClearHintStat
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertYamlConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowAllVariableStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowAuthorityRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceInfoStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceListStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowModeInfoStatement;
@@ -325,11 +323,6 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
             schemaName = null == fromSegment.schemaName() ? null : getIdentifierValue(fromSegment.schemaName());
         }
         return new RefreshTableMetadataStatement(tableName, resourceName, schemaName);
-    }
-    
-    @Override
-    public ASTNode visitShowAuthorityRule(final ShowAuthorityRuleContext ctx) {
-        return new ShowAuthorityRuleStatement();
     }
     
     @Override

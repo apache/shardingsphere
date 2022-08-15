@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.spring.boot;
 
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchShadowAlgorithm;
+import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchedShadowAlgorithm;
 import org.apache.shardingsphere.shadow.algorithm.shadow.hint.SimpleHintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -58,7 +58,7 @@ public class PropertiesShadowSpringBootStarterTest {
     
     private void assertShadowAlgorithms(final Map<String, ShadowAlgorithm> shadowAlgorithms) {
         ShadowAlgorithm userIdMatchAlgorithm = shadowAlgorithms.get("user-id-match-algorithm");
-        assertThat(userIdMatchAlgorithm, instanceOf(ColumnRegexMatchShadowAlgorithm.class));
+        assertThat(userIdMatchAlgorithm, instanceOf(ColumnRegexMatchedShadowAlgorithm.class));
         assertThat(userIdMatchAlgorithm.getType(), is("REGEX_MATCH"));
         assertThat(userIdMatchAlgorithm.getProps().getProperty("operation"), is("insert"));
         assertThat(userIdMatchAlgorithm.getProps().getProperty("column"), is("user_id"));

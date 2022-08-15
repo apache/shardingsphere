@@ -21,16 +21,13 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumper;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.InventoryDumper;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryFactory;
 
-import javax.sql.DataSource;
 import java.lang.reflect.Constructor;
 
 /**
@@ -38,24 +35,6 @@ import java.lang.reflect.Constructor;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DumperFactory {
-    
-    /**
-     * Create inventory dumper.
-     *
-     * @param inventoryDumperConfig inventory dumper configuration
-     * @param channel channel
-     * @param sourceDataSource data source
-     * @param sourceMetaDataLoader metadata loader
-     * @return inventory dumper
-     */
-    @SneakyThrows(ReflectiveOperationException.class)
-    public static InventoryDumper createInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final PipelineChannel channel,
-                                                        final DataSource sourceDataSource, final PipelineTableMetaDataLoader sourceMetaDataLoader) {
-        ScalingEntry scalingEntry = ScalingEntryFactory.getInstance(inventoryDumperConfig.getDataSourceConfig().getDatabaseType().getType());
-        Constructor<? extends InventoryDumper> constructor = scalingEntry.getInventoryDumperClass()
-                .getConstructor(InventoryDumperConfiguration.class, PipelineChannel.class, DataSource.class, PipelineTableMetaDataLoader.class);
-        return constructor.newInstance(inventoryDumperConfig, channel, sourceDataSource, sourceMetaDataLoader);
-    }
     
     /**
      * Create incremental dumper.
