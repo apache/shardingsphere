@@ -30,7 +30,7 @@ Attributes:
 | -------------------------- | -------------------- | --------------------------------------------------------------------------------------- |
 | groupName (+)              | String               | Database discovery group name                                                           |
 | dataSourceNames (+)        | Collection\<String\> | Data source names, multiple data source names separated with comma. Such as: ds_0, ds_1 |
-| discoveryHeartbeatName (+) | String               | Detect heartbeat name                                                                   |
+| discoveryHeartbeatName (+) | String               | discovery heartbeat name                                                                   |
 | discoveryTypeName (+)      | String               | Database discovery type name                                                            |
 
 ### Detect Heartbeat Configuration
