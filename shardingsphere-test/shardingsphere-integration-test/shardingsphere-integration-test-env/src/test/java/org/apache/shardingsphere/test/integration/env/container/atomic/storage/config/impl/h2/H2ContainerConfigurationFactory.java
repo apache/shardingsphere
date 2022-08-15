@@ -28,7 +28,7 @@ import java.util.Collections;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class H2ContainerConfigurationFactory {
-
+    
     /**
      * Create new instance of h2 container configuration.
      *
