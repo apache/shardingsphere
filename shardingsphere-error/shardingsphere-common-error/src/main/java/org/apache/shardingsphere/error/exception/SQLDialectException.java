@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.dialect.connection;
+package org.apache.shardingsphere.error.exception;
 
-import org.apache.shardingsphere.error.dialect.SQLDialectException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 
 /**
- * Too many connections exception.
+ * SQL dialect exception.
  */
-public final class TooManyConnectionsException extends SQLDialectException {
+public abstract class SQLDialectException extends ShardingSphereInsideException {
     
-    private static final long serialVersionUID = -4397915988239251541L;
+    private static final long serialVersionUID = -5090068160364259336L;
 }
