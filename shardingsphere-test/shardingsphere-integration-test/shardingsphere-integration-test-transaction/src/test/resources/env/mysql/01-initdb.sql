@@ -15,5 +15,4 @@
 -- limitations under the License.
 --
 
-CREATE USER IF NOT EXISTS 'test_user'@'%' IDENTIFIED BY 'Test@123';
-GRANT All privileges ON *.* TO 'test_user'@'%';
+
