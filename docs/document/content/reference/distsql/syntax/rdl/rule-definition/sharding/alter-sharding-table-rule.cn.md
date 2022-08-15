@@ -71,16 +71,16 @@ algorithmName ::=
 ```sql
 -- 修改分片算法
 ALTER SHARDING ALGORITHM database_inline (
-    TYPE(NAME=inline, PROPERTIES("algorithm-expression"="t_order_${user_id % 4}"))
+    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${user_id % 4}"))
 ), table_inline (
-    TYPE(NAME=inline, PROPERTIES("algorithm-expression"="t_order_${order_id % 4}"))
+    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${order_id % 4}"))
 ); 
 
 -- 修改分片规则为指定分片算法
 ALTER SHARDING TABLE RULE t_order (
     DATANODES("resource_${0..3}.t_order_item${0..3}"),
-    DATABASE_STRATEGY(TYPE=standard, SHARDING_COLUMN=user_id, SHARDING_ALGORITHM=database_inline),
-    TABLE_STRATEGY(TYPE=standard, SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=table_inline)
+    DATABASE_STRATEGY(TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM=database_inline),
+    TABLE_STRATEGY(TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=table_inline)
 );
 ```
 
@@ -89,20 +89,20 @@ ALTER SHARDING TABLE RULE t_order (
 ```sql
 -- 修改分片算法
 ALTER SHARDING ALGORITHM database_inline (
-    TYPE(NAME=inline, PROPERTIES("algorithm-expression"="t_order_${user_id % 4}"))
+    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${user_id % 4}"))
 ), table_inline (
-    TYPE(NAME=inline, PROPERTIES("algorithm-expression"="t_order_${order_id % 4}"))
+    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${order_id % 4}"))
 ); 
 
 -- 修改默认分库策略
 ALTER DEFAULT SHARDING DATABASE STRATEGY (
-    TYPE = standard, SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=database_inline
+    TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=database_inline
 );
 
 -- 修改分片规则为指定分片算法
 ALTER SHARDING TABLE RULE t_order (
     DATANODES("resource_${0..3}.t_order_item${0..3}"),
-    TABLE_STRATEGY(TYPE=standard, SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=table_inline)
+    TABLE_STRATEGY(TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=table_inline)
 );
 ```
 
@@ -111,19 +111,19 @@ ALTER SHARDING TABLE RULE t_order (
 ```sql
 -- 修改分片算法
 ALTER SHARDING ALGORITHM database_inline (
-    TYPE(NAME=inline, PROPERTIES("algorithm-expression"="t_order_${user_id % 4}"))
+    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${user_id % 4}"))
 ), table_inline (
-    TYPE(NAME=inline, PROPERTIES("algorithm-expression"="t_order_${order_id % 4}"))
+    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${order_id % 4}"))
 ); 
 
 -- 修改默认分库策略
 ALTER DEFAULT SHARDING DATABASE STRATEGY (
-    TYPE = standard, SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=database_inline
+    TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=database_inline
 );
 
 -- 修改默认分表策略
 ALTER DEFAULT SHARDING TABLE STRATEGY (
-    TYPE = standard, SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=table_inline
+    TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=table_inline
 );
 
 -- 修改分片规则
@@ -137,8 +137,8 @@ ALTER SHARDING TABLE RULE t_order (
 ```sql
 ALTER SHARDING TABLE RULE t_order (
     DATANODES("resource_${0..3}.t_order_item${0..3}"),
-    DATABASE_STRATEGY(TYPE=standard, SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME=inline, PROPERTIES("algorithm-expression"="ds_${user_id % 2}")))),
-    TABLE_STRATEGY(TYPE=standard, SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME=inline, PROPERTIES("algorithm-expression"="ds_${order_id % 2}"))))
+    DATABASE_STRATEGY(TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME="inline", PROPERTIES("algorithm-expression"="ds_${user_id % 2}")))),
+    TABLE_STRATEGY(TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME="inline", PROPERTIES("algorithm-expression"="ds_${order_id % 2}"))))
 );
 ```
 
@@ -149,7 +149,7 @@ ALTER SHARDING TABLE RULE t_order (
 ```sql
 ALTER SHARDING TABLE RULE t_order (
     RESOURCES(ds_0, ds_1),
-    SHARDING_COLUMN=order_id, TYPE(NAME=MOD, PROPERTIES("sharding-count"=4))
+    SHARDING_COLUMN=order_id, TYPE(NAME="MOD", PROPERTIES("sharding-count"="4"))
 );
 ```
 
