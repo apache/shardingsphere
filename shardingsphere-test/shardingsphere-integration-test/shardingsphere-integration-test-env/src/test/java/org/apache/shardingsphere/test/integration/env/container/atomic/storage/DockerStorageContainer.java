@@ -120,10 +120,10 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     }
     
     /**
-     * Get jdbc url.
+     * Get JDBC URL.
      * 
      * @param dataSourceName datasource name.
-     * @return jdbc url
+     * @return JDBC URL
      */
     public String getJdbcUrl(final String dataSourceName) {
         return DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(getPort()), dataSourceName);
