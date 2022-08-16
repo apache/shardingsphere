@@ -5,19 +5,17 @@ weight = 13
 chapter = true
 +++
 
-## SPI 接口
+## ShadowAlgorithm
 
-### 完全限定的类名
+### 完全限定类名
 
 [`org.apache.shardingsphere.shadow.spi.ShadowAlgorithm`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-shadow/shardingsphere-shadow-api/src/main/java/org/apache/shardingsphere/shadow/spi/ShadowAlgorithm.java)
 
-| *SPI 名称*       | *详细说明*   |
-|---------------- |------------ |
-| ShadowAlgorithm | 影子库路由算法 |
+### 定义
 
-## 示例
+影子库提供的影子算法
 
-### ShadowAlgorithm
+### 已知实现
 
 | *已知实现类*                        | *详细说明*              | *完全限定的类名* |
 | --------------------------------- | ---------------------- | ------------- |
