@@ -37,6 +37,7 @@ import org.apache.shardingsphere.infra.binder.segment.insert.keygen.GeneratedKey
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
@@ -78,6 +79,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.traffic.engine.TrafficEngine;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
+import org.apache.shardingsphere.transaction.TransactionHolder;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -156,6 +158,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         ResultSet result;
         try {
             LogicSQL logicSQL = createLogicSQL(sql);
+            checkSameDatabaseNameInTransaction(logicSQL.getSqlStatementContext(), connection.getDatabaseName());
             trafficInstanceId = getInstanceIdAndSet(logicSQL).orElse(null);
             if (null != trafficInstanceId) {
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, logicSQL);
@@ -235,6 +238,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     public int executeUpdate(final String sql) throws SQLException {
         try {
             LogicSQL logicSQL = createLogicSQL(sql);
+            checkSameDatabaseNameInTransaction(logicSQL.getSqlStatementContext(), connection.getDatabaseName());
             trafficInstanceId = getInstanceIdAndSet(logicSQL).orElse(null);
             if (null != trafficInstanceId) {
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, logicSQL);
@@ -263,6 +267,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         }
         try {
             LogicSQL logicSQL = createLogicSQL(sql);
+            checkSameDatabaseNameInTransaction(logicSQL.getSqlStatementContext(), connection.getDatabaseName());
             trafficInstanceId = getInstanceIdAndSet(logicSQL).orElse(null);
             if (null != trafficInstanceId) {
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, logicSQL);
@@ -289,6 +294,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         returnGeneratedKeys = true;
         try {
             LogicSQL logicSQL = createLogicSQL(sql);
+            checkSameDatabaseNameInTransaction(logicSQL.getSqlStatementContext(), connection.getDatabaseName());
             trafficInstanceId = getInstanceIdAndSet(logicSQL).orElse(null);
             if (null != trafficInstanceId) {
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, logicSQL);
@@ -315,6 +321,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         returnGeneratedKeys = true;
         try {
             LogicSQL logicSQL = createLogicSQL(sql);
+            checkSameDatabaseNameInTransaction(logicSQL.getSqlStatementContext(), connection.getDatabaseName());
             trafficInstanceId = getInstanceIdAndSet(logicSQL).orElse(null);
             if (null != trafficInstanceId) {
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, logicSQL);
@@ -431,6 +438,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     private boolean execute0(final String sql, final ExecuteCallback callback) throws SQLException {
         try {
             LogicSQL logicSQL = createLogicSQL(sql);
+            checkSameDatabaseNameInTransaction(logicSQL.getSqlStatementContext(), connection.getDatabaseName());
             trafficInstanceId = getInstanceIdAndSet(logicSQL).orElse(null);
             if (null != trafficInstanceId) {
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, logicSQL);
@@ -452,6 +460,19 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             return execute(executionGroupContext, callback, executionContext.getSqlStatementContext().getSqlStatement(), executionContext.getRouteContext().getRouteUnits());
         } finally {
             currentResultSet = null;
+        }
+    }
+    
+    private void checkSameDatabaseNameInTransaction(final SQLStatementContext<?> sqlStatementContext, final String connectionDatabaseName) {
+        if (!TransactionHolder.isTransaction()) {
+            return;
+        }
+        if (sqlStatementContext instanceof TableAvailable) {
+            ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().ifPresent(databaseName -> {
+                if (!databaseName.equals(connectionDatabaseName)) {
+                    throw new ShardingSphereException("JDBC does not support operations across multiple logical databases in transaction.");
+                }
+            });
         }
     }
     
