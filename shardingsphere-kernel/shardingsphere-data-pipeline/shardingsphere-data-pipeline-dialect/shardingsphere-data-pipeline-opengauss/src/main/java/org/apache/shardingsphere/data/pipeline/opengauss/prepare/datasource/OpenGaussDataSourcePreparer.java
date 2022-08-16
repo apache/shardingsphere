@@ -62,11 +62,12 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
         ShardingSphereMetaData metaData = PipelineContext.getContextManager().getMetaDataContexts().getMetaData();
         ShardingSphereDatabase sphereDatabase = metaData.getDatabases().get(parameter.getDatabaseName());
         ShardingSphereSQLParserEngine sqlParserEngine = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class)
-                        .getSQLParserEngine(sphereDatabase.getProtocolType().getType());
+                .getSQLParserEngine(sphereDatabase.getProtocolType().getType());
         List<String> result = new LinkedList<>();
         for (JobDataNodeEntry each : parameter.getTablesFirstDataNodes().getEntries()) {
             String schemaName = parameter.getTableNameSchemaNameMapping().getSchemaName(each.getLogicTableName());
-            result.add(generator.generateLogicDDLSQL(sphereDatabase, parameter.getDatabaseName(), schemaName, each.getLogicTableName(),
+            String dataSourceName = each.getDataNodes().get(0).getDataSourceName();
+            result.add(generator.generateLogicDDLSQL(sphereDatabase, dataSourceName, schemaName, each.getLogicTableName(),
                     getActualTable(sphereDatabase, each.getLogicTableName()), sqlParserEngine));
         }
         return result;

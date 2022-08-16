@@ -64,7 +64,8 @@ public final class MySQLDataSourcePreparer extends AbstractDataSourcePreparer {
         List<String> result = new LinkedList<>();
         for (JobDataNodeEntry each : parameter.getTablesFirstDataNodes().getEntries()) {
             String schemaName = parameter.getTableNameSchemaNameMapping().getSchemaName(each.getLogicTableName());
-            result.add(generator.generateLogicDDLSQL(sphereDatabase, parameter.getDatabaseName(), schemaName, each.getLogicTableName(),
+            String dataSourceName = each.getDataNodes().get(0).getDataSourceName();
+            result.add(generator.generateLogicDDLSQL(sphereDatabase, dataSourceName, schemaName, each.getLogicTableName(),
                     getActualTable(sphereDatabase, each.getLogicTableName()), sqlParserEngine));
         }
         return result;

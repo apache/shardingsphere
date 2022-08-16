@@ -65,12 +65,12 @@ public final class PipelineDDLGenerator {
     private static final String DELIMITER = ";";
     
     private static final String SET_SEARCH_PATH_PREFIX = "set search_path";
-
+    
     /**
      * Generate logic ddl sql.
      *
      * @param database database
-     * @param databaseName database name
+     * @param dataSourceName data source name
      * @param schemaName schema name
      * @param logicTableName table name
      * @param actualTableName actual table name
@@ -78,16 +78,16 @@ public final class PipelineDDLGenerator {
      * @return ddl SQL
      */
     @SneakyThrows
-    public String generateLogicDDLSQL(final ShardingSphereDatabase database, final String databaseName, final String schemaName,
+    public String generateLogicDDLSQL(final ShardingSphereDatabase database, final String dataSourceName, final String schemaName,
                                       final String logicTableName, final String actualTableName,
                                       final ShardingSphereSQLParserEngine parserEngine) {
         DatabaseType databaseType = database.getProtocolType();
         log.info("generateLogicDDLSQL, databaseType={}, databaseName={}, schemaName={}, tableName={}, dataSourceNames={}",
-                databaseType.getType(), databaseName, schemaName, logicTableName, database.getResource().getDataSources().keySet());
-        Collection<String> multiSQL = generateActualDDLSQL(databaseType, schemaName, actualTableName, database.getResource().getDataSources().get(databaseName));
+                databaseType.getType(), database.getName(), schemaName, logicTableName, database.getResource().getDataSources().keySet());
+        Collection<String> multiSQL = generateActualDDLSQL(databaseType, schemaName, actualTableName, database.getResource().getDataSources().get(dataSourceName));
         StringBuilder result = new StringBuilder();
         for (String each : multiSQL) {
-            Optional<String> logicSQL = decorate(databaseType, databaseName, schemaName, database, each, parserEngine);
+            Optional<String> logicSQL = decorate(databaseType, database.getName(), schemaName, database, each, parserEngine);
             logicSQL.ifPresent(ddlSQL -> result.append(ddlSQL).append(DELIMITER).append(System.lineSeparator()));
         }
         return result.toString();
