@@ -15,14 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.dialect.connection;
+package org.apache.shardingsphere.error.exception.syntax.database;
 
-import org.apache.shardingsphere.error.dialect.SQLDialectException;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.error.exception.SQLDialectException;
 
 /**
- * Too many connections exception.
+ * Database drop exists exception.
  */
-public final class TooManyConnectionsException extends SQLDialectException {
+@RequiredArgsConstructor
+@Getter
+public final class DatabaseDropNotExistsException extends SQLDialectException {
     
-    private static final long serialVersionUID = -4397915988239251541L;
+    private static final long serialVersionUID = 6088272565526510361L;
+    
+    private final String databaseName;
 }

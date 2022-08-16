@@ -15,18 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.algorithm.shadow;
+package org.apache.shardingsphere.error.exception.data;
 
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.error.exception.SQLDialectException;
 
 /**
- * Shadow algorithm exception.
+ * Invalid parameter value exception.
  */
-public final class ShadowAlgorithmException extends ShardingSphereException {
+@RequiredArgsConstructor
+@Getter
+public final class InvalidParameterValueException extends SQLDialectException {
     
-    private static final long serialVersionUID = 8144277065388645946L;
+    private static final long serialVersionUID = -6561119208409452172L;
     
-    public ShadowAlgorithmException(final String errorMessage, final Object... args) {
-        super(errorMessage, args);
-    }
+    private final String parameterName;
+    
+    private final String parameterValue;
 }

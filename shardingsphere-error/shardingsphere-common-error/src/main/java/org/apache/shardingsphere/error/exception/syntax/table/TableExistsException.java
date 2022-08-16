@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.dialect.transaction;
+package org.apache.shardingsphere.error.exception.syntax.table;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.error.dialect.SQLDialectException;
+import org.apache.shardingsphere.error.exception.SQLDialectException;
 
 /**
- * In transaction exception.
+ * Table exists exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class InTransactionException extends SQLDialectException {
+public final class TableExistsException extends SQLDialectException {
     
-    private static final long serialVersionUID = 8125852172126111520L;
+    private static final long serialVersionUID = 6056681626545854214L;
     
-    private final String message;
+    private final String tableName;
 }

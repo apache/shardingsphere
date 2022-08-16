@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.dialect.syntax.table;
+package org.apache.shardingsphere.shadow.algorithm.shadow;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.error.dialect.SQLDialectException;
+import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
 
 /**
- * Table exists exception.
+ * Unsupported shadow column type exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class TableExistsException extends SQLDialectException {
+public final class UnsupportedShadowColumnTypeException extends ShardingSphereSQLException {
     
-    private static final long serialVersionUID = 6056681626545854214L;
+    private static final long serialVersionUID = 8144277065388645946L;
     
-    private final String tableName;
+    public UnsupportedShadowColumnTypeException(final String tableName, final String columnName, final Class<?> type) {
+        super(XOpenSQLState.INVALID_DATA_TYPE, 1501, "Shadow column `%s` of table `%s` does not support `%s` type", columnName, tableName, type.getName());
+    }
 }

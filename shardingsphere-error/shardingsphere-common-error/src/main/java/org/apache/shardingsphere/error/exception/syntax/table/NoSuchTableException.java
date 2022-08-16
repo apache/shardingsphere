@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.dialect.syntax.database;
+package org.apache.shardingsphere.error.exception.syntax.table;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.error.dialect.SQLDialectException;
+import org.apache.shardingsphere.error.exception.SQLDialectException;
 
 /**
- * Database drop exists exception.
+ * No such table exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DatabaseDropNotExistsException extends SQLDialectException {
+public final class NoSuchTableException extends SQLDialectException {
     
-    private static final long serialVersionUID = 6088272565526510361L;
+    private static final long serialVersionUID = 8311953084941769743L;
     
-    private final String databaseName;
+    private final String tableName;
 }

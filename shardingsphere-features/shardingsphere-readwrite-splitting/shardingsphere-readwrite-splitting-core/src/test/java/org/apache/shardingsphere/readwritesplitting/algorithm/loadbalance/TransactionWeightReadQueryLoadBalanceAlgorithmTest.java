@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.session.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.readwritesplitting.factory.ReadQueryLoadBalanceAlgorithmFactory;
-import org.apache.shardingsphere.transaction.TransactionHolder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,9 +50,9 @@ public final class TransactionWeightReadQueryLoadBalanceAlgorithmTest {
     @Test
     public void assertGetSingleReadDataSource() {
         TransactionWeightReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = createReadQueryLoadBalanceAlgorithm(createSingleDataSourceProperties());
-        TransactionHolder.setInTransaction();
-        assertThat(loadBalanceAlgorithm.getDataSource("ds", "test_write_ds", Collections.singletonList("test_read_ds_1")), is("test_read_ds_1"));
-        TransactionHolder.clear();
+        TransactionConnectionContext context = new TransactionConnectionContext();
+        context.setInTransaction(true);
+        assertThat(loadBalanceAlgorithm.getDataSource("ds", "test_write_ds", Collections.singletonList("test_read_ds_1"), context), is("test_read_ds_1"));
     }
     
     private Properties createSingleDataSourceProperties() {
@@ -68,12 +68,12 @@ public final class TransactionWeightReadQueryLoadBalanceAlgorithmTest {
         String readDataSourceName1 = "test_read_ds_1";
         String readDataSourceName2 = "test_read_ds_2";
         List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
-        TransactionHolder.setInTransaction();
-        assertTrue(readDataSourceNames.contains(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames)));
-        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), notNullValue());
-        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), notNullValue());
-        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), notNullValue());
-        TransactionHolder.clear();
+        TransactionConnectionContext context = new TransactionConnectionContext();
+        context.setInTransaction(true);
+        assertTrue(readDataSourceNames.contains(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context)));
+        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context), notNullValue());
+        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context), notNullValue());
+        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context), notNullValue());
     }
     
     private Properties createMultipleDataSourcesProperties() {

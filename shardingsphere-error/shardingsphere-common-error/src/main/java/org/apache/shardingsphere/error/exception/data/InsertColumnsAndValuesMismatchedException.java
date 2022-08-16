@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.dialect.data;
+package org.apache.shardingsphere.error.exception.data;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.error.dialect.SQLDialectException;
+import org.apache.shardingsphere.error.exception.SQLDialectException;
 
 /**
- * Invalid parameter value exception.
+ * Insert columns and values mismatched exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class InvalidParameterValueException extends SQLDialectException {
+public final class InsertColumnsAndValuesMismatchedException extends SQLDialectException {
     
-    private static final long serialVersionUID = -6561119208409452172L;
+    private static final long serialVersionUID = 5676889868213244575L;
     
-    private final String parameterName;
-    
-    private final String parameterValue;
+    private final int mismatchedRowNumber;
 }

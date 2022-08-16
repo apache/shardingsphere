@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.dialect;
+package org.apache.shardingsphere.error.exception;
 
 import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 

@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.error.dialect.syntax.database;
+package org.apache.shardingsphere.error.exception.connection;
 
-import org.apache.shardingsphere.error.dialect.SQLDialectException;
+import org.apache.shardingsphere.error.exception.SQLDialectException;
 
 /**
- * No database selected exception.
+ * Too many connections exception.
  */
-public final class NoDatabaseSelectedException extends SQLDialectException {
+public final class TooManyConnectionsException extends SQLDialectException {
     
-    private static final long serialVersionUID = 7820981156141678308L;
+    private static final long serialVersionUID = -4397915988239251541L;
 }

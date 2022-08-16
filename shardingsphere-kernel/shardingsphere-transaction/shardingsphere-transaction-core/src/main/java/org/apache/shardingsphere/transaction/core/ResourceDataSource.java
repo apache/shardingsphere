@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.transaction.core;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 
 import javax.sql.DataSource;
@@ -34,8 +35,10 @@ public final class ResourceDataSource {
     private final DataSource dataSource;
     
     public ResourceDataSource(final String originalName, final DataSource dataSource) {
+        String[] databaseAndDataSourceName = originalName.split("\\.");
+        Preconditions.checkState(2 == databaseAndDataSourceName.length, String.format("Database and data source name must be provided,`%s`.", originalName));
         this.originalName = originalName;
         this.dataSource = dataSource;
-        uniqueResourceName = ResourceIDGenerator.getInstance().nextId() + originalName;
+        this.uniqueResourceName = ResourceIDGenerator.getInstance().nextId() + databaseAndDataSourceName[1];
     }
 }
