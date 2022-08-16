@@ -43,8 +43,8 @@ import java.util.stream.Collectors;
  */
 public final class H2SchemaMetaDataLoader implements DialectSchemaMetaDataLoader {
     
-    private static final String TABLE_META_DATA_NO_ORDER = "SELECT TABLE_CATALOG, TABLE_NAME, COLUMN_NAME, DATA_TYPE, ORDINAL_POSITION FROM INFORMATION_SCHEMA.COLUMNS "
-            + "WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=?";
+    private static final String TABLE_META_DATA_NO_ORDER = "SELECT TABLE_CATALOG, TABLE_NAME, COLUMN_NAME, DATA_TYPE, ORDINAL_POSITION, COALESCE(IS_VISIBLE, FALSE) IS_VISIBLE"
+            + " FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=?";
     
     private static final String ORDER_BY_ORDINAL_POSITION = " ORDER BY ORDINAL_POSITION";
     
@@ -108,7 +108,8 @@ public final class H2SchemaMetaDataLoader implements DialectSchemaMetaDataLoader
         String dataType = resultSet.getString("DATA_TYPE");
         boolean primaryKey = primaryKeys.contains(columnName);
         boolean generated = tableGenerated.getOrDefault(columnName, Boolean.FALSE);
-        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, false, true);
+        boolean isVisible = resultSet.getBoolean("IS_VISIBLE");
+        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, false, isVisible);
     }
     
     private String getTableMetaDataSQL(final Collection<String> tables) {
