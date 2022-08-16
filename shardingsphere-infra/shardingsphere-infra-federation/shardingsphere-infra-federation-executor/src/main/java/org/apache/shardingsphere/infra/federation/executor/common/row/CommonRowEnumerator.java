@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.executor.original.row;
+package org.apache.shardingsphere.infra.federation.executor.common.row;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.linq4j.Enumerator;
@@ -28,10 +28,10 @@ import java.sql.Statement;
 import java.util.Collection;
 
 /**
- * Filterable row enumerator.
+ * Common row enumerator.
  */
 @RequiredArgsConstructor
-public final class FilterableRowEnumerator implements Enumerator<Object[]> {
+public final class CommonRowEnumerator implements Enumerator<Object[]> {
     
     private final MergedResult queryResult;
     

@@ -15,30 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.executor.advanced.table;
+package org.apache.shardingsphere.infra.federation.executor.common.table;
 
-import org.apache.calcite.linq4j.Enumerator;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.federation.executor.FederationContext;
 
 /**
- * Empty row enumerator.
+ * Translatable table scan executor context.
  */
-public final class EmptyRowEnumerator implements Enumerator<Object[]> {
+@RequiredArgsConstructor
+@Getter
+public final class CommonTableScanExecutorContext {
     
-    @Override
-    public Object[] current() {
-        return new Object[0];
-    }
+    private final String databaseName;
     
-    @Override
-    public boolean moveNext() {
-        return false;
-    }
+    private final String schemaName;
     
-    @Override
-    public void reset() {
-    }
+    private final ConfigurationProperties props;
     
-    @Override
-    public void close() {
-    }
+    private final FederationContext federationContext;
 }

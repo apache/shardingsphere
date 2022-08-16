@@ -42,8 +42,9 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecuti
 import org.apache.shardingsphere.infra.federation.executor.FederationContext;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
 import org.apache.shardingsphere.infra.federation.executor.advanced.resultset.FederationResultSet;
+import org.apache.shardingsphere.infra.federation.executor.common.CommonExecuteDataContext;
+import org.apache.shardingsphere.infra.federation.executor.common.table.CommonTableScanExecutorContext;
 import org.apache.shardingsphere.infra.federation.executor.original.table.FilterableTableScanExecutor;
-import org.apache.shardingsphere.infra.federation.executor.original.table.FilterableTableScanExecutorContext;
 import org.apache.shardingsphere.infra.federation.optimizer.ShardingSphereOptimizer;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
@@ -119,7 +120,7 @@ public final class AdvancedFederationExecutor implements FederationExecutor {
     
     private FilterableSchema createFilterableSchema(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final ShardingSphereSchema schema,
                                                     final JDBCExecutorCallback<? extends ExecuteResult> callback, final FederationContext federationContext) {
-        FilterableTableScanExecutorContext executorContext = new FilterableTableScanExecutorContext(databaseName, schemaName, props, federationContext);
+        CommonTableScanExecutorContext executorContext = new CommonTableScanExecutorContext(databaseName, schemaName, props, federationContext);
         FilterableTableScanExecutor executor = new FilterableTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, globalRuleMetaData, executorContext, eventBusContext);
         return new FilterableSchema(schemaName, schema, executor);
     }
@@ -134,7 +135,7 @@ public final class AdvancedFederationExecutor implements FederationExecutor {
         SqlToRelConverter converter = OptimizerPlannerContextFactory.createConverter(catalogReader, validator, relDataTypeFactory);
         RelNode bestPlan = new ShardingSphereOptimizer(converter, QueryOptimizePlannerFactory.createHepPlanner()).optimize(sqlStatement);
         Bindable<Object[]> executablePlan = EnumerableInterpretable.toBindable(Collections.emptyMap(), null, (EnumerableRel) bestPlan, EnumerableRel.Prefer.ARRAY);
-        return executablePlan.bind(new AdvancedExecuteDataContext(validator, converter, parameters));
+        return executablePlan.bind(new CommonExecuteDataContext(validator, converter, parameters));
     }
     
     @Override

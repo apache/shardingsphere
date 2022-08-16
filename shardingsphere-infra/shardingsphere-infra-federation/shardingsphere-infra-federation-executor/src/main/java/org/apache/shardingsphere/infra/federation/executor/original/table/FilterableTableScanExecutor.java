@@ -56,9 +56,10 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.dr
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
 import org.apache.shardingsphere.infra.federation.executor.FederationContext;
+import org.apache.shardingsphere.infra.federation.executor.common.table.CommonTableScanExecutorContext;
 import org.apache.shardingsphere.infra.federation.executor.original.SQLDialectFactory;
-import org.apache.shardingsphere.infra.federation.executor.original.row.EmptyRowEnumerator;
-import org.apache.shardingsphere.infra.federation.executor.original.row.FilterableRowEnumerator;
+import org.apache.shardingsphere.infra.federation.executor.common.row.EmptyRowEnumerator;
+import org.apache.shardingsphere.infra.federation.executor.common.row.CommonRowEnumerator;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
 import org.apache.shardingsphere.infra.federation.optimizer.executor.FilterableScanNodeExecutorContext;
@@ -105,7 +106,7 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
     
     private final ShardingSphereRuleMetaData globalRuleMetaData;
     
-    private final FilterableTableScanExecutorContext executorContext;
+    private final CommonTableScanExecutorContext executorContext;
     
     private final EventBusContext eventBusContext;
     
@@ -220,7 +221,7 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
             
             @Override
             public Enumerator<Object[]> enumerator() {
-                return new FilterableRowEnumerator(mergedResult, metaData, statements);
+                return new CommonRowEnumerator(mergedResult, metaData, statements);
             }
         };
     }

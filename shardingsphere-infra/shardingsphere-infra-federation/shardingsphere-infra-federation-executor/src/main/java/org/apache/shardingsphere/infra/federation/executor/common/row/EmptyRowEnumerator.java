@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.executor.original.row;
+package org.apache.shardingsphere.infra.federation.executor.common.row;
 
 import org.apache.calcite.linq4j.Enumerator;
 
