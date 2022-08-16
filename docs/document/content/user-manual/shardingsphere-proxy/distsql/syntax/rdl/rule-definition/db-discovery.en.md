@@ -60,10 +60,10 @@ property:
 | name                   | DateType   | Description                                 |
 |:-----------------------|:-----------|:--------------------------------------------|
 | discoveryTypeName      | IDENTIFIER | Database discovery type name                |
-| ruleName               | IDENTIFIER | rule name                                   |
-| discoveryHeartbeatName | IDENTIFIER | discovery heartbeat name                    |
+| ruleName               | IDENTIFIER | Rule name                                   |
+| discoveryHeartbeatName | IDENTIFIER | Detect heartbeat name                       |
 | typeName               | STRING     | Database discovery type, such as: MySQL.MGR |
-| resourceName           | IDENTIFIER | resource name                               |
+| resourceName           | IDENTIFIER | Resource name                               |
 
 ### Notes
 

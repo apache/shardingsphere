@@ -27,10 +27,10 @@ Class name: org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscov
 Attributes:
 
 | *Name*                     | *Data Type*          | *Description*                                                                           |
-| -------------------------- | -------------------- | --------------------------------------------------------------------------------------- |
+|----------------------------|----------------------|-----------------------------------------------------------------------------------------|
 | groupName (+)              | String               | Database discovery group name                                                           |
 | dataSourceNames (+)        | Collection\<String\> | Data source names, multiple data source names separated with comma. Such as: ds_0, ds_1 |
-| discoveryHeartbeatName (+) | String               | discovery heartbeat name                                                                   |
+| discoveryHeartbeatName (+) | String               | Detect heartbeat name                                                                   |
 | discoveryTypeName (+)      | String               | Database discovery type name                                                            |
 
 ### Detect Heartbeat Configuration
