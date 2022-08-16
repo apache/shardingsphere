@@ -32,7 +32,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("rawtypes")
-public final class MigrationDistributedCountDownLatchTest {
+public final class PipelineDistributedBarrierTest {
     
     @BeforeClass
     public static void setUp() {
@@ -41,7 +41,7 @@ public final class MigrationDistributedCountDownLatchTest {
     
     @Test
     public void assertRegisterAndRemove() throws NoSuchFieldException, IllegalAccessException {
-        MigrationDistributedCountDownLatch instance = MigrationDistributedCountDownLatch.getInstance();
+        PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance();
         instance.register("/test", 1);
         Map countDownLatchMap = ReflectionUtil.getFieldValue(instance, "countDownLatchMap", Map.class);
         assertNotNull(countDownLatchMap);
@@ -52,7 +52,7 @@ public final class MigrationDistributedCountDownLatchTest {
     
     @Test
     public void assertAwait() {
-        MigrationDistributedCountDownLatch instance = MigrationDistributedCountDownLatch.getInstance();
+        PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance();
         String parentPath = "/scaling/j0130317c3054317c7363616c696e675f626d73716c/barrier/enable";
         instance.register(parentPath, 1);
         instance.persistEphemeralChildrenNode(parentPath, 1);

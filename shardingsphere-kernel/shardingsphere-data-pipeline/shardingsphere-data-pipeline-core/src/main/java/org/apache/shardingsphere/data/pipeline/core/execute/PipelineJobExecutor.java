@@ -25,7 +25,7 @@ import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
-import org.apache.shardingsphere.data.pipeline.core.util.MigrationDistributedCountDownLatch;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJob;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobPreparer;
@@ -48,7 +48,7 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
     
     private static final Pattern CONFIG_PATTERN = Pattern.compile(DataPipelineConstants.DATA_PIPELINE_ROOT + "/(j\\d{2}[0-9a-f]+)/config");
     
-    private static final Pattern BARRIER_MATCH_PATTERN = Pattern.compile(DataPipelineConstants.DATA_PIPELINE_ROOT + "/(j\\d{2}[0-9a-f]+)/barrier/(enable|distable)/\\d+");
+    private static final Pattern BARRIER_MATCH_PATTERN = Pattern.compile(DataPipelineConstants.DATA_PIPELINE_ROOT + "/(j\\d{2}[0-9a-f]+)/barrier/(enable|disable)/\\d+");
     
     private final ExecutorService executor = Executors.newFixedThreadPool(20);
     
@@ -56,7 +56,7 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
     protected void doStart() {
         PipelineAPIFactory.getGovernanceRepositoryAPI().watch(DataPipelineConstants.DATA_PIPELINE_ROOT, event -> {
             if (BARRIER_MATCH_PATTERN.matcher(event.getKey()).matches() && event.getType() == Type.ADDED) {
-                MigrationDistributedCountDownLatch.getInstance().checkChildrenNodeCount(event);
+                PipelineDistributedBarrier.getInstance().checkChildrenNodeCount(event);
             }
             getJobConfigPOJO(event).ifPresent(optional -> processEvent(event, optional));
         });

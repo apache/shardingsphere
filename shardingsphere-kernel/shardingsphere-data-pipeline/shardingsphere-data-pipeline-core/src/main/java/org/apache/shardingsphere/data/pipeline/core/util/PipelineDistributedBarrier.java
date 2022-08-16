@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
@@ -31,21 +30,21 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
 
+/**
+ * Pipeline distributed barrier.
+ */
 @Slf4j
-public final class MigrationDistributedCountDownLatch {
+public final class PipelineDistributedBarrier {
     
-    private static final MigrationDistributedCountDownLatch INSTANCE = new MigrationDistributedCountDownLatch();
+    private static final PipelineDistributedBarrier INSTANCE = new PipelineDistributedBarrier();
     
-    private static final Pattern BARRIER_MATCH_PATTERN = Pattern.compile(DataPipelineConstants.DATA_PIPELINE_ROOT + "/(j\\d{2}[0-9a-f]+)/barrier/(enable|distable)/\\d+");
-    
-    private final ClusterPersistRepository clusterPersistRepository;
+    private final ClusterPersistRepository repository;
     
     private final Map<String, InnerCountDownLatchHolder> countDownLatchMap = new ConcurrentHashMap<>();
     
-    private MigrationDistributedCountDownLatch() {
-        clusterPersistRepository = (ClusterPersistRepository) PipelineContext.getContextManager().getMetaDataContexts().getPersistService().getRepository();
+    private PipelineDistributedBarrier() {
+        repository = (ClusterPersistRepository) PipelineContext.getContextManager().getMetaDataContexts().getPersistService().getRepository();
     }
     
     /**
@@ -53,7 +52,7 @@ public final class MigrationDistributedCountDownLatch {
      *
      * @return instance
      */
-    public static MigrationDistributedCountDownLatch getInstance() {
+    public static PipelineDistributedBarrier getInstance() {
         return INSTANCE;
     }
     
@@ -64,7 +63,7 @@ public final class MigrationDistributedCountDownLatch {
      * @param totalCount total count
      */
     public void register(final String parentPath, final int totalCount) {
-        clusterPersistRepository.persist(parentPath, "");
+        repository.persist(parentPath, "");
         countDownLatchMap.computeIfAbsent(parentPath, k -> new InnerCountDownLatchHolder(totalCount, new CountDownLatch(1)));
     }
     
@@ -76,8 +75,8 @@ public final class MigrationDistributedCountDownLatch {
      */
     public void persistEphemeralChildrenNode(final String parentPath, final int shardingItem) {
         String key = String.join("/", parentPath, Integer.toString(shardingItem));
-        clusterPersistRepository.delete(key);
-        clusterPersistRepository.persistEphemeral(key, "");
+        repository.delete(key);
+        repository.persistEphemeral(key, "");
     }
     
     /**
@@ -86,8 +85,11 @@ public final class MigrationDistributedCountDownLatch {
      * @param parentPath parent path
      */
     public void removeParentNode(final String parentPath) {
-        clusterPersistRepository.delete(String.join("/", parentPath));
-        countDownLatchMap.remove(parentPath);
+        repository.delete(String.join("/", parentPath));
+        InnerCountDownLatchHolder holder = countDownLatchMap.remove(parentPath);
+        if (null != holder) {
+            holder.getCountDownLatch().countDown();
+        }
     }
     
     /**
@@ -96,20 +98,19 @@ public final class MigrationDistributedCountDownLatch {
      * @param parentPath parent path
      * @param timeout timeout
      * @param timeUnit time unit
-     * @return
-     * true if the count reached zero and false if the waiting time elapsed before the count reached zero
+     * @return true if the count reached zero and false if the waiting time elapsed before the count reached zero
      */
     public boolean await(final String parentPath, final long timeout, final TimeUnit timeUnit) {
         InnerCountDownLatchHolder holder = countDownLatchMap.get(parentPath);
-        if (holder == null) {
+        if (null == holder) {
             return false;
         }
         try {
-            boolean awaitResult = holder.getCountDownLatch().await(timeout, timeUnit);
-            if (!awaitResult) {
+            boolean result = holder.getCountDownLatch().await(timeout, timeUnit);
+            if (!result) {
                 log.info("await timeout, parent path: {}, timeout: {}, time unit: {}", parentPath, timeout, timeUnit);
             }
-            return awaitResult;
+            return result;
         } catch (final InterruptedException ignored) {
         }
         return false;
@@ -124,15 +125,13 @@ public final class MigrationDistributedCountDownLatch {
         if (StringUtils.isBlank(event.getKey())) {
             return;
         }
-        if (!BARRIER_MATCH_PATTERN.matcher(event.getKey()).matches()) {
-            return;
-        }
         String parentPath = event.getKey().substring(0, event.getKey().lastIndexOf("/"));
         InnerCountDownLatchHolder holder = countDownLatchMap.get(parentPath);
-        if (holder == null) {
+        if (null == holder) {
             return;
         }
-        List<String> childrenKeys = clusterPersistRepository.getChildrenKeys(parentPath);
+        List<String> childrenKeys = repository.getChildrenKeys(parentPath);
+        log.info("children keys: {}, total count: {}", childrenKeys, holder.getTotalCount());
         if (childrenKeys.size() == holder.getTotalCount()) {
             holder.getCountDownLatch().countDown();
         }
