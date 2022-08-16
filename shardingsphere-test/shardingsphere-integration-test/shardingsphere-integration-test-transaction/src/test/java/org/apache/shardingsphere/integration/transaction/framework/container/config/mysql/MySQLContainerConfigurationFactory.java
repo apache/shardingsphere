@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.mysql;
+package org.apache.shardingsphere.integration.transaction.framework.container.config.mysql;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
-import org.apache.shardingsphere.test.integration.env.container.atomic.util.MySQLContainerUtil;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,7 +33,7 @@ public final class MySQLContainerConfigurationFactory {
     
     /**
      * Create new instance of MySQL container configuration.
-     * 
+     *
      * @return created instance
      */
     public static StorageContainerConfiguration newInstance() {
@@ -42,15 +41,17 @@ public final class MySQLContainerConfigurationFactory {
     }
     
     private static String[] getCommands() {
-        String[] result = new String[1];
-        result[0] = "--server-id=" + MySQLContainerUtil.generateServerId();
+        String[] result = new String[2];
+        result[0] = "--sql_mode=";
+        result[1] = "--default-authentication-plugin=mysql_native_password";
         return result;
     }
     
     private static Map<String, String> getContainerEnvironments() {
-        Map<String, String> result = new HashMap<>(2, 1);
+        Map<String, String> result = new HashMap<>(3, 1);
         result.put("LANG", "C.UTF-8");
         result.put("MYSQL_RANDOM_ROOT_PASSWORD", "yes");
+        result.put("MYSQL_ROOT_HOST", "%");
         return result;
     }
     
