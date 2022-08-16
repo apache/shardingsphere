@@ -214,6 +214,12 @@
         <assertion parameters="6:long, 1:int, pro_order:String, S:char, true:boolean, 50:smallint, summer:enum#season, 100.00:decimal, 2021-01-01:Date, 12:30:30:time, 2021-01-01 12:30:30:timestamp"
                    expected-data-file="pro_insert_order_value.xml" />
     </test-case>
+
+    <test-case sql="INSERT INTO t_encrypt_shadow (order_id, user_id, order_name, type_char, type_boolean, type_smallint, type_enum, type_decimal, type_date, type_time, type_timestamp)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);" db-types="MySQL" scenario-types="encrypt_shadow">
+        <assertion parameters="6:long, 1:int, pro_order:String, S:char, true:boolean, 50:smallint, summer:enum#season, 100.00:decimal, 2021-01-01:Date, 12:30:30:time, 2021-01-01 12:30:30:timestamp"
+                   expected-data-file="pro_insert_order_value.xml" />
+    </test-case>
     
     <test-case sql="INSERT INTO t_shadow (order_id, user_id, order_name, type_char, type_boolean, type_smallint, type_enum, type_decimal, type_date, type_time, type_timestamp)
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);" db-types="MySQL" scenario-types="shadow">
