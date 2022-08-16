@@ -960,7 +960,6 @@
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
-                    <aggregate>true</aggregate>
                     <charset>${project.build.sourceEncoding}</charset>
                     <encoding>${project.build.sourceEncoding}</encoding>
                     <docencoding>${project.build.sourceEncoding}</docencoding>
@@ -1202,7 +1201,6 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>${maven-javadoc-plugin.version}</version>
                 <configuration>
-                    <aggregate>true</aggregate>
                     <charset>${project.build.sourceEncoding}</charset>
                     <encoding>${project.build.sourceEncoding}</encoding>
                     <docencoding>${project.build.sourceEncoding}</docencoding>
