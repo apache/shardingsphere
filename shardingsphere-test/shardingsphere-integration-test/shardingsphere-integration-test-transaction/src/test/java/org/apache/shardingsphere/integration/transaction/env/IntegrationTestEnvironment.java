@@ -190,7 +190,7 @@ public final class IntegrationTestEnvironment {
      */
     public String getProxyPassword() {
         // TODO this should extract into a constant
-        return props.getOrDefault("transaction.it.proxy.password", "proxy@123").toString();
+        return props.getOrDefault("transaction.it.proxy.password", "Proxy@123").toString();
     }
     
     /**
