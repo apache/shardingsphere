@@ -43,8 +43,6 @@ import java.util.Optional;
  */
 public final class SelectStatementConverter implements SQLStatementConverter<SelectStatement, SqlNode> {
     
-    private static final int LIMIT_SEGMENT_LENGTH = 6;
-    
     @Override
     public SqlNode convert(final SelectStatement selectStatement) {
         SqlNodeList distinct = new DistinctConverter().convert(selectStatement.getProjections()).orElse(null);

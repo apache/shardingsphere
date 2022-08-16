@@ -95,6 +95,7 @@ public final class SQLNodeConvertEngineParameterizedTest {
         SUPPORTED_SQL_CASE_IDS.add("select_count_like_concat");
         SUPPORTED_SQL_CASE_IDS.add("select_order_by_asc_and_index_desc");
         SUPPORTED_SQL_CASE_IDS.add("select_group_by_with_having_count");
+        SUPPORTED_SQL_CASE_IDS.add("select_constant_without_table");
     }
     
     private final String sqlCaseId;

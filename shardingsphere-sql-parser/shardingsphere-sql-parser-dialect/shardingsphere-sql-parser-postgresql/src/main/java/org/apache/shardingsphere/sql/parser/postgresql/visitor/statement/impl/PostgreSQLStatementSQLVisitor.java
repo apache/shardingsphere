@@ -180,6 +180,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -932,45 +933,53 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
     
     @Override
     public ASTNode visitTargetEl(final TargetElContext ctx) {
-        if (null != ctx.ASTERISK_()) {
-            return new ShorthandProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        }
-        if (null != ctx.DOT_ASTERISK_()) {
-            ShorthandProjectionSegment shorthandProjection = new ShorthandProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-            shorthandProjection.setOwner(new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText())));
-            if (null != ctx.identifier()) {
-                shorthandProjection.setAlias(new AliasSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), new IdentifierValue(ctx.identifier().getText())));
-            }
-            return shorthandProjection;
-        }
-        AExprContext expr = ctx.aExpr();
-        ProjectionSegment result = new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr));
-        if (null != expr.cExpr()) {
-            ASTNode projection = visit(expr.cExpr());
-            if (projection instanceof ColumnSegment) {
-                result = new ColumnProjectionSegment((ColumnSegment) projection);
-            }
-            if (projection instanceof FunctionSegment) {
-                result = new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr), (FunctionSegment) projection);
-            }
-            if (projection instanceof AggregationProjectionSegment) {
-                result = (AggregationProjectionSegment) projection;
-            }
-            if (projection instanceof SubqueryExpressionSegment) {
-                SubqueryExpressionSegment subqueryExpression = (SubqueryExpressionSegment) projection;
-                String text = ctx.start.getInputStream().getText(new Interval(subqueryExpression.getStartIndex(), subqueryExpression.getStopIndex()));
-                result = new SubqueryProjectionSegment(subqueryExpression.getSubquery(), text);
-            }
-            if (projection instanceof ExistsSubqueryExpression) {
-                ExistsSubqueryExpression existsSubqueryExpression = (ExistsSubqueryExpression) projection;
-                String text = ctx.start.getInputStream().getText(new Interval(existsSubqueryExpression.getStartIndex(), existsSubqueryExpression.getStopIndex()));
-                result = new SubqueryProjectionSegment(existsSubqueryExpression.getSubquery(), text);
-            }
-        }
+        ProjectionSegment result = createProjectionSegment(ctx, ctx.aExpr());
         if (null != ctx.identifier()) {
             ((AliasAvailable) result).setAlias(new AliasSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), new IdentifierValue(ctx.identifier().getText())));
         }
         return result;
+    }
+    
+    private ProjectionSegment createProjectionSegment(final TargetElContext ctx, final AExprContext expr) {
+        if (null != ctx.ASTERISK_()) {
+            return new ShorthandProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        }
+        if (null != ctx.DOT_ASTERISK_()) {
+            ShorthandProjectionSegment result = new ShorthandProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+            result.setOwner(new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText())));
+            return result;
+        }
+        if (null != ctx.aExpr().cExpr()) {
+            ASTNode projection = visit(expr.cExpr());
+            return findProjectionFromCExpr(ctx, expr, projection).orElseGet(() -> new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr), null));
+        }
+        return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr), null);
+    }
+    
+    private Optional<ProjectionSegment> findProjectionFromCExpr(final TargetElContext ctx, final AExprContext expr, final ASTNode projection) {
+        if (projection instanceof ColumnSegment) {
+            return Optional.of(new ColumnProjectionSegment((ColumnSegment) projection));
+        }
+        if (projection instanceof FunctionSegment) {
+            return Optional.of(new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr), (FunctionSegment) projection));
+        }
+        if (projection instanceof AggregationProjectionSegment) {
+            return Optional.of((AggregationProjectionSegment) projection);
+        }
+        if (projection instanceof SubqueryExpressionSegment) {
+            SubqueryExpressionSegment subqueryExpression = (SubqueryExpressionSegment) projection;
+            String text = ctx.start.getInputStream().getText(new Interval(subqueryExpression.getStartIndex(), subqueryExpression.getStopIndex()));
+            return Optional.of(new SubqueryProjectionSegment(subqueryExpression.getSubquery(), text));
+        }
+        if (projection instanceof ExistsSubqueryExpression) {
+            ExistsSubqueryExpression existsSubqueryExpression = (ExistsSubqueryExpression) projection;
+            String text = ctx.start.getInputStream().getText(new Interval(existsSubqueryExpression.getStartIndex(), existsSubqueryExpression.getStopIndex()));
+            return Optional.of(new SubqueryProjectionSegment(existsSubqueryExpression.getSubquery(), text));
+        }
+        if (projection instanceof LiteralExpressionSegment) {
+            return Optional.of(new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr), (LiteralExpressionSegment) projection));
+        }
+        return Optional.empty();
     }
     
     @Override
