@@ -88,7 +88,7 @@ resourceName
     ;
 
 typeDefinition
-    : TYPE LP NAME EQ discoveryTypeName (COMMA PROPERTIES LP properties RP)? RP
+    : TYPE LP NAME EQ discoveryType (COMMA PROPERTIES LP properties RP)? RP
     ;
 
 discoveryHeartbeat
@@ -100,11 +100,15 @@ properties
     ;
 
 property
-    : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | STRING)
+    : key=STRING EQ value=(NUMBER | INT | STRING)
+    ;
+
+discoveryType
+    : STRING
     ;
 
 discoveryTypeName
-    : IDENTIFIER | STRING
+    : IDENTIFIER
     ;
 
 discoveryHeartbeatName
