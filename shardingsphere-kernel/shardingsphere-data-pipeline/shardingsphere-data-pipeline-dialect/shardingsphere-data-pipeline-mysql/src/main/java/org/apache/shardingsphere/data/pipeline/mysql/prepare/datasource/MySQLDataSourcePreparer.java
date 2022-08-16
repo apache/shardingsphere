@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.prepare.datasource;
 
-import java.util.Map;
-import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
@@ -58,18 +56,16 @@ public final class MySQLDataSourcePreparer extends AbstractDataSourcePreparer {
     
     private List<String> getCreateTableSQL(final PrepareTargetTablesParameter parameter) {
         PipelineDDLGenerator generator = new PipelineDDLGenerator();
-        DataSource dataSource = parameter.getDataSourceManager().getDataSource(parameter.getDataSourceConfig());
         ShardingSphereMetaData metaData = PipelineContext.getContextManager().getMetaDataContexts().getMetaData();
-        Map<String, ShardingSphereDatabase> databases = metaData.getDatabases();
-        ShardingSphereDatabase sphereDatabase = databases.get(parameter.getDatabaseName());
+        ShardingSphereDatabase sphereDatabase = metaData.getDatabases().get(parameter.getDatabaseName());
         ShardingSphereSQLParserEngine sqlParserEngine =
                 metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class)
                         .getSQLParserEngine(sphereDatabase.getProtocolType().getType());
         List<String> result = new LinkedList<>();
         for (JobDataNodeEntry each : parameter.getTablesFirstDataNodes().getEntries()) {
             String schemaName = parameter.getTableNameSchemaNameMapping().getSchemaName(each.getLogicTableName());
-            result.add(generator.generateLogicDDLSQL(dataSource, parameter.getDatabaseName(), schemaName, each.getLogicTableName(),
-                    getActualTable(sphereDatabase, each.getLogicTableName()), databases, sqlParserEngine));
+            result.add(generator.generateLogicDDLSQL(sphereDatabase, parameter.getDatabaseName(), schemaName, each.getLogicTableName(),
+                    getActualTable(sphereDatabase, each.getLogicTableName()), sqlParserEngine));
         }
         return result;
     }

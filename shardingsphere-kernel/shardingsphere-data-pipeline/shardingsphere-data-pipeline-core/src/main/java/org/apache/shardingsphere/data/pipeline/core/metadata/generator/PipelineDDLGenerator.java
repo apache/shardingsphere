@@ -69,27 +69,25 @@ public final class PipelineDDLGenerator {
     /**
      * Generate logic ddl sql.
      *
-     * @param dataSource data source
+     * @param database database
      * @param databaseName database name
      * @param schemaName schema name
      * @param logicTableName table name
      * @param actualTableName actual table name
-     * @param databases databases
      * @param parserEngine parser engine
      * @return ddl SQL
      */
     @SneakyThrows
-    public String generateLogicDDLSQL(final DataSource dataSource, final String databaseName, final String schemaName,
+    public String generateLogicDDLSQL(final ShardingSphereDatabase database, final String databaseName, final String schemaName,
                                       final String logicTableName, final String actualTableName,
-                                      final Map<String, ShardingSphereDatabase> databases, final ShardingSphereSQLParserEngine parserEngine) {
-        ShardingSphereDatabase database = databases.get(databaseName);
+                                      final ShardingSphereSQLParserEngine parserEngine) {
         DatabaseType databaseType = database.getProtocolType();
         log.info("generateLogicDDLSQL, databaseType={}, databaseName={}, schemaName={}, tableName={}, dataSourceNames={}",
                 databaseType.getType(), databaseName, schemaName, logicTableName, database.getResource().getDataSources().keySet());
-        Collection<String> multiSQL = generateActualDDLSQL(databaseType, schemaName, actualTableName, dataSource);
+        Collection<String> multiSQL = generateActualDDLSQL(databaseType, schemaName, actualTableName, database.getResource().getDataSources().get(databaseName));
         StringBuilder result = new StringBuilder();
         for (String each : multiSQL) {
-            Optional<String> logicSQL = decorate(databaseType, databaseName, schemaName, database, each, databases, parserEngine);
+            Optional<String> logicSQL = decorate(databaseType, databaseName, schemaName, database, each, parserEngine);
             logicSQL.ifPresent(ddlSQL -> result.append(ddlSQL).append(DELIMITER).append(System.lineSeparator()));
         }
         return result.toString();
@@ -101,13 +99,12 @@ public final class PipelineDDLGenerator {
      * @param sql sql
      * @param prefix prefix
      * @param databaseName database name
-     * @param databases databases
      * @param parserEngine parser engine
      * @return replaced sql
      */
     public String replaceTableNameWithPrefix(final String sql, final String prefix, final String databaseName,
-                                             final Map<String, ShardingSphereDatabase> databases, final ShardingSphereSQLParserEngine parserEngine) {
-        LogicSQL logicSQL = getLogicSQL(sql, databaseName, databases, parserEngine);
+                                             final ShardingSphereSQLParserEngine parserEngine) {
+        LogicSQL logicSQL = getLogicSQL(sql, databaseName, parserEngine);
         SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
         if (sqlStatementContext instanceof CreateTableStatementContext || sqlStatementContext instanceof CommentStatementContext || sqlStatementContext instanceof CreateIndexStatementContext
                 || sqlStatementContext instanceof AlterTableStatementContext) {
@@ -122,14 +119,14 @@ public final class PipelineDDLGenerator {
     }
     
     private Optional<String> decorate(final DatabaseType databaseType, final String databaseName, final String schemaName, final ShardingSphereDatabase database, final String sql,
-                                      final Map<String, ShardingSphereDatabase> databases, final ShardingSphereSQLParserEngine parserEngine) {
+                                      final ShardingSphereSQLParserEngine parserEngine) {
         if (sql.trim().isEmpty()) {
             return Optional.empty();
         }
-        String result = decorateActualSQL(sql.trim(), database, databaseName, databases, parserEngine);
+        String result = decorateActualSQL(sql.trim(), database, databaseName, parserEngine);
         // TODO remove it after set search_path is supported.
         if ("openGauss".equals(databaseType.getType())) {
-            return decorateOpenGauss(databaseName, schemaName, result, databases, parserEngine);
+            return decorateOpenGauss(databaseName, schemaName, result, parserEngine);
         }
         return Optional.of(result);
     }
@@ -139,9 +136,8 @@ public final class PipelineDDLGenerator {
                 .generate(actualTable, schemaName, dataSource);
     }
     
-    private String decorateActualSQL(final String sql, final ShardingSphereDatabase database, final String databaseName,
-                                     final Map<String, ShardingSphereDatabase> databases, final ShardingSphereSQLParserEngine parserEngine) {
-        LogicSQL logicSQL = getLogicSQL(sql, databaseName, databases, parserEngine);
+    private String decorateActualSQL(final String sql, final ShardingSphereDatabase database, final String databaseName, final ShardingSphereSQLParserEngine parserEngine) {
+        LogicSQL logicSQL = getLogicSQL(sql, databaseName, parserEngine);
         SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
         Map<SQLSegment, String> replaceMap = new TreeMap<>(Comparator.comparing(SQLSegment::getStartIndex));
         if (sqlStatementContext instanceof CreateTableStatementContext) {
@@ -213,18 +209,18 @@ public final class PipelineDDLGenerator {
                 .map(each -> ((DataNodeContainedRule) each).findLogicTableByActualTable(actualTable).orElse(null)).filter(Objects::nonNull).findFirst().orElse(actualTable);
     }
     
-    private LogicSQL getLogicSQL(final String sql, final String databaseName, final Map<String, ShardingSphereDatabase> databases, final ShardingSphereSQLParserEngine parserEngine) {
+    private LogicSQL getLogicSQL(final String sql, final String databaseName, final ShardingSphereSQLParserEngine parserEngine) {
         SQLStatement sqlStatement = parserEngine.parse(sql, false);
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(databases, sqlStatement, databaseName);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(null, sqlStatement, databaseName);
         return new LogicSQL(sqlStatementContext, sql, Collections.emptyList());
     }
     
     // TODO remove it after set search_path is supported.
     private Optional<String> decorateOpenGauss(final String databaseName, final String schemaName, final String logicSQL,
-                                               final Map<String, ShardingSphereDatabase> databases, final ShardingSphereSQLParserEngine parserEngine) {
+                                               final ShardingSphereSQLParserEngine parserEngine) {
         if (logicSQL.toLowerCase().startsWith(SET_SEARCH_PATH_PREFIX)) {
             return Optional.empty();
         }
-        return Optional.of(replaceTableNameWithPrefix(logicSQL, schemaName + ".", databaseName, databases, parserEngine));
+        return Optional.of(replaceTableNameWithPrefix(logicSQL, schemaName + ".", databaseName, parserEngine));
     }
 }
