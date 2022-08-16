@@ -41,10 +41,8 @@ public final class PostgreSQLContainerConfigurationFactory {
     }
     
     private static String[] getCommands() {
-        String[] result = new String[3];
-        result[0] = "--max_connections=600";
-        result[1] = "--max_prepared_transactions=600";
-        result[2] = "--wal_level=logical";
+        String[] result = new String[1];
+        result[0] = "--max_connections=600 --max_prepared_transactions=600 --wal_level=logical";
         return result;
     }
     
