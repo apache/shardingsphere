@@ -32,7 +32,7 @@ import java.util.Map;
 public final class MySQLContainerConfigurationFactory {
     
     /**
-     * Create new instance of mysql container configuration.
+     * Create new instance of MySQL container configuration.
      *
      * @return created instance
      */

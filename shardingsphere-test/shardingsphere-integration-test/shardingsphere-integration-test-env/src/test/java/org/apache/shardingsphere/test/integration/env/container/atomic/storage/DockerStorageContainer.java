@@ -122,7 +122,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     /**
      * Get JDBC URL.
      * 
-     * @param dataSourceName datasource name.
+     * @param dataSourceName datasource name
      * @return JDBC URL
      */
     public String getJdbcUrl(final String dataSourceName) {
