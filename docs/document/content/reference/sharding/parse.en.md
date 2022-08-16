@@ -97,8 +97,8 @@ SQLStatement sqlStatement = sqlVisitorEngine.visit(parseASTNode);
 
 ```java
 ParseASTNode parseASTNode = parserEngine.parse(sql, useCache);
-SQLVisitorEngine sqlVisitorEngine = new SQLVisitorEngine(sql, "STATEMENT", useCache, new Properties());
-SQLStatement sqlStatement = sqlVisitorEngine.visit(parseASTNode);
+SQLVisitorEngine sqlVisitorEngine = new SQLVisitorEngine(sql, "FORMAT", useCache, new Properties());
+String result = sqlVisitorEngine.visit(parseASTNode);
 ```
 
 Example：
