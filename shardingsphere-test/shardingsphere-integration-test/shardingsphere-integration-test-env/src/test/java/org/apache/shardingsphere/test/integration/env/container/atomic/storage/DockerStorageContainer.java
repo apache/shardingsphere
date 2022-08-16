@@ -45,6 +45,7 @@ import java.util.Optional;
 @Getter
 public abstract class DockerStorageContainer extends DockerITContainer implements StorageContainer {
     
+    @Getter
     private final DatabaseType databaseType;
     
     @Getter(AccessLevel.NONE)
@@ -124,7 +125,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
      * @param dataSourceName datasource name.
      * @return jdbc url
      */
-    public final String getJdbcUrl(final String dataSourceName) {
+    public String getJdbcUrl(final String dataSourceName) {
         return DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(getPort()), dataSourceName);
     }
     
