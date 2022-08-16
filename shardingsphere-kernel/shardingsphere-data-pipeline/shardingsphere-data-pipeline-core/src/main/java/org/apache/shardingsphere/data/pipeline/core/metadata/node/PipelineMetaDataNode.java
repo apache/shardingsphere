@@ -87,4 +87,24 @@ public final class PipelineMetaDataNode {
     public static String getScalingCheckResultPath(final String jobId) {
         return String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId, "check", "result");
     }
+    
+    /**
+     * Get scaling job barrier enable path.
+     *
+     * @param jobId job id
+     * @return job barrier path.
+     */
+    public static String getScalingJobBarrierEnablePath(final String jobId) {
+        return String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId, "barrier", "enable");
+    }
+    
+    /**
+     * Get scaling job barrier disable path.
+     *
+     * @param jobId job id
+     * @return job barrier path.
+     */
+    public static String getScalingJobBarrierDisablePath(final String jobId) {
+        return String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId, "barrier", "disable");
+    }
 }

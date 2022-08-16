@@ -29,6 +29,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobNotFoun
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineVerifyFailedException;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
+import org.apache.shardingsphere.data.pipeline.core.util.MigrationDistributedCountDownLatch;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJob;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -36,6 +37,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Abstract pipeline job API impl.
@@ -85,6 +87,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     @Override
     public void startDisabledJob(final String jobId) {
         log.info("Start disabled pipeline job {}", jobId);
+        MigrationDistributedCountDownLatch.getInstance().removeParentNode(PipelineMetaDataNode.getScalingJobBarrierDisablePath(jobId));
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         if (!jobConfigPOJO.isDisabled()) {
             throw new PipelineVerifyFailedException("Job is already started.");
@@ -92,16 +95,23 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         jobConfigPOJO.setDisabled(false);
         jobConfigPOJO.getProps().remove("stop_time");
         PipelineAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);
+        String barrierPath = PipelineMetaDataNode.getScalingJobBarrierEnablePath(jobId);
+        MigrationDistributedCountDownLatch.getInstance().register(barrierPath, jobConfigPOJO.getShardingTotalCount());
+        MigrationDistributedCountDownLatch.getInstance().await(barrierPath, 10, TimeUnit.SECONDS);
     }
     
     @Override
     public void stop(final String jobId) {
         log.info("Stop pipeline job {}", jobId);
+        MigrationDistributedCountDownLatch.getInstance().removeParentNode(PipelineMetaDataNode.getScalingJobBarrierEnablePath(jobId));
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         jobConfigPOJO.setDisabled(true);
         jobConfigPOJO.getProps().setProperty("stop_time", LocalDateTime.now().format(DATE_TIME_FORMATTER));
         // TODO updateJobConfiguration might doesn't work
         PipelineAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);
+        String barrierPath = PipelineMetaDataNode.getScalingJobBarrierDisablePath(jobId);
+        MigrationDistributedCountDownLatch.getInstance().register(barrierPath, jobConfigPOJO.getShardingTotalCount());
+        MigrationDistributedCountDownLatch.getInstance().await(barrierPath, 10, TimeUnit.SECONDS);
     }
     
     @Override

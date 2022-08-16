@@ -44,6 +44,9 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     @Setter
     private OneOffJobBootstrap oneOffJobBootstrap;
     
+    @Setter
+    private int shardingItem;
+    
     private final Map<Integer, PipelineTasksRunner> tasksRunnerMap = new ConcurrentHashMap<>();
     
     protected void runInBackground(final Runnable runnable) {

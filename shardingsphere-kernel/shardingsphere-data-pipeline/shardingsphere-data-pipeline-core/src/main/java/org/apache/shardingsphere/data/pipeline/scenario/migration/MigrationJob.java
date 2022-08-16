@@ -31,7 +31,9 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineIgnoredExc
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryIncrementalTasksRunner;
+import org.apache.shardingsphere.data.pipeline.core.util.MigrationDistributedCountDownLatch;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 
@@ -59,6 +61,7 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
         InventoryIncrementalJobItemProgress initProgress = MigrationJobAPIFactory.getInstance().getJobItemProgress(shardingContext.getJobName(), shardingContext.getShardingItem());
         MigrationJobItemContext jobItemContext = new MigrationJobItemContext(jobConfig, shardingContext.getShardingItem(), initProgress, dataSourceManager);
         int shardingItem = jobItemContext.getShardingItem();
+        setShardingItem(shardingItem);
         if (getTasksRunnerMap().containsKey(shardingItem)) {
             log.warn("tasksRunnerMap contains shardingItem {}, ignore", shardingItem);
             return;
@@ -72,6 +75,7 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
         });
         getTasksRunnerMap().put(shardingItem, tasksRunner);
         PipelineJobProgressPersistService.addJobProgressPersistContext(getJobId(), shardingItem);
+        MigrationDistributedCountDownLatch.getInstance().persistEphemeralChildrenNode(PipelineMetaDataNode.getScalingJobBarrierEnablePath(getJobId()), shardingItem);
     }
     
     private void prepare(final MigrationJobItemContext jobItemContext) {
@@ -97,6 +101,7 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
     public void stop() {
         setStopping(true);
         dataSourceManager.close();
+        MigrationDistributedCountDownLatch.getInstance().persistEphemeralChildrenNode(PipelineMetaDataNode.getScalingJobBarrierDisablePath(getJobId()), getShardingItem());
         if (null != getOneOffJobBootstrap()) {
             getOneOffJobBootstrap().shutdown();
         }
