@@ -15,27 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction;
+package org.apache.shardingsphere.infra.session.transaction;
 
-import org.junit.Before;
-import org.junit.Test;
+import lombok.Getter;
+import lombok.Setter;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-public final class TransactionHolderTest {
+/**
+ * Transaction connection context.
+ */
+@Getter
+@Setter
+public final class TransactionConnectionContext implements AutoCloseable {
     
-    @Before
-    public void assertSetInTransaction() {
-        assertFalse(TransactionHolder.isTransaction());
-        TransactionHolder.setInTransaction();
-        assertTrue(TransactionHolder.isTransaction());
-    }
+    private volatile boolean inTransaction;
     
-    @Test
-    public void assertClear() {
-        assertTrue(TransactionHolder.isTransaction());
-        TransactionHolder.clear();
-        assertFalse(TransactionHolder.isTransaction());
+    private volatile String readWriteSplitReplicaRoute;
+    
+    @Override
+    public void close() {
+        inTransaction = false;
+        readWriteSplitReplicaRoute = null;
     }
 }
