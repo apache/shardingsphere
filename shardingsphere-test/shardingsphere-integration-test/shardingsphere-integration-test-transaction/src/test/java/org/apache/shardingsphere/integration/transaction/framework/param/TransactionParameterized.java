@@ -28,8 +28,8 @@ import java.util.Collection;
 /**
  * Transaction test parameters.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class TransactionParameterized {
     
     private final DatabaseType databaseType;

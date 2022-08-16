@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shadow.algorithm.shadow.validator;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.shadow.algorithm.shadow.ShadowAlgorithmException;
+import org.apache.shardingsphere.shadow.algorithm.shadow.UnsupportedShadowColumnTypeException;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -48,7 +48,7 @@ public final class ShadowValueValidator {
     public static void validate(final String table, final String column, final Comparable<?> shadowValue) {
         for (Class<?> each : UNSUPPORTED_TYPES) {
             if (each.isAssignableFrom(shadowValue.getClass())) {
-                throw new ShadowAlgorithmException("Shadow column `%s` of table `%s` does not support `%s` type", column, table, each);
+                throw new UnsupportedShadowColumnTypeException(table, column, each);
             }
         }
     }

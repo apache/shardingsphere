@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.federation.optimizer.converter.segment.e
 import org.apache.calcite.sql.SqlDynamicParam;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.federation.optimizer.converter.context.ConverterContextHolder;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
@@ -32,13 +31,7 @@ import java.util.Optional;
 public final class ParameterMarkerExpressionConverter implements SQLSegmentConverter<ParameterMarkerExpressionSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convertToSQLNode(final ParameterMarkerExpressionSegment segment) {
+    public Optional<SqlNode> convert(final ParameterMarkerExpressionSegment segment) {
         return Optional.of(new SqlDynamicParam(segment.getParameterMarkerIndex(), SqlParserPos.ZERO));
-    }
-    
-    @Override
-    public Optional<ParameterMarkerExpressionSegment> convertToSQLSegment(final SqlNode sqlNode) {
-        ConverterContextHolder.get().getParameterCount().getAndIncrement();
-        return Optional.of(new ParameterMarkerExpressionSegment(getStartIndex(sqlNode), getStopIndex(sqlNode), ((SqlDynamicParam) sqlNode).getIndex()));
     }
 }

@@ -22,7 +22,6 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDB
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.transaction.ConnectionSavepointManager;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
-import org.apache.shardingsphere.transaction.TransactionHolder;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
@@ -58,7 +57,7 @@ public final class JDBCBackendTransactionManager implements TransactionManager<V
     public Void begin() throws SQLException {
         if (!connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             connection.getConnectionSession().getTransactionStatus().setInTransaction(true);
-            TransactionHolder.setInTransaction();
+            connection.getConnectionSession().getConnectionContext().getTransactionConnectionContext().setInTransaction(true);
             connection.closeHandlers(true);
             connection.closeConnections(false);
         }
@@ -82,7 +81,7 @@ public final class JDBCBackendTransactionManager implements TransactionManager<V
             } finally {
                 connection.getConnectionSession().getTransactionStatus().setInTransaction(false);
                 connection.getConnectionSession().getTransactionStatus().setRollbackOnly(false);
-                TransactionHolder.clear();
+                connection.getConnectionSession().getConnectionContext().clearTransactionConnectionContext();
                 connection.getConnectionSession().getConnectionContext().clearCursorConnectionContext();
             }
         }
@@ -101,7 +100,7 @@ public final class JDBCBackendTransactionManager implements TransactionManager<V
             } finally {
                 connection.getConnectionSession().getTransactionStatus().setInTransaction(false);
                 connection.getConnectionSession().getTransactionStatus().setRollbackOnly(false);
-                TransactionHolder.clear();
+                connection.getConnectionSession().getConnectionContext().clearTransactionConnectionContext();
                 connection.getConnectionSession().getConnectionContext().clearCursorConnectionContext();
             }
         }

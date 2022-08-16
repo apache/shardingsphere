@@ -33,6 +33,8 @@ public enum XOpenSQLState implements SQLState {
     
     PRIVILEGE_NOT_GRANTED("01007"),
     
+    CONNECTION_EXCEPTION("08000"),
+    
     DATA_SOURCE_REJECTED_CONNECTION_ATTEMPT("08004"),
     
     FEATURE_NOT_SUPPORTED("0A000"),
@@ -48,6 +50,8 @@ public enum XOpenSQLState implements SQLState {
     DUPLICATE("42S01"),
     
     NOT_FOUND("42S02"),
+    
+    CHECK_OPTION_VIOLATION("44000"),
     
     GENERAL_ERROR("HY000"),
     

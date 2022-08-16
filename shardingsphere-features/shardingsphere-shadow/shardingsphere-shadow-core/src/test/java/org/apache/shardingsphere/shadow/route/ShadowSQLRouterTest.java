@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shadow.route;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.session.ConnectionContext;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.junit.Test;
 
@@ -30,6 +31,7 @@ public final class ShadowSQLRouterTest {
     
     @Test
     public void assertCreateRouteContext() {
-        assertNotNull(new ShadowSQLRouter().createRouteContext(mock(LogicSQL.class), mock(ShardingSphereDatabase.class), mock(ShadowRule.class), mock(ConfigurationProperties.class)));
+        assertNotNull(new ShadowSQLRouter().createRouteContext(mock(LogicSQL.class), mock(ShardingSphereDatabase.class), mock(ShadowRule.class), mock(ConfigurationProperties.class),
+                new ConnectionContext()));
     }
 }

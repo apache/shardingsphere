@@ -17,20 +17,20 @@
 
 package org.apache.shardingsphere.error.mysql.mapper;
 
+import org.apache.shardingsphere.error.exception.SQLDialectException;
+import org.apache.shardingsphere.error.exception.connection.TooManyConnectionsException;
+import org.apache.shardingsphere.error.exception.data.InsertColumnsAndValuesMismatchedException;
+import org.apache.shardingsphere.error.exception.syntax.database.DatabaseCreateExistsException;
+import org.apache.shardingsphere.error.exception.syntax.database.DatabaseDropNotExistsException;
+import org.apache.shardingsphere.error.exception.syntax.database.NoDatabaseSelectedException;
+import org.apache.shardingsphere.error.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.error.exception.syntax.table.NoSuchTableException;
+import org.apache.shardingsphere.error.exception.syntax.table.TableExistsException;
+import org.apache.shardingsphere.error.exception.transaction.TableModifyInTransactionException;
 import org.apache.shardingsphere.error.mapper.SQLDialectExceptionMapper;
 import org.apache.shardingsphere.error.mysql.code.MySQLVendorError;
-import org.apache.shardingsphere.infra.util.exception.sql.vendor.ShardingSphereVendorError;
+import org.apache.shardingsphere.infra.util.exception.sql.UnknownSQLException;
 import org.apache.shardingsphere.infra.util.exception.sql.vendor.VendorError;
-import org.apache.shardingsphere.error.dialect.connection.TooManyConnectionsException;
-import org.apache.shardingsphere.error.dialect.data.InsertColumnsAndValuesMismatchedException;
-import org.apache.shardingsphere.error.dialect.syntax.database.DatabaseCreateExistsException;
-import org.apache.shardingsphere.error.dialect.syntax.database.DatabaseDropNotExistsException;
-import org.apache.shardingsphere.error.dialect.syntax.database.NoDatabaseSelectedException;
-import org.apache.shardingsphere.error.dialect.syntax.database.UnknownDatabaseException;
-import org.apache.shardingsphere.error.dialect.syntax.table.NoSuchTableException;
-import org.apache.shardingsphere.error.dialect.syntax.table.TableExistsException;
-import org.apache.shardingsphere.error.dialect.transaction.TableModifyInTransactionException;
-import org.apache.shardingsphere.error.dialect.SQLDialectException;
 
 import java.sql.SQLException;
 
@@ -70,7 +70,7 @@ public final class MySQLDialectExceptionMapper implements SQLDialectExceptionMap
         if (sqlDialectException instanceof TooManyConnectionsException) {
             return toSQLException(MySQLVendorError.ER_CON_COUNT_ERROR);
         }
-        return toSQLException(ShardingSphereVendorError.UNKNOWN_EXCEPTION, sqlDialectException.getMessage());
+        return new UnknownSQLException(sqlDialectException).toSQLException();
     }
     
     private SQLException toSQLException(final VendorError vendorError, final Object... messageArguments) {

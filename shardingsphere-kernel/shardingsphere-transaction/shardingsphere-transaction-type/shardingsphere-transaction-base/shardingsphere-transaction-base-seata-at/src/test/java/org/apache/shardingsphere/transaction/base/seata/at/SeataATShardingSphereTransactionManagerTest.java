@@ -61,6 +61,8 @@ public final class SeataATShardingSphereTransactionManagerTest {
     
     private static final MockSeataServer MOCK_SEATA_SERVER = new MockSeataServer();
     
+    private static final String DATA_SOURCE_UNIQUE_NAME = "sharding_db.foo_ds";
+    
     private final SeataATShardingSphereTransactionManager seataTransactionManager = new SeataATShardingSphereTransactionManager();
     
     private final Queue<Object> requestQueue = MOCK_SEATA_SERVER.getMessageHandler().getRequestQueue();
@@ -84,7 +86,7 @@ public final class SeataATShardingSphereTransactionManagerTest {
     
     @Before
     public void setUp() {
-        seataTransactionManager.init(DatabaseTypeFactory.getInstance("MySQL"), Collections.singletonList(new ResourceDataSource("foo_ds", new MockedDataSource())), "Seata");
+        seataTransactionManager.init(DatabaseTypeFactory.getInstance("MySQL"), Collections.singletonList(new ResourceDataSource(DATA_SOURCE_UNIQUE_NAME, new MockedDataSource())), "Seata");
     }
     
     @After
@@ -102,13 +104,13 @@ public final class SeataATShardingSphereTransactionManagerTest {
     public void assertInit() {
         Map<String, DataSource> actual = getDataSourceMap();
         assertThat(actual.size(), is(1));
-        assertThat(actual.get("foo_ds"), instanceOf(DataSourceProxy.class));
+        assertThat(actual.get(DATA_SOURCE_UNIQUE_NAME), instanceOf(DataSourceProxy.class));
         assertThat(seataTransactionManager.getTransactionType(), is(TransactionType.BASE));
     }
     
     @Test
     public void assertGetConnection() throws SQLException {
-        Connection actual = seataTransactionManager.getConnection("foo_ds");
+        Connection actual = seataTransactionManager.getConnection("sharding_db", "foo_ds");
         assertThat(actual, instanceOf(ConnectionProxy.class));
     }
     

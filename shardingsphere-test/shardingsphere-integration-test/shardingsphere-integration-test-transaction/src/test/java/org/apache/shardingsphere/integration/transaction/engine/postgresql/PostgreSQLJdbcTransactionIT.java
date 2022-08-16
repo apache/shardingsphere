@@ -67,5 +67,4 @@ public final class PostgreSQLJdbcTransactionIT extends BaseTransactionITCase {
     private void callTestCases() {
         callTestCases(parameterized);
     }
-    
 }

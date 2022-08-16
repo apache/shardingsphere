@@ -17,12 +17,16 @@
 
 package org.apache.shardingsphere.test.integration.env.container.atomic.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
  * Command part util.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CommandPartUtil {
     
     /**

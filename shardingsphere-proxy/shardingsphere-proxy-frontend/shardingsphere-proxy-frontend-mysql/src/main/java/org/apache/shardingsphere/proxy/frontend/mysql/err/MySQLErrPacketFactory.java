@@ -21,10 +21,11 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
-import org.apache.shardingsphere.error.SQLExceptionHandler;
+import org.apache.shardingsphere.error.exception.SQLDialectException;
+import org.apache.shardingsphere.error.mapper.SQLDialectExceptionMapperFactory;
 import org.apache.shardingsphere.error.mysql.code.MySQLVendorError;
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
-import org.apache.shardingsphere.infra.util.exception.sql.vendor.ShardingSphereVendorError;
+import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.sql.UnknownSQLException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.DistSQLException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.DistSQLVendorError;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
@@ -50,8 +51,12 @@ public final class MySQLErrPacketFactory {
             return null == sqlException.getSQLState() ? new MySQLErrPacket(1, MySQLVendorError.ER_INTERNAL_ERROR, getErrorMessage(sqlException))
                     : new MySQLErrPacket(1, sqlException.getErrorCode(), sqlException.getSQLState(), sqlException.getMessage());
         }
-        if (cause instanceof ShardingSphereInsideException) {
-            SQLException sqlException = SQLExceptionHandler.convert("MySQL", (ShardingSphereInsideException) cause);
+        if (cause instanceof SQLDialectException) {
+            SQLException sqlException = SQLDialectExceptionMapperFactory.getInstance("MySQL").convert((SQLDialectException) cause);
+            return new MySQLErrPacket(1, sqlException.getErrorCode(), sqlException.getSQLState(), sqlException.getMessage());
+        }
+        if (cause instanceof ShardingSphereSQLException) {
+            SQLException sqlException = ((ShardingSphereSQLException) cause).toSQLException();
             return new MySQLErrPacket(1, sqlException.getErrorCode(), sqlException.getSQLState(), sqlException.getMessage());
         }
         if (cause instanceof DistSQLException) {
@@ -64,7 +69,8 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof UnsupportedCharsetException) {
             return new MySQLErrPacket(1, MySQLVendorError.ER_UNKNOWN_CHARACTER_SET, cause.getMessage());
         }
-        return new MySQLErrPacket(1, ShardingSphereVendorError.UNKNOWN_EXCEPTION, cause.getMessage());
+        SQLException unknownSQLException = new UnknownSQLException(cause).toSQLException();
+        return new MySQLErrPacket(1, unknownSQLException.getErrorCode(), unknownSQLException.getSQLState(), unknownSQLException.getMessage());
     }
     
     private static String getErrorMessage(final SQLException cause) {

@@ -23,9 +23,10 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.opengauss.packet.command.generic.OpenGaussErrorResponsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
-import org.apache.shardingsphere.error.SQLExceptionHandler;
+import org.apache.shardingsphere.error.exception.SQLDialectException;
+import org.apache.shardingsphere.error.mapper.SQLDialectExceptionMapperFactory;
 import org.apache.shardingsphere.error.postgresql.code.PostgreSQLVendorError;
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.InvalidAuthorizationSpecificationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLAuthenticationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLProtocolViolationException;
@@ -75,8 +76,11 @@ public final class OpenGaussErrorPacketFactory {
         if (cause instanceof SQLException) {
             return createErrorResponsePacket((SQLException) cause);
         }
-        if (cause instanceof ShardingSphereInsideException) {
-            return createErrorResponsePacket(SQLExceptionHandler.convert("PostgreSQL", (ShardingSphereInsideException) cause));
+        if (cause instanceof SQLDialectException) {
+            return createErrorResponsePacket(SQLDialectExceptionMapperFactory.getInstance("PostgreSQL").convert((SQLDialectException) cause));
+        }
+        if (cause instanceof ShardingSphereSQLException) {
+            return createErrorResponsePacket(((ShardingSphereSQLException) cause).toSQLException());
         }
         if (cause instanceof InvalidAuthorizationSpecificationException) {
             return new OpenGaussErrorResponsePacket(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLVendorError.INVALID_AUTHORIZATION_SPECIFICATION.getSqlState().getValue(), cause.getMessage());

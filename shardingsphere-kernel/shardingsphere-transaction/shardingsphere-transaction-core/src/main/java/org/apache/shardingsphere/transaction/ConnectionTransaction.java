@@ -35,6 +35,8 @@ public final class ConnectionTransaction {
     
     private final TransactionType transactionType;
     
+    private final String databaseName;
+    
     @Setter
     @Getter
     private volatile boolean rollbackOnly;
@@ -46,6 +48,7 @@ public final class ConnectionTransaction {
     }
     
     public ConnectionTransaction(final String databaseName, final TransactionType transactionType, final TransactionRule rule) {
+        this.databaseName = databaseName;
         this.transactionType = transactionType;
         transactionManager = rule.getResource().getTransactionManager(transactionType);
         TransactionTypeHolder.set(transactionType);
@@ -87,7 +90,7 @@ public final class ConnectionTransaction {
      * @throws SQLException SQL exception
      */
     public Optional<Connection> getConnection(final String dataSourceName) throws SQLException {
-        return isInTransaction() ? Optional.of(transactionManager.getConnection(dataSourceName)) : Optional.empty();
+        return isInTransaction() ? Optional.of(transactionManager.getConnection(this.databaseName, dataSourceName)) : Optional.empty();
     }
     
     /**

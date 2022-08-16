@@ -116,7 +116,6 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
         String schemaName = executorContext.getSchemaName();
         DatabaseType databaseType = DatabaseTypeEngine.getTrunkDatabaseType(optimizerContext.getParserContexts().get(databaseName).getDatabaseType().getType());
         SqlString sqlString = createSQLString(table, (FilterableScanNodeExecutorContext) scanContext, SQLDialectFactory.getSQLDialect(databaseType));
-        // TODO replace sql parse with sql convert
         FederationContext federationContext = executorContext.getFederationContext();
         LogicSQL logicSQL = createLogicSQL(federationContext.getDatabases(), sqlString, databaseType);
         ShardingSphereDatabase database = federationContext.getDatabases().get(databaseName.toLowerCase());

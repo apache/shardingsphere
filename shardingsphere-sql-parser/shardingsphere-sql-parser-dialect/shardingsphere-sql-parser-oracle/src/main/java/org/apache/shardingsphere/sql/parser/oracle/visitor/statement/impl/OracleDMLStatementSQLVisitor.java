@@ -704,7 +704,7 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
         }
         if (projection instanceof CommonExpressionSegment) {
             CommonExpressionSegment segment = (CommonExpressionSegment) projection;
-            ExpressionProjectionSegment result = new ExpressionProjectionSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getText());
+            ExpressionProjectionSegment result = new ExpressionProjectionSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getText(), segment);
             result.setAlias(alias);
             return result;
         }
@@ -722,15 +722,16 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
             return result;
         }
         if (projection instanceof BinaryOperationExpression) {
-            int startIndex = ((BinaryOperationExpression) projection).getStartIndex();
-            int stopIndex = null != alias ? alias.getStopIndex() : ((BinaryOperationExpression) projection).getStopIndex();
-            ExpressionProjectionSegment result = new ExpressionProjectionSegment(startIndex, stopIndex, ((BinaryOperationExpression) projection).getText());
+            BinaryOperationExpression binaryExpression = (BinaryOperationExpression) projection;
+            int startIndex = binaryExpression.getStartIndex();
+            int stopIndex = null != alias ? alias.getStopIndex() : binaryExpression.getStopIndex();
+            ExpressionProjectionSegment result = new ExpressionProjectionSegment(startIndex, stopIndex, binaryExpression.getText(), binaryExpression);
             result.setAlias(alias);
             return result;
         }
         LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
-        ExpressionProjectionSegment result = null == alias ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()))
-                : new ExpressionProjectionSegment(column.getStartIndex(), ctx.alias().stop.getStopIndex(), String.valueOf(column.getLiterals()));
+        ExpressionProjectionSegment result = null == alias ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()), column)
+                : new ExpressionProjectionSegment(column.getStartIndex(), ctx.alias().stop.getStopIndex(), String.valueOf(column.getLiterals()), column);
         result.setAlias(alias);
         return result;
     }

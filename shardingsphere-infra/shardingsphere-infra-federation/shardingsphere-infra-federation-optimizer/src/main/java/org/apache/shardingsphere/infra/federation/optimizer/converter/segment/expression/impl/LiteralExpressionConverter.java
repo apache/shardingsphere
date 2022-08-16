@@ -22,7 +22,6 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
 import java.util.Optional;
 
@@ -32,21 +31,12 @@ import java.util.Optional;
 public final class LiteralExpressionConverter implements SQLSegmentConverter<LiteralExpressionSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convertToSQLNode(final LiteralExpressionSegment segment) {
+    public Optional<SqlNode> convert(final LiteralExpressionSegment segment) {
         if (Integer.class == segment.getLiterals().getClass()) {
             return Optional.of(SqlLiteral.createExactNumeric(String.valueOf(segment.getLiterals()), SqlParserPos.ZERO));
         }
         if (String.class == segment.getLiterals().getClass()) {
             return Optional.of(SqlLiteral.createCharString((String) segment.getLiterals(), SqlParserPos.ZERO));
-        }
-        return Optional.empty();
-    }
-    
-    @Override
-    public Optional<LiteralExpressionSegment> convertToSQLSegment(final SqlNode sqlNode) {
-        if (sqlNode instanceof SqlLiteral) {
-            SqlLiteral sqlLiteral = (SqlLiteral) sqlNode;
-            return Optional.of(new LiteralExpressionSegment(getStartIndex(sqlLiteral), getStopIndex(sqlLiteral), SQLUtil.getExactlyValue(sqlLiteral.toValue())));
         }
         return Optional.empty();
     }

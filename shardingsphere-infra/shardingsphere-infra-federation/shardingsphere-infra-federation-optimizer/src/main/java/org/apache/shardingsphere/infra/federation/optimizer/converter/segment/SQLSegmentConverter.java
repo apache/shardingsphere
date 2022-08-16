@@ -31,38 +31,10 @@ import java.util.Optional;
 public interface SQLSegmentConverter<S extends SQLSegment, T extends SqlNode> {
     
     /**
-     * Convert SQL segment to SQL node.
+     * Convert.
      * 
      * @param segment SQL segment be to converted
      * @return converted SQL node
      */
-    Optional<T> convertToSQLNode(S segment);
-    
-    /**
-     * Convert SQL node to SQL segment.
-     *
-     * @param sqlNode SQL node be to converted
-     * @return converted SQL segment
-     */
-    Optional<S> convertToSQLSegment(T sqlNode);
-    
-    /**
-     * Get start index.
-     * 
-     * @param sqlNode SQL node
-     * @return start index
-     */
-    default int getStartIndex(SqlNode sqlNode) {
-        return sqlNode.getParserPosition().getColumnNum() - 1;
-    }
-    
-    /**
-     * Get stop index.
-     *
-     * @param sqlNode SQL node
-     * @return stop index
-     */
-    default int getStopIndex(SqlNode sqlNode) {
-        return sqlNode.getParserPosition().getEndColumnNum() - 1;
-    }
+    Optional<T> convert(S segment);
 }
