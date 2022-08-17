@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
+package org.apache.shardingsphere.data.pipeline.core.execute;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
-import org.apache.shardingsphere.data.pipeline.core.execute.FinishedCheckJobExecutor;
-import org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobExecutor;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Pipeline job worker.
@@ -29,14 +30,12 @@ import org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobExecutor;
 @Slf4j
 public final class PipelineJobWorker {
     
-    private static final RuleAlteredJobWorker INSTANCE = new RuleAlteredJobWorker();
-    
     private static final AtomicBoolean WORKER_INITIALIZED = new AtomicBoolean(false);
     
     /**
-     * Initialize job worker if necessary.
+     * Initialize job worker.
      */
-    public static void initWorkerIfNecessary() {
+    public static void initialize() {
         if (WORKER_INITIALIZED.get()) {
             return;
         }
@@ -45,7 +44,8 @@ public final class PipelineJobWorker {
                 return;
             }
             log.info("start worker initialization");
-            PipelineContext.getContextManager().getInstanceContext().getEventBusContext().register(INSTANCE);
+            EventBusContext eventBusContext = PipelineContext.getContextManager().getInstanceContext().getEventBusContext();
+            eventBusContext.register(RuleAlteredJobWorker.getInstance());
             new FinishedCheckJobExecutor().start();
             new PipelineJobExecutor().start();
             WORKER_INITIALIZED.set(true);

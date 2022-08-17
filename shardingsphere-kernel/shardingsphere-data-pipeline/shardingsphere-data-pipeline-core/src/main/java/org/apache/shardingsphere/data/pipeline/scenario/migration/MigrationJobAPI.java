@@ -19,9 +19,11 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
 import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.api.config.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
+import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
 
@@ -35,6 +37,16 @@ public interface MigrationJobAPI extends PipelineJobAPI, MigrationJobPublicAPI, 
     
     @Override
     MigrationJobConfiguration getJobConfiguration(String jobId);
+    
+    /**
+     * Build task configuration.
+     *
+     * @param jobConfig job configuration
+     * @param jobShardingItem job sharding item
+     * @param pipelineProcessConfig pipeline process configuration
+     * @return task configuration
+     */
+    TaskConfiguration buildTaskConfiguration(MigrationJobConfiguration jobConfig, int jobShardingItem, PipelineProcessConfiguration pipelineProcessConfig);
     
     /**
      * Get job progress.

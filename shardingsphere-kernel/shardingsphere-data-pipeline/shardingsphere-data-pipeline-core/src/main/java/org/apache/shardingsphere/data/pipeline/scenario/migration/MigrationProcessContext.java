@@ -31,11 +31,11 @@ import org.apache.shardingsphere.infra.config.rule.rulealtered.OnRuleAlteredActi
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.rulealtered.YamlOnRuleAlteredActionConfigurationSwapper;
 
 /**
- * Migration context.
+ * Migration process context.
  */
 @Getter
 @Slf4j
-public final class MigrationContext extends AbstractPipelineProcessContext {
+public final class MigrationProcessContext extends AbstractPipelineProcessContext {
     
     private static final YamlOnRuleAlteredActionConfigurationSwapper SWAPPER = new YamlOnRuleAlteredActionConfigurationSwapper();
     
@@ -44,7 +44,7 @@ public final class MigrationContext extends AbstractPipelineProcessContext {
     private final DataConsistencyCalculateAlgorithm dataConsistencyCalculateAlgorithm;
     
     @SuppressWarnings("unchecked")
-    public MigrationContext(final String jobId, final OnRuleAlteredActionConfiguration actionConfig) {
+    public MigrationProcessContext(final String jobId, final OnRuleAlteredActionConfiguration actionConfig) {
         super(jobId, new PipelineProcessConfiguration(actionConfig.getInput(), actionConfig.getOutput(), actionConfig.getStreamChannel()));
         AlgorithmConfiguration completionDetector = actionConfig.getCompletionDetector();
         completionDetectAlgorithm = null != completionDetector ? JobCompletionDetectAlgorithmFactory.newInstance(completionDetector) : null;
