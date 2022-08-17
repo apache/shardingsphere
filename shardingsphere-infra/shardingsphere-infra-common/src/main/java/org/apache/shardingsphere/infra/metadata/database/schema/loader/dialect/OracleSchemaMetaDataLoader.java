@@ -67,7 +67,7 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     private static final int COLLATION_START_MINOR_VERSION = 2;
     
     private static final int IDENTITY_COLUMN_START_MINOR_VERSION = 1;
-
+    
     private static final int HIDDEN_COLUMN_START_MINOR_VERSION = 1;
     
     private static final int MAX_EXPRESSION_SIZE = 1000;
@@ -144,7 +144,7 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
         return tables.isEmpty() ? String.format(TABLE_META_DATA_SQL, collation)
                 : String.format(TABLE_META_DATA_SQL_IN_TABLES, collation, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
-
+    
     private boolean versionContainsHiddenColumn(final DatabaseMetaData databaseMetaData) throws SQLException {
         return databaseMetaData.getDatabaseMajorVersion() >= COLLATION_START_MAJOR_VERSION && databaseMetaData.getDatabaseMinorVersion() >= HIDDEN_COLUMN_START_MINOR_VERSION;
     }
