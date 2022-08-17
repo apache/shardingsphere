@@ -200,8 +200,8 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     }
     
     private void verifyManualMode(final MigrationJobConfiguration jobConfig) {
-        MigrationContext migrationContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
-        if (null != migrationContext.getCompletionDetectAlgorithm()) {
+        MigrationProcessContext processContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
+        if (null != processContext.getCompletionDetectAlgorithm()) {
             throw new PipelineVerifyFailedException("It's not necessary to do it in auto mode.");
         }
     }
@@ -284,12 +284,12 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     
     @Override
     public boolean isDataConsistencyCheckNeeded(final MigrationJobConfiguration jobConfig) {
-        MigrationContext migrationContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
-        return isDataConsistencyCheckNeeded(migrationContext);
+        MigrationProcessContext processContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
+        return isDataConsistencyCheckNeeded(processContext);
     }
     
-    private boolean isDataConsistencyCheckNeeded(final MigrationContext migrationContext) {
-        return null != migrationContext.getDataConsistencyCalculateAlgorithm();
+    private boolean isDataConsistencyCheckNeeded(final MigrationProcessContext processContext) {
+        return null != processContext.getDataConsistencyCalculateAlgorithm();
     }
     
     @Override
@@ -303,12 +303,12 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     
     @Override
     public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final MigrationJobConfiguration jobConfig) {
-        MigrationContext migrationContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
-        if (!isDataConsistencyCheckNeeded(migrationContext)) {
+        MigrationProcessContext processContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
+        if (!isDataConsistencyCheckNeeded(processContext)) {
             log.info("DataConsistencyCalculatorAlgorithm is not configured, data consistency check is ignored.");
             return Collections.emptyMap();
         }
-        return dataConsistencyCheck(jobConfig, migrationContext.getDataConsistencyCalculateAlgorithm());
+        return dataConsistencyCheck(jobConfig, processContext.getDataConsistencyCalculateAlgorithm());
     }
     
     @Override
@@ -364,9 +364,9 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     @Override
     public void switchClusterConfiguration(final MigrationJobConfiguration jobConfig) {
         String jobId = jobConfig.getJobId();
-        MigrationContext migrationContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
+        MigrationProcessContext processContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
-        if (isDataConsistencyCheckNeeded(migrationContext)) {
+        if (isDataConsistencyCheckNeeded(processContext)) {
             Optional<Boolean> checkResult = repositoryAPI.getJobCheckResult(jobId);
             if (!checkResult.isPresent() || !checkResult.get()) {
                 throw new PipelineVerifyFailedException("Data consistency check is not finished or failed.");

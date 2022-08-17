@@ -64,7 +64,7 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
     
     private final MigrationJobConfiguration jobConfig;
     
-    private final MigrationContext jobProcessContext;
+    private final MigrationProcessContext jobProcessContext;
     
     private final PipelineDataSourceManager dataSourceManager;
     

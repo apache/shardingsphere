@@ -34,8 +34,8 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationContext;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationProcessContext;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetector;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetectorFactory;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
@@ -97,7 +97,7 @@ public final class RuleAlteredJobWorker {
      * @param jobConfig job configuration
      * @return rule altered context
      */
-    public static MigrationContext createRuleAlteredContext(final MigrationJobConfiguration jobConfig) {
+    public static MigrationProcessContext createRuleAlteredContext(final MigrationJobConfiguration jobConfig) {
         YamlRootConfiguration targetRootConfig = getYamlRootConfig(jobConfig);
         YamlRuleConfiguration yamlRuleConfig = null;
         for (YamlRuleConfiguration each : targetRootConfig.getRules()) {
@@ -117,7 +117,7 @@ public final class RuleAlteredJobWorker {
             log.error("rule altered action enabled but actor is not configured, ignored, ruleConfig={}", ruleConfig);
             throw new PipelineJobCreationException("rule altered actor not configured");
         }
-        return new MigrationContext(jobConfig.getJobId(), onRuleAlteredActionConfig.get());
+        return new MigrationProcessContext(jobConfig.getJobId(), onRuleAlteredActionConfig.get());
     }
     
     /**
