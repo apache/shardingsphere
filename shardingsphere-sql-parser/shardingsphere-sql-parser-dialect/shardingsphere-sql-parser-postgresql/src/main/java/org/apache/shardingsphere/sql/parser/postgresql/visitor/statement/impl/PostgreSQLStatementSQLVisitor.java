@@ -296,18 +296,38 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         if (null != ctx.patternMatchingOperator()) {
             return createPatternMatchingOperationSegment(ctx);
         }
-        if (null != ctx.comparisonOperator()) {
-            return createCommonBinaryOperationSegment(ctx, ctx.comparisonOperator().getText());
-        }
-        if (null != ctx.andOperator()) {
-            return createCommonBinaryOperationSegment(ctx, ctx.andOperator().getText());
-        }
-        if (null != ctx.orOperator()) {
-            return createCommonBinaryOperationSegment(ctx, ctx.orOperator().getText());
+        Optional<String> commonBinaryOperator = findCommonBinaryOperator(ctx);
+        if (commonBinaryOperator.isPresent()) {
+            return createCommonBinaryOperationSegment(ctx, commonBinaryOperator.get());
         }
         super.visitAExpr(ctx);
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
+    }
+    
+    private Optional<String> findCommonBinaryOperator(final AExprContext ctx) {
+        if (null != ctx.comparisonOperator()) {
+            return Optional.of(ctx.comparisonOperator().getText());
+        }
+        if (null != ctx.andOperator()) {
+            return Optional.of(ctx.andOperator().getText());
+        }
+        if (null != ctx.orOperator()) {
+            return Optional.of(ctx.orOperator().getText());
+        }
+        if (null != ctx.PLUS_()) {
+            return Optional.of(ctx.PLUS_().getText());
+        }
+        if (null != ctx.MINUS_()) {
+            return Optional.of(ctx.MINUS_().getText());
+        }
+        if (null != ctx.ASTERISK_()) {
+            return Optional.of(ctx.ASTERISK_().getText());
+        }
+        if (null != ctx.SLASH_()) {
+            return Optional.of(ctx.SLASH_().getText());
+        }
+        return Optional.empty();
     }
     
     private BinaryOperationExpression createPatternMatchingOperationSegment(final AExprContext ctx) {
