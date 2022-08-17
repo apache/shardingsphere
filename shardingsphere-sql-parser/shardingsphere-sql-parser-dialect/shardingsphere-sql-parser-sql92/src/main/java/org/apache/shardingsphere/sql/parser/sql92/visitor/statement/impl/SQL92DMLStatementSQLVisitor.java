@@ -54,6 +54,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.TableRe
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.TableReferencesContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.UpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.WhereClauseContext;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
@@ -390,6 +391,7 @@ public final class SQL92DMLStatementSQLVisitor extends SQL92StatementSQLVisitor 
         result.setStopIndex(ctx.stop.getStopIndex());
         result.setLeft(tableSegment);
         result.setRight((TableSegment) visit(ctx));
+        result.setJoinType(JoinType.COMMA.name());
         return result;
     }
     
@@ -440,13 +442,27 @@ public final class SQL92DMLStatementSQLVisitor extends SQL92StatementSQLVisitor 
         result.setStopIndex(ctx.stop.getStopIndex());
         TableSegment right = (TableSegment) visit(ctx.tableFactor());
         result.setRight(right);
+        result.setJoinType(getJoinType(ctx));
         if (null != ctx.joinSpecification()) {
-            result = visitJoinSpecification(ctx.joinSpecification(), result);
+            visitJoinSpecification(ctx.joinSpecification(), result);
         }
         return result;
     }
     
-    private JoinTableSegment visitJoinSpecification(final JoinSpecificationContext ctx, final JoinTableSegment joinTableSource) {
+    private String getJoinType(final JoinedTableContext ctx) {
+        if (null != ctx.LEFT()) {
+            return JoinType.LEFT.name();
+        } else if (null != ctx.RIGHT()) {
+            return JoinType.RIGHT.name();
+        } else if (null != ctx.INNER()) {
+            return JoinType.INNER.name();
+        } else if (null != ctx.CROSS()) {
+            return JoinType.CROSS.name();
+        }
+        return JoinType.INNER.name();
+    }
+    
+    private void visitJoinSpecification(final JoinSpecificationContext ctx, final JoinTableSegment joinTableSource) {
         if (null != ctx.expr()) {
             ExpressionSegment condition = (ExpressionSegment) visit(ctx.expr());
             joinTableSource.setCondition(condition);
@@ -454,7 +470,6 @@ public final class SQL92DMLStatementSQLVisitor extends SQL92StatementSQLVisitor 
         if (null != ctx.USING()) {
             joinTableSource.setUsing(ctx.columnNames().columnName().stream().map(each -> (ColumnSegment) visit(each)).collect(Collectors.toList()));
         }
-        return joinTableSource;
     }
     
     @Override
