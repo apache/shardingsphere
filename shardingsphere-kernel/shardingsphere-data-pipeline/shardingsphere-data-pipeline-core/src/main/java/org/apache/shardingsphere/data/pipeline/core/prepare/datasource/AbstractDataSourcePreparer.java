@@ -115,7 +115,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         }
         return PATTERN_CREATE_TABLE.matcher(createTableSQL).replaceFirst("CREATE TABLE IF NOT EXISTS ");
     }
-
+    
     protected String getActualTable(final ShardingSphereDatabase database, final String tableName) {
         DataNodes dataNodes = new DataNodes(database.getRuleMetaData().getRules());
         Optional<DataNode> filteredDataNode = dataNodes.getDataNodes(tableName).stream()

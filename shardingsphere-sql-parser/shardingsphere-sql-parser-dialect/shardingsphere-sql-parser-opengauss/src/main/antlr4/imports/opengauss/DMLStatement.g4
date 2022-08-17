@@ -387,7 +387,7 @@ tableReference
 joinedTable
     : crossJoinType tableReference
     | innerJoinType tableReference joinQual
-    | outerJoinType tableReference
+    | outerJoinType tableReference joinQual
     | naturalJoinType tableReference
     ;
 
