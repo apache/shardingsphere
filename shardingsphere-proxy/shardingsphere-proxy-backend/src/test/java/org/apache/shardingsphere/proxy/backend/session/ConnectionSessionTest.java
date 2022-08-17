@@ -84,6 +84,7 @@ public final class ConnectionSessionTest extends ProxyContextRestorer {
         JDBCBackendTransactionManager transactionManager = new JDBCBackendTransactionManager(backendConnection);
         transactionManager.begin();
         connectionSession.setCurrentDatabase("newDB");
+        assertThat(connectionSession.getDefaultDatabaseName(), is("newDB"));
     }
     
     @Test

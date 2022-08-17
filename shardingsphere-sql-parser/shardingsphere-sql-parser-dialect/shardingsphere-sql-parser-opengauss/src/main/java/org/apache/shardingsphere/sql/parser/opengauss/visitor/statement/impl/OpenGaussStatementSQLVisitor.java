@@ -69,8 +69,10 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Joi
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.JoinedTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.LimitClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.NameListContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.NaturalJoinTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.NumberLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.OptOnDuplicateKeyContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.OuterJoinTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.OwnerContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ParameterMarkerContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.QualifiedNameContext;
@@ -103,9 +105,10 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Whe
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WhereOrCurrentClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WindowClauseContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.CombineType;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.CombineType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -116,6 +119,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.Se
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
@@ -149,7 +153,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.li
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeLengthSegment;
@@ -182,6 +185,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -966,42 +970,53 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
     
     @Override
     public ASTNode visitTargetEl(final TargetElContext ctx) {
-        if (null != ctx.ASTERISK_()) {
-            return new ShorthandProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        }
-        if (null != ctx.DOT_ASTERISK_()) {
-            ShorthandProjectionSegment shorthandProjection = new ShorthandProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-            shorthandProjection.setOwner(new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText())));
-            return shorthandProjection;
-        }
-        AExprContext expr = ctx.aExpr();
-        ProjectionSegment result = new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr));
-        if (null != expr.cExpr()) {
-            ASTNode projection = visit(expr.cExpr());
-            if (projection instanceof ColumnSegment) {
-                result = new ColumnProjectionSegment((ColumnSegment) projection);
-            }
-            if (projection instanceof FunctionSegment) {
-                result = new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr), (FunctionSegment) projection);
-            }
-            if (projection instanceof AggregationProjectionSegment) {
-                result = (AggregationProjectionSegment) projection;
-            }
-            if (projection instanceof SubqueryExpressionSegment) {
-                SubqueryExpressionSegment subqueryExpression = (SubqueryExpressionSegment) projection;
-                String text = ctx.start.getInputStream().getText(new Interval(subqueryExpression.getStartIndex(), subqueryExpression.getStopIndex()));
-                result = new SubqueryProjectionSegment(subqueryExpression.getSubquery(), text);
-            }
-            if (projection instanceof ExistsSubqueryExpression) {
-                ExistsSubqueryExpression existsSubqueryExpression = (ExistsSubqueryExpression) projection;
-                String text = ctx.start.getInputStream().getText(new Interval(existsSubqueryExpression.getStartIndex(), existsSubqueryExpression.getStopIndex()));
-                result = new SubqueryProjectionSegment(existsSubqueryExpression.getSubquery(), text);
-            }
-        }
+        ProjectionSegment result = createProjectionSegment(ctx, ctx.aExpr());
         if (null != ctx.identifier()) {
             ((AliasAvailable) result).setAlias(new AliasSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), new IdentifierValue(ctx.identifier().getText())));
         }
         return result;
+    }
+    
+    private ProjectionSegment createProjectionSegment(final TargetElContext ctx, final AExprContext expr) {
+        if (null != ctx.ASTERISK_()) {
+            return new ShorthandProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        }
+        if (null != ctx.DOT_ASTERISK_()) {
+            ShorthandProjectionSegment result = new ShorthandProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+            result.setOwner(new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText())));
+            return result;
+        }
+        if (null != ctx.aExpr().cExpr()) {
+            ASTNode projection = visit(expr.cExpr());
+            return findProjectionFromCExpr(ctx, expr, projection).orElseGet(() -> new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr), null));
+        }
+        return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr), null);
+    }
+    
+    private Optional<ProjectionSegment> findProjectionFromCExpr(final TargetElContext ctx, final AExprContext expr, final ASTNode projection) {
+        if (projection instanceof ColumnSegment) {
+            return Optional.of(new ColumnProjectionSegment((ColumnSegment) projection));
+        }
+        if (projection instanceof FunctionSegment) {
+            return Optional.of(new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr), (FunctionSegment) projection));
+        }
+        if (projection instanceof AggregationProjectionSegment) {
+            return Optional.of((AggregationProjectionSegment) projection);
+        }
+        if (projection instanceof SubqueryExpressionSegment) {
+            SubqueryExpressionSegment subqueryExpression = (SubqueryExpressionSegment) projection;
+            String text = ctx.start.getInputStream().getText(new Interval(subqueryExpression.getStartIndex(), subqueryExpression.getStopIndex()));
+            return Optional.of(new SubqueryProjectionSegment(subqueryExpression.getSubquery(), text));
+        }
+        if (projection instanceof ExistsSubqueryExpression) {
+            ExistsSubqueryExpression existsSubqueryExpression = (ExistsSubqueryExpression) projection;
+            String text = ctx.start.getInputStream().getText(new Interval(existsSubqueryExpression.getStartIndex(), existsSubqueryExpression.getStopIndex()));
+            return Optional.of(new SubqueryProjectionSegment(existsSubqueryExpression.getSubquery(), text));
+        }
+        if (projection instanceof LiteralExpressionSegment) {
+            return Optional.of(new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr), (LiteralExpressionSegment) projection));
+        }
+        return Optional.empty();
     }
     
     @Override
@@ -1063,13 +1078,45 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
     }
     
     private JoinTableSegment visitJoinedTable(final JoinedTableContext ctx, final JoinTableSegment tableSegment) {
-        JoinTableSegment result = tableSegment;
         TableSegment right = (TableSegment) visit(ctx.tableReference());
-        result.setRight(right);
-        if (null != ctx.joinQual()) {
-            result = visitJoinQual(ctx.joinQual(), result);
+        tableSegment.setRight(right);
+        tableSegment.setJoinType(getJoinType(ctx));
+        return null != ctx.joinQual() ? visitJoinQual(ctx.joinQual(), tableSegment) : tableSegment;
+    }
+    
+    private String getJoinType(final JoinedTableContext ctx) {
+        if (null != ctx.crossJoinType()) {
+            return JoinType.CROSS.name();
         }
-        return result;
+        if (null != ctx.innerJoinType()) {
+            return JoinType.INNER.name();
+        }
+        if (null != ctx.outerJoinType()) {
+            return getOutJoinType(ctx.outerJoinType());
+        }
+        if (null != ctx.naturalJoinType()) {
+            return getNaturalJoinType(ctx.naturalJoinType());
+        }
+        return JoinType.COMMA.name();
+    }
+    
+    private static String getOutJoinType(final OuterJoinTypeContext ctx) {
+        if (null != ctx.FULL()) {
+            return JoinType.FULL.name();
+        }
+        return null != ctx.LEFT() ? JoinType.LEFT.name() : JoinType.RIGHT.name();
+    }
+    
+    private static String getNaturalJoinType(final NaturalJoinTypeContext ctx) {
+        if (null != ctx.INNER()) {
+            return JoinType.INNER.name();
+        } else if (null != ctx.FULL()) {
+            return JoinType.FULL.name();
+        } else if (null != ctx.LEFT()) {
+            return JoinType.LEFT.name();
+        } else {
+            return JoinType.RIGHT.name();
+        }
     }
     
     private JoinTableSegment visitJoinQual(final JoinQualContext ctx, final JoinTableSegment joinTableSource) {

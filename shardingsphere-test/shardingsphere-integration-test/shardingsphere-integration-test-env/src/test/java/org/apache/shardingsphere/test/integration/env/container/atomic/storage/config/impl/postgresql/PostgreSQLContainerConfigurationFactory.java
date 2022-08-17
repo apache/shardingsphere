@@ -31,7 +31,7 @@ import java.util.Map;
 public final class PostgreSQLContainerConfigurationFactory {
     
     /**
-     * Create new instance of postgresql container configuration.
+     * Create new instance of PostgreSQL container configuration.
      * 
      * @return created instance
      */

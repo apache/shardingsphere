@@ -55,6 +55,17 @@ property:
     key=value                          
 ```
 
+### 参数解释
+| 名称                     | 数据类型       | 说明                  |
+|:-----------------------|:-----------|:--------------------|
+| discoveryTypeName      | IDENTIFIER | 数据库发现类型名            |
+| ruleName               | IDENTIFIER | 规则名称                |
+| discoveryHeartbeatName | IDENTIFIER | 监听心跳名称              |
+| typeName               | STRING     | 数据库发现类型，如：MySQL.MGR |
+| resourceName           | IDENTIFIER | 资源名称                |
+
+### 注意事项
+
 - `discoveryType` 指定数据库发现服务类型，`ShardingSphere` 内置支持 `MySQL.MGR`；
 - 重复的 `ruleName` 将无法被创建；
 - 正在被使用的 `discoveryType` 和 `discoveryHeartbeat` 无法被删除；
