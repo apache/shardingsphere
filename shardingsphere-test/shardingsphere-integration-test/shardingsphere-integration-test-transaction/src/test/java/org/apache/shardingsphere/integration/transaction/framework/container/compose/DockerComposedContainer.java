@@ -60,7 +60,7 @@ public final class DockerComposedContainer extends BaseComposedContainer {
                 StorageContainerConfigurationFactory.newInstance(databaseType)));
         if (TransactionTestConstants.PROXY.equalsIgnoreCase(parameterized.getAdapter())) {
             jdbcContainer = null;
-            proxyContainer = (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance("Cluster", "proxy", databaseType, storageContainer, "", 
+            proxyContainer = (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance("Cluster", "proxy", databaseType, storageContainer, "",
                     TransactionProxyClusterContainerConfigurationFactory.newInstance(databaseType));
             proxyContainer.dependsOn(governanceContainer, storageContainer);
             getContainers().registerContainer(proxyContainer);
