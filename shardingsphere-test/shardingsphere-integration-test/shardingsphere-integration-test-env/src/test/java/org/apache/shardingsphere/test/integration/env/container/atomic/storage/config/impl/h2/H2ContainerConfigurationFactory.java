@@ -35,6 +35,6 @@ public final class H2ContainerConfigurationFactory {
      * @return created instance
      */
     public static StorageContainerConfiguration newInstance() {
-        return new StorageContainerConfiguration(new String[0], Collections.emptyMap(), Collections.emptyMap());
+        return new StorageContainerConfiguration("", Collections.emptyMap(), Collections.emptyMap());
     }
 }

@@ -37,11 +37,11 @@ public final class OpenGaussContainerConfigurationFactory {
      * @return created instance
      */
     public static StorageContainerConfiguration newInstance() {
-        return new StorageContainerConfiguration(getCommands(), getContainerEnvironments(), getMountedResources());
+        return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources());
     }
     
-    private static String[] getCommands() {
-        return new String[0];
+    private static String getCommand() {
+        return "";
     }
     
     private static Map<String, String> getContainerEnvironments() {

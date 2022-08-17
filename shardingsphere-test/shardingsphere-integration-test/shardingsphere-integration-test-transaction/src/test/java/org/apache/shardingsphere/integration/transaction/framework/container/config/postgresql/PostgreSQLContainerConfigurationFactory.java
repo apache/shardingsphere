@@ -37,13 +37,11 @@ public final class PostgreSQLContainerConfigurationFactory {
      * @return created instance
      */
     public static StorageContainerConfiguration newInstance() {
-        return new StorageContainerConfiguration(getCommands(), getContainerEnvironments(), getMountedResources());
+        return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources());
     }
     
-    private static String[] getCommands() {
-        String[] result = new String[1];
-        result[0] = "--max_connections=600 --max_prepared_transactions=600 --wal_level=logical";
-        return result;
+    private static String getCommand() {
+        return "--max_connections=600 --max_prepared_transactions=600 --wal_level=logical";
     }
     
     private static Map<String, String> getContainerEnvironments() {
