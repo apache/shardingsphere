@@ -3,132 +3,67 @@ title = "混合规则"
 weight = 8
 +++
 
-混合配置的规则项之间的叠加使用是通过数据源名称和表名称关联的。
+## 背景信息
 
-如果前一个规则是面向数据源聚合的，下一个规则在配置数据源时，则需要使用前一个规则配置的聚合后的逻辑数据源名称；
-同理，如果前一个规则是面向表聚合的，下一个规则在配置表时，则需要使用前一个规则配置的聚合后的逻辑表名称。
+ShardingSphere 涵盖了很多功能，例如，分库分片、读写分离、高可用、数据脱敏等。这些功能用户可以单独进行使用，也可以配合一起使用，下面是基于 Spring 命名空间 配置示例。
 
-## 配置项说明
+## 配置示例
+
 ```xml
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
-       xmlns:readwrite-splitting="http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting"
-       xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans 
-                           http://www.springframework.org/schema/beans/spring-beans.xsd 
-                           http://shardingsphere.apache.org/schema/shardingsphere/datasource
-                           http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting
-                           http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting/readwrite-splitting.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/encrypt
-                           http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd
-                           ">
-    <bean id="write_ds0" class="  com.zaxxer.hikari.HikariDataSource" init-method="init" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/write_ds?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
-        <property name="username" value="root" />
-        <property name="password" value="" />
-    </bean>
-    
-    <bean id="read_ds0_0" class="  com.zaxxer.hikari.HikariDataSource" init-method="init" destroy-method="close">
-        <!-- 省略详细数据源配置详情 -->
-    </bean>
-    
-    <bean id="read_ds0_1" class="  com.zaxxer.hikari.HikariDataSource" init-method="init" destroy-method="close">
-        <!-- 省略详细数据源配置详情 -->
-    </bean>
-    
-    <bean id="write_ds1" class="  com.zaxxer.hikari.HikariDataSource" init-method="init" destroy-method="close">
-        <!-- 省略详细数据源配置详情 -->
-    </bean>
-    
-    <bean id="read_ds1_0" class="  com.zaxxer.hikari.HikariDataSource" init-method="init" destroy-method="close">
-        <!-- 省略详细数据源配置详情 -->
-    </bean>
-    
-    <bean id="read_ds1_1" class="  com.zaxxer.hikari.HikariDataSource" init-method="init" destroy-method="close">
-        <!-- 省略详细数据源配置详情 -->
-    </bean>
-    
-    <!-- 主从配置负载均衡策略 -->
-    <readwrite-splitting:load-balance-algorithm id="randomStrategy" type="RANDOM" />
-    
-    <!-- 主从规则配置 -->
-    <readwrite-splitting:rule id="readWriteSplittingRule">
-        <readwrite-splitting:data-source-rule id="ds_0" type="Static" load-balance-algorithm-ref="randomStrategy">
-            <props>
-                <prop key="write-data-source-name">write_ds0</prop>
-                <prop key="read-data-source-names">read_ds0_0, read_ds0_1</prop>
-            </props>
-        </readwrite-splitting:data-source-rule>
-        <readwrite-splitting:data-source-rule id="ds_1" type="Static" load-balance-algorithm-ref="randomStrategy">
-            <props>
-                <prop key="write-data-source-name">write_ds1</prop>
-                <prop key="read-data-source-names">read_ds1_0, read_ds1_1</prop>
-            </props>
-        </readwrite-splitting:data-source-rule>
-    </readwrite-splitting:rule>
-    
-    <!-- 分片策略配置 -->
-    <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="inlineDatabaseStrategyAlgorithm" />
-    <sharding:standard-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-ref="inlineOrderTableStrategyAlgorithm" />
-    <sharding:standard-strategy id="orderItemTableStrategy" sharding-column="order_item_id" algorithm-ref="inlineOrderItemTableStrategyAlgorithm" />
+<!-- 分片配置 -->
+<sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="inlineStrategyShardingAlgorithm" />
+<sharding:sharding-algorithm id="inlineStrategyShardingAlgorithm" type="INLINE">
+    <props>
+        <prop key="algorithm-expression">replica_ds_${user_id % 2}</prop>
+    </props>
+</sharding:sharding-algorithm>
+<sharding:key-generate-algorithm id="snowflakeAlgorithm" type="SNOWFLAKE">
+</sharding:key-generate-algorithm>
+<sharding:key-generate-strategy id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
+<sharding:rule id="shardingRule">
+    <sharding:table-rules>
+        <sharding:table-rule logic-table="t_order" database-strategy-ref="databaseStrategy" key-generate-strategy-ref="orderKeyGenerator" />
+    </sharding:table-rules>
+</sharding:rule>
 
-    <sharding:sharding-algorithm id="inlineDatabaseStrategyAlgorithm" type="INLINE">
+<!-- 动态读写分离配置 -->
+<readwrite-splitting:rule id="readWriteSplittingRule">
+    <readwrite-splitting:data-source-rule id="replica_ds_0">
+        <readwrite-splitting:dynamic-strategy id="dynamicStrategy" auto-aware-data-source-name="readwrite_ds_0" />
+    </readwrite-splitting:data-source-rule>
+    <readwrite-splitting:data-source-rule id="replica_ds_1">
+        <readwrite-splitting:dynamic-strategy id="dynamicStrategy" auto-aware-data-source-name="readwrite_ds_1" />
+    </readwrite-splitting:data-source-rule>
+</readwrite-splitting:rule>
+
+<!-- 数据库发现配置 -->
+<database-discovery:rule id="mgrDatabaseDiscoveryRule">
+    <database-discovery:data-source-rule id="readwrite_ds_0" data-source-names="ds_0,ds_1,ds_2" discovery-heartbeat-name="mgr-heartbeat" discovery-type-name="mgr" />
+    <database-discovery:data-source-rule id="readwrite_ds_1" data-source-names="ds_3,ds_4,ds_5" discovery-heartbeat-name="mgr-heartbeat" discovery-type-name="mgr" />
+    <database-discovery:discovery-heartbeat id="mgr-heartbeat">
         <props>
-            <!-- 表达式枚举的数据源名称为主从配置的逻辑数据源名称  -->
-            <prop key="algorithm-expression">ds_${user_id % 2}</prop>
+            <prop key="keep-alive-cron" >0/5 * * * * ?</prop>
         </props>
-    </sharding:sharding-algorithm>
-    <sharding:sharding-algorithm id="inlineOrderTableStrategyAlgorithm" type="INLINE">
-        <props>
-            <prop key="algorithm-expression">t_order_${order_id % 2}</prop>
-        </props>
-    </sharding:sharding-algorithm>
-    <sharding:sharding-algorithm id="inlineOrderItemTableStrategyAlgorithm" type="INLINE">
-        <props>
-            <prop key="algorithm-expression">t_order_item_${order_item_id % 2}</prop>
-        </props>
-    </sharding:sharding-algorithm>
-    
-    <!-- 分片规则配置 -->	
-    <sharding:rule id="shardingRule">
-        <sharding:table-rules>
-            <!-- 表达式 ds_${0..1} 枚举的数据源名称为主从配置的逻辑数据源名称  -->
-            <sharding:table-rule logic-table="t_order" actual-data-nodes="ds_${0..1}.t_order_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" key-generate-strategy-ref="orderKeyGenerator"/>
-            <sharding:table-rule logic-table="t_order_item" actual-data-nodes="ds_${0..1}.t_order_item_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" key-generate-strategy-ref="itemKeyGenerator"/>
-        </sharding:table-rules>
-        <sharding:binding-table-rules>
-            <sharding:binding-table-rule logic-tables="t_order, t_order_item"/>
-        </sharding:binding-table-rules>
-        <sharding:broadcast-table-rules>
-            <sharding:broadcast-table-rule table="t_address"/>
-        </sharding:broadcast-table-rules>
-    </sharding:rule>
-    
-    <!-- 数据加密规则配置 -->
-    <encrypt:encrypt-algorithm id="name_encryptor" type="AES">
-        <props>
-            <prop key="aes-key-value">123456</prop>
-        </props>
-    </encrypt:encrypt-algorithm>
-    <encrypt:encrypt-algorithm id="pwd_encryptor" type="assistedTest" />
-    
-    <encrypt:rule id="encryptRule">
-        <encrypt:table name="t_user">
-            <encrypt:column logic-column="username" cipher-column="username" plain-column="username_plain" encrypt-algorithm-ref="name_encryptor" />
-            <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" encrypt-algorithm-ref="pwd_encryptor" />
-        </encrypt:table>
-    </encrypt:rule>
-    
-    <!-- 数据源配置 -->
-    <!-- data-source-names 数据源名称为所有的数据源节点名称 -->
-    <shardingsphere:data-source id="readQueryDataSource" data-source-names="write_ds0, read_ds0_0, read_ds0_1, write_ds1, read_ds1_0, read_ds1_1" 
-        rule-refs="readWriteSplittingRule, shardingRule, encryptRule" >
-        <props>
-            <prop key="sql-show">true</prop>
-        </props>
-    </shardingsphere:data-source>
-</beans>
+    </database-discovery:discovery-heartbeat>
+</database-discovery:rule>
+<database-discovery:discovery-type id="mgr" type="MySQL.MGR">
+    <props>
+        <prop key="group-name">558edd3c-02ec-11ea-9bb3-080027e39bd2</prop>
+    </props>
+</database-discovery:discovery-type>
+
+<!-- 数据脱敏配置 -->
+<encrypt:encrypt-algorithm id="name_encryptor" type="AES">
+    <props>
+        <prop key="aes-key-value">123456</prop>
+    </props>
+</encrypt:encrypt-algorithm>
+<encrypt:encrypt-algorithm id="pwd_encryptor" type="assistedTest" />
+
+<encrypt:rule id="encryptRule">
+    <encrypt:table name="t_user">
+        <encrypt:column logic-column="username" cipher-column="username" plain-column="username_plain" encrypt-algorithm-ref="name_encryptor" />
+        <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" encrypt-algorithm-ref="pwd_encryptor" />
+    </encrypt:table>
+</encrypt:rule>
 ```
