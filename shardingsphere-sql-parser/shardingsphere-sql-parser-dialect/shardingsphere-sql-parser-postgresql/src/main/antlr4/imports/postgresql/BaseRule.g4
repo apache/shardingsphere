@@ -563,8 +563,8 @@ aExpr
     | aExpr qualOp
     | aExpr comparisonOperator aExpr
     | NOT aExpr
-    | aExpr patternMatchingOperator aExpr
     | aExpr patternMatchingOperator aExpr ESCAPE aExpr
+    | aExpr patternMatchingOperator aExpr
     | aExpr IS NULL
     | aExpr ISNULL
     | aExpr IS NOT NULL
