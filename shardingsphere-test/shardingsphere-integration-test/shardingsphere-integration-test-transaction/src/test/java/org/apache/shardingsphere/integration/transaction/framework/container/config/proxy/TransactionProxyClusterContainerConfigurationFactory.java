@@ -43,7 +43,13 @@ public final class TransactionProxyClusterContainerConfigurationFactory {
     }
     
     private static String getProxyDatasourceName(final DatabaseType databaseType) {
-        return DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType) ? "test_user" : "";
+        if (DatabaseTypeUtil.isPostgreSQL(databaseType)) {
+            return "postgres";
+        }
+        if (DatabaseTypeUtil.isOpenGauss(databaseType)) {
+            return "test_user";
+        }
+        return "";
     }
     
     private static Map<String, String> getMountedResource(final DatabaseType databaseType) {
