@@ -97,6 +97,8 @@ public final class SQLNodeConvertEngineParameterizedTest {
         SUPPORTED_SQL_CASE_IDS.add("select_group_by_with_having_count");
         SUPPORTED_SQL_CASE_IDS.add("select_constant_without_table");
         SUPPORTED_SQL_CASE_IDS.add("select_count_with_binding_tables_with_join");
+        SUPPORTED_SQL_CASE_IDS.add("select_join_using");
+        SUPPORTED_SQL_CASE_IDS.add("select_count_with_escape_character");
     }
     
     private final String sqlCaseId;
