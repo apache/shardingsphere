@@ -93,7 +93,7 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
         this.shardingItem = jobShardingItem;
         this.initProgress = initProgress;
         this.dataSourceManager = dataSourceManager;
-        taskConfig = RuleAlteredJobWorker.buildTaskConfig(jobConfig, jobShardingItem, jobProcessContext.getPipelineProcessConfig());
+        taskConfig = MigrationJobAPIFactory.getInstance().buildTaskConfiguration(jobConfig, jobShardingItem, jobProcessContext.getPipelineProcessConfig());
     }
     
     /**
