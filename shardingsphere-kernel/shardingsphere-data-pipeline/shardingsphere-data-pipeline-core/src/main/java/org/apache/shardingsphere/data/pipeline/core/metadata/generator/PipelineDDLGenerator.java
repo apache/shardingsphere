@@ -138,34 +138,34 @@ public final class PipelineDDLGenerator {
                 .generate(actualTable, schemaName, dataSource);
     }
     
-    private String decorateActualSQL(final String sql, final String logicTable, final String databaseName, final ShardingSphereSQLParserEngine parserEngine) {
+    private String decorateActualSQL(final String sql, final String logicTableName, final String databaseName, final ShardingSphereSQLParserEngine parserEngine) {
         LogicSQL logicSQL = getLogicSQL(sql, databaseName, parserEngine);
         SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
         Map<SQLSegment, String> replaceMap = new TreeMap<>(Comparator.comparing(SQLSegment::getStartIndex));
         if (sqlStatementContext instanceof CreateTableStatementContext) {
-            appendFromIndexAndConstraint(replaceMap, logicTable, sqlStatementContext);
-            appendFromTable(replaceMap, logicTable, (TableAvailable) sqlStatementContext);
+            appendFromIndexAndConstraint(replaceMap, logicTableName, sqlStatementContext);
+            appendFromTable(replaceMap, logicTableName, (TableAvailable) sqlStatementContext);
         }
         if (sqlStatementContext instanceof CommentStatementContext) {
-            appendFromTable(replaceMap, logicTable, (TableAvailable) sqlStatementContext);
+            appendFromTable(replaceMap, logicTableName, (TableAvailable) sqlStatementContext);
         }
         if (sqlStatementContext instanceof CreateIndexStatementContext) {
-            appendFromTable(replaceMap, logicTable, (TableAvailable) sqlStatementContext);
-            appendFromIndexAndConstraint(replaceMap, logicTable, sqlStatementContext);
+            appendFromTable(replaceMap, logicTableName, (TableAvailable) sqlStatementContext);
+            appendFromIndexAndConstraint(replaceMap, logicTableName, sqlStatementContext);
         }
         if (sqlStatementContext instanceof AlterTableStatementContext) {
-            appendFromIndexAndConstraint(replaceMap, logicTable, sqlStatementContext);
-            appendFromTable(replaceMap, logicTable, (TableAvailable) sqlStatementContext);
+            appendFromIndexAndConstraint(replaceMap, logicTableName, sqlStatementContext);
+            appendFromTable(replaceMap, logicTableName, (TableAvailable) sqlStatementContext);
         }
         return doDecorateActualTable(replaceMap, sql);
     }
     
-    private void appendFromIndexAndConstraint(final Map<SQLSegment, String> replaceMap, final String logicTable, final SQLStatementContext<?> sqlStatementContext) {
+    private void appendFromIndexAndConstraint(final Map<SQLSegment, String> replaceMap, final String logicTableName, final SQLStatementContext<?> sqlStatementContext) {
         if (!(sqlStatementContext instanceof TableAvailable) || ((TableAvailable) sqlStatementContext).getTablesContext().getTables().isEmpty()) {
             return;
         }
         TableNameSegment tableNameSegment = ((TableAvailable) sqlStatementContext).getTablesContext().getTables().iterator().next().getTableName();
-        if (!tableNameSegment.getIdentifier().getValue().equals(logicTable)) {
+        if (!tableNameSegment.getIdentifier().getValue().equals(logicTableName)) {
             if (sqlStatementContext instanceof IndexAvailable) {
                 for (IndexSegment each : ((IndexAvailable) sqlStatementContext).getIndexes()) {
                     String logicIndexName = IndexMetaDataUtil.getLogicIndexName(each.getIndexName().getIdentifier().getValue(), tableNameSegment.getIdentifier().getValue());
@@ -181,10 +181,10 @@ public final class PipelineDDLGenerator {
         }
     }
     
-    private void appendFromTable(final Map<SQLSegment, String> replaceMap, final String logicTable, final TableAvailable sqlStatementContext) {
+    private void appendFromTable(final Map<SQLSegment, String> replaceMap, final String logicTableName, final TableAvailable sqlStatementContext) {
         for (SimpleTableSegment each : sqlStatementContext.getAllTables()) {
-            if (!logicTable.equals(each.getTableName().getIdentifier().getValue())) {
-                replaceMap.put(each.getTableName(), logicTable);
+            if (!logicTableName.equals(each.getTableName().getIdentifier().getValue())) {
+                replaceMap.put(each.getTableName(), logicTableName);
             }
         }
     }
