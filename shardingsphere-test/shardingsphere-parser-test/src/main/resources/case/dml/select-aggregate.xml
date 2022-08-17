@@ -74,7 +74,6 @@
                                 <literal-expression value="1" start-index="64" stop-index="64" />
                             </right>
                         </binary-operation-expression>
-                        <common-expression text="1-1" start-index="62" stop-index="64" />
                     </right>
                 </binary-operation-expression>
             </expr>
