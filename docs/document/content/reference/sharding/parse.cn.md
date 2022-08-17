@@ -1,3 +1,4 @@
+
 +++
 title = "解析引擎"
 weight = 1
@@ -99,8 +100,8 @@ SQLStatement sqlStatement = sqlVisitorEngine.visit(parseASTNode);
 
 ```java
 ParseASTNode parseASTNode = parserEngine.parse(sql, useCache);
-SQLVisitorEngine sqlVisitorEngine = new SQLVisitorEngine(sql, "STATEMENT", useCache, new Properties());
-SQLStatement sqlStatement = sqlVisitorEngine.visit(parseASTNode);
+SQLVisitorEngine sqlVisitorEngine = new SQLVisitorEngine(sql, "FORMAT", useCache, new Properties());
+String result = sqlVisitorEngine.visit(parseASTNode);
 ```
 
 例子：

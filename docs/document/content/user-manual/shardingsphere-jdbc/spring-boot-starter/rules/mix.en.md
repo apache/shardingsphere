@@ -3,82 +3,93 @@ title = "Mixed Rules"
 weight = 8
 +++
 
-## Configuration Item Explanation
+## Background
+
+ShardingSphere provides a variety of features, such as data sharding, read/write splitting, high availability, and data decryption. These features can be used independently or in combination. 
+
+Below, you will find the parameters' explanation and configuration samples based on SpringBoot Starter.
+
+## Parameters
+
 ```properties
-# data source configuration
-spring.shardingsphere.datasource.names= write-ds0,write-ds1,write-ds0-read0,write-ds1-read0
+spring.shardingsphere.datasource.names= # Please refer to the user manual for the data source configuration
+# Standard sharding table configuration
+spring.shardingsphere.rules.sharding.tables.<table-name>.actual-data-nodes= # It consists of data source name plus table name, separated by decimal points. Multiple tables are separated by commas, and inline expression is supported. By default, a data node is generated with a known data source and logical table name, used for broadcast tables (that is, each database needs the same table for associated queries, mostly the dictionary table) or the situation when only database sharding is needed and all databases have the same table structure.
+# Standard sharding scenarios used for a single shard key
+spring.shardingsphere.rules.sharding.tables.<table-name>.database-strategy.standard.sharding-column= # Sharding column name
+spring.shardingsphere.rules.sharding.tables.<table-name>.database-strategy.standard.sharding-algorithm-name= # sharding algorithm name
+# Table shards strategy. The same as database shards strategy
+spring.shardingsphere.rules.sharding.tables.<table-name>.table-strategy.xxx= # Omit
+# Distributed sequence strategy configuration
+spring.shardingsphere.rules.sharding.tables.<table-name>.key-generate-strategy.column= # Distributed sequence column name
+spring.shardingsphere.rules.sharding.tables.<table-name>.key-generate-strategy.key-generator-name= # Distributed sequence algorithm name
+# Sharding algorithm configuration
+spring.shardingsphere.rules.sharding.sharding-algorithms.<sharding-algorithm-name>.type= # Sharding algorithm type
+spring.shardingsphere.rules.sharding.sharding-algorithms.<sharding-algorithm-name>.props.xxx= # Sharidng algorithm property configuration
+# Distributed sequence algorithm configuration
+spring.shardingsphere.rules.sharding.key-generators.<key-generate-algorithm-name>.type= # Distributed sequence algorithm type
+spring.shardingsphere.rules.sharding.key-generators.<key-generate-algorithm-name>.props.xxx= # Property configuration of distributed sequence algorithm 
+# Dynamic read/write splitting configuration
+spring.shardingsphere.rules.readwrite-splitting.data-sources.<readwrite-splitting-data-source-name>.dynamic-strategy.auto-aware-data-source-name= # logical data source name of database discovery
+spring.shardingsphere.rules.readwrite-splitting.data-sources.<readwrite-splitting-data-source-name>.dynamic-strategy.write-data-source-query-enabled= # All the read databases went offline. Whether the primary database bears the read traffic.
+spring.shardingsphere.rules.readwrite-splitting.data-sources.<readwrite-splitting-data-source-name>.load-balancer-name= # Load balancer algorithm name
+# Database discovery configuration
+spring.shardingsphere.rules.database-discovery.data-sources.<database-discovery-data-source-name>.data-source-names= # Data source name. Multiple data sources are separated by commas, such as ds_0, ds_1.
+spring.shardingsphere.rules.database-discovery.data-sources.<database-discovery-data-source-name>.discovery-heartbeat-name= # Detect heartbeat name
+spring.shardingsphere.rules.database-discovery.data-sources.<database-discovery-data-source-name>.discovery-type-name= # Database discovery type name
+spring.shardingsphere.rules.database-discovery.discovery-heartbeats.<discovery-heartbeat-name>.props.keep-alive-cron= # cron expression, such as '0/5 * * * * ?'.
+spring.shardingsphere.rules.database-discovery.discovery-types.<discovery-type-name>.type= # Database discovery type, such as MySQL.MGR.
+spring.shardingsphere.rules.database-discovery.discovery-types.<discovery-type-name>.props.group-name= # Required parameter of database discovery type, such as MGR's group-name.
+# Data desensitization configuration
+spring.shardingsphere.rules.encrypt.tables.<table-name>.query-with-cipher-column= # Whether the table uses ciphercolumn for queries.
+spring.shardingsphere.rules.encrypt.tables.<table-name>.columns.<column-name>.cipher-column= # Ciphercolumn name
+spring.shardingsphere.rules.encrypt.tables.<table-name>.columns.<column-name>.assisted-query-column= # Query column name
+spring.shardingsphere.rules.encrypt.tables.<table-name>.columns.<column-name>.plain-column= # Plaincolumn name
+spring.shardingsphere.rules.encrypt.tables.<table-name>.columns.<column-name>.encryptor-name= # Encryption algorithm name
+# Encryption algorithm configuration
+spring.shardingsphere.rules.encrypt.encryptors.<encrypt-algorithm-name>.type= # Encryption algorithm type
+spring.shardingsphere.rules.encrypt.encryptors.<encrypt-algorithm-name>.props.xxx= # Encryption algorithm property configuration
+spring.shardingsphere.rules.encrypt.queryWithCipherColumn= # Whether use ciphercolumn for queries. You can use the plaincolumn for queries if it's available.
+```
 
-spring.shardingsphere.datasource.write-ds0.jdbc-url= # Database URL connection
-spring.shardingsphere.datasource.write-ds0.type=  # Database connection pool type name
-spring.shardingsphere.datasource.write-ds0.driver-class-name= # Database driver class name
-spring.shardingsphere.datasource.write-ds0.username= # Database username
-spring.shardingsphere.datasource.write-ds0.password= # Database password
-spring.shardingsphere.datasource.write-ds0.xxx=  # Other properties of database connection pool
+## Samples
 
-spring.shardingsphere.datasource.write-ds1.url= # Database URL connection
-# ...Omit specific configuration.
-
-spring.shardingsphere.datasource.write-ds0-read0.url= # Database URL connection
-# ...Omit specific configuration.
-
-spring.shardingsphere.datasource.write-ds1-read0.url= # Database URL connection
-# ...Omit specific configuration.
-
-# Sharding rules configuration
-# Databases sharding strategy
-spring.shardingsphere.rules.sharding.default-database-strategy.standard.sharding-column=user_id
-spring.shardingsphere.rules.sharding.default-database-strategy.standard.sharding-algorithm-name=default-database-strategy-inline
-# Binding table rules configuration ,and multiple groups of binding-tables configured with arrays
-spring.shardingsphere.rules.sharding.binding-tables[0]=t_user,t_user_detail
-spring.shardingsphere.rules.sharding.binding-tables[1]= # Binding table names,multiple table name are separated by commas
-spring.shardingsphere.rules.sharding.binding-tables[x]= # Binding table names,multiple table name are separated by commas
-# Broadcast table rules configuration
-spring.shardingsphere.rules.sharding.broadcast-tables= # Broadcast table names,multiple table name are separated by commas
-
-# Table sharding strategy
-# The enumeration value of `ds_$->{0..1}` is the name of the logical data source configured with readwrite-splitting
-spring.shardingsphere.rules.sharding.tables.t_user.actual-data-nodes=ds_$->{0..1}.t_user_$->{0..1}
-spring.shardingsphere.rules.sharding.tables.t_user.table-strategy.standard.sharding-column=user_id
-spring.shardingsphere.rules.sharding.tables.t_user.table-strategy.standard.sharding-algorithm-name=user-table-strategy-inline
-
-# Data encrypt configuration
-# Table `t_user` is the name of the logical table that uses for data sharding configuration.
-spring.shardingsphere.rules.encrypt.tables.t_user.columns.username.cipher-column=username
-spring.shardingsphere.rules.encrypt.tables.t_user.columns.username.encryptor-name=name-encryptor
-spring.shardingsphere.rules.encrypt.tables.t_user.columns.pwd.cipher-column=pwd
-spring.shardingsphere.rules.encrypt.tables.t_user.columns.pwd.encryptor-name=pwd-encryptor
-
-# Data encrypt algorithm configuration
+```properties
+# Sharding configuration
+spring.shardingsphere.rules.sharding.tables.t_order.actual-data-nodes=replica-ds-$->{0..1}.t_order_$->{0..1}
+spring.shardingsphere.rules.sharding.tables.t_order.table-strategy.standard.sharding-column=order_id
+spring.shardingsphere.rules.sharding.tables.t_order.table-strategy.standard.sharding-algorithm-name=t-order-inline
+spring.shardingsphere.rules.sharding.tables.t_order.key-generate-strategy.column=order_id
+spring.shardingsphere.rules.sharding.tables.t_order.key-generate-strategy.key-generator-name=snowflake
+spring.shardingsphere.rules.sharding.tables.t_order_item.actual-data-nodes=replica-ds-$->{0..1}.t_order_item_$->{0..1}
+spring.shardingsphere.rules.sharding.tables.t_order_item.table-strategy.standard.sharding-column=order_id
+spring.shardingsphere.rules.sharding.sharding-algorithms.database-inline.type=INLINE
+spring.shardingsphere.rules.sharding.sharding-algorithms.database-inline.props.algorithm-expression=replica_ds-$->{user_id % 2}
+spring.shardingsphere.rules.sharding.sharding-algorithms.t-order-inline.type=INLINE
+spring.shardingsphere.rules.sharding.sharding-algorithms.t-order-inline.props.algorithm-expression=t_order_$->{order_id % 2}
+spring.shardingsphere.rules.sharding.key-generators.snowflake.type=SNOWFLAKE
+# Dynamic read/write splitting configuration
+spring.shardingsphere.rules.readwrite-splitting.data-sources.replica-ds-0.dynamic-strategy.auto-aware-data-source-name=readwrite-ds-0
+spring.shardingsphere.rules.readwrite-splitting.data-sources.replica-ds-1.dynamic-strategy.auto-aware-data-source-name=readwrite-ds-1
+# Database discovery configuration
+spring.shardingsphere.rules.database-discovery.data-sources.readwrite-ds-0.data-source-names=ds-0, ds-1, ds-2
+spring.shardingsphere.rules.database-discovery.data-sources.readwrite-ds-0.discovery-heartbeat-name=mgr-heartbeat
+spring.shardingsphere.rules.database-discovery.data-sources.readwrite-ds-0.discovery-type-name=mgr
+spring.shardingsphere.rules.database-discovery.data-sources.readwrite-ds-1.data-source-names=ds-3, ds-4, ds-5
+spring.shardingsphere.rules.database-discovery.data-sources.readwrite-ds-1.discovery-heartbeat-name=mgr-heartbeat
+spring.shardingsphere.rules.database-discovery.data-sources.readwrite-ds-1.discovery-type-name=mgr
+spring.shardingsphere.rules.database-discovery.discovery-heartbeats.mgr-heartbeat.props.keep-alive-cron=0/5 * * * * ?
+spring.shardingsphere.rules.database-discovery.discovery-types.mgr.type=MGR
+spring.shardingsphere.rules.database-discovery.discovery-types.mgr.props.groupName=b13df29e-90b6-11e8-8d1b-525400fc3996
+# Data decryption
 spring.shardingsphere.rules.encrypt.encryptors.name-encryptor.type=AES
 spring.shardingsphere.rules.encrypt.encryptors.name-encryptor.props.aes-key-value=123456abc
 spring.shardingsphere.rules.encrypt.encryptors.pwd-encryptor.type=AES
 spring.shardingsphere.rules.encrypt.encryptors.pwd-encryptor.props.aes-key-value=123456abc
-
-# Key generate strategy configuration
-spring.shardingsphere.rules.sharding.tables.t_user.key-generate-strategy.column=user_id
-spring.shardingsphere.rules.sharding.tables.t_user.key-generate-strategy.key-generator-name=snowflake
-
-# Sharding algorithm configuration
-spring.shardingsphere.rules.sharding.sharding-algorithms.default-database-strategy-inline.type=INLINE
-# The enumeration value of `ds_$->{user_id % 2}` is the name of the logical data source configured with readwrite-splitting
-spring.shardingsphere.rules.sharding.sharding-algorithms.default-database-strategy-inline.algorithm-expression=ds$->{user_id % 2}
-spring.shardingsphere.rules.sharding.sharding-algorithms.user-table-strategy-inline.type=INLINE
-spring.shardingsphere.rules.sharding.sharding-algorithms.user-table-strategy-inline.algorithm-expression=t_user_$->{user_id % 2}
-
-# Key generate algorithm configuration
-spring.shardingsphere.rules.sharding.key-generators.snowflake.type=SNOWFLAKE
-
-# read query configuration
-# ds_0,ds_1 is the logical data source name of the readwrite-splitting
-spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_0.type=Static
-spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_0.props.write-data-source-name=write-ds0
-spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_0.props.read-data-source-names=write-ds0-read0
-spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_0.load-balancer-name=read-random
-spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_1.type=Static
-spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_1.props.write-data-source-name=write-ds1
-spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_1.props.read-data-source-names=write-ds1-read0
-spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_1.load-balancer-name=read-random
-
-# Load balance algorithm configuration
-spring.shardingsphere.rules.readwrite-splitting.load-balancers.read-random.type=RANDOM
+spring.shardingsphere.rules.encrypt.tables.t_user.columns.username.cipher-column=username
+spring.shardingsphere.rules.encrypt.tables.t_user.columns.username.encryptor-name=name-encryptor
+spring.shardingsphere.rules.encrypt.tables.t_user.columns.pwd.cipher-column=pwd
+spring.shardingsphere.rules.encrypt.tables.t_user.columns.pwd.encryptor-name=pwd-encryptor
+spring.shardingsphere.props.query-with-cipher-column=true
+spring.shardingsphere.props.sql-show=true
 ```

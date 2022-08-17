@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.integration.transaction.framework.container.jdbc;
 
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.integration.transaction.framework.container.database.DatabaseContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.EmbeddedITContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -33,13 +33,13 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public final class ShardingSphereJDBCContainer implements EmbeddedITContainer {
     
-    private final DatabaseContainer databaseContainer;
+    private final DockerStorageContainer databaseContainer;
     
     private final String ruleConfigPath;
     
     private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
     
-    public ShardingSphereJDBCContainer(final DatabaseContainer databaseContainer, final String ruleConfigPath) {
+    public ShardingSphereJDBCContainer(final DockerStorageContainer databaseContainer, final String ruleConfigPath) {
         this.databaseContainer = databaseContainer;
         this.ruleConfigPath = ruleConfigPath;
     }

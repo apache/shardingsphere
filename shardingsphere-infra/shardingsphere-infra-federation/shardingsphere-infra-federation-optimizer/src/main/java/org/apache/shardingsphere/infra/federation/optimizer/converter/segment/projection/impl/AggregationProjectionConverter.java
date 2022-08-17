@@ -65,7 +65,8 @@ public final class AggregationProjectionConverter implements SQLSegmentConverter
             return Optional.empty();
         }
         SqlLiteral functionQuantifier = null;
-        List<String> parameters = Splitter.on(",").trimResults().splitToList(SQLUtil.getExpressionWithoutOutsideParentheses(segment.getInnerExpression()));
+        List<String> parameters = Splitter.on(",").trimResults().splitToList(
+                SQLUtil.getExactlyValue(SQLUtil.getExpressionWithoutOutsideParentheses(segment.getInnerExpression())));
         if (segment instanceof AggregationDistinctProjectionSegment) {
             parameters = Collections.singletonList(((AggregationDistinctProjectionSegment) segment).getDistinctExpression());
             functionQuantifier = SqlLiteral.createSymbol(SqlSelectKeyword.DISTINCT, SqlParserPos.ZERO);

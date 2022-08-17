@@ -69,8 +69,10 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Joi
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.JoinedTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.LimitClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.NameListContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.NaturalJoinTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.NumberLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.OptOnDuplicateKeyContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.OuterJoinTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.OwnerContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ParameterMarkerContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.QualifiedNameContext;
@@ -104,6 +106,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Whe
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WindowClauseContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.CombineType;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
@@ -295,18 +298,38 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
         if (null != ctx.patternMatchingOperator()) {
             return createPatternMatchingOperationSegment(ctx);
         }
-        if (null != ctx.comparisonOperator()) {
-            return createCommonBinaryOperationSegment(ctx, ctx.comparisonOperator().getText());
-        }
-        if (null != ctx.andOperator()) {
-            return createCommonBinaryOperationSegment(ctx, ctx.andOperator().getText());
-        }
-        if (null != ctx.orOperator()) {
-            return createCommonBinaryOperationSegment(ctx, ctx.orOperator().getText());
+        Optional<String> commonBinaryOperator = findCommonBinaryOperator(ctx);
+        if (commonBinaryOperator.isPresent()) {
+            return createCommonBinaryOperationSegment(ctx, commonBinaryOperator.get());
         }
         super.visitAExpr(ctx);
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
+    }
+    
+    private Optional<String> findCommonBinaryOperator(final AExprContext ctx) {
+        if (null != ctx.comparisonOperator()) {
+            return Optional.of(ctx.comparisonOperator().getText());
+        }
+        if (null != ctx.andOperator()) {
+            return Optional.of(ctx.andOperator().getText());
+        }
+        if (null != ctx.orOperator()) {
+            return Optional.of(ctx.orOperator().getText());
+        }
+        if (null != ctx.PLUS_()) {
+            return Optional.of(ctx.PLUS_().getText());
+        }
+        if (null != ctx.MINUS_()) {
+            return Optional.of(ctx.MINUS_().getText());
+        }
+        if (null != ctx.ASTERISK_()) {
+            return Optional.of(ctx.ASTERISK_().getText());
+        }
+        if (null != ctx.SLASH_()) {
+            return Optional.of(ctx.SLASH_().getText());
+        }
+        return Optional.empty();
     }
     
     private BinaryOperationExpression createPatternMatchingOperationSegment(final AExprContext ctx) {
@@ -1029,6 +1052,7 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
             result.setStopIndex(ctx.stop.getStopIndex());
             result.setLeft((TableSegment) visit(ctx.fromList()));
             result.setRight((TableSegment) visit(ctx.tableReference()));
+            result.setJoinType(JoinType.COMMA.name());
             return result;
         }
         return visit(ctx.tableReference());
@@ -1075,13 +1099,45 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
     }
     
     private JoinTableSegment visitJoinedTable(final JoinedTableContext ctx, final JoinTableSegment tableSegment) {
-        JoinTableSegment result = tableSegment;
         TableSegment right = (TableSegment) visit(ctx.tableReference());
-        result.setRight(right);
-        if (null != ctx.joinQual()) {
-            result = visitJoinQual(ctx.joinQual(), result);
+        tableSegment.setRight(right);
+        tableSegment.setJoinType(getJoinType(ctx));
+        return null != ctx.joinQual() ? visitJoinQual(ctx.joinQual(), tableSegment) : tableSegment;
+    }
+    
+    private String getJoinType(final JoinedTableContext ctx) {
+        if (null != ctx.crossJoinType()) {
+            return JoinType.CROSS.name();
         }
-        return result;
+        if (null != ctx.innerJoinType()) {
+            return JoinType.INNER.name();
+        }
+        if (null != ctx.outerJoinType()) {
+            return getOutJoinType(ctx.outerJoinType());
+        }
+        if (null != ctx.naturalJoinType()) {
+            return getNaturalJoinType(ctx.naturalJoinType());
+        }
+        return JoinType.COMMA.name();
+    }
+    
+    private static String getOutJoinType(final OuterJoinTypeContext ctx) {
+        if (null != ctx.FULL()) {
+            return JoinType.FULL.name();
+        }
+        return null != ctx.LEFT() ? JoinType.LEFT.name() : JoinType.RIGHT.name();
+    }
+    
+    private static String getNaturalJoinType(final NaturalJoinTypeContext ctx) {
+        if (null != ctx.INNER()) {
+            return JoinType.INNER.name();
+        } else if (null != ctx.FULL()) {
+            return JoinType.FULL.name();
+        } else if (null != ctx.LEFT()) {
+            return JoinType.LEFT.name();
+        } else {
+            return JoinType.RIGHT.name();
+        }
     }
     
     private JoinTableSegment visitJoinQual(final JoinQualContext ctx, final JoinTableSegment joinTableSource) {

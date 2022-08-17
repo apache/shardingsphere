@@ -31,7 +31,9 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineIgnoredExc
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryIncrementalTasksRunner;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 
@@ -43,6 +45,8 @@ import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 public final class MigrationJob extends AbstractPipelineJob implements SimpleJob, PipelineJob {
     
     private final PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
+    
+    private final PipelineDistributedBarrier pipelineDistributedBarrier = PipelineDistributedBarrier.getInstance();
     
     // Shared by all sharding items
     private final MigrationJobPreparer jobPreparer = new MigrationJobPreparer();
@@ -72,6 +76,7 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
         });
         getTasksRunnerMap().put(shardingItem, tasksRunner);
         PipelineJobProgressPersistService.addJobProgressPersistContext(getJobId(), shardingItem);
+        pipelineDistributedBarrier.persistEphemeralChildrenNode(PipelineMetaDataNode.getScalingJobBarrierEnablePath(getJobId()), shardingItem);
     }
     
     private void prepare(final MigrationJobItemContext jobItemContext) {
@@ -105,8 +110,10 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
             return;
         }
         log.info("stop tasks runner, jobId={}", getJobId());
+        String scalingJobBarrierDisablePath = PipelineMetaDataNode.getScalingJobBarrierDisablePath(getJobId());
         for (PipelineTasksRunner each : getTasksRunnerMap().values()) {
             each.stop();
+            pipelineDistributedBarrier.persistEphemeralChildrenNode(scalingJobBarrierDisablePath, each.getJobItemContext().getShardingItem());
         }
         getTasksRunnerMap().clear();
         PipelineJobProgressPersistService.removeJobProgressPersistContext(getJobId());

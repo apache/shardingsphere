@@ -18,9 +18,11 @@
 package org.apache.shardingsphere.test.integration.env.container.atomic.storage.impl;
 
 import com.google.common.base.Strings;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
+import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 
 import java.util.Optional;
 
@@ -52,6 +54,11 @@ public final class OpenGaussContainer extends DockerStorageContainer {
     
     @Override
     protected Optional<String> getDefaultDatabaseName() {
-        return Optional.of("postgres");
+        return Optional.of("test_user");
+    }
+    
+    @Override
+    public String getJdbcUrl(final String dataSourceName) {
+        return DataSourceEnvironment.getURL(getDatabaseType(), getHost(), getMappedPort(getPort()), StringUtils.isNotEmpty(dataSourceName) ? dataSourceName : "test_user");
     }
 }
