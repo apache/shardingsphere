@@ -26,16 +26,20 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepare
 import org.apache.shardingsphere.data.pipeline.core.metadata.generator.PipelineDDLGenerator;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.AbstractDataSourcePreparer;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Data source preparer for PostgresSQL.
@@ -61,14 +65,14 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
         PipelineDDLGenerator generator = new PipelineDDLGenerator();
         ShardingSphereMetaData metaData = PipelineContext.getContextManager().getMetaDataContexts().getMetaData();
         ShardingSphereDatabase sphereDatabase = metaData.getDatabases().get(parameter.getDatabaseName());
-        ShardingSphereSQLParserEngine sqlParserEngine =
-                metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class)
-                        .getSQLParserEngine(sphereDatabase.getProtocolType().getType());
+        ShardingSphereSQLParserEngine sqlParserEngine = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getSQLParserEngine(sphereDatabase.getProtocolType().getType());
         List<String> result = new LinkedList<>();
         for (JobDataNodeEntry each : parameter.getTablesFirstDataNodes().getEntries()) {
             String schemaName = parameter.getTableNameSchemaNameMapping().getSchemaName(each.getLogicTableName());
             String dataSourceName = each.getDataNodes().get(0).getDataSourceName();
-            result.add(generator.generateLogicDDLSQL(sphereDatabase, dataSourceName, schemaName, each.getLogicTableName(),
+            DataSource dataSource = sphereDatabase.getResource().getDataSources().get(dataSourceName);
+            DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(Collections.singletonList(dataSource));
+            result.add(generator.generateLogicDDLSQL(dataSource, databaseType, schemaName, each.getLogicTableName(),
                     getActualTable(sphereDatabase, each.getLogicTableName()), sqlParserEngine));
         }
         return result;
