@@ -30,7 +30,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-common-error</artifactId>
+            <artifactId>shardingsphere-dialect-exception-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

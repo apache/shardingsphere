@@ -33,7 +33,7 @@
     
     <modules>
         <module>shardingsphere-infra</module>
-        <module>shardingsphere-error</module>
+        <module>shardingsphere-dialect-exception</module>
         <module>shardingsphere-sql-parser</module>
         <module>shardingsphere-distsql</module>
         <module>shardingsphere-db-protocol</module>
