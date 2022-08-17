@@ -79,5 +79,4 @@ public final class AddResourceTestCase extends BaseTransactionTestCase {
         conn.commit();
         assertTableRowCount(conn, TransactionTestConstants.ACCOUNT, 6);
     }
-    
 }
