@@ -998,6 +998,7 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
             result.setStopIndex(ctx.stop.getStopIndex());
             result.setLeft((TableSegment) visit(ctx.fromList()));
             result.setRight((TableSegment) visit(ctx.tableReference()));
+            result.setJoinType(JoinType.COMMA.name());
             return result;
         }
         return visit(ctx.tableReference());
