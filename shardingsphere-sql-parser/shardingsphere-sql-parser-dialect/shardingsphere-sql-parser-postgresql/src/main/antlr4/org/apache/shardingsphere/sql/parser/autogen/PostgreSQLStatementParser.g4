@@ -174,5 +174,6 @@ execute
     | createGroup
     | alterSubscription
     | createMaterializedView
+    | alterTextSearchConfiguration
     ) SEMI_? EOF
     ;

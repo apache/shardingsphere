@@ -54,6 +54,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Al
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterTableActionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterTablespaceContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterTextSearchConfigurationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterTextSearchDictionaryContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterTextSearchParserContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterTextSearchTemplateContext;
@@ -982,6 +983,11 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
         return new PostgreSQLCreateTextSearchStatement();
     }
     
+    @Override
+    public ASTNode visitAlterTextSearchConfiguration(final AlterTextSearchConfigurationContext ctx) {
+        return new PostgreSQLAlterTextSearchStatement();
+    }
+
     @Override
     public ASTNode visitAlterTextSearchDictionary(final AlterTextSearchDictionaryContext ctx) {
         return new PostgreSQLAlterTextSearchStatement();
