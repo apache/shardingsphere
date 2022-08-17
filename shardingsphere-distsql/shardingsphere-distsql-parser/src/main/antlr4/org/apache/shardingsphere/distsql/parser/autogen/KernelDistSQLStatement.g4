@@ -53,7 +53,6 @@ execute
     | alterSQLParserRule
     | showTransactionRule
     | alterTransactionRule
-    | showTrafficRules
     | dropTrafficRule
     | createTrafficRule
     | alterTrafficRule

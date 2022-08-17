@@ -91,10 +91,6 @@ alterTrafficRule
     : ALTER TRAFFIC RULE trafficRuleDefinition (COMMA trafficRuleDefinition)* 
     ;
 
-showTrafficRules
-    : SHOW TRAFFIC (RULES | RULE ruleName)
-    ;
-
 dropTrafficRule
     : DROP TRAFFIC RULE ifExists? ruleName (COMMA ruleName)*
     ;

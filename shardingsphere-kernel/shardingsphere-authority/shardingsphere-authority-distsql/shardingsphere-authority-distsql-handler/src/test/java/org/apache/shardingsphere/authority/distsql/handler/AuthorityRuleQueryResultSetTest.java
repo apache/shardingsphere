@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
 public final class AuthorityRuleQueryResultSetTest {
     
     @Test
-    public void assertAuthorityRule() {
+    public void assertExecute() {
         ShardingSphereRuleMetaData ruleMetaData = mockRuleMetaData();
         GlobalRuleDistSQLResultSet resultSet = new AuthorityRuleQueryResultSet();
         resultSet.init(ruleMetaData, mock(ShowAuthorityRuleStatement.class));
@@ -52,13 +52,14 @@ public final class AuthorityRuleQueryResultSetTest {
     }
     
     private ShardingSphereRuleMetaData mockRuleMetaData() {
-        AuthorityRule authorityRule = new AuthorityRule(getAuthorityRuleConfiguration(), Collections.emptyMap());
+        AuthorityRule authorityRule = mock(AuthorityRule.class);
+        when(authorityRule.getConfiguration()).thenReturn(createAuthorityRuleConfiguration());
         ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class);
         when(result.findSingleRule(AuthorityRule.class)).thenReturn(Optional.of(authorityRule));
         return result;
     }
     
-    private AuthorityRuleConfiguration getAuthorityRuleConfiguration() {
+    private AuthorityRuleConfiguration createAuthorityRuleConfiguration() {
         ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
         return new AuthorityRuleConfiguration(Collections.singleton(root), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()));
     }
