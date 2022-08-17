@@ -19,8 +19,10 @@ package org.apache.shardingsphere.data.pipeline.core.util;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
@@ -39,12 +41,18 @@ public final class PipelineDistributedBarrier {
     
     private static final PipelineDistributedBarrier INSTANCE = new PipelineDistributedBarrier();
     
-    private final ClusterPersistRepository repository;
+    private static final LazyInitializer<ClusterPersistRepository> REPOSITORY_LAZY_INITIALIZER = new LazyInitializer<ClusterPersistRepository>() {
+        @Override
+        protected ClusterPersistRepository initialize() {
+            return (ClusterPersistRepository) PipelineContext.getContextManager().getMetaDataContexts().getPersistService().getRepository();
+        }
+    };
     
     private final Map<String, InnerCountDownLatchHolder> countDownLatchMap = new ConcurrentHashMap<>();
     
-    private PipelineDistributedBarrier() {
-        repository = (ClusterPersistRepository) PipelineContext.getContextManager().getMetaDataContexts().getPersistService().getRepository();
+    @SneakyThrows
+    private static ClusterPersistRepository getRepository() {
+        return REPOSITORY_LAZY_INITIALIZER.get();
     }
     
     /**
@@ -63,7 +71,7 @@ public final class PipelineDistributedBarrier {
      * @param totalCount total count
      */
     public void register(final String parentPath, final int totalCount) {
-        repository.persist(parentPath, "");
+        getRepository().persist(parentPath, "");
         countDownLatchMap.computeIfAbsent(parentPath, k -> new InnerCountDownLatchHolder(totalCount, new CountDownLatch(1)));
     }
     
@@ -75,8 +83,8 @@ public final class PipelineDistributedBarrier {
      */
     public void persistEphemeralChildrenNode(final String parentPath, final int shardingItem) {
         String key = String.join("/", parentPath, Integer.toString(shardingItem));
-        repository.delete(key);
-        repository.persistEphemeral(key, "");
+        getRepository().delete(key);
+        getRepository().persistEphemeral(key, "");
     }
     
     /**
@@ -85,7 +93,7 @@ public final class PipelineDistributedBarrier {
      * @param parentPath parent path
      */
     public void removeParentNode(final String parentPath) {
-        repository.delete(String.join("/", parentPath));
+        getRepository().delete(String.join("/", parentPath));
         InnerCountDownLatchHolder holder = countDownLatchMap.remove(parentPath);
         if (null != holder) {
             holder.getCountDownLatch().countDown();
@@ -130,7 +138,7 @@ public final class PipelineDistributedBarrier {
         if (null == holder) {
             return;
         }
-        List<String> childrenKeys = repository.getChildrenKeys(parentPath);
+        List<String> childrenKeys = getRepository().getChildrenKeys(parentPath);
         log.info("children keys: {}, total count: {}", childrenKeys, holder.getTotalCount());
         if (childrenKeys.size() == holder.getTotalCount()) {
             holder.getCountDownLatch().countDown();
