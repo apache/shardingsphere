@@ -7,7 +7,7 @@ chapter = true
 
 ## ShadowAlgorithm
 
-### 完全限定类名
+### 全限定类名
 
 [`org.apache.shardingsphere.shadow.spi.ShadowAlgorithm`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-shadow/shardingsphere-shadow-api/src/main/java/org/apache/shardingsphere/shadow/spi/ShadowAlgorithm.java)
 

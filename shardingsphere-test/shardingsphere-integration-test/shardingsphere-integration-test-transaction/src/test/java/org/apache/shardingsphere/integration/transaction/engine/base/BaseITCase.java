@@ -39,9 +39,9 @@ import org.apache.shardingsphere.integration.transaction.env.enums.TransactionTe
 import org.apache.shardingsphere.integration.transaction.framework.container.compose.BaseComposedContainer;
 import org.apache.shardingsphere.integration.transaction.framework.container.compose.DockerComposedContainer;
 import org.apache.shardingsphere.integration.transaction.framework.container.compose.NativeComposedContainer;
-import org.apache.shardingsphere.integration.transaction.framework.container.database.DatabaseContainer;
 import org.apache.shardingsphere.integration.transaction.framework.param.TransactionParameterized;
 import org.apache.shardingsphere.integration.transaction.util.TransactionTestCaseClassScanner;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -128,7 +128,7 @@ public abstract class BaseITCase {
     private void createJdbcDataSource() {
         if (composedContainer instanceof DockerComposedContainer) {
             DockerComposedContainer dockerComposedContainer = (DockerComposedContainer) composedContainer;
-            DatabaseContainer databaseContainer = dockerComposedContainer.getDatabaseContainer();
+            DockerStorageContainer databaseContainer = dockerComposedContainer.getStorageContainer();
             Map<String, DataSource> actualDataSourceMap = databaseContainer.getActualDataSourceMap();
             actualDataSourceMap.put("ds_0", createDataSource(databaseContainer, DS_0));
             actualDataSourceMap.put("ds_1", createDataSource(databaseContainer, DS_1));
@@ -136,12 +136,12 @@ public abstract class BaseITCase {
         }
     }
     
-    private DataSource createDataSource(final DatabaseContainer databaseContainer, final String dataSourceName) {
+    private DataSource createDataSource(final DockerStorageContainer databaseContainer, final String dataSourceName) {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
         result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, databaseContainer.getHost(), databaseContainer.getMappedPort(databaseContainer.getPort()), dataSourceName));
         result.setUsername(databaseContainer.getUsername());
-        result.setPassword(databaseContainer.getPassword());
+        result.setPassword(databaseContainer.getUnifiedPassword());
         result.setMaximumPoolSize(4);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return result;
@@ -306,7 +306,7 @@ public abstract class BaseITCase {
         String jdbcUrl;
         if (ENV.getItEnvType() == TransactionITEnvTypeEnum.DOCKER) {
             DockerComposedContainer dockerComposedContainer = (DockerComposedContainer) composedContainer;
-            DatabaseContainer databaseContainer = dockerComposedContainer.getDatabaseContainer();
+            DockerStorageContainer databaseContainer = dockerComposedContainer.getStorageContainer();
             jdbcUrl = databaseContainer.getJdbcUrl("");
         } else {
             jdbcUrl = DataSourceEnvironment.getURL(databaseType, "localhost", jdbcInfo.getPort());
@@ -318,8 +318,8 @@ public abstract class BaseITCase {
         JdbcInfoEntity jdbcInfo;
         if (ENV.getItEnvType() == TransactionITEnvTypeEnum.DOCKER) {
             DockerComposedContainer dockerComposedContainer = (DockerComposedContainer) composedContainer;
-            DatabaseContainer databaseContainer = dockerComposedContainer.getDatabaseContainer();
-            jdbcInfo = new JdbcInfoEntity(databaseContainer.getUsername(), databaseContainer.getPassword(), databaseContainer.getPort());
+            DockerStorageContainer databaseContainer = dockerComposedContainer.getStorageContainer();
+            jdbcInfo = new JdbcInfoEntity(databaseContainer.getUsername(), databaseContainer.getUnifiedPassword(), databaseContainer.getPort());
         } else {
             jdbcInfo = ENV.getActualDatabaseJdbcInfo(getDatabaseType());
         }
@@ -468,7 +468,7 @@ public abstract class BaseITCase {
     
     private String getActualJdbcUrlTemplate(final String databaseName) {
         if (ENV.getItEnvType() == TransactionITEnvTypeEnum.DOCKER) {
-            final DatabaseContainer databaseContainer = ((DockerComposedContainer) composedContainer).getDatabaseContainer();
+            final DockerStorageContainer databaseContainer = ((DockerComposedContainer) composedContainer).getStorageContainer();
             return DataSourceEnvironment.getURL(getDatabaseType(), getDatabaseType().getType().toLowerCase() + ".host", databaseContainer.getPort(), databaseName);
         } else {
             return DataSourceEnvironment.getURL(getDatabaseType(), "127.0.0.1", ENV.getActualDataSourceDefaultPort(databaseType), databaseName);

@@ -68,7 +68,9 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Jo
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.LimitClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NameListContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NaturalJoinTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NumberLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.OuterJoinTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.OwnerContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ParameterMarkerContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.QualifiedNameContext;
@@ -103,6 +105,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Wi
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParserBaseVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.CombineType;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
@@ -1041,13 +1044,45 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
     }
     
     private JoinTableSegment visitJoinedTable(final JoinedTableContext ctx, final JoinTableSegment tableSegment) {
-        JoinTableSegment result = tableSegment;
         TableSegment right = (TableSegment) visit(ctx.tableReference());
-        result.setRight(right);
-        if (null != ctx.joinQual()) {
-            result = visitJoinQual(ctx.joinQual(), result);
+        tableSegment.setRight(right);
+        tableSegment.setJoinType(getJoinType(ctx));
+        return null != ctx.joinQual() ? visitJoinQual(ctx.joinQual(), tableSegment) : tableSegment;
+    }
+    
+    private String getJoinType(final JoinedTableContext ctx) {
+        if (null != ctx.crossJoinType()) {
+            return JoinType.CROSS.name();
         }
-        return result;
+        if (null != ctx.innerJoinType()) {
+            return JoinType.INNER.name();
+        }
+        if (null != ctx.outerJoinType()) {
+            return getOutJoinType(ctx.outerJoinType());
+        }
+        if (null != ctx.naturalJoinType()) {
+            return getNaturalJoinType(ctx.naturalJoinType());
+        }
+        return JoinType.COMMA.name();
+    }
+    
+    private static String getNaturalJoinType(final NaturalJoinTypeContext ctx) {
+        if (null != ctx.INNER()) {
+            return JoinType.INNER.name();
+        } else if (null != ctx.FULL()) {
+            return JoinType.FULL.name();
+        } else if (null != ctx.LEFT()) {
+            return JoinType.LEFT.name();
+        } else {
+            return JoinType.RIGHT.name();
+        }
+    }
+    
+    private static String getOutJoinType(final OuterJoinTypeContext ctx) {
+        if (null != ctx.FULL()) {
+            return JoinType.FULL.name();
+        }
+        return null != ctx.LEFT() ? JoinType.LEFT.name() : JoinType.RIGHT.name();
     }
     
     private JoinTableSegment visitJoinQual(final JoinQualContext ctx, final JoinTableSegment joinTableSource) {

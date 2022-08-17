@@ -13,8 +13,5 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
---
 
-CREATE USER test_user WITH ENCRYPTED PASSWORD 'Test@123';
-ALTER ROLE test_user SYSADMIN;
-CREATE DATABASE test_user;
+

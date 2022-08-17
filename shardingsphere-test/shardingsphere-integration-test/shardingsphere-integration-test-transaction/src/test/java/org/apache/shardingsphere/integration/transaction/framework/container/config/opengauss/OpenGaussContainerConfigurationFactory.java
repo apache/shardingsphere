@@ -15,26 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.mysql;
+package org.apache.shardingsphere.integration.transaction.framework.container.config.opengauss;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
-import org.apache.shardingsphere.test.integration.env.container.atomic.util.MySQLContainerUtil;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
- * MySQL container configuration factory.
+ * OpenGauss container configuration factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MySQLContainerConfigurationFactory {
+public final class OpenGaussContainerConfigurationFactory {
     
     /**
-     * Create new instance of MySQL container configuration.
-     * 
+     * Create new instance of openGauss container configuration.
+     *
      * @return created instance
      */
     public static StorageContainerConfiguration newInstance() {
@@ -42,19 +40,17 @@ public final class MySQLContainerConfigurationFactory {
     }
     
     private static String[] getCommands() {
-        String[] result = new String[1];
-        result[0] = "--server-id=" + MySQLContainerUtil.generateServerId();
+        String[] result = new String[2];
+        result[0] = "--max_connections=600";
+        result[1] = "--max_prepared_transactions=600";
         return result;
     }
     
     private static Map<String, String> getContainerEnvironments() {
-        Map<String, String> result = new HashMap<>(2, 1);
-        result.put("LANG", "C.UTF-8");
-        result.put("MYSQL_RANDOM_ROOT_PASSWORD", "yes");
-        return result;
+        return Collections.singletonMap("GS_PASSWORD", "Test@123");
     }
     
     private static Map<String, String> getMountedResources() {
-        return Collections.singletonMap("/env/mysql/my.cnf", "/etc/mysql/my.cnf");
+        return Collections.singletonMap("/env/postgresql/postgresql.conf", "/usr/local/opengauss/share/postgresql/postgresql.conf.sample");
     }
 }

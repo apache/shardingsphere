@@ -32,7 +32,7 @@ import java.util.Map;
 public final class OpenGaussContainerConfigurationFactory {
     
     /**
-     * Create new instance of opengauss container configuration.
+     * Create new instance of openGauss container configuration.
      * 
      * @return created instance
      */
