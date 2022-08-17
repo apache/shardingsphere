@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.integration.transaction.framework.container.config.StorageContainerConfigurationFactory;
-import org.apache.shardingsphere.integration.transaction.framework.container.config.proxy.TransactionProxyClusterContainerConfigurationFactory;
+import org.apache.shardingsphere.integration.transaction.framework.container.config.proxy.ProxyClusterContainerConfigurationFactory;
 import org.apache.shardingsphere.integration.transaction.framework.container.jdbc.ShardingSphereJDBCContainer;
 import org.apache.shardingsphere.integration.transaction.framework.param.TransactionParameterized;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.AdapterContainerFactory;
@@ -61,7 +61,7 @@ public final class DockerComposedContainer extends BaseComposedContainer {
         if (TransactionTestConstants.PROXY.equalsIgnoreCase(parameterized.getAdapter())) {
             jdbcContainer = null;
             proxyContainer = (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance("Cluster", "proxy", databaseType, storageContainer, "",
-                    TransactionProxyClusterContainerConfigurationFactory.newInstance(databaseType));
+                    ProxyClusterContainerConfigurationFactory.newInstance(databaseType));
             proxyContainer.dependsOn(governanceContainer, storageContainer);
             getContainers().registerContainer(proxyContainer);
         } else {
