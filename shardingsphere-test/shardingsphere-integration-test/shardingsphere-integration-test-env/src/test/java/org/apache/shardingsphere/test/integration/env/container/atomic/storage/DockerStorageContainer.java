@@ -80,9 +80,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     }
     
     protected final void setCommands(final String[] commands) {
-        for (String each : commands) {
-            setCommand(each);
-        }
+        setCommand(commands);
     }
     
     protected final void addEnvs(final Map<String, String> envs) {
