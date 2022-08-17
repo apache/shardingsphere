@@ -38,13 +38,11 @@ public final class MySQLContainerConfigurationFactory {
      * @return created instance
      */
     public static StorageContainerConfiguration newInstance() {
-        return new StorageContainerConfiguration(getCommands(), getContainerEnvironments(), getMountedResources());
+        return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources());
     }
     
-    private static String[] getCommands() {
-        String[] result = new String[1];
-        result[0] = "--server-id=" + MySQLContainerUtil.generateServerId();
-        return result;
+    private static String getCommand() {
+        return "--server-id=" + MySQLContainerUtil.generateServerId();
     }
     
     private static Map<String, String> getContainerEnvironments() {

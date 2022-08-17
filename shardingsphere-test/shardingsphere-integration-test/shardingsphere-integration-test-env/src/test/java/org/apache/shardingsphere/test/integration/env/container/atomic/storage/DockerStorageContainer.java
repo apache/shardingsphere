@@ -79,8 +79,8 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
                         : DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort()), getUsername(), getUnifiedPassword())));
     }
     
-    protected final void setCommands(final String[] commands) {
-        setCommand(commands);
+    protected final void setCommands(final String command) {
+        setCommand(command);
     }
     
     protected final void addEnvs(final Map<String, String> envs) {
