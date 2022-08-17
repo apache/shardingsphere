@@ -1084,7 +1084,7 @@
 
     <select sql-case-id="select_sharding_route_with_binding_tables" parameters="1, 2, 9, 10">
         <from>
-            <join-table>
+            <join-table join-type="INNER">
                 <left>
                     <simple-table name="t_order" alias="o" start-index="16" stop-index="24" />
                 </left>
@@ -1189,7 +1189,7 @@
 
     <select sql-case-id="select_full_route_with_binding_tables">
         <from>
-            <join-table>
+            <join-table join-type="INNER">
                 <left>
                     <simple-table name="t_order" alias="o" start-index="16" stop-index="24" />
                 </left>
@@ -1247,9 +1247,9 @@
 
     <select sql-case-id="select_sharding_route_with_broadcast_table" parameters="1, 2, 9, 10, 'init'">
         <from>
-            <join-table>
+            <join-table join-type="INNER">
                 <left>
-                    <join-table>
+                    <join-table join-type="INNER">
                         <left>
                             <simple-table name="t_order" alias="o" start-index="16" stop-index="24" />
                         </left>
@@ -1393,9 +1393,9 @@
 
     <select sql-case-id="select_keyword_table_name_with_back_quotes" parameters="1, 2, 9, 10, 'init'">
         <from>
-            <join-table>
+            <join-table join-type="INNER">
                 <left>
-                    <join-table>
+                    <join-table join-type="INNER">
                         <left>
                             <simple-table name="t_order" alias="o" start-index="16" stop-index="24" />
                         </left>
@@ -1539,9 +1539,9 @@
 
     <select sql-case-id="select_keyword_table_name_with_double_quotes" parameters="1, 2, 9, 10, 'init'">
         <from>
-            <join-table>
+            <join-table join-type="INNER">
                 <left>
-                    <join-table>
+                    <join-table join-type="INNER">
                         <left>
                             <simple-table name="t_order" alias="o" start-index="16" stop-index="24" />
                         </left>
@@ -1685,9 +1685,9 @@
 
     <select sql-case-id="select_keyword_table_name_with_square_brackets" parameters="1, 2, 9, 10, 'init'">
         <from>
-            <join-table>
+            <join-table join-type="INNER">
                 <left>
-                    <join-table>
+                    <join-table join-type="INNER">
                         <left>
                             <simple-table name="t_order" alias="o" start-index="16" stop-index="24" />
                         </left>
@@ -1858,7 +1858,7 @@
 
     <select sql-case-id="select_with_force_index_join" parameters="1000">
         <from>
-            <join-table>
+            <join-table join-type="INNER">
                 <left>
                     <simple-table name="t_order" alias="o" start-index="16" stop-index="24" />
                 </left>
@@ -2265,7 +2265,7 @@
 
     <select sql-case-id="select_distinct_with_owner_star_without_order_by" >
         <from>
-            <join-table>
+            <join-table join-type="COMMA">
                 <left>
                     <simple-table name="t_order" start-index="54" stop-index="60" />
                 </left>
@@ -2384,7 +2384,7 @@
 
     <select sql-case-id="select_distinct_with_owner_star">
         <from>
-            <join-table>
+            <join-table join-type="COMMA">
                 <left>
                     <simple-table name="t_order" start-index="54" stop-index="60" />
                 </left>
@@ -3466,7 +3466,7 @@
 
     <select sql-case-id="select_with_binding_tables_with_subquery_without_join">
         <from>
-            <join-table>
+            <join-table join-type="COMMA">
                 <left>
                     <subquery-table alias="a">
                         <subquery>
@@ -3548,7 +3548,7 @@
 
     <select sql-case-id="select_with_binding_tables_without_join">
         <from>
-            <join-table>
+            <join-table join-type="COMMA">
                 <left>
                     <simple-table name="employees" start-index="74" stop-index="82" />
                 </left>
@@ -3590,7 +3590,7 @@
 
     <select sql-case-id="select_with_lateral_clause">
         <from>
-            <join-table>
+            <join-table join-type="COMMA">
                 <left>
                     <simple-table name="employees" alias="e" start-index="14" stop-index="24" />
                 </left>
@@ -4282,7 +4282,7 @@
 
     <select sql-case-id="select_with_for_xml_clause">
         <from>
-            <join-table>
+            <join-table join-type="INNER">
                 <left>
                     <simple-table name="t_order" alias="o" start-index="44" stop-index="52" />
                 </left>

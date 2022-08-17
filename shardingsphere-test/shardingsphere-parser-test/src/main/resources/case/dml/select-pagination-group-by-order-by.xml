@@ -18,7 +18,7 @@
 <sql-parser-test-cases>
     <select sql-case-id="select_pagination_with_group_by_and_order_by" parameters="1, 2, 9, 10, 5, 3">
         <from>
-            <join-table>
+            <join-table join-type="INNER">
                 <left>
                     <simple-table name="t_order" alias="o" start-index="22" stop-index="30"/>
                 </left>
@@ -132,7 +132,7 @@
 
     <select sql-case-id="select_pagination_with_diff_group_by_and_order_by" parameters="1, 2, 9, 10, 5, 3">
         <from>
-            <join-table>
+            <join-table join-type="INNER">
                 <left>
                     <simple-table name="t_order" alias="o" start-index="22" stop-index="30"/>
                 </left>
@@ -270,7 +270,7 @@
                             </column-projection>
                         </projections>
                         <from>
-                            <join-table>
+                            <join-table join-type="INNER">
                                 <left>
                                     <simple-table start-index="165" stop-index="173" name="t_order" alias="o"/>
                                 </left>
@@ -414,7 +414,7 @@
                             </column-projection>
                         </projections>
                         <from>
-                            <join-table>
+                            <join-table join-type="INNER">
                                 <left>
                                     <simple-table start-index="183" stop-index="191" name="t_order" alias="o"/>
                                 </left>
@@ -558,7 +558,7 @@
                             </column-projection>
                         </projections>
                         <from>
-                            <join-table>
+                            <join-table join-type="INNER">
                                 <left>
                                     <simple-table start-index="167" stop-index="175" name="t_order" alias="o"/>
                                 </left>
@@ -702,7 +702,7 @@
                             </column-projection>
                         </projections>
                         <from>
-                            <join-table>
+                            <join-table join-type="INNER">
                                 <left>
                                     <simple-table start-index="185" stop-index="193" name="t_order" alias="o"/>
                                 </left>
@@ -846,7 +846,7 @@
                             </column-projection>
                         </projections>
                         <from>
-                            <join-table>
+                            <join-table join-type="INNER">
                                 <left>
                                     <simple-table start-index="165" stop-index="173" name="t_order" alias="o"/>
                                 </left>
@@ -990,7 +990,7 @@
                             </column-projection>
                         </projections>
                         <from>
-                            <join-table>
+                            <join-table join-type="INNER">
                                 <left>
                                     <simple-table start-index="183" stop-index="191" name="t_order" alias="o"/>
                                 </left>
@@ -1134,7 +1134,7 @@
                             </column-projection>
                         </projections>
                         <from>
-                            <join-table>
+                            <join-table join-type="INNER">
                                 <left>
                                     <simple-table start-index="167" stop-index="175" name="t_order" alias="o"/>
                                 </left>
@@ -1278,7 +1278,7 @@
                             </column-projection>
                         </projections>
                         <from>
-                            <join-table>
+                            <join-table join-type="INNER">
                                 <left>
                                     <simple-table start-index="185" stop-index="193" name="t_order" alias="o"/>
                                 </left>
@@ -1426,7 +1426,7 @@
                                             </column-projection>
                                         </projections>
                                         <from>
-                                            <join-table>
+                                            <join-table join-type="INNER">
                                                 <left>
                                                     <simple-table start-index="146" stop-index="160" name="t_order" alias="order0_"/>
                                                 </left>
@@ -1597,7 +1597,7 @@
                                             </column-projection>
                                         </projections>
                                         <from>
-                                            <join-table>
+                                            <join-table join-type="INNER">
                                                 <left>
                                                     <simple-table start-index="146" stop-index="160" name="t_order" alias="order0_"/>
                                                 </left>
@@ -1768,7 +1768,7 @@
                                             </column-projection>
                                         </projections>
                                         <from>
-                                            <join-table>
+                                            <join-table join-type="INNER">
                                                 <left>
                                                     <simple-table start-index="146" stop-index="160" name="t_order" alias="order0_"/>
                                                 </left>
@@ -1939,7 +1939,7 @@
                                             </column-projection>
                                         </projections>
                                         <from>
-                                            <join-table>
+                                            <join-table join-type="INNER">
                                                 <left>
                                                     <simple-table start-index="146" stop-index="160" name="t_order" alias="order0_"/>
                                                 </left>
