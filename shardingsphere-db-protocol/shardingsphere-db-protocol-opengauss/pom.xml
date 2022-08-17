@@ -36,7 +36,7 @@
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-postgresql-error</artifactId>
+            <artifactId>shardingsphere-postgresql-dialect-exception</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

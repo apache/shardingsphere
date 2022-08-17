@@ -63,7 +63,7 @@ public class DatabaseDiscoveryDistSQLTest {
         assertThat(distSQLStatement.getRules().size(), is(1));
         assertDiscoverySegment((DatabaseDiscoveryDefinitionSegment) distSQLStatement.getRules().iterator().next());
     }
-
+    
     @Test
     public void assertCreateDatabaseDiscoveryType() {
         String sql = "CREATE DB_DISCOVERY TYPE primary_replica_ds_mgr(TYPE(NAME='mgr',PROPERTIES('group-name'='92504d5b'))),primary_replica_ds_mgr_2(TYPE(NAME='mgr'))";
@@ -71,7 +71,7 @@ public class DatabaseDiscoveryDistSQLTest {
         assertThat(distSQLStatement.getProviders().size(), is(2));
         assertAlgorithmSegment(distSQLStatement.getProviders().iterator());
     }
-
+    
     @Test
     public void assertAlterDatabaseDiscoveryType() {
         String sql = "ALTER DB_DISCOVERY TYPE primary_replica_ds_mgr(TYPE(NAME='mgr',PROPERTIES('group-name'='92504d5b'))),primary_replica_ds_mgr_2(TYPE(NAME='mgr'))";
@@ -79,7 +79,7 @@ public class DatabaseDiscoveryDistSQLTest {
         assertThat(distSQLStatement.getProviders().size(), is(2));
         assertAlgorithmSegment(distSQLStatement.getProviders().iterator());
     }
-
+    
     private void assertDiscoverySegment(final DatabaseDiscoveryDefinitionSegment discoverySegment) {
         assertThat(discoverySegment.getName(), is("db_discovery_group_0"));
         assertThat(discoverySegment.getDataSources(), is(Arrays.asList("ds_0", "ds_1")));
@@ -91,7 +91,7 @@ public class DatabaseDiscoveryDistSQLTest {
         heartbeatProps.setProperty("keep-alive-cron", "0/5 * * * * ?");
         assertThat(discoverySegment.getDiscoveryHeartbeat(), is(heartbeatProps));
     }
-
+    
     private void assertAlgorithmSegment(final Iterator<DatabaseDiscoveryProviderAlgorithmSegment> iterator) {
         DatabaseDiscoveryProviderAlgorithmSegment providerAlgorithmSegment = iterator.next();
         Properties properties = new Properties();
