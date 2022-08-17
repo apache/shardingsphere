@@ -15,33 +15,5 @@
 # limitations under the License.
 #
 
-scalingName: default_scaling
-scaling:
-  default_scaling:
-    input:
-      workerThread: 40
-      batchSize: 1000
-      shardingSize: 10000000
-      rateLimiter:
-        type: QPS
-        props:
-          qps: 50
-    output:
-      workerThread: 40
-      batchSize: 1000
-      rateLimiter:
-        type: TPS
-        props:
-          tps: 2000
-    streamChannel:
-      type: MEMORY
-      props:
-        block-queue-size: 10000
-    completionDetector:
-      type: IDLE
-      props:
-        incremental-task-idle-seconds-threshold: 1800
-    dataConsistencyChecker:
-      type: DATA_MATCH
-      props:
-        chunk-size: 1000
+org.apache.shardingsphere.data.pipeline.core.spi.ratelimit.QPSJobRateLimitAlgorithm
+org.apache.shardingsphere.data.pipeline.core.spi.ratelimit.TPSJobRateLimitAlgorithm
