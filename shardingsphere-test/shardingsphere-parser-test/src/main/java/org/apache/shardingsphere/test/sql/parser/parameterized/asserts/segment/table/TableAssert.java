@@ -122,14 +122,6 @@ public final class TableAssert {
         }
     }
     
-    private static void assertJoinType(final SQLCaseAssertContext assertContext, final String actual, final String expected) {
-        if (Strings.isNullOrEmpty(expected)) {
-            assertTrue(assertContext.getText("Actual join-type should not exist."), Strings.isNullOrEmpty(actual));
-        } else {
-            assertThat(assertContext.getText("Actual join-type should exist."), actual, is(expected));
-        }
-    }
-    
     /**
      * Assert actual table segments is correct with expected tables.
      *
@@ -158,6 +150,14 @@ public final class TableAssert {
                 actualTables.size(), is(expectedTables.size()));
         for (int i = 0; i < actualTables.size(); i++) {
             assertIs(assertContext, actualTables.get(i), expectedTables.get(i));
+        }
+    }
+    
+    private static void assertJoinType(final SQLCaseAssertContext assertContext, final String actual, final String expected) {
+        if (Strings.isNullOrEmpty(expected)) {
+            assertTrue(assertContext.getText("Actual join-type should not exist."), Strings.isNullOrEmpty(actual));
+        } else {
+            assertThat(assertContext.getText("Actual join-type should exist."), actual, is(expected));
         }
     }
 }
