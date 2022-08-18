@@ -174,5 +174,6 @@ execute
     | createGroup
     | alterSubscription
     | createMaterializedView
+    | createOperator
     ) SEMI_? EOF
     ;

@@ -19,8 +19,8 @@ package org.apache.shardingsphere.scaling.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineInputConfiguration;
-import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineOutputConfiguration;
+import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineReadConfiguration;
+import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineWriteConfiguration;
 import org.apache.shardingsphere.infra.config.rule.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.migration.distsql.handler.query.ShardingScalingRulesQueryResultSet;
@@ -82,8 +82,8 @@ public final class ShardingScalingRulesQueryResultSetTest {
     }
     
     private OnRuleAlteredActionConfiguration buildCompleteConfiguration() {
-        PipelineInputConfiguration inputConfig = new PipelineInputConfiguration(10, 100, 10, new AlgorithmConfiguration("QPS", createProperties("qps", "50")));
-        PipelineOutputConfiguration outputConfig = new PipelineOutputConfiguration(10, 100, new AlgorithmConfiguration("TPS", createProperties("tps", "2000")));
+        PipelineReadConfiguration inputConfig = new PipelineReadConfiguration(10, 100, 10, new AlgorithmConfiguration("QPS", createProperties("qps", "50")));
+        PipelineWriteConfiguration outputConfig = new PipelineWriteConfiguration(10, 100, new AlgorithmConfiguration("TPS", createProperties("tps", "2000")));
         AlgorithmConfiguration streamChannel = new AlgorithmConfiguration("MEMORY", createProperties("block-queue-size", "10000"));
         AlgorithmConfiguration completionDetector = new AlgorithmConfiguration("IDLE", createProperties("incremental-task-idle-seconds-threshold", "1800"));
         AlgorithmConfiguration dataConsistencyChecker = new AlgorithmConfiguration("DATA_MATCH", createProperties("chunk-size", "1000"));
