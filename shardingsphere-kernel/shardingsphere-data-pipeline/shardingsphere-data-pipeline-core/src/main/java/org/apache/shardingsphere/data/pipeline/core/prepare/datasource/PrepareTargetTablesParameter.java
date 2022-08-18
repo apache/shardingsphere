@@ -49,7 +49,7 @@ public final class PrepareTargetTablesParameter {
     private final TableNameSchemaNameMapping tableNameSchemaNameMapping;
     
     private final ShardingSphereSQLParserEngine sqlParserEngine;
-            
+    
     public PrepareTargetTablesParameter(@NonNull final String databaseName, @NonNull final PipelineDataSourceConfiguration targetDataSourceConfig,
                                         @NonNull final Map<String, DataSource> sourceDataSourceMap, @NonNull final PipelineDataSourceManager dataSourceManager,
                                         @NonNull final JobDataNodeLine tablesFirstDataNodes, final Map<String, String> tableNameMap, final TableNameSchemaNameMapping tableNameSchemaNameMapping,
