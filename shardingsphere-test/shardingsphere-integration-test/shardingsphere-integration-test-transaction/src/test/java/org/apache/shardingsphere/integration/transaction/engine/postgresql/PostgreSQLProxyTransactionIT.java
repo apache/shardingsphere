@@ -83,5 +83,4 @@ public final class PostgreSQLProxyTransactionIT extends BaseTransactionITCase {
     private void callTestCases() {
         callTestCases(parameterized);
     }
-    
 }

@@ -19,7 +19,11 @@
 <sql-parser-test-cases>
     <select sql-case-id="select_constant_without_table" >
         <projections start-index="7" stop-index="12">
-            <expression-projection text="1" alias="a" start-index="7" stop-index="12" />
+            <expression-projection text="1" alias="a" start-index="7" stop-index="12">
+                <expr>
+                    <literal-expression value="1" start-index="7" stop-index="7" />
+                </expr>
+            </expression-projection>
         </projections>
     </select>
 

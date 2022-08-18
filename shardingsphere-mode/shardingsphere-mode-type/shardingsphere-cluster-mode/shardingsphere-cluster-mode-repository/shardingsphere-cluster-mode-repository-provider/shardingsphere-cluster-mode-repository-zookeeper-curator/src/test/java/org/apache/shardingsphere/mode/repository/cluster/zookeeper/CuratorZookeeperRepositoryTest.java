@@ -188,8 +188,10 @@ public final class CuratorZookeeperRepositoryTest {
     @Test
     @SneakyThrows
     public void assertPersistEphemeralExist() {
+        when(existsBuilder.forPath("/test/ephemeral")).thenReturn(new Stat());
         when(protect.withMode(CreateMode.EPHEMERAL)).thenReturn(protect);
         REPOSITORY.persistEphemeral("/test/ephemeral", "value4");
+        verify(backgroundVersionable).forPath("/test/ephemeral");
         verify(protect).forPath("/test/ephemeral", "value4".getBytes(StandardCharsets.UTF_8));
     }
     

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.integration.data.pipeline.framework.container.
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.config.proxy.ScalingProxyClusterContainerConfigurationFactory;
-import org.apache.shardingsphere.integration.data.pipeline.framework.container.config.storage.ScalingStorageContainerConfigurationFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
@@ -28,6 +27,7 @@ import org.apache.shardingsphere.test.integration.env.container.atomic.governanc
 import org.apache.shardingsphere.test.integration.env.container.atomic.governance.impl.ZookeeperContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainerFactory;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.StorageContainerConfigurationFactory;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 
 /**
@@ -49,7 +49,7 @@ public final class DockerComposedContainer extends BaseComposedContainer {
         this.databaseType = databaseType;
         governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
         storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, dockerImageName,
-                "", ScalingStorageContainerConfigurationFactory.newInstance(databaseType, "")));
+                "", StorageContainerConfigurationFactory.newInstance(databaseType)));
         AdaptorContainerConfiguration containerConfig = ScalingProxyClusterContainerConfigurationFactory.newInstance(databaseType, dockerImageName);
         ShardingSphereProxyClusterContainer proxyClusterContainer =
                 (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance("Cluster", "proxy", databaseType, storageContainer, "", containerConfig);

@@ -22,9 +22,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
-import org.apache.shardingsphere.error.SQLExceptionHandler;
+import org.apache.shardingsphere.error.exception.SQLDialectException;
+import org.apache.shardingsphere.error.mapper.SQLDialectExceptionMapperFactory;
 import org.apache.shardingsphere.error.postgresql.code.PostgreSQLVendorError;
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.InvalidAuthorizationSpecificationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLAuthenticationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLProtocolViolationException;
@@ -49,8 +50,11 @@ public final class PostgreSQLErrPacketFactory {
         if (cause instanceof PSQLException && null != ((PSQLException) cause).getServerErrorMessage()) {
             return createErrorResponsePacket(((PSQLException) cause).getServerErrorMessage());
         }
-        if (cause instanceof ShardingSphereInsideException) {
-            return createErrorResponsePacket(SQLExceptionHandler.convert("PostgreSQL", (ShardingSphereInsideException) cause));
+        if (cause instanceof SQLDialectException) {
+            return createErrorResponsePacket(SQLDialectExceptionMapperFactory.getInstance("PostgreSQL").convert((SQLDialectException) cause));
+        }
+        if (cause instanceof ShardingSphereSQLException) {
+            return createErrorResponsePacket(((ShardingSphereSQLException) cause).toSQLException());
         }
         if (cause instanceof SQLException) {
             return createErrorResponsePacket((SQLException) cause);

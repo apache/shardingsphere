@@ -282,9 +282,23 @@ public final class ContextManagerTest {
     }
     
     @Test
+    public void assertReloadSchema() {
+        when(metaDataContexts.getMetaData().getDatabase("foo_db").getResource().getDataSources()).thenReturn(Collections.singletonMap("foo_ds", new MockedDataSource()));
+        when(metaDataContexts.getMetaData().getActualDatabaseName("foo_db")).thenReturn("foo_db");
+        DatabaseMetaDataPersistService databaseMetaDataPersistService = mock(DatabaseMetaDataPersistService.class, RETURNS_DEEP_STUBS);
+        MetaDataPersistService persistService = mock(MetaDataPersistService.class);
+        when(persistService.getDatabaseMetaDataService()).thenReturn(databaseMetaDataPersistService);
+        when(metaDataContexts.getPersistService()).thenReturn(persistService);
+        contextManager.reloadSchema("foo_db", "foo_schema", "foo_ds");
+        verify(databaseMetaDataPersistService, times(1)).deleteSchema(eq("foo_db"), eq("foo_schema"));
+    }
+    
+    @Test
     public void assertReloadTable() {
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getResource().getDataSources()).thenReturn(Collections.singletonMap("foo_ds", new MockedDataSource()));
+        DatabaseMetaDataPersistService databaseMetaDataPersistService = mock(DatabaseMetaDataPersistService.class, RETURNS_DEEP_STUBS);
         MetaDataPersistService persistService = mock(MetaDataPersistService.class);
+        when(persistService.getDatabaseMetaDataService()).thenReturn(databaseMetaDataPersistService);
         when(metaDataContexts.getPersistService()).thenReturn(persistService);
         contextManager.reloadTable("foo_db", "foo_schema", "foo_table");
         assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResource().getDataSources().containsKey("foo_ds"));

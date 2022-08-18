@@ -27,12 +27,22 @@ import static org.junit.Assert.assertTrue;
 
 public final class ResourceDataSourceTest {
     
+    private static final String DATABASE_NAME = "sharding_db";
+    
+    private static final String DATA_SOURCE_NAME = "fooDataSource";
+    
     @Test
     public void assertNewInstance() {
-        ResourceDataSource actual = new ResourceDataSource("fooDataSource", new MockedDataSource());
-        assertThat(actual.getOriginalName(), is("fooDataSource"));
+        String originalName = DATABASE_NAME + "." + DATA_SOURCE_NAME;
+        ResourceDataSource actual = new ResourceDataSource(originalName, new MockedDataSource());
+        assertThat(actual.getOriginalName(), is(originalName));
         assertThat(actual.getDataSource(), instanceOf(MockedDataSource.class));
         assertTrue(actual.getUniqueResourceName().startsWith("resource"));
-        assertTrue(actual.getUniqueResourceName().endsWith("fooDataSource"));
+        assertTrue(actual.getUniqueResourceName().endsWith(DATA_SOURCE_NAME));
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void assertDataSourceNameOnlyFailure() {
+        new ResourceDataSource(DATA_SOURCE_NAME, new MockedDataSource());
     }
 }

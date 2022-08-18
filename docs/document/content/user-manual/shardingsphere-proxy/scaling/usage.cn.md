@@ -164,8 +164,8 @@ DistSQL 字段含义和 YAML 配置保持一致，详情请参见 [YAML 配置#�
 ALTER SHARDING TABLE RULE t_order (
 RESOURCES(ds_2, ds_3, ds_4),
 SHARDING_COLUMN=order_id,
-TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=6)),
-KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
+TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="6")),
+KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
 );
 ```
 
@@ -174,19 +174,19 @@ KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
 `TableRule` 修改示例：
 ```sql
 ALTER SHARDING ALGORITHM database_inline (
-TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="ds_${user_id % 3 + 2}"))
+TYPE(NAME="INLINE",PROPERTIES("algorithm-expression"="ds_${user_id % 3 + 2}"))
 );
 
 ALTER SHARDING TABLE RULE t_order (
 DATANODES("ds_${2..4}.t_order_${0..1}"),
-DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
-TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_inline),
-KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
+DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+TABLE_STRATEGY(TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_inline),
+KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
 ), t_order_item (
 DATANODES("ds_${2..4}.t_order_item_${0..1}"),
-DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
-TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_item_inline),
-KEY_GENERATE_STRATEGY(COLUMN=order_item_id,TYPE(NAME=snowflake))
+DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+TABLE_STRATEGY(TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_item_inline),
+KEY_GENERATE_STRATEGY(COLUMN=order_item_id,TYPE(NAME="snowflake"))
 );
 ```
 
@@ -328,25 +328,25 @@ ADD RESOURCE ds_0 (
 把现有系统中的表配置到规则里，使用 tables 规则 INLINE 算法，方便适配已有的表名。
 ```sql
 CREATE SHARDING ALGORITHM database_inline (
-TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="ds_${user_id % 2}"))
+TYPE(NAME="INLINE",PROPERTIES("algorithm-expression"="ds_${user_id % 2}"))
 );
 CREATE SHARDING ALGORITHM t_order_inline (
-TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="t_order_${order_id % 2}"))
+TYPE(NAME="INLINE",PROPERTIES("algorithm-expression"="t_order_${order_id % 2}"))
 );
 CREATE SHARDING ALGORITHM t_order_item_inline (
-TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="t_order_item_${order_id % 2}"))
+TYPE(NAME="INLINE",PROPERTIES("algorithm-expression"="t_order_item_${order_id % 2}"))
 );
 
 CREATE SHARDING TABLE RULE t_order (
 DATANODES("ds_${0..1}.t_order_${0..1}"),
-DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
-TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_inline),
-KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
+DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+TABLE_STRATEGY(TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_inline),
+KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
 ), t_order_item (
 DATANODES("ds_${0..1}.t_order_item_${0..1}"),
-DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
-TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_item_inline),
-KEY_GENERATE_STRATEGY(COLUMN=order_item_id,TYPE(NAME=snowflake))
+DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+TABLE_STRATEGY(TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_item_inline),
+KEY_GENERATE_STRATEGY(COLUMN=order_item_id,TYPE(NAME="snowflake"))
 );
 
 CREATE SHARDING SCALING RULE scaling_manual2 (
@@ -415,19 +415,19 @@ ADD RESOURCE ds_2 (
 修改分片规则触发迁移：
 ```sql
 ALTER SHARDING ALGORITHM database_inline (
-TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="ds_${user_id % 3 + 2}"))
+TYPE(NAME="INLINE",PROPERTIES("algorithm-expression"="ds_${user_id % 3 + 2}"))
 );
 
 ALTER SHARDING TABLE RULE t_order (
 DATANODES("ds_${2..4}.t_order_${0..1}"),
-DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
-TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_inline),
-KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
+DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+TABLE_STRATEGY(TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_inline),
+KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
 ), t_order_item (
 DATANODES("ds_${2..4}.t_order_item_${0..1}"),
-DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
-TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_item_inline),
-KEY_GENERATE_STRATEGY(COLUMN=order_item_id,TYPE(NAME=snowflake))
+DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+TABLE_STRATEGY(TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_item_inline),
+KEY_GENERATE_STRATEGY(COLUMN=order_item_id,TYPE(NAME="snowflake"))
 );
 ```
 

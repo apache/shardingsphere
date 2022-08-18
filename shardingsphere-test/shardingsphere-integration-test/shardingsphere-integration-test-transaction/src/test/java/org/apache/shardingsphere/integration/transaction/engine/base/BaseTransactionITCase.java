@@ -173,6 +173,7 @@ public abstract class BaseTransactionITCase extends BaseITCase {
     }
     
     protected boolean waitExpectedTransactionRule(final TransactionType expectedTransType, final String expectedProviderType, final int maxWaitTimes) {
+        ThreadUtil.sleep(5, TimeUnit.SECONDS);
         Connection connection = getProxyConnection();
         int waitTimes = 0;
         do {

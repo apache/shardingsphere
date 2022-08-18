@@ -20,17 +20,17 @@ package org.apache.shardingsphere.proxy.frontend.mysql.err;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
-import org.apache.shardingsphere.error.dialect.syntax.database.NoDatabaseSelectedException;
-import org.apache.shardingsphere.error.dialect.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.error.exception.syntax.database.NoDatabaseSelectedException;
+import org.apache.shardingsphere.error.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.proxy.frontend.exception.CircuitBreakException;
-import org.apache.shardingsphere.error.dialect.syntax.database.DatabaseCreateExistsException;
-import org.apache.shardingsphere.error.dialect.syntax.database.DatabaseDropNotExistsException;
-import org.apache.shardingsphere.error.dialect.transaction.TableModifyInTransactionException;
+import org.apache.shardingsphere.error.exception.syntax.database.DatabaseCreateExistsException;
+import org.apache.shardingsphere.error.exception.syntax.database.DatabaseDropNotExistsException;
+import org.apache.shardingsphere.error.exception.transaction.TableModifyInTransactionException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.UnsupportedVariableException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedCommandException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
-import org.apache.shardingsphere.error.dialect.syntax.table.NoSuchTableException;
-import org.apache.shardingsphere.error.dialect.syntax.table.TableExistsException;
+import org.apache.shardingsphere.error.exception.syntax.table.NoSuchTableException;
+import org.apache.shardingsphere.error.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.junit.Test;
 
@@ -148,19 +148,26 @@ public final class MySQLErrPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithShardingSphereConfigurationException() {
-        assertCommonException(MySQLErrPacketFactory.newInstance(new ShardingSphereConfigurationException("No reason")));
+        assertShardingSphereConfigurationException(MySQLErrPacketFactory.newInstance(new ShardingSphereConfigurationException("No reason")));
+    }
+    
+    private void assertShardingSphereConfigurationException(final MySQLErrPacket actual) {
+        assertThat(actual.getSequenceId(), is(1));
+        assertThat(actual.getErrorCode(), is(1235));
+        assertThat(actual.getSqlState(), is("42000"));
+        assertThat(actual.getErrorMessage(), is("No reason"));
     }
     
     @Test
     public void assertNewInstanceWithSQLParsingException() {
-        assertCommonException(MySQLErrPacketFactory.newInstance(new SQLParsingException("No reason")));
+        assertSQLParsingException(MySQLErrPacketFactory.newInstance(new SQLParsingException()));
     }
     
-    private void assertCommonException(final MySQLErrPacket actual) {
+    private void assertSQLParsingException(final MySQLErrPacket actual) {
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(1235));
         assertThat(actual.getSqlState(), is("42000"));
-        assertThat(actual.getErrorMessage(), is("Unsupported SQL: No reason"));
+        assertThat(actual.getErrorMessage(), is("You have an error in your SQL syntax"));
     }
     
     @Test

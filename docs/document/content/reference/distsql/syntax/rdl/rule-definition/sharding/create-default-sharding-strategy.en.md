@@ -45,12 +45,12 @@ algorithmType ::=
 ```sql
 -- create a sharding algorithm
 CREATE SHARDING ALGORITHM database_inline (
-    TYPE(NAME=inline, PROPERTIES("algorithm-expression"="t_order_${order_id % 2}"))
+    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${order_id % 2}"))
 );
 
 -- create a default sharding database strategy
 CREATE DEFAULT SHARDING DATABASE STRATEGY (
-    TYPE=standard, SHARDING_COLUMN=user_id, SHARDING_ALGORITHM=database_inline
+    TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM=database_inline
 );
 ```
 
@@ -59,7 +59,7 @@ CREATE DEFAULT SHARDING DATABASE STRATEGY (
 ```sql
 -- create a default sharding table strategy
 CREATE DEFAULT SHARDING TABLE STRATEGY (
-    TYPE=standard, SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME=inline, PROPERTIES("algorithm-expression"="t_order_${user_id % 2}")))
+    TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${user_id % 2}")))
 );
 ```
 

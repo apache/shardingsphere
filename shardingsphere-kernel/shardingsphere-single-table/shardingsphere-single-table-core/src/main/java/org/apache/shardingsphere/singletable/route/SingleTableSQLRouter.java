@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.session.ConnectionContext;
 import org.apache.shardingsphere.singletable.constant.SingleTableOrder;
 import org.apache.shardingsphere.singletable.route.engine.SingleTableRouteEngineFactory;
 import org.apache.shardingsphere.singletable.route.validator.SingleTableMetadataValidator;
@@ -53,7 +54,8 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereDatabase database, final SingleTableRule rule, final ConfigurationProperties props) {
+    public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereDatabase database, final SingleTableRule rule,
+                                           final ConfigurationProperties props, final ConnectionContext connectionContext) {
         if (1 == database.getResource().getDataSources().size()) {
             return createSingleDataSourceRouteContext(rule, database);
         }
@@ -71,7 +73,7 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
     
     @Override
     public void decorateRouteContext(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereDatabase database,
-                                     final SingleTableRule rule, final ConfigurationProperties props) {
+                                     final SingleTableRule rule, final ConfigurationProperties props, final ConnectionContext connectionContext) {
         SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
         Collection<QualifiedTable> singleTableNames = getSingleTableNames(sqlStatementContext, database, rule, routeContext);
         if (singleTableNames.isEmpty()) {

@@ -62,5 +62,4 @@ public final class MySQLJdbcTransactionIT extends BaseTransactionITCase {
     public void assertTransaction() {
         callTestCases(parameterized);
     }
-    
 }
