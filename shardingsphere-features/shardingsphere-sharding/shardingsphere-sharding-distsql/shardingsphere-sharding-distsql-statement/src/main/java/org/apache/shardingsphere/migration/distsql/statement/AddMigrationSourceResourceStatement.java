@@ -15,28 +15,21 @@
  * limitations under the License.
  */
 
-grammar MigrationDistSQLStatement;
+package org.apache.shardingsphere.migration.distsql.statement;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
+import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 
-execute
-    : (showScalingList
-    | showScalingStatus
-    | migrateTable
-    | startScaling
-    | stopScaling
-    | dropScaling
-    | resetScaling
-    | checkScaling
-    | showScalingCheckAlgorithms
-    | stopScalingSourceWriting
-    | restoreScalingSourceWriting
-    | applyScaling
-    | showShardingScalingRules
-    | createShardingScalingRule
-    | dropShardingScalingRule
-    | enableShardingScalingRule
-    | disableShardingScalingRule
-    | addMigrationSourceResource
-    ) SEMI?
-    ;
+import java.util.Collection;
+
+/**
+ * Add resource statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class AddMigrationSourceResourceStatement extends UpdatableScalingRALStatement {
+    
+    private final Collection<DataSourceSegment> dataSources;
+}

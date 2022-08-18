@@ -15,28 +15,25 @@
  * limitations under the License.
  */
 
-grammar MigrationDistSQLStatement;
+package org.apache.shardingsphere.migration.distsql.handler.update;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
+import org.apache.shardingsphere.migration.distsql.statement.AddMigrationSourceResourceStatement;
 
-execute
-    : (showScalingList
-    | showScalingStatus
-    | migrateTable
-    | startScaling
-    | stopScaling
-    | dropScaling
-    | resetScaling
-    | checkScaling
-    | showScalingCheckAlgorithms
-    | stopScalingSourceWriting
-    | restoreScalingSourceWriting
-    | applyScaling
-    | showShardingScalingRules
-    | createShardingScalingRule
-    | dropShardingScalingRule
-    | enableShardingScalingRule
-    | disableShardingScalingRule
-    | addMigrationSourceResource
-    ) SEMI?
-    ;
+/**
+ * Add migration source resource updater.
+ */
+@Slf4j
+public final class AddMigrationSourceResourceUpdater implements RALUpdater<AddMigrationSourceResourceStatement> {
+    
+    @Override
+    public void executeUpdate(final AddMigrationSourceResourceStatement sqlStatement) {
+        // TODO add migration source resource later
+    }
+    
+    @Override
+    public String getType() {
+        return AddMigrationSourceResourceStatement.class.getName();
+    }
+}
