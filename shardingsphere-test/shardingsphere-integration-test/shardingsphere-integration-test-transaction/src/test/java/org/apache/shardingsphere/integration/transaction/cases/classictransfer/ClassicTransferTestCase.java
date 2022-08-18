@@ -78,7 +78,7 @@ public final class ClassicTransferTestCase extends BaseTransactionTestCase {
             ResultSet resultSet = statement.executeQuery("select sum(balance) as a from account where transaction_id in (1, 2)");
             if (resultSet.next()) {
                 result = resultSet.getInt(1);
-            } 
+            }
             connection.commit();
         }
         return result;
@@ -93,7 +93,7 @@ public final class ClassicTransferTestCase extends BaseTransactionTestCase {
         public void run() {
             Statement statement1 = null;
             Statement statement2 = null;
-            try (Connection connection = dataSource.getConnection();){
+            try (Connection connection = dataSource.getConnection()) {
                 connection.setAutoCommit(false);
                 statement1 = connection.createStatement();
                 statement1.execute("update account set balance=balance-1 where transaction_id=2;");
