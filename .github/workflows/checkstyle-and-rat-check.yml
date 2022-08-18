@@ -27,6 +27,7 @@ on:
       - '**/src/main/**'
       - '**/src/test/**'
       - '.github/workflows/checkstyle-and-rat-check.yml'
+      - 'examples/shardingsphere-example-generator/**'
       - '!examples/**'
       - '!*.md'
   pull_request:
@@ -35,6 +36,7 @@ on:
       - '**/src/main/**'
       - '**/src/test/**'
       - '.github/workflows/checkstyle-and-rat-check.yml'
+      - 'examples/shardingsphere-example-generator/**'
       - '!examples/**'
       - '!*.md'
 
@@ -54,4 +56,7 @@ jobs:
           path: ~/.m2/repository
           key: maven-cache-checkstyle-and-apache-rat-${{ hashFiles('**/pom.xml') }}
       - name: Run Checkstyle and Apache Rat
-        run: ./mvnw checkstyle:check apache-rat:check -T1C
+        run: ./mvnw checkstyle:check -T1C
+      - name: Run Apache Rat
+        if: github.repository == 'apache/shardingsphere'
+        run: ./mvnw apache-rat:check -T1C
