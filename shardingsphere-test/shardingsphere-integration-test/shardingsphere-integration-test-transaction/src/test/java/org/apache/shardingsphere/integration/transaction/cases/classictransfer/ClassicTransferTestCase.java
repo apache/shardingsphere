@@ -73,16 +73,14 @@ public final class ClassicTransferTestCase extends BaseTransactionTestCase {
     
     private int getBalanceSum() throws Exception {
         int result = 0;
-        Connection connection = getDataSource().getConnection();
-        connection.setAutoCommit(false);
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery("select sum(balance) as a from account where transaction_id in (1, 2)");
-        if (resultSet.next()) {
-            result = resultSet.getInt(1);
+        try (Connection connection = getDataSource().getConnection(); Statement statement = connection.createStatement()) {
+            connection.setAutoCommit(false);
+            ResultSet resultSet = statement.executeQuery("select sum(balance) as a from account where transaction_id in (1, 2)");
+            if (resultSet.next()) {
+                result = resultSet.getInt(1);
+            }
+            connection.commit();
         }
-        connection.commit();
-        statement.close();
-        connection.close();
         return result;
     }
     
@@ -93,11 +91,9 @@ public final class ClassicTransferTestCase extends BaseTransactionTestCase {
         private DataSource dataSource;
         
         public void run() {
-            Connection connection = null;
             Statement statement1 = null;
             Statement statement2 = null;
-            try {
-                connection = dataSource.getConnection();
+            try (Connection connection = dataSource.getConnection()) {
                 connection.setAutoCommit(false);
                 statement1 = connection.createStatement();
                 statement1.execute("update account set balance=balance-1 where transaction_id=2;");
@@ -110,7 +106,6 @@ public final class ClassicTransferTestCase extends BaseTransactionTestCase {
                 try {
                     statement1.close();
                     statement2.close();
-                    connection.close();
                 } catch (SQLException ignored) {
                 }
             }
