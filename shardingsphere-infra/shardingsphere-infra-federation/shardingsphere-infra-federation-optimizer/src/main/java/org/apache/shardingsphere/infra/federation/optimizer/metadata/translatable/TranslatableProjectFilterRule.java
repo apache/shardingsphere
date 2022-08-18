@@ -53,9 +53,9 @@ public class TranslatableProjectFilterRule extends RelOptRule {
     
     @Override
     public void onMatch(final RelOptRuleCall call) {
-        final LogicalProject project = call.rel(0);
-        final LogicalFilter filter = call.rel(1);
-        final TranslatableTableScan scan = call.rel(2);
+        LogicalProject project = call.rel(0);
+        LogicalFilter filter = call.rel(1);
+        TranslatableTableScan scan = call.rel(2);
         RexNode filterNode = filter.getCondition();
         List filters = new ArrayList();
         filters.add(filterNode);
@@ -73,15 +73,15 @@ public class TranslatableProjectFilterRule extends RelOptRule {
     }
     
     private int[] getProjectFields(final List<RexNode> exps) {
-        final int[] fields = new int[exps.size()];
+        final int[] result = new int[exps.size()];
         for (int i = 0; i < exps.size(); i++) {
             final RexNode exp = exps.get(i);
             if (exp instanceof RexInputRef) {
-                fields[i] = ((RexInputRef) exp).getIndex();
+                result[i] = ((RexInputRef) exp).getIndex();
             } else {
                 return null;
             }
         }
-        return fields;
+        return result;
     }
 }
