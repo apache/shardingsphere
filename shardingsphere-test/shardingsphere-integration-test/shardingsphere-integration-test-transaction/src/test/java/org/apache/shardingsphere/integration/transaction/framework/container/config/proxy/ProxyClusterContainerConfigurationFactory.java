@@ -30,7 +30,7 @@ import java.util.Map;
  * Transaction proxy cluster container configuration factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TransactionProxyClusterContainerConfigurationFactory {
+public final class ProxyClusterContainerConfigurationFactory {
     
     /**
      * Create instance of adaptor container configuration.
