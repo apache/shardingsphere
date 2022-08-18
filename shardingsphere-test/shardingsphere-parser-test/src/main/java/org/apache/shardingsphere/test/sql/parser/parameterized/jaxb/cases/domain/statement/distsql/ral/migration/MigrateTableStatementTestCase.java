@@ -15,26 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.rule.data.pipeline;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Pipeline input configuration.
+ * Migrate table statement test case.
  */
-@RequiredArgsConstructor
 @Getter
-@ToString
-public final class PipelineInputConfiguration {
+@Setter
+public final class MigrateTableStatementTestCase extends SQLParserTestCase {
     
-    private final Integer workerThread;
+    @XmlElement(name = "source-database-name")
+    private String sourceDatabaseName;
     
-    private final Integer batchSize;
+    @XmlElement(name = "source-table-name")
+    private String sourceTableName;
     
-    private final Integer shardingSize;
+    @XmlElement(name = "target-database-name")
+    private String targetDatabaseName;
     
-    private final AlgorithmConfiguration rateLimiter;
+    @XmlElement(name = "target-table-name")
+    private String targetTableName;
 }

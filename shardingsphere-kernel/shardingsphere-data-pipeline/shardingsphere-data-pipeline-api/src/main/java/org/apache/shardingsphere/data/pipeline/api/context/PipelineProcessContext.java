@@ -41,9 +41,9 @@ public interface PipelineProcessContext {
     PipelineChannelCreator getPipelineChannelCreator();
     
     /**
-     * Get job input rate limit algorithm.
+     * Get job read rate limit algorithm.
      *
-     * @return job input rate limit algorithm
+     * @return job read rate limit algorithm
      */
-    JobRateLimitAlgorithm getInputRateLimitAlgorithm();
+    JobRateLimitAlgorithm getReadRateLimitAlgorithm();
 }

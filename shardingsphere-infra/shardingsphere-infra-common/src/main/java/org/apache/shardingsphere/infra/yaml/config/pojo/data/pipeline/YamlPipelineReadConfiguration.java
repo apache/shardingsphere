@@ -22,10 +22,10 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 
 /**
- * YAML pipeline input configuration.
+ * YAML pipeline read configuration.
  */
 @Data
-public final class YamlPipelineInputConfiguration implements YamlConfiguration {
+public final class YamlPipelineReadConfiguration implements YamlConfiguration {
     
     private static final Integer DEFAULT_WORKER_THREAD = 40;
     
@@ -44,10 +44,10 @@ public final class YamlPipelineInputConfiguration implements YamlConfiguration {
     /**
      * Build with default value.
      *
-     * @return input configuration
+     * @return read configuration
      */
-    public static YamlPipelineInputConfiguration buildWithDefaultValue() {
-        return new YamlPipelineInputConfiguration();
+    public static YamlPipelineReadConfiguration buildWithDefaultValue() {
+        return new YamlPipelineReadConfiguration();
     }
     
     /**

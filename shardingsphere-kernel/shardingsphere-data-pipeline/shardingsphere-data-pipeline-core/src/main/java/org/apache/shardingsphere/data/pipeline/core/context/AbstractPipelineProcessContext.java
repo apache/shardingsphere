@@ -30,12 +30,12 @@ import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChanne
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineInputConfiguration;
-import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineOutputConfiguration;
+import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineReadConfiguration;
+import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineWriteConfiguration;
 import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineInputConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineOutputConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineReadConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineWriteConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineProcessConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.data.pipeline.YamlPipelineProcessConfigurationSwapper;
 
@@ -52,9 +52,9 @@ public abstract class AbstractPipelineProcessContext implements PipelineProcessC
     
     private final PipelineProcessConfiguration pipelineProcessConfig;
     
-    private final JobRateLimitAlgorithm inputRateLimitAlgorithm;
+    private final JobRateLimitAlgorithm readRateLimitAlgorithm;
     
-    private final JobRateLimitAlgorithm outputRateLimitAlgorithm;
+    private final JobRateLimitAlgorithm writeRateLimitAlgorithm;
     
     private final PipelineChannelCreator pipelineChannelCreator;
     
@@ -67,19 +67,19 @@ public abstract class AbstractPipelineProcessContext implements PipelineProcessC
     public AbstractPipelineProcessContext(final String jobId, final PipelineProcessConfiguration originalProcessConfig) {
         PipelineProcessConfiguration processConfig = convertProcessConfig(originalProcessConfig);
         this.pipelineProcessConfig = processConfig;
-        PipelineInputConfiguration inputConfig = processConfig.getInput();
-        AlgorithmConfiguration inputRateLimiter = inputConfig.getRateLimiter();
-        inputRateLimitAlgorithm = null != inputRateLimiter ? JobRateLimitAlgorithmFactory.newInstance(inputRateLimiter) : null;
-        PipelineOutputConfiguration outputConfig = processConfig.getOutput();
-        AlgorithmConfiguration outputRateLimiter = outputConfig.getRateLimiter();
-        outputRateLimitAlgorithm = null != outputRateLimiter ? JobRateLimitAlgorithmFactory.newInstance(outputRateLimiter) : null;
+        PipelineReadConfiguration readConfig = processConfig.getRead();
+        AlgorithmConfiguration readRateLimiter = readConfig.getRateLimiter();
+        readRateLimitAlgorithm = null != readRateLimiter ? JobRateLimitAlgorithmFactory.newInstance(readRateLimiter) : null;
+        PipelineWriteConfiguration writeConfig = processConfig.getWrite();
+        AlgorithmConfiguration writeRateLimiter = writeConfig.getRateLimiter();
+        writeRateLimitAlgorithm = null != writeRateLimiter ? JobRateLimitAlgorithmFactory.newInstance(writeRateLimiter) : null;
         AlgorithmConfiguration streamChannel = processConfig.getStreamChannel();
         pipelineChannelCreator = PipelineChannelCreatorFactory.newInstance(streamChannel);
         inventoryDumperExecuteEngineLazyInitializer = new LazyInitializer<ExecuteEngine>() {
             
             @Override
             protected ExecuteEngine initialize() {
-                return ExecuteEngine.newFixedThreadInstance(inputConfig.getWorkerThread(), "Inventory-" + jobId);
+                return ExecuteEngine.newFixedThreadInstance(readConfig.getWorkerThread(), "Inventory-" + jobId);
             }
         };
         incrementalDumperExecuteEngineLazyInitializer = new LazyInitializer<ExecuteEngine>() {
@@ -93,22 +93,22 @@ public abstract class AbstractPipelineProcessContext implements PipelineProcessC
             
             @Override
             protected ExecuteEngine initialize() {
-                return ExecuteEngine.newFixedThreadInstance(outputConfig.getWorkerThread(), "Importer-" + jobId);
+                return ExecuteEngine.newFixedThreadInstance(writeConfig.getWorkerThread(), "Importer-" + jobId);
             }
         };
     }
     
     private PipelineProcessConfiguration convertProcessConfig(final PipelineProcessConfiguration originalProcessConfig) {
         YamlPipelineProcessConfiguration yamlActionConfig = SWAPPER.swapToYamlConfiguration(originalProcessConfig);
-        if (null == yamlActionConfig.getInput()) {
-            yamlActionConfig.setInput(YamlPipelineInputConfiguration.buildWithDefaultValue());
+        if (null == yamlActionConfig.getRead()) {
+            yamlActionConfig.setRead(YamlPipelineReadConfiguration.buildWithDefaultValue());
         } else {
-            yamlActionConfig.getInput().fillInNullFieldsWithDefaultValue();
+            yamlActionConfig.getRead().fillInNullFieldsWithDefaultValue();
         }
-        if (null == yamlActionConfig.getOutput()) {
-            yamlActionConfig.setOutput(YamlPipelineOutputConfiguration.buildWithDefaultValue());
+        if (null == yamlActionConfig.getWrite()) {
+            yamlActionConfig.setWrite(YamlPipelineWriteConfiguration.buildWithDefaultValue());
         } else {
-            yamlActionConfig.getOutput().fillInNullFieldsWithDefaultValue();
+            yamlActionConfig.getWrite().fillInNullFieldsWithDefaultValue();
         }
         if (null == yamlActionConfig.getStreamChannel()) {
             yamlActionConfig.setStreamChannel(new YamlAlgorithmConfiguration(MemoryPipelineChannelCreator.TYPE, new Properties()));
