@@ -1,0 +1,81 @@
++++
+title = "CREATE ENCRYPT RULE"
+weight = 2
++++
+
+## Description
+
+The `CREATE READWRITE_SPLITTING RULE` syntax is used to create a readwrite splitting rule.
+
+### Syntax
+
+```sql
+CreateEncryptRule ::=
+  'CREATE' 'ENCRYPT' 'RULE' encryptDefinition ( ',' encryptDefinition )*
+
+encryptDefinition ::=
+  tableName '(' 'COLUMNS' '(' columnDefinition ( ',' columnDefinition )*  ')' ',' 'QUERY_WITH_CIPHER_COLUMN' '=' queryWithCipherColumn ')'
+
+columnDefinition ::=
+    'NAME' '=' columnName ',' ( 'PLAIN' '=' plainColumnName )? 'CIPHER' '=' cipherColumnName ','  'TYPE' '(' 'NAME' '=' encryptAlgorithmType ( ',' 'PROPERTIES' '(' 'key' '=' 'value' ( ',' 'key' '=' 'value' )* ')' )? ')'
+
+tableName ::=
+  identifier
+
+queryWithCipherColumn ::=
+  identifier
+
+columnName ::=
+  identifier
+
+plainColumnName ::=
+  identifier
+
+cipherColumnName ::=
+  identifier
+
+encryptAlgorithmType ::=
+  identifier
+```
+
+### Supplement
+
+- `PLAIN` specifies the plain column, `CIPHER` specifies the cipher column 
+- `encryptAlgorithmType` specifies the encryption algorithm type, please refer to Encryption Algorithm 
+- Duplicate `tableName` will not be created 
+- `queryWithCipherColumn` support uppercase or lowercase true or false
+
+### Example
+
+#### Create a statics readwrite splitting rule
+
+```sql
+CREATE READWRITE_SPLITTING RULE ms_group_0 (
+    WRITE_RESOURCE=write_ds,
+    READ_RESOURCES(read_ds_0,read_ds_1),
+    TYPE(NAME=random)
+);
+```
+
+#### Create a encrypt rule
+
+```sql
+CREATE ENCRYPT RULE t_encrypt (
+COLUMNS(
+(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc'))),
+(NAME=order_id, CIPHER =order_cipher,TYPE(NAME='MD5'))
+),QUERY_WITH_CIPHER_COLUMN=true),
+t_encrypt_2 (
+COLUMNS(
+(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc'))),
+(NAME=order_id, CIPHER=order_cipher,TYPE(NAME='MD5'))
+), QUERY_WITH_CIPHER_COLUMN=FALSE);
+```
+
+### Reserved word
+
+`CREATE`, `ENCRYPT`, `RULE`, `COLUMNS`, `NAME`, `CIPHER`, `PLAIN`, `QUERY_WITH_CIPHER_COLUMN`, `TYPE`, `TRUE`, `FALSE`
+
+### Related links
+
+- [Reserved word](/en/reference/distsql/syntax/reserved-word/)
