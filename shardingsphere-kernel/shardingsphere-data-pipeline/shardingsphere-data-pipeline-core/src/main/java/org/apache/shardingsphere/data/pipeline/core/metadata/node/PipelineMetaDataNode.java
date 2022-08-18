@@ -19,9 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.metadata.node;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
-import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 
 import java.util.regex.Pattern;
 
@@ -31,11 +29,25 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PipelineMetaDataNode {
     
-    private static final String JOB_PATTERN_PREFIX = DataPipelineConstants.DATA_PIPELINE_ROOT + "/[a-z]+/jobs/(j\\d{2}[0-9a-f]+)";
+    private static final String JOB_PATTERN_PREFIX = DataPipelineConstants.DATA_PIPELINE_ROOT + "/jobs/(j\\d{2}[0-9a-f]+)";
     
     public static final Pattern CONFIG_PATTERN = Pattern.compile(JOB_PATTERN_PREFIX + "/config");
     
     public static final Pattern BARRIER_PATTERN = Pattern.compile(JOB_PATTERN_PREFIX + "/barrier/(enable|disable)/\\d+");
+    
+    /**
+     * Get ElasticJob namespace.
+     *
+     * @return namespace
+     */
+    public static String getElasticJobNamespace() {
+        // ElasticJob will persist job to namespace
+        return getJobsPath();
+    }
+    
+    private static String getJobsPath() {
+        return String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, "jobs");
+    }
     
     /**
      * Get job root path.
@@ -44,8 +56,7 @@ public final class PipelineMetaDataNode {
      * @return root path
      */
     public static String getJobRootPath(final String jobId) {
-        JobType jobType = PipelineJobIdUtils.parseJobType(jobId);
-        return String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, jobType.getLowercaseTypeName(), "jobs", jobId);
+        return String.join("/", getJobsPath(), jobId);
     }
     
     /**

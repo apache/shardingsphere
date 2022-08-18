@@ -26,7 +26,14 @@ public final class PipelineMetaDataNodeTest {
     
     private final String jobId = "j01001";
     
-    private final String jobRootPath = "/pipeline/migration/jobs/j01001";
+    private final String jobsPath = "/pipeline/jobs";
+    
+    private final String jobRootPath = jobsPath + "/j01001";
+    
+    @Test
+    public void assertGetElasticJobNamespace() {
+        assertThat(PipelineMetaDataNode.getElasticJobNamespace(), is(jobsPath));
+    }
     
     @Test
     public void assertGetJobRootPath() {
