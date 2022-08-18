@@ -52,7 +52,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: shardingsphere-it-cache-${{ github.sha }}
+          key: shardingsphere-checkstyle-check-cache-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Set up JDK 8
