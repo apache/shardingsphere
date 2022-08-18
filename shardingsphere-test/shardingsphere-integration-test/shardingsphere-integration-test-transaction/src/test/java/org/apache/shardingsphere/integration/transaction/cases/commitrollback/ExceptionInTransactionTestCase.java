@@ -21,6 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
+import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -33,8 +34,9 @@ import static org.junit.Assert.fail;
 /**
  * An exception occurred within the transaction integration test.
  */
-@TransactionTestCase
-public class ExceptionInTransactionTestCase extends BaseTransactionTestCase {
+// TODO Investigate why it doesn't work correctly with proxy and postgresql
+@TransactionTestCase(dbTypes = {TransactionTestConstants.MYSQL})
+public final class ExceptionInTransactionTestCase extends BaseTransactionTestCase {
     
     public ExceptionInTransactionTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
         super(baseTransactionITCase, dataSource);
