@@ -42,33 +42,33 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class SQLServerSchemaMetaDataLoaderTest {
-
+    
     private static final String LOAD_COLUMN_META_DATA_WITHOUT_TABLES_HIGH_VERSION = "SELECT obj.name AS TABLE_NAME, col.name AS COLUMN_NAME, t.name AS DATA_TYPE,"
             + " col.collation_name AS COLLATION_NAME, col.column_id, is_identity AS IS_IDENTITY, is_hidden AS IS_HIDDEN,"
             + " (SELECT TOP 1 ind.is_primary_key FROM sys.index_columns ic LEFT JOIN sys.indexes ind ON ic.object_id = ind.object_id"
             + " AND ic.index_id = ind.index_id AND ind.name LIKE 'PK_%' WHERE ic.object_id = obj.object_id AND ic.column_id = col.column_id) AS IS_PRIMARY_KEY"
             + " FROM sys.objects obj INNER JOIN sys.columns col ON obj.object_id = col.object_id LEFT JOIN sys.types t ON t.user_type_id = col.user_type_id ORDER BY col.column_id";
-
+    
     private static final String LOAD_COLUMN_META_DATA_WITHOUT_TABLES_LOW_VERSION = "SELECT obj.name AS TABLE_NAME, col.name AS COLUMN_NAME, t.name AS DATA_TYPE,"
             + " col.collation_name AS COLLATION_NAME, col.column_id, is_identity AS IS_IDENTITY,"
             + "  (SELECT TOP 1 ind.is_primary_key FROM sys.index_columns ic LEFT JOIN sys.indexes ind ON ic.object_id = ind.object_id"
             + " AND ic.index_id = ind.index_id AND ind.name LIKE 'PK_%' WHERE ic.object_id = obj.object_id AND ic.column_id = col.column_id) AS IS_PRIMARY_KEY"
             + " FROM sys.objects obj INNER JOIN sys.columns col ON obj.object_id = col.object_id LEFT JOIN sys.types t ON t.user_type_id = col.user_type_id ORDER BY col.column_id";
-
+    
     private static final String LOAD_COLUMN_META_DATA_WITH_TABLES_HIGH_VERSION = "SELECT obj.name AS TABLE_NAME, col.name AS COLUMN_NAME, t.name AS DATA_TYPE,"
             + " col.collation_name AS COLLATION_NAME, col.column_id, is_identity AS IS_IDENTITY, is_hidden AS IS_HIDDEN,"
             + " (SELECT TOP 1 ind.is_primary_key FROM sys.index_columns ic LEFT JOIN sys.indexes ind ON ic.object_id = ind.object_id"
             + " AND ic.index_id = ind.index_id AND ind.name LIKE 'PK_%' WHERE ic.object_id = obj.object_id AND ic.column_id = col.column_id) AS IS_PRIMARY_KEY"
             + " FROM sys.objects obj INNER JOIN sys.columns col ON obj.object_id = col.object_id LEFT JOIN sys.types t ON t.user_type_id = col.user_type_id"
             + " WHERE obj.name IN ('tbl') ORDER BY col.column_id";
-
+    
     private static final String LOAD_COLUMN_META_DATA_WITH_TABLES_LOW_VERSION = "SELECT obj.name AS TABLE_NAME, col.name AS COLUMN_NAME, t.name AS DATA_TYPE,"
             + " col.collation_name AS COLLATION_NAME, col.column_id, is_identity AS IS_IDENTITY,"
             + "  (SELECT TOP 1 ind.is_primary_key FROM sys.index_columns ic LEFT JOIN sys.indexes ind ON ic.object_id = ind.object_id"
             + " AND ic.index_id = ind.index_id AND ind.name LIKE 'PK_%' WHERE ic.object_id = obj.object_id AND ic.column_id = col.column_id) AS IS_PRIMARY_KEY"
             + " FROM sys.objects obj INNER JOIN sys.columns col ON obj.object_id = col.object_id LEFT JOIN sys.types t ON t.user_type_id = col.user_type_id"
             + " WHERE obj.name IN ('tbl') ORDER BY col.column_id";
-
+    
     private static final String LOAD_INDEX_META_DATA = "SELECT a.name AS INDEX_NAME, c.name AS TABLE_NAME FROM sys.indexes a"
             + " JOIN sys.objects c ON a.object_id = c.object_id WHERE a.index_id NOT IN (0, 255) AND c.name IN ('tbl')";
     
@@ -89,7 +89,7 @@ public final class SQLServerSchemaMetaDataLoaderTest {
         assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, false, true, true, true)));
         assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false, false)));
     }
-
+    
     @Test
     public void assertLoadWithoutTablesWithLowVersion() throws SQLException {
         DataSource dataSource = mockDataSource();
@@ -124,7 +124,7 @@ public final class SQLServerSchemaMetaDataLoaderTest {
         assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, false, true, true, true)));
         assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false, false)));
     }
-
+    
     @Test
     public void assertLoadWithTablesWithLowVersion() throws SQLException {
         DataSource dataSource = mockDataSource();

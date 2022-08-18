@@ -58,7 +58,7 @@ public final class SQLServerSchemaMetaDataLoader implements DialectSchemaMetaDat
     
     private static final String INDEX_META_DATA_SQL = "SELECT a.name AS INDEX_NAME, c.name AS TABLE_NAME FROM sys.indexes a"
             + " JOIN sys.objects c ON a.object_id = c.object_id WHERE a.index_id NOT IN (0, 255) AND c.name IN (%s)";
-
+    
     private static final int HIDDEN_COLUMN_START_MAJOR_VERSION = 15;
     
     @Override
@@ -115,7 +115,7 @@ public final class SQLServerSchemaMetaDataLoader implements DialectSchemaMetaDat
         return tables.isEmpty() ? String.format(TABLE_META_DATA_SQL, isHidden)
                 : String.format(TABLE_META_DATA_SQL_IN_TABLES, isHidden, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
-
+    
     private boolean versionContainsHiddenColumn(final DatabaseMetaData databaseMetaData) throws SQLException {
         return databaseMetaData.getDatabaseMajorVersion() >= HIDDEN_COLUMN_START_MAJOR_VERSION;
     }
