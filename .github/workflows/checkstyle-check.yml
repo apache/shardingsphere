@@ -43,7 +43,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  checkstyle-and-apache-rat:
+  checkstyle-check:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
