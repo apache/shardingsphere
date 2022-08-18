@@ -15,27 +15,24 @@
  * limitations under the License.
  */
 
-grammar MigrationDistSQLStatement;
+package org.apache.shardingsphere.migration.distsql.statement;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 
-execute
-    : (showScalingList
-    | showScalingStatus
-    | migrateTable
-    | startScaling
-    | stopScaling
-    | dropScaling
-    | resetScaling
-    | checkScaling
-    | showScalingCheckAlgorithms
-    | stopScalingSourceWriting
-    | restoreScalingSourceWriting
-    | applyScaling
-    | showShardingScalingRules
-    | createShardingScalingRule
-    | dropShardingScalingRule
-    | enableShardingScalingRule
-    | disableShardingScalingRule
-    ) SEMI?
-    ;
+/**
+ * Migrate table statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class MigrateTableStatement extends UpdatableScalingRALStatement {
+    
+    private final String sourceDatabaseName;
+    
+    private final String sourceTableName;
+    
+    private final String targetDatabaseName;
+    
+    private final String targetTableName;
+}

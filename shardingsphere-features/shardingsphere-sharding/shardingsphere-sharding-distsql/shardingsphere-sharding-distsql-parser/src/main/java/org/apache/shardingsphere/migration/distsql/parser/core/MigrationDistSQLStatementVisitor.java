@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.migration.distsql.parser.core;
 
+import com.google.common.base.Splitter;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatemen
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.DropShardingScalingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.EnableShardingScalingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.InputDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.MigrateTableContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.OutputDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.RateLimiterContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.ResetScalingContext;
@@ -56,6 +58,7 @@ import org.apache.shardingsphere.migration.distsql.statement.DisableShardingScal
 import org.apache.shardingsphere.migration.distsql.statement.DropMigrationStatement;
 import org.apache.shardingsphere.migration.distsql.statement.DropShardingScalingRuleStatement;
 import org.apache.shardingsphere.migration.distsql.statement.EnableShardingScalingRuleStatement;
+import org.apache.shardingsphere.migration.distsql.statement.MigrateTableStatement;
 import org.apache.shardingsphere.migration.distsql.statement.ResetMigrationStatement;
 import org.apache.shardingsphere.migration.distsql.statement.RestoreMigrationSourceWritingStatement;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationCheckAlgorithmsStatement;
@@ -72,12 +75,20 @@ import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
+import java.util.List;
 import java.util.Properties;
 
 /**
  * SQL statement visitor for migration dist SQL.
  */
 public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
+    
+    @Override
+    public ASTNode visitMigrateTable(final MigrateTableContext ctx) {
+        List<String> source = Splitter.on('.').splitToList(getIdentifierValue(ctx.sourceTableName()));
+        List<String> target = Splitter.on('.').splitToList(getIdentifierValue(ctx.targetTableName()));
+        return new MigrateTableStatement(source.size() > 1 ? source.get(0) : null, source.get(source.size() - 1), target.size() > 1 ? target.get(0) : null, target.get(target.size() - 1));
+    }
     
     @Override
     public ASTNode visitShowScalingList(final ShowScalingListContext ctx) {

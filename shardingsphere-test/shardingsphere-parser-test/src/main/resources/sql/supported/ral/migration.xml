@@ -23,6 +23,8 @@
     <distsql-case id="show-scaling-status" value="SHOW SCALING STATUS 123;" />
     <distsql-case id="check-scaling-with-type" value="CHECK SCALING 123 by TYPE(name='DEFAULT', PROPERTIES('test-property'='4'));" />
     
+    <distsql-case id="migrate-table-without-target-db" value="MIGRATE TABLE ds_0.t_order INTO t_order;" />
+    <distsql-case id="migrate-table-with-target-db" value="MIGRATE TABLE ds_0.t_order INTO sharding_db.t_order;" />
     <distsql-case id="stop-scaling-source-writing" value="STOP SCALING SOURCE WRITING 123;" />
     <distsql-case id="restore-scaling-source-writing" value="RESTORE SCALING SOURCE WRITING 123;" />
     <distsql-case id="apply-scaling" value="APPLY SCALING 123;" />
