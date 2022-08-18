@@ -66,3 +66,47 @@ applyScaling
 jobId
     : INT | STRING
     ;
+
+resourceDefinition
+    : resourceName LP (simpleSource | urlSource) COMMA USER EQ user (COMMA PASSWORD EQ password)? (COMMA propertiesDefinition)? RP
+    ;
+
+resourceName
+    : IDENTIFIER
+    ;
+
+simpleSource
+    : HOST EQ hostname COMMA PORT EQ port COMMA DB EQ dbName
+    ;
+
+urlSource
+    : URL EQ url
+    ;
+
+hostname
+    : STRING
+    ;
+
+port
+    : INT
+    ;
+
+dbName
+    : STRING
+    ;
+
+url
+    : STRING
+    ;
+
+user
+    : STRING
+    ;
+
+password
+    : STRING
+    ;
+
+addMigrationSourceResource
+    : ADD MIGRATION SOURCE RESOURCE resourceDefinition (COMMA resourceDefinition)*
+    ;

@@ -34,3 +34,15 @@ algorithmProperties
 algorithmProperty
     : key=STRING EQ value=STRING
     ;
+
+propertiesDefinition
+    : PROPERTIES LP properties? RP
+    ;
+
+properties
+    : property (COMMA property)*
+    ;
+
+property
+    : key=STRING EQ value=STRING
+    ;

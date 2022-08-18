@@ -23,10 +23,6 @@ addResource
     : ADD RESOURCE resourceDefinition (COMMA resourceDefinition)*
     ;
 
-addMigrationSourceResource
-    : ADD MIGRATION SOURCE RESOURCE resourceDefinition (COMMA resourceDefinition)*
-    ;
-
 alterResource
     : ALTER RESOURCE resourceDefinition (COMMA resourceDefinition)*
     ;

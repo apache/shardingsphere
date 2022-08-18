@@ -22,10 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddMigrationResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.AddMigrationSourceResourceBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.AddResourceBackendHandler;
@@ -52,9 +50,6 @@ public final class RDLBackendHandlerFactory {
     public static ProxyBackendHandler newInstance(final RDLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
         if (sqlStatement instanceof AddResourceStatement) {
             return new AddResourceBackendHandler((AddResourceStatement) sqlStatement, connectionSession);
-        }
-        if (sqlStatement instanceof AddMigrationResourceStatement) {
-            return new AddMigrationSourceResourceBackendHandler((AddMigrationResourceStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof AlterResourceStatement) {
             return new AlterResourceBackendHandler((AlterResourceStatement) sqlStatement, connectionSession);
