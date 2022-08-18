@@ -7,7 +7,7 @@ weight = 4
 
 ```xml
 <!-- algorithmName is specified by users and its property should be consistent with that of algorithm-ref in the sharding strategy. -->
-<!-- type and props, please refer to the built-in sharding algorithm: https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/ -->
+<!-- type and props, please refer to the built-in sharding algorithm: https://shardingsphere.apache.org/document/current/en/user-manual/common-config/builtin-algorithm/sharding/ -->
 <sharding:sharding-algorithm id="algorithmName" type="xxx">
     <props>
         <prop key="xxx">xxx</prop>
@@ -19,7 +19,7 @@ weight = 4
 
 ```xml
 <!-- encryptorName is specified by users, and its property should be consistent with that of encrypt-algorithm-ref in encryption rules. -->
-<!-- type and props, please refer to the built-in encryption algorithm: https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-jdbc/builtin-algorithm/encrypt/ -->
+<!-- type and props, please refer to the built-in encryption algorithm: https://shardingsphere.apache.org/document/current/en/user-manual/common-config/builtin-algorithm/encrypt/ -->
 <encrypt:encrypt-algorithm id="encryptorName" type="xxx">
     <props>
         <prop key="xxx">xxx</prop>
@@ -31,7 +31,7 @@ weight = 4
 
 ```xml
 <!-- loadBalancerName is specified by users, and its property has to be consistent with that of load-balance-algorithm-ref in read/write splitting rules. -->  
-<!-- type and props, please refer to the built-in read/write splitting algorithm load balancer: https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-jdbc/builtin-algorithm/load-balance/ -->
+<!-- type and props, please refer to the built-in read/write splitting algorithm load balancer: https://shardingsphere.apache.org/document/current/en/user-manual/common-config/builtin-algorithm/load-balance/ -->
 <readwrite-splitting:load-balance-algorithm id="loadBalancerName" type="xxx">
     <props>
         <prop key="xxx">xxx</prop>
@@ -43,7 +43,7 @@ weight = 4
 
 ```xml
 <!-- shadowAlgorithmName is specified by users, and its property has to be consistent with that of shadow-algorithm-ref in shadow DB rules. -->  
-<!-- type and props, please refer to the built-in shadow DB algorithm: https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-jdbc/builtin-algorithm/shadow/ -->
+<!-- type and props, please refer to the built-in shadow DB algorithm: https://shardingsphere.apache.org/document/current/en/user-manual/common-config/builtin-algorithm/shadow/ -->
 <shadow:shadow-algorithm id="shadowAlgorithmName" type="xxx">
     <props>
         <prop key="xxx">xxx</prop>

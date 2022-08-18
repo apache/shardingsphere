@@ -28,7 +28,7 @@ algorithmType ::=
 
 ### 补充说明
 
-- `algorithmType` 为分片算法类型，详细的分片算法类型信息请参考[分片算法](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/)。
+- `algorithmType` 为分片算法类型，详细的分片算法类型信息请参考[分片算法](/cn/user-manual/common-config/builtin-algorithm/sharding/)。
 
 ### 示例
 
