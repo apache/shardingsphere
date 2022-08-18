@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.federation.optimizer.converter.segment.e
 import com.google.common.base.Preconditions;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
@@ -27,7 +28,9 @@ import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.SQ
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.expression.ExpressionConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -71,9 +74,17 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
     @Override
     public Optional<SqlBasicCall> convert(final BinaryOperationExpression segment) {
         SqlOperator operator = convertOperator(segment.getOperator());
+        List<SqlNode> sqlNodes = convertSqlNodes(segment);
+        return Optional.of(new SqlBasicCall(operator, sqlNodes, SqlParserPos.ZERO));
+    }
+    
+    private List<SqlNode> convertSqlNodes(final BinaryOperationExpression segment) {
         SqlNode left = new ExpressionConverter().convert(segment.getLeft()).orElseThrow(IllegalStateException::new);
         SqlNode right = new ExpressionConverter().convert(segment.getRight()).orElseThrow(IllegalStateException::new);
-        return Optional.of(new SqlBasicCall(operator, Arrays.asList(left, right), SqlParserPos.ZERO));
+        List<SqlNode> result = new LinkedList<>();
+        result.add(left);
+        result.addAll(right instanceof SqlNodeList ? ((SqlNodeList) right).getList() : Collections.singletonList(right));
+        return result;
     }
     
     private SqlOperator convertOperator(final String operator) {
