@@ -63,5 +63,4 @@ public final class PostgreSQLSetReadOnlyTestCase extends SetReadOnlyTestCase {
             Assert.fail("Update failed, should be successfully.");
         }
     }
-    
 }

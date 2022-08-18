@@ -188,24 +188,9 @@
                 <assignment-value>
                     <function function-name="ST_GeographyFromText" text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="61" stop-index="116" literal-start-index="72" literal-stop-index="131">
                         <parameter>
-                            <literal-expression value="SRID=4326;POINT(" literal-start-index="93" start-index="82" literal-stop-index="110" stop-index="99"/>
-                        </parameter>
-                        <parameter>
-                            <literal-expression value="100" literal-start-index="113" literal-stop-index="115"/>
-                            <parameter-marker-expression parameter-index="1" start-index="102" stop-index="102"/>
-                        </parameter>
-                        <parameter>
-                            <literal-expression value=" " literal-start-index="118" literal-stop-index="120" start-index="105" stop-index="107"/>
-                        </parameter>
-                        <parameter>
-                            <literal-expression value="200" literal-start-index="123" literal-stop-index="125"/>
-                            <parameter-marker-expression parameter-index="2" start-index="110" stop-index="110"/>
-                        </parameter>
-                        <parameter>
-                            <literal-expression value=")" literal-start-index="128" literal-stop-index="130" start-index="113" stop-index="115"/>
+                            <common-expression text="'SRID=4326;POINT('||?||' '||?||')'" literal-text="'SRID=4326;POINT('||100||' '||200||')'" literal-start-index="93" start-index="82" literal-stop-index="130" stop-index="115"/>
                         </parameter>
                     </function>
-                    <common-expression text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="61" stop-index="116" literal-start-index="72" literal-stop-index="131"/>
                 </assignment-value>
             </assignment>
             <assignment start-index="119" stop-index="133" literal-start-index="134" literal-stop-index="166">

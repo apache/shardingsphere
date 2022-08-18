@@ -24,9 +24,9 @@ import org.apache.shardingsphere.data.pipeline.api.detect.RuleAlteredJobAlmostCo
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationContext;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationProcessContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
@@ -64,13 +64,13 @@ public final class FinishedCheckJob implements SimpleJob {
             try {
                 // TODO refactor: dispatch to different job types
                 MigrationJobConfiguration jobConfig = YamlMigrationJobConfigurationSwapper.swapToObject(jobInfo.getJobParameter());
-                MigrationContext migrationContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
-                if (null == migrationContext.getCompletionDetectAlgorithm()) {
+                MigrationProcessContext processContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
+                if (null == processContext.getCompletionDetectAlgorithm()) {
                     log.info("completionDetector not configured, auto switch will not be enabled. You could query job progress and switch config manually with DistSQL.");
                     continue;
                 }
                 RuleAlteredJobAlmostCompletedParameter parameter = new RuleAlteredJobAlmostCompletedParameter(jobInfo.getShardingTotalCount(), jobAPI.getJobProgress(jobConfig).values());
-                if (!migrationContext.getCompletionDetectAlgorithm().isAlmostCompleted(parameter)) {
+                if (!processContext.getCompletionDetectAlgorithm().isAlmostCompleted(parameter)) {
                     continue;
                 }
                 log.info("scaling job {} almost finished.", jobId);

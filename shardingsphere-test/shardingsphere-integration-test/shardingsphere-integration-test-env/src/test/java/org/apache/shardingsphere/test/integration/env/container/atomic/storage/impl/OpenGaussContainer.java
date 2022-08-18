@@ -40,7 +40,7 @@ public final class OpenGaussContainer extends DockerStorageContainer {
     
     @Override
     protected void configure() {
-        setCommands(storageContainerConfiguration.getCommands());
+        setCommands(storageContainerConfiguration.getContainerCommand());
         addEnvs(storageContainerConfiguration.getContainerEnvironments());
         mapResources(storageContainerConfiguration.getMountedResources());
         withPrivilegedMode(true);

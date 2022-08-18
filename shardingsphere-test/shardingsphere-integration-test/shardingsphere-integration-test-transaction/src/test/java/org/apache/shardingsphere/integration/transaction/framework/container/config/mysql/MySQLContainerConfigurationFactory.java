@@ -37,14 +37,11 @@ public final class MySQLContainerConfigurationFactory {
      * @return created instance
      */
     public static StorageContainerConfiguration newInstance() {
-        return new StorageContainerConfiguration(getCommands(), getContainerEnvironments(), getMountedResources());
+        return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources());
     }
     
-    private static String[] getCommands() {
-        String[] result = new String[2];
-        result[0] = "--sql_mode=";
-        result[1] = "--default-authentication-plugin=mysql_native_password";
-        return result;
+    private static String getCommand() {
+        return "--sql_mode= --default-authentication-plugin=mysql_native_password";
     }
     
     private static Map<String, String> getContainerEnvironments() {
