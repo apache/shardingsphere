@@ -213,7 +213,7 @@ compute:
   ## The server.yaml is auto-generated based on this parameter.
   ## If it is empty, the server.yaml is also empty.
   ## ref: https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-jdbc/yaml-config/mode/
-  ## ref: https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-jdbc/builtin-algorithm/metadata-repository/
+  ## ref: https://shardingsphere.apache.org/document/current/en/user-manual/common-config/builtin-algorithm/metadata-repository/
   ##
   serverConfig:
     ## @section Compute-Node ShardingSphere-Proxy ServerConfiguration authority parameters

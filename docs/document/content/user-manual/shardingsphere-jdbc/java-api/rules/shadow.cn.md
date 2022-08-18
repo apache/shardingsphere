@@ -54,7 +54,7 @@ weight = 6
 | type | String | 影子算法类型 |
 | props | Properties | 影子算法配置 |
 
-算法类型的详情，请参见[内置影子算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/shadow)。
+算法类型的详情，请参见[内置影子算法列表](/cn/user-manual/common-config/builtin-algorithm/shadow)。
 
 ## 操作步骤
 

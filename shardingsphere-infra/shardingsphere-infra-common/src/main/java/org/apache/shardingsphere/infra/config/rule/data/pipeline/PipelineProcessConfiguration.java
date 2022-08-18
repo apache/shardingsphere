@@ -30,9 +30,9 @@ import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 @ToString
 public final class PipelineProcessConfiguration {
     
-    private final PipelineInputConfiguration input;
+    private final PipelineReadConfiguration read;
     
-    private final PipelineOutputConfiguration output;
+    private final PipelineWriteConfiguration write;
     
     private final AlgorithmConfiguration streamChannel;
 }

@@ -287,7 +287,7 @@
 
     <select sql-case-id="select_or_mix_and_with_binding_tables" parameters="1, 2, 3">
         <from>
-            <join-table>
+            <join-table join-type="INNER">
                 <left>
                     <simple-table name="t_order" alias="o" start-index="16" stop-index="24" />
                 </left>
@@ -394,9 +394,9 @@
 
     <select sql-case-id="select_or_mix_and_with_binding_and_broadcast_tables" parameters="1, 2, 3, 'init'">
         <from>
-            <join-table>
+            <join-table join-type="INNER">
                 <left>
-                    <join-table>
+                    <join-table join-type="INNER">
                         <left>
                             <simple-table name="t_order" alias="o" start-index="16" stop-index="24" />
                         </left>

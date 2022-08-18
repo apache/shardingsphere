@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.infra.federation.optimizer.converter.segment.expression.impl;
 
-import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.calcite.sql.fun.SqlStdOperatorTable;
+import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.expression.ExpressionConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 
-import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -36,18 +36,11 @@ public final class ListExpressionConverter implements SQLSegmentConverter<ListEx
     
     @Override
     public Optional<SqlNode> convert(final ListExpression segment) {
-        SqlNode left = null;
+        Collection<SqlNode> sqlNodes = new LinkedList<>();
         for (ExpressionSegment each : segment.getItems()) {
             Optional<SqlNode> sqlNode = new ExpressionConverter().convert(each);
-            if (!sqlNode.isPresent()) {
-                continue;
-            }
-            if (null == left) {
-                left = sqlNode.get();
-                continue;
-            }
-            left = new SqlBasicCall(SqlStdOperatorTable.OR, Arrays.asList(left, sqlNode.get()), SqlParserPos.ZERO);
+            sqlNode.ifPresent(sqlNodes::add);
         }
-        return Optional.ofNullable(left);
+        return sqlNodes.isEmpty() ? Optional.empty() : Optional.of(new SqlNodeList(sqlNodes, SqlParserPos.ZERO));
     }
 }

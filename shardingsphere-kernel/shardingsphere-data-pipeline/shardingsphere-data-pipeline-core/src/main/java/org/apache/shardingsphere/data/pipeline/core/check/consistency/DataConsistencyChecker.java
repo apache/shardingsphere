@@ -157,7 +157,7 @@ public final class DataConsistencyChecker {
         PipelineDataSourceConfiguration targetDataSourceConfig = jobConfig.getTarget();
         ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job-" + getJobIdDigest(jobConfig.getJobId()) + "-data-check-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
-        JobRateLimitAlgorithm inputRateLimitAlgorithm = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig).getInputRateLimitAlgorithm();
+        JobRateLimitAlgorithm readRateLimitAlgorithm = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig).getReadRateLimitAlgorithm();
         Map<String, DataConsistencyContentCheckResult> result = new HashMap<>(logicTableNames.size(), 1);
         try (
                 PipelineDataSourceWrapper sourceDataSource = PipelineDataSourceFactory.newInstance(sourceDataSourceConfig);
@@ -177,8 +177,8 @@ public final class DataConsistencyChecker {
                 Iterator<Object> targetCalculatedResults = calculator.calculate(targetParameter).iterator();
                 boolean contentMatched = true;
                 while (sourceCalculatedResults.hasNext() && targetCalculatedResults.hasNext()) {
-                    if (null != inputRateLimitAlgorithm) {
-                        inputRateLimitAlgorithm.intercept(JobOperationType.SELECT, 1);
+                    if (null != readRateLimitAlgorithm) {
+                        readRateLimitAlgorithm.intercept(JobOperationType.SELECT, 1);
                     }
                     Future<Object> sourceFuture = executor.submit(sourceCalculatedResults::next);
                     Future<Object> targetFuture = executor.submit(targetCalculatedResults::next);

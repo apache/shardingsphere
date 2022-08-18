@@ -105,8 +105,8 @@ keyGeneratorDefinition:
     keyGeneratorName (algorithmDefinition)
 ```
 - `RESOURCES` needs to use data source resources managed by RDL
-- `shardingAlgorithmType` specifies the type of automatic sharding algorithm, please refer to [Auto Sharding Algorithm](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/)
-- `keyGenerateStrategyType` specifies the distributed primary key generation strategy, please refer to [Key Generate Algorithm](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen/)
+- `shardingAlgorithmType` specifies the type of automatic sharding algorithm, please refer to [Auto Sharding Algorithm](/en/user-manual/common-config/builtin-algorithm/sharding/)
+- `keyGenerateStrategyType` specifies the distributed primary key generation strategy, please refer to [Key Generate Algorithm](/en/user-manual/common-config/builtin-algorithm/keygen/)
 - Duplicate `tableName` will not be created
 - `shardingAlgorithm` can be reused by different `Sharding Table Rule`, so when executing `DROP SHARDING TABLE RULE`, the corresponding `shardingAlgorithm` will not be removed
 - To remove `shardingAlgorithm`, please execute `DROP SHARDING ALGORITHM`
@@ -291,11 +291,13 @@ DROP SHARDING BROADCAST TABLE RULES;
 CREATE SHARDING SCALING RULE sharding_scaling(
 INPUT(
   WORKER_THREAD=40,
-  BATCH_SIZE=1000
+  BATCH_SIZE=1000,
+  RATE_LIMITER(TYPE(NAME=QPS, PROPERTIES("qps"=50)))
 ),
 OUTPUT(
   WORKER_THREAD=40,
-  BATCH_SIZE=1000
+  BATCH_SIZE=1000,
+  RATE_LIMITER(TYPE(NAME=TPS, PROPERTIES("tps"=2000)))
 ),
 STREAM_CHANNEL(TYPE(NAME="MEMORY", PROPERTIES("block-queue-size"="10000"))),
 COMPLETION_DETECTOR(TYPE(NAME="IDLE", PROPERTIES("incremental-task-idle-seconds-threshold"="1800"))),

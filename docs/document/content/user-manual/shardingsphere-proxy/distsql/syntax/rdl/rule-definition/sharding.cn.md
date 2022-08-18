@@ -105,8 +105,8 @@ keyGeneratorDefinition:
     keyGeneratorName (algorithmDefinition)
 ```
 - `RESOURCES` 需使用 RDL 管理的数据源资源；
-- `shardingAlgorithmType` 指定自动分片算法类型，请参考  [自动分片算法](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/)；
-- `keyGenerateStrategyType` 指定分布式主键生成策略，请参考 [分布式主键](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen/)；
+- `shardingAlgorithmType` 指定自动分片算法类型，请参考  [自动分片算法](/cn/user-manual/common-config/builtin-algorithm/sharding/)；
+- `keyGenerateStrategyType` 指定分布式主键生成策略，请参考 [分布式主键](/cn/user-manual/common-config/builtin-algorithm/keygen/)；
 - 重复的 `tableName` 将无法被创建；
 - `shardingAlgorithm` 能够被不同的 `Sharding Table Rule` 复用，因此在执行 `DROP SHARDING TABLE RULE` 时，对应的 `shardingAlgorithm` 不会被移除；
 - 如需移除 `shardingAlgorithm`，请执行 `DROP SHARDING ALGORITHM`；
@@ -293,11 +293,13 @@ DROP SHARDING BROADCAST TABLE RULES t_b;
 CREATE SHARDING SCALING RULE sharding_scaling(
 INPUT(
   WORKER_THREAD=40,
-  BATCH_SIZE=1000
+  BATCH_SIZE=1000,
+  RATE_LIMITER(TYPE(NAME=QPS, PROPERTIES("qps"=50)))
 ),
 OUTPUT(
   WORKER_THREAD=40,
-  BATCH_SIZE=1000
+  BATCH_SIZE=1000,
+  RATE_LIMITER(TYPE(NAME=TPS, PROPERTIES("tps"=2000)))
 ),
 STREAM_CHANNEL(TYPE(NAME="MEMORY", PROPERTIES("block-queue-size"="10000"))),
 COMPLETION_DETECTOR(TYPE(NAME="IDLE", PROPERTIES("incremental-task-idle-seconds-threshold"="1800"))),

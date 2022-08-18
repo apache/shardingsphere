@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
  */
 public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLoader {
     
-    private static final String TABLE_META_DATA_SQL_NO_ORDER = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_ID %s FROM ALL_TAB_COLUMNS WHERE OWNER = ?";
+    private static final String TABLE_META_DATA_SQL_NO_ORDER = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_ID, HIDDEN_COLUMN %s FROM ALL_TAB_COLS WHERE OWNER = ?";
     
     private static final String ORDER_BY_COLUMN_ID = " ORDER BY COLUMN_ID";
     
@@ -115,7 +115,8 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
         boolean generated = versionContainsIdentityColumn(databaseMetaData) && "YES".equals(resultSet.getString("IDENTITY_COLUMN"));
         // TODO need to support caseSensitive when version < 12.2.
         boolean caseSensitive = versionContainsCollation(databaseMetaData) && resultSet.getString("COLLATION").endsWith("_CS");
-        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive, true);
+        boolean isVisible = "NO".equals(resultSet.getString("HIDDEN_COLUMN"));
+        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive, isVisible);
     }
     
     private String getOriginalDataType(final String dataType) {

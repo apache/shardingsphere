@@ -36,13 +36,11 @@ public final class PostgreSQLContainerConfigurationFactory {
      * @return created instance
      */
     public static StorageContainerConfiguration newInstance() {
-        return new StorageContainerConfiguration(getCommands(), getContainerEnvironments(), getMountedResources());
+        return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources());
     }
     
-    private static String[] getCommands() {
-        String[] result = new String[1];
-        result[0] = "-c config_file=/etc/postgresql/postgresql.conf";
-        return result;
+    private static String getCommand() {
+        return "-c config_file=/etc/postgresql/postgresql.conf";
     }
     
     private static Map<String, String> getContainerEnvironments() {

@@ -51,7 +51,7 @@ Java API 形式配置的读写分离可以方便的适用于各种场景，不�
 | autoAwareDataSourceName         | String    | 数据库发现的逻辑数据源名称      | -       |
 | writeDataSourceQueryEnabled (?) | String    | 读库全部下线，主库是否承担读流量 | true    |
 
-算法类型的详情，请参见[内置负载均衡算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/load-balance)。
+算法类型的详情，请参见[内置负载均衡算法列表](/cn/user-manual/common-config/builtin-algorithm/load-balance)。
 查询一致性路由的详情，请参见[核心特性：读写分离](/cn/features/readwrite-splitting/)。
 
 ## 操作步骤
