@@ -26,7 +26,7 @@ on:
     paths:
       - '**/src/main/**'
       - '**/src/test/**'
-      - '.github/workflows/checkstyle-check.yml'
+      - '.github/workflows/checkstyle-and-rat-check.yml'
       - '!examples/**'
       - '!*.md'
   pull_request:
@@ -34,7 +34,7 @@ on:
     paths:
       - '**/src/main/**'
       - '**/src/test/**'
-      - '.github/workflows/checkstyle-check.yml'
+      - '.github/workflows/checkstyle-and-rat-check.yml'
       - '!examples/**'
       - '!*.md'
 
@@ -43,20 +43,15 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  checkstyle-check:
+  checkstyle-and-apache-rat:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
-      - name: Cache local Maven repository
+      - name: Cache dependencies of Checkstyle and Apache Rat
         uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-checkstyle-check-${{ hashFiles('.github/workflows/checkstyle-check.yml') }}
-      - name: Set up JDK 8
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'temurin'
-          java-version: 8
-      - name: Run Checkstyle
-        run: ./mvnw checkstyle:check -T1C
+          key: maven-cache-checkstyle-and-apache-rat-${{ hashFiles('**/pom.xml') }}
+      - name: Run Checkstyle and Apache Rat
+        run: ./mvnw checkstyle:check apache-rat:check -T1C
