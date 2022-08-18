@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.metadata.generator;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGenerator;
 import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGeneratorFactory;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
@@ -134,7 +135,7 @@ public final class PipelineDDLGenerator {
     }
     
     private Collection<String> generateActualDDLSQL(final DatabaseType databaseType, final String schemaName, final String actualTable, final DataSource dataSource) throws SQLException {
-        return CreateTableSQLGeneratorFactory.findInstance(databaseType).orElseThrow(() -> new ServiceProviderNotFoundException(DatabaseType.class))
+        return CreateTableSQLGeneratorFactory.findInstance(databaseType).orElseThrow(() -> new ServiceProviderNotFoundException(CreateTableSQLGenerator.class, databaseType.getType()))
                 .generate(actualTable, schemaName, dataSource);
     }
     

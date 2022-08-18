@@ -20,24 +20,12 @@ package org.apache.shardingsphere.data.pipeline.postgresql.prepare.datasource;
 import com.google.common.base.Splitter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeEntry;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
-import org.apache.shardingsphere.data.pipeline.core.metadata.generator.PipelineDDLGenerator;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.AbstractDataSourcePreparer;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
-import org.apache.shardingsphere.parser.rule.SQLParserRule;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,7 +38,7 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
     @Override
     public void prepareTargetTables(final PrepareTargetTablesParameter parameter) {
         List<String> createLogicalTableSQLs = listCreateLogicalTableSQL(parameter);
-        try (Connection targetConnection = getTargetCachedDataSource(parameter.getDataSourceConfig(), parameter.getDataSourceManager()).getConnection()) {
+        try (Connection targetConnection = getCachedDataSource(parameter.getTargetDataSourceConfig(), parameter.getDataSourceManager()).getConnection()) {
             for (String createLogicalTableSQL : createLogicalTableSQLs) {
                 for (String each : Splitter.on(";").splitToList(createLogicalTableSQL).stream().filter(StringUtils::isNotBlank).collect(Collectors.toList())) {
                     executeTargetTableSQL(targetConnection, each);
@@ -59,23 +47,6 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
         } catch (final SQLException ex) {
             throw new PipelineJobPrepareFailedException("prepare target tables failed.", ex);
         }
-    }
-    
-    private List<String> listCreateLogicalTableSQL(final PrepareTargetTablesParameter parameter) {
-        PipelineDDLGenerator generator = new PipelineDDLGenerator();
-        ShardingSphereMetaData metaData = PipelineContext.getContextManager().getMetaDataContexts().getMetaData();
-        ShardingSphereDatabase sphereDatabase = metaData.getDatabases().get(parameter.getDatabaseName());
-        ShardingSphereSQLParserEngine sqlParserEngine = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getSQLParserEngine(sphereDatabase.getProtocolType().getType());
-        List<String> result = new LinkedList<>();
-        for (JobDataNodeEntry each : parameter.getTablesFirstDataNodes().getEntries()) {
-            String schemaName = parameter.getTableNameSchemaNameMapping().getSchemaName(each.getLogicTableName());
-            String dataSourceName = each.getDataNodes().get(0).getDataSourceName();
-            DataSource dataSource = sphereDatabase.getResource().getDataSources().get(dataSourceName);
-            DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(Collections.singletonList(dataSource));
-            result.add(generator.generateLogicDDLSQL(dataSource, databaseType, schemaName, each.getLogicTableName(),
-                    getActualTable(sphereDatabase, each.getLogicTableName()), sqlParserEngine));
-        }
-        return result;
     }
     
     @Override
