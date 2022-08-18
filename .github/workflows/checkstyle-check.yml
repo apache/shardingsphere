@@ -48,11 +48,11 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
-      - name: Cache Maven Repos
-        uses: actions/cache@v2
+      - name: Cache local Maven repository
+        uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: shardingsphere-checkstyle-check-cache-${{ github.sha }}
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Set up JDK 8
