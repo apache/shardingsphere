@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.yaml.config.swapper.rule.data.pipeline;
 import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineInputConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineOutputConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineReadConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineWriteConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineProcessConfiguration;
 import org.junit.Test;
 
@@ -41,12 +41,12 @@ public final class YamlPipelineProcessConfigurationSwapperTest {
         Properties rateLimiterProps = new Properties();
         rateLimiterProps.setProperty("batch-size", "1000");
         rateLimiterProps.setProperty("qps", "50");
-        YamlPipelineInputConfiguration yamlInputConfig = YamlPipelineInputConfiguration.buildWithDefaultValue();
-        yamlConfig.setInput(yamlInputConfig);
+        YamlPipelineReadConfiguration yamlInputConfig = YamlPipelineReadConfiguration.buildWithDefaultValue();
+        yamlConfig.setRead(yamlInputConfig);
         yamlInputConfig.setRateLimiter(new YamlAlgorithmConfiguration("INPUT", rateLimiterProps));
-        YamlPipelineOutputConfiguration yamlOutputConfig = YamlPipelineOutputConfiguration.buildWithDefaultValue();
+        YamlPipelineWriteConfiguration yamlOutputConfig = YamlPipelineWriteConfiguration.buildWithDefaultValue();
         yamlOutputConfig.setRateLimiter(new YamlAlgorithmConfiguration("OUTPUT", rateLimiterProps));
-        yamlConfig.setOutput(yamlOutputConfig);
+        yamlConfig.setWrite(yamlOutputConfig);
         Properties streamChannelProps = new Properties();
         streamChannelProps.setProperty("block-queue-size", "10000");
         yamlConfig.setStreamChannel(new YamlAlgorithmConfiguration("MEMORY", streamChannelProps));

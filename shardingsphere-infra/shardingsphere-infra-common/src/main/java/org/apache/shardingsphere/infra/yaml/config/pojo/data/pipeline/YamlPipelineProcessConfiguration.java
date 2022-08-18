@@ -31,9 +31,9 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmC
 @ToString
 public final class YamlPipelineProcessConfiguration implements YamlConfiguration {
     
-    private YamlPipelineInputConfiguration input;
+    private YamlPipelineReadConfiguration read;
     
-    private YamlPipelineOutputConfiguration output;
+    private YamlPipelineWriteConfiguration write;
     
     private YamlAlgorithmConfiguration streamChannel;
 }
