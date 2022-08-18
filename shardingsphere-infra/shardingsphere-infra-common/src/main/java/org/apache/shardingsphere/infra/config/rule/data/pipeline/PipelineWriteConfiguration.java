@@ -23,18 +23,16 @@ import lombok.ToString;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 
 /**
- * Pipeline input configuration.
+ * Pipeline write configuration.
  */
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class PipelineInputConfiguration {
+public final class PipelineWriteConfiguration {
     
     private final Integer workerThread;
     
     private final Integer batchSize;
-    
-    private final Integer shardingSize;
     
     private final AlgorithmConfiguration rateLimiter;
 }

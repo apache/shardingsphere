@@ -22,8 +22,8 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineInputConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineOutputConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineReadConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineWriteConfiguration;
 
 /**
  * YAML on rule altered action configuration.
@@ -33,9 +33,9 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipeli
 @ToString
 public final class YamlOnRuleAlteredActionConfiguration implements YamlConfiguration {
     
-    private YamlPipelineInputConfiguration input;
+    private YamlPipelineReadConfiguration input;
     
-    private YamlPipelineOutputConfiguration output;
+    private YamlPipelineWriteConfiguration output;
     
     private YamlAlgorithmConfiguration streamChannel;
     

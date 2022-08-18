@@ -39,8 +39,8 @@ public final class YamlPipelineProcessConfigurationSwapper implements YamlConfig
             return null;
         }
         YamlPipelineProcessConfiguration result = new YamlPipelineProcessConfiguration();
-        result.setInput(INPUT_CONFIG_SWAPPER.swapToYamlConfiguration(data.getInput()));
-        result.setOutput(OUTPUT_CONFIG_SWAPPER.swapToYamlConfiguration(data.getOutput()));
+        result.setRead(INPUT_CONFIG_SWAPPER.swapToYamlConfiguration(data.getRead()));
+        result.setWrite(OUTPUT_CONFIG_SWAPPER.swapToYamlConfiguration(data.getWrite()));
         result.setStreamChannel(ALGORITHM_CONFIG_SWAPPER.swapToYamlConfiguration(data.getStreamChannel()));
         return result;
     }
@@ -51,8 +51,8 @@ public final class YamlPipelineProcessConfigurationSwapper implements YamlConfig
             return null;
         }
         return new PipelineProcessConfiguration(
-                INPUT_CONFIG_SWAPPER.swapToObject(yamlConfig.getInput()),
-                OUTPUT_CONFIG_SWAPPER.swapToObject(yamlConfig.getOutput()),
+                INPUT_CONFIG_SWAPPER.swapToObject(yamlConfig.getRead()),
+                OUTPUT_CONFIG_SWAPPER.swapToObject(yamlConfig.getWrite()),
                 ALGORITHM_CONFIG_SWAPPER.swapToObject(yamlConfig.getStreamChannel()));
     }
 }
