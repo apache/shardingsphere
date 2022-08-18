@@ -536,7 +536,8 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
             result.getParameters().addAll(expressionSegments);
             return result;
         }
-        AggregationDistinctProjectionSegment result = new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression, getDistinctExpression(ctx));
+        AggregationDistinctProjectionSegment result =
+                new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression, getDistinctExpression(ctx));
         result.getParameters().addAll(expressionSegments);
         return result;
     }
