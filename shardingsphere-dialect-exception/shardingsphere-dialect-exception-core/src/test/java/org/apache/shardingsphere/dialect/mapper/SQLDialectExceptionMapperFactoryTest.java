@@ -17,28 +17,16 @@
 
 package org.apache.shardingsphere.dialect.mapper;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.dialect.mapper.fixture.FixtureSQLDialectExceptionMapper;
+import org.junit.Test;
 
-/**
- * SQL dialect exception mapper factory.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SQLDialectExceptionMapperFactory {
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
+
+public final class SQLDialectExceptionMapperFactoryTest {
     
-    static {
-        ShardingSphereServiceLoader.register(SQLDialectExceptionMapper.class);
-    }
-    
-    /**
-     * Get instance of SQL dialect exception mapper.
-     * 
-     * @param databaseType database type
-     * @return got instance
-     */
-    public static SQLDialectExceptionMapper getInstance(final String databaseType) {
-        return TypedSPIRegistry.getRegisteredService(SQLDialectExceptionMapper.class, databaseType);
+    @Test
+    public void assertGetInstance() {
+        assertThat(SQLDialectExceptionMapperFactory.getInstance("FIXTURE"), instanceOf(FixtureSQLDialectExceptionMapper.class));
     }
 }
