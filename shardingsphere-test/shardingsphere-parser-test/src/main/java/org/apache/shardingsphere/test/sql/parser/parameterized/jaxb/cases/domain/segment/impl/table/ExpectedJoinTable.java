@@ -23,6 +23,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.column.ExpectedColumn;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.ExpectedExpression;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,4 +46,7 @@ public final class ExpectedJoinTable extends AbstractExpectedDelimiterSQLSegment
     
     @XmlElement(name = "using-columns")
     private final List<ExpectedColumn> usingColumns = new LinkedList<>();
+    
+    @XmlAttribute(name = "join-type")
+    private String joinType;
 }

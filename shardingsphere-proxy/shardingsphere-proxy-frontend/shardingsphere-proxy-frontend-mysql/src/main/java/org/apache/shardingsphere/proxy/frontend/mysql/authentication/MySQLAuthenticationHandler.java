@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.authentication;
 
 import lombok.Getter;
-import org.apache.shardingsphere.error.mysql.code.MySQLVendorError;
+import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
 import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;

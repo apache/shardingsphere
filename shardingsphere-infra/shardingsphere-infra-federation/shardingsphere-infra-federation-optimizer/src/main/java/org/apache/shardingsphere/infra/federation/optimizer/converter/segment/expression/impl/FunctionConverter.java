@@ -44,10 +44,10 @@ import java.util.Optional;
 /**
  * Function converter.
  */
-public final class FunctionConverter implements SQLSegmentConverter<FunctionSegment, SqlBasicCall> {
+public final class FunctionConverter implements SQLSegmentConverter<FunctionSegment, SqlNode> {
     
     @Override
-    public Optional<SqlBasicCall> convert(final FunctionSegment segment) {
+    public Optional<SqlNode> convert(final FunctionSegment segment) {
         if ("POSITION".equalsIgnoreCase(segment.getFunctionName())) {
             return Optional.of(new SqlBasicCall(new SqlPositionFunction(), getSqlNodes(segment.getParameters()), SqlParserPos.ZERO));
         }
@@ -55,8 +55,15 @@ public final class FunctionConverter implements SQLSegmentConverter<FunctionSegm
             return Optional.of(new SqlBasicCall(new SqlCastFunction(), getSqlNodes(segment.getParameters()), SqlParserPos.ZERO));
         }
         if ("CONCAT".equalsIgnoreCase(segment.getFunctionName())) {
-            return Optional.of(new SqlBasicCall(new SqlUnresolvedFunction(new SqlIdentifier("CONCAT", SqlParserPos.ZERO),
+            return Optional.of(new SqlBasicCall(new SqlUnresolvedFunction(new SqlIdentifier(segment.getFunctionName(), SqlParserPos.ZERO),
                     null, null, null, null, SqlFunctionCategory.USER_DEFINED_FUNCTION), getSqlNodes(segment.getParameters()), SqlParserPos.ZERO));
+        }
+        if ("DATABASE".equalsIgnoreCase(segment.getFunctionName())) {
+            return Optional.of(new SqlBasicCall(new SqlUnresolvedFunction(new SqlIdentifier(segment.getFunctionName(), SqlParserPos.ZERO),
+                    null, null, null, null, SqlFunctionCategory.USER_DEFINED_FUNCTION), getSqlNodes(segment.getParameters()), SqlParserPos.ZERO));
+        }
+        if ("CURRENT_USER".equalsIgnoreCase(segment.getFunctionName())) {
+            return Optional.of(new SqlIdentifier(segment.getFunctionName(), SqlParserPos.ZERO));
         }
         return Optional.empty();
     }

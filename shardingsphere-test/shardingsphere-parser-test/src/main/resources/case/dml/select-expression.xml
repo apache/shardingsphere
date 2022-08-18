@@ -132,7 +132,7 @@
             <expression-projection text="case when t.status = 'init' then '已启用' when t.status = 'failed' then '已停用' end" start-index="33" stop-index="124" alias="stateName"/>
         </projections>
         <from>
-            <join-table>
+            <join-table join-type="LEFT">
                 <left>
                     <simple-table start-index="135" stop-index="143" name="t_order" alias="t"/>
                 </left>

@@ -1502,6 +1502,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         result.setStartIndex(tableSegment.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
         result.setLeft(tableSegment);
+        result.setJoinType(JoinType.COMMA.name());
         result.setRight((TableSegment) visit(ctx));
         return result;
     }

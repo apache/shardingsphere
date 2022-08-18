@@ -175,7 +175,7 @@
             </expr>
         </where>
         <from start-index="14" stop-index="34">
-            <join-table start-index="14" stop-index="34">
+            <join-table start-index="14" stop-index="34" join-type="COMMA">
                 <left start-index="14" stop-index="20">
                     <simple-table name="t_order" start-index="14" stop-index="20"/>
                 </left>
@@ -251,9 +251,9 @@
             </expr>
         </where>
         <from start-index="14" stop-index="42">
-            <join-table start-index="14" stop-index="42">
+            <join-table start-index="14" stop-index="42" join-type="COMMA">
                 <left start-index="14" stop-index="34">
-                    <join-table start-index="14" stop-index="34">
+                    <join-table start-index="14" stop-index="34" join-type="COMMA">
                         <left start-index="14" stop-index="20">
                             <simple-table name="t_order" start-index="14" stop-index="20"/>
                         </left>

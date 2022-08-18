@@ -36,14 +36,11 @@ public final class OpenGaussContainerConfigurationFactory {
      * @return created instance
      */
     public static StorageContainerConfiguration newInstance() {
-        return new StorageContainerConfiguration(getCommands(), getContainerEnvironments(), getMountedResources());
+        return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources());
     }
     
-    private static String[] getCommands() {
-        String[] result = new String[2];
-        result[0] = "--max_connections=600";
-        result[1] = "--max_prepared_transactions=600";
-        return result;
+    private static String getCommand() {
+        return "--max_connections=600 --max_prepared_transactions=600";
     }
     
     private static Map<String, String> getContainerEnvironments() {
