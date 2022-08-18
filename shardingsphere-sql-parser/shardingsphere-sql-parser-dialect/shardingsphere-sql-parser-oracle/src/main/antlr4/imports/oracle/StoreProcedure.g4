@@ -17,8 +17,73 @@
 
 grammar StoreProcedure;
 
-import Keyword;
+import Keyword, BaseRule, DDLStatement, DMLStatement;
 
 call
     : CALL 
+    ;
+
+createProcedure
+    : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? PROCEDURE plsqlProcedureSource
+    ;
+
+plsqlProcedureSource
+    : (schemaName DOT)? procedureName ( LP_ parameterDeclaration ( COMMA_ parameterDeclaration )* RP_)? sharingClause?
+    ((defaultCollationClause | invokerRightsClause | accessibleByClause)*)? (IS | AS) (callSpec | declareSection? body) SEMI_
+    ;
+
+declareSection
+    : itemList1 itemList2?
+    | itemList2
+    ;
+
+itemList1
+    :( typeDefinition | cursorDeclaration | itemDeclaration | functionDeclaration | procedureDeclaration )*
+    ;
+
+typeDefinition
+    : collectionTypeDefinition | recordTypeDefinition | refCursorTypeDefinition | subtypeDefinition
+    ;
+
+collectionTypeDefinition
+    : TYPE typeName IS ( assocArrayTypeDef | varrayTypeDef | nestedTableTypeDef ) SEMI
+    ;
+
+assocArrayTypeDef
+    : TABLE OF dataType ( NOT NULL )?  INDEX BY (PLS_INTEGER | BINARY_INTEGER | VARCHAR2 LP_ vSize RP_ | dataType )
+    ;
+
+vSize: ' ';
+
+dataType
+    :
+    ;
+
+recordTypeDefinition
+    :
+    ;
+
+refCursorTypeDefinition
+    :
+    ;
+
+subtypeDefinition
+    :
+    ;
+
+cursorDeclaration
+    :
+    ;
+
+itemDeclaration
+    :
+    ;
+
+
+itemList2
+    :
+    ;
+
+body
+    :
     ;
