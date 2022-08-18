@@ -334,3 +334,11 @@ SQL_TRANSLATOR
 INFO
     : I N F O
     ;
+
+MIGRATION 
+    : M I G R A T I O N
+    ;
+    
+SOURCE
+    : S O U R C E
+    ;
