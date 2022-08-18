@@ -45,30 +45,30 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     
     @Override
     public void persistJobItemProgress(final String jobId, final int shardingItem, final String progressValue) {
-        repository.persist(PipelineMetaDataNode.getScalingJobOffsetPath(jobId, shardingItem), progressValue);
+        repository.persist(PipelineMetaDataNode.getJobOffsetItemPath(jobId, shardingItem), progressValue);
     }
     
     @Override
     public String getJobItemProgress(final String jobId, final int shardingItem) {
-        return repository.get(PipelineMetaDataNode.getScalingJobOffsetPath(jobId, shardingItem));
+        return repository.get(PipelineMetaDataNode.getJobOffsetItemPath(jobId, shardingItem));
     }
     
     @Override
     public void persistJobCheckResult(final String jobId, final boolean checkSuccess) {
         log.info("persist job check result '{}' for job {}", checkSuccess, jobId);
-        repository.persist(PipelineMetaDataNode.getScalingCheckResultPath(jobId), String.valueOf(checkSuccess));
+        repository.persist(PipelineMetaDataNode.getJobCheckResultPath(jobId), String.valueOf(checkSuccess));
     }
     
     @Override
     public Optional<Boolean> getJobCheckResult(final String jobId) {
-        String data = repository.get(PipelineMetaDataNode.getScalingCheckResultPath(jobId));
+        String data = repository.get(PipelineMetaDataNode.getJobCheckResultPath(jobId));
         return Strings.isNullOrEmpty(data) ? Optional.empty() : Optional.of(Boolean.parseBoolean(data));
     }
     
     @Override
     public void deleteJob(final String jobId) {
         log.info("delete job {}", jobId);
-        repository.delete(PipelineMetaDataNode.getScalingJobPath(jobId));
+        repository.delete(PipelineMetaDataNode.getJobRootPath(jobId));
     }
     
     @Override
@@ -88,7 +88,7 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     
     @Override
     public List<Integer> getShardingItems(final String jobId) {
-        List<String> result = getChildrenKeys(PipelineMetaDataNode.getScalingJobOffsetPath(jobId));
+        List<String> result = getChildrenKeys(PipelineMetaDataNode.getJobOffsetPath(jobId));
         log.info("getShardingItems, jobId={}, offsetKeys={}", jobId, result);
         return result.stream().map(Integer::parseInt).collect(Collectors.toList());
     }
