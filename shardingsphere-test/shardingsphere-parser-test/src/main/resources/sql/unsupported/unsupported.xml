@@ -1164,8 +1164,6 @@
     <sql-case id="select_by_mysql_source_test_case665" value="SELECT attrs.* FROM t_json, JSON_TABLE(json_col, &apos;$[*]&apos; COLUMNS (nickname JSON PATH &apos;$.nickname&apos;)) as attrs" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case666" value="SELECT b, b IN (&apos;20161213&apos;), b in (&apos;20161213&apos;, 0) FROM t2" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case667" value="SELECT b, b in (&apos;121314&apos;), b in (&apos;121314&apos;, 0) FROM t3" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case669" value="SELECT bin_to_uuid(x&apos;&apos;)" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case670" value="SELECT bin_to_uuid(x&apos;&apos;, true)" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case671" value="SELECT bug18589_f1(REPEAT(&quot;a&quot;, 767))" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case672" value="SELECT c1 &lt;=  REPEAT( SUBSTR( UPPER(&apos;Rdlpikti&apos;) , 1 , 2 ), 8 ) FROM t1" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case676" value="SELECT cast( &apos;2019-10-10 10:11&apos; AT TIME ZONE &apos;UTC&apos; AS DATETIME )" db-types="MySQL" />
