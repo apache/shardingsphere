@@ -55,7 +55,7 @@ Attributes:
 | type | String | shadow algorithm type |
 | props | Properties | shadow algorithm configuration |
 
-Please refer to [Built-in Shadow Algorithm List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/shadow).
+Please refer to [Built-in Shadow Algorithm List](/en/user-manual/common-config/builtin-algorithm/shadow).
 
 ## Procedure
 

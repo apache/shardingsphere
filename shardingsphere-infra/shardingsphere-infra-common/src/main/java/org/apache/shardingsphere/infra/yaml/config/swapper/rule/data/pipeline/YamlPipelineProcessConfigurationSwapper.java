@@ -29,9 +29,9 @@ public final class YamlPipelineProcessConfigurationSwapper implements YamlConfig
     
     private static final YamlAlgorithmConfigurationSwapper ALGORITHM_CONFIG_SWAPPER = new YamlAlgorithmConfigurationSwapper();
     
-    private static final YamlPipelineInputConfigurationSwapper INPUT_CONFIG_SWAPPER = new YamlPipelineInputConfigurationSwapper();
+    private static final YamlPipelineReadConfigurationSwapper READ_CONFIG_SWAPPER = new YamlPipelineReadConfigurationSwapper();
     
-    private static final YamlPipelineOutputConfigurationSwapper OUTPUT_CONFIG_SWAPPER = new YamlPipelineOutputConfigurationSwapper();
+    private static final YamlPipelineWriteConfigurationSwapper WRITE_CONFIG_SWAPPER = new YamlPipelineWriteConfigurationSwapper();
     
     @Override
     public YamlPipelineProcessConfiguration swapToYamlConfiguration(final PipelineProcessConfiguration data) {
@@ -39,8 +39,8 @@ public final class YamlPipelineProcessConfigurationSwapper implements YamlConfig
             return null;
         }
         YamlPipelineProcessConfiguration result = new YamlPipelineProcessConfiguration();
-        result.setInput(INPUT_CONFIG_SWAPPER.swapToYamlConfiguration(data.getInput()));
-        result.setOutput(OUTPUT_CONFIG_SWAPPER.swapToYamlConfiguration(data.getOutput()));
+        result.setRead(READ_CONFIG_SWAPPER.swapToYamlConfiguration(data.getRead()));
+        result.setWrite(WRITE_CONFIG_SWAPPER.swapToYamlConfiguration(data.getWrite()));
         result.setStreamChannel(ALGORITHM_CONFIG_SWAPPER.swapToYamlConfiguration(data.getStreamChannel()));
         return result;
     }
@@ -51,8 +51,8 @@ public final class YamlPipelineProcessConfigurationSwapper implements YamlConfig
             return null;
         }
         return new PipelineProcessConfiguration(
-                INPUT_CONFIG_SWAPPER.swapToObject(yamlConfig.getInput()),
-                OUTPUT_CONFIG_SWAPPER.swapToObject(yamlConfig.getOutput()),
+                READ_CONFIG_SWAPPER.swapToObject(yamlConfig.getRead()),
+                WRITE_CONFIG_SWAPPER.swapToObject(yamlConfig.getWrite()),
                 ALGORITHM_CONFIG_SWAPPER.swapToObject(yamlConfig.getStreamChannel()));
     }
 }

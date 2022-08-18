@@ -22,6 +22,7 @@ import Symbol, RALStatement, RDLStatement, RQLStatement;
 execute
     : (showScalingList
     | showScalingStatus
+    | migrateTable
     | startScaling
     | stopScaling
     | dropScaling
@@ -36,5 +37,6 @@ execute
     | dropShardingScalingRule
     | enableShardingScalingRule
     | disableShardingScalingRule
+    | addMigrationSourceResource
     ) SEMI?
     ;

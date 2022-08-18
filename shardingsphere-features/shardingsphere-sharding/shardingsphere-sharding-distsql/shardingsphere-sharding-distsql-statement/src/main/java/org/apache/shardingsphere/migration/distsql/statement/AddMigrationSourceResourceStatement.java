@@ -15,24 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.rule.data.pipeline;
+package org.apache.shardingsphere.migration.distsql.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
+import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
+
+import java.util.Collection;
 
 /**
- * Pipeline output configuration.
+ * Add resource statement.
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
-public final class PipelineOutputConfiguration {
+public final class AddMigrationSourceResourceStatement extends UpdatableScalingRALStatement {
     
-    private final Integer workerThread;
-    
-    private final Integer batchSize;
-    
-    private final AlgorithmConfiguration rateLimiter;
+    private final Collection<DataSourceSegment> dataSources;
 }

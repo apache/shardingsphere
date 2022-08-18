@@ -18,25 +18,25 @@
 package org.apache.shardingsphere.infra.yaml.config.swapper.rule.data.pipeline;
 
 import lombok.Data;
-import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineInputConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineInputConfiguration;
+import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineReadConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineReadConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 
 /**
- * YAML pipeline input configuration swapper.
+ * YAML pipeline read configuration swapper.
  */
 @Data
-public final class YamlPipelineInputConfigurationSwapper implements YamlConfigurationSwapper<YamlPipelineInputConfiguration, PipelineInputConfiguration> {
+public final class YamlPipelineReadConfigurationSwapper implements YamlConfigurationSwapper<YamlPipelineReadConfiguration, PipelineReadConfiguration> {
     
     private static final YamlAlgorithmConfigurationSwapper ALGORITHM_CONFIG_SWAPPER = new YamlAlgorithmConfigurationSwapper();
     
     @Override
-    public YamlPipelineInputConfiguration swapToYamlConfiguration(final PipelineInputConfiguration data) {
+    public YamlPipelineReadConfiguration swapToYamlConfiguration(final PipelineReadConfiguration data) {
         if (null == data) {
             return null;
         }
-        YamlPipelineInputConfiguration result = new YamlPipelineInputConfiguration();
+        YamlPipelineReadConfiguration result = new YamlPipelineReadConfiguration();
         result.setWorkerThread(data.getWorkerThread());
         result.setBatchSize(data.getBatchSize());
         result.setShardingSize(data.getShardingSize());
@@ -45,10 +45,10 @@ public final class YamlPipelineInputConfigurationSwapper implements YamlConfigur
     }
     
     @Override
-    public PipelineInputConfiguration swapToObject(final YamlPipelineInputConfiguration yamlConfig) {
+    public PipelineReadConfiguration swapToObject(final YamlPipelineReadConfiguration yamlConfig) {
         return null == yamlConfig
                 ? null
-                : new PipelineInputConfiguration(yamlConfig.getWorkerThread(), yamlConfig.getBatchSize(), yamlConfig.getShardingSize(),
+                : new PipelineReadConfiguration(yamlConfig.getWorkerThread(), yamlConfig.getBatchSize(), yamlConfig.getShardingSize(),
                         ALGORITHM_CONFIG_SWAPPER.swapToObject(yamlConfig.getRateLimiter()));
     }
 }

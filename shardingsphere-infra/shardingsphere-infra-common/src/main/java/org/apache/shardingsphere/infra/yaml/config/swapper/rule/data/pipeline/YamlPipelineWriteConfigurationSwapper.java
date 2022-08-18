@@ -18,25 +18,25 @@
 package org.apache.shardingsphere.infra.yaml.config.swapper.rule.data.pipeline;
 
 import lombok.Data;
-import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineOutputConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineOutputConfiguration;
+import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineWriteConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineWriteConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 
 /**
- * YAML pipeline output configuration swapper.
+ * YAML pipeline write configuration swapper.
  */
 @Data
-public final class YamlPipelineOutputConfigurationSwapper implements YamlConfigurationSwapper<YamlPipelineOutputConfiguration, PipelineOutputConfiguration> {
+public final class YamlPipelineWriteConfigurationSwapper implements YamlConfigurationSwapper<YamlPipelineWriteConfiguration, PipelineWriteConfiguration> {
     
     private static final YamlAlgorithmConfigurationSwapper ALGORITHM_CONFIG_SWAPPER = new YamlAlgorithmConfigurationSwapper();
     
     @Override
-    public YamlPipelineOutputConfiguration swapToYamlConfiguration(final PipelineOutputConfiguration data) {
+    public YamlPipelineWriteConfiguration swapToYamlConfiguration(final PipelineWriteConfiguration data) {
         if (null == data) {
             return null;
         }
-        YamlPipelineOutputConfiguration result = new YamlPipelineOutputConfiguration();
+        YamlPipelineWriteConfiguration result = new YamlPipelineWriteConfiguration();
         result.setWorkerThread(data.getWorkerThread());
         result.setBatchSize(data.getBatchSize());
         result.setRateLimiter(ALGORITHM_CONFIG_SWAPPER.swapToYamlConfiguration(data.getRateLimiter()));
@@ -44,9 +44,9 @@ public final class YamlPipelineOutputConfigurationSwapper implements YamlConfigu
     }
     
     @Override
-    public PipelineOutputConfiguration swapToObject(final YamlPipelineOutputConfiguration yamlConfig) {
+    public PipelineWriteConfiguration swapToObject(final YamlPipelineWriteConfiguration yamlConfig) {
         return null == yamlConfig
                 ? null
-                : new PipelineOutputConfiguration(yamlConfig.getWorkerThread(), yamlConfig.getBatchSize(), ALGORITHM_CONFIG_SWAPPER.swapToObject(yamlConfig.getRateLimiter()));
+                : new PipelineWriteConfiguration(yamlConfig.getWorkerThread(), yamlConfig.getBatchSize(), ALGORITHM_CONFIG_SWAPPER.swapToObject(yamlConfig.getRateLimiter()));
     }
 }

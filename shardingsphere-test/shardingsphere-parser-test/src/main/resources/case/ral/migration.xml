@@ -37,6 +37,19 @@
         <job-id>123</job-id>
     </show-scaling-status>
     
+    <migrate-table sql-case-id="migrate-table-without-target-db">
+        <source-database-name>ds_0</source-database-name>
+        <source-table-name>t_order</source-table-name>
+        <target-table-name>t_order</target-table-name>
+    </migrate-table>
+    
+    <migrate-table sql-case-id="migrate-table-with-target-db">
+        <source-database-name>ds_0</source-database-name>
+        <source-table-name>t_order</source-table-name>
+        <target-database-name>sharding_db</target-database-name>
+        <target-table-name>t_order</target-table-name>
+    </migrate-table>
+    
     <stop-scaling-source-writing sql-case-id="stop-scaling-source-writing">
         <job-id>123</job-id>
     </stop-scaling-source-writing>

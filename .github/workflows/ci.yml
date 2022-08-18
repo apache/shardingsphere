@@ -53,27 +53,13 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true -Drat.skip=true
 
 jobs:
-  checkstyle-and-apache-rat:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v3
-      - name: Cache dependencies of Checkstyle and Apache Rat
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: maven-cache-checkstyle-and-apache-rat-${{ hashFiles('**/pom.xml') }}
-      - name: Run Checkstyle and Apache Rat
-        run: ./mvnw checkstyle:check apache-rat:check -T1C
-
   linux:
     if: github.repository == 'apache/shardingsphere'
     name: JDK ${{ matrix.java_version }} - on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
-    needs: checkstyle-and-apache-rat
     timeout-minutes: 60
     strategy:
       matrix:
@@ -96,7 +82,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Build with Maven
-        run: ./mvnw -B -ntp clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Dcheckstyle.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true
+        run: ./mvnw -B -ntp clean install -Dmaven.javadoc.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true
       - name: Build examples with Maven
         run: ./mvnw -B -f examples/pom.xml clean package -DskipTests
   
@@ -105,7 +91,6 @@ jobs:
     if: github.repository == 'apache/shardingsphere'
     name: ShardingSphere example generator
     runs-on: ubuntu-latest
-    needs: checkstyle-and-apache-rat
     steps:
       - uses: actions/checkout@v3
       - name: Maven resolve ranges
@@ -123,7 +108,7 @@ jobs:
           distribution: 'temurin'
           java-version: 8
       - name: Build Project
-        run: ./mvnw -B -ntp clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Dcheckstyle.skip=true -DskipITs -DskipTests -Dspotless.apply.skip=true
+        run: ./mvnw -B -ntp clean install -Dmaven.javadoc.skip=true -DskipITs -DskipTests -Dspotless.apply.skip=true
       - name: Run Example generator
         run: ./mvnw -B test -f examples/shardingsphere-example-generator/pom.xml -Pexample-generator
 
@@ -131,7 +116,6 @@ jobs:
     if: github.repository == 'apache/shardingsphere'
     runs-on: ubuntu-latest
     name: ShardingSphere test coverage report
-    needs: checkstyle-and-apache-rat
     steps:
       - uses: actions/checkout@v3
       - name: Cache Maven Repos
@@ -147,6 +131,6 @@ jobs:
           distribution: 'temurin'
           java-version: 8
       - name: Test with Maven
-        run: ./mvnw -B -ntp clean install cobertura:cobertura -Dmaven.javadoc.skip=true -Drat.skip=true -Dcheckstyle.skip=true
+        run: ./mvnw -B -ntp clean install cobertura:cobertura -Dmaven.javadoc.skip=true
       - name: Upload to Codecov
         run: bash <(curl -s https://codecov.io/bash)
