@@ -357,16 +357,16 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
         }
         if (null != ctx.parameterMarker()) {
             ParameterMarkerValue parameterMarker = (ParameterMarkerValue) visit(ctx.parameterMarker());
-            ParameterMarkerExpressionSegment segment = new ParameterMarkerExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), parameterMarker.getValue(), parameterMarker.getType());
-            parameterMarkerSegments.add(segment);
-            return segment;
+            ParameterMarkerExpressionSegment result = new ParameterMarkerExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), parameterMarker.getValue(), parameterMarker.getType());
+            parameterMarkerSegments.add(result);
+            return result;
         }
         if (null != ctx.aexprConst()) {
-            ASTNode astNode = visit(ctx.aexprConst());
-            if (astNode instanceof StringLiteralValue || astNode instanceof BooleanLiteralValue || astNode instanceof NumberLiteralValue) {
-                return new LiteralExpressionSegment(ctx.aexprConst().start.getStartIndex(), ctx.aexprConst().stop.getStopIndex(), ((LiteralValue) astNode).getValue());
+            ASTNode result = visit(ctx.aexprConst());
+            if (result instanceof StringLiteralValue || result instanceof BooleanLiteralValue || result instanceof NumberLiteralValue) {
+                return new LiteralExpressionSegment(ctx.aexprConst().start.getStartIndex(), ctx.aexprConst().stop.getStopIndex(), ((LiteralValue) result).getValue());
             }
-            return astNode;
+            return result;
         }
         if (null != ctx.aExpr()) {
             return visit(ctx.aExpr());
