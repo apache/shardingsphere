@@ -25,7 +25,7 @@ on:
     - cron: '0 18 */1 * *'  # once a day. UTC time
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3  -Drat.skip=true -Dcheckstyle.skip=true
 
 jobs:
   ci:
@@ -64,7 +64,7 @@ jobs:
           distribution: 'temurin'
           java-version: 8
       - name: Build Project
-        run: ./mvnw -B -ntp clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Dcheckstyle.skip=true -DskipITs -DskipTests -Dspotless.apply.skip=true
+        run: ./mvnw -B -ntp clean install -Dmaven.javadoc.skip=true -DskipITs -DskipTests -Dspotless.apply.skip=true
       - name: Run Example generator
         run: ./mvnw -B test -f examples/shardingsphere-example-generator/pom.xml -Pexample-generator
 
@@ -80,6 +80,6 @@ jobs:
           distribution: 'temurin'
           java-version: 8
       - name: Test with Maven
-        run: ./mvnw -B -ntp clean install cobertura:cobertura -Dmaven.javadoc.skip=true -Drat.skip=true -Dcheckstyle.skip=true
+        run: ./mvnw -B -ntp clean install cobertura:cobertura -Dmaven.javadoc.skip=true
       - name: Upload to Codecov
         run: bash <(curl -s https://codecov.io/bash)
