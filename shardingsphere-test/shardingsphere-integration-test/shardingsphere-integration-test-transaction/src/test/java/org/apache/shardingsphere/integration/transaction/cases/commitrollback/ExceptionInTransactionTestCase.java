@@ -18,16 +18,14 @@
 package org.apache.shardingsphere.integration.transaction.cases.commitrollback;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
-import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -36,8 +34,8 @@ import static org.junit.Assert.fail;
 /**
  * An exception occurred within the transaction integration test.
  */
-// TODO Investigate why it doesn't work correctly with proxy and postgresql
-@TransactionTestCase(dbTypes = {TransactionTestConstants.MYSQL})
+@Slf4j
+@TransactionTestCase
 public final class ExceptionInTransactionTestCase extends BaseTransactionTestCase {
     
     public ExceptionInTransactionTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
@@ -57,11 +55,28 @@ public final class ExceptionInTransactionTestCase extends BaseTransactionTestCas
             executeWithLog(conn, "insert into account(id, balance, transaction_id) values(2, 2, 2);");
             conn.commit();
             fail("It should fail here.");
-        } catch (ArithmeticException ex) {
+        } catch (final ArithmeticException ex) {
             assertThat(ex.getMessage(), is("/ by zero"));
         }
-        ThreadUtil.sleep(1, TimeUnit.SECONDS);
-        Connection conn = getDataSource().getConnection();
-        assertAccountRowCount(conn, 0);
+//        ThreadUtil.sleep(1, TimeUnit.SECONDS);
+//        Connection conn = getDataSource().getConnection();
+//        assertAccountRowCount(conn, 0);
+        Thread queryThread = new Thread(() -> {
+            log.info("Execute query in new thread.");
+            Connection conn = null;
+            try {
+                conn = getDataSource().getConnection();
+            } catch (final SQLException ignored) {
+                
+            }
+            assertAccountRowCount(conn, 0);
+        });
+        queryThread.start();
+        try {
+            queryThread.join();
+            log.info("ExceptionInTransactionTestCase test over.");
+        } catch (final InterruptedException ignored) {
+            
+        }
     }
 }
