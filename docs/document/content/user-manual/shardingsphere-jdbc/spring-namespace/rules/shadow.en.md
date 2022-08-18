@@ -63,7 +63,7 @@ Therefore, enterprises usually select the full link voltage test method, i.e. a 
 | id | Attribute | Shadow algorithm name |
 | type | Attribute | Shadow algorithm type |
 | props (?) | Tag | Shadow algorithm attribute configuration |
-Refer to [Builin Shadow Algorithm](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/shadow/) for details
+Refer to [Builin Shadow Algorithm](/en/user-manual/common-config/builtin-algorithm/shadow/) for details
 
 ## Procedure
 1. Create production and shadow data sources.

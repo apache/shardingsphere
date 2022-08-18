@@ -45,7 +45,7 @@ rules:
 | type | shadow algorithm type | none |
 | props | shadow algorithm configuration | none |
 
-Please refer to [Built-in shadow algorithm list](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/shadow) for more details.
+Please refer to [Built-in shadow algorithm list](/en/user-manual/common-config/builtin-algorithm/shadow) for more details.
 
 ## Procedure
 1. Create production and shadow data sources.
