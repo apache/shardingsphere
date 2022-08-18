@@ -634,7 +634,9 @@ public enum SQLVisitorRule {
     
     CREATE_GROUP("CreateGroup", SQLStatementType.DCL),
     
-    CREATE_MATERIALIZED_VIEW("CreateMaterializedView", SQLStatementType.DDL);
+    CREATE_MATERIALIZED_VIEW("CreateMaterializedView", SQLStatementType.DDL),
+    
+    CREATE_OPERATOR("CreateOperator", SQLStatementType.DDL);
     
     private final String name;
     

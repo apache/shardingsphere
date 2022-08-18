@@ -24,7 +24,7 @@ import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.AuthorityRuleBuilder;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
-import org.apache.shardingsphere.error.mysql.code.MySQLVendorError;
+import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;

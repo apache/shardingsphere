@@ -22,6 +22,7 @@ import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.api.config.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlMigrationJobConfiguration;
@@ -53,6 +54,7 @@ import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobCon
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
 import org.apache.shardingsphere.mode.lock.ExclusiveLockDefinition;
@@ -130,6 +132,11 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     }
     
     @Override
+    public TaskConfiguration buildTaskConfiguration(final MigrationJobConfiguration jobConfig, final int jobShardingItem, final PipelineProcessConfiguration pipelineProcessConfig) {
+        return RuleAlteredJobConfigurationPreparerFactory.getInstance().createTaskConfiguration(jobConfig, jobShardingItem, pipelineProcessConfig);
+    }
+    
+    @Override
     public List<JobInfo> list() {
         checkModeConfig();
         return getJobBriefInfos().map(each -> getJobInfo(each.getJobName())).collect(Collectors.toList());
@@ -193,8 +200,8 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     }
     
     private void verifyManualMode(final MigrationJobConfiguration jobConfig) {
-        MigrationContext migrationContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
-        if (null != migrationContext.getCompletionDetectAlgorithm()) {
+        MigrationProcessContext processContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
+        if (null != processContext.getCompletionDetectAlgorithm()) {
             throw new PipelineVerifyFailedException("It's not necessary to do it in auto mode.");
         }
     }
@@ -277,12 +284,12 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     
     @Override
     public boolean isDataConsistencyCheckNeeded(final MigrationJobConfiguration jobConfig) {
-        MigrationContext migrationContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
-        return isDataConsistencyCheckNeeded(migrationContext);
+        MigrationProcessContext processContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
+        return isDataConsistencyCheckNeeded(processContext);
     }
     
-    private boolean isDataConsistencyCheckNeeded(final MigrationContext migrationContext) {
-        return null != migrationContext.getDataConsistencyCalculateAlgorithm();
+    private boolean isDataConsistencyCheckNeeded(final MigrationProcessContext processContext) {
+        return null != processContext.getDataConsistencyCalculateAlgorithm();
     }
     
     @Override
@@ -296,12 +303,12 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     
     @Override
     public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final MigrationJobConfiguration jobConfig) {
-        MigrationContext migrationContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
-        if (!isDataConsistencyCheckNeeded(migrationContext)) {
+        MigrationProcessContext processContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
+        if (!isDataConsistencyCheckNeeded(processContext)) {
             log.info("DataConsistencyCalculatorAlgorithm is not configured, data consistency check is ignored.");
             return Collections.emptyMap();
         }
-        return dataConsistencyCheck(jobConfig, migrationContext.getDataConsistencyCalculateAlgorithm());
+        return dataConsistencyCheck(jobConfig, processContext.getDataConsistencyCalculateAlgorithm());
     }
     
     @Override
@@ -357,9 +364,9 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     @Override
     public void switchClusterConfiguration(final MigrationJobConfiguration jobConfig) {
         String jobId = jobConfig.getJobId();
-        MigrationContext migrationContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
+        MigrationProcessContext processContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
-        if (isDataConsistencyCheckNeeded(migrationContext)) {
+        if (isDataConsistencyCheckNeeded(processContext)) {
             Optional<Boolean> checkResult = repositoryAPI.getJobCheckResult(jobId);
             if (!checkResult.isPresent() || !checkResult.get()) {
                 throw new PipelineVerifyFailedException("Data consistency check is not finished or failed.");

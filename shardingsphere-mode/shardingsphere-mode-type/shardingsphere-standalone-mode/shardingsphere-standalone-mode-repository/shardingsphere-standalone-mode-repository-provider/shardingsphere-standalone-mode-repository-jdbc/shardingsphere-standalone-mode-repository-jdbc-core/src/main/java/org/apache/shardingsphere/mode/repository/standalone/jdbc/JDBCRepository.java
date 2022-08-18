@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.repository.standalone.jdbc;
 
 import com.google.common.base.Strings;
+import com.zaxxer.hikari.HikariDataSource;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
@@ -27,7 +28,6 @@ import org.apache.shardingsphere.mode.repository.standalone.jdbc.provider.JDBCRe
 import org.apache.shardingsphere.mode.repository.standalone.jdbc.provider.JDBCRepositoryProviderFactory;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -48,18 +48,22 @@ public final class JDBCRepository implements StandalonePersistRepository {
     
     private static final String SEPARATOR = "/";
     
-    private Connection connection;
-    
     private JDBCRepositoryProvider provider;
+    
+    private HikariDataSource hikariDataSource;
     
     @SneakyThrows
     @Override
     public void init(final Properties props) {
         JDBCRepositoryProperties jdbcRepositoryProps = new JDBCRepositoryProperties(props);
-        connection = DriverManager.getConnection(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.JDBC_URL),
-                jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.USERNAME), jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.PASSWORD));
-        provider = JDBCRepositoryProviderFactory.getInstance(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.PROVIDER));
-        try (Statement statement = connection.createStatement()) {
+        hikariDataSource = new HikariDataSource();
+        hikariDataSource.setJdbcUrl(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.JDBC_URL));
+        hikariDataSource.setUsername(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.USERNAME));
+        hikariDataSource.setPassword(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.PASSWORD));
+        try (
+                Connection connection = hikariDataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            provider = JDBCRepositoryProviderFactory.getInstance(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.PROVIDER));
             statement.execute(provider.dropTableSQL());
             statement.execute(provider.createTableSQL());
         }
@@ -67,7 +71,9 @@ public final class JDBCRepository implements StandalonePersistRepository {
     
     @Override
     public String get(final String key) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(provider.selectByKeySQL())) {
+        try (
+                Connection connection = hikariDataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(provider.selectByKeySQL())) {
             preparedStatement.setString(1, key);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
@@ -82,7 +88,9 @@ public final class JDBCRepository implements StandalonePersistRepository {
     
     @Override
     public List<String> getChildrenKeys(final String key) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(provider.selectByParentKeySQL())) {
+        try (
+                Connection connection = hikariDataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(provider.selectByParentKeySQL())) {
             preparedStatement.setString(1, key);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 List<String> resultChildren = new LinkedList<>();
@@ -133,7 +141,9 @@ public final class JDBCRepository implements StandalonePersistRepository {
     }
     
     private void insert(final String key, final String value, final String parent) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(provider.insertSQL())) {
+        try (
+                Connection connection = hikariDataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(provider.insertSQL())) {
             preparedStatement.setString(1, UUID.randomUUID().toString());
             preparedStatement.setString(2, key);
             preparedStatement.setString(3, value);
@@ -143,7 +153,9 @@ public final class JDBCRepository implements StandalonePersistRepository {
     }
     
     private void update(final String key, final String value) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(provider.updateSQL())) {
+        try (
+                Connection connection = hikariDataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(provider.updateSQL())) {
             preparedStatement.setString(1, value);
             preparedStatement.setString(2, key);
             preparedStatement.executeUpdate();
@@ -152,7 +164,9 @@ public final class JDBCRepository implements StandalonePersistRepository {
     
     @Override
     public void delete(final String key) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(provider.deleteSQL())) {
+        try (
+                Connection connection = hikariDataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(provider.deleteSQL())) {
             preparedStatement.setString(1, key);
             preparedStatement.executeUpdate();
         } catch (final SQLException ex) {
@@ -162,13 +176,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
     
     @Override
     public void close() {
-        try {
-            if (null != connection) {
-                connection.close();
-            }
-        } catch (final SQLException ex) {
-            log.error(String.format("Failed to release %s database resources.", getType()), ex);
-        }
+        hikariDataSource.close();
     }
     
     @Override

@@ -68,5 +68,4 @@ public abstract class BaseSavePointTestCase extends BaseTransactionTestCase {
         connection.commit();
         assertAccountRowCount(connection, 3);
     }
-    
 }
