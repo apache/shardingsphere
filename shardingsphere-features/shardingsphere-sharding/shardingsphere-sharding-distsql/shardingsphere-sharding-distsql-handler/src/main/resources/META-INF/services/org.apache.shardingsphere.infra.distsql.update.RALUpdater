@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+org.apache.shardingsphere.migration.distsql.handler.update.MigrateTableUpdater
 org.apache.shardingsphere.migration.distsql.handler.update.StartMigrationUpdater
 org.apache.shardingsphere.migration.distsql.handler.update.StopMigrationUpdater
 org.apache.shardingsphere.migration.distsql.handler.update.ResetMigrationUpdater

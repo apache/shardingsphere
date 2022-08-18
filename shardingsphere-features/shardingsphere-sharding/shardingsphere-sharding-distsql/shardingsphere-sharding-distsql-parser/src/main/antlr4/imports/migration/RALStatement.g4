@@ -19,6 +19,10 @@ grammar RALStatement;
 
 import BaseRule;
 
+migrateTable
+    : MIGRATE TABLE sourceTableName INTO targetTableName
+    ;
+
 showScalingList
     : SHOW SCALING LIST
     ;
@@ -65,4 +69,24 @@ applyScaling
 
 jobId
     : INT | STRING
+    ;
+
+sourceTableName
+    : (owner DOT)? name
+    ;
+
+targetTableName
+    : (owner DOT)? name
+    ;
+
+owner
+    : identifier
+    ;
+
+name
+    : identifier
+    ;
+
+identifier
+    : IDENTIFIER
     ;

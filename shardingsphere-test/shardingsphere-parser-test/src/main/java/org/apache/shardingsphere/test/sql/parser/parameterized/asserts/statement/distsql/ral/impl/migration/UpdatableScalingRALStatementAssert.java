@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 import org.apache.shardingsphere.migration.distsql.statement.ApplyMigrationStatement;
 import org.apache.shardingsphere.migration.distsql.statement.DropMigrationStatement;
+import org.apache.shardingsphere.migration.distsql.statement.MigrateTableStatement;
 import org.apache.shardingsphere.migration.distsql.statement.ResetMigrationStatement;
 import org.apache.shardingsphere.migration.distsql.statement.RestoreMigrationSourceWritingStatement;
 import org.apache.shardingsphere.migration.distsql.statement.StopMigrationSourceWritingStatement;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.migration.distsql.statement.StartMigrationState
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.migration.update.ApplyMigrationStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.migration.update.DropMigrationStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.migration.update.MigrateTableStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.migration.update.ResetMigrationStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.migration.update.RestoreMigrationSourceWritingStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.migration.update.StopMigrationSourceWritingStatementAssert;
@@ -37,6 +39,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.migration.update.StartMigrationStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.ApplyMigrationStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.MigrateTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.ResetMigrationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.DropMigrationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.RestoreMigrationSourceWritingStatementTestCase;
@@ -59,7 +62,9 @@ public final class UpdatableScalingRALStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final UpdatableScalingRALStatement actual, final SQLParserTestCase expected) {
         // TODO add more test case
-        if (actual instanceof StopMigrationSourceWritingStatement) {
+        if (actual instanceof MigrateTableStatement) {
+            MigrateTableStatementAssert.assertIs(assertContext, (MigrateTableStatement) actual, (MigrateTableStatementTestCase) expected);
+        } else if (actual instanceof StopMigrationSourceWritingStatement) {
             StopMigrationSourceWritingStatementAssert.assertIs(assertContext, (StopMigrationSourceWritingStatement) actual, (StopMigrationSourceWritingStatementTestCase) expected);
         } else if (actual instanceof RestoreMigrationSourceWritingStatement) {
             RestoreMigrationSourceWritingStatementAssert.assertIs(assertContext, (RestoreMigrationSourceWritingStatement) actual, (RestoreMigrationSourceWritingStatementTestCase) expected);

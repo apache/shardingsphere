@@ -170,3 +170,15 @@ IF
 EXISTS
     : E X I S T S
     ;
+
+MIGRATE
+    : M I G R A T E
+    ;
+
+TABLE
+    : T A B L E
+    ;
+
+INTO
+    : I N T O
+    ;

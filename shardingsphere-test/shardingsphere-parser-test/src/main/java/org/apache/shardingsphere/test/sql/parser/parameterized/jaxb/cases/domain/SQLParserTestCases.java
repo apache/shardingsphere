@@ -309,6 +309,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.ApplyMigrationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.CheckMigrationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.DropMigrationStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.MigrateTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.ResetMigrationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.RestoreMigrationSourceWritingStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.ShowMigrationCheckAlgorithmsStatementTestCase;
@@ -1025,6 +1026,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "start-scaling")
     private final List<StartMigrationStatementTestCase> startScalingTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "migrate-table")
+    private final List<MigrateTableStatementTestCase> migrateTableTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-sharding-scaling-rule")
     private final List<CreateShardingScalingRuleStatementTestCase> createShardingScalingRuleTestCases = new LinkedList<>();
