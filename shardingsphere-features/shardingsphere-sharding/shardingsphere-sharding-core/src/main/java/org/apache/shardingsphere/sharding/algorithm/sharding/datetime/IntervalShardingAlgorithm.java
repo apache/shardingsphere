@@ -331,6 +331,9 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         if (endpoint instanceof TemporalAccessor) {
             return dateTimeFormatter.format((TemporalAccessor) endpoint);
         }
+        if (endpoint instanceof java.sql.Date) {
+            return dateTimeFormatter.format(((java.sql.Date) endpoint).toLocalDate().atStartOfDay(ZoneId.systemDefault()));
+        }
         if (endpoint instanceof Date) {
             return dateTimeFormatter.format(((Date) endpoint).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
         }
