@@ -129,7 +129,8 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
                 .filter(each -> database.getResource().getDataSources().containsKey(each.getDataSourceName().contains(".") ? each.getDataSourceName().split("\\.")[0] : each.getDataSourceName()))
                 .findFirst();
         return filteredDataNode.map(DataNode::getTableName).orElse(tableName);
-
+    }
+    
     protected List<String> listCreateLogicalTableSQL(final PrepareTargetTablesParameter parameter) {
         PipelineDDLGenerator generator = new PipelineDDLGenerator();
         List<String> result = new LinkedList<>();
@@ -142,6 +143,5 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
             result.add(generator.generateLogicDDLSQL(dataSource, databaseType, schemaName, each.getLogicTableName(), actualTableName, parameter.getSqlParserEngine()));
         }
         return result;
-
     }
 }

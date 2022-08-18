@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.dbdiscovery.distsql.parser;
 
-
 import lombok.SneakyThrows;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.facade.DatabaseDiscoveryDistSQLStatementParserFacade;
