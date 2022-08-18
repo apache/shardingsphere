@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
 
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
@@ -28,16 +27,17 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepare
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.datanode.DataNodes;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
-import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.datanode.DataNodes;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 /**
  * Abstract data source preparer.
@@ -115,7 +115,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         }
         return PATTERN_CREATE_TABLE.matcher(createTableSQL).replaceFirst("CREATE TABLE IF NOT EXISTS ");
     }
-
+    
     protected String getActualTable(final ShardingSphereDatabase database, final String tableName) {
         DataNodes dataNodes = new DataNodes(database.getRuleMetaData().getRules());
         Optional<DataNode> filteredDataNode = dataNodes.getDataNodes(tableName).stream()

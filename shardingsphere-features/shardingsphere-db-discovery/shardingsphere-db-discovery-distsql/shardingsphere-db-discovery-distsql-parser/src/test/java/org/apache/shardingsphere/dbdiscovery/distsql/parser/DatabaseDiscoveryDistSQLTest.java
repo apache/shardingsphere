@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.dbdiscovery.distsql.parser;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 
 import lombok.SneakyThrows;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
@@ -40,6 +37,10 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Properties;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class DatabaseDiscoveryDistSQLTest {
     
@@ -63,7 +64,7 @@ public class DatabaseDiscoveryDistSQLTest {
         assertThat(distSQLStatement.getRules().size(), is(1));
         assertDiscoverySegment((DatabaseDiscoveryDefinitionSegment) distSQLStatement.getRules().iterator().next());
     }
-
+    
     @Test
     public void assertCreateDatabaseDiscoveryType() {
         String sql = "CREATE DB_DISCOVERY TYPE primary_replica_ds_mgr(TYPE(NAME='mgr',PROPERTIES('group-name'='92504d5b'))),primary_replica_ds_mgr_2(TYPE(NAME='mgr'))";
@@ -71,7 +72,7 @@ public class DatabaseDiscoveryDistSQLTest {
         assertThat(distSQLStatement.getProviders().size(), is(2));
         assertAlgorithmSegment(distSQLStatement.getProviders().iterator());
     }
-
+    
     @Test
     public void assertAlterDatabaseDiscoveryType() {
         String sql = "ALTER DB_DISCOVERY TYPE primary_replica_ds_mgr(TYPE(NAME='mgr',PROPERTIES('group-name'='92504d5b'))),primary_replica_ds_mgr_2(TYPE(NAME='mgr'))";
@@ -79,7 +80,7 @@ public class DatabaseDiscoveryDistSQLTest {
         assertThat(distSQLStatement.getProviders().size(), is(2));
         assertAlgorithmSegment(distSQLStatement.getProviders().iterator());
     }
-
+    
     private void assertDiscoverySegment(final DatabaseDiscoveryDefinitionSegment discoverySegment) {
         assertThat(discoverySegment.getName(), is("db_discovery_group_0"));
         assertThat(discoverySegment.getDataSources(), is(Arrays.asList("ds_0", "ds_1")));
@@ -91,7 +92,7 @@ public class DatabaseDiscoveryDistSQLTest {
         heartbeatProps.setProperty("keep-alive-cron", "0/5 * * * * ?");
         assertThat(discoverySegment.getDiscoveryHeartbeat(), is(heartbeatProps));
     }
-
+    
     private void assertAlgorithmSegment(final Iterator<DatabaseDiscoveryProviderAlgorithmSegment> iterator) {
         DatabaseDiscoveryProviderAlgorithmSegment providerAlgorithmSegment = iterator.next();
         Properties properties = new Properties();
