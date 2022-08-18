@@ -27,7 +27,7 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 2
     minPoolSize: 2
-  shadow_db:
+  encrypt_shadow_db:
     url: jdbc:postgresql://postgresql.encrypt_shadow.host:5432/encrypt_shadow_db
     username: test_user
     password: Test@123
@@ -44,7 +44,7 @@ rules:
       sourceDataSourceName: db
       shadowDataSourceName: encrypt_shadow_db
   tables:
-    t_encrypt_shadow:
+    t_shadow:
       dataSourceNames:
         - shadowDataSource
       shadowAlgorithmNames:
@@ -89,7 +89,7 @@ rules:
       props:
         aes-key-value: 123456abc
   tables:
-    t_encrypt_shadow:
+    t_shadow:
       columns:
         order_name:
           plainColumn: order_name_plain
