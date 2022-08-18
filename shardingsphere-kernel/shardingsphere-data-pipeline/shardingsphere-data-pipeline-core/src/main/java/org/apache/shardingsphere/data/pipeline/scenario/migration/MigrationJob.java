@@ -76,7 +76,7 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
         });
         getTasksRunnerMap().put(shardingItem, tasksRunner);
         PipelineJobProgressPersistService.addJobProgressPersistContext(getJobId(), shardingItem);
-        pipelineDistributedBarrier.persistEphemeralChildrenNode(PipelineMetaDataNode.getScalingJobBarrierEnablePath(getJobId()), shardingItem);
+        pipelineDistributedBarrier.persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierEnablePath(getJobId()), shardingItem);
     }
     
     private void prepare(final MigrationJobItemContext jobItemContext) {
@@ -110,7 +110,7 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
             return;
         }
         log.info("stop tasks runner, jobId={}", getJobId());
-        String scalingJobBarrierDisablePath = PipelineMetaDataNode.getScalingJobBarrierDisablePath(getJobId());
+        String scalingJobBarrierDisablePath = PipelineMetaDataNode.getJobBarrierDisablePath(getJobId());
         for (PipelineTasksRunner each : getTasksRunnerMap().values()) {
             each.stop();
             pipelineDistributedBarrier.persistEphemeralChildrenNode(scalingJobBarrierDisablePath, each.getJobItemContext().getShardingItem());

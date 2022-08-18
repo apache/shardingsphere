@@ -25,6 +25,7 @@ import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJob;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPIFactory;
@@ -38,7 +39,6 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.regex.Pattern;
 
 /**
  * Pipeline job executor.
@@ -46,16 +46,12 @@ import java.util.regex.Pattern;
 @Slf4j
 public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
     
-    private static final Pattern CONFIG_PATTERN = Pattern.compile(DataPipelineConstants.DATA_PIPELINE_ROOT + "/(j\\d{2}[0-9a-f]+)/config");
-    
-    private static final Pattern BARRIER_MATCH_PATTERN = Pattern.compile(DataPipelineConstants.DATA_PIPELINE_ROOT + "/(j\\d{2}[0-9a-f]+)/barrier/(enable|disable)/\\d+");
-    
     private final ExecutorService executor = Executors.newFixedThreadPool(20);
     
     @Override
     protected void doStart() {
         PipelineAPIFactory.getGovernanceRepositoryAPI().watch(DataPipelineConstants.DATA_PIPELINE_ROOT, event -> {
-            if (BARRIER_MATCH_PATTERN.matcher(event.getKey()).matches() && event.getType() == Type.ADDED) {
+            if (PipelineMetaDataNode.BARRIER_PATTERN.matcher(event.getKey()).matches() && event.getType() == Type.ADDED) {
                 PipelineDistributedBarrier.getInstance().checkChildrenNodeCount(event);
             }
             getJobConfigPOJO(event).ifPresent(optional -> processEvent(event, optional));
@@ -64,7 +60,7 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
     
     private Optional<JobConfigurationPOJO> getJobConfigPOJO(final DataChangedEvent event) {
         try {
-            if (CONFIG_PATTERN.matcher(event.getKey()).matches()) {
+            if (PipelineMetaDataNode.CONFIG_PATTERN.matcher(event.getKey()).matches()) {
                 log.info("{} job config: {}", event.getType(), event.getKey());
                 return Optional.of(YamlEngine.unmarshal(event.getValue(), JobConfigurationPOJO.class, true));
             }
