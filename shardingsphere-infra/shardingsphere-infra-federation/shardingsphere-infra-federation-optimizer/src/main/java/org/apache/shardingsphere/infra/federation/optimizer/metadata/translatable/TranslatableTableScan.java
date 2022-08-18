@@ -137,13 +137,6 @@ public class TranslatableTableScan extends TableScan implements EnumerableRel {
     @Override
     public RelOptCost computeSelfCost(final RelOptPlanner planner,
                                       final RelMetadataQuery mq) {
-        // Multiply the cost by a factor that makes a scan more attractive if it
-        // has significantly fewer fields than the original scan.
-        //
-        // The "+ 2D" on top and bottom keeps the function fairly smooth.
-        //
-        // For example, if table has 3 fields, project has 1 field,
-        // then factor = (1 + 2) / (3 + 2) = 0.6
         return super.computeSelfCost(planner, mq)
                 .multiplyBy(((double) fields.length + 2D)
                         / ((double) table.getRowType().getFieldCount() + 2D));
