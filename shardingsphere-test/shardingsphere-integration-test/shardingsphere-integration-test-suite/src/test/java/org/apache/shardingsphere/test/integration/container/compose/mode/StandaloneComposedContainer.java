@@ -49,7 +49,7 @@ public final class StandaloneComposedContainer implements ComposedContainer {
         storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(parameterizedArray.getDatabaseType(), "", scenario,
                 StorageContainerConfigurationFactory.newInstance(parameterizedArray.getDatabaseType())));
         adapterContainer = containers.registerContainer(AdapterContainerFactory.newInstance(parameterizedArray.getMode(), parameterizedArray.getAdapter(),
-                parameterizedArray.getDatabaseType(), storageContainer, "", ProxyStandaloneContainerConfigurationFactory.newInstance(scenario, parameterizedArray.getDatabaseType())));
+                parameterizedArray.getDatabaseType(), storageContainer, scenario, ProxyStandaloneContainerConfigurationFactory.newInstance(scenario, parameterizedArray.getDatabaseType())));
         if (adapterContainer instanceof DockerITContainer) {
             ((DockerITContainer) adapterContainer).dependsOn(storageContainer);
         }
