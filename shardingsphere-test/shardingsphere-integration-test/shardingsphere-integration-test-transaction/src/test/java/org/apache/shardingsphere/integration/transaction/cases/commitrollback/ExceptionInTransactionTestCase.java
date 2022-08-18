@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.integration.transaction.cases.commitrollback;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.integration.transaction.engine.constants.Transa
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -58,6 +60,7 @@ public final class ExceptionInTransactionTestCase extends BaseTransactionTestCas
         } catch (ArithmeticException ex) {
             assertThat(ex.getMessage(), is("/ by zero"));
         }
+        ThreadUtil.sleep(1, TimeUnit.SECONDS);
         Connection conn = getDataSource().getConnection();
         assertAccountRowCount(conn, 0);
     }
