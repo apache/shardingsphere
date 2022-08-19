@@ -32,4 +32,5 @@
     <distsql-case id="reset-scaling" value="RESET SCALING 123;" />
     <distsql-case id="stop-scaling" value="STOP SCALING 123;" />
     <distsql-case id="start-scaling" value="START SCALING 123;" />
+    <distsql-case id="drop-migration-source-resource" value="DROP MIGRATION SOURCE RESOURCE ds_0,ds_1" />
 </sql-cases>

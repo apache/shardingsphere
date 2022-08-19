@@ -85,6 +85,7 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
     
     public MigrationJobItemContext(final MigrationJobConfiguration jobConfig, final int jobShardingItem, final InventoryIncrementalJobItemProgress initProgress,
                                    final PipelineDataSourceManager dataSourceManager) {
+        // TODO refactor, transfer in parameter
         MigrationJobAPI jobAPI = MigrationJobAPIFactory.getInstance();
         jobProcessContext = jobAPI.buildPipelineProcessContext(jobConfig);
         this.jobConfig = jobConfig;

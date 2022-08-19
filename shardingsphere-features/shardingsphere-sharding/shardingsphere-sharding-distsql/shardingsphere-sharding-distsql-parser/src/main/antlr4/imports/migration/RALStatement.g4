@@ -134,3 +134,7 @@ password
 addMigrationSourceResource
     : ADD MIGRATION SOURCE RESOURCE resourceDefinition (COMMA resourceDefinition)*
     ;
+    
+dropMigrationSourceResource
+    : DROP MIGRATION SOURCE RESOURCE resourceName (COMMA resourceName)*
+    ;

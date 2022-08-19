@@ -17,16 +17,15 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.query;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
 import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.DatabaseRequiredBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.sql.Types;
 import java.util.ArrayList;
@@ -36,21 +35,19 @@ import java.util.List;
 /**
  * Queryable scaling RAL backend handler.
  */
-public final class QueryableScalingRALBackendHandler extends DatabaseRequiredBackendHandler<RALStatement> {
+@RequiredArgsConstructor
+public final class QueryableScalingRALBackendHandler implements ProxyBackendHandler {
+    
+    private final QueryableScalingRALStatement sqlStatement;
     
     private final DatabaseDistSQLResultSet resultSet;
     
-    public QueryableScalingRALBackendHandler(final RALStatement sqlStatement, final ConnectionSession connectionSession, final DatabaseDistSQLResultSet resultSet) {
-        super(sqlStatement, connectionSession);
-        this.resultSet = resultSet;
-    }
-    
     @Override
-    protected ResponseHeader execute(final String databaseName, final RALStatement sqlStatement) {
-        resultSet.init(ProxyContext.getInstance().getDatabase(databaseName), sqlStatement);
+    public ResponseHeader execute() {
+        resultSet.init(null, sqlStatement);
         List<QueryHeader> queryHeaders = new ArrayList<>();
         for (String each : resultSet.getColumnNames()) {
-            queryHeaders.add(new QueryHeader(databaseName, "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+            queryHeaders.add(new QueryHeader("", "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false));
         }
         return new QueryResponseHeader(queryHeaders);
     }

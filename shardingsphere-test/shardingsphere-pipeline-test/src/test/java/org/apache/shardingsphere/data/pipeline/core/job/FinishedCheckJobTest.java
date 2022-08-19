@@ -24,6 +24,7 @@ import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationProcessContext;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -35,6 +36,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -45,6 +47,9 @@ public final class FinishedCheckJobTest {
     @Mock
     private MigrationJobAPI jobAPI;
     
+    @Mock
+    private MigrationProcessContext processContext;
+    
     @BeforeClass
     public static void beforeClass() {
         PipelineContextUtil.mockModeConfigAndContextManager();
@@ -54,6 +59,7 @@ public final class FinishedCheckJobTest {
     @Before
     @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
+        when(jobAPI.buildPipelineProcessContext(any())).thenReturn(processContext);
         ReflectionUtil.setFieldValue(finishedCheckJob, "jobAPI", jobAPI);
     }
     

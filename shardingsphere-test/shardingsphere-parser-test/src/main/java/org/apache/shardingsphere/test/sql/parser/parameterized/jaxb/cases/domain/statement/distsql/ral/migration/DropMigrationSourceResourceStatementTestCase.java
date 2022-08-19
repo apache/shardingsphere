@@ -15,18 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.queryable;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Show traffic rules statement.
+ * Drop migration statement test case.
  */
-@RequiredArgsConstructor
 @Getter
-public final class ShowTrafficRulesStatement extends QueryableRALStatement {
+public final class DropMigrationSourceResourceStatementTestCase extends SQLParserTestCase {
     
-    private final String ruleName;
+    @XmlElement(name = "data-source")
+    private final List<String> dataSources = new LinkedList<>();
 }

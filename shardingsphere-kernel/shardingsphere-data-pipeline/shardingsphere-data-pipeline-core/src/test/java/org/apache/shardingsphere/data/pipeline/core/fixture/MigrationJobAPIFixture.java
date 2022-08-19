@@ -150,6 +150,10 @@ public final class MigrationJobAPIFixture implements MigrationJobAPI {
     }
     
     @Override
+    public void dropMigrationSourceResources(final Collection<String> resourceNames) {
+    }
+    
+    @Override
     public MigrationJobConfiguration getJobConfiguration(final String jobId) {
         return null;
     }
