@@ -144,6 +144,14 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     }
     
     @Override
+    public MigrationProcessContext buildPipelineProcessContext(final PipelineJobConfiguration pipelineJobConfig) {
+        // TODO add jobType
+        // TODO read process config from registry center
+        PipelineProcessConfiguration processConfig = new PipelineProcessConfiguration(null, null, null);
+        return new MigrationProcessContext(pipelineJobConfig.getJobId(), processConfig);
+    }
+    
+    @Override
     public List<JobInfo> list() {
         checkModeConfig();
         return getJobBriefInfos().map(each -> getJobInfo(each.getJobName())).collect(Collectors.toList());
