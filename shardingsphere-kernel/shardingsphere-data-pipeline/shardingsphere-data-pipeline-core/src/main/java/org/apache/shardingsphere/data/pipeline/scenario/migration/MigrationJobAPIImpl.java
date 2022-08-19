@@ -58,9 +58,12 @@ import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
+import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineReadConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
+import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineReadConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.data.pipeline.YamlPipelineReadConfigurationSwapper;
 import org.apache.shardingsphere.mode.lock.ExclusiveLockDefinition;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
 
@@ -147,7 +150,11 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     public MigrationProcessContext buildPipelineProcessContext(final PipelineJobConfiguration pipelineJobConfig) {
         // TODO add jobType
         // TODO read process config from registry center
-        PipelineProcessConfiguration processConfig = new PipelineProcessConfiguration(null, null, null);
+        YamlPipelineReadConfiguration yamlReadConfig = YamlPipelineReadConfiguration.buildWithDefaultValue();
+        yamlReadConfig.fillInNullFieldsWithDefaultValue();
+        yamlReadConfig.setShardingSize(10);
+        PipelineReadConfiguration readConfig = new YamlPipelineReadConfigurationSwapper().swapToObject(yamlReadConfig);
+        PipelineProcessConfiguration processConfig = new PipelineProcessConfiguration(readConfig, null, null);
         return new MigrationProcessContext(pipelineJobConfig.getJobId(), processConfig);
     }
     
