@@ -29,7 +29,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Drop migration statement assert.
+ * Clean migration statement assert.
  */
 public final class CleanMigrationStatementAssert {
     
