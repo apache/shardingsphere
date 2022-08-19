@@ -28,7 +28,7 @@ import org.apache.shardingsphere.migration.distsql.statement.AddMigrationSourceR
 public final class AddMigrationSourceResourceUpdater implements RALUpdater<AddMigrationSourceResourceStatement> {
     
     @Override
-    public void executeUpdate(final AddMigrationSourceResourceStatement sqlStatement) {
+    public void executeUpdate(final String databaseName, final AddMigrationSourceResourceStatement sqlStatement) {
         // TODO add migration source resource later
     }
     
