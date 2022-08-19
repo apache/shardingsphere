@@ -21,7 +21,6 @@ import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGe
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.integration.data.pipeline.cases.entity.CreateTableSQLGeneratorAssertionEntity;
 import org.apache.shardingsphere.integration.data.pipeline.cases.entity.CreateTableSQLGeneratorAssertionsRootEntity;
 import org.apache.shardingsphere.integration.data.pipeline.cases.entity.CreateTableSQLGeneratorOutputEntity;
@@ -113,9 +112,8 @@ public final class CreateTableSQLGeneratorIT {
             int majorVersion = connection.getMetaData().getDatabaseMajorVersion();
             for (CreateTableSQLGeneratorAssertionEntity each : rootEntity.getAssertions()) {
                 statement.execute(each.getInput().getSql());
-                Collection<String> multiSQL = CreateTableSQLGeneratorFactory.findInstance(parameterized.getDatabaseType())
-                        .orElseThrow(() -> new ShardingSphereException("Failed to get create table sql generator")).generate(each.getInput().getTable(), DEFAULT_SCHEMA, dataSource);
-                assertIsCorrect(multiSQL, getVersionOutput(each.getOutputs(), majorVersion));
+                Collection<String> actualDDLs = CreateTableSQLGeneratorFactory.getInstance(parameterized.getDatabaseType()).generate(dataSource, DEFAULT_SCHEMA, each.getInput().getTable());
+                assertIsCorrect(actualDDLs, getVersionOutput(each.getOutputs(), majorVersion));
             }
         }
     }
