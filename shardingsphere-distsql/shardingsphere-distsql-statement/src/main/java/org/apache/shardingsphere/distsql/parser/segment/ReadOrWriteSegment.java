@@ -15,34 +15,31 @@
  * limitations under the License.
  */
 
-grammar RQLStatement;
+package org.apache.shardingsphere.distsql.parser.segment;
 
-import BaseRule;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
-showResources
-    : SHOW DATABASE RESOURCES (FROM databaseName)?
-    ;
-
-showUnusedResources
-    : SHOW UNUSED DATABASE? RESOURCES (FROM databaseName)?
-    ;
-
-showSingleTableRules
-    : SHOW SINGLE TABLE RULES (FROM databaseName)?
-    ;
-
-showSingleTable
-    : SHOW SINGLE (TABLES | TABLE tableName) (FROM databaseName)?
-    ;
-
-countDatabaseRules
-    : COUNT DATABASE RULES (FROM databaseName)?
-    ;
-
-showRulesUsedResource
-    : SHOW RULES USED RESOURCE resourceName (FROM databaseName)?
-    ;
-
-countSingleTableRule
-    : COUNT SINGLE_TABLE RULE (FROM databaseName)?
-    ;
+/**
+ * Read or Write configuration segment.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class ReadOrWriteSegment implements ASTNode {
+    
+    private final Integer workerThread;
+    
+    private final Integer batchSize;
+    
+    private final Integer shardingSize;
+    
+    private final AlgorithmSegment rateLimiter;
+    
+    public ReadOrWriteSegment(final Integer workerThread, final Integer batchSize, final AlgorithmSegment rateLimiter) {
+        this.workerThread = workerThread;
+        this.batchSize = batchSize;
+        this.shardingSize = 1000_0000;
+        this.rateLimiter = rateLimiter;
+    }
+}

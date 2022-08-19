@@ -15,34 +15,19 @@
  * limitations under the License.
  */
 
-grammar RQLStatement;
+package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
 
-import BaseRule;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.MigrationProcessConfigurationSegment;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 
-showResources
-    : SHOW DATABASE RESOURCES (FROM databaseName)?
-    ;
-
-showUnusedResources
-    : SHOW UNUSED DATABASE? RESOURCES (FROM databaseName)?
-    ;
-
-showSingleTableRules
-    : SHOW SINGLE TABLE RULES (FROM databaseName)?
-    ;
-
-showSingleTable
-    : SHOW SINGLE (TABLES | TABLE tableName) (FROM databaseName)?
-    ;
-
-countDatabaseRules
-    : COUNT DATABASE RULES (FROM databaseName)?
-    ;
-
-showRulesUsedResource
-    : SHOW RULES USED RESOURCE resourceName (FROM databaseName)?
-    ;
-
-countSingleTableRule
-    : COUNT SINGLE_TABLE RULE (FROM databaseName)?
-    ;
+/**
+ * Alter migration process configuration statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class AlterMigrationProcessConfigurationStatement extends UpdatableRALStatement {
+    
+    private final MigrationProcessConfigurationSegment migrationProcessConfigurationSegment;
+}

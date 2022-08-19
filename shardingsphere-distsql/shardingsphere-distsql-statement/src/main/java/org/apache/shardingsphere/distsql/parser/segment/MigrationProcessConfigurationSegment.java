@@ -15,34 +15,22 @@
  * limitations under the License.
  */
 
-grammar RQLStatement;
+package org.apache.shardingsphere.distsql.parser.segment;
 
-import BaseRule;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
-showResources
-    : SHOW DATABASE RESOURCES (FROM databaseName)?
-    ;
-
-showUnusedResources
-    : SHOW UNUSED DATABASE? RESOURCES (FROM databaseName)?
-    ;
-
-showSingleTableRules
-    : SHOW SINGLE TABLE RULES (FROM databaseName)?
-    ;
-
-showSingleTable
-    : SHOW SINGLE (TABLES | TABLE tableName) (FROM databaseName)?
-    ;
-
-countDatabaseRules
-    : COUNT DATABASE RULES (FROM databaseName)?
-    ;
-
-showRulesUsedResource
-    : SHOW RULES USED RESOURCE resourceName (FROM databaseName)?
-    ;
-
-countSingleTableRule
-    : COUNT SINGLE_TABLE RULE (FROM databaseName)?
-    ;
+/**
+ * Migration process configuration segment.
+ */
+@Getter
+@Setter
+public final class MigrationProcessConfigurationSegment implements ASTNode {
+    
+    private ReadOrWriteSegment readSegment;
+    
+    private ReadOrWriteSegment writeSegment;
+    
+    private AlgorithmSegment streamChannel;
+}

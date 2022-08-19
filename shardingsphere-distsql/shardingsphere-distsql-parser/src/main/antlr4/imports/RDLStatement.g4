@@ -43,48 +43,8 @@ dropDefaultSingleTableRule
     : DROP  DEFAULT SINGLE TABLE RULE ifExists?
     ;
 
-createMigrationProcessConfiguration
-    : CREATE MIGRATION PROCESS CONFIGURATION migrationProcessConfiguration?
-    ;
-
-alterMigrationProcessConfiguration
-    : ALTER MIGRATION PROCESS CONFIGURATION migrationProcessConfiguration?
-    ;
-
 resourceDefinition
     : resourceName LP (simpleSource | urlSource) COMMA USER EQ user (COMMA PASSWORD EQ password)? (COMMA propertiesDefinition)? RP
-    ;
-
-migrationProcessConfiguration
-    : LP readDefinition? (COMMA? writeDefinition)? (COMMA? streamChannel)? RP
-    ;
-
-readDefinition
-    : READ LP workerThread? (COMMA? batchSize)? (COMMA? shardingSize)? (COMMA? rateLimiter)? RP
-    ;
-
-writeDefinition
-    : WRITE LP workerThread? (COMMA? batchSize)? (COMMA? rateLimiter)? RP
-    ;
-
-workerThread
-    : WORKER_THREAD EQ intValue
-    ;
-
-batchSize
-    : BATCH_SIZE EQ intValue
-    ;
-
-shardingSize
-    : SHARDING_SIZE EQ intValue
-    ;
-
-rateLimiter
-    : RATE_LIMITER LP algorithmDefinition RP
-    ;
-
-streamChannel
-    : STREAM_CHANNEL LP algorithmDefinition RP
     ;
 
 resourceName
@@ -121,10 +81,6 @@ user
 
 password
     : STRING
-    ;
-
-intValue
-    : INT
     ;
 
 ignoreSingleTables

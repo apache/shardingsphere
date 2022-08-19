@@ -15,34 +15,12 @@
  * limitations under the License.
  */
 
-grammar RQLStatement;
+package org.apache.shardingsphere.distsql.parser.statement.ral.queryable;
 
-import BaseRule;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
-showResources
-    : SHOW DATABASE RESOURCES (FROM databaseName)?
-    ;
-
-showUnusedResources
-    : SHOW UNUSED DATABASE? RESOURCES (FROM databaseName)?
-    ;
-
-showSingleTableRules
-    : SHOW SINGLE TABLE RULES (FROM databaseName)?
-    ;
-
-showSingleTable
-    : SHOW SINGLE (TABLES | TABLE tableName) (FROM databaseName)?
-    ;
-
-countDatabaseRules
-    : COUNT DATABASE RULES (FROM databaseName)?
-    ;
-
-showRulesUsedResource
-    : SHOW RULES USED RESOURCE resourceName (FROM databaseName)?
-    ;
-
-countSingleTableRule
-    : COUNT SINGLE_TABLE RULE (FROM databaseName)?
-    ;
+/**
+ * Show migration process configuration statement.
+ */
+public final class ShowMigrationProcessConfigurationStatement extends QueryableRALStatement {
+}

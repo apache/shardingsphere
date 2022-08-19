@@ -139,6 +139,50 @@ showSQLTranslatorRule
     : SHOW SQL_TRANSLATOR RULE
     ;
 
+showMigrationProcessConfiguration
+    : SHOW MIGRATION PROCESS CONFIGURATION
+    ;
+
+createMigrationProcessConfiguration
+    : CREATE MIGRATION PROCESS CONFIGURATION migrationProcessConfiguration?
+    ;
+
+alterMigrationProcessConfiguration
+    : ALTER MIGRATION PROCESS CONFIGURATION migrationProcessConfiguration?
+    ;
+
+migrationProcessConfiguration
+    : LP readDefinition? (COMMA? writeDefinition)? (COMMA? streamChannel)? RP
+    ;
+
+readDefinition
+    : READ LP workerThread? (COMMA? batchSize)? (COMMA? shardingSize)? (COMMA? rateLimiter)? RP
+    ;
+
+writeDefinition
+    : WRITE LP workerThread? (COMMA? batchSize)? (COMMA? rateLimiter)? RP
+    ;
+
+workerThread
+    : WORKER_THREAD EQ intValue
+    ;
+
+batchSize
+    : BATCH_SIZE EQ intValue
+    ;
+
+shardingSize
+    : SHARDING_SIZE EQ intValue
+    ;
+
+rateLimiter
+    : RATE_LIMITER LP algorithmDefinition RP
+    ;
+
+streamChannel
+    : STREAM_CHANNEL LP algorithmDefinition RP
+    ;
+
 filePath
     : STRING
     ;
@@ -221,6 +265,10 @@ ruleName
 
 label
     : IDENTIFIER
+    ;
+
+intValue
+    : INT
     ;
 
 ifExists

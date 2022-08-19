@@ -15,34 +15,20 @@
  * limitations under the License.
  */
 
-grammar RQLStatement;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import BaseRule;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.CreateMigrationProcessConfigurationStatement;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
 
-showResources
-    : SHOW DATABASE RESOURCES (FROM databaseName)?
-    ;
-
-showUnusedResources
-    : SHOW UNUSED DATABASE? RESOURCES (FROM databaseName)?
-    ;
-
-showSingleTableRules
-    : SHOW SINGLE TABLE RULES (FROM databaseName)?
-    ;
-
-showSingleTable
-    : SHOW SINGLE (TABLES | TABLE tableName) (FROM databaseName)?
-    ;
-
-countDatabaseRules
-    : COUNT DATABASE RULES (FROM databaseName)?
-    ;
-
-showRulesUsedResource
-    : SHOW RULES USED RESOURCE resourceName (FROM databaseName)?
-    ;
-
-countSingleTableRule
-    : COUNT SINGLE_TABLE RULE (FROM databaseName)?
-    ;
+/**
+ * Create migration process configuration handler.
+ */
+public final class CreateMigrationProcessConfigurationHandler extends UpdatableRALBackendHandler<CreateMigrationProcessConfigurationStatement> {
+    
+    @Override
+    protected void update(final ContextManager contextManager) throws DistSQLException {
+        // TODO
+    }
+}
