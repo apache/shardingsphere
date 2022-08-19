@@ -43,6 +43,12 @@ public final class MigrationProcessContext extends AbstractPipelineProcessContex
     
     private final DataConsistencyCalculateAlgorithm dataConsistencyCalculateAlgorithm;
     
+    public MigrationProcessContext(final String jobId, final PipelineProcessConfiguration originalProcessConfig) {
+        super(jobId, originalProcessConfig);
+        completionDetectAlgorithm = null;
+        dataConsistencyCalculateAlgorithm = null;
+    }
+    
     @SuppressWarnings("unchecked")
     public MigrationProcessContext(final String jobId, final OnRuleAlteredActionConfiguration actionConfig) {
         super(jobId, new PipelineProcessConfiguration(actionConfig.getInput(), actionConfig.getOutput(), actionConfig.getStreamChannel()));

@@ -33,7 +33,6 @@ import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncremental
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -86,8 +85,8 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
     
     public MigrationJobItemContext(final MigrationJobConfiguration jobConfig, final int jobShardingItem, final InventoryIncrementalJobItemProgress initProgress,
                                    final PipelineDataSourceManager dataSourceManager) {
-        // TODO refactor RuleAlteredJobWorker
-        jobProcessContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
+        MigrationJobAPI jobAPI = MigrationJobAPIFactory.getInstance();
+        jobProcessContext = jobAPI.buildPipelineProcessContext(jobConfig);
         this.jobConfig = jobConfig;
         jobId = jobConfig.getJobId();
         this.shardingItem = jobShardingItem;
