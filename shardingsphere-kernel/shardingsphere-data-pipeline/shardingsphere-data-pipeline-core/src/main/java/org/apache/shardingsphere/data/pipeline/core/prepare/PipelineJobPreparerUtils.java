@@ -71,8 +71,9 @@ public final class PipelineJobPreparerUtils {
      *
      * @param databaseType database type
      * @param prepareTargetTablesParameter prepare target tables parameter
+     * @throws SQLException SQL exception
      */
-    public static void prepareTargetTables(final String databaseType, final PrepareTargetTablesParameter prepareTargetTablesParameter) {
+    public static void prepareTargetTables(final String databaseType, final PrepareTargetTablesParameter prepareTargetTablesParameter) throws SQLException {
         Optional<DataSourcePreparer> dataSourcePreparer = DataSourcePreparerFactory.getInstance(databaseType);
         if (!dataSourcePreparer.isPresent()) {
             log.info("dataSourcePreparer null, ignore prepare target");

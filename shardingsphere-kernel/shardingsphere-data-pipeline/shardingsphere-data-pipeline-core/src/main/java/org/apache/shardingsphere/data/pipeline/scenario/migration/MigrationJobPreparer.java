@@ -70,8 +70,9 @@ public final class MigrationJobPreparer {
      * Do prepare work for scaling job.
      *
      * @param jobItemContext job item context
+     * @throws SQLException SQL exception
      */
-    public void prepare(final MigrationJobItemContext jobItemContext) {
+    public void prepare(final MigrationJobItemContext jobItemContext) throws SQLException {
         PipelineJobPreparerUtils.checkSourceDataSource(jobItemContext.getJobConfig().getSourceDatabaseType(), Collections.singleton(jobItemContext.getSourceDataSource()));
         if (jobItemContext.isStopping()) {
             throw new PipelineIgnoredException("Job stopping, jobId=" + jobItemContext.getJobId());
@@ -95,7 +96,7 @@ public final class MigrationJobPreparer {
         }
     }
     
-    private void prepareAndCheckTargetWithLock(final MigrationJobItemContext jobItemContext) {
+    private void prepareAndCheckTargetWithLock(final MigrationJobItemContext jobItemContext) throws SQLException {
         MigrationJobConfiguration jobConfig = jobItemContext.getJobConfig();
         String lockName = "prepare-" + jobConfig.getJobId();
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
@@ -124,7 +125,7 @@ public final class MigrationJobPreparer {
         }
     }
     
-    private void prepareAndCheckTarget(final MigrationJobItemContext jobItemContext) {
+    private void prepareAndCheckTarget(final MigrationJobItemContext jobItemContext) throws SQLException {
         prepareTarget(jobItemContext);
         InventoryIncrementalJobItemProgress initProgress = jobItemContext.getInitProgress();
         if (null == initProgress || initProgress.getStatus() == JobStatus.PREPARING_FAILURE) {
@@ -134,7 +135,7 @@ public final class MigrationJobPreparer {
         }
     }
     
-    private void prepareTarget(final MigrationJobItemContext jobItemContext) {
+    private void prepareTarget(final MigrationJobItemContext jobItemContext) throws SQLException {
         MigrationJobConfiguration jobConfig = jobItemContext.getJobConfig();
         TableNameSchemaNameMapping tableNameSchemaNameMapping = jobItemContext.getTaskConfig().getDumperConfig().getTableNameSchemaNameMapping();
         String targetDatabaseType = jobConfig.getTargetDatabaseType();
