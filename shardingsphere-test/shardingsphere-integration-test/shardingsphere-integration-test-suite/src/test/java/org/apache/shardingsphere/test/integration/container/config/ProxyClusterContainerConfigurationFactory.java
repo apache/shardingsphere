@@ -29,7 +29,7 @@ import java.util.Map;
  * Suite proxy cluster container configuration factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SuiteProxyClusterContainerConfigurationFactory {
+public final class ProxyClusterContainerConfigurationFactory {
     
     /**
      * Create instance of adaptor container configuration.
