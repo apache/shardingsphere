@@ -1469,13 +1469,17 @@
 
     <insert sql-case-id="insert_with_digit_literals_value">
         <table name="digit_literals_value_test" start-index="12" stop-index="36" />
-        <columns start-index="37" stop-index="42">
+        <columns start-index="37" stop-index="48">
             <column name="col1" start-index="38" stop-index="41" />
+            <column name="col2" start-index="44" stop-index="47" />
         </columns>
         <values>
             <value>
                 <assignment-value>
-                    <common-expression text="x'1234'" start-index="51" stop-index="57" />
+                    <common-expression text="x'1234'" start-index="57" stop-index="63" />
+                </assignment-value>
+                <assignment-value>
+                    <common-expression text="x''" start-index="66" stop-index="68" />
                 </assignment-value>
             </value>
         </values>
