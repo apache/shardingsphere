@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration;
+package org.apache.shardingsphere.migration.distsql.statement;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedDataSource;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Collection;
 
 /**
- * Add migration statement test case.
+ * Drop resource statement.
  */
 @Getter
-public final class AddMigrationSourceResourceStatementTestCase extends SQLParserTestCase {
+public final class DropMigrationSourceResourceStatement extends UpdatableScalingRALStatement {
+    private final Collection<String> names;
     
-    @XmlElement(name = "data-source")
-    private final List<ExpectedDataSource> dataSources = new LinkedList<>();
+    public DropMigrationSourceResourceStatement(final Collection<String> names) {
+        this.names = names;
+    }
 }

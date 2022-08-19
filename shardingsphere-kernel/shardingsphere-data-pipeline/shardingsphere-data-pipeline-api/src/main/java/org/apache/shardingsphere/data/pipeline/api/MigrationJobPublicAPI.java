@@ -119,4 +119,11 @@ public interface MigrationJobPublicAPI extends PipelineJobPublicAPI, RequiredSPI
      * @param sourcePropertiesMap source properties map
      */
     void addMigrationSourceResources(Map<String, DataSourceProperties> sourcePropertiesMap);
+    
+    /**
+     * Drop migration source resource.
+     *
+     * @param resourceNames resource names
+     */
+    void dropMigrationSourceResources(Collection<String> resourceNames);
 }

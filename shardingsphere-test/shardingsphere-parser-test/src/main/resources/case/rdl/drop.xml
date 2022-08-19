@@ -160,4 +160,9 @@
     <drop-sharding-algorithm sql-case-id="drop-sharding-algorithm" if-exists="true">
         <algorithm>t_order_hash_mod</algorithm>
     </drop-sharding-algorithm>
+    
+    <drop-resource sql-case-id="drop-migration-source-resource">
+        <data-source>ds_0</data-source>
+        <data-source>ds_1</data-source>
+    </drop-resource>
 </sql-parser-test-cases>
