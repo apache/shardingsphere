@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.metadata.node;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 
 import java.util.regex.Pattern;
@@ -34,6 +35,30 @@ public final class PipelineMetaDataNode {
     public static final Pattern CONFIG_PATTERN = Pattern.compile(JOB_PATTERN_PREFIX + "/config");
     
     public static final Pattern BARRIER_PATTERN = Pattern.compile(JOB_PATTERN_PREFIX + "/barrier/(enable|disable)/\\d+");
+    
+    /**
+     * Get metadata data sources path.
+     *
+     * @param jobType job type
+     * @return data sources path
+     */
+    public static String getMetaDataDataSourcesPath(final JobType jobType) {
+        return String.join("/", getMetaDataRootPath(jobType), "dataSources");
+    }
+    
+    private static String getMetaDataRootPath(final JobType jobType) {
+        return String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, jobType.getLowercaseTypeName(), "metadata");
+    }
+    
+    /**
+     * Get metadata process configuration path.
+     *
+     * @param jobType job type
+     * @return data sources path
+     */
+    public static String getMetaDataProcessConfigPath(final JobType jobType) {
+        return String.join("/", getMetaDataRootPath(jobType), "processConfig");
+    }
     
     /**
      * Get ElasticJob namespace.

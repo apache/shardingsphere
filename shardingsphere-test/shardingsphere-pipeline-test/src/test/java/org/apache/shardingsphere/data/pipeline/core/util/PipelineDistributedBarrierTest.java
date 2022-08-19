@@ -25,10 +25,8 @@ import org.junit.Test;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("rawtypes")
@@ -42,12 +40,13 @@ public final class PipelineDistributedBarrierTest {
     @Test
     public void assertRegisterAndRemove() throws NoSuchFieldException, IllegalAccessException {
         PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance();
-        instance.register("/test", 1);
+        String parentPath = "/test";
+        instance.register(parentPath, 1);
         Map countDownLatchMap = ReflectionUtil.getFieldValue(instance, "countDownLatchMap", Map.class);
         assertNotNull(countDownLatchMap);
-        assertThat(countDownLatchMap.size(), is(1));
-        instance.removeParentNode("/test");
-        assertThat(countDownLatchMap.size(), is(0));
+        assertTrue(countDownLatchMap.containsKey(parentPath));
+        instance.removeParentNode(parentPath);
+        assertFalse(countDownLatchMap.containsKey(parentPath));
     }
     
     @Test

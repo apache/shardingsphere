@@ -25,7 +25,7 @@ execute
     | migrateTable
     | startScaling
     | stopScaling
-    | dropScaling
+    | cleanScaling
     | resetScaling
     | checkScaling
     | showScalingCheckAlgorithms
@@ -38,5 +38,6 @@ execute
     | enableShardingScalingRule
     | disableShardingScalingRule
     | addMigrationSourceResource
+    | dropMigrationSourceResource
     ) SEMI?
     ;

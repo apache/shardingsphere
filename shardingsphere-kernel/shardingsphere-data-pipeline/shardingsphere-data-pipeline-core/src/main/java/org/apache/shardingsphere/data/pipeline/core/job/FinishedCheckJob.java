@@ -27,7 +27,6 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationProcessContext;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 
@@ -64,7 +63,7 @@ public final class FinishedCheckJob implements SimpleJob {
             try {
                 // TODO refactor: dispatch to different job types
                 MigrationJobConfiguration jobConfig = YamlMigrationJobConfigurationSwapper.swapToObject(jobInfo.getJobParameter());
-                MigrationProcessContext processContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
+                MigrationProcessContext processContext = jobAPI.buildPipelineProcessContext(jobConfig);
                 if (null == processContext.getCompletionDetectAlgorithm()) {
                     log.info("completionDetector not configured, auto switch will not be enabled. You could query job progress and switch config manually with DistSQL.");
                     continue;

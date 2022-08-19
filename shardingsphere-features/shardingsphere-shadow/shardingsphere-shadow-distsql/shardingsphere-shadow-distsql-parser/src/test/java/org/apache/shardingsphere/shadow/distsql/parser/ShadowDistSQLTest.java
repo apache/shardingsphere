@@ -45,7 +45,7 @@ public final class ShadowDistSQLTest {
         assertThat(shadowDistSQLStatement.getRules().size(), is(1));
         assertShadowRuleSegment(shadowDistSQLStatement.getRules().iterator().next());
     }
-
+    
     @Test
     public void assertAlterShadowRule() {
         String sql = "ALTER SHADOW RULE `shadow_rule`(SOURCE=demo_ds,SHADOW=demo_ds_shadow,t_order((simple_hint_algorithm,TYPE(NAME='SIMPLE_HINT',PROPERTIES('shadow'='true','foo'='bar')))))";
@@ -53,7 +53,7 @@ public final class ShadowDistSQLTest {
         assertThat(shadowDistSQLStatement.getRules().size(), is(1));
         assertShadowRuleSegment(shadowDistSQLStatement.getRules().iterator().next());
     }
-
+    
     private void assertShadowRuleSegment(final ShadowRuleSegment shadowRuleSegment) {
         assertThat(shadowRuleSegment.getRuleName(), is("shadow_rule"));
         assertThat(shadowRuleSegment.getSource(), is("demo_ds"));

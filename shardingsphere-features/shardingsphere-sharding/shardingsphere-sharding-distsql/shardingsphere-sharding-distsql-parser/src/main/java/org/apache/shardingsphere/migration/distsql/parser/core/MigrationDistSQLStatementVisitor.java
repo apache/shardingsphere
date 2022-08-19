@@ -26,12 +26,12 @@ import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatemen
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.ApplyScalingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.BatchSizeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.CheckScalingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.CleanScalingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.CompletionDetectorContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.CreateShardingScalingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.DataConsistencyCheckerContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.DisableShardingScalingRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.DropScalingContext;
-import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.DropShardingScalingRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.DropMigrationSourceResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.EnableShardingScalingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.InputDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.MigrateTableContext;
@@ -62,9 +62,10 @@ import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegmen
 import org.apache.shardingsphere.migration.distsql.statement.AddMigrationSourceResourceStatement;
 import org.apache.shardingsphere.migration.distsql.statement.ApplyMigrationStatement;
 import org.apache.shardingsphere.migration.distsql.statement.CheckMigrationStatement;
+import org.apache.shardingsphere.migration.distsql.statement.CleanMigrationStatement;
 import org.apache.shardingsphere.migration.distsql.statement.CreateShardingScalingRuleStatement;
 import org.apache.shardingsphere.migration.distsql.statement.DisableShardingScalingRuleStatement;
-import org.apache.shardingsphere.migration.distsql.statement.DropMigrationStatement;
+import org.apache.shardingsphere.migration.distsql.statement.DropMigrationSourceResourceStatement;
 import org.apache.shardingsphere.migration.distsql.statement.DropShardingScalingRuleStatement;
 import org.apache.shardingsphere.migration.distsql.statement.EnableShardingScalingRuleStatement;
 import org.apache.shardingsphere.migration.distsql.statement.MigrateTableStatement;
@@ -88,6 +89,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * SQL statement visitor for migration dist SQL.
@@ -122,8 +124,8 @@ public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStat
     }
     
     @Override
-    public ASTNode visitDropScaling(final DropScalingContext ctx) {
-        return new DropMigrationStatement(getIdentifierValue(ctx.jobId()));
+    public ASTNode visitCleanScaling(final CleanScalingContext ctx) {
+        return new CleanMigrationStatement(getIdentifierValue(ctx.jobId()));
     }
     
     @Override
@@ -242,7 +244,7 @@ public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStat
     }
     
     @Override
-    public ASTNode visitDropShardingScalingRule(final DropShardingScalingRuleContext ctx) {
+    public ASTNode visitDropShardingScalingRule(final MigrationDistSQLStatementParser.DropShardingScalingRuleContext ctx) {
         return new DropShardingScalingRuleStatement(null != ctx.ifExists(), getIdentifierValue(ctx.scalingName()));
     }
     
@@ -327,5 +329,10 @@ public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStat
             dataSources.add((DataSourceSegment) visit(each));
         }
         return new AddMigrationSourceResourceStatement(dataSources);
+    }
+    
+    @Override
+    public ASTNode visitDropMigrationSourceResource(final DropMigrationSourceResourceContext ctx) {
+        return new DropMigrationSourceResourceStatement(ctx.resourceName().stream().map(ParseTree::getText).map(each -> new IdentifierValue(each).getValue()).collect(Collectors.toList()));
     }
 }
