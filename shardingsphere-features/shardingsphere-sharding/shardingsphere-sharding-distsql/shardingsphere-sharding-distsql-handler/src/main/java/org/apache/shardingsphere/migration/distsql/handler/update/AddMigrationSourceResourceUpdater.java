@@ -20,8 +20,20 @@ package org.apache.shardingsphere.migration.distsql.handler.update;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
+import org.apache.shardingsphere.data.pipeline.core.exception.AddMigrationSourceResourceException;
+import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
+import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
 import org.apache.shardingsphere.migration.distsql.statement.AddMigrationSourceResourceStatement;
+import org.apache.shardingsphere.sharding.distsql.handler.converter.MigrationResourceSegmentsConverter;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Add migration source resource updater.
@@ -33,7 +45,16 @@ public final class AddMigrationSourceResourceUpdater implements RALUpdater<AddMi
     
     @Override
     public void executeUpdate(final String databaseName, final AddMigrationSourceResourceStatement sqlStatement) {
-        // TODO add migration source resource later
+        List<DataSourceSegment> dataSources = new ArrayList<>(sqlStatement.getDataSources());
+        DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(MigrationResourceSegmentsConverter.getURL(dataSources.get(0)));
+        Map<String, DataSourceProperties> sourcePropertiesMap = MigrationResourceSegmentsConverter.convert(dataSources);
+        DataSourcePropertiesValidator validator = new DataSourcePropertiesValidator();
+        try {
+            validator.validate(sourcePropertiesMap, databaseType);
+        } catch (final InvalidResourcesException ex) {
+            throw new AddMigrationSourceResourceException(ex);
+        }
+        JOB_API.addMigrationSourceResources(sourcePropertiesMap);
     }
     
     @Override
