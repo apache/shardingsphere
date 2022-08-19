@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Migration source resource API implementation.
+ * Pipeline resource API implementation.
  */
 public final class PipelineResourceAPIImpl implements PipelineResourceAPI {
     

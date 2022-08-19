@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 
 import java.util.Collection;
@@ -29,30 +30,30 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Migration resource segments converter.
+ * Resource segments converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MigrationResourceSegmentsConverter {
-    
+public final class ResourceSegmentsConverter {
     
     /**
      * Convert resource segments to data source properties map.
      *
+     * @param databaseType database type
      * @param resources data source segments
      * @return data source properties map
      */
-    public static Map<String, DataSourceProperties> convert(final Collection<DataSourceSegment> resources) {
+    public static Map<String, DataSourceProperties> convert(final DatabaseType databaseType, final Collection<DataSourceSegment> resources) {
         Map<String, DataSourceProperties> result = new LinkedHashMap<>(resources.size(), 1);
         for (DataSourceSegment each : resources) {
-            result.put(each.getName(), new DataSourceProperties("com.zaxxer.hikari.HikariDataSource", createProperties(each)));
+            result.put(each.getName(), new DataSourceProperties("com.zaxxer.hikari.HikariDataSource", createProperties(databaseType, each)));
         }
         return result;
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static Map<String, Object> createProperties(final DataSourceSegment segment) {
+    private static Map<String, Object> createProperties(final DatabaseType databaseType, final DataSourceSegment segment) {
         Map<String, Object> result = new LinkedHashMap<>();
-        result.put("jdbcUrl", getURL(segment));
+        result.put("jdbcUrl", getURL(databaseType, segment));
         result.put("username", segment.getUser());
         result.put("password", segment.getPassword());
         if (null != segment.getProps()) {
@@ -61,19 +62,14 @@ public final class MigrationResourceSegmentsConverter {
         return result;
     }
     
-    /**
-     * Get URL.
-     *
-     * @param segment data source segment
-     * @return jdbc url
-     */
-    public static String getURL(final DataSourceSegment segment) {
+    private static String getURL(final DatabaseType databaseType, final DataSourceSegment segment) {
         String result = null;
         if (segment instanceof URLBasedDataSourceSegment) {
             result = ((URLBasedDataSourceSegment) segment).getUrl();
         }
         if (segment instanceof HostnameAndPortBasedDataSourceSegment) {
-            throw new UnsupportedOperationException("Not currently support add hostname and port, please use url");
+            HostnameAndPortBasedDataSourceSegment actualSegment = (HostnameAndPortBasedDataSourceSegment) segment;
+            result = String.format("%s//%s:%s/%s", databaseType.getJdbcUrlPrefixes().iterator().next(), actualSegment.getHostname(), actualSegment.getPort(), actualSegment.getDatabase());
         }
         return result;
     }

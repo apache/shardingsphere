@@ -22,6 +22,8 @@ import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.AddMigrationSourceResourceException;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
+import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
+import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
@@ -29,7 +31,7 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesVali
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
 import org.apache.shardingsphere.migration.distsql.statement.AddMigrationSourceResourceStatement;
-import org.apache.shardingsphere.sharding.distsql.handler.converter.MigrationResourceSegmentsConverter;
+import org.apache.shardingsphere.sharding.distsql.handler.converter.ResourceSegmentsConverter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,8 +48,12 @@ public final class AddMigrationSourceResourceUpdater implements RALUpdater<AddMi
     @Override
     public void executeUpdate(final String databaseName, final AddMigrationSourceResourceStatement sqlStatement) {
         List<DataSourceSegment> dataSources = new ArrayList<>(sqlStatement.getDataSources());
-        DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(MigrationResourceSegmentsConverter.getURL(dataSources.get(0)));
-        Map<String, DataSourceProperties> sourcePropertiesMap = MigrationResourceSegmentsConverter.convert(dataSources);
+        if (dataSources.stream().anyMatch(each -> each instanceof HostnameAndPortBasedDataSourceSegment)) {
+            throw new UnsupportedOperationException("Not currently support add hostname and port, please use url");
+        }
+        URLBasedDataSourceSegment urlBasedDataSourceSegment = (URLBasedDataSourceSegment) dataSources.get(0);
+        DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(urlBasedDataSourceSegment.getUrl());
+        Map<String, DataSourceProperties> sourcePropertiesMap = ResourceSegmentsConverter.convert(databaseType, dataSources);
         DataSourcePropertiesValidator validator = new DataSourcePropertiesValidator();
         try {
             validator.validate(sourcePropertiesMap, databaseType);

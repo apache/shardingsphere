@@ -23,12 +23,12 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import java.util.Map;
 
 /**
- * Migration source resource API.
+ * Pipeline resource API.
  */
 public interface PipelineResourceAPI {
     
     /**
-     * Get data source properties.
+     * Get meta data data source.
      *
      * @param jobType job type
      * @return meta data data source
@@ -36,7 +36,7 @@ public interface PipelineResourceAPI {
     Map<String, DataSourceProperties> getMetaDataDataSource(JobType jobType);
     
     /**
-     * Persist metadata data source.
+     * Persist meta data data source.
      *
      * @param jobType job type
      * @param dataSource data source

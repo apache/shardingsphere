@@ -38,6 +38,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.DatabaseRequiredBackendHandler;
+import org.apache.shardingsphere.sharding.distsql.handler.converter.ResourceSegmentsConverter;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
