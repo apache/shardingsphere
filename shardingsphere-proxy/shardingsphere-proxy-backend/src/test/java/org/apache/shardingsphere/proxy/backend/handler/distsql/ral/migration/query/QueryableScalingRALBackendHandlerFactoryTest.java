@@ -24,10 +24,10 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
-public final class QueryableMigrationRALBackendHandlerFactoryTest {
+public final class QueryableScalingRALBackendHandlerFactoryTest {
     
     @Test
     public void assertNewInstance() {
-        assertThat(QueryableMigrationRALBackendHandlerFactory.newInstance(new QueryableScalingFixtureRALStatement()), instanceOf(QueryableScalingFixtureQueryResultSet.class));
+        assertThat(QueryableScalingRALBackendHandlerFactory.newInstance(new QueryableScalingFixtureRALStatement()), instanceOf(QueryableScalingFixtureQueryResultSet.class));
     }
 }

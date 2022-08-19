@@ -30,12 +30,11 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 /**
- * Updatable migration RAL backend handler factory.
+ * Updatable scaling RAL backend handler factory.
  */
 @RequiredArgsConstructor
 @Setter
-// TODO rename, and also similar ones
-public final class UpdatableMigrationRALBackendHandler implements ProxyBackendHandler {
+public final class UpdatableScalingRALBackendHandler implements ProxyBackendHandler {
     
     private final UpdatableScalingRALStatement sqlStatement;
     

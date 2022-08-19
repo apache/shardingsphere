@@ -34,13 +34,13 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Queryable migration RAL backend handler.
+ * Queryable scaling RAL backend handler.
  */
-public final class QueryableMigrationRALBackendHandler extends DatabaseRequiredBackendHandler<RALStatement> {
+public final class QueryableScalingRALBackendHandler extends DatabaseRequiredBackendHandler<RALStatement> {
     
     private final DatabaseDistSQLResultSet resultSet;
     
-    public QueryableMigrationRALBackendHandler(final RALStatement sqlStatement, final ConnectionSession connectionSession, final DatabaseDistSQLResultSet resultSet) {
+    public QueryableScalingRALBackendHandler(final RALStatement sqlStatement, final ConnectionSession connectionSession, final DatabaseDistSQLResultSet resultSet) {
         super(sqlStatement, connectionSession);
         this.resultSet = resultSet;
     }
