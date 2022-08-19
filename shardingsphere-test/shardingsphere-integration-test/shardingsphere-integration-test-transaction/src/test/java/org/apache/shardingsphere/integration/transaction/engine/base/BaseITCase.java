@@ -142,7 +142,9 @@ public abstract class BaseITCase {
         result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, databaseContainer.getHost(), databaseContainer.getMappedPort(databaseContainer.getPort()), dataSourceName));
         result.setUsername(databaseContainer.getUsername());
         result.setPassword(databaseContainer.getUnifiedPassword());
-        result.setMaximumPoolSize(4);
+        result.setMaximumPoolSize(50);
+        result.setIdleTimeout(60000);
+        result.setMaxLifetime(1800000);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return result;
     }
