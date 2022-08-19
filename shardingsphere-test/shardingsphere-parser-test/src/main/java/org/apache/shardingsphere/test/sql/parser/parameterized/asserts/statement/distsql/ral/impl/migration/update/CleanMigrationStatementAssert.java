@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.migration.update;
 
-import org.apache.shardingsphere.migration.distsql.statement.DropMigrationStatement;
+import org.apache.shardingsphere.migration.distsql.statement.CleanMigrationStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.DropMigrationStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.CleanMigrationStatementTestCase;
 
 import java.util.List;
 
@@ -29,9 +29,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Drop migration statement assert.
+ * Clean migration statement assert.
  */
-public final class DropMigrationStatementAssert {
+public final class CleanMigrationStatementAssert {
     
     /**
      * Assert drop migration statement is correct with expected parser result.
@@ -40,7 +40,7 @@ public final class DropMigrationStatementAssert {
      * @param actual actual drop migration statement
      * @param expected expected drop migration statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final DropMigrationStatement actual, final DropMigrationStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final CleanMigrationStatement actual, final CleanMigrationStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {

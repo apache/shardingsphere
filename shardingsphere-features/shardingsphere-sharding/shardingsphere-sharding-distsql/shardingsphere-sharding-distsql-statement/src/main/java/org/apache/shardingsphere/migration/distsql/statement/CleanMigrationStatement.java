@@ -26,7 +26,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableS
  */
 @RequiredArgsConstructor
 @Getter
-public final class DropMigrationStatement extends UpdatableScalingRALStatement {
+public final class CleanMigrationStatement extends UpdatableScalingRALStatement {
     
     private final String jobId;
 }

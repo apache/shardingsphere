@@ -25,10 +25,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Drop migration statement test case.
+ * Clean migration statement test case.
  */
 @Getter
-public final class DropMigrationStatementTestCase extends SQLParserTestCase {
+public final class CleanMigrationStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "job-id")
     private final List<String> jobIds = new LinkedList<>();

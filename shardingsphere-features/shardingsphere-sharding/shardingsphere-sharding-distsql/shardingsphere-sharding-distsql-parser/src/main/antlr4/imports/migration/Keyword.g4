@@ -218,3 +218,7 @@ ADD
 RESOURCE
     : R E S O U R C E
     ;
+
+CLEAN
+    : C L E A N
+    ;

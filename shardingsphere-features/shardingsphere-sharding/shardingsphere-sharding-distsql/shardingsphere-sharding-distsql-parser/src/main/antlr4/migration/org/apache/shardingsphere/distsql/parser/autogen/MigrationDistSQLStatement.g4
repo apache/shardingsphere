@@ -25,7 +25,7 @@ execute
     | migrateTable
     | startScaling
     | stopScaling
-    | dropScaling
+    | cleanScaling
     | resetScaling
     | checkScaling
     | showScalingCheckAlgorithms
