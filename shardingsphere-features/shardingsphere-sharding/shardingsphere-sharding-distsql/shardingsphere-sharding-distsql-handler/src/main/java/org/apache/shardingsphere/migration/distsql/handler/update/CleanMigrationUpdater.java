@@ -20,22 +20,22 @@ package org.apache.shardingsphere.migration.distsql.handler.update;
 import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
-import org.apache.shardingsphere.migration.distsql.statement.DropMigrationStatement;
+import org.apache.shardingsphere.migration.distsql.statement.CleanMigrationStatement;
 
 /**
- * Drop migration updater.
+ * Clean migration updater.
  */
-public final class DropMigrationUpdater implements RALUpdater<DropMigrationStatement> {
+public final class CleanMigrationUpdater implements RALUpdater<CleanMigrationStatement> {
     
     private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
     
     @Override
-    public void executeUpdate(final String databaseName, final DropMigrationStatement sqlStatement) {
+    public void executeUpdate(final String databaseName, final CleanMigrationStatement sqlStatement) {
         JOB_API.remove(sqlStatement.getJobId());
     }
     
     @Override
     public String getType() {
-        return DropMigrationStatement.class.getName();
+        return CleanMigrationStatement.class.getName();
     }
 }

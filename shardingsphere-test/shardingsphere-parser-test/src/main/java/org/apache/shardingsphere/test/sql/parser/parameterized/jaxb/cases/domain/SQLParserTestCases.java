@@ -308,7 +308,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.UnlabelInstanceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.ApplyMigrationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.CheckMigrationStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.DropMigrationStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.CleanMigrationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.MigrateTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.ResetMigrationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.RestoreMigrationSourceWritingStatementTestCase;
@@ -1022,8 +1022,8 @@ public final class SQLParserTestCases {
     @XmlElement(name = "reset-scaling")
     private final List<ResetMigrationStatementTestCase> resetScalingTestCases = new LinkedList<>();
     
-    @XmlElement(name = "drop-scaling")
-    private final List<DropMigrationStatementTestCase> dropScalingTestCases = new LinkedList<>();
+    @XmlElement(name = "clean-scaling")
+    private final List<CleanMigrationStatementTestCase> cleanScalingTestCases = new LinkedList<>();
     
     @XmlElement(name = "stop-scaling")
     private final List<StopMigrationStatementTestCase> stopScalingTestCases = new LinkedList<>();

@@ -30,7 +30,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatemen
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.CreateShardingScalingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.DataConsistencyCheckerContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.DisableShardingScalingRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.DropScalingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.CleanScalingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.DropShardingScalingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.EnableShardingScalingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.InputDefinitionContext;
@@ -64,7 +64,7 @@ import org.apache.shardingsphere.migration.distsql.statement.ApplyMigrationState
 import org.apache.shardingsphere.migration.distsql.statement.CheckMigrationStatement;
 import org.apache.shardingsphere.migration.distsql.statement.CreateShardingScalingRuleStatement;
 import org.apache.shardingsphere.migration.distsql.statement.DisableShardingScalingRuleStatement;
-import org.apache.shardingsphere.migration.distsql.statement.DropMigrationStatement;
+import org.apache.shardingsphere.migration.distsql.statement.CleanMigrationStatement;
 import org.apache.shardingsphere.migration.distsql.statement.DropShardingScalingRuleStatement;
 import org.apache.shardingsphere.migration.distsql.statement.EnableShardingScalingRuleStatement;
 import org.apache.shardingsphere.migration.distsql.statement.MigrateTableStatement;
@@ -122,8 +122,8 @@ public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStat
     }
     
     @Override
-    public ASTNode visitDropScaling(final DropScalingContext ctx) {
-        return new DropMigrationStatement(getIdentifierValue(ctx.jobId()));
+    public ASTNode visitCleanScaling(final CleanScalingContext ctx) {
+        return new CleanMigrationStatement(getIdentifierValue(ctx.jobId()));
     }
     
     @Override

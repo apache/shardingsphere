@@ -39,8 +39,8 @@ stopScaling
     : STOP SCALING jobId
     ;
 
-dropScaling
-    : DROP SCALING jobId
+cleanScaling
+    : CLEAN SCALING jobId
     ;
 
 resetScaling

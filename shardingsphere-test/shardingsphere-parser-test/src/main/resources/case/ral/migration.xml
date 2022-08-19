@@ -62,9 +62,9 @@
         <job-id>123</job-id>
     </apply-scaling>
     
-    <drop-scaling sql-case-id="drop-scaling">
+    <clean-scaling sql-case-id="clean-scaling">
         <job-id>123</job-id>
-    </drop-scaling>
+    </clean-scaling>
     
     <reset-scaling sql-case-id="reset-scaling">
         <job-id>123</job-id>
