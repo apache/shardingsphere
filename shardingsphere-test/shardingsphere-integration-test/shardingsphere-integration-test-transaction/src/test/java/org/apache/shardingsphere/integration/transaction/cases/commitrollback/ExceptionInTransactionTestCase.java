@@ -58,18 +58,13 @@ public final class ExceptionInTransactionTestCase extends BaseTransactionTestCas
         } catch (final ArithmeticException ex) {
             assertThat(ex.getMessage(), is("/ by zero"));
         }
-//        ThreadUtil.sleep(1, TimeUnit.SECONDS);
-//        Connection conn = getDataSource().getConnection();
-//        assertAccountRowCount(conn, 0);
         Thread queryThread = new Thread(() -> {
             log.info("Execute query in new thread.");
-            Connection conn = null;
-            try {
-                conn = getDataSource().getConnection();
+            try (Connection conn = getDataSource().getConnection()) {
+                assertAccountRowCount(conn, 0);
             } catch (final SQLException ignored) {
                 
             }
-            assertAccountRowCount(conn, 0);
         });
         queryThread.start();
         try {
