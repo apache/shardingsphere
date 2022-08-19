@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.metadata.generator;
 
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGeneratorFactory;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
@@ -51,9 +49,8 @@ import java.util.Optional;
 import java.util.TreeMap;
 
 /**
- * Pipeline ddl generator.
+ * Pipeline DDL generator.
  */
-@RequiredArgsConstructor
 @Slf4j
 public final class PipelineDDLGenerator {
     
@@ -71,10 +68,10 @@ public final class PipelineDDLGenerator {
      * @param actualTableName actual table name
      * @param parserEngine parser engine
      * @return DDL
+     * @throws SQLException SQL exception 
      */
-    @SneakyThrows(SQLException.class)
     public String generateLogicDDL(final DatabaseType databaseType, final DataSource sourceDataSource,
-                                   final String schemaName, final String logicTableName, final String actualTableName, final ShardingSphereSQLParserEngine parserEngine) {
+                                   final String schemaName, final String logicTableName, final String actualTableName, final ShardingSphereSQLParserEngine parserEngine) throws SQLException {
         log.info("generateLogicDDLSQL, databaseType={}, schemaName={}, tableName={}", databaseType.getType(), schemaName, logicTableName);
         StringBuilder result = new StringBuilder();
         for (String each : CreateTableSQLGeneratorFactory.getInstance(databaseType).generate(sourceDataSource, schemaName, actualTableName)) {

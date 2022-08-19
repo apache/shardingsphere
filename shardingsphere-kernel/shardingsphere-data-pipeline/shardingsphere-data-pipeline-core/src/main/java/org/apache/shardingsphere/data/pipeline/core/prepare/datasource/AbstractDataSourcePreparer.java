@@ -119,7 +119,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         return PATTERN_CREATE_TABLE.matcher(createTableSQL).replaceFirst("CREATE TABLE IF NOT EXISTS ");
     }
     
-    protected List<String> listCreateLogicalTableSQL(final PrepareTargetTablesParameter parameter) {
+    protected final List<String> listCreateLogicalTableSQL(final PrepareTargetTablesParameter parameter) throws SQLException {
         PipelineDDLGenerator generator = new PipelineDDLGenerator();
         List<String> result = new LinkedList<>();
         for (JobDataNodeEntry each : parameter.getTablesFirstDataNodes().getEntries()) {

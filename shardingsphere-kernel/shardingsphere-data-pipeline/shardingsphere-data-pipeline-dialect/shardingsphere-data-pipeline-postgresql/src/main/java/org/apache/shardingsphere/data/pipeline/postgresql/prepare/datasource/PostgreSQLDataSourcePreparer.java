@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePreparer {
     
     @Override
-    public void prepareTargetTables(final PrepareTargetTablesParameter parameter) {
+    public void prepareTargetTables(final PrepareTargetTablesParameter parameter) throws SQLException {
         List<String> createLogicalTableSQLs = listCreateLogicalTableSQL(parameter);
         try (Connection targetConnection = getCachedDataSource(parameter.getTargetDataSourceConfig(), parameter.getDataSourceManager()).getConnection()) {
             for (String createLogicalTableSQL : createLogicalTableSQLs) {

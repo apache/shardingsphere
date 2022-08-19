@@ -37,6 +37,8 @@ import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarr
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 
+import java.sql.SQLException;
+
 /**
  * Migration job.
  */
@@ -86,13 +88,16 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
             log.info("pipeline ignore exception: {}", ex.getMessage());
             PipelineJobCenter.stop(getJobId());
             // CHECKSTYLE:OFF
-        } catch (final RuntimeException ex) {
+        } catch (final SQLException | RuntimeException ex) {
             // CHECKSTYLE:ON
             log.error("job prepare failed, {}-{}", getJobId(), jobItemContext.getShardingItem(), ex);
             PipelineJobCenter.stop(getJobId());
             jobItemContext.setStatus(JobStatus.PREPARING_FAILURE);
             MigrationJobAPIFactory.getInstance().persistJobItemProgress(jobItemContext);
-            throw ex;
+            if (ex instanceof RuntimeException) {
+                throw (RuntimeException) ex;
+            }
+            throw new RuntimeException(ex);
         }
     }
     
