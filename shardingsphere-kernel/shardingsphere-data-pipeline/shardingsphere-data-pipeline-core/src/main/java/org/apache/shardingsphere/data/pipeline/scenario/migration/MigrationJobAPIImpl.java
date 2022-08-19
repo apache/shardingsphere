@@ -52,16 +52,19 @@ import org.apache.shardingsphere.data.pipeline.core.exception.DropMigrationSourc
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineVerifyFailedException;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparerFactory;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
+import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineReadConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
+import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineReadConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.data.pipeline.YamlPipelineReadConfigurationSwapper;
 import org.apache.shardingsphere.mode.lock.ExclusiveLockDefinition;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
 
@@ -145,6 +148,18 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     }
     
     @Override
+    public MigrationProcessContext buildPipelineProcessContext(final PipelineJobConfiguration pipelineJobConfig) {
+        // TODO add jobType
+        // TODO read process config from registry center
+        YamlPipelineReadConfiguration yamlReadConfig = YamlPipelineReadConfiguration.buildWithDefaultValue();
+        yamlReadConfig.fillInNullFieldsWithDefaultValue();
+        yamlReadConfig.setShardingSize(10);
+        PipelineReadConfiguration readConfig = new YamlPipelineReadConfigurationSwapper().swapToObject(yamlReadConfig);
+        PipelineProcessConfiguration processConfig = new PipelineProcessConfiguration(readConfig, null, null);
+        return new MigrationProcessContext(pipelineJobConfig.getJobId(), processConfig);
+    }
+    
+    @Override
     public List<JobInfo> list() {
         checkModeConfig();
         return getJobBriefInfos().map(each -> getJobInfo(each.getJobName())).collect(Collectors.toList());
@@ -208,7 +223,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     }
     
     private void verifyManualMode(final MigrationJobConfiguration jobConfig) {
-        MigrationProcessContext processContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
+        MigrationProcessContext processContext = buildPipelineProcessContext(jobConfig);
         if (null != processContext.getCompletionDetectAlgorithm()) {
             throw new PipelineVerifyFailedException("It's not necessary to do it in auto mode.");
         }
@@ -292,7 +307,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     
     @Override
     public boolean isDataConsistencyCheckNeeded(final MigrationJobConfiguration jobConfig) {
-        MigrationProcessContext processContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
+        MigrationProcessContext processContext = buildPipelineProcessContext(jobConfig);
         return isDataConsistencyCheckNeeded(processContext);
     }
     
@@ -311,7 +326,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     
     @Override
     public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final MigrationJobConfiguration jobConfig) {
-        MigrationProcessContext processContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
+        MigrationProcessContext processContext = buildPipelineProcessContext(jobConfig);
         if (!isDataConsistencyCheckNeeded(processContext)) {
             log.info("DataConsistencyCalculatorAlgorithm is not configured, data consistency check is ignored.");
             return Collections.emptyMap();
@@ -330,7 +345,8 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     
     private Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final MigrationJobConfiguration jobConfig, final DataConsistencyCalculateAlgorithm calculator) {
         String jobId = jobConfig.getJobId();
-        Map<String, DataConsistencyCheckResult> result = new DataConsistencyChecker(jobConfig).check(calculator);
+        JobRateLimitAlgorithm readRateLimitAlgorithm = buildPipelineProcessContext(jobConfig).getReadRateLimitAlgorithm();
+        Map<String, DataConsistencyCheckResult> result = new DataConsistencyChecker(jobConfig, readRateLimitAlgorithm).check(calculator);
         log.info("Scaling job {} with check algorithm '{}' data consistency checker result {}", jobId, calculator.getType(), result);
         PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobCheckResult(jobId, aggregateDataConsistencyCheckResults(jobId, result));
         return result;
@@ -372,7 +388,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     @Override
     public void switchClusterConfiguration(final MigrationJobConfiguration jobConfig) {
         String jobId = jobConfig.getJobId();
-        MigrationProcessContext processContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
+        MigrationProcessContext processContext = buildPipelineProcessContext(jobConfig);
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
         if (isDataConsistencyCheckNeeded(processContext)) {
             Optional<Boolean> checkResult = repositoryAPI.getJobCheckResult(jobId);

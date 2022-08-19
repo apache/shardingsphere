@@ -160,14 +160,14 @@ public final class MySQLErrPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithSQLParsingException() {
-        assertSQLParsingException(MySQLErrPacketFactory.newInstance(new SQLParsingException()));
+        assertSQLParsingException(MySQLErrPacketFactory.newInstance(new SQLParsingException("test")));
     }
     
     private void assertSQLParsingException(final MySQLErrPacket actual) {
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(11000));
         assertThat(actual.getSqlState(), is("42000"));
-        assertThat(actual.getErrorMessage(), is("You have an error in your SQL syntax"));
+        assertThat(actual.getErrorMessage(), is("You have an error in your SQL syntax: test"));
     }
     
     @Test

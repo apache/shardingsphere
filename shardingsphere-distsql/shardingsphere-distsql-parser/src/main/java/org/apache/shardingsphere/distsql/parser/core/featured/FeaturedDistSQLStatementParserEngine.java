@@ -52,7 +52,7 @@ public final class FeaturedDistSQLStatementParserEngine {
             } catch (final ParseCancellationException | SQLParsingException ignored) {
             }
         }
-        throw new SQLParsingException();
+        throw new SQLParsingException(sql);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

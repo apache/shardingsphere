@@ -15,54 +15,52 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
+package org.apache.shardingsphere.traffic.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTrafficRulesStatement;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.distsql.query.GlobalRuleDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
+import org.apache.shardingsphere.traffic.distsql.parser.statement.queryable.ShowTrafficRulesStatement;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.junit.Test;
 
-import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ShowTrafficRulesHandlerTest extends ProxyContextRestorer {
+public final class TrafficRulesQueryResultSetTest {
     
     @Test
-    public void assertExecute() throws SQLException {
-        ShowTrafficRulesHandler handler = new ShowTrafficRulesHandler();
-        handler.init(new ShowTrafficRulesStatement("rule_name_1"), null);
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        TrafficRule rule = mock(TrafficRule.class);
-        when(rule.getConfiguration()).thenReturn(createTrafficRuleConfiguration());
-        ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
-        when(globalRuleMetaData.getSingleRule(TrafficRule.class)).thenReturn(rule);
-        ProxyContext.init(contextManager);
-        handler.execute();
-        handler.next();
-        List<Object> data = handler.getRowData().getData();
-        assertThat(data.size(), is(6));
-        assertThat(data.get(0), is("rule_name_1"));
-        assertThat(data.get(1), is("olap,order_by"));
-        assertThat(data.get(2), is("SQL_MATCH"));
-        assertThat(data.get(3), is("sql=select * from t_order"));
-        assertThat(data.get(4), is("RANDOM"));
-        assertThat(data.get(5), is(""));
+    public void assertExecute() {
+        ShardingSphereRuleMetaData ruleMetaData = mockRuleMetaData();
+        GlobalRuleDistSQLResultSet resultSet = new TrafficRulesQueryResultSet();
+        resultSet.init(ruleMetaData, mock(ShowTrafficRulesStatement.class));
+        Collection<Object> actual = resultSet.getRowData();
+        assertThat(actual.size(), is(6));
+        assertTrue(actual.contains("rule_name_1"));
+        assertTrue(actual.contains("olap,order_by"));
+        assertTrue(actual.contains("SQL_MATCH"));
+        assertTrue(actual.contains("sql=select * from t_order"));
+        assertTrue(actual.contains("RANDOM"));
+        assertTrue(actual.contains(""));
+    }
+    
+    private ShardingSphereRuleMetaData mockRuleMetaData() {
+        TrafficRule trafficRule = mock(TrafficRule.class);
+        when(trafficRule.getConfiguration()).thenReturn(createTrafficRuleConfiguration());
+        ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class);
+        when(result.findSingleRule(TrafficRule.class)).thenReturn(Optional.of(trafficRule));
+        return result;
     }
     
     private TrafficRuleConfiguration createTrafficRuleConfiguration() {

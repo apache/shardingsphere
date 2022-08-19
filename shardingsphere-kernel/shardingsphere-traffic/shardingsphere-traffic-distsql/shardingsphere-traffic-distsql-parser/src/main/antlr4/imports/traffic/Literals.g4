@@ -15,18 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.queryable;
+lexer grammar Literals;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
+import Alphabet, Symbol;
 
-/**
- * Show traffic rules statement.
- */
-@RequiredArgsConstructor
-@Getter
-public final class ShowTrafficRulesStatement extends QueryableRALStatement {
-    
-    private final String ruleName;
-}
+IDENTIFIER
+    : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
+    | BQ ~'`'+ BQ
+    ;
+
+STRING
+    : (DQ ('\\'. | '""' | ~('"' | '\\'))* DQ)
+    | (SQ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ)
+    ;
