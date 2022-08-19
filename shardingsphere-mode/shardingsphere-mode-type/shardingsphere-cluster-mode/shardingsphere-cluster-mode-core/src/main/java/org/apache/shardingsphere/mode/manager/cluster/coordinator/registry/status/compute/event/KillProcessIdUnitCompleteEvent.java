@@ -15,32 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.kernel.model;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
-
-import java.util.Collection;
-import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * Execution group context.
- *
- * @param <T> type of execution input value
+ * Kill processID unit complete event.
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
-public final class ExecutionGroupContext<T> {
+public class KillProcessIdUnitCompleteEvent implements GovernanceEvent {
     
-    private final Collection<ExecutionGroup<T>> inputGroups;
-    
-    private final String executionID = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replaceAll("-", "");
-    
-    private volatile String databaseName;
-    
-    private volatile Grantee grantee;
+    private final String showProcessListId;
 }

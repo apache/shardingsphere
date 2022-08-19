@@ -22,20 +22,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutorCreator;
-import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.NoResourceShowExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.ShowConnectionIdExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.ShowCreateDatabaseExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.ShowCurrentDatabaseExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.ShowCurrentUserExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.ShowDatabasesExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.ShowFunctionStatusExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.ShowProcedureStatusExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.ShowProcessListExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.ShowTablesExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.ShowTransactionExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.ShowVersionExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.UnicastResourceShowExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.UseDatabaseExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.*;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -44,12 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.UseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowFunctionStatusStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowProcedureStatusStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowProcessListStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.*;
 
 import java.util.Iterator;
 import java.util.Collection;
@@ -90,6 +72,9 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
         }
         if (sqlStatement instanceof MySQLShowProcessListStatement) {
             return Optional.of(new ShowProcessListExecutor());
+        }
+        if (sqlStatement instanceof MySQLKillStatement) {
+            return Optional.of(new KillProcessExecutor((MySQLKillStatement) sqlStatement));
         }
         if (sqlStatement instanceof MySQLShowCreateDatabaseStatement) {
             return Optional.of(new ShowCreateDatabaseExecutor((MySQLShowCreateDatabaseStatement) sqlStatement));

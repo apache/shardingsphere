@@ -41,6 +41,8 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metad
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOfflineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOnlineEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessIdEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessIdUnitCompleteEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListTriggerEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListUnitCompleteEvent;
@@ -58,8 +60,10 @@ import org.apache.shardingsphere.mode.process.lock.ShowProcessListSimpleLock;
 import org.apache.shardingsphere.mode.process.node.ProcessNode;
 
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -297,12 +301,45 @@ public final class ClusterContextManagerCoordinator {
     }
     
     /**
+     * Trigger show process list.
+     *
+     * @param event show process list trigger event
+     * @throws SQLException SQL exception
+     */
+    @Subscribe
+    public synchronized void killProcessId(final KillProcessIdEvent event) throws SQLException {
+        if (!event.getInstanceId().equals(contextManager.getInstanceContext().getInstance().getMetaData().getId())) {
+            return;
+        }
+        List<Statement> statements = ShowProcessListManager.getInstance().getProcessStatement(event.getProcessId());
+        if (!statements.isEmpty()) {
+            for (Statement statement : statements) {
+                statement.cancel();
+            }
+        }
+        registryCenter.getRepository().delete(ComputeNode.getProcessKillInstanceIdNodePath(event.getInstanceId(), event.getProcessId()));
+    }
+    
+    /**
      * Complete unit show process list.
      *
      * @param event show process list unit complete event
      */
     @Subscribe
     public synchronized void completeUnitShowProcessList(final ShowProcessListUnitCompleteEvent event) {
+        ShowProcessListSimpleLock simpleLock = ShowProcessListManager.getInstance().getLocks().get(event.getShowProcessListId());
+        if (null != simpleLock) {
+            simpleLock.doNotify();
+        }
+    }
+    
+    /**
+     * Complete unit kill process id.
+     *
+     * @param event kill process id unit complete event
+     */
+    @Subscribe
+    public synchronized void completeUnitKillProcessId(final KillProcessIdUnitCompleteEvent event) {
         ShowProcessListSimpleLock simpleLock = ShowProcessListManager.getInstance().getLocks().get(event.getShowProcessListId());
         if (null != simpleLock) {
             simpleLock.doNotify();
