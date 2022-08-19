@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
  */
 public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLoader {
     
-    private static final String TABLE_META_DATA_SQL_NO_ORDER = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_ID %s FROM ALL_TAB_COLS WHERE OWNER = ?";
+    private static final String TABLE_META_DATA_SQL_NO_ORDER = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_ID, HIDDEN_COLUMN %s FROM ALL_TAB_COLS WHERE OWNER = ?";
     
     private static final String ORDER_BY_COLUMN_ID = " ORDER BY COLUMN_ID";
     
@@ -67,8 +67,6 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     private static final int COLLATION_START_MINOR_VERSION = 2;
     
     private static final int IDENTITY_COLUMN_START_MINOR_VERSION = 1;
-    
-    private static final int HIDDEN_COLUMN_START_MINOR_VERSION = 1;
     
     private static final int MAX_EXPRESSION_SIZE = 1000;
     
@@ -117,7 +115,7 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
         boolean generated = versionContainsIdentityColumn(databaseMetaData) && "YES".equals(resultSet.getString("IDENTITY_COLUMN"));
         // TODO need to support caseSensitive when version < 12.2.
         boolean caseSensitive = versionContainsCollation(databaseMetaData) && resultSet.getString("COLLATION").endsWith("_CS");
-        boolean isVisible = !(versionContainsHiddenColumn(databaseMetaData) && "YES".equals(resultSet.getString("HIDDEN_COLUMN")));
+        boolean isVisible = "NO".equals(resultSet.getString("HIDDEN_COLUMN"));
         return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive, isVisible);
     }
     
@@ -130,10 +128,7 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     }
     
     private String getTableMetaDataSQL(final Collection<String> tables, final DatabaseMetaData databaseMetaData) throws SQLException {
-        StringBuilder stringBuilder = new StringBuilder(43);
-        if (versionContainsHiddenColumn(databaseMetaData)) {
-            stringBuilder.append(", HIDDEN_COLUMN");
-        }
+        StringBuilder stringBuilder = new StringBuilder(28);
         if (versionContainsIdentityColumn(databaseMetaData)) {
             stringBuilder.append(", IDENTITY_COLUMN");
         }
@@ -143,10 +138,6 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
         String collation = stringBuilder.toString();
         return tables.isEmpty() ? String.format(TABLE_META_DATA_SQL, collation)
                 : String.format(TABLE_META_DATA_SQL_IN_TABLES, collation, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
-    }
-    
-    private boolean versionContainsHiddenColumn(final DatabaseMetaData databaseMetaData) throws SQLException {
-        return databaseMetaData.getDatabaseMajorVersion() >= COLLATION_START_MAJOR_VERSION && databaseMetaData.getDatabaseMinorVersion() >= HIDDEN_COLUMN_START_MINOR_VERSION;
     }
     
     private boolean versionContainsCollation(final DatabaseMetaData databaseMetaData) throws SQLException {

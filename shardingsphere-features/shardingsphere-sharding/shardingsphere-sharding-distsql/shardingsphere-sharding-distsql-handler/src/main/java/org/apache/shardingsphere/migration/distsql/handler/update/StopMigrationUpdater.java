@@ -30,7 +30,7 @@ public final class StopMigrationUpdater implements RALUpdater<StopMigrationState
     private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
     
     @Override
-    public void executeUpdate(final StopMigrationStatement sqlStatement) {
+    public void executeUpdate(final String databaseName, final StopMigrationStatement sqlStatement) {
         JOB_API.stop(sqlStatement.getJobId());
     }
     

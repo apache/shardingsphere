@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.Diale
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -44,19 +45,21 @@ import java.util.stream.Collectors;
 public final class SQLServerSchemaMetaDataLoader implements DialectSchemaMetaDataLoader {
     
     private static final String TABLE_META_DATA_SQL_NO_ORDER = "SELECT obj.name AS TABLE_NAME, col.name AS COLUMN_NAME, t.name AS DATA_TYPE,"
-            + " col.collation_name AS COLLATION_NAME, col.column_id, is_identity AS IS_IDENTITY,"
+            + " col.collation_name AS COLLATION_NAME, col.column_id, is_identity AS IS_IDENTITY, %s"
             + " (SELECT TOP 1 ind.is_primary_key FROM sys.index_columns ic LEFT JOIN sys.indexes ind ON ic.object_id = ind.object_id"
-            + " AND ic.index_id = ind.index_id AND ind.name LIKE 'PK_%' WHERE ic.object_id = obj.object_id AND ic.column_id = col.column_id) AS IS_PRIMARY_KEY"
+            + " AND ic.index_id = ind.index_id AND ind.name LIKE 'PK_%%' WHERE ic.object_id = obj.object_id AND ic.column_id = col.column_id) AS IS_PRIMARY_KEY"
             + " FROM sys.objects obj INNER JOIN sys.columns col ON obj.object_id = col.object_id LEFT JOIN sys.types t ON t.user_type_id = col.user_type_id";
     
     private static final String ORDER_BY_COLUMN_ID = " ORDER BY col.column_id";
     
     private static final String TABLE_META_DATA_SQL = TABLE_META_DATA_SQL_NO_ORDER + ORDER_BY_COLUMN_ID;
     
-    private static final String TABLE_META_DATA_SQL_IN_TABLES = " WHERE obj.name IN (%s)" + ORDER_BY_COLUMN_ID;
+    private static final String TABLE_META_DATA_SQL_IN_TABLES = TABLE_META_DATA_SQL_NO_ORDER + " WHERE obj.name IN (%s)" + ORDER_BY_COLUMN_ID;
     
     private static final String INDEX_META_DATA_SQL = "SELECT a.name AS INDEX_NAME, c.name AS TABLE_NAME FROM sys.indexes a"
             + " JOIN sys.objects c ON a.object_id = c.object_id WHERE a.index_id NOT IN (0, 255) AND c.name IN (%s)";
+    
+    private static final int HIDDEN_COLUMN_START_MAJOR_VERSION = 15;
     
     @Override
     public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
@@ -76,12 +79,12 @@ public final class SQLServerSchemaMetaDataLoader implements DialectSchemaMetaDat
         Map<String, Collection<ColumnMetaData>> result = new HashMap<>();
         try (
                 Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables))) {
+                PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables, connection.getMetaData()))) {
             Map<String, Integer> dataTypes = DataTypeLoaderFactory.getInstance(DatabaseTypeFactory.getInstance("SQLServer")).load(connection.getMetaData());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String tableName = resultSet.getString("TABLE_NAME");
-                    ColumnMetaData columnMetaData = loadColumnMetaData(dataTypes, resultSet);
+                    ColumnMetaData columnMetaData = loadColumnMetaData(dataTypes, resultSet, connection.getMetaData());
                     if (!result.containsKey(tableName)) {
                         result.put(tableName, new LinkedList<>());
                     }
@@ -92,19 +95,29 @@ public final class SQLServerSchemaMetaDataLoader implements DialectSchemaMetaDat
         return result;
     }
     
-    private ColumnMetaData loadColumnMetaData(final Map<String, Integer> dataTypeMap, final ResultSet resultSet) throws SQLException {
+    private ColumnMetaData loadColumnMetaData(final Map<String, Integer> dataTypeMap, final ResultSet resultSet, final DatabaseMetaData databaseMetaData) throws SQLException {
         String columnName = resultSet.getString("COLUMN_NAME");
         String dataType = resultSet.getString("DATA_TYPE");
         String collationName = resultSet.getString("COLLATION_NAME");
         boolean primaryKey = "1".equals(resultSet.getString("IS_PRIMARY_KEY"));
         boolean generated = "1".equals(resultSet.getString("IS_IDENTITY"));
         boolean caseSensitive = null != collationName && collationName.indexOf("_CS") > 0;
-        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive, true);
+        boolean isVisible = !(versionContainsHiddenColumn(databaseMetaData) && "1".equals(resultSet.getString("IS_HIDDEN")));
+        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive, isVisible);
     }
     
-    private String getTableMetaDataSQL(final Collection<String> tables) {
-        return tables.isEmpty() ? TABLE_META_DATA_SQL
-                : TABLE_META_DATA_SQL_NO_ORDER + String.format(TABLE_META_DATA_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+    private String getTableMetaDataSQL(final Collection<String> tables, final DatabaseMetaData databaseMetaData) throws SQLException {
+        StringBuilder stringBuilder = new StringBuilder(24);
+        if (versionContainsHiddenColumn(databaseMetaData)) {
+            stringBuilder.append("is_hidden AS IS_HIDDEN,");
+        }
+        String isHidden = stringBuilder.toString();
+        return tables.isEmpty() ? String.format(TABLE_META_DATA_SQL, isHidden)
+                : String.format(TABLE_META_DATA_SQL_IN_TABLES, isHidden, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+    }
+    
+    private boolean versionContainsHiddenColumn(final DatabaseMetaData databaseMetaData) throws SQLException {
+        return databaseMetaData.getDatabaseMajorVersion() >= HIDDEN_COLUMN_START_MAJOR_VERSION;
     }
     
     private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final DataSource dataSource, final Collection<String> tableNames) throws SQLException {

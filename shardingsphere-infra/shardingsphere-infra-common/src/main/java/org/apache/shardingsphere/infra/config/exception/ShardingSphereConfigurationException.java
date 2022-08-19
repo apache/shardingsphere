@@ -28,6 +28,6 @@ public final class ShardingSphereConfigurationException extends ShardingSphereSQ
     private static final long serialVersionUID = -1360264079938958332L;
     
     public ShardingSphereConfigurationException(final String reason, final String... messageArguments) {
-        super(XOpenSQLState.SYNTAX_ERROR, 1235, reason, messageArguments);
+        super(XOpenSQLState.SYNTAX_ERROR, 11001, reason, messageArguments);
     }
 }

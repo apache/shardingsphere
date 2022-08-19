@@ -30,7 +30,7 @@ public final class StartMigrationUpdater implements RALUpdater<StartMigrationSta
     private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
     
     @Override
-    public void executeUpdate(final StartMigrationStatement sqlStatement) {
+    public void executeUpdate(final String databaseName, final StartMigrationStatement sqlStatement) {
         JOB_API.startDisabledJob(sqlStatement.getJobId());
     }
     

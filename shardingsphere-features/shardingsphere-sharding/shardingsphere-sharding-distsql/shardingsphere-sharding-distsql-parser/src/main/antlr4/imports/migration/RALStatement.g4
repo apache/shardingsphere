@@ -19,6 +19,10 @@ grammar RALStatement;
 
 import BaseRule;
 
+migrateTable
+    : MIGRATE TABLE sourceTableName INTO targetTableName
+    ;
+
 showScalingList
     : SHOW SCALING LIST
     ;
@@ -35,8 +39,8 @@ stopScaling
     : STOP SCALING jobId
     ;
 
-dropScaling
-    : DROP SCALING jobId
+cleanScaling
+    : CLEAN SCALING jobId
     ;
 
 resetScaling
@@ -65,4 +69,68 @@ applyScaling
 
 jobId
     : INT | STRING
+    ;
+
+sourceTableName
+    : (owner DOT)? name
+    ;
+
+targetTableName
+    : (owner DOT)? name
+    ;
+
+owner
+    : identifier
+    ;
+
+name
+    : identifier
+    ;
+
+identifier
+    : IDENTIFIER
+    ;
+
+resourceDefinition
+    : resourceName LP (simpleSource | urlSource) COMMA USER EQ user (COMMA PASSWORD EQ password)? (COMMA propertiesDefinition)? RP
+    ;
+
+resourceName
+    : IDENTIFIER
+    ;
+
+simpleSource
+    : HOST EQ hostname COMMA PORT EQ port COMMA DB EQ dbName
+    ;
+
+urlSource
+    : URL EQ url
+    ;
+
+hostname
+    : STRING
+    ;
+
+port
+    : INT
+    ;
+
+dbName
+    : STRING
+    ;
+
+url
+    : STRING
+    ;
+
+user
+    : STRING
+    ;
+
+password
+    : STRING
+    ;
+
+addMigrationSourceResource
+    : ADD MIGRATION SOURCE RESOURCE resourceDefinition (COMMA resourceDefinition)*
     ;

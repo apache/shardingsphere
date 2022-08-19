@@ -30,6 +30,7 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgo
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPI;
 import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 
 import java.util.Collection;
 import java.util.List;
@@ -141,6 +142,10 @@ public final class MigrationJobAPIFixture implements MigrationJobAPI {
     
     @Override
     public void reset(final String jobId) {
+    }
+    
+    @Override
+    public void addMigrationSourceResources(final Map<String, DataSourceProperties> sourcePropertiesMap) {
     }
     
     @Override

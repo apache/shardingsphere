@@ -111,4 +111,4 @@ Introduce MAVEN dependency
 ## Relevant References
 
 - [Installation and use of ZooKeeper Registry Center](https://zookeeper.apache.org/doc/r3.7.1/zookeeperStarted.html)
-- For details about persistent repository, please refer to [List of Built-in repository types](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/metadata-repository/)
+- For details about persistent repository, please refer to [List of Built-in repository types](/cn/user-manual/common-config/builtin-algorithm/metadata-repository/)

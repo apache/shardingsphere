@@ -28,6 +28,6 @@ public final class UnrecognizedDatabaseURLException extends ShardingSphereSQLExc
     private static final long serialVersionUID = -1551117178863766353L;
     
     public UnrecognizedDatabaseURLException(final String url, final String pattern) {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 1940, "The URL `%s` is not recognized, please refer to the pattern `%s`.", url, pattern);
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 10001, "The URL `%s` is not recognized, please refer to the pattern `%s`", url, pattern);
     }
 }

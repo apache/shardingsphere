@@ -36,7 +36,7 @@ public final class SQLDialectExceptionMapperFactory {
      * Get instance of SQL dialect exception mapper.
      * 
      * @param databaseType database type
-     * @return SQL dialect exception mapper
+     * @return got instance
      */
     public static SQLDialectExceptionMapper getInstance(final String databaseType) {
         return TypedSPIRegistry.getRegisteredService(SQLDialectExceptionMapper.class, databaseType);

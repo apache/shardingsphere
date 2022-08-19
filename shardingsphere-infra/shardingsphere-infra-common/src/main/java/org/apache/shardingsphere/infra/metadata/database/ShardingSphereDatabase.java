@@ -33,7 +33,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSc
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 
 import javax.sql.DataSource;
@@ -43,7 +42,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 /**
  * ShardingSphere database.
@@ -184,14 +182,7 @@ public final class ShardingSphereDatabase {
         RuleConfiguration config = toBeReloadedRules.stream().map(ShardingSphereRule::getConfiguration).findFirst().orElse(null);
         toBeReloadedRules.stream().findFirst().ifPresent(optional -> {
             ruleMetaData.getRules().removeAll(toBeReloadedRules);
-            ruleMetaData.getRules().addAll(reloadRules(config, (MutableDataNodeRule) optional));
+            ruleMetaData.getRules().add(((MutableDataNodeRule) optional).reloadRule(config, name, resource.getDataSources(), ruleMetaData.getRules()));
         });
-    }
-    
-    private Collection<ShardingSphereRule> reloadRules(final RuleConfiguration config, final MutableDataNodeRule mutableDataNodeRule) {
-        Collection<ShardingSphereRule> result = new LinkedList<>();
-        Collection<ShardingSphereRule> dataSourceContainedRules = ruleMetaData.getRules().stream().filter(each -> each instanceof DataSourceContainedRule).collect(Collectors.toList());
-        result.add(mutableDataNodeRule.reloadRule(config, name, resource.getDataSources(), dataSourceContainedRules));
-        return result;
     }
 }

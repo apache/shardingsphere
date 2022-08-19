@@ -37,7 +37,7 @@ writeDataSourceQueryEnabled:
 
 - 支持创建静态读写分离规则和动态读写分离规则；
 - 动态读写分离规则依赖于数据库发现规则；
-- `loadBanlancerType` 指定负载均衡算法类型，请参考 [负载均衡算法](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/load-balance/)；
+- `loadBanlancerType` 指定负载均衡算法类型，请参考 [负载均衡算法](/cn/user-manual/common-config/builtin-algorithm/load-balance/)；
 - 重复的 `ruleName` 将无法被创建。
 
 ## 示例

@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.migration.distsql.parser.core;
 
+import com.google.common.base.Splitter;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser;
+import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.AddMigrationSourceResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.ApplyScalingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.BatchSizeContext;
@@ -28,13 +30,17 @@ import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatemen
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.CreateShardingScalingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.DataConsistencyCheckerContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.DisableShardingScalingRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.DropScalingContext;
-import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.DropShardingScalingRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.CleanScalingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.EnableShardingScalingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.InputDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.MigrateTableContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.OutputDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.PasswordContext;
+import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.PropertiesDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.PropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.RateLimiterContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.ResetScalingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.ResourceDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.RestoreScalingSourceWritingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.ScalingRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.SchemaNameContext;
@@ -49,13 +55,18 @@ import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatemen
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.StreamChannelContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.WorkerThreadContext;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
+import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
+import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
+import org.apache.shardingsphere.migration.distsql.statement.AddMigrationSourceResourceStatement;
 import org.apache.shardingsphere.migration.distsql.statement.ApplyMigrationStatement;
 import org.apache.shardingsphere.migration.distsql.statement.CheckMigrationStatement;
 import org.apache.shardingsphere.migration.distsql.statement.CreateShardingScalingRuleStatement;
 import org.apache.shardingsphere.migration.distsql.statement.DisableShardingScalingRuleStatement;
-import org.apache.shardingsphere.migration.distsql.statement.DropMigrationStatement;
+import org.apache.shardingsphere.migration.distsql.statement.CleanMigrationStatement;
 import org.apache.shardingsphere.migration.distsql.statement.DropShardingScalingRuleStatement;
 import org.apache.shardingsphere.migration.distsql.statement.EnableShardingScalingRuleStatement;
+import org.apache.shardingsphere.migration.distsql.statement.MigrateTableStatement;
 import org.apache.shardingsphere.migration.distsql.statement.ResetMigrationStatement;
 import org.apache.shardingsphere.migration.distsql.statement.RestoreMigrationSourceWritingStatement;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationCheckAlgorithmsStatement;
@@ -72,12 +83,22 @@ import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Properties;
 
 /**
  * SQL statement visitor for migration dist SQL.
  */
 public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
+    
+    @Override
+    public ASTNode visitMigrateTable(final MigrateTableContext ctx) {
+        List<String> source = Splitter.on('.').splitToList(getIdentifierValue(ctx.sourceTableName()));
+        List<String> target = Splitter.on('.').splitToList(getIdentifierValue(ctx.targetTableName()));
+        return new MigrateTableStatement(source.size() > 1 ? source.get(0) : null, source.get(source.size() - 1), target.size() > 1 ? target.get(0) : null, target.get(target.size() - 1));
+    }
     
     @Override
     public ASTNode visitShowScalingList(final ShowScalingListContext ctx) {
@@ -100,8 +121,8 @@ public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStat
     }
     
     @Override
-    public ASTNode visitDropScaling(final DropScalingContext ctx) {
-        return new DropMigrationStatement(getIdentifierValue(ctx.jobId()));
+    public ASTNode visitCleanScaling(final CleanScalingContext ctx) {
+        return new CleanMigrationStatement(getIdentifierValue(ctx.jobId()));
     }
     
     @Override
@@ -220,7 +241,7 @@ public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStat
     }
     
     @Override
-    public ASTNode visitDropShardingScalingRule(final DropShardingScalingRuleContext ctx) {
+    public ASTNode visitDropShardingScalingRule(final MigrationDistSQLStatementParser.DropShardingScalingRuleContext ctx) {
         return new DropShardingScalingRuleStatement(null != ctx.ifExists(), getIdentifierValue(ctx.scalingName()));
     }
     
@@ -265,5 +286,45 @@ public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStat
             return null;
         }
         return new IdentifierValue(context.getText()).getValue();
+    }
+    
+    @Override
+    public ASTNode visitResourceDefinition(final MigrationDistSQLStatementParser.ResourceDefinitionContext ctx) {
+        String user = getIdentifierValue(ctx.user());
+        String password = null == ctx.password() ? "" : getPassword(ctx.password());
+        Properties props = getProperties(ctx.propertiesDefinition());
+        DataSourceSegment result = null;
+        if (null != ctx.urlSource()) {
+            result = new URLBasedDataSourceSegment(getIdentifierValue(ctx.resourceName()), getIdentifierValue(ctx.urlSource().url()), user, password, props);
+        }
+        if (null != ctx.simpleSource()) {
+            result = new HostnameAndPortBasedDataSourceSegment(getIdentifierValue(ctx.resourceName()), getIdentifierValue(ctx.simpleSource().hostname()), ctx.simpleSource().port().getText(),
+                    getIdentifierValue(ctx.simpleSource().dbName()), user, password, props);
+        }
+        return result;
+    }
+    
+    private String getPassword(final PasswordContext ctx) {
+        return getIdentifierValue(ctx);
+    }
+    
+    private Properties getProperties(final PropertiesDefinitionContext ctx) {
+        Properties result = new Properties();
+        if (null == ctx || null == ctx.properties()) {
+            return result;
+        }
+        for (PropertyContext each : ctx.properties().property()) {
+            result.setProperty(IdentifierValue.getQuotedContent(each.key.getText()), IdentifierValue.getQuotedContent(each.value.getText()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAddMigrationSourceResource(final AddMigrationSourceResourceContext ctx) {
+        Collection<DataSourceSegment> dataSources = new ArrayList<>();
+        for (ResourceDefinitionContext each : ctx.resourceDefinition()) {
+            dataSources.add((DataSourceSegment) visit(each));
+        }
+        return new AddMigrationSourceResourceStatement(dataSources);
     }
 }
