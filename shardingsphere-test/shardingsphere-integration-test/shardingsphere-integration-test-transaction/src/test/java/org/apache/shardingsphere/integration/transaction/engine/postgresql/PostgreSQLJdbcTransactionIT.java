@@ -58,13 +58,7 @@ public final class PostgreSQLJdbcTransactionIT extends BaseTransactionITCase {
     }
     
     @Test
-    @SneakyThrows
     public void assertTransaction() {
-        callTestCases();
-    }
-    
-    @SneakyThrows
-    private void callTestCases() {
         callTestCases(parameterized);
     }
 }

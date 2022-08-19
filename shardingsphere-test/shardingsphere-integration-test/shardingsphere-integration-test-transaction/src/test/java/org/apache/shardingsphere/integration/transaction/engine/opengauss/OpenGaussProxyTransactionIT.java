@@ -74,13 +74,7 @@ public final class OpenGaussProxyTransactionIT extends BaseTransactionITCase {
     }
     
     @Test
-    @SneakyThrows
     public void assertTransaction() {
-        callTestCases();
-    }
-    
-    @SneakyThrows
-    private void callTestCases() {
         callTestCases(parameterized);
     }
 }
