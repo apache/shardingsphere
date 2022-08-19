@@ -192,11 +192,11 @@ providerDefinition
     ;
 
 defaultType
-    : IDENTIFIER
+    : STRING
     ;
 
 providerName
-    : IDENTIFIER
+    : STRING
     ;
 
 sqlParserRuleDefinition
