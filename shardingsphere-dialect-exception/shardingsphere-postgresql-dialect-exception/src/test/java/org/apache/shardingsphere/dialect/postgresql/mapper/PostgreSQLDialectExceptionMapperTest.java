@@ -33,7 +33,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public class PostgreSQLDialectExceptionMapperTest {
+public final class PostgreSQLDialectExceptionMapperTest {
     
     private Collection<Object[]> getConvertParameters() {
         return Arrays.asList(new Object[][]{
