@@ -143,7 +143,7 @@ public final class RALBackendHandlerFactory {
         }
         if (sqlStatement instanceof QueryableScalingRALStatement) {
             DistSQLResultSet resultSet = QueryableScalingRALBackendHandlerFactory.newInstance((QueryableScalingRALStatement) sqlStatement);
-            return new QueryableScalingRALBackendHandler(sqlStatement, connectionSession, (DatabaseDistSQLResultSet) resultSet);
+            return new QueryableScalingRALBackendHandler((QueryableScalingRALStatement) sqlStatement, (DatabaseDistSQLResultSet) resultSet);
         }
         if (sqlStatement instanceof UpdatableScalingRALStatement) {
             return new UpdatableScalingRALBackendHandler((UpdatableScalingRALStatement) sqlStatement, connectionSession);
