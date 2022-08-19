@@ -45,8 +45,9 @@ public final class ExceptionInTransactionTestCase extends BaseTransactionTestCas
     @Override
     @SneakyThrows(SQLException.class)
     protected void executeTest() {
+        Connection conn = null;
         try {
-            Connection conn = getDataSource().getConnection();
+            conn = getDataSource().getConnection();
             conn.setAutoCommit(false);
             assertAccountRowCount(conn, 0);
             executeWithLog(conn, "insert into account(id, balance, transaction_id) values(1, 1, 1);");
@@ -57,11 +58,15 @@ public final class ExceptionInTransactionTestCase extends BaseTransactionTestCas
             fail("It should fail here.");
         } catch (final ArithmeticException ex) {
             assertThat(ex.getMessage(), is("/ by zero"));
+        } finally {
+            if (null != conn) {
+                conn.rollback();
+            }
         }
         Thread queryThread = new Thread(() -> {
             log.info("Execute query in new thread.");
-            try (Connection conn = getDataSource().getConnection()) {
-                assertAccountRowCount(conn, 0);
+            try (Connection connection = getDataSource().getConnection()) {
+                assertAccountRowCount(connection, 0);
             } catch (final SQLException ignored) {
                 
             }
