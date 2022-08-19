@@ -62,7 +62,7 @@ public final class SQLParserExecutor {
             try {
                 return (ParseASTNode) sqlParser.parse();
             } catch (final ParseCancellationException e) {
-                throw new SQLParsingException();
+                throw new SQLParsingException(sql);
             }
         }
     }
