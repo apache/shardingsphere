@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.migration.distsql.handler.update;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
+import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
 import org.apache.shardingsphere.migration.distsql.statement.AddMigrationSourceResourceStatement;
 
@@ -26,6 +28,8 @@ import org.apache.shardingsphere.migration.distsql.statement.AddMigrationSourceR
  */
 @Slf4j
 public final class AddMigrationSourceResourceUpdater implements RALUpdater<AddMigrationSourceResourceStatement> {
+    
+    private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
     
     @Override
     public void executeUpdate(final String databaseName, final AddMigrationSourceResourceStatement sqlStatement) {

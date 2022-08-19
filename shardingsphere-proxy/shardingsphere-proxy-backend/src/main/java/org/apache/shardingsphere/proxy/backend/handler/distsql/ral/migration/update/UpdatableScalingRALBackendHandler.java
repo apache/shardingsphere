@@ -19,23 +19,19 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.up
 
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
-import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdaterFactory;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 /**
- * Updatable migration RAL backend handler factory.
+ * Updatable scaling RAL backend handler factory.
  */
 @RequiredArgsConstructor
 @Setter
-// TODO rename, and also similar ones
-public final class UpdatableMigrationRALBackendHandler implements ProxyBackendHandler {
+public final class UpdatableScalingRALBackendHandler implements ProxyBackendHandler {
     
     private final UpdatableScalingRALStatement sqlStatement;
     
@@ -45,21 +41,11 @@ public final class UpdatableMigrationRALBackendHandler implements ProxyBackendHa
     @Override
     public ResponseHeader execute() {
         String databaseName = getDatabaseName(connectionSession);
-        checkDatabaseName(databaseName);
         RALUpdaterFactory.getInstance(sqlStatement.getClass()).executeUpdate(databaseName, sqlStatement);
         return new UpdateResponseHeader(sqlStatement);
     }
     
     private String getDatabaseName(final ConnectionSession connectionSession) {
         return connectionSession.getDatabaseName();
-    }
-    
-    private void checkDatabaseName(final String databaseName) {
-        if (null == databaseName) {
-            throw new NoDatabaseSelectedException();
-        }
-        if (!ProxyContext.getInstance().databaseExists(databaseName)) {
-            throw new UnknownDatabaseException(databaseName);
-        }
     }
 }

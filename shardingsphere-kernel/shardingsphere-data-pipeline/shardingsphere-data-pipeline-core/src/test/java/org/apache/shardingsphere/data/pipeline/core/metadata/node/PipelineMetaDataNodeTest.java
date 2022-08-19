@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.metadata.node;
 
+import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -24,11 +25,23 @@ import static org.junit.Assert.assertThat;
 
 public final class PipelineMetaDataNodeTest {
     
+    private final String migrationMetaDataRootPath = "/pipeline/migration/metadata";
+    
     private final String jobId = "j01001";
     
     private final String jobsPath = "/pipeline/jobs";
     
     private final String jobRootPath = jobsPath + "/j01001";
+    
+    @Test
+    public void assertGetMetaDataDataSourcesPath() {
+        assertThat(PipelineMetaDataNode.getMetaDataDataSourcesPath(JobType.MIGRATION), is(migrationMetaDataRootPath + "/dataSources"));
+    }
+    
+    @Test
+    public void assertGetMetaDataProcessConfigPath() {
+        assertThat(PipelineMetaDataNode.getMetaDataProcessConfigPath(JobType.MIGRATION), is(migrationMetaDataRootPath + "/processConfig"));
+    }
     
     @Test
     public void assertGetElasticJobNamespace() {
