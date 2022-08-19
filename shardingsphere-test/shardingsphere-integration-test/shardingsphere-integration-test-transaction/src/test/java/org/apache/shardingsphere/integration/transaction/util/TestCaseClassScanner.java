@@ -28,7 +28,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,13 +40,13 @@ import java.util.jar.JarFile;
  * Scan the transaction test classes to be tested.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TransactionTestCaseClassScanner {
+public final class TestCaseClassScanner {
     
     private static final String TEST_CASE_PACKAGE_NAME = "org.apache.shardingsphere.integration.transaction.cases";
     
-    private static final List<File> FILES = new ArrayList<>();
+    private static final Collection<File> CLASS_FILES = new LinkedList<>();
     
-    private static final String CLASS_SYMBOL = ".class";
+    private static final String CLASS_SUFFIX = ".class";
     
     /**
      * Scan transaction test case classes in classpath.
@@ -98,7 +98,7 @@ public final class TransactionTestCaseClassScanner {
         while (jarEntryEnumeration.hasMoreElements()) {
             JarEntry entry = jarEntryEnumeration.nextElement();
             String jarEntryName = entry.getName();
-            if (jarEntryName.contains(CLASS_SYMBOL) && jarEntryName.replace("/", ".").startsWith(TEST_CASE_PACKAGE_NAME)) {
+            if (jarEntryName.contains(CLASS_SUFFIX) && jarEntryName.replace("/", ".").startsWith(TEST_CASE_PACKAGE_NAME)) {
                 String className = jarEntryName.substring(0, jarEntryName.lastIndexOf(".")).replace("/", ".");
                 Class<?> clazz = Class.forName(className);
                 if (clazz.isAssignableFrom(BaseTransactionTestCase.class)) {
@@ -114,17 +114,17 @@ public final class TransactionTestCaseClassScanner {
                 scanClassFiles(f);
             }
         } else {
-            if (file.getName().endsWith(CLASS_SYMBOL)) {
-                FILES.add(file);
+            if (file.getName().endsWith(CLASS_SUFFIX)) {
+                CLASS_FILES.add(file);
             }
         }
     }
     
     private static void addTestCaseClasses(final List<Class<? extends BaseTransactionTestCase>> caseClasses) throws ClassNotFoundException {
-        for (File file : FILES) {
+        for (File file : CLASS_FILES) {
             String fileName = file.getAbsolutePath();
-            if (fileName.endsWith(CLASS_SYMBOL)) {
-                String noSuffixFileName = fileName.substring(8 + fileName.lastIndexOf("classes"), fileName.indexOf(CLASS_SYMBOL));
+            if (fileName.endsWith(CLASS_SUFFIX)) {
+                String noSuffixFileName = fileName.substring(8 + fileName.lastIndexOf("classes"), fileName.indexOf(CLASS_SUFFIX));
                 String filePackage = noSuffixFileName.replace("/", ".");
                 Class<?> clazz = Class.forName(filePackage);
                 if (BaseTransactionTestCase.class.isAssignableFrom(clazz)) {
