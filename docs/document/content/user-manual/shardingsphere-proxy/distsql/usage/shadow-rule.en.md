@@ -35,8 +35,8 @@ ADD RESOURCE ds_0 (
 CREATE SHADOW RULE group_0(
 SOURCE=ds_0,
 SHADOW=ds_1,
-t_order((simple_hint_algorithm, TYPE(NAME=SIMPLE_HINT, PROPERTIES("foo"="bar"))),(TYPE(NAME=REGEX_MATCH, PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]')))), 
-t_order_item((TYPE(NAME=SIMPLE_HINT, PROPERTIES("foo"="bar")))));
+t_order((simple_hint_algorithm, TYPE(NAME="SIMPLE_HINT", PROPERTIES("foo"="bar"))),(TYPE(NAME="REGEX_MATCH", PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]')))), 
+t_order_item((TYPE(NAME="SIMPLE_HINT", PROPERTIES("foo"="bar")))));
 ```
 
 - Alter shadow rule
@@ -45,7 +45,7 @@ t_order_item((TYPE(NAME=SIMPLE_HINT, PROPERTIES("foo"="bar")))));
 ALTER SHADOW RULE group_0(
 SOURCE=ds_0,
 SHADOW=ds_2,
-t_order_item((TYPE(NAME=SIMPLE_HINT, PROPERTIES("foo"="bar")))));
+t_order_item((TYPE(NAME="SIMPLE_HINT", PROPERTIES("foo"="bar")))));
 ```
 
 - Drop shadow rule

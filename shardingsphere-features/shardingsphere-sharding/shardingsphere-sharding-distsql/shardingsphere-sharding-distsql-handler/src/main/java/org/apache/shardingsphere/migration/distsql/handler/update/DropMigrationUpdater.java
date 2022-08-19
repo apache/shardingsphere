@@ -30,7 +30,7 @@ public final class DropMigrationUpdater implements RALUpdater<DropMigrationState
     private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
     
     @Override
-    public void executeUpdate(final DropMigrationStatement sqlStatement) {
+    public void executeUpdate(final String databaseName, final DropMigrationStatement sqlStatement) {
         JOB_API.remove(sqlStatement.getJobId());
     }
     

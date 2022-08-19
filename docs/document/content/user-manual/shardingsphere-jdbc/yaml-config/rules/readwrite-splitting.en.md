@@ -48,7 +48,7 @@ rules:
         # ...
 ```
 
-Please refer to [Built-in Load Balance Algorithm List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/load-balance) for more details about type of algorithm.
+Please refer to [Built-in Load Balance Algorithm List](/en/user-manual/common-config/builtin-algorithm/load-balance) for more details about type of algorithm.
 Please refer to [Read-write splitting-Core features](/en/features/readwrite-splitting/) for more details about query consistent routing.
 
 ## Procedure
