@@ -570,3 +570,7 @@ TRIGGERS
 GLOBAL_NAME
     : G L O B A L UL_ N A M E
     ;
+
+ROWTYPE
+    : R O W T Y P E
+    ;
