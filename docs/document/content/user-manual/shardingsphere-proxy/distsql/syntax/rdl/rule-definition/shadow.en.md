@@ -33,6 +33,17 @@ algorithmProperties: algorithmProperty [, algorithmProperty] ...
 algorithmProperty: key=value
 ```
 
+### Parameters Explained
+| name                | DateType   | Description           |
+|:--------------------|:-----------|:----------------------|
+| ruleName            | IDENTIFIER | Rule name             |
+| resourceName        | IDENTIFIER | Resource name         |
+| tableName           | IDENTIFIER | Shadow table name     |
+| algorithmName       | IDENTIFIER | Shadow algorithm name |
+| shadowAlgorithmType | STRING     | Shadow algorithm type | 
+
+### Notes
+
 -  Duplicate `ruleName` cannot be created
 - `resourceMapping` specifies the mapping relationship between the source database and the shadow library. You need to use the `resource` managed by RDL, please refer to [resource](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/resource-definition/)
 - `shadowAlgorithm` can act on multiple `shadowTableRule` at the same time
@@ -48,23 +59,23 @@ algorithmProperty: key=value
 CREATE SHADOW RULE shadow_rule(
 SOURCE=demo_ds,
 SHADOW=demo_ds_shadow,
-t_order((simple_hint_algorithm, TYPE(NAME=SIMPLE_HINT, PROPERTIES("shadow"="true", foo="bar"))),(TYPE(NAME=REGEX_MATCH, PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]')))), 
-t_order_item((TYPE(NAME=VALUE_MATCH, PROPERTIES("operation"="insert","column"="user_id", "value"='1')))));
+t_order((simple_hint_algorithm, TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar"))),(TYPE(NAME="REGEX_MATCH", PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]')))), 
+t_order_item((TYPE(NAME="VALUE_MATCH", PROPERTIES("operation"="insert","column"="user_id", "value"='1')))));
 
 ALTER SHADOW RULE shadow_rule(
 SOURCE=demo_ds,
 SHADOW=demo_ds_shadow,
-t_order((simple_hint_algorithm, TYPE(NAME=SIMPLE_HINT, PROPERTIES("shadow"="true", foo="bar"))),(TYPE(NAME=REGEX_MATCH, PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]')))), 
-t_order_item((TYPE(NAME=VALUE_MATCH, PROPERTIES("operation"="insert","column"="user_id", "value"='1')))));
+t_order((simple_hint_algorithm, TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar"))),(TYPE(NAME="REGEX_MATCH", PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]')))), 
+t_order_item((TYPE(NAME="VALUE_MATCH", PROPERTIES("operation"="insert","column"="user_id", "value"='1')))));
 
 CREATE SHADOW ALGORITHM 
-(simple_hint_algorithm, TYPE(NAME=SIMPLE_HINT, PROPERTIES("shadow"="true", "foo"="bar"))), 
-(user_id_match_algorithm, TYPE(NAME=REGEX_MATCH,PROPERTIES("operation"="insert", "column"="user_id", "regex"='[1]')));
+(simple_hint_algorithm, TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar"))), 
+(user_id_match_algorithm, TYPE(NAME="REGEX_MATCH",PROPERTIES("operation"="insert", "column"="user_id", "regex"='[1]')));
 
 
 ALTER SHADOW ALGORITHM 
-(simple_hint_algorithm, TYPE(NAME=SIMPLE_HINT, PROPERTIES("shadow"="false", "foo"="bar"))), 
-(user_id_match_algorithm, TYPE(NAME=VALUE_MATCH,PROPERTIES("operation"="insert", "column"="user_id", "value"='1')));
+(simple_hint_algorithm, TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="false", "foo"="bar"))), 
+(user_id_match_algorithm, TYPE(NAME="VALUE_MATCH",PROPERTIES("operation"="insert", "column"="user_id", "value"='1')));
 
 DROP SHADOW RULE shadow_rule;
 

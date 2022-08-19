@@ -19,15 +19,14 @@ lexer grammar Literals;
 
 import Alphabet, Symbol;
 
-STRING
-    : (DQ ('""' | ~('"'| '\\') )* DQ)
-    | (SQ ('\'\'' | ~('\'' | '\\'))* SQ)
-    ;
-
 IDENTIFIER
     : [A-Za-z_$0-9-]*?[A-Za-z_$-]+?[A-Za-z_$0-9-]*
     | BQ ~'`'+ BQ
-    | (DQ ( '\\'. | '""' | ~('"'| '\\') )* DQ)
+    ;
+
+STRING
+    : (DQ ('\\'. | '""' | ~('"' | '\\'))* DQ)
+    | (SQ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ)
     ;
 
 INT
