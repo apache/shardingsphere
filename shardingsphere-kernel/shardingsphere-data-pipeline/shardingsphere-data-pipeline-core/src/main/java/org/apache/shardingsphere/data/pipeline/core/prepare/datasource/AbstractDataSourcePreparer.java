@@ -123,12 +123,12 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         PipelineDDLGenerator generator = new PipelineDDLGenerator();
         List<String> result = new LinkedList<>();
         for (JobDataNodeEntry each : parameter.getTablesFirstDataNodes().getEntries()) {
-            String schemaName = parameter.getTableNameSchemaNameMapping().getSchemaName(each.getLogicTableName());
             String dataSourceName = each.getDataNodes().get(0).getDataSourceName();
             DataSource dataSource = parameter.getSourceDataSourceMap().get(dataSourceName);
             DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(Collections.singletonList(dataSource));
+            String schemaName = parameter.getTableNameSchemaNameMapping().getSchemaName(each.getLogicTableName());
             String actualTableName = parameter.getTableNameMap().get(each.getLogicTableName());
-            result.add(generator.generateLogicDDL(dataSource, databaseType, schemaName, each.getLogicTableName(), actualTableName, parameter.getSqlParserEngine()));
+            result.add(generator.generateLogicDDL(databaseType, dataSource, schemaName, each.getLogicTableName(), actualTableName, parameter.getSqlParserEngine()));
         }
         return result;
     }
