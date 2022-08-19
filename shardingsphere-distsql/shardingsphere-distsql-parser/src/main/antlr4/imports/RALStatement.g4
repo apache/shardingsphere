@@ -123,14 +123,6 @@ loadBalancerDefinition
     : LOAD_BALANCER LP algorithmDefinition RP
     ;
 
-algorithmDefinition
-    : TYPE LP NAME EQ typeName (COMMA propertiesDefinition)? RP
-    ;
-
-typeName
-    : IDENTIFIER
-    ;
-
 exportDatabaseConfiguration
     : EXPORT DATABASE (CONFIGURATION | CONFIG) (FROM databaseName)? (COMMA? FILE EQ filePath)?
     ;

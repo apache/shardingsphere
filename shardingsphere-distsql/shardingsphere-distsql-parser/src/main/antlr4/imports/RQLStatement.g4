@@ -46,3 +46,7 @@ showRulesUsedResource
 countSingleTableRule
     : COUNT SINGLE_TABLE RULE (FROM databaseName)?
     ;
+
+showMigrationProcessConfiguration
+    : CREATE MIGRATION PROCESS CONFIGURATION
+    ;
