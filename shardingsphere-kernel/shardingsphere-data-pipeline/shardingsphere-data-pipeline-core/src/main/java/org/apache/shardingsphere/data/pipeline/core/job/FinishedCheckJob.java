@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlMigration
 import org.apache.shardingsphere.data.pipeline.api.detect.RuleAlteredJobAlmostCompletedParameter;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
+import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationProcessContext;
@@ -45,8 +45,8 @@ public final class FinishedCheckJob implements SimpleJob {
     // TODO only one proxy node could do data consistency check in proxy cluster
     @Override
     public void execute(final ShardingContext shardingContext) {
-        List<JobInfo> jobInfos = jobAPI.list();
-        for (JobInfo jobInfo : jobInfos) {
+        List<PipelineJobInfo> jobInfos = jobAPI.list();
+        for (PipelineJobInfo jobInfo : jobInfos) {
             if (!jobInfo.isActive()) {
                 continue;
             }
