@@ -67,7 +67,7 @@ compute:
     pullPolicy: IfNotPresent
     ## Overrides the image tag whose default is the chart appVersion.
     ##
-    tag: "5.1.2"
+    tag: "5.1.3"
   ## @param compute.imagePullSecrets Specify docker-registry secret names as an array
   ## e.g：
   ## imagePullSecrets:
