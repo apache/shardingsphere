@@ -51,8 +51,7 @@ public final class ExceptionInTransactionTestCase extends BaseTransactionTestCas
             conn.setAutoCommit(false);
             assertAccountRowCount(conn, 0);
             executeWithLog(conn, "insert into account(id, balance, transaction_id) values(1, 1, 1);");
-            // Simulate execution exception in transaction
-            int errorResult = 1 / 0;
+            int causedExceptionResult = 1 / 0;
             executeWithLog(conn, "insert into account(id, balance, transaction_id) values(2, 2, 2);");
             conn.commit();
             fail("It should fail here.");
@@ -68,7 +67,6 @@ public final class ExceptionInTransactionTestCase extends BaseTransactionTestCas
             try (Connection connection = getDataSource().getConnection()) {
                 assertAccountRowCount(connection, 0);
             } catch (final SQLException ignored) {
-                
             }
         });
         queryThread.start();
@@ -76,7 +74,6 @@ public final class ExceptionInTransactionTestCase extends BaseTransactionTestCas
             queryThread.join();
             log.info("ExceptionInTransactionTestCase test over.");
         } catch (final InterruptedException ignored) {
-            
         }
     }
 }
