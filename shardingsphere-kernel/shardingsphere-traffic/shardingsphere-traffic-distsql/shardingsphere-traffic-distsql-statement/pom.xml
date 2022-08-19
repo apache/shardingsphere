@@ -21,16 +21,17 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-kernel</artifactId>
+        <artifactId>shardingsphere-traffic-distsql</artifactId>
         <version>5.1.3-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-traffic</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-traffic-distsql-statement</artifactId>
     <name>${project.artifactId}</name>
     
-    <modules>
-        <module>shardingsphere-traffic-api</module>
-        <module>shardingsphere-traffic-core</module>
-        <module>shardingsphere-traffic-distsql</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-distsql-statement</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
