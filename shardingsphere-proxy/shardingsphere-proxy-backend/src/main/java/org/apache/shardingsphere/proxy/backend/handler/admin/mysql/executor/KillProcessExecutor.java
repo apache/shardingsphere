@@ -32,7 +32,7 @@ public final class KillProcessExecutor implements DatabaseAdminExecutor {
     
     private final MySQLKillStatement mySQLKillStatement;
     
-    public KillProcessExecutor(MySQLKillStatement sqlStatement) {
+    public KillProcessExecutor(final MySQLKillStatement sqlStatement) {
         this.mySQLKillStatement = sqlStatement;
     }
     
@@ -43,7 +43,7 @@ public final class KillProcessExecutor implements DatabaseAdminExecutor {
      * @throws SQLException SQLException
      */
     @Override
-    public void execute(ConnectionSession connectionSession) throws SQLException {
+    public void execute(final ConnectionSession connectionSession) throws SQLException {
         String processlistId = mySQLKillStatement.getProcesslistId();
         ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext().post(new KillProcessIdRequestEvent(processlistId));
     }

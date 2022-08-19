@@ -29,7 +29,6 @@ import org.apache.shardingsphere.mode.process.event.ShowProcessListResponseEvent
 import org.apache.shardingsphere.mode.process.lock.ShowProcessListSimpleLock;
 import org.apache.shardingsphere.mode.process.node.ProcessNode;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
