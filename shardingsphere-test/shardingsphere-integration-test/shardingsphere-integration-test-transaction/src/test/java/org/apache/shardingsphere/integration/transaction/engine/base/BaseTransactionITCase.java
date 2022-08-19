@@ -210,7 +210,7 @@ public abstract class BaseTransactionITCase extends BaseITCase {
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
-                log.error("Transaction IT {} -> {} test failed", parameterized, each.getSimpleName());
+                log.error(String.format("Transaction IT %s -> %s test failed", parameterized, each.getSimpleName()), ex);
                 throw new ShardingSphereException(ex);
             }
             log.info("Transaction IT {} -> {} test end.", parameterized, each.getSimpleName());
