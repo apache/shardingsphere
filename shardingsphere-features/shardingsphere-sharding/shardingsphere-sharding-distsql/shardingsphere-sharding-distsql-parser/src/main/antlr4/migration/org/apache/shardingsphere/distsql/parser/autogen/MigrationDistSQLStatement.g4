@@ -38,5 +38,6 @@ execute
     | enableShardingScalingRule
     | disableShardingScalingRule
     | addMigrationSourceResource
+    | dropMigrationSourceResource
     ) SEMI?
     ;

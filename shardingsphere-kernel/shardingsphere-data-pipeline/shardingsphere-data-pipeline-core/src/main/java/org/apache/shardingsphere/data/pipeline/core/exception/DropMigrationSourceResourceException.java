@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration;
-
-import lombok.Getter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedDataSource;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
+package org.apache.shardingsphere.data.pipeline.core.exception;
 
 /**
- * Add migration statement test case.
+ * Drop migration source resource exception.
  */
-@Getter
-public final class AddMigrationSourceResourceStatementTestCase extends SQLParserTestCase {
+public final class DropMigrationSourceResourceException extends RuntimeException {
     
-    @XmlElement(name = "data-source")
-    private final List<ExpectedDataSource> dataSources = new LinkedList<>();
+    private static final long serialVersionUID = 1L;
+    
+    public DropMigrationSourceResourceException(final String message) {
+        super(message);
+    }
+    
+    public DropMigrationSourceResourceException(final Throwable cause) {
+        super(cause);
+    }
 }

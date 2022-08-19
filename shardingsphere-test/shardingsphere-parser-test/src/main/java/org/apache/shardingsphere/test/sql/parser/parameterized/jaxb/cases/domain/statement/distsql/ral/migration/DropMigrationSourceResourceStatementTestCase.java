@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedDataSource;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -26,11 +25,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Add migration statement test case.
+ * Drop migration statement test case.
  */
 @Getter
-public final class AddMigrationSourceResourceStatementTestCase extends SQLParserTestCase {
+public final class DropMigrationSourceResourceStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "data-source")
-    private final List<ExpectedDataSource> dataSources = new LinkedList<>();
+    private final List<String> dataSources = new LinkedList<>();
 }

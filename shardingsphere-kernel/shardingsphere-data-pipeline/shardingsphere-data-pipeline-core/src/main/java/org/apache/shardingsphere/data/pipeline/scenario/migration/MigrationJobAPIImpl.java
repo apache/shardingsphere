@@ -48,6 +48,7 @@ import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsis
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.AddMigrationSourceResourceException;
+import org.apache.shardingsphere.data.pipeline.core.exception.DropMigrationSourceResourceException;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineVerifyFailedException;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
@@ -429,6 +430,19 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         Map<String, DataSourceProperties> result = new LinkedHashMap<>(existDataSources);
         result.putAll(dataSourceProperties);
         pipelineResourceAPI.persistMetaDataDataSource(JobType.MIGRATION, result);
+    }
+    
+    @Override
+    public void dropMigrationSourceResources(final Collection<String> resourceNames) {
+        Map<String, DataSourceProperties> metaDataDataSource = pipelineResourceAPI.getMetaDataDataSource(JobType.MIGRATION);
+        List<String> noExistResources = resourceNames.stream().filter(each -> !metaDataDataSource.containsKey(each)).collect(Collectors.toList());
+        if (!noExistResources.isEmpty()) {
+            throw new DropMigrationSourceResourceException(String.format("Resource names %s not exist.", resourceNames));
+        }
+        for (String each : resourceNames) {
+            metaDataDataSource.remove(each);
+        }
+        pipelineResourceAPI.persistMetaDataDataSource(JobType.MIGRATION, metaDataDataSource);
     }
     
     @Override

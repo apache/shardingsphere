@@ -24,3 +24,4 @@ org.apache.shardingsphere.migration.distsql.handler.update.StopMigrationSourceWr
 org.apache.shardingsphere.migration.distsql.handler.update.RestoreMigrationSourceWritingUpdater
 org.apache.shardingsphere.migration.distsql.handler.update.ApplyMigrationUpdater
 org.apache.shardingsphere.migration.distsql.handler.update.AddMigrationSourceResourceUpdater
+org.apache.shardingsphere.migration.distsql.handler.update.DropMigrationSourceResourceUpdater
