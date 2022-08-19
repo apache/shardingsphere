@@ -40,11 +40,14 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobItemAPI;
+import org.apache.shardingsphere.data.pipeline.core.api.PipelineResourceAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.AbstractPipelineJobAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.InventoryIncrementalJobItemAPIImpl;
+import org.apache.shardingsphere.data.pipeline.core.api.impl.PipelineResourceAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCalculateAlgorithmFactory;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
+import org.apache.shardingsphere.data.pipeline.core.exception.AddMigrationSourceResourceException;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineVerifyFailedException;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
@@ -55,6 +58,7 @@ import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
 import org.apache.shardingsphere.mode.lock.ExclusiveLockDefinition;
@@ -63,6 +67,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,6 +85,8 @@ import java.util.stream.Stream;
 public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implements MigrationJobAPI {
     
     private final PipelineJobItemAPI jobItemAPI = new InventoryIncrementalJobItemAPIImpl();
+    
+    private final PipelineResourceAPI pipelineResourceAPI = new PipelineResourceAPIImpl();
     
     @Override
     protected String marshalJobIdLeftPart(final PipelineJobId pipelineJobId) {
@@ -388,6 +395,24 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         log.info("Scaling job {} reset target table", jobId);
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         verifyJobStopped(jobConfigPOJO);
+    }
+    
+    @Override
+    public void addMigrationSourceResources(final Map<String, DataSourceProperties> dataSourceProperties) {
+        log.info("Add migration source resources {}", dataSourceProperties.keySet());
+        Map<String, DataSourceProperties> existDataSources = pipelineResourceAPI.getMetaDataDataSource(JobType.MIGRATION);
+        Collection<String> duplicateDataSourceNames = new HashSet<>(dataSourceProperties.size(), 1);
+        for (Entry<String, DataSourceProperties> entry : dataSourceProperties.entrySet()) {
+            if (existDataSources.containsKey(entry.getKey())) {
+                duplicateDataSourceNames.add(entry.getKey());
+            }
+        }
+        if (!duplicateDataSourceNames.isEmpty()) {
+            throw new AddMigrationSourceResourceException(String.format("Duplicate resource names %s.", duplicateDataSourceNames));
+        }
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>(existDataSources);
+        result.putAll(dataSourceProperties);
+        pipelineResourceAPI.persistMetaDataDataSource(JobType.MIGRATION, result);
     }
     
     @Override

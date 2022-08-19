@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.api.impl;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -91,5 +92,15 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
         List<String> result = getChildrenKeys(PipelineMetaDataNode.getJobOffsetPath(jobId));
         log.info("getShardingItems, jobId={}, offsetKeys={}", jobId, result);
         return result.stream().map(Integer::parseInt).collect(Collectors.toList());
+    }
+    
+    @Override
+    public String getMetaDataDataSource(final JobType jobType) {
+        return repository.get(PipelineMetaDataNode.getMetaDataDataSourcesPath(jobType));
+    }
+    
+    @Override
+    public void persistMetaDataDataSource(final JobType jobType, final String metaDataDataSource) {
+        repository.persist(PipelineMetaDataNode.getMetaDataDataSourcesPath(jobType), metaDataDataSource);
     }
 }

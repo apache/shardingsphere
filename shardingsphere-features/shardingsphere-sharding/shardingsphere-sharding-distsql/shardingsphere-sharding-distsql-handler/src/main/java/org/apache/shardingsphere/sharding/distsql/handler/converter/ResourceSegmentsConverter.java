@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource;
+package org.apache.shardingsphere.sharding.distsql.handler.converter;
 
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
@@ -46,7 +45,7 @@ public final class ResourceSegmentsConverter {
     public static Map<String, DataSourceProperties> convert(final DatabaseType databaseType, final Collection<DataSourceSegment> resources) {
         Map<String, DataSourceProperties> result = new LinkedHashMap<>(resources.size(), 1);
         for (DataSourceSegment each : resources) {
-            result.put(each.getName(), new DataSourceProperties(HikariDataSource.class.getName(), createProperties(databaseType, each)));
+            result.put(each.getName(), new DataSourceProperties("com.zaxxer.hikari.HikariDataSource", createProperties(databaseType, each)));
         }
         return result;
     }
