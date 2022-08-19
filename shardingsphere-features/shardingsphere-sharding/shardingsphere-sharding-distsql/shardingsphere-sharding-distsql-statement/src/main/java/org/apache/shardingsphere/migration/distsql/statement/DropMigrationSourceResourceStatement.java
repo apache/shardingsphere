@@ -27,6 +27,7 @@ import java.util.Collection;
  */
 @Getter
 public final class DropMigrationSourceResourceStatement extends UpdatableScalingRALStatement {
+    
     private final Collection<String> names;
     
     public DropMigrationSourceResourceStatement(final Collection<String> names) {

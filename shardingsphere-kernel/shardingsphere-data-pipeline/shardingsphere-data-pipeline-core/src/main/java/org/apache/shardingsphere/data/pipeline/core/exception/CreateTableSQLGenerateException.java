@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.fixture;
+package org.apache.shardingsphere.data.pipeline.core.exception;
 
-import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGenerator;
+import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
 
-import javax.sql.DataSource;
-import java.util.Collection;
-import java.util.Collections;
-
-public final class CreateTableSQLGeneratorFixture implements CreateTableSQLGenerator {
+/**
+ * Create table SQL generate exception.
+ */
+public final class CreateTableSQLGenerateException extends ShardingSphereSQLException {
     
-    @Override
-    public Collection<String> generate(final DataSource dataSource, final String schemaName, final String tableName) {
-        return Collections.singletonList("");
-    }
+    private static final long serialVersionUID = -219467568498936298L;
     
-    @Override
-    public String getType() {
-        return "FIXTURE";
+    public CreateTableSQLGenerateException(final String tableName) {
+        super(XOpenSQLState.GENERAL_ERROR, 16001, "Failed to get DDL for table `%s`", tableName);
     }
 }

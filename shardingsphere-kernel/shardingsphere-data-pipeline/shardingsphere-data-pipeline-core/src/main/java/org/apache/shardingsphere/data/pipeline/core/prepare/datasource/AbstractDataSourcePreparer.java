@@ -128,7 +128,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
             DataSource dataSource = parameter.getSourceDataSourceMap().get(dataSourceName);
             DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(Collections.singletonList(dataSource));
             String actualTableName = parameter.getTableNameMap().get(each.getLogicTableName());
-            result.add(generator.generateLogicDDLSQL(dataSource, databaseType, schemaName, each.getLogicTableName(), actualTableName, parameter.getSqlParserEngine()));
+            result.add(generator.generateLogicDDL(dataSource, databaseType, schemaName, each.getLogicTableName(), actualTableName, parameter.getSqlParserEngine()));
         }
         return result;
     }

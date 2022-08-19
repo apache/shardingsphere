@@ -36,7 +36,7 @@ public final class PostgreSQLCreateTableSQLGenerator implements CreateTableSQLGe
     
     // TODO support partitions etc.
     @Override
-    public Collection<String> generate(final String tableName, final String schemaName, final DataSource dataSource) throws SQLException {
+    public Collection<String> generate(final DataSource dataSource, final String schemaName, final String tableName) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             int majorVersion = connection.getMetaData().getDatabaseMajorVersion();
             int minorVersion = connection.getMetaData().getDatabaseMinorVersion();
