@@ -51,7 +51,7 @@ Configurable Properties:
 | autoAwareDataSourceName         | String     | Database discovery logic data source name                                                                   | -                  |
 | writeDataSourceQueryEnabled (?) | String     | All read data source are offline, write data source whether the data source is responsible for read traffic | true               |
 
-Please refer to [Built-in Load Balance Algorithm List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/load-balance) for details on algorithm types.
+Please refer to [Built-in Load Balance Algorithm List](/en/user-manual/common-config/builtin-algorithm/load-balance) for details on algorithm types.
 Please refer to [Read-write splitting-Core features](/en/features/readwrite-splitting/) for more details about query consistent routing.
 
 ## Operating Procedures

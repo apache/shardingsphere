@@ -37,27 +37,20 @@ namespace
    ├    ├     ├     ├     ├──UUID             # JDBC instance identifier
    ├    ├     ├     ├     ├──....   
    ├    ├     ├──status
-   ├    ├     ├     ├──UUID
-   ├    ├     ├     ├──....
-   ├    ├     ├──xa_recovery_id
-   ├    ├     ├     ├──recovery_id
-   ├    ├     ├     ├     ├──UUID     
+   ├    ├     ├     ├──UUID                   
    ├    ├     ├     ├──....
    ├    ├     ├──worker_id
    ├    ├     ├     ├──UUID
    ├    ├     ├     ├──....
    ├    ├     ├──process_trigger
    ├    ├     ├     ├──process_list_id:UUID
-   ├    ├     ├     ├──....            
-   ├    ├──storage_nodes
-   ├    ├     ├──disable
-   ├    ├     ├      ├──${schema_1.ds_0}
-   ├    ├     ├      ├──${schema_1.ds_1}
-   ├    ├     ├      ├──....
-   ├    ├     ├──primary
-   ├    ├     ├      ├──${schema_2.ds_0}
-   ├    ├     ├      ├──${schema_2.ds_1}
-   ├    ├     ├      ├──....   
+   ├    ├     ├     ├──....
+   ├    ├     ├──labels                      
+   ├    ├     ├     ├──UUID
+   ├    ├     ├     ├──....               
+   ├    ├──storage_nodes                       
+   ├    ├     ├──${databaseName.groupName.ds} 
+   ├    ├     ├──${databaseName.groupName.ds}
 ```
 
 ### /rules

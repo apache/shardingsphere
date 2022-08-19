@@ -28,6 +28,6 @@ public final class RuleNotExistedException extends ShardingSphereSQLException {
     private static final long serialVersionUID = -4150905802300104824L;
     
     public RuleNotExistedException() {
-        super(XOpenSQLState.SYNTAX_ERROR, 1305, "Rule does not exist");
+        super(XOpenSQLState.SYNTAX_ERROR, 11003, "Rule does not exist");
     }
 }
