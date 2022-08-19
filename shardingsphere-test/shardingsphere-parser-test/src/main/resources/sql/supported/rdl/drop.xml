@@ -52,5 +52,4 @@
     <distsql-case id="drop-sharding-scaling-rule" value="DROP SHARDING SCALING RULE default_scaling" />
     <distsql-case id="drop-sharding-scaling-rule-if-exists" value="DROP SHARDING SCALING RULE IF EXISTS default_scaling" />
     <distsql-case id="drop-sharding-algorithm" value="DROP SHARDING ALGORITHM IF EXISTS t_order_hash_mod" />
-    <distsql-case id="drop-migration-source-resource" value="DROP MIGRATION SOURCE RESOURCE ds_0,ds_1" />
 </sql-cases>

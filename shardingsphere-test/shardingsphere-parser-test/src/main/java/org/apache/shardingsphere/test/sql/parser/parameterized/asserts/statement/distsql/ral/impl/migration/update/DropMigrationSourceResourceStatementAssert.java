@@ -34,7 +34,7 @@ import static org.junit.Assert.assertThat;
 public final class DropMigrationSourceResourceStatementAssert {
     
     /**
-     * Assert drop resource statement is correct with expected parser result.
+     * Assert drop migration source resource statement is correct with expected parser result.
      *
      * @param assertContext assert context
      * @param actual actual drop resource statement

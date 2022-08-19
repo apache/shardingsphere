@@ -77,4 +77,9 @@
     <start-scaling sql-case-id="start-scaling">
         <job-id>123</job-id>
     </start-scaling>
+    
+    <drop-migration-source-resource sql-case-id="drop-migration-source-resource">
+        <data-source>ds_0</data-source>
+        <data-source>ds_1</data-source>
+    </drop-migration-source-resource>
 </sql-parser-test-cases>

@@ -882,9 +882,6 @@ public final class SQLParserTestCases {
     @XmlElement(name = "add-migration-source-resource")
     private final List<AddMigrationSourceResourceStatementTestCase> addMigrationSourceResourceTestCases = new LinkedList<>();
     
-    @XmlElement(name = "drop-migration-source-resource")
-    private final List<DropMigrationSourceResourceStatementTestCase> dropMigrationSourceResourceTestCases = new LinkedList<>();
-    
     @XmlElement(name = "alter-resource")
     private final List<AlterResourceStatementTestCase> alterResourceTestCases = new LinkedList<>();
     
@@ -1670,6 +1667,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "create-operator")
     private final List<CreateOperatorStatementTestCase> createOperatorStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-migration-source-resource")
+    private final List<DropMigrationSourceResourceStatementTestCase> dropMigrationSourceResourceTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
