@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJobId;
@@ -31,11 +30,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJobId;
 @ToString(callSuper = true)
 public final class MigrationJobId extends AbstractPipelineJobId {
     
-    public static final String CURRENT_VERSION = "01";
+    private String tableName;
     
-    @NonNull
-    private Integer currentMetadataVersion;
-    
-    @NonNull
-    private Integer newMetadataVersion;
+    private String sourceDataSourceName;
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
@@ -67,7 +67,6 @@ import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProg
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
-import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
 import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
 import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineReadConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -102,7 +101,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 /**
  * Migration job API impl.
@@ -121,8 +119,8 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     @Override
     protected String marshalJobIdLeftPart(final PipelineJobId pipelineJobId) {
         MigrationJobId jobId = (MigrationJobId) pipelineJobId;
-        String text = jobId.getFormatVersion() + "|" + jobId.getCurrentMetadataVersion() + "T" + jobId.getNewMetadataVersion() + "|" + jobId.getDatabaseName();
-        return Hex.encodeHexString(text.getBytes(StandardCharsets.UTF_8), true);
+        String text = jobId.getDatabaseName() + "|" + jobId.getTableName() + "|" + jobId.getSourceDataSourceName();
+        return DigestUtils.md5Hex(text.getBytes(StandardCharsets.UTF_8));
     }
     
     @Override
@@ -149,7 +147,8 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     private String generateJobId(final YamlMigrationJobConfiguration config) {
         MigrationJobId jobId = new MigrationJobId();
         jobId.setTypeCode(JobType.MIGRATION.getTypeCode());
-        jobId.setFormatVersion(MigrationJobId.CURRENT_VERSION);
+        jobId.setSourceDataSourceName(config.getSourceDataSourceName());
+        jobId.setTableName(config.getSourceTableName());
         jobId.setDatabaseName(config.getTargetDatabaseName());
         return marshalJobId(jobId);
     }
@@ -218,10 +217,6 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         PipelineReadConfiguration readConfig = new YamlPipelineReadConfigurationSwapper().swapToObject(yamlReadConfig);
         PipelineProcessConfiguration processConfig = new PipelineProcessConfiguration(readConfig, null, null);
         return new MigrationProcessContext(pipelineJobConfig.getJobId(), processConfig);
-    }
-    
-    private Stream<JobBriefInfo> getJobBriefInfos() {
-        return PipelineAPIFactory.getJobStatisticsAPI().getAllJobsBriefInfo().stream().filter(each -> !each.getJobName().startsWith("_"));
     }
     
     protected PipelineJobInfo getJobInfo(final String jobName) {

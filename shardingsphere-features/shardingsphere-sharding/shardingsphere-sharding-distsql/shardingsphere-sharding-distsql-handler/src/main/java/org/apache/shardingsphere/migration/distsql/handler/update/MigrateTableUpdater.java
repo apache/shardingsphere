@@ -51,7 +51,7 @@ public final class MigrateTableUpdater implements RALUpdater<MigrateTableStateme
         targetShardingRule.getTables().removeIf(each -> !Objects.equals(each.getLogicTable(), sqlStatement.getTargetTableName()));
         targetShardingRule.getAutoTables().removeIf(each -> !Objects.equals(each.getLogicTable(), sqlStatement.getTargetTableName()));
         CreateMigrationJobParameter createMigrationJobParameter = new CreateMigrationJobParameter(sqlStatement.getSourceDatabaseName(), sqlStatement.getSourceTableName(),
-                ObjectUtils.defaultIfNull(sqlStatement.getTargetDatabaseName(), ""), sqlStatement.getTargetTableName(),
+                ObjectUtils.defaultIfNull(sqlStatement.getTargetDatabaseName(), sqlStatement.getSourceDatabaseName()), sqlStatement.getTargetTableName(),
                 SHARDING_RULE_CONFIG_SWAPPER.swapToYamlConfiguration(targetShardingRule), targetDatabase.getResource().getDataSources());
         JOB_API.createJob(createMigrationJobParameter);
     }
