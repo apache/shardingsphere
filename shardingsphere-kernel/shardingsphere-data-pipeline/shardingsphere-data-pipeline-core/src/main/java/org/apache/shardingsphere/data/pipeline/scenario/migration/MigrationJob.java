@@ -58,20 +58,18 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
     
     @Override
     public void execute(final ShardingContext shardingContext) {
-        int jobShardingItem = shardingContext.getShardingItem();
-        log.info("Execute job {}-{}", shardingContext.getJobName(), jobShardingItem);
+        int shardingItem = shardingContext.getShardingItem();
+        log.info("Execute job {}-{}", shardingContext.getJobName(), shardingItem);
         if (isStopping()) {
             log.info("stopping true, ignore");
             return;
         }
         setJobId(shardingContext.getJobName());
         MigrationJobConfiguration jobConfig = YamlMigrationJobConfigurationSwapper.swapToObject(shardingContext.getJobParameter());
-        InventoryIncrementalJobItemProgress initProgress = MigrationJobAPIFactory.getInstance().getJobItemProgress(shardingContext.getJobName(), jobShardingItem);
+        InventoryIncrementalJobItemProgress initProgress = jobAPI.getJobItemProgress(shardingContext.getJobName(), shardingItem);
         MigrationProcessContext jobProcessContext = jobAPI.buildPipelineProcessContext(jobConfig);
-        TaskConfiguration taskConfig = jobAPI.buildTaskConfiguration(jobConfig, jobShardingItem, jobProcessContext.getPipelineProcessConfig());
-        MigrationJobItemContext jobItemContext = new MigrationJobItemContext(jobConfig, jobShardingItem, initProgress,
-                jobProcessContext, taskConfig, dataSourceManager);
-        int shardingItem = jobItemContext.getShardingItem();
+        TaskConfiguration taskConfig = jobAPI.buildTaskConfiguration(jobConfig, shardingItem, jobProcessContext.getPipelineProcessConfig());
+        MigrationJobItemContext jobItemContext = new MigrationJobItemContext(jobConfig, shardingItem, initProgress, jobProcessContext, taskConfig, dataSourceManager);
         if (getTasksRunnerMap().containsKey(shardingItem)) {
             log.warn("tasksRunnerMap contains shardingItem {}, ignore", shardingItem);
             return;
@@ -100,7 +98,7 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
             log.error("job prepare failed, {}-{}", getJobId(), jobItemContext.getShardingItem(), ex);
             PipelineJobCenter.stop(getJobId());
             jobItemContext.setStatus(JobStatus.PREPARING_FAILURE);
-            MigrationJobAPIFactory.getInstance().persistJobItemProgress(jobItemContext);
+            jobAPI.persistJobItemProgress(jobItemContext);
             if (ex instanceof RuntimeException) {
                 throw (RuntimeException) ex;
             }

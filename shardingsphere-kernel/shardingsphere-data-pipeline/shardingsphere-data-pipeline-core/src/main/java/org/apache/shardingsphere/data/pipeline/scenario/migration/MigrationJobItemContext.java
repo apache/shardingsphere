@@ -83,12 +83,11 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
         }
     };
     
-    public MigrationJobItemContext(final MigrationJobConfiguration jobConfig, final int jobShardingItem, final InventoryIncrementalJobItemProgress initProgress,
-                                   final MigrationProcessContext jobProcessContext, final TaskConfiguration taskConfig,
-                                   final PipelineDataSourceManager dataSourceManager) {
+    public MigrationJobItemContext(final MigrationJobConfiguration jobConfig, final int shardingItem, final InventoryIncrementalJobItemProgress initProgress,
+                                   final MigrationProcessContext jobProcessContext, final TaskConfiguration taskConfig, final PipelineDataSourceManager dataSourceManager) {
         this.jobConfig = jobConfig;
         jobId = jobConfig.getJobId();
-        this.shardingItem = jobShardingItem;
+        this.shardingItem = shardingItem;
         this.initProgress = initProgress;
         this.jobProcessContext = jobProcessContext;
         this.taskConfig = taskConfig;
