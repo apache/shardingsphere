@@ -19,26 +19,26 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterMigrationProcessConfigurationStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.CreateMigrationProcessConfigurationStatement;
 import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.converter.MigrationProcessConfigurationSegmentConverter;
 
 /**
- * Alter migration process configuration handler.
+ * Create migration process configuration updater.
  */
-public final class AlterMigrationProcessConfigurationHandler implements RALUpdater<AlterMigrationProcessConfigurationStatement> {
+public final class CreateMigrationProcessConfigurationUpdater implements RALUpdater<CreateMigrationProcessConfigurationStatement> {
     
     private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
     
     @Override
-    public void executeUpdate(final String databaseName, final AlterMigrationProcessConfigurationStatement sqlStatement) {
+    public void executeUpdate(final String databaseName, final CreateMigrationProcessConfigurationStatement sqlStatement) {
         PipelineProcessConfiguration processConfig = MigrationProcessConfigurationSegmentConverter.convert(sqlStatement.getMigrationProcessConfigurationSegment());
-        JOB_API.alterProcessConfiguration(processConfig);
+        JOB_API.createProcessConfiguration(processConfig);
     }
     
     @Override
     public String getType() {
-        return AlterMigrationProcessConfigurationStatement.class.getName();
+        return CreateMigrationProcessConfigurationStatement.class.getName();
     }
 }
