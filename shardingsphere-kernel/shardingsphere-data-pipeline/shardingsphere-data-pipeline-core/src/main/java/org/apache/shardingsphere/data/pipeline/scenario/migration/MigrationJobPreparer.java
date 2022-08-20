@@ -195,7 +195,7 @@ public final class MigrationJobPreparer {
      */
     public void cleanup(final MigrationJobConfiguration jobConfig) {
         try {
-            PipelineJobPreparerUtils.destroyPosition(jobConfig.getSource());
+            PipelineJobPreparerUtils.destroyPosition(jobConfig.getJobId(), jobConfig.getSource());
         } catch (final SQLException ex) {
             log.warn("Scaling job destroying failed", ex);
         }

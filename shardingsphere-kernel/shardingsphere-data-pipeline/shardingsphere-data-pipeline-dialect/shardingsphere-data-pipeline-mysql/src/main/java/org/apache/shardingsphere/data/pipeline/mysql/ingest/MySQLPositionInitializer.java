@@ -33,7 +33,7 @@ import java.sql.SQLException;
 public final class MySQLPositionInitializer implements PositionInitializer {
     
     @Override
-    public BinlogPosition init(final DataSource dataSource) throws SQLException {
+    public BinlogPosition init(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             BinlogPosition result = getBinlogPosition(connection);
             result.setServerId(getServerId(connection));

@@ -38,6 +38,8 @@ import java.util.Map;
 // TODO fields final
 public class DumperConfiguration {
     
+    private String jobId;
+    
     private String dataSourceName;
     
     private PipelineDataSourceConfiguration dataSourceConfig;

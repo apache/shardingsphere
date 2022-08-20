@@ -171,7 +171,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         tableNameMap.put(new ActualTableName(jobConfig.getSourceTableName()), new LogicTableName(jobConfig.getSourceTableName()));
         Map<LogicTableName, String> tableNameSchemaMap = TableNameSchemaNameMapping.convert(SchemaTableUtil.getSchemaTablesMapFromActual(jobConfig.getSource(), jobConfig.getSourceTableName()));
         TableNameSchemaNameMapping tableNameSchemaNameMapping = new TableNameSchemaNameMapping(tableNameSchemaMap);
-        DumperConfiguration dumperConfig = createDumperConfiguration(jobConfig.getSourceDataSourceName(), jobConfig.getSource(), tableNameMap, tableNameSchemaNameMapping);
+        DumperConfiguration dumperConfig = createDumperConfiguration(jobConfig.getJobId(), jobConfig.getSourceDataSourceName(), jobConfig.getSource(), tableNameMap, tableNameSchemaNameMapping);
         // TODO now shardingColumnsMap always empty, 
         ImporterConfiguration importerConfig = createImporterConfiguration(jobConfig, pipelineProcessConfig, Collections.emptyMap(), tableNameSchemaNameMapping);
         TaskConfiguration result = new TaskConfiguration(dumperConfig, importerConfig);
@@ -179,9 +179,10 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         return result;
     }
     
-    private static DumperConfiguration createDumperConfiguration(final String dataSourceName, final PipelineDataSourceConfiguration sourceDataSource,
+    private static DumperConfiguration createDumperConfiguration(final String jobId, final String dataSourceName, final PipelineDataSourceConfiguration sourceDataSource,
                                                                  final Map<ActualTableName, LogicTableName> tableNameMap, final TableNameSchemaNameMapping tableNameSchemaNameMapping) {
         DumperConfiguration result = new DumperConfiguration();
+        result.setJobId(jobId);
         result.setDataSourceName(dataSourceName);
         result.setDataSourceConfig(sourceDataSource);
         result.setTableNameMap(tableNameMap);

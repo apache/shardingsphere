@@ -215,7 +215,7 @@ public abstract class BaseITCase {
             if (isInContainer) {
                 return DataSourceEnvironment.getURL(getDatabaseType(), getDatabaseType().getType().toLowerCase() + ".host", storageContainer.getPort(), databaseName);
             } else {
-                return DataSourceEnvironment.getURL(getDatabaseType(), storageContainer.getHost(), storageContainer.getMappedPort(3306), databaseName);
+                return DataSourceEnvironment.getURL(getDatabaseType(), storageContainer.getHost(), storageContainer.getFirstMappedPort(), databaseName);
             }
         }
         return DataSourceEnvironment.getURL(getDatabaseType(), "127.0.0.1", ENV.getActualDataSourceDefaultPort(databaseType), databaseName);
