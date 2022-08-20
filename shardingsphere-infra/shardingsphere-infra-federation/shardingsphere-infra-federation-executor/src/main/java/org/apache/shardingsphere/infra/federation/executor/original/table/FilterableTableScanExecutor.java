@@ -56,13 +56,15 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.dr
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
 import org.apache.shardingsphere.infra.federation.executor.FederationContext;
+import org.apache.shardingsphere.infra.federation.executor.common.table.CommonTableScanExecutorContext;
 import org.apache.shardingsphere.infra.federation.executor.original.SQLDialectFactory;
-import org.apache.shardingsphere.infra.federation.executor.original.row.EmptyRowEnumerator;
-import org.apache.shardingsphere.infra.federation.executor.original.row.FilterableRowEnumerator;
+import org.apache.shardingsphere.infra.federation.executor.common.row.EmptyRowEnumerator;
+import org.apache.shardingsphere.infra.federation.executor.common.row.CommonRowEnumerator;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
+import org.apache.shardingsphere.infra.federation.optimizer.executor.FilterableScanNodeExecutorContext;
+import org.apache.shardingsphere.infra.federation.optimizer.executor.ScanNodeExecutorContext;
 import org.apache.shardingsphere.infra.federation.optimizer.executor.TableScanExecutor;
-import org.apache.shardingsphere.infra.federation.optimizer.executor.TableScanExecutorContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.filter.FilterableSchema;
 import org.apache.shardingsphere.infra.federation.optimizer.planner.QueryOptimizePlannerFactory;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
@@ -104,16 +106,16 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
     
     private final ShardingSphereRuleMetaData globalRuleMetaData;
     
-    private final FilterableTableScanExecutorContext executorContext;
+    private final CommonTableScanExecutorContext executorContext;
     
     private final EventBusContext eventBusContext;
     
     @Override
-    public Enumerable<Object[]> execute(final ShardingSphereTable table, final TableScanExecutorContext scanContext) {
+    public Enumerable<Object[]> execute(final ShardingSphereTable table, final ScanNodeExecutorContext scanContext) {
         String databaseName = executorContext.getDatabaseName();
         String schemaName = executorContext.getSchemaName();
         DatabaseType databaseType = DatabaseTypeEngine.getTrunkDatabaseType(optimizerContext.getParserContexts().get(databaseName).getDatabaseType().getType());
-        SqlString sqlString = createSQLString(table, scanContext, SQLDialectFactory.getSQLDialect(databaseType));
+        SqlString sqlString = createSQLString(table, (FilterableScanNodeExecutorContext) scanContext, SQLDialectFactory.getSQLDialect(databaseType));
         FederationContext federationContext = executorContext.getFederationContext();
         LogicSQL logicSQL = createLogicSQL(federationContext.getDatabases(), sqlString, databaseType);
         ShardingSphereDatabase database = federationContext.getDatabases().get(databaseName.toLowerCase());
@@ -167,7 +169,7 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
         return result;
     }
     
-    private SqlString createSQLString(final ShardingSphereTable table, final TableScanExecutorContext scanContext, final SqlDialect sqlDialect) {
+    private SqlString createSQLString(final ShardingSphereTable table, final FilterableScanNodeExecutorContext scanContext, final SqlDialect sqlDialect) {
         return new RelToSqlConverter(sqlDialect).visitRoot(createRelNode(table, scanContext)).asStatement().toSqlString(sqlDialect);
     }
     
@@ -190,7 +192,7 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
         }
     }
     
-    private RelNode createRelNode(final ShardingSphereTable table, final TableScanExecutorContext scanContext) {
+    private RelNode createRelNode(final ShardingSphereTable table, final FilterableScanNodeExecutorContext scanContext) {
         String databaseName = executorContext.getDatabaseName();
         String schemaName = executorContext.getSchemaName();
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(OptimizerPlannerContextFactory.createConnectionProperties());
@@ -198,7 +200,7 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
         CalciteCatalogReader catalogReader = OptimizerPlannerContextFactory.createCatalogReader(schemaName,
                 new FilterableSchema(schemaName, schema, null), new JavaTypeFactoryImpl(), connectionConfig);
         RelOptCluster relOptCluster = RelOptCluster.create(QueryOptimizePlannerFactory.createVolcanoPlanner(), new RexBuilder(new JavaTypeFactoryImpl()));
-        RelBuilder builder = RelFactories.LOGICAL_BUILDER.create(relOptCluster, catalogReader).scan(table.getName()).filter(scanContext.getFilters());
+        RelBuilder builder = RelFactories.LOGICAL_BUILDER.create(relOptCluster, catalogReader).scan(table.getName()).filter(scanContext.getFilterValues());
         if (null != scanContext.getProjects()) {
             builder.project(createProjections(scanContext.getProjects(), builder, table.getColumnNames()));
         }
@@ -218,7 +220,7 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
             
             @Override
             public Enumerator<Object[]> enumerator() {
-                return new FilterableRowEnumerator(mergedResult, metaData, statements);
+                return new CommonRowEnumerator(mergedResult, metaData, statements);
             }
         };
     }

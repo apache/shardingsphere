@@ -22,18 +22,18 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 
 | 语句                                                    | 说明                                                   | 示例                                         |
 |:------------------------------------------------------|:----------------------------------------------------- |:-------------------------------------------|
-| SHOW SCALING LIST                                     | 查询运行列表                                            | SHOW SCALING LIST                          |
-| SHOW SCALING STATUS jobId                             | 查询任务状态，xx：任务 id                                | SHOW SCALING STATUS 1234                   |
-| START SCALING jobId                                   | 开始运行任务，xx：任务 id                                | START SCALING 1234                         |
-| STOP SCALING jobId                                    | 停止运行任务，xx：任务 id                                | STOP SCALING 12345                         |
-| CLEAN SCALING jobId                                   | 移除任务，xx：任务 id                                   | CLEAN SCALING 1234                         |
-| RESET SCALING jobId                                   | 重置任务进度，xx：任务 id                                | RESET SCALING 1234                         |
-| CHECK SCALING jobId                                   | 数据一致性校验，使用 `server.yaml` 里的校验算法，xx：任务 id | CHECK SCALING 1234                         |
-| SHOW SCALING CHECK ALGORITHMS                         | 展示可用的一致性校验算法                                  | SHOW SCALING CHECK ALGORITHMS              |
-| CHECK SCALING jobId (by type(name=algorithmTypeName)? | 数据一致性校验，使用指定的校验算法                          | CHECK SCALING 1234 by type(name="DEFAULT") |
-| STOP SCALING SOURCE WRITING jobId                     | 旧的 ShardingSphere 数据源停写，xx：任务 id               | STOP SCALING SOURCE WRITING 1234           |
-| RESTORE SCALING SOURCE WRITING jobId                  | 旧的 ShardingSphere 数据源恢复写，xx：任务 id             | RESTORE SCALING SOURCE WRITING 1234        |
-| APPLY SCALING jobId                                   | 切换至新的 ShardingSphere 元数据，xx：任务 id             | APPLY SCALING 1234                         |
+| SHOW MIGRATION LIST                                     | 查询运行列表                                            | SHOW MIGRATION LIST                          |
+| SHOW MIGRATION STATUS jobId                             | 查询任务状态，xx：任务 id                                | SHOW MIGRATION STATUS 1234                   |
+| START MIGRATION jobId                                   | 开始运行任务，xx：任务 id                                | START MIGRATION 1234                         |
+| STOP MIGRATION jobId                                    | 停止运行任务，xx：任务 id                                | STOP MIGRATION 12345                         |
+| CLEAN MIGRATION jobId                                   | 移除任务，xx：任务 id                                   | CLEAN MIGRATION 1234                         |
+| RESET MIGRATION jobId                                   | 重置任务进度，xx：任务 id                                | RESET MIGRATION 1234                         |
+| CHECK MIGRATION jobId                                   | 数据一致性校验，使用 `server.yaml` 里的校验算法，xx：任务 id | CHECK MIGRATION 1234                         |
+| SHOW MIGRATION CHECK ALGORITHMS                         | 展示可用的一致性校验算法                                  | SHOW MIGRATION CHECK ALGORITHMS              |
+| CHECK MIGRATION jobId (by type(name=algorithmTypeName)? | 数据一致性校验，使用指定的校验算法                          | CHECK MIGRATION 1234 by type(name="DEFAULT") |
+| STOP MIGRATION SOURCE WRITING jobId                     | 旧的 ShardingSphere 数据源停写，xx：任务 id               | STOP MIGRATION SOURCE WRITING 1234           |
+| RESTORE MIGRATION SOURCE WRITING jobId                  | 旧的 ShardingSphere 数据源恢复写，xx：任务 id             | RESTORE MIGRATION SOURCE WRITING 1234        |
+| APPLY MIGRATION jobId                                   | 切换至新的 ShardingSphere 元数据，xx：任务 id             | APPLY MIGRATION 1234                         |
 
 ## 熔断
 

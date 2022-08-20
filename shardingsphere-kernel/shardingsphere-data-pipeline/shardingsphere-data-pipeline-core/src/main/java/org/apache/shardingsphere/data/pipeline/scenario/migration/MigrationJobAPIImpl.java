@@ -209,13 +209,8 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     
     @Override
     public MigrationProcessContext buildPipelineProcessContext(final PipelineJobConfiguration pipelineJobConfig) {
-        // TODO add jobType
-        // TODO read process config from registry center
-        YamlPipelineReadConfiguration yamlReadConfig = YamlPipelineReadConfiguration.buildWithDefaultValue();
-        yamlReadConfig.fillInNullFieldsWithDefaultValue();
-        yamlReadConfig.setShardingSize(10);
-        PipelineReadConfiguration readConfig = new YamlPipelineReadConfigurationSwapper().swapToObject(yamlReadConfig);
-        PipelineProcessConfiguration processConfig = new PipelineProcessConfiguration(readConfig, null, null);
+        // TODO cache process config on local
+        PipelineProcessConfiguration processConfig = showProcessConfiguration();
         return new MigrationProcessContext(pipelineJobConfig.getJobId(), processConfig);
     }
     

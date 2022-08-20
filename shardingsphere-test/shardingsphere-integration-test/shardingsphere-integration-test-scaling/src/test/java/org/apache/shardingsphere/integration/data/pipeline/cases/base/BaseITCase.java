@@ -317,14 +317,40 @@ public abstract class BaseITCase {
         getIncreaseTaskThread().start();
     }
     
-    protected void stopMigration(final String jobId) {
-        proxyExecuteWithLog(String.format("STOP SCALING '%s'", jobId), 5);
+    protected void stopScalingSourceWriting(final String jobId) {
+        executeWithLog(String.format("STOP MIGRATION SOURCE WRITING '%s'", jobId));
+    }
+    
+    protected void stopScaling(final String jobId) {
+        executeWithLog(String.format("STOP MIGRATION '%s'", jobId), 5);
     }
     
     protected void startScaling(final String jobId) {
-        proxyExecuteWithLog(String.format("START SCALING '%s'", jobId), 5);
+        executeWithLog(String.format("START MIGRATION '%s'", jobId), 10);
     }
     
+    protected void applyScaling(final String jobId) {
+        assertBeforeApplyScalingMetadataCorrectly();
+        executeWithLog(String.format("APPLY MIGRATION '%s'", jobId));
+    }
+    
+    protected void assertBeforeApplyScalingMetadataCorrectly() {
+        List<Map<String, Object>> previewResults = queryForListWithLog("PREVIEW SELECT COUNT(1) FROM t_order");
+        assertThat("data_source_name name not correct, it's effective early, search watcher failed get more info",
+                previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet()), is(new HashSet<>(Arrays.asList("ds_0", "ds_1"))));
+    }
+    
+    protected String getScalingJobId() {
+        List<Map<String, Object>> scalingListMap = queryForListWithLog("SHOW MIGRATION LIST");
+        String jobId = scalingListMap.get(0).get("id").toString();
+        log.info("jobId: {}", jobId);
+        return jobId;
+    }
+    
+    protected void stopMigration(final String jobId) {
+        proxyExecuteWithLog(String.format("STOP SCALING '%s'", jobId), 5);
+    }
+        
     protected List<String> listJobId() {
         List<Map<String, Object>> jobList = queryForListWithLog("SHOW SCALING LIST");
         return jobList.stream().map(a -> a.get("id").toString()).collect(Collectors.toList());
@@ -338,7 +364,7 @@ public abstract class BaseITCase {
         Set<String> actualStatus;
         for (int i = 0; i < 10; i++) {
             List<Map<String, Object>> showScalingStatusResult = showScalingStatus(jobId);
-            log.info("show scaling status result: {}", showScalingStatusResult);
+            log.info("show migration status result: {}", showScalingStatusResult);
             actualStatus = showScalingStatusResult.stream().map(each -> each.get("status").toString()).collect(Collectors.toSet());
             assertFalse(CollectionUtils.containsAny(actualStatus, Arrays.asList(JobStatus.PREPARING_FAILURE.name(), JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name(),
                     JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name())));
@@ -358,7 +384,7 @@ public abstract class BaseITCase {
     }
     
     protected List<Map<String, Object>> showScalingStatus(final String jobId) {
-        return queryForListWithLog(String.format("SHOW SCALING STATUS '%s'", jobId));
+        return queryForListWithLog(String.format("SHOW MIGRATION STATUS '%s'", jobId));
     }
     
     protected void assertCheckScalingSuccess(final String jobId) {
@@ -370,7 +396,8 @@ public abstract class BaseITCase {
         }
         boolean secondCheckJobResult = checkJobIncrementTaskFinished(jobId);
         log.info("second check job result: {}", secondCheckJobResult);
-        List<Map<String, Object>> checkScalingResults = queryForListWithLog(String.format("CHECK SCALING '%s' BY TYPE (NAME='DATA_MATCH')", jobId));
+        stopScalingSourceWriting(jobId);
+        List<Map<String, Object>> checkScalingResults = queryForListWithLog(String.format("CHECK MIGRATION '%s' BY TYPE (NAME='DATA_MATCH')", jobId));
         log.info("checkScalingResults: {}", checkScalingResults);
         for (Map<String, Object> entry : checkScalingResults) {
             assertTrue(Boolean.parseBoolean(entry.get("records_content_matched").toString()));

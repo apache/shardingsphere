@@ -20,18 +20,18 @@ grammar MigrationDistSQLStatement;
 import Symbol, RALStatement, RDLStatement, RQLStatement;
 
 execute
-    : (showScalingList
-    | showScalingStatus
+    : (showMigrationList
+    | showMigrationStatus
     | migrateTable
-    | startScaling
-    | stopScaling
-    | cleanScaling
-    | resetScaling
-    | checkScaling
-    | showScalingCheckAlgorithms
-    | stopScalingSourceWriting
-    | restoreScalingSourceWriting
-    | applyScaling
+    | startMigration
+    | stopMigration
+    | cleanMigration
+    | resetMigration
+    | checkMigration
+    | showMigrationCheckAlgorithms
+    | stopMigrationSourceWriting
+    | restoreMigrationSourceWriting
+    | applyMigration
     | showShardingScalingRules
     | createShardingScalingRule
     | dropShardingScalingRule

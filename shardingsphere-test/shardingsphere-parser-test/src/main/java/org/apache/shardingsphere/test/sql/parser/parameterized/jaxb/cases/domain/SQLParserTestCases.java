@@ -999,37 +999,37 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-sharding-table-rule")
     private final List<ShowShardingTableRulesStatementTestCase> showShardingTableRuleTestCases = new LinkedList<>();
     
-    @XmlElement(name = "show-scaling-list")
+    @XmlElement(name = "show-migration-list")
     private final List<ShowMigrationListStatementTestCase> showMigrationListTestCases = new LinkedList<>();
     
-    @XmlElement(name = "check-scaling")
+    @XmlElement(name = "check-migration")
     private final List<CheckMigrationStatementTestCase> checkScalingTestCases = new LinkedList<>();
     
-    @XmlElement(name = "show-scaling-status")
+    @XmlElement(name = "show-migration-status")
     private final List<ShowMigrationStatusStatementTestCase> showScalingStatusTestCases = new LinkedList<>();
     
-    @XmlElement(name = "show-scaling-check-algorithms")
+    @XmlElement(name = "show-migration-check-algorithms")
     private final List<ShowMigrationCheckAlgorithmsStatementTestCase> showScalingCheckAlgorithmsTestCases = new LinkedList<>();
     
-    @XmlElement(name = "stop-scaling-source-writing")
+    @XmlElement(name = "stop-migration-source-writing")
     private final List<StopMigrationSourceWritingStatementTestCase> stopScalingSourceWritingTestCases = new LinkedList<>();
     
-    @XmlElement(name = "restore-scaling-source-writing")
+    @XmlElement(name = "restore-migration-source-writing")
     private final List<RestoreMigrationSourceWritingStatementTestCase> restoreScalingSourceWritingTestCases = new LinkedList<>();
     
-    @XmlElement(name = "apply-scaling")
+    @XmlElement(name = "apply-migration")
     private final List<ApplyMigrationStatementTestCase> applyScalingTestCases = new LinkedList<>();
     
-    @XmlElement(name = "reset-scaling")
+    @XmlElement(name = "reset-migration")
     private final List<ResetMigrationStatementTestCase> resetScalingTestCases = new LinkedList<>();
     
-    @XmlElement(name = "clean-scaling")
+    @XmlElement(name = "clean-migration")
     private final List<CleanMigrationStatementTestCase> cleanScalingTestCases = new LinkedList<>();
     
-    @XmlElement(name = "stop-scaling")
+    @XmlElement(name = "stop-migration")
     private final List<StopMigrationStatementTestCase> stopScalingTestCases = new LinkedList<>();
     
-    @XmlElement(name = "start-scaling")
+    @XmlElement(name = "start-migration")
     private final List<StartMigrationStatementTestCase> startScalingTestCases = new LinkedList<>();
     
     @XmlElement(name = "migrate-table")

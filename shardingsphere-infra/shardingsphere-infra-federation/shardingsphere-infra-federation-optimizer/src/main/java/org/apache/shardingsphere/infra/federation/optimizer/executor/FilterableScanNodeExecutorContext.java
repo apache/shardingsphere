@@ -29,11 +29,11 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
-public final class TableScanExecutorContext {
+public final class FilterableScanNodeExecutorContext implements ScanNodeExecutorContext {
     
     private final DataContext root;
     
-    private final List<RexNode> filters;
+    private final List<RexNode> filterValues;
     
     private final int[] projects;
 }

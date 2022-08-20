@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.executor.advanced;
+package org.apache.shardingsphere.infra.federation.executor.common;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.DataContext;
@@ -31,7 +31,7 @@ import java.util.Map;
  * Advanced execute data context.
  */
 @RequiredArgsConstructor
-public final class AdvancedExecuteDataContext implements DataContext {
+public final class CommonExecuteDataContext implements DataContext {
     
     private final SqlValidator validator;
     

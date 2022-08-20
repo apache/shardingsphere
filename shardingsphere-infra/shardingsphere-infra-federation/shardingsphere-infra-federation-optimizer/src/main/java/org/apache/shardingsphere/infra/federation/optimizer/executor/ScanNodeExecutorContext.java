@@ -15,30 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.executor.original.row;
+package org.apache.shardingsphere.infra.federation.optimizer.executor;
 
-import org.apache.calcite.linq4j.Enumerator;
-
-/**
- * Empty row enumerator.
- */
-public final class EmptyRowEnumerator implements Enumerator<Object[]> {
-    
-    @Override
-    public Object[] current() {
-        return new Object[0];
-    }
-    
-    @Override
-    public boolean moveNext() {
-        return false;
-    }
-    
-    @Override
-    public void reset() {
-    }
-    
-    @Override
-    public void close() {
-    }
+public interface ScanNodeExecutorContext {
 }
