@@ -30,14 +30,13 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-
-import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
 @Slf4j
@@ -67,29 +66,37 @@ public class TextPrimaryKeyScalingIT extends BaseExtraSQLITCase {
     }
     
     @Test
-    public void assertTextPrimaryKeyScalingSuccess() throws InterruptedException {
+    public void assertTextPrimaryKeyScalingSuccess() throws InterruptedException, SQLException {
         addSourceResource();
-        initShardingAlgorithm();
-        assertTrue(waitShardingAlgorithmEffect(15));
         createScalingRule();
-        createOrderTableRule();
-        createOrderTable();
+        createTargetOrderTableRule();
+        createSourceOrderTable();
         batchInsertOrder();
         addTargetResource();
-        executeWithLog(getCommonSQLCommand().getAlterOrderAutoTableRule());
-        String jobId = getScalingJobId();
-        waitScalingFinished(jobId);
-        assertCheckScalingSuccess(jobId);
-        applyScaling(jobId);
-        assertPreviewTableSuccess("t_order", Arrays.asList("ds_2", "ds_3", "ds_4"));
+        List<String> jobIds = listJobId();
+        for (String each : jobIds) {
+            waitMigrationFinished(each);
+        }
+        for (String each : jobIds) {
+            stopMigration(each);
+        }
+        for (String each : jobIds) {
+            assertCheckScalingSuccess(each);
+        }
     }
     
-    private void batchInsertOrder() {
+    private void batchInsertOrder() throws SQLException {
         UUIDKeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
-        List<Object[]> orderData = new ArrayList<>(TABLE_INIT_ROW_COUNT);
-        for (int i = 0; i < TABLE_INIT_ROW_COUNT; i++) {
-            orderData.add(new Object[]{keyGenerateAlgorithm.generateKey(), ThreadLocalRandom.current().nextInt(0, 6), ThreadLocalRandom.current().nextInt(0, 6), "OK"});
+        try (Connection connection = getSourceDataSource().getConnection()) {
+            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO t_order (id,order_id,user_id,status) VALUES (?,?,?,?)");
+            for (int i = 0; i < TABLE_INIT_ROW_COUNT; i++) {
+                preparedStatement.setObject(1, keyGenerateAlgorithm.generateKey());
+                preparedStatement.setObject(2, ThreadLocalRandom.current().nextInt(0, 6));
+                preparedStatement.setObject(3, ThreadLocalRandom.current().nextInt(0, 6));
+                preparedStatement.setObject(4, "OK");
+                preparedStatement.addBatch();
+            }
+            preparedStatement.executeBatch();
         }
-        getJdbcTemplate().batchUpdate("INSERT INTO t_order (id,order_id,user_id,status) VALUES (?,?,?,?)", orderData);
     }
 }

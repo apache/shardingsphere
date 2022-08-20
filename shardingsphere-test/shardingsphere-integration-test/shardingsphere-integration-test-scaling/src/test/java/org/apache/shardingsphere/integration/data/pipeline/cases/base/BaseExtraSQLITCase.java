@@ -26,8 +26,6 @@ import org.apache.shardingsphere.test.integration.env.container.atomic.util.Data
 import javax.xml.bind.JAXB;
 import java.util.Objects;
 
-import static org.junit.Assert.assertTrue;
-
 @Slf4j
 public abstract class BaseExtraSQLITCase extends BaseITCase {
     
@@ -39,42 +37,23 @@ public abstract class BaseExtraSQLITCase extends BaseITCase {
         extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BaseExtraSQLITCase.class.getClassLoader().getResource(parameterized.getScenario())), ExtraSQLCommand.class);
     }
     
-    protected void createNoUseTable() {
-        executeWithLog("CREATE SHARDING TABLE RULE no_use (RESOURCES(ds_0, ds_1), SHARDING_COLUMN=sharding_id, TYPE(NAME='MOD',PROPERTIES('sharding-count'='4')))");
-        executeWithLog("CREATE TABLE no_use(id int(11) NOT NULL,sharding_id int(11) NOT NULL, PRIMARY KEY (id))");
+    protected void createSourceOrderTable() {
+        sourceExecuteWithLog(extraSQLCommand.getCreateTableOrder());
     }
     
-    protected void createOrderTable() {
-        executeWithLog(extraSQLCommand.getCreateTableOrder());
-    }
-    
-    protected void createTableIndexList(final String schema) {
+    protected void createSourceTableIndexList(final String schema) {
         if (DatabaseTypeUtil.isPostgreSQL(getDatabaseType())) {
-            executeWithLog(String.format("CREATE INDEX IF NOT EXISTS idx_user_id ON %s.t_order ( user_id )", schema));
+            sourceExecuteWithLog(String.format("CREATE INDEX IF NOT EXISTS idx_user_id ON %s.t_order ( user_id )", schema));
         } else if (DatabaseTypeUtil.isOpenGauss(getDatabaseType())) {
-            executeWithLog(String.format("CREATE INDEX idx_user_id ON %s.t_order ( user_id )", schema));
+            sourceExecuteWithLog(String.format("CREATE INDEX idx_user_id ON %s.t_order ( user_id )", schema));
         }
     }
     
-    protected void createOrderItemTable() {
-        executeWithLog(extraSQLCommand.getCreateTableOrderItem());
+    protected void createSourceCommentOnList(final String schema) {
+        sourceExecuteWithLog(String.format("COMMENT ON COLUMN %st_order.user_id IS 'user id'", schema));
     }
     
-    private boolean executeSql(final String sql) {
-        try {
-            getJdbcTemplate().execute(sql);
-            return true;
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            // TODO openGauss seem return the different error message, need to check it
-            if (DatabaseTypeUtil.isOpenGauss(getDatabaseType())) {
-                log.info("openGauss error msg:{}", ex.getMessage());
-                return false;
-            } else {
-                assertTrue(ex.getMessage(), ex.getCause().getMessage().endsWith("The database sharding_db is read-only"));
-            }
-            return false;
-        }
+    protected void createSourceOrderItemTable() {
+        sourceExecuteWithLog(extraSQLCommand.getCreateTableOrderItem());
     }
 }

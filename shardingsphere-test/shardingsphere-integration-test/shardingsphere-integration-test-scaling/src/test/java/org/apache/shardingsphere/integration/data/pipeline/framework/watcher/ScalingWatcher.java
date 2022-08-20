@@ -28,7 +28,6 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.CuratorZookeeperRepository;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -41,8 +40,6 @@ public class ScalingWatcher extends TestWatcher {
     
     private final BaseComposedContainer composedContainer;
     
-    private final JdbcTemplate jdbcTemplate;
-    
     @Override
     protected void failed(final Throwable e, final Description description) {
         if (composedContainer instanceof NativeComposedContainer) {
@@ -50,9 +47,6 @@ public class ScalingWatcher extends TestWatcher {
             return;
         }
         outputZookeeperData();
-        List<Map<String, Object>> previewList = jdbcTemplate.queryForList("preview select * from t_order");
-        List<Map<String, Object>> shardingAlgorithms = jdbcTemplate.queryForList("SHOW SHARDING ALGORITHMS");
-        log.warn("watcher failed, preview:{}, shardingAlgorithms:{}", previewList, shardingAlgorithms);
     }
     
     private void outputZookeeperData() {

@@ -41,6 +41,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -187,6 +188,9 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                     Object thatResult = thatNextIterator.next();
                     if (thisResult instanceof SQLXML && thatResult instanceof SQLXML) {
                         return ((SQLXML) thisResult).getString().equals(((SQLXML) thatResult).getString());
+                    }
+                    if (thisResult instanceof Integer && thatResult instanceof Long) {
+                        return Objects.equals(Integer.toString((Integer) thisResult), Long.toString((Long) thatResult));
                     }
                     if (!new EqualsBuilder().append(thisResult, thatResult).isEquals()) {
                         log.warn("record column value not match, value1={}, value2={}, record1={}, record2={}", thisResult, thatResult, thisNext, thatNext);

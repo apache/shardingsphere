@@ -30,13 +30,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-
-import static org.junit.Assert.assertTrue;
 
 /**
  * General scaling test case, includes multiple cases.
@@ -68,34 +66,38 @@ public final class MySQLMigrationGeneralIT extends BaseExtraSQLITCase {
     
     @Test
     public void assertManualScalingSuccess() throws InterruptedException {
-        addSourceResource();
-        initShardingAlgorithm();
-        assertTrue(waitShardingAlgorithmEffect(15));
         createScalingRule();
-        createOrderTableRule();
-        createOrderItemTableRule();
-        createNoUseTable();
-        createOrderTable();
-        createOrderItemTable();
+        createSourceOrderTable();
+        createSourceOrderItemTable();
+        addSourceResource();
+        addTargetResource();
+        createTargetOrderTableRule();
+        createTargetOrderItemTableRule();
         SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(getSourceDataSource());
         for (int i = 0; i < TABLE_INIT_ROW_COUNT / 1000; i++) {
             Pair<List<Object[]>, List<Object[]>> dataPair = ScalingCaseHelper.generateFullInsertData(keyGenerateAlgorithm, parameterized.getDatabaseType(), 1000);
-            getJdbcTemplate().batchUpdate(getExtraSQLCommand().getFullInsertOrder(), dataPair.getLeft());
-            getJdbcTemplate().batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
+            jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrder(), dataPair.getLeft());
+            jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
         }
-        addTargetResource();
-        startIncrementTask(new MySQLIncrementTask(getJdbcTemplate(), keyGenerateAlgorithm, true, 20));
-        executeWithLog(getCommonSQLCommand().getAlterOrderWithItemAutoTableRule());
-        String jobId = getScalingJobId();
-        waitScalingFinished(jobId);
-        stopScaling(jobId);
-        getJdbcTemplate().update("INSERT INTO t_order (id,order_id,user_id,status,t_json) VALUES (?, ?, ?, ?, ?)", keyGenerateAlgorithm.generateKey(), keyGenerateAlgorithm.generateKey(),
+        startMigrationOrder();
+        startMigrationOrderItem();
+        startIncrementTask(new MySQLIncrementTask(jdbcTemplate, keyGenerateAlgorithm, true, 20));
+        List<String> jobIds = listJobId();
+        for (String each : jobIds) {
+            waitMigrationFinished(each);
+        }
+        for (String each : jobIds) {
+            stopMigration(each);
+        }
+        jdbcTemplate.update("INSERT INTO t_order (id,order_id,user_id,status,t_json) VALUES (?, ?, ?, ?, ?)", keyGenerateAlgorithm.generateKey(), keyGenerateAlgorithm.generateKey(),
                 1, "afterStopScaling", "{}");
-        startScaling(jobId);
-        assertCheckScalingSuccess(jobId);
+        for (String each : jobIds) {
+            startScaling(each);
+        }
+        for (String each : jobIds) {
+            assertCheckScalingSuccess(each);
+        }
         assertGreaterThanInitTableInitRows(TABLE_INIT_ROW_COUNT, "");
-        applyScaling(jobId);
-        assertPreviewTableSuccess("t_order", Arrays.asList("ds_2", "ds_3", "ds_4"));
-        assertPreviewTableSuccess("t_order_item", Arrays.asList("ds_2", "ds_3", "ds_4"));
     }
 }
