@@ -26,6 +26,7 @@
     <logger name="org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer" level="WARN" />
     <logger name="com.zaxxer.hikari.pool.ProxyConnection" level="OFF" />
     <logger name="com.github.dockerjava" level="WARN"/>
+    <logger name="org.apache.zookeeper.ZooKeeper" level="OFF"/>
     
     <root level="INFO">
         <appender-ref ref="console" />

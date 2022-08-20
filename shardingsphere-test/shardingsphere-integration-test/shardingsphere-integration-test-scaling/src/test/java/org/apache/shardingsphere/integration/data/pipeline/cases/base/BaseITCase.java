@@ -33,7 +33,7 @@ import org.apache.shardingsphere.integration.data.pipeline.cases.command.Migrati
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.BaseComposedContainer;
-import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.DockerComposedContainer;
+import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.MigrationComposedContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.NativeComposedContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.integration.data.pipeline.framework.watcher.ScalingWatcher;
@@ -115,13 +115,13 @@ public abstract class BaseITCase {
     public BaseITCase(final ScalingParameterized parameterized) {
         databaseType = parameterized.getDatabaseType();
         if (ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER) {
-            composedContainer = new DockerComposedContainer(parameterized.getDatabaseType(), parameterized.getDockerImageName());
+            composedContainer = new MigrationComposedContainer(parameterized.getDatabaseType(), parameterized.getDockerImageName());
         } else {
             composedContainer = new NativeComposedContainer(parameterized.getDatabaseType());
         }
         composedContainer.start();
         if (ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER) {
-            DockerStorageContainer storageContainer = ((DockerComposedContainer) composedContainer).getStorageContainer();
+            DockerStorageContainer storageContainer = ((MigrationComposedContainer) composedContainer).getStorageContainer();
             username = storageContainer.getUsername();
             password = storageContainer.getUnifiedPassword();
         } else {
@@ -160,7 +160,7 @@ public abstract class BaseITCase {
         } catch (final SQLException ex) {
             throw new IllegalStateException(ex);
         }
-        sourceDataSource = getDataSource(getActualJdbcUrlTemplate(DS_0), username, password);
+        sourceDataSource = getDataSource(getActualJdbcUrlTemplate(DS_0, false), username, password);
         proxyDataSource = getDataSource(composedContainer.getProxyJdbcUrl("sharding_db"), "proxy", "Proxy@123");
     }
     
@@ -193,7 +193,7 @@ public abstract class BaseITCase {
         }
         String addSourceResource = migrationDistSQLCommand.getAddMigrationSourceResourceTemplate().replace("${user}", username)
                 .replace("${password}", password)
-                .replace("${ds0}", getActualJdbcUrlTemplate(DS_0));
+                .replace("${ds0}", getActualJdbcUrlTemplate(DS_0, true));
         connectionExecuteWithLog(connection, addSourceResource);
     }
     
@@ -201,18 +201,22 @@ public abstract class BaseITCase {
     protected void addTargetResource() {
         String addTargetResource = migrationDistSQLCommand.getAddMigrationTargetResourceTemplate().replace("${user}", username)
                 .replace("${password}", password)
-                .replace("${ds2}", getActualJdbcUrlTemplate(DS_2))
-                .replace("${ds3}", getActualJdbcUrlTemplate(DS_3))
-                .replace("${ds4}", getActualJdbcUrlTemplate(DS_4));
+                .replace("${ds2}", getActualJdbcUrlTemplate(DS_2, true))
+                .replace("${ds3}", getActualJdbcUrlTemplate(DS_3, true))
+                .replace("${ds4}", getActualJdbcUrlTemplate(DS_4, true));
         proxyExecuteWithLog(addTargetResource, 2);
         List<Map<String, Object>> resources = queryForListWithLog("SHOW DATABASE RESOURCES from sharding_db");
         assertThat(resources.size(), is(3));
     }
     
-    private String getActualJdbcUrlTemplate(final String databaseName) {
+    private String getActualJdbcUrlTemplate(final String databaseName, final boolean isInContainer) {
         if (ScalingITEnvTypeEnum.DOCKER == ENV.getItEnvType()) {
-            DockerStorageContainer storageContainer = ((DockerComposedContainer) composedContainer).getStorageContainer();
-            return DataSourceEnvironment.getURL(getDatabaseType(), getDatabaseType().getType().toLowerCase() + ".host", storageContainer.getPort(), databaseName);
+            DockerStorageContainer storageContainer = ((MigrationComposedContainer) composedContainer).getStorageContainer();
+            if (isInContainer) {
+                return DataSourceEnvironment.getURL(getDatabaseType(), getDatabaseType().getType().toLowerCase() + ".host", storageContainer.getPort(), databaseName);
+            } else {
+                return DataSourceEnvironment.getURL(getDatabaseType(), storageContainer.getHost(), storageContainer.getMappedPort(3306), databaseName);
+            }
         }
         return DataSourceEnvironment.getURL(getDatabaseType(), "127.0.0.1", ENV.getActualDataSourceDefaultPort(databaseType), databaseName);
     }

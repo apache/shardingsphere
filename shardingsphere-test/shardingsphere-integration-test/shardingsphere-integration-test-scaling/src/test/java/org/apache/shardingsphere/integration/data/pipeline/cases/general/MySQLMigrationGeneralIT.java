@@ -65,7 +65,7 @@ public final class MySQLMigrationGeneralIT extends BaseExtraSQLITCase {
     }
     
     @Test
-    public void assertManualScalingSuccess() throws InterruptedException {
+    public void assertMigrationSuccess() throws InterruptedException {
         createScalingRule();
         createSourceOrderTable();
         createSourceOrderItemTable();

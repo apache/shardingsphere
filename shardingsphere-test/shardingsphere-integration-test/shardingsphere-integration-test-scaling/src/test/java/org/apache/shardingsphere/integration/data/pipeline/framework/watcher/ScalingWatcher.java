@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.BaseComposedContainer;
-import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.DockerComposedContainer;
+import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.MigrationComposedContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.NativeComposedContainer;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
@@ -50,11 +50,11 @@ public class ScalingWatcher extends TestWatcher {
     }
     
     private void outputZookeeperData() {
-        DockerComposedContainer dockerComposedContainer = (DockerComposedContainer) composedContainer;
-        DatabaseType databaseType = dockerComposedContainer.getStorageContainer().getDatabaseType();
+        MigrationComposedContainer migrationComposedContainer = (MigrationComposedContainer) composedContainer;
+        DatabaseType databaseType = migrationComposedContainer.getStorageContainer().getDatabaseType();
         String namespace = "it_db_" + databaseType.getType().toLowerCase();
         ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration("ZooKeeper", namespace,
-                dockerComposedContainer.getGovernanceContainer().getServerLists(), new Properties());
+                migrationComposedContainer.getGovernanceContainer().getServerLists(), new Properties());
         ClusterPersistRepository zookeeperRepository = new CuratorZookeeperRepository();
         zookeeperRepository.init(config);
         List<String> childrenKeys = zookeeperRepository.getChildrenKeys("/");

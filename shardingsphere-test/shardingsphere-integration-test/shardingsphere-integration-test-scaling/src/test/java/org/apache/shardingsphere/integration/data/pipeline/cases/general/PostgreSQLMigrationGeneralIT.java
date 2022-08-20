@@ -68,7 +68,7 @@ public final class PostgreSQLMigrationGeneralIT extends BaseExtraSQLITCase {
     }
     
     @Test
-    public void assertManualScalingSuccess() throws InterruptedException {
+    public void assertMigrationSuccess() throws InterruptedException {
         createScalingRule();
         createSourceSchema("test");
         createSourceOrderTable();
