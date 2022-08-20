@@ -31,7 +31,6 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncreme
 import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
-import org.apache.shardingsphere.data.pipeline.core.api.PipelineResourceAPI;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreatorFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineVerifyFailedException;
@@ -277,8 +276,8 @@ public final class MigrationJobAPIImplTest {
         Map<String, DataSourceProperties> expect = new LinkedHashMap<>(1, 1);
         expect.put("ds_0", new DataSourceProperties("com.zaxxer.hikari.HikariDataSource", props));
         jobAPI.addMigrationSourceResources(expect);
-        PipelineResourceAPI pipelineResourceAPI = new PipelineResourceAPIImpl();
-        Map<String, DataSourceProperties> actual = pipelineResourceAPI.getMetaDataDataSource(JobType.MIGRATION);
+        PipelineDataSourcePersistService persistService = new PipelineDataSourcePersistService();
+        Map<String, DataSourceProperties> actual = persistService.load(JobType.MIGRATION);
         assertTrue(actual.containsKey("ds_0"));
     }
     

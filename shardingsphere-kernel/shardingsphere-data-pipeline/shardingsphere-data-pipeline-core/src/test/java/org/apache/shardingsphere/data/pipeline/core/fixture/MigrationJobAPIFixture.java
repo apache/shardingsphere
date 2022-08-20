@@ -52,6 +52,19 @@ public final class MigrationJobAPIFixture implements MigrationJobAPI {
     }
     
     @Override
+    public void createProcessConfiguration(final PipelineProcessConfiguration processConfig) {
+    }
+    
+    @Override
+    public void alterProcessConfiguration(final PipelineProcessConfiguration processConfig) {
+    }
+    
+    @Override
+    public PipelineProcessConfiguration showProcessConfiguration() {
+        return null;
+    }
+    
+    @Override
     public void startDisabledJob(final String jobId) {
     }
     
@@ -147,7 +160,7 @@ public final class MigrationJobAPIFixture implements MigrationJobAPI {
     }
     
     @Override
-    public void addMigrationSourceResources(final Map<String, DataSourceProperties> sourcePropertiesMap) {
+    public void addMigrationSourceResources(final Map<String, DataSourceProperties> dataSourcePropsMap) {
     }
     
     @Override

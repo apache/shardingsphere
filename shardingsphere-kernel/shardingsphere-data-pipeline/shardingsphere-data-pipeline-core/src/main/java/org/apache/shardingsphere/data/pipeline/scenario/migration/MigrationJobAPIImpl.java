@@ -51,10 +51,9 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.MigrationJobInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobItemAPI;
-import org.apache.shardingsphere.data.pipeline.core.api.PipelineResourceAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.AbstractPipelineJobAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.InventoryIncrementalJobItemAPIImpl;
-import org.apache.shardingsphere.data.pipeline.core.api.impl.PipelineResourceAPIImpl;
+import org.apache.shardingsphere.data.pipeline.core.api.impl.PipelineDataSourcePersistService;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCalculateAlgorithmFactory;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
@@ -108,7 +107,12 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     
     private final PipelineJobItemAPI jobItemAPI = new InventoryIncrementalJobItemAPIImpl();
     
-    private final PipelineResourceAPI pipelineResourceAPI = new PipelineResourceAPIImpl();
+    private final PipelineDataSourcePersistService dataSourcePersistService = new PipelineDataSourcePersistService();
+    
+    @Override
+    protected JobType getJobType() {
+        return JobType.MIGRATION;
+    }
     
     @Override
     protected String marshalJobIdLeftPart(final PipelineJobId pipelineJobId) {
@@ -140,7 +144,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     
     private String generateJobId(final YamlMigrationJobConfiguration config) {
         MigrationJobId jobId = new MigrationJobId();
-        jobId.setTypeCode(JobType.MIGRATION.getTypeCode());
+        jobId.setTypeCode(getJobType().getTypeCode());
         jobId.setSourceDataSourceName(config.getSourceDataSourceName());
         jobId.setTableName(config.getSourceTableName());
         jobId.setDatabaseName(config.getTargetDatabaseName());
@@ -437,11 +441,11 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     }
     
     @Override
-    public void addMigrationSourceResources(final Map<String, DataSourceProperties> dataSourceProperties) {
-        log.info("Add migration source resources {}", dataSourceProperties.keySet());
-        Map<String, DataSourceProperties> existDataSources = pipelineResourceAPI.getMetaDataDataSource(JobType.MIGRATION);
-        Collection<String> duplicateDataSourceNames = new HashSet<>(dataSourceProperties.size(), 1);
-        for (Entry<String, DataSourceProperties> entry : dataSourceProperties.entrySet()) {
+    public void addMigrationSourceResources(final Map<String, DataSourceProperties> dataSourcePropsMap) {
+        log.info("Add migration source resources {}", dataSourcePropsMap.keySet());
+        Map<String, DataSourceProperties> existDataSources = dataSourcePersistService.load(getJobType());
+        Collection<String> duplicateDataSourceNames = new HashSet<>(dataSourcePropsMap.size(), 1);
+        for (Entry<String, DataSourceProperties> entry : dataSourcePropsMap.entrySet()) {
             if (existDataSources.containsKey(entry.getKey())) {
                 duplicateDataSourceNames.add(entry.getKey());
             }
@@ -450,13 +454,13 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
             throw new AddMigrationSourceResourceException(String.format("Duplicate resource names %s.", duplicateDataSourceNames));
         }
         Map<String, DataSourceProperties> result = new LinkedHashMap<>(existDataSources);
-        result.putAll(dataSourceProperties);
-        pipelineResourceAPI.persistMetaDataDataSource(JobType.MIGRATION, result);
+        result.putAll(dataSourcePropsMap);
+        dataSourcePersistService.persist(getJobType(), result);
     }
     
     @Override
     public void dropMigrationSourceResources(final Collection<String> resourceNames) {
-        Map<String, DataSourceProperties> metaDataDataSource = pipelineResourceAPI.getMetaDataDataSource(JobType.MIGRATION);
+        Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(getJobType());
         List<String> noExistResources = resourceNames.stream().filter(each -> !metaDataDataSource.containsKey(each)).collect(Collectors.toList());
         if (!noExistResources.isEmpty()) {
             throw new DropMigrationSourceResourceException(String.format("Resource names %s not exist.", resourceNames));
@@ -464,13 +468,13 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         for (String each : resourceNames) {
             metaDataDataSource.remove(each);
         }
-        pipelineResourceAPI.persistMetaDataDataSource(JobType.MIGRATION, metaDataDataSource);
+        dataSourcePersistService.persist(getJobType(), metaDataDataSource);
     }
     
     @Override
     public void createJobAndStart(final CreateMigrationJobParameter parameter) {
         YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
-        Map<String, DataSourceProperties> metaDataDataSource = pipelineResourceAPI.getMetaDataDataSource(JobType.MIGRATION);
+        Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(JobType.MIGRATION);
         Map<String, Object> sourceDataSourceProps = DATA_SOURCE_CONFIG_SWAPPER.swapToMap(metaDataDataSource.get(parameter.getSourceDataSourceName()));
         YamlPipelineDataSourceConfiguration sourcePipelineDataSourceConfiguration = createYamlPipelineDataSourceConfiguration(StandardPipelineDataSourceConfiguration.TYPE,
                 YamlEngine.marshal(sourceDataSourceProps));
@@ -515,6 +519,6 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     
     @Override
     public String getType() {
-        return JobType.MIGRATION.getTypeName();
+        return getJobType().getTypeName();
     }
 }
