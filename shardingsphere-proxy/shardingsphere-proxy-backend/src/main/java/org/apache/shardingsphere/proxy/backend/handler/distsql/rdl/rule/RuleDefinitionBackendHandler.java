@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
@@ -38,19 +37,11 @@ import org.apache.shardingsphere.proxy.backend.handler.DatabaseRequiredBackendHa
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterDefaultShardingStrategyStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingAlgorithmStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBindingTableRulesStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBroadcastTableRulesStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Rule definition backend handler.
@@ -59,9 +50,6 @@ import java.util.Set;
  */
 @Slf4j
 public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatement> extends DatabaseRequiredBackendHandler<T> {
-    
-    private static final Set<String> RULE_ALTERED_ACTIONS = new HashSet<>(Arrays.asList(AlterShardingTableRuleStatement.class.getName(), AlterShardingAlgorithmStatement.class.getName(),
-            AlterDefaultShardingStrategyStatement.class.getName(), AlterShardingBindingTableRulesStatement.class.getName(), AlterShardingBroadcastTableRulesStatement.class.getName()));
     
     public RuleDefinitionBackendHandler(final T sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession);
@@ -76,12 +64,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(database, ruleConfigClass).orElse(null);
         ruleDefinitionUpdater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
         Optional<RuleDefinitionAlterPreprocessor> preprocessor = RuleDefinitionAlterPreprocessorFactory.findInstance(sqlStatement);
-        if (!RuleAlteredJobWorker.isOnRuleAlteredActionEnabled(currentRuleConfig)) {
-            if (RULE_ALTERED_ACTIONS.contains(sqlStatement.getClass().getCanonicalName())) {
-                // TODO throw new RuntimeException("scaling is not enabled");
-                log.warn("rule altered and scaling is not enabled.");
-            }
-        } else if (preprocessor.isPresent()) {
+        if (preprocessor.isPresent()) {
             prepareScaling(database, sqlStatement, (RuleDefinitionAlterUpdater) ruleDefinitionUpdater, currentRuleConfig, preprocessor.get());
             return new UpdateResponseHeader(sqlStatement);
         }

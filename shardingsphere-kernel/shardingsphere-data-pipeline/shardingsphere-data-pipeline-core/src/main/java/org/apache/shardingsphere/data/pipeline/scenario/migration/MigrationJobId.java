@@ -30,6 +30,8 @@ import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJobId;
 @ToString(callSuper = true)
 public final class MigrationJobId extends AbstractPipelineJobId {
     
+    public static final String CURRENT_VERSION = "01";
+    
     private String tableName;
     
     private String sourceDataSourceName;

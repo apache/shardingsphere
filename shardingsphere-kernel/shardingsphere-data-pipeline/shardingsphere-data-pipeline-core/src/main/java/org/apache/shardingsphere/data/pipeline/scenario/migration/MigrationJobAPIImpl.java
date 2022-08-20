@@ -33,13 +33,11 @@ import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlPipelineJ
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
-import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
@@ -59,11 +57,11 @@ import org.apache.shardingsphere.data.pipeline.core.api.impl.PipelineResourceAPI
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCalculateAlgorithmFactory;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.AddMigrationSourceResourceException;
 import org.apache.shardingsphere.data.pipeline.core.exception.DropMigrationSourceResourceException;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineVerifyFailedException;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
+import org.apache.shardingsphere.data.pipeline.core.util.SchemaTableUtil;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
@@ -84,11 +82,6 @@ import org.apache.shardingsphere.mode.lock.ExclusiveLockDefinition;
 
 import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -109,8 +102,6 @@ import java.util.stream.IntStream;
 public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implements MigrationJobAPI {
     
     private static final YamlDataSourceConfigurationSwapper DATA_SOURCE_CONFIG_SWAPPER = new YamlDataSourceConfigurationSwapper();
-    
-    private static final YamlPipelineDataSourceConfigurationSwapper PIPELINE_DATA_SOURCE_CONFIG_SWAPPER = new YamlPipelineDataSourceConfigurationSwapper();
     
     private final PipelineJobItemAPI jobItemAPI = new InventoryIncrementalJobItemAPIImpl();
     
@@ -495,7 +486,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         result.setTargetDatabaseType(targetPipelineDataSource.getDatabaseType().getType());
         result.setTargetDatabaseName(targetDatabaseName);
         result.setTargetTableName(parameter.getTargetTableName());
-        result.setSchemaTablesMap(getSchemaNameMap(sourcePipelineDataSourceConfiguration, parameter.getSourceTableName()));
+        result.setSchemaTablesMap(SchemaTableUtil.getSchemaTablesMapFromActual(sourcePipelineDataSourceConfiguration, parameter.getSourceTableName()));
         extendYamlJobConfiguration(result);
         MigrationJobConfiguration jobConfiguration = new YamlMigrationJobConfigurationSwapper().swapToObject(result);
         start(jobConfiguration);
@@ -514,24 +505,6 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         YamlPipelineDataSourceConfiguration result = new YamlPipelineDataSourceConfiguration();
         result.setType(type);
         result.setParameter(parameter);
-        return result;
-    }
-    
-    private Map<String, List<String>> getSchemaNameMap(final YamlPipelineDataSourceConfiguration pipelineDataSourceConfig, final String tableName) {
-        Map<String, List<String>> result = new HashMap<>();
-        try (PipelineDataSourceWrapper dataSource = PipelineDataSourceFactory.newInstance(PIPELINE_DATA_SOURCE_CONFIG_SWAPPER.swapToObject(pipelineDataSourceConfig))) {
-            try (Connection connection = dataSource.getConnection()) {
-                DatabaseMetaData metaData = connection.getMetaData();
-                ResultSet resultSet = metaData.getTables(null, null, tableName, new String[]{"TABLE"});
-                while (resultSet.next()) {
-                    String schemaName = resultSet.getString("TABLE_SCHEM");
-                    result.computeIfAbsent(schemaName, k -> new ArrayList<>()).add(resultSet.getString("TABLE_NAME"));
-                }
-            }
-        } catch (final SQLException ex) {
-            log.error("Get schema name map error", ex);
-            throw new AddMigrationSourceResourceException(ex.getMessage());
-        }
         return result;
     }
     

@@ -18,9 +18,20 @@
 package org.apache.shardingsphere.data.pipeline.core.util;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
+import org.apache.shardingsphere.data.pipeline.core.exception.AddMigrationSourceResourceException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,6 +43,9 @@ import java.util.Set;
  */
 @Slf4j
 public final class SchemaTableUtil {
+    
+    private static final YamlPipelineDataSourceConfigurationSwapper PIPELINE_DATA_SOURCE_CONFIG_SWAPPER = new YamlPipelineDataSourceConfigurationSwapper();
+    
     
     /**
      * Get schema table map.
@@ -53,6 +67,31 @@ public final class SchemaTableUtil {
             }
         });
         log.info("getSchemaTablesMap, result={}", result);
+        return result;
+    }
+    
+    /**
+     * Get schema tables map from actual data source.
+     *
+     * @param pipelineDataSourceConfig pipeline data source config
+     * @param tableName table name
+     * @return schema tables map
+     */
+    public static Map<String, List<String>> getSchemaTablesMapFromActual(final YamlPipelineDataSourceConfiguration pipelineDataSourceConfig, final String tableName) {
+        Map<String, List<String>> result = new HashMap<>();
+        try (PipelineDataSourceWrapper dataSource = PipelineDataSourceFactory.newInstance(PIPELINE_DATA_SOURCE_CONFIG_SWAPPER.swapToObject(pipelineDataSourceConfig))) {
+            try (Connection connection = dataSource.getConnection()) {
+                DatabaseMetaData metaData = connection.getMetaData();
+                ResultSet resultSet = metaData.getTables(null, null, tableName, new String[]{"TABLE"});
+                while (resultSet.next()) {
+                    String schemaName = resultSet.getString("TABLE_SCHEM");
+                    result.computeIfAbsent(schemaName, k -> new ArrayList<>()).add(resultSet.getString("TABLE_NAME"));
+                }
+            }
+        } catch (final SQLException ex) {
+            log.error("Get schema name map error", ex);
+            throw new AddMigrationSourceResourceException(ex.getMessage());
+        }
         return result;
     }
 }
