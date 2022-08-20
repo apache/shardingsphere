@@ -19,8 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.AddMigrationSourceResourceException;
@@ -43,9 +42,6 @@ import java.util.Set;
  */
 @Slf4j
 public final class SchemaTableUtil {
-    
-    private static final YamlPipelineDataSourceConfigurationSwapper PIPELINE_DATA_SOURCE_CONFIG_SWAPPER = new YamlPipelineDataSourceConfigurationSwapper();
-    
     
     /**
      * Get schema table map.
@@ -77,9 +73,9 @@ public final class SchemaTableUtil {
      * @param tableName table name
      * @return schema tables map
      */
-    public static Map<String, List<String>> getSchemaTablesMapFromActual(final YamlPipelineDataSourceConfiguration pipelineDataSourceConfig, final String tableName) {
+    public static Map<String, List<String>> getSchemaTablesMapFromActual(final PipelineDataSourceConfiguration pipelineDataSourceConfig, final String tableName) {
         Map<String, List<String>> result = new HashMap<>();
-        try (PipelineDataSourceWrapper dataSource = PipelineDataSourceFactory.newInstance(PIPELINE_DATA_SOURCE_CONFIG_SWAPPER.swapToObject(pipelineDataSourceConfig))) {
+        try (PipelineDataSourceWrapper dataSource = PipelineDataSourceFactory.newInstance(pipelineDataSourceConfig)) {
             try (Connection connection = dataSource.getConnection()) {
                 DatabaseMetaData metaData = connection.getMetaData();
                 ResultSet resultSet = metaData.getTables(null, null, tableName, new String[]{"TABLE"});

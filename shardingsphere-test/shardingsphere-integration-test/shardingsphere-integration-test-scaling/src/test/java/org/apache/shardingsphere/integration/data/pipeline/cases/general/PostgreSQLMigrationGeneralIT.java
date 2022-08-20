@@ -42,11 +42,11 @@ import java.util.List;
  */
 @Slf4j
 @RunWith(Parameterized.class)
-public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
+public final class PostgreSQLMigrationGeneralIT extends BaseExtraSQLITCase {
     
     private final ScalingParameterized parameterized;
     
-    public PostgreSQLGeneralScalingIT(final ScalingParameterized parameterized) {
+    public PostgreSQLMigrationGeneralIT(final ScalingParameterized parameterized) {
         super(parameterized);
         this.parameterized = parameterized;
         log.info("parameterized:{}", parameterized);
@@ -69,14 +69,13 @@ public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
     
     @Test
     public void assertManualScalingSuccess() throws InterruptedException {
-        addSourceResource();
         createScalingRule();
         createSourceSchema("test");
         createSourceOrderTable();
         createSourceOrderItemTable();
-        // TODO wait kernel support create index if not exists
         createSourceTableIndexList("test");
         createSourceCommentOnList("test");
+        addSourceResource();
         addTargetResource();
         createTargetOrderTableRule();
         createTargetOrderItemTableRule();
@@ -85,6 +84,8 @@ public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(getSourceDataSource());
         jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrder(), dataPair.getLeft());
         jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
+        startMigrationOrder();
+        startMigrationOrderItem();
         startIncrementTask(new PostgreSQLIncrementTask(jdbcTemplate, new SnowflakeKeyGenerateAlgorithm(), "test", true, 20));
         List<String> jobIds = listJobId();
         for (String each : jobIds) {

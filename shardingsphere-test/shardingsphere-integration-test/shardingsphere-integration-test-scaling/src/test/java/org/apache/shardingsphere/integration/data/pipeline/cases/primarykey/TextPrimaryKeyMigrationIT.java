@@ -35,14 +35,13 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 @RunWith(Parameterized.class)
 @Slf4j
-public class TextPrimaryKeyScalingIT extends BaseExtraSQLITCase {
+public class TextPrimaryKeyMigrationIT extends BaseExtraSQLITCase {
     
-    public TextPrimaryKeyScalingIT(final ScalingParameterized parameterized) {
+    public TextPrimaryKeyMigrationIT(final ScalingParameterized parameterized) {
         super(parameterized);
         log.info("parameterized:{}", parameterized);
     }
@@ -67,22 +66,17 @@ public class TextPrimaryKeyScalingIT extends BaseExtraSQLITCase {
     
     @Test
     public void assertTextPrimaryKeyScalingSuccess() throws InterruptedException, SQLException {
-        addSourceResource();
-        createScalingRule();
-        createTargetOrderTableRule();
         createSourceOrderTable();
         batchInsertOrder();
+        createScalingRule();
+        addSourceResource();
         addTargetResource();
-        List<String> jobIds = listJobId();
-        for (String each : jobIds) {
-            waitMigrationFinished(each);
-        }
-        for (String each : jobIds) {
-            stopMigration(each);
-        }
-        for (String each : jobIds) {
-            assertCheckScalingSuccess(each);
-        }
+        createTargetOrderTableRule();
+        startMigrationOrder();
+        String jobId = listJobId().get(0);
+        waitMigrationFinished(jobId);
+        stopMigration(jobId);
+        assertCheckScalingSuccess(jobId);
     }
     
     private void batchInsertOrder() throws SQLException {

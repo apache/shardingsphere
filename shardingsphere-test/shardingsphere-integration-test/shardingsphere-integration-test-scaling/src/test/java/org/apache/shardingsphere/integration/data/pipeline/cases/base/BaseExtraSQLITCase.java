@@ -50,7 +50,7 @@ public abstract class BaseExtraSQLITCase extends BaseITCase {
     }
     
     protected void createSourceCommentOnList(final String schema) {
-        sourceExecuteWithLog(String.format("COMMENT ON COLUMN %st_order.user_id IS 'user id'", schema));
+        sourceExecuteWithLog(String.format("COMMENT ON COLUMN %s.t_order.user_id IS 'user id'", schema));
     }
     
     protected void createSourceOrderItemTable() {
