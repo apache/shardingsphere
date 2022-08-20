@@ -155,7 +155,7 @@ public final class MigrationJobAPIFixture implements MigrationJobAPI {
     }
     
     @Override
-    public void createJob(final CreateMigrationJobParameter parameter) {
+    public void createJobAndStart(final CreateMigrationJobParameter parameter) {
     }
     
     @Override

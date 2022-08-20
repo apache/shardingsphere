@@ -473,7 +473,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     }
     
     @Override
-    public void createJob(final CreateMigrationJobParameter parameter) {
+    public void createJobAndStart(final CreateMigrationJobParameter parameter) {
         YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
         Map<String, DataSourceProperties> metaDataDataSource = pipelineResourceAPI.getMetaDataDataSource(JobType.MIGRATION);
         Map<String, Object> sourceDataSourceProps = DATA_SOURCE_CONFIG_SWAPPER.swapToMap(metaDataDataSource.get(parameter.getSourceDataSourceName()));

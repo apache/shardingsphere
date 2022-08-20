@@ -53,7 +53,7 @@ public final class MigrateTableUpdater implements RALUpdater<MigrateTableStateme
         CreateMigrationJobParameter createMigrationJobParameter = new CreateMigrationJobParameter(sqlStatement.getSourceDatabaseName(), sqlStatement.getSourceTableName(),
                 ObjectUtils.defaultIfNull(sqlStatement.getTargetDatabaseName(), sqlStatement.getSourceDatabaseName()), sqlStatement.getTargetTableName(),
                 SHARDING_RULE_CONFIG_SWAPPER.swapToYamlConfiguration(targetShardingRule), targetDatabase.getResource().getDataSources());
-        JOB_API.createJob(createMigrationJobParameter);
+        JOB_API.createJobAndStart(createMigrationJobParameter);
     }
     
     @Override
