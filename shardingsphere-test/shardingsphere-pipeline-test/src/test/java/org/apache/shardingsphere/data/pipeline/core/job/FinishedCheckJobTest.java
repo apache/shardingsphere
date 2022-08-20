@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.job;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
+import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
@@ -67,7 +67,7 @@ public final class FinishedCheckJobTest {
     public void assertExecuteAllDisabledJob() {
         Optional<String> jobId = MigrationJobAPIFactory.getInstance().start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
-        List<JobInfo> jobInfos = MigrationJobAPIFactory.getInstance().list();
+        List<PipelineJobInfo> jobInfos = MigrationJobAPIFactory.getInstance().list();
         jobInfos.forEach(each -> each.setActive(false));
         when(jobAPI.list()).thenReturn(jobInfos);
         finishedCheckJob.execute(null);
@@ -77,7 +77,7 @@ public final class FinishedCheckJobTest {
     public void assertExecuteActiveJob() {
         Optional<String> jobId = MigrationJobAPIFactory.getInstance().start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
-        List<JobInfo> jobInfos = MigrationJobAPIFactory.getInstance().list();
+        List<PipelineJobInfo> jobInfos = MigrationJobAPIFactory.getInstance().list();
         jobInfos.forEach(each -> each.setActive(true));
         when(jobAPI.list()).thenReturn(jobInfos);
         finishedCheckJob.execute(null);
