@@ -385,7 +385,7 @@ public abstract class BaseITCase {
                 return false;
             }
             int incrementalIdleSeconds = Integer.parseInt(entry.get("incremental_idle_seconds").toString());
-            if (incrementalIdleSeconds <= 5) {
+            if (incrementalIdleSeconds < 10) {
                 return false;
             }
         }

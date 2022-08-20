@@ -75,8 +75,8 @@ public final class MySQLMigrationGeneralIT extends BaseExtraSQLITCase {
         createTargetOrderItemTableRule();
         SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
         JdbcTemplate jdbcTemplate = new JdbcTemplate(getSourceDataSource());
-        for (int i = 0; i < TABLE_INIT_ROW_COUNT / 1000; i++) {
-            Pair<List<Object[]>, List<Object[]>> dataPair = ScalingCaseHelper.generateFullInsertData(keyGenerateAlgorithm, parameterized.getDatabaseType(), 1000);
+        for (int i = 0; i < TABLE_INIT_ROW_COUNT / 10; i++) {
+            Pair<List<Object[]>, List<Object[]>> dataPair = ScalingCaseHelper.generateFullInsertData(keyGenerateAlgorithm, parameterized.getDatabaseType(), 10);
             jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrder(), dataPair.getLeft());
             jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
         }
