@@ -110,18 +110,18 @@ public interface GovernanceRepositoryAPI {
     List<Integer> getShardingItems(String jobId);
     
     /**
-     * Get migration source data source.
+     * Get meta data data sources.
      *
      * @param jobType job type
-     * @return migration source data source
+     * @return data source properties
      */
-    String getMetaDataDataSource(JobType jobType);
+    String getMetaDataDataSources(JobType jobType);
     
     /**
-     * Persist meta data data source.
+     * Persist meta data data sources.
      *
      * @param jobType job type
-     * @param metaDataDataSource meta data data source
+     * @param metaDataDataSources data source properties
      */
-    void persistMetaDataDataSource(JobType jobType, String metaDataDataSource);
+    void persistMetaDataDataSources(JobType jobType, String metaDataDataSources);
 }
