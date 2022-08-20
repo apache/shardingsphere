@@ -230,11 +230,11 @@ public abstract class BaseITCase {
     }
     
     protected void startMigrationOrder() {
-        proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderSingleTable(), 3);
+        proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderSingleTable(), 5);
     }
     
     protected void startMigrationOrderItem() {
-        proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderItemSingleTable(), 3);
+        proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderItemSingleTable(), 5);
     }
     
     // TODO use new DistSQL
@@ -317,21 +317,12 @@ public abstract class BaseITCase {
         getIncreaseTaskThread().start();
     }
     
-    protected void stopScalingSourceWriting(final String jobId) {
-        executeWithLog(String.format("STOP MIGRATION SOURCE WRITING '%s'", jobId));
+    protected void stopMigration(final String jobId) {
+        proxyExecuteWithLog(String.format("STOP MIGRATION '%s'", jobId), 5);
     }
     
-    protected void stopScaling(final String jobId) {
-        executeWithLog(String.format("STOP MIGRATION '%s'", jobId), 5);
-    }
-    
-    protected void startScaling(final String jobId) {
-        executeWithLog(String.format("START MIGRATION '%s'", jobId), 10);
-    }
-    
-    protected void applyScaling(final String jobId) {
-        assertBeforeApplyScalingMetadataCorrectly();
-        executeWithLog(String.format("APPLY MIGRATION '%s'", jobId));
+    protected void startMigration(final String jobId) {
+        proxyExecuteWithLog(String.format("START MIGRATION '%s'", jobId), 10);
     }
     
     protected void assertBeforeApplyScalingMetadataCorrectly() {
@@ -347,12 +338,8 @@ public abstract class BaseITCase {
         return jobId;
     }
     
-    protected void stopMigration(final String jobId) {
-        proxyExecuteWithLog(String.format("STOP SCALING '%s'", jobId), 5);
-    }
-        
     protected List<String> listJobId() {
-        List<Map<String, Object>> jobList = queryForListWithLog("SHOW SCALING LIST");
+        List<Map<String, Object>> jobList = queryForListWithLog("SHOW MIGRATION LIST");
         return jobList.stream().map(a -> a.get("id").toString()).collect(Collectors.toList());
     }
     
@@ -373,7 +360,7 @@ public abstract class BaseITCase {
             } else if (actualStatus.size() >= 1 && actualStatus.containsAll(new HashSet<>(Arrays.asList("", JobStatus.EXECUTE_INCREMENTAL_TASK.name())))) {
                 log.warn("one of the shardingItem was not started correctly");
             }
-            ThreadUtil.sleep(2, TimeUnit.SECONDS);
+            ThreadUtil.sleep(4, TimeUnit.SECONDS);
         }
     }
     
@@ -396,7 +383,6 @@ public abstract class BaseITCase {
         }
         boolean secondCheckJobResult = checkJobIncrementTaskFinished(jobId);
         log.info("second check job result: {}", secondCheckJobResult);
-        stopScalingSourceWriting(jobId);
         List<Map<String, Object>> checkScalingResults = queryForListWithLog(String.format("CHECK MIGRATION '%s' BY TYPE (NAME='DATA_MATCH')", jobId));
         log.info("checkScalingResults: {}", checkScalingResults);
         for (Map<String, Object> entry : checkScalingResults) {
