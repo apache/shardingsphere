@@ -45,7 +45,7 @@ public interface PipelineJobPublicAPI extends TypedSPI {
     /**
      * Show process configuration.
      *
-     * @return process configuration
+     * @return process configuration, non-null
      */
     PipelineProcessConfiguration showProcessConfiguration();
     

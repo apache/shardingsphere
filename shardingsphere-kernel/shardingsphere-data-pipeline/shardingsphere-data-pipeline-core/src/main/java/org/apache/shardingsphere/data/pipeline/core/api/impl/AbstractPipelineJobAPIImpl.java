@@ -84,6 +84,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         if (null == existingProcessConfig) {
             throw new PipelineMetaDataException("Process configuration does not exists");
         }
+        // TODO check rateLimiter type match or not
         YamlPipelineProcessConfiguration targetYamlProcessConfig = PROCESS_CONFIG_SWAPPER.swapToYamlConfiguration(existingProcessConfig);
         targetYamlProcessConfig.copyNonNullFields(PROCESS_CONFIG_SWAPPER.swapToYamlConfiguration(processConfig));
         processConfigPersistService.persist(getJobType(), PROCESS_CONFIG_SWAPPER.swapToObject(targetYamlProcessConfig));

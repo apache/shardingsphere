@@ -27,7 +27,6 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportDa
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowAllVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceInfoStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceListStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowMigrationProcessConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowModeInfoStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowSQLParserRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowSQLTranslatorRuleStatement;
@@ -36,12 +35,10 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTran
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterMigrationProcessConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterSQLParserRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterTrafficRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterTransactionRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ApplyDistSQLStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.CreateMigrationProcessConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.CreateTrafficRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.DiscardDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.DropTrafficRuleStatement;
@@ -64,7 +61,6 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.Exp
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowAllVariableHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowInstanceInfoHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowInstanceListHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowMigrationProcessConfigurationHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowModeInfoHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowReadwriteSplittingReadResourcesHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowSQLParserRuleHandler;
@@ -72,12 +68,10 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.Sho
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowTableMetadataHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowTransactionRuleHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowVariableHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.AlterMigrationProcessConfigurationHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.AlterSQLParserRuleHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.AlterTrafficRuleHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.AlterTransactionRuleHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.ApplyDistSQLHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.CreateMigrationProcessConfigurationHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.CreateTrafficRuleHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.DiscardDistSQLHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.DropTrafficRuleHandler;
@@ -133,9 +127,6 @@ public final class RALBackendHandlerFactory {
         HANDLERS.put(ShowSQLTranslatorRuleStatement.class, ShowSQLTranslatorRuleHandler.class);
         HANDLERS.put(ShowInstanceInfoStatement.class, ShowInstanceInfoHandler.class);
         HANDLERS.put(ShowModeInfoStatement.class, ShowModeInfoHandler.class);
-        HANDLERS.put(ShowMigrationProcessConfigurationStatement.class, ShowMigrationProcessConfigurationHandler.class);
-        HANDLERS.put(CreateMigrationProcessConfigurationStatement.class, CreateMigrationProcessConfigurationHandler.class);
-        HANDLERS.put(AlterMigrationProcessConfigurationStatement.class, AlterMigrationProcessConfigurationHandler.class);
     }
     
     /**

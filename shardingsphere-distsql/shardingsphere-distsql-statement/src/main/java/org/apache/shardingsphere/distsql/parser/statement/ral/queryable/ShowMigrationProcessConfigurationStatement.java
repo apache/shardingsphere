@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.ral.queryable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
 
 /**
  * Show migration process configuration statement.
  */
-public final class ShowMigrationProcessConfigurationStatement extends QueryableRALStatement {
+public final class ShowMigrationProcessConfigurationStatement extends QueryableScalingRALStatement {
 }
