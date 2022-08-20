@@ -20,14 +20,14 @@ package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.MigrationProcessConfigurationSegment;
-import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 
 /**
  * Alter migration process configuration statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterMigrationProcessConfigurationStatement extends UpdatableRALStatement {
+public final class AlterMigrationProcessConfigurationStatement extends UpdatableScalingRALStatement {
     
     private final MigrationProcessConfigurationSegment migrationProcessConfigurationSegment;
 }

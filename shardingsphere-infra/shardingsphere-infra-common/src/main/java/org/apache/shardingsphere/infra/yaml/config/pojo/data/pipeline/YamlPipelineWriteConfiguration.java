@@ -67,14 +67,27 @@ public final class YamlPipelineWriteConfiguration implements YamlConfiguration {
         if (null == another) {
             return;
         }
-        if (null != another.getWorkerThread()) {
+        if (isAllFieldsNull(another)) {
+            setAllFieldsNull(this);
+        }
+        if (null != another.workerThread) {
             workerThread = another.workerThread;
         }
-        if (null != another.getBatchSize()) {
-            batchSize = another.getBatchSize();
+        if (null != another.batchSize) {
+            batchSize = another.batchSize;
         }
-        if (null != another.getRateLimiter()) {
-            rateLimiter = another.getRateLimiter();
+        if (null != another.rateLimiter) {
+            rateLimiter = another.rateLimiter;
         }
+    }
+    
+    private boolean isAllFieldsNull(final YamlPipelineWriteConfiguration config) {
+        return null == config.workerThread && null == config.batchSize && null == config.rateLimiter;
+    }
+    
+    private void setAllFieldsNull(final YamlPipelineWriteConfiguration config) {
+        config.workerThread = null;
+        config.batchSize = null;
+        config.rateLimiter = null;
     }
 }
