@@ -19,6 +19,7 @@ package org.apache.shardingsphere.integration.transaction.framework.container.co
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
 
 import java.util.Collections;
@@ -44,10 +45,10 @@ public final class OpenGaussContainerConfigurationFactory {
     }
     
     private static Map<String, String> getContainerEnvironments() {
-        return Collections.singletonMap("GS_PASSWORD", "Test@123");
+        return Collections.singletonMap("GS_PASSWORD", StorageContainerConstants.PASSWORD);
     }
     
     private static Map<String, String> getMountedResources() {
-        return Collections.singletonMap("/env/postgresql/postgresql.conf", "/usr/local/opengauss/share/postgresql/postgresql.conf.sample");
+        return Collections.singletonMap("/env/postgresql/postgresql.conf", StorageContainerConstants.OPENGAUSS_CONF_IN_CONTAINER);
     }
 }

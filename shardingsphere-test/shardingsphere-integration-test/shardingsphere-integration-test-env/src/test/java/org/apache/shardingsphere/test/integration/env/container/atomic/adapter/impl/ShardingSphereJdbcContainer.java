@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * ShardingSphere JDBC container.
  */
-public final class ShardingSphereJDBCContainer implements EmbeddedITContainer, AdapterContainer {
+public final class ShardingSphereJdbcContainer implements EmbeddedITContainer, AdapterContainer {
     
     private final StorageContainer storageContainer;
     
@@ -48,7 +48,7 @@ public final class ShardingSphereJDBCContainer implements EmbeddedITContainer, A
     
     private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
     
-    public ShardingSphereJDBCContainer(final StorageContainer storageContainer, final String scenario) {
+    public ShardingSphereJdbcContainer(final StorageContainer storageContainer, final String scenario) {
         this.storageContainer = storageContainer;
         scenarioCommonPath = new ScenarioCommonPath(scenario);
     }

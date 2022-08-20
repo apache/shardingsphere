@@ -15,30 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config;
+package org.apache.shardingsphere.test.integration.env.container.atomic.constants;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.util.Collections;
-import java.util.Map;
-
 /**
- * Proxy cluster container configuration factory.
+ * Storage container constants.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ProxyClusterContainerConfigurationFactory {
+public class StorageContainerConstants {
     
-    /**
-     * Create new instance of adaptor container configuration.
-     *
-     * @return created instance
-     */
-    public static AdaptorContainerConfiguration newInstance() {
-        return new AdaptorContainerConfiguration("", getMountedResources());
-    }
+    public static final String USERNAME = "test_user";
     
-    private static Map<String, String> getMountedResources() {
-        return Collections.singletonMap("/env/log/logback.xml", "/opt/shardingsphere-proxy/conf/logback.xml");
-    }
+    public static final String PASSWORD = "Test@123";
+    
+    public static final String MYSQL_CONF_IN_CONTAINER = "/etc/mysql/my.cnf";
+    
+    public static final String POSTGRESQL_CONF_IN_CONTAINER = "/etc/postgresql/postgresql.conf";
+    
+    public static final String OPENGAUSS_CONF_IN_CONTAINER = "/usr/local/opengauss/share/postgresql/postgresql.conf.sample";
+    
+    public static final String OPENGAUSS_HBA_IN_CONF_CONTAINER = "/usr/local/opengauss/share/postgresql/pg_hba.conf.sample";
 }
