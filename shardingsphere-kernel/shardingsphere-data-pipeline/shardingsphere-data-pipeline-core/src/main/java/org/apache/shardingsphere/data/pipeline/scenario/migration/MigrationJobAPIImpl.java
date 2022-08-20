@@ -401,11 +401,11 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     }
     
     @Override
-    public void addMigrationSourceResources(final Map<String, DataSourceProperties> dataSourceProperties) {
-        log.info("Add migration source resources {}", dataSourceProperties.keySet());
+    public void addMigrationSourceResources(final Map<String, DataSourceProperties> dataSourcePropsMap) {
+        log.info("Add migration source resources {}", dataSourcePropsMap.keySet());
         Map<String, DataSourceProperties> existDataSources = dataSourcePersistService.load(JobType.MIGRATION);
-        Collection<String> duplicateDataSourceNames = new HashSet<>(dataSourceProperties.size(), 1);
-        for (Entry<String, DataSourceProperties> entry : dataSourceProperties.entrySet()) {
+        Collection<String> duplicateDataSourceNames = new HashSet<>(dataSourcePropsMap.size(), 1);
+        for (Entry<String, DataSourceProperties> entry : dataSourcePropsMap.entrySet()) {
             if (existDataSources.containsKey(entry.getKey())) {
                 duplicateDataSourceNames.add(entry.getKey());
             }
@@ -414,7 +414,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
             throw new AddMigrationSourceResourceException(String.format("Duplicate resource names %s.", duplicateDataSourceNames));
         }
         Map<String, DataSourceProperties> result = new LinkedHashMap<>(existDataSources);
-        result.putAll(dataSourceProperties);
+        result.putAll(dataSourcePropsMap);
         dataSourcePersistService.persist(JobType.MIGRATION, result);
     }
     

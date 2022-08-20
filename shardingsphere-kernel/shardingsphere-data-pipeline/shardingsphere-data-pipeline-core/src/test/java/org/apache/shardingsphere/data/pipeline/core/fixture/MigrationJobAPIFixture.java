@@ -146,7 +146,7 @@ public final class MigrationJobAPIFixture implements MigrationJobAPI {
     }
     
     @Override
-    public void addMigrationSourceResources(final Map<String, DataSourceProperties> sourcePropertiesMap) {
+    public void addMigrationSourceResources(final Map<String, DataSourceProperties> dataSourcePropsMap) {
     }
     
     @Override

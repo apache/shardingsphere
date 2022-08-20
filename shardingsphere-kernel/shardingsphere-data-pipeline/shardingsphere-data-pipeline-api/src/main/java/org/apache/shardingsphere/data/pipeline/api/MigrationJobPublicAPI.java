@@ -114,14 +114,14 @@ public interface MigrationJobPublicAPI extends PipelineJobPublicAPI, RequiredSPI
     void reset(String jobId);
     
     /**
-     * Update migration source resource.
+     * Add migration source resources.
      *
-     * @param sourcePropertiesMap source properties map
+     * @param dataSourcePropsMap data source properties map
      */
-    void addMigrationSourceResources(Map<String, DataSourceProperties> sourcePropertiesMap);
+    void addMigrationSourceResources(Map<String, DataSourceProperties> dataSourcePropsMap);
     
     /**
-     * Drop migration source resource.
+     * Drop migration source resources.
      *
      * @param resourceNames resource names
      */
