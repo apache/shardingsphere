@@ -208,7 +208,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     
     protected final void verifyJobStopped(final JobConfigurationPOJO jobConfigPOJO) {
         if (!jobConfigPOJO.isDisabled()) {
-            throw new PipelineVerifyFailedException("Job is not stopped. You could run `STOP SCALING {jobId}` to stop it.");
+            throw new PipelineVerifyFailedException("Job is not stopped. You could run `STOP MIGRATION {jobId}` to stop it.");
         }
     }
 }
