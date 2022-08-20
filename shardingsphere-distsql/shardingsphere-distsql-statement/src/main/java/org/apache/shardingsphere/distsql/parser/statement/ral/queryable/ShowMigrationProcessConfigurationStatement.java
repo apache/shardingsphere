@@ -15,43 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api;
+package org.apache.shardingsphere.distsql.parser.statement.ral.queryable;
 
-import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-
-import java.util.List;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
- * Pipeline job public API.
+ * Show migration process configuration statement.
  */
-public interface PipelineJobPublicAPI extends TypedSPI {
-    
-    /**
-     * Start disabled job.
-     *
-     * @param jobId job id
-     */
-    void startDisabledJob(String jobId);
-    
-    /**
-     * Stop pipeline job.
-     *
-     * @param jobId job id
-     */
-    void stop(String jobId);
-    
-    /**
-     * Remove pipeline job.
-     *
-     * @param jobId job id
-     */
-    void remove(String jobId);
-    
-    /**
-     * Get pipeline job info.
-     *
-     * @return jobInfos
-     */
-    List<PipelineJobInfo> list();
+public final class ShowMigrationProcessConfigurationStatement extends QueryableRALStatement {
 }

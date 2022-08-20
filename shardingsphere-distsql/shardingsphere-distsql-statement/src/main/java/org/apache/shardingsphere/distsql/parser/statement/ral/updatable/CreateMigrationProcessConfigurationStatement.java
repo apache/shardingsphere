@@ -15,43 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api;
+package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
 
-import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-
-import java.util.List;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.MigrationProcessConfigurationSegment;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 
 /**
- * Pipeline job public API.
+ * Create migration process configuration statement.
  */
-public interface PipelineJobPublicAPI extends TypedSPI {
+@RequiredArgsConstructor
+@Getter
+public final class CreateMigrationProcessConfigurationStatement extends UpdatableRALStatement {
     
-    /**
-     * Start disabled job.
-     *
-     * @param jobId job id
-     */
-    void startDisabledJob(String jobId);
-    
-    /**
-     * Stop pipeline job.
-     *
-     * @param jobId job id
-     */
-    void stop(String jobId);
-    
-    /**
-     * Remove pipeline job.
-     *
-     * @param jobId job id
-     */
-    void remove(String jobId);
-    
-    /**
-     * Get pipeline job info.
-     *
-     * @return jobInfos
-     */
-    List<PipelineJobInfo> list();
+    private final MigrationProcessConfigurationSegment migrationProcessConfigurationSegment;
 }

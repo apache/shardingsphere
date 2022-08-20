@@ -15,43 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api;
+package org.apache.shardingsphere.data.pipeline.core.exception;
 
-import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-
-import java.util.List;
+import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
 
 /**
- * Pipeline job public API.
+ * Create table SQL generate exception.
  */
-public interface PipelineJobPublicAPI extends TypedSPI {
+public final class CreateTableSQLGenerateException extends ShardingSphereSQLException {
     
-    /**
-     * Start disabled job.
-     *
-     * @param jobId job id
-     */
-    void startDisabledJob(String jobId);
+    private static final long serialVersionUID = -219467568498936298L;
     
-    /**
-     * Stop pipeline job.
-     *
-     * @param jobId job id
-     */
-    void stop(String jobId);
-    
-    /**
-     * Remove pipeline job.
-     *
-     * @param jobId job id
-     */
-    void remove(String jobId);
-    
-    /**
-     * Get pipeline job info.
-     *
-     * @return jobInfos
-     */
-    List<PipelineJobInfo> list();
+    public CreateTableSQLGenerateException(final String tableName) {
+        super(XOpenSQLState.GENERAL_ERROR, 16001, "Failed to get DDL for table `%s`", tableName);
+    }
 }

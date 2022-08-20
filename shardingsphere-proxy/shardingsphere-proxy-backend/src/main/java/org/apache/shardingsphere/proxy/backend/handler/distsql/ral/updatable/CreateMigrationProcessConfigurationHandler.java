@@ -15,43 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-
-import java.util.List;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.CreateMigrationProcessConfigurationStatement;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
 
 /**
- * Pipeline job public API.
+ * Create migration process configuration handler.
  */
-public interface PipelineJobPublicAPI extends TypedSPI {
+public final class CreateMigrationProcessConfigurationHandler extends UpdatableRALBackendHandler<CreateMigrationProcessConfigurationStatement> {
     
-    /**
-     * Start disabled job.
-     *
-     * @param jobId job id
-     */
-    void startDisabledJob(String jobId);
-    
-    /**
-     * Stop pipeline job.
-     *
-     * @param jobId job id
-     */
-    void stop(String jobId);
-    
-    /**
-     * Remove pipeline job.
-     *
-     * @param jobId job id
-     */
-    void remove(String jobId);
-    
-    /**
-     * Get pipeline job info.
-     *
-     * @return jobInfos
-     */
-    List<PipelineJobInfo> list();
+    @Override
+    protected void update(final ContextManager contextManager) throws DistSQLException {
+        // TODO
+    }
 }

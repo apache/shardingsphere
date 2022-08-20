@@ -15,43 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api;
+package org.apache.shardingsphere.distsql.parser.segment;
 
-import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-
-import java.util.List;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 /**
- * Pipeline job public API.
+ * Read or Write configuration segment.
  */
-public interface PipelineJobPublicAPI extends TypedSPI {
+@RequiredArgsConstructor
+@Getter
+public final class ReadOrWriteSegment implements ASTNode {
     
-    /**
-     * Start disabled job.
-     *
-     * @param jobId job id
-     */
-    void startDisabledJob(String jobId);
+    private final Integer workerThread;
     
-    /**
-     * Stop pipeline job.
-     *
-     * @param jobId job id
-     */
-    void stop(String jobId);
+    private final Integer batchSize;
     
-    /**
-     * Remove pipeline job.
-     *
-     * @param jobId job id
-     */
-    void remove(String jobId);
+    private final Integer shardingSize;
     
-    /**
-     * Get pipeline job info.
-     *
-     * @return jobInfos
-     */
-    List<PipelineJobInfo> list();
+    private final AlgorithmSegment rateLimiter;
+    
+    public ReadOrWriteSegment(final Integer workerThread, final Integer batchSize, final AlgorithmSegment rateLimiter) {
+        this.workerThread = workerThread;
+        this.batchSize = batchSize;
+        this.shardingSize = 1000_0000;
+        this.rateLimiter = rateLimiter;
+    }
 }
