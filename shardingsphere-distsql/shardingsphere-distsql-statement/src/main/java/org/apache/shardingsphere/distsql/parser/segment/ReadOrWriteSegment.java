@@ -15,42 +15,31 @@
  * limitations under the License.
  */
 
-grammar BaseRule;
+package org.apache.shardingsphere.distsql.parser.segment;
 
-import Symbol, Keyword, Literals;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
-algorithmDefinition
-    : TYPE LP NAME EQ algorithmTypeName (COMMA propertiesDefinition)? RP
-    ;
-
-algorithmTypeName
-    : STRING
-    ;
-
-propertiesDefinition
-    : PROPERTIES LP properties? RP
-    ;
-
-properties
-    : property (COMMA property)*
-    ;
-
-property
-    : key=STRING EQ value=STRING
-    ;
-
-databaseName
-    : IDENTIFIER
-    ;
-
-schemaName
-    : IDENTIFIER
-    ;
-
-tableName
-    : IDENTIFIER
-    ;
-
-resourceName
-    : IDENTIFIER
-    ;
+/**
+ * Read or Write configuration segment.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class ReadOrWriteSegment implements ASTNode {
+    
+    private final Integer workerThread;
+    
+    private final Integer batchSize;
+    
+    private final Integer shardingSize;
+    
+    private final AlgorithmSegment rateLimiter;
+    
+    public ReadOrWriteSegment(final Integer workerThread, final Integer batchSize, final AlgorithmSegment rateLimiter) {
+        this.workerThread = workerThread;
+        this.batchSize = batchSize;
+        this.shardingSize = 1000_0000;
+        this.rateLimiter = rateLimiter;
+    }
+}

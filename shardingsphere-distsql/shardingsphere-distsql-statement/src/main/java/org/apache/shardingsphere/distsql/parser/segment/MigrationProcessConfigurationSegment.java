@@ -15,42 +15,22 @@
  * limitations under the License.
  */
 
-grammar BaseRule;
+package org.apache.shardingsphere.distsql.parser.segment;
 
-import Symbol, Keyword, Literals;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
-algorithmDefinition
-    : TYPE LP NAME EQ algorithmTypeName (COMMA propertiesDefinition)? RP
-    ;
-
-algorithmTypeName
-    : STRING
-    ;
-
-propertiesDefinition
-    : PROPERTIES LP properties? RP
-    ;
-
-properties
-    : property (COMMA property)*
-    ;
-
-property
-    : key=STRING EQ value=STRING
-    ;
-
-databaseName
-    : IDENTIFIER
-    ;
-
-schemaName
-    : IDENTIFIER
-    ;
-
-tableName
-    : IDENTIFIER
-    ;
-
-resourceName
-    : IDENTIFIER
-    ;
+/**
+ * Migration process configuration segment.
+ */
+@Getter
+@Setter
+public final class MigrationProcessConfigurationSegment implements ASTNode {
+    
+    private ReadOrWriteSegment readSegment;
+    
+    private ReadOrWriteSegment writeSegment;
+    
+    private AlgorithmSegment streamChannel;
+}

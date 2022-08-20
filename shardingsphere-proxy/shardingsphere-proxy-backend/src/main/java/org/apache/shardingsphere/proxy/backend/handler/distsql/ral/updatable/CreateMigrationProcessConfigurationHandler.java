@@ -15,42 +15,20 @@
  * limitations under the License.
  */
 
-grammar BaseRule;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import Symbol, Keyword, Literals;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.CreateMigrationProcessConfigurationStatement;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
 
-algorithmDefinition
-    : TYPE LP NAME EQ algorithmTypeName (COMMA propertiesDefinition)? RP
-    ;
-
-algorithmTypeName
-    : STRING
-    ;
-
-propertiesDefinition
-    : PROPERTIES LP properties? RP
-    ;
-
-properties
-    : property (COMMA property)*
-    ;
-
-property
-    : key=STRING EQ value=STRING
-    ;
-
-databaseName
-    : IDENTIFIER
-    ;
-
-schemaName
-    : IDENTIFIER
-    ;
-
-tableName
-    : IDENTIFIER
-    ;
-
-resourceName
-    : IDENTIFIER
-    ;
+/**
+ * Create migration process configuration handler.
+ */
+public final class CreateMigrationProcessConfigurationHandler extends UpdatableRALBackendHandler<CreateMigrationProcessConfigurationStatement> {
+    
+    @Override
+    protected void update(final ContextManager contextManager) throws DistSQLException {
+        // TODO
+    }
+}

@@ -15,42 +15,19 @@
  * limitations under the License.
  */
 
-grammar BaseRule;
+package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
 
-import Symbol, Keyword, Literals;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.MigrationProcessConfigurationSegment;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 
-algorithmDefinition
-    : TYPE LP NAME EQ algorithmTypeName (COMMA propertiesDefinition)? RP
-    ;
-
-algorithmTypeName
-    : STRING
-    ;
-
-propertiesDefinition
-    : PROPERTIES LP properties? RP
-    ;
-
-properties
-    : property (COMMA property)*
-    ;
-
-property
-    : key=STRING EQ value=STRING
-    ;
-
-databaseName
-    : IDENTIFIER
-    ;
-
-schemaName
-    : IDENTIFIER
-    ;
-
-tableName
-    : IDENTIFIER
-    ;
-
-resourceName
-    : IDENTIFIER
-    ;
+/**
+ * Alter migration process configuration statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class AlterMigrationProcessConfigurationStatement extends UpdatableRALStatement {
+    
+    private final MigrationProcessConfigurationSegment migrationProcessConfigurationSegment;
+}

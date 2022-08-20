@@ -15,42 +15,12 @@
  * limitations under the License.
  */
 
-grammar BaseRule;
+package org.apache.shardingsphere.distsql.parser.statement.ral.queryable;
 
-import Symbol, Keyword, Literals;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
-algorithmDefinition
-    : TYPE LP NAME EQ algorithmTypeName (COMMA propertiesDefinition)? RP
-    ;
-
-algorithmTypeName
-    : STRING
-    ;
-
-propertiesDefinition
-    : PROPERTIES LP properties? RP
-    ;
-
-properties
-    : property (COMMA property)*
-    ;
-
-property
-    : key=STRING EQ value=STRING
-    ;
-
-databaseName
-    : IDENTIFIER
-    ;
-
-schemaName
-    : IDENTIFIER
-    ;
-
-tableName
-    : IDENTIFIER
-    ;
-
-resourceName
-    : IDENTIFIER
-    ;
+/**
+ * Show migration process configuration statement.
+ */
+public final class ShowMigrationProcessConfigurationStatement extends QueryableRALStatement {
+}

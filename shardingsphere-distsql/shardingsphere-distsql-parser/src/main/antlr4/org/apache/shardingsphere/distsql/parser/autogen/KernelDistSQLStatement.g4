@@ -61,5 +61,8 @@ execute
     | importDatabaseConfiguration
     | convertYamlConfiguration
     | showSQLTranslatorRule
+    | showMigrationProcessConfiguration
+    | createMigrationProcessConfiguration
+    | alterMigrationProcessConfiguration
     ) SEMI?
     ;
