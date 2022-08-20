@@ -32,12 +32,14 @@ public final class MemoryPipelineChannelCreator implements PipelineChannelCreato
     
     public static final String TYPE = "MEMORY";
     
-    private static final String BLOCK_QUEUE_SIZE_KEY = "block-queue-size";
+    public static final int BLOCK_QUEUE_SIZE_DEFAULT_VALUE = 10000;
+    
+    public static final String BLOCK_QUEUE_SIZE_KEY = "block-queue-size";
     
     @Getter
     private Properties props;
     
-    private int blockQueueSize = 10000;
+    private int blockQueueSize = BLOCK_QUEUE_SIZE_DEFAULT_VALUE;
     
     @Override
     public void init(final Properties props) {
