@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
+package org.apache.shardingsphere.traffic.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.DropTrafficRuleStatement;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.update.GlobalRuleRALUpdater;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
+import org.apache.shardingsphere.traffic.distsql.parser.statement.updatable.DropTrafficRuleStatement;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 
 import java.util.Collection;
@@ -36,45 +35,43 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Drop traffic rule statement handler.
+ * Drop traffic rule statement updater.
  */
-public final class DropTrafficRuleHandler extends UpdatableRALBackendHandler<DropTrafficRuleStatement> {
+public final class DropTrafficRuleStatementUpdater implements GlobalRuleRALUpdater {
     
     @Override
-    protected void update(final ContextManager contextManager) throws DistSQLException {
-        check();
-        replaceNewRule();
-        persistNewRuleConfigurations();
+    public void executeUpdate(final ShardingSphereRuleMetaData ruleMetaData, final SQLStatement sqlStatement) throws DistSQLException {
+        DropTrafficRuleStatement statement = (DropTrafficRuleStatement) sqlStatement;
+        check(ruleMetaData, statement);
+        replaceNewRule(ruleMetaData, statement);
     }
     
-    private void check() throws DistSQLException {
-        checkRuleNames();
+    private void check(final ShardingSphereRuleMetaData ruleMetaData, final DropTrafficRuleStatement sqlStatement) throws DistSQLException {
+        checkRuleNames(ruleMetaData, sqlStatement);
     }
     
-    private void checkRuleNames() throws DistSQLException {
-        if (getSqlStatement().isIfExists()) {
+    private void checkRuleNames(final ShardingSphereRuleMetaData ruleMetaData, final DropTrafficRuleStatement sqlStatement) throws DistSQLException {
+        if (sqlStatement.isIfExists()) {
             return;
         }
-        TrafficRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
+        TrafficRule rule = ruleMetaData.getSingleRule(TrafficRule.class);
         TrafficRuleConfiguration config = rule.getConfiguration();
         Collection<String> currentRuleNames = config.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getName).collect(Collectors.toSet());
-        Collection<String> notExistRuleNames = getSqlStatement().getRuleNames().stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toSet());
+        Collection<String> notExistRuleNames = sqlStatement.getRuleNames().stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toSet());
         DistSQLException.predictionThrow(notExistRuleNames.isEmpty(), () -> new RequiredRuleMissedException("Traffic"));
     }
     
-    private void replaceNewRule() {
-        TrafficRuleConfiguration toBeAlteredRuleConfig = createToBeAlteredRuleConfiguration();
-        Collection<ShardingSphereRule> globalRules = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules();
+    private void replaceNewRule(final ShardingSphereRuleMetaData ruleMetaData, final DropTrafficRuleStatement sqlStatement) {
+        TrafficRuleConfiguration toBeAlteredRuleConfig = createToBeAlteredRuleConfiguration(ruleMetaData, sqlStatement);
+        Collection<ShardingSphereRule> globalRules = ruleMetaData.getRules();
         globalRules.removeIf(each -> each instanceof TrafficRule);
         globalRules.add(new TrafficRule(toBeAlteredRuleConfig));
     }
     
-    private TrafficRuleConfiguration createToBeAlteredRuleConfiguration() {
+    private TrafficRuleConfiguration createToBeAlteredRuleConfiguration(final ShardingSphereRuleMetaData ruleMetaData, final DropTrafficRuleStatement sqlStatement) {
         TrafficRuleConfiguration result = new TrafficRuleConfiguration();
-        DropTrafficRuleStatement statement = getSqlStatement();
-        TrafficRuleConfiguration currentConfig = ProxyContext
-                .getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class).getConfiguration();
-        result.getTrafficStrategies().addAll(createToBeAlteredStrategyConfigurations(currentConfig, statement));
+        TrafficRuleConfiguration currentConfig = ruleMetaData.getSingleRule(TrafficRule.class).getConfiguration();
+        result.getTrafficStrategies().addAll(createToBeAlteredStrategyConfigurations(currentConfig, sqlStatement));
         result.getTrafficAlgorithms().putAll(createToBeAlteredTrafficAlgorithm(currentConfig, getInUsedTrafficAlgorithm(result)));
         result.getLoadBalancers().putAll(createToBeAlteredLoadBalancers(currentConfig, getInUsedLoadBalancer(result)));
         return result;
@@ -108,8 +105,8 @@ public final class DropTrafficRuleHandler extends UpdatableRALBackendHandler<Dro
         return result;
     }
     
-    private void persistNewRuleConfigurations() {
-        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        metaDataContexts.getPersistService().getGlobalRuleService().persist(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), true);
+    @Override
+    public String getType() {
+        return DropTrafficRuleStatement.class.getName();
     }
 }

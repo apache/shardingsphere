@@ -15,32 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.fixture;
+package org.apache.shardingsphere.traffic.distsql.parser.statement.updatable;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
-import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableGlobalRuleRALStatement;
 
-import java.util.List;
-import java.util.Properties;
+import java.util.Collection;
 
+/**
+ * Drop traffic rule statement.
+ */
+@RequiredArgsConstructor
 @Getter
-public final class DistSQLTrafficLoadBalanceAlgorithmFixture implements TrafficLoadBalanceAlgorithm {
+public final class DropTrafficRuleStatement extends UpdatableGlobalRuleRALStatement {
     
-    private Properties props;
+    private final boolean ifExists;
     
-    @Override
-    public void init(final Properties props) {
-        this.props = props;
-    }
-    
-    @Override
-    public String getType() {
-        return "DISTSQL.FIXTURE";
-    }
-    
-    @Override
-    public InstanceMetaData getInstanceId(final String name, final List<InstanceMetaData> instances) {
-        return null;
-    }
+    private final Collection<String> ruleNames;
 }

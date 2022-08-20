@@ -20,13 +20,11 @@ package org.apache.shardingsphere.distsql.parser.core.kernel;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AddResourceContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterDefaultSingleTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterInstanceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterMigrationProcessConfigurationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterSQLParserRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterTrafficRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterTransactionRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ApplyDistSQLContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.BatchSizeContext;
@@ -37,21 +35,17 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.CountSingleTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.CreateDefaultSingleTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.CreateMigrationProcessConfigurationContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.CreateTrafficRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.DatabaseNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.DisableInstanceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.DiscardDistSQLContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.DropDefaultSingleTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.DropResourceContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.DropTrafficRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.EnableInstanceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ExportDatabaseConfigurationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.FromSegmentContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ImportDatabaseConfigurationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.InstanceIdContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.LabelDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.LabelInstanceContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.LoadBalancerDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.MigrationProcessConfigurationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.PasswordContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.PrepareDistSQLContext;
@@ -81,7 +75,6 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowVariableContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.SqlParserRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.StreamChannelContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.TrafficRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.TransactionRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.UnlabelInstanceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.WorkerThreadContext;
@@ -92,7 +85,6 @@ import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.MigrationProcessConfigurationSegment;
 import org.apache.shardingsphere.distsql.parser.segment.ReadOrWriteSegment;
-import org.apache.shardingsphere.distsql.parser.segment.TrafficRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TransactionProviderSegment;
 import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.ral.hint.ClearHintStatement;
@@ -111,13 +103,10 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowVari
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterMigrationProcessConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterSQLParserRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterTrafficRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterTransactionRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ApplyDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.CreateMigrationProcessConfigurationStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.CreateTrafficRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.DiscardDistSQLStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.DropTrafficRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.LabelInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.PrepareDistSQLStatement;
@@ -144,7 +133,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseS
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -350,12 +338,6 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     }
     
     @Override
-    public ASTNode visitDropTrafficRule(final DropTrafficRuleContext ctx) {
-        Collection<String> ruleNames = null == ctx.ruleName() ? null : ctx.ruleName().stream().map(this::getIdentifierValue).collect(Collectors.toSet());
-        return new DropTrafficRuleStatement(null != ctx.ifExists(), ruleNames);
-    }
-    
-    @Override
     public ASTNode visitTransactionRuleDefinition(final TransactionRuleDefinitionContext ctx) {
         String defaultType = getIdentifierValue(ctx.defaultType());
         if (null != ctx.providerDefinition()) {
@@ -393,57 +375,6 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
         return new CacheOptionSegment(
                 null == ctx.initialCapacity() ? null : Integer.parseInt(getIdentifierValue(ctx.initialCapacity())),
                 null == ctx.maximumSize() ? null : Long.parseLong(getIdentifierValue(ctx.maximumSize())));
-    }
-    
-    @Override
-    public ASTNode visitCreateTrafficRule(final CreateTrafficRuleContext ctx) {
-        return new CreateTrafficRuleStatement(ctx.trafficRuleDefinition().stream().map(each -> (TrafficRuleSegment) visit(each)).collect(Collectors.toList()));
-    }
-    
-    @Override
-    public ASTNode visitAlterTrafficRule(final AlterTrafficRuleContext ctx) {
-        return new AlterTrafficRuleStatement(ctx.trafficRuleDefinition().stream().map(each -> (TrafficRuleSegment) visit(each)).collect(Collectors.toList()));
-    }
-    
-    @Override
-    public ASTNode visitTrafficRuleDefinition(final TrafficRuleDefinitionContext ctx) {
-        AlgorithmSegment loadBalancerSegment = null;
-        if (null != ctx.loadBalancerDefinition()) {
-            loadBalancerSegment = (AlgorithmSegment) visit(ctx.loadBalancerDefinition().algorithmDefinition());
-        }
-        return new TrafficRuleSegment(getIdentifierValue(ctx.ruleName()), buildLabels(ctx.labelDefinition()),
-                (AlgorithmSegment) visit(ctx.trafficAlgorithmDefinition().algorithmDefinition()), loadBalancerSegment);
-    }
-    
-    @Override
-    public ASTNode visitLoadBalancerDefinition(final LoadBalancerDefinitionContext ctx) {
-        if (null == ctx) {
-            return null;
-        }
-        return visit(ctx.algorithmDefinition());
-    }
-    
-    @Override
-    public ASTNode visitAlgorithmDefinition(final AlgorithmDefinitionContext ctx) {
-        return new AlgorithmSegment(getIdentifierValue(ctx.algorithmTypeName()), buildProperties(ctx.propertiesDefinition()));
-    }
-    
-    private Properties buildProperties(final PropertiesDefinitionContext ctx) {
-        Properties result = new Properties();
-        if (null == ctx) {
-            return result;
-        }
-        for (PropertyContext each : ctx.properties().property()) {
-            result.setProperty(IdentifierValue.getQuotedContent(each.key.getText()), IdentifierValue.getQuotedContent(each.value.getText()));
-        }
-        return result;
-    }
-    
-    private Collection<String> buildLabels(final LabelDefinitionContext labelDefinition) {
-        if (null == labelDefinition) {
-            return Collections.emptyList();
-        }
-        return labelDefinition.label().stream().map(this::getIdentifierValue).collect(Collectors.toList());
     }
     
     @Override

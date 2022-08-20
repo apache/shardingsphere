@@ -15,21 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
+grammar BaseRule;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.TrafficRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
+import Symbol, Keyword, Literals;
 
-import java.util.Collection;
+propertiesDefinition
+    : PROPERTIES LP properties? RP
+    ;
 
-/**
- * Alter traffic rule statement.
- */
-@RequiredArgsConstructor
-@Getter
-public final class AlterTrafficRuleStatement extends UpdatableRALStatement {
-    
-    private final Collection<TrafficRuleSegment> segments;
-}
+properties
+    : property (COMMA property)*
+    ;
+
+property
+    : key=STRING EQ value=STRING
+    ;

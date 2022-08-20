@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.fixture;
+package org.apache.shardingsphere.traffic.distsql.handler.fixture;
 
 import lombok.Getter;
 import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
