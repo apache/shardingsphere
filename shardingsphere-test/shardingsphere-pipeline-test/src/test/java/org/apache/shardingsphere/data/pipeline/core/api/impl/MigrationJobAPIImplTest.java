@@ -31,7 +31,6 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncreme
 import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreatorFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineVerifyFailedException;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
@@ -203,7 +202,7 @@ public final class MigrationJobAPIImplTest {
         Optional<String> jobId = jobAPI.start(jobConfig);
         assertTrue(jobId.isPresent());
         final GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
-        MigrationJobItemContext jobItemContext = new MigrationJobItemContext(jobConfig, 0, new InventoryIncrementalJobItemProgress(), new DefaultPipelineDataSourceManager());
+        MigrationJobItemContext jobItemContext = PipelineContextUtil.mockMigrationJobItemContext(jobConfig);
         jobAPI.persistJobItemProgress(jobItemContext);
         repositoryAPI.persistJobCheckResult(jobId.get(), true);
         jobAPI.updateJobItemStatus(jobId.get(), 0, JobStatus.FINISHED);
@@ -216,7 +215,7 @@ public final class MigrationJobAPIImplTest {
         Optional<String> jobId = jobAPI.start(jobConfig);
         assertTrue(jobId.isPresent());
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
-        MigrationJobItemContext jobItemContext = new MigrationJobItemContext(jobConfig, 0, new InventoryIncrementalJobItemProgress(), new DefaultPipelineDataSourceManager());
+        MigrationJobItemContext jobItemContext = PipelineContextUtil.mockMigrationJobItemContext(jobConfig);
         jobAPI.persistJobItemProgress(jobItemContext);
         repositoryAPI.persistJobCheckResult(jobId.get(), true);
         jobAPI.updateJobItemStatus(jobId.get(), jobItemContext.getShardingItem(), JobStatus.EXECUTE_INVENTORY_TASK);
@@ -260,7 +259,7 @@ public final class MigrationJobAPIImplTest {
     @Test
     public void assertRenewJobStatus() {
         final MigrationJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
-        MigrationJobItemContext jobItemContext = new MigrationJobItemContext(jobConfig, 0, new InventoryIncrementalJobItemProgress(), new DefaultPipelineDataSourceManager());
+        MigrationJobItemContext jobItemContext = PipelineContextUtil.mockMigrationJobItemContext(jobConfig);
         jobAPI.persistJobItemProgress(jobItemContext);
         jobAPI.updateJobItemStatus(jobConfig.getJobId(), 0, JobStatus.FINISHED);
         InventoryIncrementalJobItemProgress actual = jobAPI.getJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem());

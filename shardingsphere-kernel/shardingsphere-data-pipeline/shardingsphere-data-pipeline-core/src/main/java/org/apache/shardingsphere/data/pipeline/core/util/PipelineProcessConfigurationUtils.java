@@ -45,6 +45,16 @@ public final class PipelineProcessConfigurationUtils {
             return originalConfig;
         }
         YamlPipelineProcessConfiguration yamlConfig = null != originalConfig ? SWAPPER.swapToYamlConfiguration(originalConfig) : new YamlPipelineProcessConfiguration();
+        fillInDefaultValue(yamlConfig);
+        return SWAPPER.swapToObject(yamlConfig);
+    }
+    
+    /**
+     * Fill in default value.
+     *
+     * @param yamlConfig YAML configuration, non-null
+     */
+    public static void fillInDefaultValue(final YamlPipelineProcessConfiguration yamlConfig) {
         if (null == yamlConfig.getRead()) {
             yamlConfig.setRead(YamlPipelineReadConfiguration.buildWithDefaultValue());
         } else {
@@ -60,6 +70,5 @@ public final class PipelineProcessConfigurationUtils {
             props.put(MemoryPipelineChannelCreator.BLOCK_QUEUE_SIZE_KEY, MemoryPipelineChannelCreator.BLOCK_QUEUE_SIZE_DEFAULT_VALUE);
             yamlConfig.setStreamChannel(new YamlAlgorithmConfiguration(MemoryPipelineChannelCreator.TYPE, props));
         }
-        return SWAPPER.swapToObject(yamlConfig);
     }
 }
