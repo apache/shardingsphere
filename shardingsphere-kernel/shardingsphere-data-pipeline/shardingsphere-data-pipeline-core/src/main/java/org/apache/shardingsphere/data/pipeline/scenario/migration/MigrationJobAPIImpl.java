@@ -40,10 +40,9 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobItemAPI;
-import org.apache.shardingsphere.data.pipeline.core.api.PipelineResourceAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.AbstractPipelineJobAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.InventoryIncrementalJobItemAPIImpl;
-import org.apache.shardingsphere.data.pipeline.core.api.impl.PipelineResourceAPIImpl;
+import org.apache.shardingsphere.data.pipeline.core.api.impl.PipelineDataSourcePersistService;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCalculateAlgorithmFactory;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
@@ -89,7 +88,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     
     private final PipelineJobItemAPI jobItemAPI = new InventoryIncrementalJobItemAPIImpl();
     
-    private final PipelineResourceAPI pipelineResourceAPI = new PipelineResourceAPIImpl();
+    private final PipelineDataSourcePersistService dataSourcePersistService = new PipelineDataSourcePersistService();
     
     @Override
     protected String marshalJobIdLeftPart(final PipelineJobId pipelineJobId) {
@@ -404,7 +403,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     @Override
     public void addMigrationSourceResources(final Map<String, DataSourceProperties> dataSourceProperties) {
         log.info("Add migration source resources {}", dataSourceProperties.keySet());
-        Map<String, DataSourceProperties> existDataSources = pipelineResourceAPI.getMetaDataDataSource(JobType.MIGRATION);
+        Map<String, DataSourceProperties> existDataSources = dataSourcePersistService.load(JobType.MIGRATION);
         Collection<String> duplicateDataSourceNames = new HashSet<>(dataSourceProperties.size(), 1);
         for (Entry<String, DataSourceProperties> entry : dataSourceProperties.entrySet()) {
             if (existDataSources.containsKey(entry.getKey())) {
@@ -416,12 +415,12 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         }
         Map<String, DataSourceProperties> result = new LinkedHashMap<>(existDataSources);
         result.putAll(dataSourceProperties);
-        pipelineResourceAPI.persistMetaDataDataSource(JobType.MIGRATION, result);
+        dataSourcePersistService.persist(JobType.MIGRATION, result);
     }
     
     @Override
     public void dropMigrationSourceResources(final Collection<String> resourceNames) {
-        Map<String, DataSourceProperties> metaDataDataSource = pipelineResourceAPI.getMetaDataDataSource(JobType.MIGRATION);
+        Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(JobType.MIGRATION);
         List<String> noExistResources = resourceNames.stream().filter(each -> !metaDataDataSource.containsKey(each)).collect(Collectors.toList());
         if (!noExistResources.isEmpty()) {
             throw new DropMigrationSourceResourceException(String.format("Resource names %s not exist.", resourceNames));
@@ -429,7 +428,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         for (String each : resourceNames) {
             metaDataDataSource.remove(each);
         }
-        pipelineResourceAPI.persistMetaDataDataSource(JobType.MIGRATION, metaDataDataSource);
+        dataSourcePersistService.persist(JobType.MIGRATION, metaDataDataSource);
     }
     
     @Override

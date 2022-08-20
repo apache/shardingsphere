@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.api.impl;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
-import org.apache.shardingsphere.data.pipeline.core.api.PipelineResourceAPI;
+import org.apache.shardingsphere.data.pipeline.core.api.PipelineMetaDataPersistService;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
@@ -31,15 +31,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Pipeline resource API implementation.
+ * Pipeline data source persist service.
  */
-public final class PipelineResourceAPIImpl implements PipelineResourceAPI {
+public final class PipelineDataSourcePersistService implements PipelineMetaDataPersistService<Map<String, DataSourceProperties>> {
     
     private static final YamlDataSourceConfigurationSwapper DATA_SOURCE_CONFIG_SWAPPER = new YamlDataSourceConfigurationSwapper();
     
     @Override
     @SuppressWarnings("unchecked")
-    public Map<String, DataSourceProperties> getMetaDataDataSource(final JobType jobType) {
+    public Map<String, DataSourceProperties> load(final JobType jobType) {
         String dataSourcesProperties = PipelineAPIFactory.getGovernanceRepositoryAPI().getMetaDataDataSource(jobType);
         if (StringUtils.isBlank(dataSourcesProperties)) {
             return Collections.emptyMap();
@@ -51,9 +51,9 @@ public final class PipelineResourceAPIImpl implements PipelineResourceAPI {
     }
     
     @Override
-    public void persistMetaDataDataSource(final JobType jobType, final Map<String, DataSourceProperties> dataSourceConfigs) {
-        Map<String, Map<String, Object>> dataSourceMap = new LinkedHashMap<>(dataSourceConfigs.size());
-        for (Entry<String, DataSourceProperties> entry : dataSourceConfigs.entrySet()) {
+    public void persist(final JobType jobType, final Map<String, DataSourceProperties> dataSourcePropsMap) {
+        Map<String, Map<String, Object>> dataSourceMap = new LinkedHashMap<>(dataSourcePropsMap.size());
+        for (Entry<String, DataSourceProperties> entry : dataSourcePropsMap.entrySet()) {
             dataSourceMap.put(entry.getKey(), DATA_SOURCE_CONFIG_SWAPPER.swapToMap(entry.getValue()));
         }
         PipelineAPIFactory.getGovernanceRepositoryAPI().persistMetaDataDataSource(jobType, YamlEngine.marshal(dataSourceMap));

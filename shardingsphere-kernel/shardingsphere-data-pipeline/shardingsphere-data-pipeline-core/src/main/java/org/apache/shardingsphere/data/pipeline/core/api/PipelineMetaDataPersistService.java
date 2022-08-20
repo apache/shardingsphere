@@ -18,28 +18,27 @@
 package org.apache.shardingsphere.data.pipeline.core.api;
 
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-
-import java.util.Map;
 
 /**
- * Pipeline resource API.
+ * Pipeline meta data persist service.
+ *
+ * @param <T> type of configuration
  */
-public interface PipelineResourceAPI {
+public interface PipelineMetaDataPersistService<T> {
     
     /**
-     * Get meta data data source.
+     * Load meta data.
      *
-     * @param jobType job type
-     * @return meta data data source
+     * @param jobType job type, nullable
+     * @return configurations
      */
-    Map<String, DataSourceProperties> getMetaDataDataSource(JobType jobType);
+    T load(JobType jobType);
     
     /**
-     * Persist meta data data source.
+     * Persist meta data.
      *
-     * @param jobType job type
-     * @param dataSource data source
+     * @param jobType job type, nullable
+     * @param configs configurations
      */
-    void persistMetaDataDataSource(JobType jobType, Map<String, DataSourceProperties> dataSource);
+    void persist(JobType jobType, T configs);
 }
