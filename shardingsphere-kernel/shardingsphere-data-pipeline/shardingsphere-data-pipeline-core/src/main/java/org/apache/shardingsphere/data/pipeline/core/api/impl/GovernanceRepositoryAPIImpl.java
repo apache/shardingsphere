@@ -103,4 +103,14 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     public void persistMetaDataDataSources(final JobType jobType, final String metaDataDataSources) {
         repository.persist(PipelineMetaDataNode.getMetaDataDataSourcesPath(jobType), metaDataDataSources);
     }
+    
+    @Override
+    public String getMetaDataProcessConfiguration(final JobType jobType) {
+        return repository.get(PipelineMetaDataNode.getMetaDataProcessConfigPath(jobType));
+    }
+    
+    @Override
+    public void persistMetaDataProcessConfiguration(final JobType jobType, final String processConfigYamlText) {
+        repository.persist(PipelineMetaDataNode.getMetaDataProcessConfigPath(jobType), processConfigYamlText);
+    }
 }

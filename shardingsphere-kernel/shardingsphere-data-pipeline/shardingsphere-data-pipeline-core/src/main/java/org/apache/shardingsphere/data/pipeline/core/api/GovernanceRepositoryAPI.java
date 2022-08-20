@@ -124,4 +124,20 @@ public interface GovernanceRepositoryAPI {
      * @param metaDataDataSources data source properties
      */
     void persistMetaDataDataSources(JobType jobType, String metaDataDataSources);
+    
+    /**
+     * Get meta data process configuration.
+     *
+     * @param jobType job type, nullable
+     * @return process configuration YAML text
+     */
+    String getMetaDataProcessConfiguration(JobType jobType);
+    
+    /**
+     * Persist meta data process configuration.
+     *
+     * @param jobType job type, nullable
+     * @param processConfigYamlText process configuration YAML text
+     */
+    void persistMetaDataProcessConfiguration(JobType jobType, String processConfigYamlText);
 }
