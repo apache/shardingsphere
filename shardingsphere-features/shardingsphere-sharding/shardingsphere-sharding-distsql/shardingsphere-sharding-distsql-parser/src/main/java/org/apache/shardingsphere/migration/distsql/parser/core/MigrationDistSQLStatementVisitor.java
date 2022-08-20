@@ -23,10 +23,10 @@ import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatemen
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.AddMigrationSourceResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.AlgorithmDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.ApplyScalingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.ApplyMigrationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.BatchSizeContext;
-import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.CheckScalingContext;
-import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.CleanScalingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.CheckMigrationContext;
+import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.CleanMigrationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.CompletionDetectorContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.CreateShardingScalingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.DataConsistencyCheckerContext;
@@ -40,19 +40,19 @@ import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatemen
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.PropertiesDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.PropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.RateLimiterContext;
-import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.ResetScalingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.ResetMigrationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.ResourceDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.RestoreScalingSourceWritingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.RestoreMigrationSourceWritingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.ScalingRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.ShardingSizeContext;
-import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.ShowScalingCheckAlgorithmsContext;
-import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.ShowScalingListContext;
-import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.ShowScalingStatusContext;
+import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.ShowMigrationCheckAlgorithmsContext;
+import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.ShowMigrationListContext;
+import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.ShowMigrationStatusContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.ShowShardingScalingRulesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.StartScalingContext;
-import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.StopScalingContext;
-import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.StopScalingSourceWritingContext;
+import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.StartMigrationContext;
+import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.StopMigrationContext;
+import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.StopMigrationSourceWritingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.StreamChannelContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.WorkerThreadContext;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
@@ -104,57 +104,57 @@ public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStat
     }
     
     @Override
-    public ASTNode visitShowScalingList(final ShowScalingListContext ctx) {
+    public ASTNode visitShowMigrationList(final ShowMigrationListContext ctx) {
         return new ShowMigrationListStatement();
     }
     
     @Override
-    public ASTNode visitShowScalingStatus(final ShowScalingStatusContext ctx) {
+    public ASTNode visitShowMigrationStatus(final ShowMigrationStatusContext ctx) {
         return new ShowMigrationStatusStatement(getIdentifierValue(ctx.jobId()));
     }
     
     @Override
-    public ASTNode visitStartScaling(final StartScalingContext ctx) {
+    public ASTNode visitStartMigration(final StartMigrationContext ctx) {
         return new StartMigrationStatement(getIdentifierValue(ctx.jobId()));
     }
     
     @Override
-    public ASTNode visitStopScaling(final StopScalingContext ctx) {
+    public ASTNode visitStopMigration(final StopMigrationContext ctx) {
         return new StopMigrationStatement(getIdentifierValue(ctx.jobId()));
     }
     
     @Override
-    public ASTNode visitCleanScaling(final CleanScalingContext ctx) {
+    public ASTNode visitCleanMigration(final CleanMigrationContext ctx) {
         return new CleanMigrationStatement(getIdentifierValue(ctx.jobId()));
     }
     
     @Override
-    public ASTNode visitResetScaling(final ResetScalingContext ctx) {
+    public ASTNode visitResetMigration(final ResetMigrationContext ctx) {
         return new ResetMigrationStatement(getIdentifierValue(ctx.jobId()));
     }
     
     @Override
-    public ASTNode visitCheckScaling(final CheckScalingContext ctx) {
+    public ASTNode visitCheckMigration(final CheckMigrationContext ctx) {
         return new CheckMigrationStatement(getIdentifierValue(ctx.jobId()), null == ctx.algorithmDefinition() ? null : (AlgorithmSegment) visit(ctx.algorithmDefinition()));
     }
     
     @Override
-    public ASTNode visitShowScalingCheckAlgorithms(final ShowScalingCheckAlgorithmsContext ctx) {
+    public ASTNode visitShowMigrationCheckAlgorithms(final ShowMigrationCheckAlgorithmsContext ctx) {
         return new ShowMigrationCheckAlgorithmsStatement();
     }
     
     @Override
-    public ASTNode visitStopScalingSourceWriting(final StopScalingSourceWritingContext ctx) {
+    public ASTNode visitStopMigrationSourceWriting(final StopMigrationSourceWritingContext ctx) {
         return new StopMigrationSourceWritingStatement(getIdentifierValue(ctx.jobId()));
     }
     
     @Override
-    public ASTNode visitRestoreScalingSourceWriting(final RestoreScalingSourceWritingContext ctx) {
+    public ASTNode visitRestoreMigrationSourceWriting(final RestoreMigrationSourceWritingContext ctx) {
         return new RestoreMigrationSourceWritingStatement(getIdentifierValue(ctx.jobId()));
     }
     
     @Override
-    public ASTNode visitApplyScaling(final ApplyScalingContext ctx) {
+    public ASTNode visitApplyMigration(final ApplyMigrationContext ctx) {
         return new ApplyMigrationStatement(getIdentifierValue(ctx.jobId()));
     }
     
