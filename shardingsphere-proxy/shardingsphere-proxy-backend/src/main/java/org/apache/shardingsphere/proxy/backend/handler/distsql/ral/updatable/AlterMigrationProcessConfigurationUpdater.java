@@ -25,9 +25,9 @@ import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.converter.MigrationProcessConfigurationSegmentConverter;
 
 /**
- * Alter migration process configuration handler.
+ * Alter migration process configuration updater.
  */
-public final class AlterMigrationProcessConfigurationHandler implements RALUpdater<AlterMigrationProcessConfigurationStatement> {
+public final class AlterMigrationProcessConfigurationUpdater implements RALUpdater<AlterMigrationProcessConfigurationStatement> {
     
     private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
     
