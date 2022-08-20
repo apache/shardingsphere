@@ -202,12 +202,12 @@ Please refer to [RAL#Scaling](/en/user-manual/shardingsphere-proxy/distsql/synta
 
 Example:
 ```sql
-show scaling list;
+SHOW MIGRATION LIST;
 ```
 
 Response:
 ```
-mysql> show scaling list;
+mysql> SHOW MIGRATION LIST;
 +--------------------+-----------------------+----------------------+--------+---------------------+---------------------+
 | id                 | tables                | sharding_total_count | active | create_time         | stop_time           |
 +--------------------+-----------------------+----------------------+--------+---------------------+---------------------+
@@ -217,16 +217,16 @@ mysql> show scaling list;
 2 rows in set (0.04 sec)
 ```
 
-#### Get scaling progress
+#### Get migration progress
 
 Example:
 ```sql
-show scaling status {jobId};
+SHOW MIGRATION STATUS {jobId};
 ```
 
 Response:
 ```
-mysql> show scaling status 660152090995195904;
+mysql> SHOW MIGRATION STATUS 660152090995195904;
 +------+-------------+----------+-------------------------------+--------------------------+
 | item | data_source | status   | inventory_finished_percentage | incremental_idle_seconds |
 +------+-------------+----------+-------------------------------+--------------------------+
@@ -435,7 +435,7 @@ KEY_GENERATE_STRATEGY(COLUMN=order_item_id,TYPE(NAME="snowflake"))
 
 Query job progress:
 ```sql
-mysql> SHOW SCALING LIST;
+mysql> SHOW MIGRATION LIST;
 +--------------------------------------------+----------------------+----------------------+--------+---------------------+-----------+
 | id                                         | tables               | sharding_total_count | active | create_time         | stop_time |
 +--------------------------------------------+----------------------+----------------------+--------+---------------------+-----------+
@@ -443,7 +443,7 @@ mysql> SHOW SCALING LIST;
 +--------------------------------------------+----------------------+----------------------+--------+---------------------+-----------+
 1 row in set (0.34 sec)
 
-mysql> SHOW SCALING STATUS "0130317c30317c3054317c7363616c696e675f6462";
+mysql> SHOW MIGRATION STATUS "0130317c30317c3054317c7363616c696e675f6462";
 +------+-------------+--------------------------+--------+-------------------------------+--------------------------+
 | item | data_source | status                   | active | inventory_finished_percentage | incremental_idle_seconds |
 +------+-------------+--------------------------+--------+-------------------------------+--------------------------+
@@ -458,13 +458,13 @@ Choose an idle time of business system, stop source database writing or stop upp
 
 Stop source writing in proxy:
 ```sql
-mysql> STOP SCALING SOURCE WRITING "0130317c30317c3054317c7363616c696e675f6462";
+mysql> STOP MIGRATION SOURCE WRITING "0130317c30317c3054317c7363616c696e675f6462";
 Query OK, 0 rows affected (0.07 sec)
 ```
 
 Data consistency check:
 ```sql
-mysql> CHECK SCALING "0130317c30317c3054317c7363616c696e675f6462" BY TYPE (NAME="CRC32_MATCH");
+mysql> CHECK MIGRATION "0130317c30317c3054317c7363616c696e675f6462" BY TYPE (NAME="CRC32_MATCH");
 +--------------+----------------------+----------------------+-----------------------+-------------------------+
 | table_name   | source_records_count | target_records_count | records_count_matched | records_content_matched |
 +--------------+----------------------+----------------------+-----------------------+-------------------------+
@@ -476,7 +476,7 @@ mysql> CHECK SCALING "0130317c30317c3054317c7363616c696e675f6462" BY TYPE (NAME=
 
 Apply metadata:
 ```sql
-mysql> APPLY SCALING "0130317c30317c3054317c7363616c696e675f6462";
+mysql> APPLY MIGRATION "0130317c30317c3054317c7363616c696e675f6462";
 Query OK, 0 rows affected (0.22 sec)
 ```
 
