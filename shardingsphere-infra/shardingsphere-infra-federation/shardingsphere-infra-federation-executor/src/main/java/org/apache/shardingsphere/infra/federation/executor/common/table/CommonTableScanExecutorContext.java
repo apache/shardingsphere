@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.executor.original.table;
+package org.apache.shardingsphere.infra.federation.executor.common.table;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +23,11 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.federation.executor.FederationContext;
 
 /**
- * Filterable table scan executor context.
+ * Translatable table scan executor context.
  */
 @RequiredArgsConstructor
 @Getter
-public final class FilterableTableScanExecutorContext {
+public final class CommonTableScanExecutorContext {
     
     private final String databaseName;
     

@@ -15,22 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.optimizer.executor;
+package org.apache.shardingsphere.infra.federation.executor.common.row;
 
-import org.apache.calcite.linq4j.Enumerable;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.calcite.linq4j.Enumerator;
 
 /**
- * Table scan executor.
+ * Empty row enumerator.
  */
-public interface TableScanExecutor {
+public final class EmptyRowEnumerator implements Enumerator<Object[]> {
     
-    /**
-     * Execute.
-     *
-     * @param table table meta data
-     * @param scanContext filterable table scan context
-     * @return query results
-     */
-    Enumerable<Object[]> execute(ShardingSphereTable table, ScanNodeExecutorContext scanContext);
+    @Override
+    public Object[] current() {
+        return new Object[0];
+    }
+    
+    @Override
+    public boolean moveNext() {
+        return false;
+    }
+    
+    @Override
+    public void reset() {
+    }
+    
+    @Override
+    public void close() {
+    }
 }
