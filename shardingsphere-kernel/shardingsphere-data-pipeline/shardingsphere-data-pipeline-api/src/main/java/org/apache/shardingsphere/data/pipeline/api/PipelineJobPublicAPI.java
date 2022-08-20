@@ -17,7 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.api;
 
+import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+
+import java.util.List;
 
 /**
  * Pipeline job public API.
@@ -44,4 +47,11 @@ public interface PipelineJobPublicAPI extends TypedSPI {
      * @param jobId job id
      */
     void remove(String jobId);
+    
+    /**
+     * Get pipeline job info.
+     *
+     * @return jobInfos
+     */
+    List<PipelineJobInfo> list();
 }

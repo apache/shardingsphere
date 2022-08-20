@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.metadata.node;
 
+import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -24,21 +25,61 @@ import static org.junit.Assert.assertThat;
 
 public final class PipelineMetaDataNodeTest {
     
+    private final String migrationMetaDataRootPath = "/pipeline/migration/metadata";
+    
+    private final String jobId = "j01001";
+    
+    private final String jobsPath = "/pipeline/jobs";
+    
+    private final String jobRootPath = jobsPath + "/j01001";
+    
+    @Test
+    public void assertGetMetaDataDataSourcesPath() {
+        assertThat(PipelineMetaDataNode.getMetaDataDataSourcesPath(JobType.MIGRATION), is(migrationMetaDataRootPath + "/dataSources"));
+    }
+    
+    @Test
+    public void assertGetMetaDataProcessConfigPath() {
+        assertThat(PipelineMetaDataNode.getMetaDataProcessConfigPath(JobType.MIGRATION), is(migrationMetaDataRootPath + "/processConfig"));
+    }
+    
+    @Test
+    public void assertGetElasticJobNamespace() {
+        assertThat(PipelineMetaDataNode.getElasticJobNamespace(), is(jobsPath));
+    }
+    
+    @Test
+    public void assertGetJobRootPath() {
+        assertThat(PipelineMetaDataNode.getJobRootPath(jobId), is(jobRootPath));
+    }
+    
+    @Test
+    public void assertGetJobOffsetPath() {
+        assertThat(PipelineMetaDataNode.getJobOffsetPath(jobId), is(jobRootPath + "/offset"));
+    }
+    
+    @Test
+    public void assertGetJobOffsetItemPath() {
+        assertThat(PipelineMetaDataNode.getJobOffsetItemPath(jobId, 0), is(jobRootPath + "/offset/0"));
+    }
+    
     @Test
     public void assertGetJobConfigPath() {
-        String actualOffsetPath = PipelineMetaDataNode.getScalingJobOffsetPath("0130317c30317c3054317c7368617264696e675f6462");
-        assertThat(actualOffsetPath, is("/scaling/0130317c30317c3054317c7368617264696e675f6462/offset"));
-        actualOffsetPath = PipelineMetaDataNode.getScalingJobOffsetPath("0130317c30317c3054317c7368617264696e675f6462", 1);
-        assertThat(actualOffsetPath, is("/scaling/0130317c30317c3054317c7368617264696e675f6462/offset/1"));
+        assertThat(PipelineMetaDataNode.getJobConfigPath(jobId), is(jobRootPath + "/config"));
     }
     
     @Test
-    public void assertGetScalingJobConfigPath() {
-        assertThat(PipelineMetaDataNode.getScalingJobConfigPath("0130317c30317c3054317c7368617264696e675f6462"), is("/scaling/0130317c30317c3054317c7368617264696e675f6462/config"));
+    public void assertGetCheckResultPath() {
+        assertThat(PipelineMetaDataNode.getJobCheckResultPath(jobId), is(jobRootPath + "/check/result"));
     }
     
     @Test
-    public void assertGetScalingCheckResultPath() {
-        assertThat(PipelineMetaDataNode.getScalingCheckResultPath("0130317c30317c3054317c7368617264696e675f6462"), is("/scaling/0130317c30317c3054317c7368617264696e675f6462/check/result"));
+    public void assertGetJobBarrierEnablePath() {
+        assertThat(PipelineMetaDataNode.getJobBarrierEnablePath(jobId), is(jobRootPath + "/barrier/enable"));
+    }
+    
+    @Test
+    public void assertGetJobBarrierDisablePath() {
+        assertThat(PipelineMetaDataNode.getJobBarrierDisablePath(jobId), is(jobRootPath + "/barrier/disable"));
     }
 }

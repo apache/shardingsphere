@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
-import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.wait.JDBCConnectionWaitStrategy;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.testcontainers.containers.BindMode;
@@ -43,17 +42,13 @@ public final class ShardingSphereProxyClusterContainer extends DockerITContainer
     
     private final DatabaseType databaseType;
     
-    private final String scenario;
-    
     private final AdaptorContainerConfiguration config;
     
     private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
     
-    public ShardingSphereProxyClusterContainer(final DatabaseType databaseType, final String scenario, final StorageContainer storageContainer,
-                                               final AdaptorContainerConfiguration config) {
+    public ShardingSphereProxyClusterContainer(final DatabaseType databaseType, final AdaptorContainerConfiguration config) {
         super("ShardingSphere-Proxy", "apache/shardingsphere-proxy-test");
         this.databaseType = databaseType;
-        this.scenario = scenario;
         this.config = config;
     }
     
@@ -93,7 +88,7 @@ public final class ShardingSphereProxyClusterContainer extends DockerITContainer
     private DataSource createProxyDataSource() {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
-        result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), scenario));
+        result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), config.getProxyDataSourceName()));
         result.setUsername("proxy");
         result.setPassword("Proxy@123");
         result.setMaximumPoolSize(2);

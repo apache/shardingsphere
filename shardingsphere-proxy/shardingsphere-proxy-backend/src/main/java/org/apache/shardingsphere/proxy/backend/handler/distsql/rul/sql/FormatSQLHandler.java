@@ -25,7 +25,6 @@ import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
-import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -58,10 +57,6 @@ public final class FormatSQLHandler extends SQLRULBackendHandler<FormatStatement
     }
     
     private ParseASTNode parseSQL(final String sql, final String databaseType) {
-        try {
-            return new SQLParserEngine(databaseType, new CacheOption(1, 1L)).parse(sql, false);
-        } catch (final SQLParsingException ex) {
-            throw new SQLParsingException();
-        }
+        return new SQLParserEngine(databaseType, new CacheOption(1, 1L)).parse(sql, false);
     }
 }

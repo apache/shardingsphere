@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.api.impl;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -45,30 +46,30 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     
     @Override
     public void persistJobItemProgress(final String jobId, final int shardingItem, final String progressValue) {
-        repository.persist(PipelineMetaDataNode.getScalingJobOffsetPath(jobId, shardingItem), progressValue);
+        repository.persist(PipelineMetaDataNode.getJobOffsetItemPath(jobId, shardingItem), progressValue);
     }
     
     @Override
     public String getJobItemProgress(final String jobId, final int shardingItem) {
-        return repository.get(PipelineMetaDataNode.getScalingJobOffsetPath(jobId, shardingItem));
+        return repository.get(PipelineMetaDataNode.getJobOffsetItemPath(jobId, shardingItem));
     }
     
     @Override
     public void persistJobCheckResult(final String jobId, final boolean checkSuccess) {
         log.info("persist job check result '{}' for job {}", checkSuccess, jobId);
-        repository.persist(PipelineMetaDataNode.getScalingCheckResultPath(jobId), String.valueOf(checkSuccess));
+        repository.persist(PipelineMetaDataNode.getJobCheckResultPath(jobId), String.valueOf(checkSuccess));
     }
     
     @Override
     public Optional<Boolean> getJobCheckResult(final String jobId) {
-        String data = repository.get(PipelineMetaDataNode.getScalingCheckResultPath(jobId));
+        String data = repository.get(PipelineMetaDataNode.getJobCheckResultPath(jobId));
         return Strings.isNullOrEmpty(data) ? Optional.empty() : Optional.of(Boolean.parseBoolean(data));
     }
     
     @Override
     public void deleteJob(final String jobId) {
         log.info("delete job {}", jobId);
-        repository.delete(PipelineMetaDataNode.getScalingJobPath(jobId));
+        repository.delete(PipelineMetaDataNode.getJobRootPath(jobId));
     }
     
     @Override
@@ -88,8 +89,18 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     
     @Override
     public List<Integer> getShardingItems(final String jobId) {
-        List<String> result = getChildrenKeys(PipelineMetaDataNode.getScalingJobOffsetPath(jobId));
+        List<String> result = getChildrenKeys(PipelineMetaDataNode.getJobOffsetPath(jobId));
         log.info("getShardingItems, jobId={}, offsetKeys={}", jobId, result);
         return result.stream().map(Integer::parseInt).collect(Collectors.toList());
+    }
+    
+    @Override
+    public String getMetaDataDataSource(final JobType jobType) {
+        return repository.get(PipelineMetaDataNode.getMetaDataDataSourcesPath(jobType));
+    }
+    
+    @Override
+    public void persistMetaDataDataSource(final JobType jobType, final String metaDataDataSource) {
+        repository.persist(PipelineMetaDataNode.getMetaDataDataSourcesPath(jobType), metaDataDataSource);
     }
 }

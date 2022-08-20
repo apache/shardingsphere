@@ -39,8 +39,8 @@ stopScaling
     : STOP SCALING jobId
     ;
 
-dropScaling
-    : DROP SCALING jobId
+cleanScaling
+    : CLEAN SCALING jobId
     ;
 
 resetScaling
@@ -133,4 +133,8 @@ password
 
 addMigrationSourceResource
     : ADD MIGRATION SOURCE RESOURCE resourceDefinition (COMMA resourceDefinition)*
+    ;
+    
+dropMigrationSourceResource
+    : DROP MIGRATION SOURCE RESOURCE resourceName (COMMA resourceName)*
     ;

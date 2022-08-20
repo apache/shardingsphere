@@ -96,8 +96,7 @@ public final class MySQLDataSourcePreparerTest {
                     .thenReturn(sourceScalingDataSourceConfig);
             mockedStaticPipelineDataSourceConfigurationFactory.when(() -> PipelineDataSourceConfigurationFactory.newInstance(eq("ShardingSphereJDBC"), eq("target")))
                     .thenReturn(targetScalingDataSourceConfig);
-            MySQLDataSourcePreparer mySQLDataSourcePreparer = new MySQLDataSourcePreparer();
-            mySQLDataSourcePreparer.prepareTargetTables(prepareTargetTablesParameter);
+            new MySQLDataSourcePreparer().prepareTargetTables(prepareTargetTablesParameter);
             verify(sourceDataSourceWrapper).getConnection();
             verify(targetDataSourceWrapper).getConnection();
         }
@@ -111,8 +110,7 @@ public final class MySQLDataSourcePreparerTest {
             mockedStaticPipelineDataSourceConfigurationFactory.when(() -> PipelineDataSourceConfigurationFactory.newInstance(eq("ShardingSphereJDBC"), eq("target")))
                     .thenReturn(targetScalingDataSourceConfig);
             when(sourceDataSourceWrapper.getConnection()).thenThrow(SQLException.class);
-            MySQLDataSourcePreparer mySQLDataSourcePreparer = new MySQLDataSourcePreparer();
-            mySQLDataSourcePreparer.prepareTargetTables(prepareTargetTablesParameter);
+            new MySQLDataSourcePreparer().prepareTargetTables(prepareTargetTablesParameter);
         }
     }
 }

@@ -257,7 +257,7 @@ public abstract class BaseITCase {
                 List<Map<String, Object>> scalingList = jdbcTemplate.queryForList("SHOW SCALING LIST");
                 for (Map<String, Object> each : scalingList) {
                     String id = each.get("id").toString();
-                    executeWithLog(String.format("DROP SCALING '%s'", id), 0);
+                    executeWithLog(String.format("CLEAN SCALING '%s'", id), 0);
                 }
             } catch (final DataAccessException ex) {
                 log.error("Failed to show scaling list. {}", ex.getMessage());

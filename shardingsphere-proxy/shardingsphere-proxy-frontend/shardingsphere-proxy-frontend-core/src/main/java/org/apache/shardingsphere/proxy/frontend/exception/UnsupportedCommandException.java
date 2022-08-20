@@ -28,6 +28,6 @@ public final class UnsupportedCommandException extends ShardingSphereSQLExceptio
     private static final long serialVersionUID = 8010680371699936338L;
     
     public UnsupportedCommandException(final String commandType) {
-        super(XOpenSQLState.SYNTAX_ERROR, 1998, "Unsupported command: %s", commandType);
+        super(XOpenSQLState.SYNTAX_ERROR, 12000, "Unsupported command: %s", commandType);
     }
 }

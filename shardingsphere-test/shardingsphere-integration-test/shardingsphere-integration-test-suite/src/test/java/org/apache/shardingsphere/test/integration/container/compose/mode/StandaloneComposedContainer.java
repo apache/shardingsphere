@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.integration.container.compose.mode;
 
 import org.apache.shardingsphere.test.integration.container.compose.ComposedContainer;
+import org.apache.shardingsphere.test.integration.container.config.ProxyStandaloneContainerConfigurationFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.ITContainers;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.AdapterContainer;
@@ -47,8 +48,8 @@ public final class StandaloneComposedContainer implements ComposedContainer {
         // TODO add more version of databases
         storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(parameterizedArray.getDatabaseType(), "", scenario,
                 StorageContainerConfigurationFactory.newInstance(parameterizedArray.getDatabaseType())));
-        adapterContainer = containers.registerContainer(
-                AdapterContainerFactory.newInstance(parameterizedArray.getMode(), parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), storageContainer, scenario, null));
+        adapterContainer = containers.registerContainer(AdapterContainerFactory.newInstance(parameterizedArray.getMode(), parameterizedArray.getAdapter(),
+                parameterizedArray.getDatabaseType(), storageContainer, scenario, ProxyStandaloneContainerConfigurationFactory.newInstance(scenario, parameterizedArray.getDatabaseType())));
         if (adapterContainer instanceof DockerITContainer) {
             ((DockerITContainer) adapterContainer).dependsOn(storageContainer);
         }

@@ -30,7 +30,7 @@ public final class MigrateTableUpdater implements RALUpdater<MigrateTableStateme
     private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
     
     @Override
-    public void executeUpdate(final MigrateTableStatement sqlStatement) {
+    public void executeUpdate(final String databaseName, final MigrateTableStatement sqlStatement) {
         // TODO implement migrate table
         JOB_API.getType();
     }

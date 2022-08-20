@@ -26,7 +26,7 @@ import java.util.Collections;
 public final class CreateTableSQLGeneratorFixture implements CreateTableSQLGenerator {
     
     @Override
-    public Collection<String> generate(final String tableName, final String schemaName, final DataSource dataSource) {
+    public Collection<String> generate(final DataSource dataSource, final String schemaName, final String tableName) {
         return Collections.singletonList("");
     }
     

@@ -80,7 +80,7 @@ algorithmName
     ;
 
 shadowAlgorithmType
-    : IDENTIFIER
+    : STRING
     ;
 
 algorithmProperties
@@ -88,7 +88,7 @@ algorithmProperties
     ;
 
 algorithmProperty
-    : key = (SHADOW | IDENTIFIER | STRING) EQ value = (NUMBER | INT | STRING)
+    : key = STRING EQ value = (NUMBER | INT | STRING)
     ;
 
 ifExists

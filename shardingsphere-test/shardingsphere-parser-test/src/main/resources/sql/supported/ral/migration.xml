@@ -28,8 +28,9 @@
     <distsql-case id="stop-scaling-source-writing" value="STOP SCALING SOURCE WRITING 123;" />
     <distsql-case id="restore-scaling-source-writing" value="RESTORE SCALING SOURCE WRITING 123;" />
     <distsql-case id="apply-scaling" value="APPLY SCALING 123;" />
-    <distsql-case id="drop-scaling" value="DROP SCALING 123;" />
+    <distsql-case id="clean-scaling" value="CLEAN SCALING 123;" />
     <distsql-case id="reset-scaling" value="RESET SCALING 123;" />
     <distsql-case id="stop-scaling" value="STOP SCALING 123;" />
     <distsql-case id="start-scaling" value="START SCALING 123;" />
+    <distsql-case id="drop-migration-source-resource" value="DROP MIGRATION SOURCE RESOURCE ds_0,ds_1" />
 </sql-cases>
