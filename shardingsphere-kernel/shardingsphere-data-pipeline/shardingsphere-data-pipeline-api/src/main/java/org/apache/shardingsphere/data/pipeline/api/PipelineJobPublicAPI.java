@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.api;
 
 import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
+import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import java.util.List;
@@ -26,6 +27,27 @@ import java.util.List;
  * Pipeline job public API.
  */
 public interface PipelineJobPublicAPI extends TypedSPI {
+    
+    /**
+     * Create process configuration.
+     *
+     * @param processConfig process configuration
+     */
+    void createProcessConfiguration(PipelineProcessConfiguration processConfig);
+    
+    /**
+     * Alter process configuration.
+     *
+     * @param processConfig process configuration
+     */
+    void alterProcessConfiguration(PipelineProcessConfiguration processConfig);
+    
+    /**
+     * Show process configuration.
+     *
+     * @return process configuration
+     */
+    PipelineProcessConfiguration showProcessConfiguration();
     
     /**
      * Start disabled job.
