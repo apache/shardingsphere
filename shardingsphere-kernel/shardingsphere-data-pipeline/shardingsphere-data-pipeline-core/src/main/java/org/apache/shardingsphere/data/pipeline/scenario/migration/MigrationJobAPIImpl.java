@@ -91,6 +91,11 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     private final PipelineDataSourcePersistService dataSourcePersistService = new PipelineDataSourcePersistService();
     
     @Override
+    protected JobType getJobType() {
+        return JobType.MIGRATION;
+    }
+    
+    @Override
     protected String marshalJobIdLeftPart(final PipelineJobId pipelineJobId) {
         MigrationJobId jobId = (MigrationJobId) pipelineJobId;
         String text = jobId.getFormatVersion() + "|" + jobId.getCurrentMetadataVersion() + "T" + jobId.getNewMetadataVersion() + "|" + jobId.getDatabaseName();
@@ -118,7 +123,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     
     private String generateJobId(final YamlMigrationJobConfiguration config) {
         MigrationJobId jobId = new MigrationJobId();
-        jobId.setTypeCode(JobType.MIGRATION.getTypeCode());
+        jobId.setTypeCode(getJobType().getTypeCode());
         jobId.setFormatVersion(MigrationJobId.CURRENT_VERSION);
         jobId.setCurrentMetadataVersion(config.getActiveVersion());
         jobId.setNewMetadataVersion(config.getNewVersion());
@@ -403,7 +408,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     @Override
     public void addMigrationSourceResources(final Map<String, DataSourceProperties> dataSourcePropsMap) {
         log.info("Add migration source resources {}", dataSourcePropsMap.keySet());
-        Map<String, DataSourceProperties> existDataSources = dataSourcePersistService.load(JobType.MIGRATION);
+        Map<String, DataSourceProperties> existDataSources = dataSourcePersistService.load(getJobType());
         Collection<String> duplicateDataSourceNames = new HashSet<>(dataSourcePropsMap.size(), 1);
         for (Entry<String, DataSourceProperties> entry : dataSourcePropsMap.entrySet()) {
             if (existDataSources.containsKey(entry.getKey())) {
@@ -415,12 +420,12 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         }
         Map<String, DataSourceProperties> result = new LinkedHashMap<>(existDataSources);
         result.putAll(dataSourcePropsMap);
-        dataSourcePersistService.persist(JobType.MIGRATION, result);
+        dataSourcePersistService.persist(getJobType(), result);
     }
     
     @Override
     public void dropMigrationSourceResources(final Collection<String> resourceNames) {
-        Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(JobType.MIGRATION);
+        Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(getJobType());
         List<String> noExistResources = resourceNames.stream().filter(each -> !metaDataDataSource.containsKey(each)).collect(Collectors.toList());
         if (!noExistResources.isEmpty()) {
             throw new DropMigrationSourceResourceException(String.format("Resource names %s not exist.", resourceNames));
@@ -428,11 +433,11 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         for (String each : resourceNames) {
             metaDataDataSource.remove(each);
         }
-        dataSourcePersistService.persist(JobType.MIGRATION, metaDataDataSource);
+        dataSourcePersistService.persist(getJobType(), metaDataDataSource);
     }
     
     @Override
     public String getType() {
-        return JobType.MIGRATION.getTypeName();
+        return getJobType().getTypeName();
     }
 }

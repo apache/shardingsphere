@@ -36,4 +36,26 @@ public final class YamlPipelineProcessConfiguration implements YamlConfiguration
     private YamlPipelineWriteConfiguration write;
     
     private YamlAlgorithmConfiguration streamChannel;
+    
+    /**
+     * Copy non-null fields from another.
+     *
+     * @param another another configuration
+     */
+    // TODO add unit test
+    public void copyNonNullFields(final YamlPipelineProcessConfiguration another) {
+        if (null == read) {
+            read = another.getRead();
+        } else {
+            read.copyNonNullFields(another.getRead());
+        }
+        if (null == write) {
+            write = another.getWrite();
+        } else {
+            write.copyNonNullFields(another.getWrite());
+        }
+        if (null == streamChannel) {
+            streamChannel = another.getStreamChannel();
+        }
+    }
 }

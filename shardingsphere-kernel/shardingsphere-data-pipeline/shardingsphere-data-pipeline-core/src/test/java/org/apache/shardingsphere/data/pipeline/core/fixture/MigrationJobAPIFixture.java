@@ -51,6 +51,19 @@ public final class MigrationJobAPIFixture implements MigrationJobAPI {
     }
     
     @Override
+    public void createProcessConfiguration(final PipelineProcessConfiguration processConfig) {
+    }
+    
+    @Override
+    public void alterProcessConfiguration(final PipelineProcessConfiguration processConfig) {
+    }
+    
+    @Override
+    public PipelineProcessConfiguration showProcessConfiguration() {
+        return null;
+    }
+    
+    @Override
     public void startDisabledJob(final String jobId) {
     }
     
