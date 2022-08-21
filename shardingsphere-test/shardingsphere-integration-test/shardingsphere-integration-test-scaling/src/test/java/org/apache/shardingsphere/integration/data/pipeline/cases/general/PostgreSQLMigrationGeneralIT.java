@@ -68,7 +68,7 @@ public final class PostgreSQLMigrationGeneralIT extends BaseExtraSQLITCase {
     }
     
     @Test
-    public void assertMigrationSuccess() throws InterruptedException {
+    public void assertMigrationSuccess() {
         createScalingRule();
         createSourceSchema("test");
         createSourceOrderTable();
@@ -84,24 +84,23 @@ public final class PostgreSQLMigrationGeneralIT extends BaseExtraSQLITCase {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(getSourceDataSource());
         jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrder(), dataPair.getLeft());
         jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
+        checkOrderMigration(jdbcTemplate);
+        checkOrderItemMigration();
+    }
+    
+    private void checkOrderMigration(final JdbcTemplate jdbcTemplate) {
         startMigrationOrder();
-        startMigrationOrderItem();
-        startIncrementTask(new PostgreSQLIncrementTask(jdbcTemplate, new SnowflakeKeyGenerateAlgorithm(), "test", true, 20));
-        List<String> jobIds = listJobId();
-        for (String each : jobIds) {
-            waitMigrationFinished(each);
-        }
-        for (String each : jobIds) {
-            stopMigration(each);
-        }
-        sourceExecuteWithLog(String.format("INSERT INTO test.t_order (id,order_id,user_id,status) VALUES (%s, %s, %s, '%s')", keyGenerateAlgorithm.generateKey(), System.currentTimeMillis(),
-                1, "afterStopScaling"));
-        for (String each : jobIds) {
-            startScaling(each);
-        }
-        for (String each : jobIds) {
-            assertCheckScalingSuccess(each);
-        }
+        startIncrementTask(new PostgreSQLIncrementTask(jdbcTemplate, "test", false, 20));
+        String jobId = getJobIdByTableName("t_order");
+        waitMigrationFinished(jobId);
+        assertCheckScalingSuccess(jobId);
         assertGreaterThanInitTableInitRows(TABLE_INIT_ROW_COUNT, "test");
+    }
+    
+    private void checkOrderItemMigration() {
+        startMigrationOrderItem();
+        String jobId = getJobIdByTableName("t_order");
+        waitMigrationFinished(jobId);
+        assertCheckScalingSuccess(jobId);
     }
 }

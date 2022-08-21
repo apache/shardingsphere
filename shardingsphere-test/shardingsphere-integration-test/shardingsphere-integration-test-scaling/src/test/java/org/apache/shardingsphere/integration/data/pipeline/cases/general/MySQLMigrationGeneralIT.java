@@ -26,6 +26,7 @@ import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEn
 import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingCaseHelper;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -65,7 +66,7 @@ public final class MySQLMigrationGeneralIT extends BaseExtraSQLITCase {
     }
     
     @Test
-    public void assertMigrationSuccess() throws InterruptedException {
+    public void assertMigrationSuccess() {
         createScalingRule();
         createSourceOrderTable();
         createSourceOrderItemTable();
@@ -80,25 +81,24 @@ public final class MySQLMigrationGeneralIT extends BaseExtraSQLITCase {
             jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrder(), dataPair.getLeft());
             jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
         }
-        startMigrationOrder();
         startMigrationOrderItem();
+        checkOrderMigration(keyGenerateAlgorithm, jdbcTemplate);
+        checkOrderItemMigration();
+    }
+    
+    private void checkOrderMigration(final KeyGenerateAlgorithm keyGenerateAlgorithm, final JdbcTemplate jdbcTemplate) {
+        startMigrationOrder();
         startIncrementTask(new MySQLIncrementTask(jdbcTemplate, keyGenerateAlgorithm, true, 20));
-        List<String> jobIds = listJobId();
-        for (String each : jobIds) {
-            waitMigrationFinished(each);
-        }
-        // TODO may cause ci error accident, need to be fixed
-//        for (String each : jobIds) {
-//            stopMigration(each);
-//        }
-//        jdbcTemplate.update("INSERT INTO t_order (id,order_id,user_id,status,t_json) VALUES (?, ?, ?, ?, ?)", keyGenerateAlgorithm.generateKey(), keyGenerateAlgorithm.generateKey(),
-//                1, "afterStopScaling", "{}");
-//        for (String each : jobIds) {
-//            startScaling(each);
-//        }
-        for (String each : jobIds) {
-            assertCheckScalingSuccess(each);
-        }
+        String jobId = getJobIdByTableName("t_order");
+        waitMigrationFinished(jobId);
+        assertCheckScalingSuccess(jobId);
         assertGreaterThanInitTableInitRows(TABLE_INIT_ROW_COUNT, "");
+    }
+    
+    private void checkOrderItemMigration() {
+        startMigrationOrderItem();
+        String jobId = getJobIdByTableName("t_order");
+        waitMigrationFinished(jobId);
+        assertCheckScalingSuccess(jobId);
     }
 }

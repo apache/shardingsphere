@@ -65,7 +65,7 @@ public class TextPrimaryKeyMigrationIT extends BaseExtraSQLITCase {
     }
     
     @Test
-    public void assertTextPrimaryMigrationSuccess() throws InterruptedException, SQLException {
+    public void assertTextPrimaryMigrationSuccess() throws SQLException {
         createSourceOrderTable();
         batchInsertOrder();
         createScalingRule();

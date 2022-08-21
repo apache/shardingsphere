@@ -343,7 +343,13 @@ public abstract class BaseITCase {
         return jobList.stream().map(a -> a.get("id").toString()).collect(Collectors.toList());
     }
     
-    protected void waitMigrationFinished(final String jobId) throws InterruptedException {
+    protected String getJobIdByTableName(final String tableName) {
+        List<Map<String, Object>> jobList = queryForListWithLog("SHOW MIGRATION LIST");
+        return jobList.stream().filter(a -> a.get("tables").toString().equals(tableName)).findFirst().orElseThrow(() -> new RuntimeException("not find target table")).get("id").toString();
+    }
+    
+    @SneakyThrows(InterruptedException.class)
+    protected void waitMigrationFinished(final String jobId) {
         if (null != increaseTaskThread) {
             TimeUnit.SECONDS.timedJoin(increaseTaskThread, 60);
         }
@@ -360,7 +366,7 @@ public abstract class BaseITCase {
             } else if (actualStatus.size() >= 1 && actualStatus.containsAll(new HashSet<>(Arrays.asList("", JobStatus.EXECUTE_INCREMENTAL_TASK.name())))) {
                 log.warn("one of the shardingItem was not started correctly");
             }
-            ThreadUtil.sleep(4, TimeUnit.SECONDS);
+            ThreadUtil.sleep(3, TimeUnit.SECONDS);
         }
     }
     
