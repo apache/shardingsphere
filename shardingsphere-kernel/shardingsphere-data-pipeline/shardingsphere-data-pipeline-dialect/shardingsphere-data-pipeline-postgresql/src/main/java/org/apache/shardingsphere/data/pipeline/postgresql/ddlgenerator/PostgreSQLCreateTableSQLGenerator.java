@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator;
 
 import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGenerator;
-import org.apache.shardingsphere.data.pipeline.postgresql.util.FreemarkerManager;
+import org.apache.shardingsphere.data.pipeline.postgresql.util.PostgreSQLPipelineFreemarkerManager;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -57,7 +57,7 @@ public final class PostgreSQLCreateTableSQLGenerator implements CreateTableSQLGe
     }
     
     private String generateCreateTableSQL(final int majorVersion, final int minorVersion, final Map<String, Object> materials) {
-        return FreemarkerManager.getSQLByPgVersion(materials, "table/%s/create.ftl", majorVersion, minorVersion).trim();
+        return PostgreSQLPipelineFreemarkerManager.getSQLByVersion(materials, "table/%s/create.ftl", majorVersion, minorVersion).trim();
     }
     
     private String generateCreateIndexSQL(final Connection connection, final int majorVersion, final int minorVersion, final Map<String, Object> materials) {
