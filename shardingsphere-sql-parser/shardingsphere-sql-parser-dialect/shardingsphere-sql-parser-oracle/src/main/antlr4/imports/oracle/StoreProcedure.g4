@@ -41,6 +41,18 @@ itemList2
     : cursorDeclaration | cursorDefinition | functionDeclaration | functionDefinition | procedureDeclaration | procedureDefinition
     ;
 
+cursorDefinition
+    : CURSOR variableName ( LP_ cursorParameterDec ( COMMA_ cursorParameterDec )* RP_)? ( RETURN rowtype)? IS select SEMI_
+    ;
+
+functionDefinition
+    : functionHeading ( DETERMINISTIC | PIPELINED | PARALLEL_ENABLE | resultCacheClause )+  ( IS | AS ) ( declareSection ? body | callSpec )
+    ;
+
+procedureDefinition
+    : procedureDeclaration (IS | AS) (callSpec | declareSection? body)
+    ;
+
 itemList1
     :( typeDefinition | cursorDeclaration | itemDeclaration | functionDeclaration | procedureDeclaration )*
     ;
