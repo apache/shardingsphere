@@ -63,7 +63,7 @@ weight = 5
 | type | 属性 | 影子算法类型 |
 | props (?) | 标签 | 影子算法属性配置 |
 
-详情请参见[内置影子算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/shadow)
+详情请参见[内置影子算法列表](/cn/user-manual/common-config/builtin-algorithm/shadow)
 
 ## 操作步骤
 1. 创建生产和影子数据源。

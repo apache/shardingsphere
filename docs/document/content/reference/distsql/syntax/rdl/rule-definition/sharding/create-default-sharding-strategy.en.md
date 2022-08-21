@@ -36,7 +36,7 @@ algorithmType ::=
 
 - When using the complex sharding algorithm, multiple sharding columns need to be specified using `SHARDING_COLUMNS`;
 - `algorithmType` is the sharding algorithm type. For detailed sharding algorithm type information, please refer
-  to [Sharding Algorithm](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/).
+  to [Sharding Algorithm](/en/user-manual/common-config/builtin-algorithm/sharding/).
 
 ### Example
 

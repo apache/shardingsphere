@@ -47,9 +47,9 @@ public final class MySQLErrPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithSQLException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new SQLException("No reason", "XXX", 9999, new RuntimeException("")));
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new SQLException("No reason", "XXX", 30000, new RuntimeException("")));
         assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getErrorCode(), is(9999));
+        assertThat(actual.getErrorCode(), is(30000));
         assertThat(actual.getSqlState(), is("XXX"));
         assertThat(actual.getErrorMessage(), is("No reason"));
     }
@@ -153,21 +153,21 @@ public final class MySQLErrPacketFactoryTest {
     
     private void assertShardingSphereConfigurationException(final MySQLErrPacket actual) {
         assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getErrorCode(), is(1235));
+        assertThat(actual.getErrorCode(), is(11001));
         assertThat(actual.getSqlState(), is("42000"));
         assertThat(actual.getErrorMessage(), is("No reason"));
     }
     
     @Test
     public void assertNewInstanceWithSQLParsingException() {
-        assertSQLParsingException(MySQLErrPacketFactory.newInstance(new SQLParsingException()));
+        assertSQLParsingException(MySQLErrPacketFactory.newInstance(new SQLParsingException("test")));
     }
     
     private void assertSQLParsingException(final MySQLErrPacket actual) {
         assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getErrorCode(), is(1235));
+        assertThat(actual.getErrorCode(), is(11000));
         assertThat(actual.getSqlState(), is("42000"));
-        assertThat(actual.getErrorMessage(), is("You have an error in your SQL syntax"));
+        assertThat(actual.getErrorMessage(), is("You have an error in your SQL syntax: test"));
     }
     
     @Test
@@ -183,7 +183,7 @@ public final class MySQLErrPacketFactoryTest {
     public void assertNewInstanceWithCircuitBreakException() {
         MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new CircuitBreakException());
         assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getErrorCode(), is(1000));
+        assertThat(actual.getErrorCode(), is(10000));
         assertThat(actual.getSqlState(), is("01000"));
         assertThat(actual.getErrorMessage(), is("Circuit break open, the request has been ignored"));
     }
@@ -205,7 +205,7 @@ public final class MySQLErrPacketFactoryTest {
     public void assertNewInstanceWithUnsupportedCommandException() {
         MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new UnsupportedCommandException("No reason"));
         assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getErrorCode(), is(1998));
+        assertThat(actual.getErrorCode(), is(12000));
         assertThat(actual.getSqlState(), is("42000"));
         assertThat(actual.getErrorMessage(), is("Unsupported command: No reason"));
     }
@@ -214,7 +214,7 @@ public final class MySQLErrPacketFactoryTest {
     public void assertNewInstanceWithOtherException() {
         MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new ReflectiveOperationException("No reason"));
         assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getErrorCode(), is(1999));
+        assertThat(actual.getErrorCode(), is(30000));
         assertThat(actual.getSqlState(), is("42000"));
         assertThat(actual.getErrorMessage(), is("Unknown exception: No reason"));
     }

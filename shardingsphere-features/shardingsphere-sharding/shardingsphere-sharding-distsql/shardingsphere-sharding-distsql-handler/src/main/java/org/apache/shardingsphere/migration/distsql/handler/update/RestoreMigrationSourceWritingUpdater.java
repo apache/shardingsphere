@@ -30,7 +30,7 @@ public final class RestoreMigrationSourceWritingUpdater implements RALUpdater<Re
     private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
     
     @Override
-    public void executeUpdate(final RestoreMigrationSourceWritingStatement sqlStatement) {
+    public void executeUpdate(final String databaseName, final RestoreMigrationSourceWritingStatement sqlStatement) {
         JOB_API.restoreClusterWriteDB(sqlStatement.getJobId());
     }
     

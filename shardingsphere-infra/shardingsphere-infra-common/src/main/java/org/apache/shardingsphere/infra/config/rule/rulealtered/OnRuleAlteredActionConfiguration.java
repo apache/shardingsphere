@@ -21,8 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineInputConfiguration;
-import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineOutputConfiguration;
+import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineReadConfiguration;
+import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineWriteConfiguration;
 
 /**
  * On rule altered action configuration.
@@ -32,9 +32,9 @@ import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineOutputC
 @ToString
 public final class OnRuleAlteredActionConfiguration {
     
-    private final PipelineInputConfiguration input;
+    private final PipelineReadConfiguration input;
     
-    private final PipelineOutputConfiguration output;
+    private final PipelineWriteConfiguration output;
     
     private final AlgorithmConfiguration streamChannel;
     

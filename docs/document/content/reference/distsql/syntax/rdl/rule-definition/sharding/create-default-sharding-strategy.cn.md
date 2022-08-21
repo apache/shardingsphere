@@ -35,7 +35,7 @@ algorithmType ::=
 ### 补充说明
 
 - 当使用复合分片算法时，需要通过 `SHARDING_COLUMNS` 指定多个分片键；
-- `algorithmType` 为分片算法类型，详细的分片算法类型信息请参考[分片算法](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/)。
+- `algorithmType` 为分片算法类型，详细的分片算法类型信息请参考[分片算法](/cn/user-manual/common-config/builtin-algorithm/sharding/)。
 
 ### 示例
 

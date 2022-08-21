@@ -357,16 +357,16 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
         }
         if (null != ctx.parameterMarker()) {
             ParameterMarkerValue parameterMarker = (ParameterMarkerValue) visit(ctx.parameterMarker());
-            ParameterMarkerExpressionSegment segment = new ParameterMarkerExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), parameterMarker.getValue(), parameterMarker.getType());
-            parameterMarkerSegments.add(segment);
-            return segment;
+            ParameterMarkerExpressionSegment result = new ParameterMarkerExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), parameterMarker.getValue(), parameterMarker.getType());
+            parameterMarkerSegments.add(result);
+            return result;
         }
         if (null != ctx.aexprConst()) {
-            ASTNode astNode = visit(ctx.aexprConst());
-            if (astNode instanceof StringLiteralValue || astNode instanceof BooleanLiteralValue || astNode instanceof NumberLiteralValue) {
-                return new LiteralExpressionSegment(ctx.aexprConst().start.getStartIndex(), ctx.aexprConst().stop.getStopIndex(), ((LiteralValue) astNode).getValue());
+            ASTNode result = visit(ctx.aexprConst());
+            if (result instanceof StringLiteralValue || result instanceof BooleanLiteralValue || result instanceof NumberLiteralValue) {
+                return new LiteralExpressionSegment(ctx.aexprConst().start.getStartIndex(), ctx.aexprConst().stop.getStopIndex(), ((LiteralValue) result).getValue());
             }
-            return astNode;
+            return result;
         }
         if (null != ctx.aExpr()) {
             return visit(ctx.aExpr());
@@ -396,11 +396,11 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
         if (null != ctx.functionExprCommonSubexpr()) {
             return visit(ctx.functionExprCommonSubexpr());
         }
-        Collection<ExpressionSegment> expressionSegments = getExpressionSegments(getTargetRuleContextFromParseTree(ctx, CExprContext.class));
+        Collection<ExpressionSegment> expressionSegments = getExpressionSegments(getTargetRuleContextFromParseTree(ctx, AExprContext.class));
         // TODO replace aggregation segment
         String aggregationType = ctx.funcApplication().funcName().getText();
         if (AggregationType.isAggregationType(aggregationType)) {
-            return createAggregationSegment(ctx.funcApplication(), aggregationType);
+            return createAggregationSegment(ctx.funcApplication(), aggregationType, expressionSegments);
         }
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcApplication().funcName().getText(), getOriginalText(ctx));
         result.getParameters().addAll(expressionSegments);
@@ -410,7 +410,7 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
     @Override
     public ASTNode visitFunctionExprCommonSubexpr(final FunctionExprCommonSubexprContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getText(), getOriginalText(ctx));
-        Collection<ExpressionSegment> expressionSegments = getExpressionSegments(getTargetRuleContextFromParseTree(ctx, CExprContext.class));
+        Collection<ExpressionSegment> expressionSegments = getExpressionSegments(getTargetRuleContextFromParseTree(ctx, AExprContext.class));
         result.getParameters().addAll(expressionSegments);
         return result;
     }
@@ -428,9 +428,9 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
         return result;
     }
     
-    private Collection<ExpressionSegment> getExpressionSegments(final Collection<CExprContext> cexprContexts) {
+    private Collection<ExpressionSegment> getExpressionSegments(final Collection<AExprContext> aExprContexts) {
         Collection<ExpressionSegment> result = new LinkedList<>();
-        for (CExprContext each : cexprContexts) {
+        for (AExprContext each : aExprContexts) {
             result.add((ExpressionSegment) visit(each));
         }
         return result;
@@ -528,13 +528,18 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
         return new LiteralExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
     }
     
-    private ProjectionSegment createAggregationSegment(final FuncApplicationContext ctx, final String aggregationType) {
+    private ProjectionSegment createAggregationSegment(final FuncApplicationContext ctx, final String aggregationType, final Collection<ExpressionSegment> expressionSegments) {
         AggregationType type = AggregationType.valueOf(aggregationType.toUpperCase());
         String innerExpression = ctx.start.getInputStream().getText(new Interval(ctx.LP_().getSymbol().getStartIndex(), ctx.stop.getStopIndex()));
         if (null == ctx.DISTINCT()) {
-            return new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression);
+            AggregationProjectionSegment result = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression);
+            result.getParameters().addAll(expressionSegments);
+            return result;
         }
-        return new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression, getDistinctExpression(ctx));
+        AggregationDistinctProjectionSegment result =
+                new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression, getDistinctExpression(ctx));
+        result.getParameters().addAll(expressionSegments);
+        return result;
     }
     
     private String getDistinctExpression(final FuncApplicationContext ctx) {

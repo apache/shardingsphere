@@ -7,7 +7,7 @@ weight = 4
 
 ```properties
 # sharding-algorithm-name 由用户指定，需要和分片策略中的 sharding-algorithm-name 属性一致
-# type 和 props，请参考分片内置算法：https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/
+# type 和 props，请参考分片内置算法：https://shardingsphere.apache.org/document/current/cn/user-manual/common-config/builtin-algorithm/sharding/
 spring.shardingsphere.rules.sharding.sharding-algorithms.<sharding-algorithm-name>.type=xxx
 spring.shardingsphere.rules.sharding.sharding-algorithms.<sharding-algorithm-name>.props.xxx=xxx
 ```
@@ -16,7 +16,7 @@ spring.shardingsphere.rules.sharding.sharding-algorithms.<sharding-algorithm-nam
 
 ```properties
 # encrypt-algorithm-name 由用户指定，需要和加密规则中的 encryptor-name 属性一致
-# type 和 props，请参考加密内置算法：https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/encrypt/
+# type 和 props，请参考加密内置算法：https://shardingsphere.apache.org/document/current/cn/user-manual/common-config/builtin-algorithm/encrypt/
 spring.shardingsphere.rules.encrypt.encryptors.<encrypt-algorithm-name>.type=xxx
 spring.shardingsphere.rules.encrypt.encryptors.<encrypt-algorithm-name>.props.xxx=xxx
 ```
@@ -25,7 +25,7 @@ spring.shardingsphere.rules.encrypt.encryptors.<encrypt-algorithm-name>.props.xx
 
 ```properties
 # load-balance-algorithm-name 由用户指定，需要和读写分离规则中的 load-balancer-name 属性一致
-# type 和 props，请参考读写分离负载均衡内置算法：https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/load-balance/
+# type 和 props，请参考读写分离负载均衡内置算法：https://shardingsphere.apache.org/document/current/cn/user-manual/common-config/builtin-algorithm/load-balance/
 spring.shardingsphere.rules.readwrite-splitting.load-balancers.<load-balance-algorithm-name>.type=xxx
 spring.shardingsphere.rules.readwrite-splitting.load-balancers.<load-balance-algorithm-name>.props.xxx=xxx
 ```
@@ -34,7 +34,7 @@ spring.shardingsphere.rules.readwrite-splitting.load-balancers.<load-balance-alg
 
 ```properties
 # shadow-algorithm-name 由用户指定，需要和影子库规则中的 shadow-algorithm-names 属性一致
-# type 和 props，请参考影子库内置算法：https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/shadow/
+# type 和 props，请参考影子库内置算法：https://shardingsphere.apache.org/document/current/cn/user-manual/common-config/builtin-algorithm/shadow/
 spring.shardingsphere.rules.shadow.shadow-algorithms.<shadow-algorithm-name>.type=xxx
 spring.shardingsphere.rules.shadow.shadow-algorithms.<shadow-algorithm-name>.props.xxx=xxx
 ```

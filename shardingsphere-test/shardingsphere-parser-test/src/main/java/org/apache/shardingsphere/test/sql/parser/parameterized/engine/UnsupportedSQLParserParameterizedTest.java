@@ -48,11 +48,13 @@ public abstract class UnsupportedSQLParserParameterizedTest {
     }
     
     @Test(expected = Exception.class)
+    // TODO should expect SQLParsingException only
     public final void assertUnsupportedSQL() {
         String sql = SQL_CASES_LOADER.getCaseValue(sqlCaseId, sqlCaseType, Collections.emptyList(), databaseType);
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
         CacheOption cacheOption = new CacheOption(128, 1024L);
         ParseASTNode parseContext = new SQLParserEngine(databaseType, cacheOption).parse(sql, false);
+        // TODO remove SQLStatement sqlStatement =
         SQLStatement sqlStatement = new SQLVisitorEngine(databaseType, "STATEMENT", true, new Properties()).visit(parseContext);
     }
 }

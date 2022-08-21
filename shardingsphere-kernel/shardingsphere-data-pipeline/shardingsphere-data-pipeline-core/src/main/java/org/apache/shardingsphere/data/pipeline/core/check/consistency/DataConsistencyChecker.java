@@ -32,7 +32,6 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -74,10 +73,13 @@ public final class DataConsistencyChecker {
     
     private final TableNameSchemaNameMapping tableNameSchemaNameMapping;
     
-    public DataConsistencyChecker(final MigrationJobConfiguration jobConfig) {
+    private final JobRateLimitAlgorithm readRateLimitAlgorithm;
+    
+    public DataConsistencyChecker(final MigrationJobConfiguration jobConfig, final JobRateLimitAlgorithm readRateLimitAlgorithm) {
         this.jobConfig = jobConfig;
         logicTableNames = jobConfig.splitLogicTableNames();
         tableNameSchemaNameMapping = new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(jobConfig.getSchemaTablesMap()));
+        this.readRateLimitAlgorithm = readRateLimitAlgorithm;
     }
     
     /**
@@ -157,7 +159,6 @@ public final class DataConsistencyChecker {
         PipelineDataSourceConfiguration targetDataSourceConfig = jobConfig.getTarget();
         ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job-" + getJobIdDigest(jobConfig.getJobId()) + "-data-check-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
-        JobRateLimitAlgorithm inputRateLimitAlgorithm = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig).getInputRateLimitAlgorithm();
         Map<String, DataConsistencyContentCheckResult> result = new HashMap<>(logicTableNames.size(), 1);
         try (
                 PipelineDataSourceWrapper sourceDataSource = PipelineDataSourceFactory.newInstance(sourceDataSourceConfig);
@@ -177,8 +178,8 @@ public final class DataConsistencyChecker {
                 Iterator<Object> targetCalculatedResults = calculator.calculate(targetParameter).iterator();
                 boolean contentMatched = true;
                 while (sourceCalculatedResults.hasNext() && targetCalculatedResults.hasNext()) {
-                    if (null != inputRateLimitAlgorithm) {
-                        inputRateLimitAlgorithm.intercept(JobOperationType.SELECT, 1);
+                    if (null != readRateLimitAlgorithm) {
+                        readRateLimitAlgorithm.intercept(JobOperationType.SELECT, 1);
                     }
                     Future<Object> sourceFuture = executor.submit(sourceCalculatedResults::next);
                     Future<Object> targetFuture = executor.submit(targetCalculatedResults::next);

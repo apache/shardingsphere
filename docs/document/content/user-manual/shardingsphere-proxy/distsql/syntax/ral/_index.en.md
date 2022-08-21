@@ -20,20 +20,20 @@ RAL (Resource & Rule Administration Language) responsible for hint, circuit brea
 
 ## Scaling
 
-| Statement                                            | Function                                                          | Example                                  |
-|:---------------------------------------------------- |:----------------------------------------------------------------- |:---------------------------------------- |
-| SHOW SCALING LIST                                    | Query running list                                                | SHOW SCALING LIST                        |
-| SHOW SCALING STATUS jobId                            | Query scaling status, xx: jobId                                   | SHOW SCALING STATUS 1234                 |
-| START SCALING jobId                                  | Start scaling, xx: jobId                                          | START SCALING 1234                       |
-| STOP SCALING jobId                                   | Stop scaling, xx: jobId                                           | STOP SCALING 1234                        |
-| DROP SCALING jobId                                   | Drop scaling, xx: jobId                                           | DROP SCALING 1234                        |
-| RESET SCALING jobId                                  | reset progress, xx: jobId                                         | RESET SCALING 1234                       |
-| CHECK SCALING jobId                                  | Data consistency check with algorithm in `server.yaml`, xx: jobId | CHECK SCALING 1234                       |
-| SHOW SCALING CHECK ALGORITHMS                        | Show available consistency check algorithms                       | SHOW SCALING CHECK ALGORITHMS            |
-| CHECK SCALING jobId (by type(name=algorithmTypeName)?    | Data consistency check with defined algorithm                     | CHECK SCALING 1234 by type(name="DEFAULT") |
-| STOP SCALING SOURCE WRITING jobId                    | The source ShardingSphere data source is discontinued, xx: jobId  | STOP SCALING SOURCE WRITING 1234         |
-| RESTORE SCALING SOURCE WRITING jobId                 | Restore source data source writing, xx: jobId                     | RESTORE SCALING SOURCE WRITING 1234      |
-| APPLY SCALING jobId                                  | Switch to target ShardingSphere metadata, xx: jobId               | APPLY SCALING 1234                       |
+| Statement                                             | Function                                                          | Example                                    |
+|:------------------------------------------------------|:------------------------------------------------------------------|:-------------------------------------------|
+| SHOW MIGRATION LIST                                     | Query running list                                                | SHOW MIGRATION LIST                          |
+| SHOW MIGRATION STATUS jobId                             | Query migration status, xx: jobId                                   | SHOW MIGRATION STATUS 1234                   |
+| START MIGRATION jobId                                   | Start migration, xx: jobId                                          | START MIGRATION 1234                         |
+| STOP MIGRATION jobId                                    | Stop migration, xx: jobId                                           | STOP MIGRATION 1234                          |
+| CLEAN MIGRATION jobId                                   | Clean migration, xx: jobId                                          | CLEAN MIGRATION 1234                         |
+| RESET MIGRATION jobId                                   | reset progress, xx: jobId                                         | RESET MIGRATION 1234                         |
+| CHECK MIGRATION jobId                                   | Data consistency check with algorithm in `server.yaml`, xx: jobId | CHECK MIGRATION 1234                         |
+| SHOW MIGRATION CHECK ALGORITHMS                         | Show available consistency check algorithms                       | SHOW MIGRATION CHECK ALGORITHMS              |
+| CHECK MIGRATION jobId (by type(name=algorithmTypeName)? | Data consistency check with defined algorithm                     | CHECK MIGRATION 1234 by type(name="DEFAULT") |
+| STOP MIGRATION SOURCE WRITING jobId                     | The source ShardingSphere data source is discontinued, xx: jobId  | STOP MIGRATION SOURCE WRITING 1234           |
+| RESTORE MIGRATION SOURCE WRITING jobId                  | Restore source data source writing, xx: jobId                     | RESTORE MIGRATION SOURCE WRITING 1234        |
+| APPLY MIGRATION jobId                                   | Switch to target ShardingSphere metadata, xx: jobId               | APPLY MIGRATION 1234                         |
 
 ## Circuit Breaker
 

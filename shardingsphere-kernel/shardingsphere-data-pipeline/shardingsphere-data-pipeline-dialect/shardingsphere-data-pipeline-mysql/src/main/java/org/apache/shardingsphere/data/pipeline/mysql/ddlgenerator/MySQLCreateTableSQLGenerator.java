@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ddlgenerator;
 
+import org.apache.shardingsphere.data.pipeline.core.exception.CreateTableSQLGenerateException;
 import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGenerator;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -38,7 +38,7 @@ public final class MySQLCreateTableSQLGenerator implements CreateTableSQLGenerat
     private static final String COLUMN_LABEL = "create table";
     
     @Override
-    public Collection<String> generate(final String tableName, final String schemaName, final DataSource dataSource) throws SQLException {
+    public Collection<String> generate(final DataSource dataSource, final String schemaName, final String tableName) throws SQLException {
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement();
@@ -47,7 +47,7 @@ public final class MySQLCreateTableSQLGenerator implements CreateTableSQLGenerat
                 return Collections.singletonList(resultSet.getString(COLUMN_LABEL));
             }
         }
-        throw new ShardingSphereException("Failed to get ddl sql for table %s", tableName);
+        throw new CreateTableSQLGenerateException(tableName);
     }
     
     @Override

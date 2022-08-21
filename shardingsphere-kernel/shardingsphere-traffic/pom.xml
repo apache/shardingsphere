@@ -31,5 +31,6 @@
     <modules>
         <module>shardingsphere-traffic-api</module>
         <module>shardingsphere-traffic-core</module>
+        <module>shardingsphere-traffic-distsql</module>
     </modules>
 </project>

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.integration.container.compose.mode;
 
 import org.apache.shardingsphere.test.integration.container.compose.ComposedContainer;
-import org.apache.shardingsphere.test.integration.container.config.SuiteProxyClusterContainerConfigurationFactory;
+import org.apache.shardingsphere.test.integration.container.config.ProxyClusterContainerConfigurationFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.ITContainers;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.AdapterContainer;
@@ -55,7 +55,7 @@ public final class ClusterComposedContainer implements ComposedContainer {
         // TODO add more version of databases
         storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(parameterizedArray.getDatabaseType(), "", scenario,
                 StorageContainerConfigurationFactory.newInstance(parameterizedArray.getDatabaseType())));
-        AdaptorContainerConfiguration containerConfig = SuiteProxyClusterContainerConfigurationFactory.newInstance(scenario, parameterizedArray.getDatabaseType());
+        AdaptorContainerConfiguration containerConfig = ProxyClusterContainerConfigurationFactory.newInstance(scenario, parameterizedArray.getDatabaseType());
         AdapterContainer adapterContainer = AdapterContainerFactory.newInstance(
                 parameterizedArray.getMode(), parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), storageContainer, scenario, containerConfig);
         if (adapterContainer instanceof DockerITContainer) {

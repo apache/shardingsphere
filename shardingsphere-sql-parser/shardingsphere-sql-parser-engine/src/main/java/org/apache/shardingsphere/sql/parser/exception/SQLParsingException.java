@@ -19,24 +19,15 @@ package org.apache.shardingsphere.sql.parser.exception;
 
 import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatementType;
 
 /**
- * Throw exception when SQL parsing error.
+ * SQL parsing exception.
  */
 public final class SQLParsingException extends ShardingSphereSQLException {
     
     private static final long serialVersionUID = -6408790652103666096L;
     
-    public SQLParsingException() {
-        super(XOpenSQLState.SYNTAX_ERROR, 1235, "You have an error in your SQL syntax");
-    }
-    
     public SQLParsingException(final String sql) {
-        super(XOpenSQLState.SYNTAX_ERROR, 1235, "Unsupported SQL: %s", sql);
-    }
-    
-    public SQLParsingException(final SQLStatementType type) {
-        super(XOpenSQLState.SYNTAX_ERROR, 1235, "Unsupported SQL statement type: `%s`", type.toString());
+        super(XOpenSQLState.SYNTAX_ERROR, 11000, "You have an error in your SQL syntax: %s", sql);
     }
 }

@@ -7,7 +7,7 @@ weight = 4
 
 ```properties
 # sharding-algorithm-name is specified by users and its property should be consistent with that of sharding-algorithm-name in the sharding strategy.
-# type and props, please refer to the built-in sharding algorithm: https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/
+# type and props, please refer to the built-in sharding algorithm: https://shardingsphere.apache.org/document/current/en/user-manual/common-config/builtin-algorithm/sharding/
 spring.shardingsphere.rules.sharding.sharding-algorithms.<sharding-algorithm-name>.type=xxx
 spring.shardingsphere.rules.sharding.sharding-algorithms.<sharding-algorithm-name>.props.xxx=xxx
 ```
@@ -16,7 +16,7 @@ spring.shardingsphere.rules.sharding.sharding-algorithms.<sharding-algorithm-nam
 
 ```properties
 # encrypt-algorithm-name is specified by users, and its property should be consistent with that of encryptor-name in encryption rules. 
-# type and props, please refer to the built-in encryption algorithm: https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-jdbc/builtin-algorithm/encrypt/
+# type and props, please refer to the built-in encryption algorithm: https://shardingsphere.apache.org/document/current/en/user-manual/common-config/builtin-algorithm/encrypt/
 spring.shardingsphere.rules.encrypt.encryptors.<encrypt-algorithm-name>.type=xxx
 spring.shardingsphere.rules.encrypt.encryptors.<encrypt-algorithm-name>.props.xxx=xxx
 ```
@@ -25,7 +25,7 @@ spring.shardingsphere.rules.encrypt.encryptors.<encrypt-algorithm-name>.props.xx
 
 ```properties
 # load-balance-algorithm-name is specified by users, and its property has to be consistent with that of load-balancer-name in read/write splitting rules. 
-# type and props, please refer to the built-in read/write splitting algorithm load balancer: https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-jdbc/builtin-algorithm/load-balance/
+# type and props, please refer to the built-in read/write splitting algorithm load balancer: https://shardingsphere.apache.org/document/current/en/user-manual/common-config/builtin-algorithm/load-balance/
 spring.shardingsphere.rules.readwrite-splitting.load-balancers.<load-balance-algorithm-name>.type=xxx
 spring.shardingsphere.rules.readwrite-splitting.load-balancers.<load-balance-algorithm-name>.props.xxx=xxx
 ```
@@ -34,7 +34,7 @@ spring.shardingsphere.rules.readwrite-splitting.load-balancers.<load-balance-alg
 
 ```properties
 # shadow-algorithm-name is specified by users, and its property has to be consistent with that of shadow-algorithm-names in shadow DB rules. 
-# type and props, please refer to the built-in shadow DB algorithm: https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-jdbc/builtin-algorithm/shadow/
+# type and props, please refer to the built-in shadow DB algorithm: https://shardingsphere.apache.org/document/current/en/user-manual/common-config/builtin-algorithm/shadow/
 spring.shardingsphere.rules.shadow.shadow-algorithms.<shadow-algorithm-name>.type=xxx
 spring.shardingsphere.rules.shadow.shadow-algorithms.<shadow-algorithm-name>.props.xxx=xxx
 ```

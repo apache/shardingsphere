@@ -23,6 +23,10 @@ import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMap
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+
+import javax.sql.DataSource;
+import java.util.Map;
 
 /**
  * Prepare target tables parameter.
@@ -34,19 +38,29 @@ public final class PrepareTargetTablesParameter {
     
     private final JobDataNodeLine tablesFirstDataNodes;
     
-    private final PipelineDataSourceConfiguration dataSourceConfig;
+    private final PipelineDataSourceConfiguration targetDataSourceConfig;
+    
+    private final Map<String, DataSource> sourceDataSourceMap;
     
     private final PipelineDataSourceManager dataSourceManager;
     
+    private final Map<String, String> tableNameMap;
+    
     private final TableNameSchemaNameMapping tableNameSchemaNameMapping;
     
-    public PrepareTargetTablesParameter(@NonNull final String databaseName, @NonNull final PipelineDataSourceConfiguration dataSourceConfig,
-                                        @NonNull final PipelineDataSourceManager dataSourceManager,
-                                        @NonNull final String tablesFirstDataNodes, final TableNameSchemaNameMapping tableNameSchemaNameMapping) {
+    private final ShardingSphereSQLParserEngine sqlParserEngine;
+    
+    public PrepareTargetTablesParameter(@NonNull final String databaseName, @NonNull final PipelineDataSourceConfiguration targetDataSourceConfig,
+                                        @NonNull final Map<String, DataSource> sourceDataSourceMap, @NonNull final PipelineDataSourceManager dataSourceManager,
+                                        @NonNull final JobDataNodeLine tablesFirstDataNodes, final Map<String, String> tableNameMap, final TableNameSchemaNameMapping tableNameSchemaNameMapping,
+                                        @NonNull final ShardingSphereSQLParserEngine sqlParserEngine) {
         this.databaseName = databaseName;
-        this.dataSourceConfig = dataSourceConfig;
-        this.tablesFirstDataNodes = JobDataNodeLine.unmarshal(tablesFirstDataNodes);
+        this.targetDataSourceConfig = targetDataSourceConfig;
+        this.sourceDataSourceMap = sourceDataSourceMap;
+        this.tablesFirstDataNodes = tablesFirstDataNodes;
         this.dataSourceManager = dataSourceManager;
+        this.tableNameMap = tableNameMap;
         this.tableNameSchemaNameMapping = tableNameSchemaNameMapping;
+        this.sqlParserEngine = sqlParserEngine;
     }
 }
