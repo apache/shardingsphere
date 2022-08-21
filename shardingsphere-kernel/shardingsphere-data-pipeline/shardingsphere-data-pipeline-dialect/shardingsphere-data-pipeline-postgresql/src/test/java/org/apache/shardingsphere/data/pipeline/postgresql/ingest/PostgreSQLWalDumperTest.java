@@ -37,6 +37,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.postgresql.jdbc.PgConnection;
 import org.postgresql.replication.LogSequenceNumber;
@@ -51,6 +52,9 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -103,6 +107,7 @@ public final class PostgreSQLWalDumperTest {
         }
         PipelineDataSourceConfiguration dataSourceConfig = new StandardPipelineDataSourceConfiguration(jdbcUrl, username, password);
         DumperConfiguration result = new DumperConfiguration();
+        result.setJobId("0101123455F45SCALING8898");
         result.setDataSourceConfig(dataSourceConfig);
         result.setTableNameMap(Collections.singletonMap(new ActualTableName("t_order_0"), new LogicTableName("t_order")));
         result.setTableNameSchemaNameMapping(new TableNameSchemaNameMapping(Collections.emptyMap()));
@@ -116,13 +121,16 @@ public final class PostgreSQLWalDumperTest {
             ReflectionUtil.setFieldValue(walDumper, "logicalReplication", logicalReplication);
             when(logicalReplication.createConnection(dataSourceConfig)).thenReturn(pgConnection);
             when(pgConnection.unwrap(PgConnection.class)).thenReturn(pgConnection);
-            when(pgConnection.getCatalog()).thenReturn("test_db");
-            when(logicalReplication.createReplicationStream(pgConnection, PostgreSQLPositionInitializer.getUniqueSlotName(pgConnection, ""), position.getLogSequenceNumber()))
-                    .thenReturn(pgReplicationStream);
-            ByteBuffer data = ByteBuffer.wrap("table public.t_order_0: DELETE: order_id[integer]:1".getBytes());
-            when(pgReplicationStream.readPending()).thenReturn(null).thenReturn(data).thenThrow(new SQLException(""));
-            when(pgReplicationStream.getLastReceiveLSN()).thenReturn(LogSequenceNumber.valueOf(101L));
-            walDumper.start();
+            try (MockedStatic<PostgreSQLPositionInitializer> positionInitializer = mockStatic(PostgreSQLPositionInitializer.class)) {
+                positionInitializer.when(() -> PostgreSQLPositionInitializer.getUniqueSlotName(eq(pgConnection), anyString())).thenReturn("0101123455F45SCALING8898");
+                when(logicalReplication.createReplicationStream(pgConnection, PostgreSQLPositionInitializer.getUniqueSlotName(pgConnection, ""), position.getLogSequenceNumber()))
+                        .thenReturn(pgReplicationStream);
+                ByteBuffer data = ByteBuffer.wrap("table public.t_order_0: DELETE: order_id[integer]:1".getBytes());
+                when(pgReplicationStream.readPending()).thenReturn(null).thenReturn(data).thenThrow(new SQLException(""));
+                when(pgReplicationStream.getLastReceiveLSN()).thenReturn(LogSequenceNumber.valueOf(101L));
+                // TODO NPE occurred here
+                walDumper.start();
+            }
         } catch (final IngestException ignored) {
         }
         assertThat(channel.fetchRecords(100, 0).size(), is(1));
