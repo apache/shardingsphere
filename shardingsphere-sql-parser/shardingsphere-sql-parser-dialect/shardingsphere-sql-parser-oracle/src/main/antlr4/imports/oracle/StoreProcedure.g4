@@ -28,8 +28,28 @@ createProcedure
     ;
 
 plsqlProcedureSource
-    : (schemaName DOT)? procedureName ( LP_ parameterDeclaration ( COMMA_ parameterDeclaration )* RP_)? sharingClause?
+    : (schemaName DOT_)? procedureName ( LP_ parameterDeclaration ( COMMA_ parameterDeclaration )* RP_)? sharingClause?
     ((defaultCollationClause | invokerRightsClause | accessibleByClause)*)? (IS | AS) (callSpec | declareSection? body) SEMI_
+    ;
+
+body
+    : BEGIN statement+ (EXCEPTION (exceptionHandler)+)? END (identifier)? SEMI_
+    ;
+
+//need add more statement type according to the doc
+statement
+    : ( SIGNED_LEFT_SHIFT_ label SIGNED_RIGHT_SHIFT_ ( SIGNED_LEFT_SHIFT_ label SIGNED_RIGHT_SHIFT_ ) *)?
+        ( select
+        | update
+        | delete
+        | insert
+        | lockTable
+        | merge
+        )
+    ;
+
+exceptionHandler
+    : WHEN ( (typeName (OR typeName)* )| OTHERS ) THEN statement+
     ;
 
 declareSection
@@ -79,7 +99,7 @@ collectionVariableDecl
       (
       typeName ( COLON_ EQ_ ( qualifiedExpression | functionCall | variableName ) )?
       | typeName ( COLON_ EQ_  ( collectionConstructor | variableName ) )?
-      | typeName COMA_ TYPE
+      | typeName MOD_ TYPE
       )
       SEMI_
     ;
@@ -141,7 +161,7 @@ typeDefinition
     ;
 
 recordTypeDefinition
-    : TYPE typeName IS RECORD  LP_ fieldDefinition ( COMMA_ fieldDefinition )* RP_ SEMI
+    : TYPE typeName IS RECORD  LP_ fieldDefinition ( COMMA_ fieldDefinition )* RP_ SEMI_
     ;
 
 fieldDefinition
@@ -160,11 +180,11 @@ subtypeDefinition
     ;
 
 constraint
-    : (INTEGER_ COMMA_ INTEGER_) | (RANGE NEMBER_ DOT_ DOT_ NEMBER_)
+    : (INTEGER_ COMMA_ INTEGER_) | (RANGE NUMBER_ DOT_ DOT_ NUMBER_)
     ;
 
 collectionTypeDefinition
-    : TYPE typeName IS ( assocArrayTypeDef | varrayTypeDef | nestedTableTypeDef ) SEMI
+    : TYPE typeName IS ( assocArrayTypeDef | varrayTypeDef | nestedTableTypeDef ) SEMI_
     ;
 
 varrayTypeDef

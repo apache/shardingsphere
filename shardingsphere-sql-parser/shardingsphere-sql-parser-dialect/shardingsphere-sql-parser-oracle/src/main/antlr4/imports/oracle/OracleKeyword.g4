@@ -723,6 +723,10 @@ VARCHAR2
     : V A R C H A R [2]
     ;
 
+STRING
+    : S T R I N G
+    ;
+
 NVARCHAR2
     : N V A R C H A R [2]
     ;
