@@ -53,9 +53,6 @@ execute
     | alterSQLParserRule
     | showTransactionRule
     | alterTransactionRule
-    | dropTrafficRule
-    | createTrafficRule
-    | alterTrafficRule
     | exportDatabaseConfiguration
     | showRulesUsedResource
     | importDatabaseConfiguration

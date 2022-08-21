@@ -15,21 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
+package org.apache.shardingsphere.traffic.distsql.handler.fixture;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.TrafficRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
+import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 
-import java.util.Collection;
+import java.util.List;
+import java.util.Properties;
 
-/**
- * Create traffic rule statement.
- */
-@RequiredArgsConstructor
 @Getter
-public final class CreateTrafficRuleStatement extends UpdatableRALStatement {
+public final class DistSQLTrafficLoadBalanceAlgorithmFixture implements TrafficLoadBalanceAlgorithm {
     
-    private final Collection<TrafficRuleSegment> segments;
+    private Properties props;
+    
+    @Override
+    public void init(final Properties props) {
+        this.props = props;
+    }
+    
+    @Override
+    public String getType() {
+        return "DISTSQL.FIXTURE";
+    }
+    
+    @Override
+    public InstanceMetaData getInstanceId(final String name, final List<InstanceMetaData> instances) {
+        return null;
+    }
 }

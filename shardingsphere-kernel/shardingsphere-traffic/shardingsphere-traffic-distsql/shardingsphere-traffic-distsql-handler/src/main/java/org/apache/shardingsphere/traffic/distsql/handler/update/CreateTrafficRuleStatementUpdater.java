@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
+package org.apache.shardingsphere.traffic.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.parser.segment.TrafficRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.CreateTrafficRuleStatement;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.distsql.update.GlobalRuleRALUpdater;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.convert.TrafficRuleConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
+import org.apache.shardingsphere.traffic.distsql.handler.convert.TrafficRuleConverter;
+import org.apache.shardingsphere.traffic.distsql.parser.segment.TrafficRuleSegment;
+import org.apache.shardingsphere.traffic.distsql.parser.statement.updatable.CreateTrafficRuleStatement;
 import org.apache.shardingsphere.traffic.factory.TrafficAlgorithmFactory;
 import org.apache.shardingsphere.traffic.factory.TrafficLoadBalanceAlgorithmFactory;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
@@ -43,41 +42,41 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Create traffic rule handler.
+ * Create traffic rule statement updater.
  */
-public final class CreateTrafficRuleHandler extends UpdatableRALBackendHandler<CreateTrafficRuleStatement> {
+public final class CreateTrafficRuleStatementUpdater implements GlobalRuleRALUpdater {
     
     @Override
-    protected void update(final ContextManager contextManager) throws DistSQLException {
-        check();
-        replaceNewRule();
-        persistNewRuleConfigurations();
+    public void executeUpdate(final ShardingSphereRuleMetaData ruleMetaData, final SQLStatement sqlStatement) throws DistSQLException {
+        CreateTrafficRuleStatement statement = (CreateTrafficRuleStatement) sqlStatement;
+        check(ruleMetaData, statement);
+        replaceNewRule(ruleMetaData, statement);
     }
     
-    private void check() throws DistSQLException {
-        checkRuleNames();
-        checkAlgorithmNames();
+    private void check(final ShardingSphereRuleMetaData ruleMetaData, final CreateTrafficRuleStatement sqlStatement) throws DistSQLException {
+        checkRuleNames(ruleMetaData, sqlStatement);
+        checkAlgorithmNames(sqlStatement);
     }
     
-    private void checkRuleNames() throws DistSQLException {
-        Collection<String> inUsedRuleNames = getInUsedRuleNames();
+    private void checkRuleNames(final ShardingSphereRuleMetaData ruleMetaData, final CreateTrafficRuleStatement sqlStatement) throws DistSQLException {
+        Collection<String> inUsedRuleNames = getInUsedRuleNames(ruleMetaData, sqlStatement);
         DistSQLException.predictionThrow(inUsedRuleNames.isEmpty(), () -> new DuplicateRuleException("Traffic", inUsedRuleNames));
     }
     
-    private Collection<String> getInUsedRuleNames() {
-        TrafficRule currentRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
+    private Collection<String> getInUsedRuleNames(final ShardingSphereRuleMetaData ruleMetaData, final CreateTrafficRuleStatement sqlStatement) {
+        TrafficRule currentRule = ruleMetaData.getSingleRule(TrafficRule.class);
         Collection<String> currentRuleNames = currentRule.getStrategyRules().stream().map(TrafficStrategyRule::getName).collect(Collectors.toSet());
-        return getSqlStatement().getSegments().stream().map(TrafficRuleSegment::getName).filter(currentRuleNames::contains).collect(Collectors.toSet());
+        return sqlStatement.getSegments().stream().map(TrafficRuleSegment::getName).filter(currentRuleNames::contains).collect(Collectors.toSet());
     }
     
-    private void checkAlgorithmNames() throws DistSQLException {
-        Collection<String> invalidAlgorithmNames = getInvalidAlgorithmNames();
+    private void checkAlgorithmNames(final CreateTrafficRuleStatement sqlStatement) throws DistSQLException {
+        Collection<String> invalidAlgorithmNames = getInvalidAlgorithmNames(sqlStatement);
         DistSQLException.predictionThrow(invalidAlgorithmNames.isEmpty(), () -> new InvalidAlgorithmConfigurationException("Traffic", invalidAlgorithmNames));
     }
     
-    private Collection<String> getInvalidAlgorithmNames() {
+    private Collection<String> getInvalidAlgorithmNames(final CreateTrafficRuleStatement sqlStatement) {
         Collection<String> result = new LinkedList<>();
-        for (TrafficRuleSegment each : getSqlStatement().getSegments()) {
+        for (TrafficRuleSegment each : sqlStatement.getSegments()) {
             if (!TrafficAlgorithmFactory.contains(each.getAlgorithm().getName())) {
                 result.add(each.getAlgorithm().getName());
             }
@@ -88,19 +87,18 @@ public final class CreateTrafficRuleHandler extends UpdatableRALBackendHandler<C
         return result;
     }
     
-    private void replaceNewRule() {
-        TrafficRuleConfiguration toBeAlteredRuleConfig = createToBeAlteredRuleConfiguration();
-        Collection<ShardingSphereRule> globalRules = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules();
+    private void replaceNewRule(final ShardingSphereRuleMetaData ruleMetaData, final CreateTrafficRuleStatement sqlStatement) {
+        TrafficRuleConfiguration toBeAlteredRuleConfig = createToBeAlteredRuleConfiguration(ruleMetaData, sqlStatement);
+        Collection<ShardingSphereRule> globalRules = ruleMetaData.getRules();
         TrafficRule trafficRule = new TrafficRule(toBeAlteredRuleConfig);
         globalRules.removeIf(each -> each instanceof TrafficRule);
         globalRules.add(trafficRule);
     }
     
-    private TrafficRuleConfiguration createToBeAlteredRuleConfiguration() {
+    private TrafficRuleConfiguration createToBeAlteredRuleConfiguration(final ShardingSphereRuleMetaData ruleMetaData, final CreateTrafficRuleStatement sqlStatement) {
         TrafficRuleConfiguration result = new TrafficRuleConfiguration();
-        TrafficRuleConfiguration configFromSQLStatement = TrafficRuleConverter.convert(getSqlStatement().getSegments());
-        TrafficRuleConfiguration currentConfig = ProxyContext
-                .getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class).getConfiguration();
+        TrafficRuleConfiguration configFromSQLStatement = TrafficRuleConverter.convert(sqlStatement.getSegments());
+        TrafficRuleConfiguration currentConfig = ruleMetaData.getSingleRule(TrafficRule.class).getConfiguration();
         result.getTrafficStrategies().addAll(createToBeAlteredStrategyConfigurations(currentConfig, configFromSQLStatement));
         result.getTrafficAlgorithms().putAll(createToBeAlteredTrafficAlgorithms(currentConfig, configFromSQLStatement));
         result.getLoadBalancers().putAll(createToBeAlteredLoadBalancers(currentConfig, configFromSQLStatement));
@@ -125,8 +123,8 @@ public final class CreateTrafficRuleHandler extends UpdatableRALBackendHandler<C
         return result;
     }
     
-    private void persistNewRuleConfigurations() {
-        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        metaDataContexts.getPersistService().getGlobalRuleService().persist(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), true);
+    @Override
+    public String getType() {
+        return CreateTrafficRuleStatement.class.getName();
     }
 }

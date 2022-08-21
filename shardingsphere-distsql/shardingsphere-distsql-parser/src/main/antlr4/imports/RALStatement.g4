@@ -83,40 +83,12 @@ showModeInfo
     : SHOW MODE INFO
     ;
 
-createTrafficRule
-    : CREATE TRAFFIC RULE trafficRuleDefinition (COMMA trafficRuleDefinition)* 
-    ;
-
-alterTrafficRule
-    : ALTER TRAFFIC RULE trafficRuleDefinition (COMMA trafficRuleDefinition)* 
-    ;
-
-dropTrafficRule
-    : DROP TRAFFIC RULE ifExists? ruleName (COMMA ruleName)*
-    ;
-
 labelInstance
     : (LABEL | RELABEL) INSTANCE instanceId WITH label (COMMA label)*
     ;
 
 unlabelInstance
     : UNLABEL INSTANCE instanceId (WITH label (COMMA label)*)?
-    ;
-
-trafficRuleDefinition
-    : ruleName LP (labelDefinition COMMA)? trafficAlgorithmDefinition (COMMA loadBalancerDefinition)? RP
-    ;
-
-labelDefinition
-    : LABELS LP label (COMMA label)* RP
-    ;
-
-trafficAlgorithmDefinition
-    : TRAFFIC_ALGORITHM LP algorithmDefinition RP 
-    ;
-
-loadBalancerDefinition
-    : LOAD_BALANCER LP algorithmDefinition RP
     ;
 
 exportDatabaseConfiguration
@@ -255,20 +227,12 @@ concurrencyLevel
     : INT
     ;
 
-ruleName
-    : IDENTIFIER
-    ;
-
 label
     : IDENTIFIER
     ;
 
 intValue
     : INT
-    ;
-
-ifExists
-    : IF EXISTS
     ;
 
 prepareDistSQL

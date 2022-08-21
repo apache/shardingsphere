@@ -15,70 +15,21 @@
  * limitations under the License.
  */
 
-lexer grammar Keyword;
+package org.apache.shardingsphere.traffic.distsql.parser.statement.updatable;
 
-import Alphabet;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableGlobalRuleRALStatement;
+import org.apache.shardingsphere.traffic.distsql.parser.segment.TrafficRuleSegment;
 
-WS
-    : [ \t\r\n] + ->skip
-    ;
+import java.util.Collection;
 
-SHOW
-    : S H O W
-    ;
-
-TRAFFIC
-    : T R A F F I C
-    ;
-
-RULES
-    : R U L E S
-    ;
-
-RULE
-    : R U L E
-    ;
-
-CREATE
-    : C R E A T E
-    ;
-
-PROPERTIES
-    : P R O P E R T I E S
-    ;
-
-LABELS
-    : L A B E L S
-    ;
-
-TRAFFIC_ALGORITHM
-    : T R A F F I C UL_ A L G O R I T H M
-    ;
-
-TYPE
-    : T Y P E
-    ;
-
-NAME
-    : N A M E
-    ;
-
-LOAD_BALANCER
-    : L O A D UL_ B A L A N C E R
-    ;
-
-ALTER
-    : A L T E R
-    ;
-
-DROP
-    : D R O P
-    ;
-
-IF  
-    : I F
-    ;
-
-EXISTS
-    : E X I S T S
-    ;
+/**
+ * Create traffic rule statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class CreateTrafficRuleStatement extends UpdatableGlobalRuleRALStatement {
+    
+    private final Collection<TrafficRuleSegment> segments;
+}

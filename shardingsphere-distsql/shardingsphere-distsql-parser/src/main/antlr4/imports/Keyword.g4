@@ -239,10 +239,6 @@ COUNT
     : C O U N T
     ;
 
-TRAFFIC
-    : T R A F F I C
-    ;
-
 LABEL
     : L A B E L
     ;
@@ -257,14 +253,6 @@ UNLABEL
 
 LABELS
     : L A B E L S
-    ;
-
-TRAFFIC_ALGORITHM
-    : T R A F F I C UL_ A L G O R I T H M
-    ;
-
-LOAD_BALANCER
-    : L O A D UL_ B A L A N C E R
     ;
 
 EXPORT

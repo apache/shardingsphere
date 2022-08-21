@@ -15,70 +15,27 @@
  * limitations under the License.
  */
 
-lexer grammar Keyword;
+package org.apache.shardingsphere.traffic.distsql.parser.segment;
 
-import Alphabet;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
-WS
-    : [ \t\r\n] + ->skip
-    ;
+import java.util.Collection;
 
-SHOW
-    : S H O W
-    ;
-
-TRAFFIC
-    : T R A F F I C
-    ;
-
-RULES
-    : R U L E S
-    ;
-
-RULE
-    : R U L E
-    ;
-
-CREATE
-    : C R E A T E
-    ;
-
-PROPERTIES
-    : P R O P E R T I E S
-    ;
-
-LABELS
-    : L A B E L S
-    ;
-
-TRAFFIC_ALGORITHM
-    : T R A F F I C UL_ A L G O R I T H M
-    ;
-
-TYPE
-    : T Y P E
-    ;
-
-NAME
-    : N A M E
-    ;
-
-LOAD_BALANCER
-    : L O A D UL_ B A L A N C E R
-    ;
-
-ALTER
-    : A L T E R
-    ;
-
-DROP
-    : D R O P
-    ;
-
-IF  
-    : I F
-    ;
-
-EXISTS
-    : E X I S T S
-    ;
+/**
+ * Traffic rule segment.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class TrafficRuleSegment implements ASTNode {
+    
+    private final String name;
+    
+    private final Collection<String> labels;
+    
+    private final AlgorithmSegment algorithm;
+    
+    private final AlgorithmSegment loadBalancer;
+}

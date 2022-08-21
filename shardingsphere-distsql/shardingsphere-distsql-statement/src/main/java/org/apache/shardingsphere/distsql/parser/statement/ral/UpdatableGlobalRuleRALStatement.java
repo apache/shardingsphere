@@ -15,22 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
-
-import java.util.Collection;
+package org.apache.shardingsphere.distsql.parser.statement.ral;
 
 /**
- * Drop traffic rule statement.
+ * Updatable RAL statement for global rule.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DropTrafficRuleStatement extends UpdatableRALStatement {
-    
-    private final boolean ifExists;
-    
-    private final Collection<String> ruleNames;
+public abstract class UpdatableGlobalRuleRALStatement extends UpdatableRALStatement {
 }
