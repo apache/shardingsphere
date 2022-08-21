@@ -15,30 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config;
+package org.apache.shardingsphere.test.integration.env.container.atomic.constants;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.util.Collections;
-import java.util.Map;
-
 /**
- * Proxy cluster container configuration factory.
+ * Proxy container constants.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ProxyClusterContainerConfigurationFactory {
+public class ProxyContainerConstants {
     
-    /**
-     * Create new instance of adaptor container configuration.
-     *
-     * @return created instance
-     */
-    public static AdaptorContainerConfiguration newInstance() {
-        return new AdaptorContainerConfiguration("", getMountedResources());
-    }
+    public static final String USERNAME = "proxy";
     
-    private static Map<String, String> getMountedResources() {
-        return Collections.singletonMap("/env/log/logback.xml", "/opt/shardingsphere-proxy/conf/logback.xml");
-    }
+    public static final String PASSWORD = "Proxy@123";
+    
+    public static final String AGENT_HOME_IN_CONTAINER = "/usr/local/shardingsphere-agent";
 }

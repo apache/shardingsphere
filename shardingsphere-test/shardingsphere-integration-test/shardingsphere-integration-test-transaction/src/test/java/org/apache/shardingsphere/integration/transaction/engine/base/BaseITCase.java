@@ -132,7 +132,7 @@ public abstract class BaseITCase {
             Map<String, DataSource> actualDataSourceMap = databaseContainer.getActualDataSourceMap();
             actualDataSourceMap.put("ds_0", createDataSource(databaseContainer, DS_0));
             actualDataSourceMap.put("ds_1", createDataSource(databaseContainer, DS_1));
-            dataSource = new JDBCDataSource(dockerComposedContainer);
+            dataSource = new JdbcDataSource(dockerComposedContainer);
         }
     }
     

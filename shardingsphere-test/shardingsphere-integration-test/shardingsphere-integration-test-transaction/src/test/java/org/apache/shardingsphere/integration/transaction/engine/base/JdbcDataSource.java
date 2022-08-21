@@ -27,11 +27,11 @@ import java.sql.SQLException;
  * JDBC data source.
  */
 @Slf4j
-public final class JDBCDataSource extends AutoDataSource {
+public final class JdbcDataSource extends AutoDataSource {
     
     private final DockerComposedContainer composedContainer;
     
-    public JDBCDataSource(final DockerComposedContainer composedContainer) {
+    public JdbcDataSource(final DockerComposedContainer composedContainer) {
         this.composedContainer = composedContainer;
     }
     

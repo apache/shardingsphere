@@ -48,7 +48,7 @@ public abstract class BaseTransactionITCase extends BaseITCase {
         if (isProxyAdapter(parameterized)) {
             initProxyConfig();
         } else {
-            initJDBCConfig();
+            initJdbcConfig();
         }
     }
     
@@ -60,7 +60,7 @@ public abstract class BaseTransactionITCase extends BaseITCase {
         createTables();
     }
     
-    private void initJDBCConfig() throws SQLException {
+    private void initJdbcConfig() throws SQLException {
         createTables();
     }
     

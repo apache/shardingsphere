@@ -38,6 +38,7 @@ import org.apache.shardingsphere.integration.data.pipeline.framework.container.c
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.NativeComposedContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.integration.data.pipeline.framework.watcher.ScalingWatcher;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
@@ -146,7 +147,7 @@ public abstract class BaseITCase {
             defaultDatabaseName = "postgres";
         }
         String jdbcUrl = composedContainer.getProxyJdbcUrl(defaultDatabaseName);
-        try (Connection connection = DriverManager.getConnection(jdbcUrl, "proxy", "Proxy@123")) {
+        try (Connection connection = DriverManager.getConnection(jdbcUrl, ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD)) {
             if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NATIVE) {
                 try {
                     executeWithLog(connection, "DROP DATABASE sharding_db");
@@ -165,8 +166,8 @@ public abstract class BaseITCase {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(getDatabaseType()));
         result.setJdbcUrl(composedContainer.getProxyJdbcUrl(databaseName));
-        result.setUsername("proxy");
-        result.setPassword("Proxy@123");
+        result.setUsername(ProxyContainerConstants.USERNAME);
+        result.setPassword(ProxyContainerConstants.PASSWORD);
         result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return result;
@@ -191,12 +192,12 @@ public abstract class BaseITCase {
     protected void addSourceResource() {
         // TODO if mysql can append database firstly, they can be combined
         if (databaseType instanceof MySQLDatabaseType) {
-            try (Connection connection = DriverManager.getConnection(getComposedContainer().getProxyJdbcUrl(""), "proxy", "Proxy@123")) {
+            try (Connection connection = DriverManager.getConnection(getComposedContainer().getProxyJdbcUrl(""), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD)) {
                 connection.createStatement().execute("USE sharding_db");
                 addSourceResource0(connection);
             }
         } else {
-            try (Connection connection = DriverManager.getConnection(getComposedContainer().getProxyJdbcUrl("sharding_db"), "proxy", "Proxy@123")) {
+            try (Connection connection = DriverManager.getConnection(getComposedContainer().getProxyJdbcUrl("sharding_db"), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD)) {
                 addSourceResource0(connection);
             }
         }
