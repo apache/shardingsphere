@@ -20,7 +20,7 @@ package org.apache.shardingsphere.example.extension.spibased.sharding.raw.jdbc.c
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -54,8 +54,8 @@ public final class SPIBasedShardingRawJavaConfiguration implements ExampleConfig
         result.getBindingTableGroups().add("t_order, t_order_item"); 
         result.getBroadcastTables().add("t_address");
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "spi_based"));
-        result.getShardingAlgorithms().put("spi_based", new ShardingSphereAlgorithmConfiguration("SPI_BASED", new Properties()));
-        result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", new Properties()));
+        result.getShardingAlgorithms().put("spi_based", new AlgorithmConfiguration("SPI_BASED", new Properties()));
+        result.getKeyGenerators().put("snowflake", new AlgorithmConfiguration("SNOWFLAKE", new Properties()));
         return result;
     }
     
