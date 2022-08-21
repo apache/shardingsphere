@@ -989,7 +989,7 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitAlterTextSearchConfiguration(final AlterTextSearchConfigurationContext ctx) {
         return new PostgreSQLAlterTextSearchStatement();
     }
-
+    
     @Override
     public ASTNode visitAlterTextSearchDictionary(final AlterTextSearchDictionaryContext ctx) {
         return new PostgreSQLAlterTextSearchStatement();
