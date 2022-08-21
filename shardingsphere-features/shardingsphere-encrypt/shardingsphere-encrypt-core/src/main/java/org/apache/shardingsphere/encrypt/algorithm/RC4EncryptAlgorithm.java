@@ -19,9 +19,9 @@ package org.apache.shardingsphere.encrypt.algorithm;
 
 import lombok.Getter;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.shardingsphere.encrypt.exception.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -52,9 +52,9 @@ public final class RC4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
         setKey(props.getProperty(RC4_KEY, "").getBytes(StandardCharsets.UTF_8));
     }
     
-    private void setKey(final byte[] key) throws ShardingSphereException {
+    private void setKey(final byte[] key) {
         if (!(key.length >= KEY_MIN_LENGTH && key.length < SBOX_LENGTH)) {
-            throw new ShardingSphereException("Key length has to be between " + KEY_MIN_LENGTH + " and " + (SBOX_LENGTH - 1));
+            throw new EncryptAlgorithmInitializationException("RC4", "Key length has to be between " + KEY_MIN_LENGTH + " and " + (SBOX_LENGTH - 1));
         }
         this.key = key;
     }
