@@ -80,9 +80,11 @@ public final class MigrationJobPreparer {
         }
         // TODO check metadata
         try {
-            initIncrementalTasks(jobItemContext);
-            if (jobItemContext.isStopping()) {
-                throw new PipelineIgnoredException("Job stopping, jobId=" + jobItemContext.getJobId());
+            if (PipelineJobPreparerUtils.isIncrementalSupported(jobItemContext.getJobConfig().getSourceDatabaseType())) {
+                initIncrementalTasks(jobItemContext);
+                if (jobItemContext.isStopping()) {
+                    throw new PipelineIgnoredException("Job stopping, jobId=" + jobItemContext.getJobId());
+                }
             }
             initInventoryTasks(jobItemContext);
             log.info("prepare, jobId={}, shardingItem={}, inventoryTasks={}, incrementalTasks={}",
@@ -123,7 +125,10 @@ public final class MigrationJobPreparer {
     }
     
     private void prepareAndCheckTarget(final MigrationJobItemContext jobItemContext) throws SQLException {
-        prepareTarget(jobItemContext);
+        if (jobItemContext.isSourceTargetDatabaseTheSame()) {
+            log.info("prepare target ...");
+            prepareTarget(jobItemContext);
+        }
         InventoryIncrementalJobItemProgress initProgress = jobItemContext.getInitProgress();
         if (null == initProgress || initProgress.getStatus() == JobStatus.PREPARING_FAILURE) {
             PipelineDataSourceWrapper targetDataSource = jobItemContext.getDataSourceManager().getDataSource(jobItemContext.getTaskConfig().getImporterConfig().getDataSourceConfig());

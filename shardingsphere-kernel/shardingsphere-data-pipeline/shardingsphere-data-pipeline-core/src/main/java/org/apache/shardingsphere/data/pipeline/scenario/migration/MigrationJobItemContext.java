@@ -113,4 +113,13 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
     public PipelineTableMetaDataLoader getSourceMetaDataLoader() {
         return sourceMetaDataLoaderLazyInitializer.get();
     }
+    
+    /**
+     * Is source and target database the same or not.
+     *
+     * @return true if source and target database the same, otherwise false
+     */
+    public boolean isSourceTargetDatabaseTheSame() {
+        return jobConfig.getSourceDatabaseType().equalsIgnoreCase(jobConfig.getTargetDatabaseType());
+    }
 }
