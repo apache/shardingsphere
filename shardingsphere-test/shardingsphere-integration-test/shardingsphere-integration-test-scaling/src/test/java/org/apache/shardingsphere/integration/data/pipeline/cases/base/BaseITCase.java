@@ -38,6 +38,7 @@ import org.apache.shardingsphere.integration.data.pipeline.framework.container.c
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.NativeComposedContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.integration.data.pipeline.framework.watcher.ScalingWatcher;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
@@ -146,7 +147,7 @@ public abstract class BaseITCase {
             defaultDatabaseName = "postgres";
         }
         String jdbcUrl = composedContainer.getProxyJdbcUrl(defaultDatabaseName);
-        try (Connection connection = DriverManager.getConnection(jdbcUrl, "proxy", "Proxy@123")) {
+        try (Connection connection = DriverManager.getConnection(jdbcUrl, ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD)) {
             if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NATIVE) {
                 try {
                     executeWithLog(connection, "DROP DATABASE sharding_db");
@@ -165,8 +166,8 @@ public abstract class BaseITCase {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(getDatabaseType()));
         result.setJdbcUrl(composedContainer.getProxyJdbcUrl(databaseName));
-        result.setUsername("proxy");
-        result.setPassword("Proxy@123");
+        result.setUsername(ProxyContainerConstants.USERNAME);
+        result.setPassword(ProxyContainerConstants.PASSWORD);
         result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return result;
@@ -191,12 +192,12 @@ public abstract class BaseITCase {
     protected void addSourceResource() {
         // TODO if mysql can append database firstly, they can be combined
         if (databaseType instanceof MySQLDatabaseType) {
-            try (Connection connection = DriverManager.getConnection(getComposedContainer().getProxyJdbcUrl(""), "proxy", "Proxy@123")) {
+            try (Connection connection = DriverManager.getConnection(getComposedContainer().getProxyJdbcUrl(""), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD)) {
                 connection.createStatement().execute("USE sharding_db");
                 addSourceResource0(connection);
             }
         } else {
-            try (Connection connection = DriverManager.getConnection(getComposedContainer().getProxyJdbcUrl("sharding_db"), "proxy", "Proxy@123")) {
+            try (Connection connection = DriverManager.getConnection(getComposedContainer().getProxyJdbcUrl("sharding_db"), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD)) {
                 addSourceResource0(connection);
             }
         }
@@ -254,13 +255,13 @@ public abstract class BaseITCase {
     protected void createScalingRule() {
         if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NATIVE) {
             try {
-                List<Map<String, Object>> scalingList = jdbcTemplate.queryForList("SHOW SCALING LIST");
+                List<Map<String, Object>> scalingList = jdbcTemplate.queryForList("SHOW MIGRATION LIST");
                 for (Map<String, Object> each : scalingList) {
                     String id = each.get("id").toString();
-                    executeWithLog(String.format("CLEAN SCALING '%s'", id), 0);
+                    executeWithLog(String.format("CLEAN MIGRATION '%s'", id), 0);
                 }
             } catch (final DataAccessException ex) {
-                log.error("Failed to show scaling list. {}", ex.getMessage());
+                log.error("Failed to show migration list. {}", ex.getMessage());
             }
         }
         executeWithLog("CREATE SHARDING SCALING RULE scaling_manual (INPUT(SHARDING_SIZE=1000), DATA_CONSISTENCY_CHECKER(TYPE(NAME='DATA_MATCH')))");
@@ -321,20 +322,20 @@ public abstract class BaseITCase {
     }
     
     protected void stopScalingSourceWriting(final String jobId) {
-        executeWithLog(String.format("STOP SCALING SOURCE WRITING '%s'", jobId));
+        executeWithLog(String.format("STOP MIGRATION SOURCE WRITING '%s'", jobId));
     }
     
     protected void stopScaling(final String jobId) {
-        executeWithLog(String.format("STOP SCALING '%s'", jobId), 5);
+        executeWithLog(String.format("STOP MIGRATION '%s'", jobId), 5);
     }
     
     protected void startScaling(final String jobId) {
-        executeWithLog(String.format("START SCALING '%s'", jobId), 10);
+        executeWithLog(String.format("START MIGRATION '%s'", jobId), 10);
     }
     
     protected void applyScaling(final String jobId) {
         assertBeforeApplyScalingMetadataCorrectly();
-        executeWithLog(String.format("APPLY SCALING '%s'", jobId));
+        executeWithLog(String.format("APPLY MIGRATION '%s'", jobId));
     }
     
     protected void assertBeforeApplyScalingMetadataCorrectly() {
@@ -344,7 +345,7 @@ public abstract class BaseITCase {
     }
     
     protected String getScalingJobId() {
-        List<Map<String, Object>> scalingListMap = queryForListWithLog("SHOW SCALING LIST");
+        List<Map<String, Object>> scalingListMap = queryForListWithLog("SHOW MIGRATION LIST");
         String jobId = scalingListMap.get(0).get("id").toString();
         log.info("jobId: {}", jobId);
         return jobId;
@@ -358,7 +359,7 @@ public abstract class BaseITCase {
         Set<String> actualStatus = null;
         for (int i = 0; i < 20; i++) {
             List<Map<String, Object>> showScalingStatusResult = showScalingStatus(jobId);
-            log.info("show scaling status result: {}", showScalingStatusResult);
+            log.info("show migration status result: {}", showScalingStatusResult);
             actualStatus = showScalingStatusResult.stream().map(each -> each.get("status").toString()).collect(Collectors.toSet());
             assertFalse(CollectionUtils.containsAny(actualStatus, Arrays.asList(JobStatus.PREPARING_FAILURE.name(), JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name(),
                     JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name())));
@@ -379,7 +380,7 @@ public abstract class BaseITCase {
     }
     
     protected List<Map<String, Object>> showScalingStatus(final String jobId) {
-        return queryForListWithLog(String.format("SHOW SCALING STATUS '%s'", jobId));
+        return queryForListWithLog(String.format("SHOW MIGRATION STATUS '%s'", jobId));
     }
     
     protected void assertCheckScalingSuccess(final String jobId) {
@@ -392,7 +393,7 @@ public abstract class BaseITCase {
         boolean secondCheckJobResult = checkJobIncrementTaskFinished(jobId);
         log.info("second check job result: {}", secondCheckJobResult);
         stopScalingSourceWriting(jobId);
-        List<Map<String, Object>> checkScalingResults = queryForListWithLog(String.format("CHECK SCALING '%s' BY TYPE (NAME='DATA_MATCH')", jobId));
+        List<Map<String, Object>> checkScalingResults = queryForListWithLog(String.format("CHECK MIGRATION '%s' BY TYPE (NAME='DATA_MATCH')", jobId));
         log.info("checkScalingResults: {}", checkScalingResults);
         for (Map<String, Object> entry : checkScalingResults) {
             assertTrue(Boolean.parseBoolean(entry.get("records_content_matched").toString()));

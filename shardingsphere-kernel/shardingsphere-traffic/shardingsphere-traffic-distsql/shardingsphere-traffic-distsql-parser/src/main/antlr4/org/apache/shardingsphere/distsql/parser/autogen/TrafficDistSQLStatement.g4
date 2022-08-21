@@ -20,5 +20,9 @@ grammar TrafficDistSQLStatement;
 import Symbol, RALStatement;
 
 execute
-    : (showTrafficRules) SEMI?
+    : (showTrafficRules
+    | createTrafficRule
+    | alterTrafficRule
+    | dropTrafficRule
+    ) SEMI?
     ;

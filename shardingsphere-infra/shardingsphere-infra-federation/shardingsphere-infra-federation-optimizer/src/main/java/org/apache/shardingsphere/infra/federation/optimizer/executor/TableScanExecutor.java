@@ -32,5 +32,5 @@ public interface TableScanExecutor {
      * @param scanContext filterable table scan context
      * @return query results
      */
-    Enumerable<Object[]> execute(ShardingSphereTable table, TableScanExecutorContext scanContext);
+    Enumerable<Object[]> execute(ShardingSphereTable table, ScanNodeExecutorContext scanContext);
 }

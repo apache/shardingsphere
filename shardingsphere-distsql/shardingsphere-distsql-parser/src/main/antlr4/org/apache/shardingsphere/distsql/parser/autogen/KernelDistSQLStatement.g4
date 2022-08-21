@@ -53,13 +53,13 @@ execute
     | alterSQLParserRule
     | showTransactionRule
     | alterTransactionRule
-    | dropTrafficRule
-    | createTrafficRule
-    | alterTrafficRule
     | exportDatabaseConfiguration
     | showRulesUsedResource
     | importDatabaseConfiguration
     | convertYamlConfiguration
     | showSQLTranslatorRule
+    | showMigrationProcessConfiguration
+    | createMigrationProcessConfiguration
+    | alterMigrationProcessConfiguration
     ) SEMI?
     ;

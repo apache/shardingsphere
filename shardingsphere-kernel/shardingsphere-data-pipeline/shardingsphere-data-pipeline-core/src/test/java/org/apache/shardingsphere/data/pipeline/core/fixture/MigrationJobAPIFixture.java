@@ -27,7 +27,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
-import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
+import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationProcessContext;
 import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
@@ -51,6 +51,19 @@ public final class MigrationJobAPIFixture implements MigrationJobAPI {
     }
     
     @Override
+    public void createProcessConfiguration(final PipelineProcessConfiguration processConfig) {
+    }
+    
+    @Override
+    public void alterProcessConfiguration(final PipelineProcessConfiguration processConfig) {
+    }
+    
+    @Override
+    public PipelineProcessConfiguration showProcessConfiguration() {
+        return null;
+    }
+    
+    @Override
     public void startDisabledJob(final String jobId) {
     }
     
@@ -63,7 +76,7 @@ public final class MigrationJobAPIFixture implements MigrationJobAPI {
     }
     
     @Override
-    public List<JobInfo> list() {
+    public List<PipelineJobInfo> list() {
         return null;
     }
     
@@ -146,7 +159,7 @@ public final class MigrationJobAPIFixture implements MigrationJobAPI {
     }
     
     @Override
-    public void addMigrationSourceResources(final Map<String, DataSourceProperties> sourcePropertiesMap) {
+    public void addMigrationSourceResources(final Map<String, DataSourceProperties> dataSourcePropsMap) {
     }
     
     @Override

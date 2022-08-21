@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.api;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
-import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
+import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
@@ -41,7 +41,7 @@ public interface MigrationJobPublicAPI extends PipelineJobPublicAPI, RequiredSPI
      *
      * @return job infos
      */
-    List<JobInfo> list();
+    List<PipelineJobInfo> list();
     
     /**
      * Get job progress.
@@ -114,14 +114,14 @@ public interface MigrationJobPublicAPI extends PipelineJobPublicAPI, RequiredSPI
     void reset(String jobId);
     
     /**
-     * Update migration source resource.
+     * Add migration source resources.
      *
-     * @param sourcePropertiesMap source properties map
+     * @param dataSourcePropsMap data source properties map
      */
-    void addMigrationSourceResources(Map<String, DataSourceProperties> sourcePropertiesMap);
+    void addMigrationSourceResources(Map<String, DataSourceProperties> dataSourcePropsMap);
     
     /**
-     * Drop migration source resource.
+     * Drop migration source resources.
      *
      * @param resourceNames resource names
      */

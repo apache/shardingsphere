@@ -38,3 +38,47 @@ RULES
 RULE
     : R U L E
     ;
+
+CREATE
+    : C R E A T E
+    ;
+
+PROPERTIES
+    : P R O P E R T I E S
+    ;
+
+LABELS
+    : L A B E L S
+    ;
+
+TRAFFIC_ALGORITHM
+    : T R A F F I C UL_ A L G O R I T H M
+    ;
+
+TYPE
+    : T Y P E
+    ;
+
+NAME
+    : N A M E
+    ;
+
+LOAD_BALANCER
+    : L O A D UL_ B A L A N C E R
+    ;
+
+ALTER
+    : A L T E R
+    ;
+
+DROP
+    : D R O P
+    ;
+
+IF  
+    : I F
+    ;
+
+EXISTS
+    : E X I S T S
+    ;
