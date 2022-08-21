@@ -22,5 +22,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | HY000     | 15000       | Work ID assigned failed, which can not exceed 1024 |
 | HY000     | 16000       | Can not find pipeline job \`%s\` |
 | HY000     | 16001       | Failed to get DDL for table \`%s\` |
+| HY004     | 24000       | Encrypt algorithm \`%s\` initialize failed, reason is: %s |
 | HY004     | 25000       | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type |
 | 42000     | 30000       | Unknown exception: %s |
