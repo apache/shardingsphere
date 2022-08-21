@@ -28,6 +28,6 @@ public final class EncryptAlgorithmInitializationException extends ShardingSpher
     private static final long serialVersionUID = -2004166948563207100L;
     
     public EncryptAlgorithmInitializationException(final String encryptorType, final String reason) {
-        super(XOpenSQLState.GENERAL_ERROR, 24000, "Encrypt algorithm `%s` initialize failed, reason is: %s", encryptorType, reason);
+        super(XOpenSQLState.GENERAL_ERROR, 24000, "Encrypt algorithm `%s` initialization failed, reason is: %s", encryptorType, reason);
     }
 }
