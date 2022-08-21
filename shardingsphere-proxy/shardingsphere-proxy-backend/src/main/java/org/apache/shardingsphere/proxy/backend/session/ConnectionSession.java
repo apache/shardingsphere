@@ -75,6 +75,7 @@ public final class ConnectionSession {
     
     private final ConnectionContext connectionContext;
     
+    // TODO rename to QueryContext
     private LogicSQL logicSQL;
     
     private final RequiredSessionVariableRecorder requiredSessionVariableRecorder = new RequiredSessionVariableRecorder();
