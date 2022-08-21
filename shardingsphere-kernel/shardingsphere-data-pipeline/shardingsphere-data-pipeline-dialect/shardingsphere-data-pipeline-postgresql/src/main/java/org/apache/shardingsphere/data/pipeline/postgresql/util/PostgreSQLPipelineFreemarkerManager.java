@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.postgresql.util;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import freemarker.template.TemplateNotFoundException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -33,14 +34,14 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * Freemarker manager.
+ * PostgreSQL pipeline freemarker manager.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class FreemarkerManager {
-    
-    private static final FreemarkerManager INSTANCE = new FreemarkerManager();
+public final class PostgreSQLPipelineFreemarkerManager {
     
     private static final Map<Integer, String> PG_VERSION_PATHS = new LinkedHashMap<>();
+    
+    private static final Configuration TEMPLATE_CONFIG = createTemplateConfiguration();
     
     static {
         PG_VERSION_PATHS.put(120000, "12_plus");
@@ -56,39 +57,27 @@ public final class FreemarkerManager {
         PG_VERSION_PATHS.put(0, "default");
     }
     
-    private final Configuration templateConfig = createTemplateConfiguration();
-    
-    /**
-     * Get freemarker manager instance.
-     * 
-     * @return freemarker manager instance
-     */
-    public static FreemarkerManager getInstance() {
-        return INSTANCE;
-    }
-    
-    @SneakyThrows
-    private Configuration createTemplateConfiguration() {
+    private static Configuration createTemplateConfiguration() {
         Configuration result = new Configuration(Configuration.VERSION_2_3_31);
-        result.setClassForTemplateLoading(getClass(), "/template");
+        result.setClassForTemplateLoading(PostgreSQLPipelineFreemarkerManager.class, "/template");
         result.setDefaultEncoding("UTF-8");
         return result;
     }
     
     /**
-     * Get SQL by postgres version.
+     * Get SQL by PostgreSQL version.
      * 
-     * @param data data
+     * @param dataModel data model of template
      * @param pathFormat path format
      * @param majorVersion major version
      * @param minorVersion minor version
      * @return SQL
      */
-    @SneakyThrows
-    public static String getSQLByPgVersion(final Map<String, Object> data, final String pathFormat, final int majorVersion, final int minorVersion) {
+    @SneakyThrows({IOException.class, TemplateException.class})
+    public static String getSQLByVersion(final Map<String, Object> dataModel, final String pathFormat, final int majorVersion, final int minorVersion) {
         int version = majorVersion * 10000 + minorVersion;
         try (StringWriter result = new StringWriter()) {
-            findTemplate(pathFormat, version).orElseThrow(() -> new ShardingSphereException("Failed to get template, path:%s, version:%s", pathFormat, version)).process(data, result);
+            findTemplate(pathFormat, version).orElseThrow(() -> new ShardingSphereException("Failed to get template, path:%s, version:%s", pathFormat, version)).process(dataModel, result);
             return result.toString();
         }
     }
@@ -99,8 +88,7 @@ public final class FreemarkerManager {
                 continue;
             }
             try {
-                Template template = FreemarkerManager.getInstance().templateConfig.getTemplate(String.format(pathFormat, entry.getValue()));
-                return Optional.of(template);
+                return Optional.of(TEMPLATE_CONFIG.getTemplate(String.format(pathFormat, entry.getValue())));
             } catch (TemplateNotFoundException ignored) {
             }
         }

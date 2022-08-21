@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.postgresql.util.FreemarkerManager;
+import org.apache.shardingsphere.data.pipeline.postgresql.util.PostgreSQLPipelineFreemarkerManager;
 import org.postgresql.jdbc.PgArray;
 
 import java.sql.Connection;
@@ -53,7 +53,7 @@ public final class PostgresIndexSQLGenerator extends AbstractPostgresDDLAdapter 
             if (each.containsKey("is_inherited") && (Boolean) each.get("is_inherited")) {
                 continue;
             }
-            result.append(getIndexSql(context, each));
+            result.append(getIndexSQL(context, each));
         }
         return result.toString().trim();
     }
@@ -64,19 +64,19 @@ public final class PostgresIndexSQLGenerator extends AbstractPostgresDDLAdapter 
         return executeByTemplate(param, "indexes/%s/nodes.ftl");
     }
     
-    private String getIndexSql(final Map<String, Object> context, final Map<String, Object> indexNode) throws SQLException {
+    private String getIndexSQL(final Map<String, Object> context, final Map<String, Object> indexNode) throws SQLException {
         Map<String, Object> indexData = getIndexData(context, indexNode);
         appendColumnDetails(indexData, (Long) indexNode.get("oid"));
         if (getMajorVersion() >= PG_INDEX_INCLUDE_VERSION) {
             appendIncludeDetails(indexData, (Long) indexNode.get("oid"));
         }
-        return doGenerateIndexSql(indexData);
+        return doGenerateIndexSQL(indexData);
     }
     
-    private String doGenerateIndexSql(final Map<String, Object> indexData) {
-        String result = FreemarkerManager.getSQLByPgVersion(indexData, "indexes/%s/create.ftl", getMajorVersion(), getMinorVersion());
+    private String doGenerateIndexSQL(final Map<String, Object> indexData) {
+        String result = PostgreSQLPipelineFreemarkerManager.getSQLByVersion(indexData, "indexes/%s/create.ftl", getMajorVersion(), getMinorVersion());
         result += System.lineSeparator();
-        result += FreemarkerManager.getSQLByPgVersion(indexData, "indexes/%s/alter.ftl", getMajorVersion(), getMinorVersion());
+        result += PostgreSQLPipelineFreemarkerManager.getSQLByVersion(indexData, "indexes/%s/alter.ftl", getMajorVersion(), getMinorVersion());
         return result;
     }
     
