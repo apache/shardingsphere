@@ -104,7 +104,7 @@ public final class MySQLSchemaMetaDataLoader implements DialectSchemaMetaDataLoa
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables))) {
             Map<String, Integer> dataTypes = DataTypeLoaderFactory.getInstance(DatabaseTypeFactory.getInstance("MySQL")).load(connection.getMetaData());
-            String databaseName = "".equals(connection.getCatalog()) ? GlobalDataSourceRegistry.getInstance().getCachedDatabaseTables().get(tables.iterator().next()) : connection.getCatalog();
+            String databaseName = "".equals(connection.getCatalog()) ? GlobalDataSourceRegistry.getInstance().getCachedDatabaseTables().get(tables.iterator().next()) : getRealDatabaseName(connection);
             preparedStatement.setString(1, databaseName);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
@@ -141,7 +141,8 @@ public final class MySQLSchemaMetaDataLoader implements DialectSchemaMetaDataLoa
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(getIndexMetaDataSQL(tableNames))) {
-            String databaseName = "".equals(connection.getCatalog()) ? GlobalDataSourceRegistry.getInstance().getCachedDatabaseTables().get(tableNames.iterator().next()) : connection.getCatalog();
+            String databaseName =
+                    "".equals(connection.getCatalog()) ? GlobalDataSourceRegistry.getInstance().getCachedDatabaseTables().get(tableNames.iterator().next()) : getRealDatabaseName(connection);
             preparedStatement.setString(1, databaseName);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
@@ -159,6 +160,18 @@ public final class MySQLSchemaMetaDataLoader implements DialectSchemaMetaDataLoa
     
     private String getIndexMetaDataSQL(final Collection<String> tableNames) {
         return String.format(INDEX_META_DATA_SQL, tableNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+    }
+    
+    private String getRealDatabaseName(final Connection connection) throws SQLException {
+        String databaseName = "";
+        try (
+                PreparedStatement preparedStatement = connection.prepareStatement("SELECT DATABASE()")) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                resultSet.next();
+                databaseName = resultSet.getString("DATABASE()");
+            }
+        }
+        return databaseName == null || "NULL".equalsIgnoreCase(databaseName) ? "" : databaseName;
     }
     
     @Override
