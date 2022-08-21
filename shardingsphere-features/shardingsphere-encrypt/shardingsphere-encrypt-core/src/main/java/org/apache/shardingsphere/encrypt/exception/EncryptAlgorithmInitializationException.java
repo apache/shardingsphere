@@ -21,13 +21,13 @@ import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLExcep
 import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
 
 /**
- * Encrypt algorithm initialize exception.
+ * Encrypt algorithm initialization exception.
  */
-public final class EncryptAlgorithmInitializeException extends ShardingSphereSQLException {
+public final class EncryptAlgorithmInitializationException extends ShardingSphereSQLException {
     
     private static final long serialVersionUID = -2004166948563207100L;
     
-    public EncryptAlgorithmInitializeException(final String encryptorType, final String reason) {
+    public EncryptAlgorithmInitializationException(final String encryptorType, final String reason) {
         super(XOpenSQLState.GENERAL_ERROR, 24000, "Encrypt algorithm `%s` initialize failed, reason is: %s", encryptorType, reason);
     }
 }

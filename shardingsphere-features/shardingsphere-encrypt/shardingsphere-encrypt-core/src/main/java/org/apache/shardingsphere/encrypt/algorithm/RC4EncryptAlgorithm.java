@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.algorithm;
 
 import lombok.Getter;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.shardingsphere.encrypt.exception.EncryptAlgorithmInitializeException;
+import org.apache.shardingsphere.encrypt.exception.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
@@ -54,7 +54,7 @@ public final class RC4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     
     private void setKey(final byte[] key) {
         if (!(key.length >= KEY_MIN_LENGTH && key.length < SBOX_LENGTH)) {
-            throw new EncryptAlgorithmInitializeException("RC4", "Key length has to be between " + KEY_MIN_LENGTH + " and " + (SBOX_LENGTH - 1));
+            throw new EncryptAlgorithmInitializationException("RC4", "Key length has to be between " + KEY_MIN_LENGTH + " and " + (SBOX_LENGTH - 1));
         }
         this.key = key;
     }
