@@ -15,32 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.fixture;
+grammar BaseRule;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
-import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
+import Symbol, Keyword, Literals;
 
-import java.util.List;
-import java.util.Properties;
+propertiesDefinition
+    : PROPERTIES LP properties? RP
+    ;
 
-@Getter
-public final class DistSQLTrafficLoadBalanceAlgorithmFixture implements TrafficLoadBalanceAlgorithm {
-    
-    private Properties props;
-    
-    @Override
-    public void init(final Properties props) {
-        this.props = props;
-    }
-    
-    @Override
-    public String getType() {
-        return "DISTSQL.FIXTURE";
-    }
-    
-    @Override
-    public InstanceMetaData getInstanceId(final String name, final List<InstanceMetaData> instances) {
-        return null;
-    }
-}
+properties
+    : property (COMMA property)*
+    ;
+
+property
+    : key=STRING EQ value=STRING
+    ;

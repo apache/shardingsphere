@@ -24,6 +24,8 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.transaction.engine.entity.JdbcInfoEntity;
 import org.apache.shardingsphere.integration.transaction.env.enums.TransactionITEnvTypeEnum;
 import org.apache.shardingsphere.integration.transaction.env.enums.TransactionTestCaseRegistry;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.ProxyContainerConstants;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.StorageContainerConstants;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -164,10 +166,9 @@ public final class IntegrationTestEnvironment {
      * @return actual data source username
      */
     public String getActualDataSourceUsername(final DatabaseType databaseType) {
-        String username = "test_user";
         return itEnvType == TransactionITEnvTypeEnum.NATIVE
-                ? String.valueOf(props.getOrDefault(String.format("transaction.it.native.%s.username", databaseType.getType().toLowerCase()), username))
-                : username;
+                ? String.valueOf(props.getOrDefault(String.format("transaction.it.native.%s.username", databaseType.getType().toLowerCase()), ProxyContainerConstants.USERNAME))
+                : StorageContainerConstants.USERNAME;
     }
     
     /**
@@ -177,10 +178,9 @@ public final class IntegrationTestEnvironment {
      * @return actual data source username
      */
     public String getActualDataSourcePassword(final DatabaseType databaseType) {
-        String password = "Test@123";
         return itEnvType == TransactionITEnvTypeEnum.NATIVE
-                ? props.getOrDefault(String.format("transaction.it.native.%s.password", databaseType.getType().toLowerCase()), password).toString()
-                : password;
+                ? props.getOrDefault(String.format("transaction.it.native.%s.password", databaseType.getType().toLowerCase()), ProxyContainerConstants.PASSWORD).toString()
+                : StorageContainerConstants.PASSWORD;
     }
     
     /**
@@ -190,7 +190,7 @@ public final class IntegrationTestEnvironment {
      */
     public String getProxyPassword() {
         // TODO this should extract into a constant
-        return props.getOrDefault("transaction.it.proxy.password", "Proxy@123").toString();
+        return props.getOrDefault("transaction.it.proxy.password", ProxyContainerConstants.PASSWORD).toString();
     }
     
     /**
@@ -200,7 +200,7 @@ public final class IntegrationTestEnvironment {
      */
     public String getProxyUserName() {
         // TODO this should extract into a constant
-        return props.getOrDefault("transaction.it.proxy.username", "proxy").toString();
+        return props.getOrDefault("transaction.it.proxy.username", ProxyContainerConstants.USERNAME).toString();
     }
     
     /**

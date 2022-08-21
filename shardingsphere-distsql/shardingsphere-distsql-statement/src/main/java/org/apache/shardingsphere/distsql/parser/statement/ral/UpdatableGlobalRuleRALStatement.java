@@ -15,21 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.TrafficRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
-
-import java.util.Collection;
+package org.apache.shardingsphere.distsql.parser.statement.ral;
 
 /**
- * Alter traffic rule statement.
+ * Updatable RAL statement for global rule.
  */
-@RequiredArgsConstructor
-@Getter
-public final class AlterTrafficRuleStatement extends UpdatableRALStatement {
-    
-    private final Collection<TrafficRuleSegment> segments;
+public abstract class UpdatableGlobalRuleRALStatement extends UpdatableRALStatement {
 }

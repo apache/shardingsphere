@@ -15,26 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.segment;
+package org.apache.shardingsphere.traffic.distsql.parser.statement.updatable;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableGlobalRuleRALStatement;
 
 import java.util.Collection;
 
 /**
- * Traffic rule segment.
+ * Drop traffic rule statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class TrafficRuleSegment implements ASTNode {
+public final class DropTrafficRuleStatement extends UpdatableGlobalRuleRALStatement {
     
-    private final String name;
+    private final boolean ifExists;
     
-    private final Collection<String> labels;
-    
-    private final AlgorithmSegment algorithm;
-    
-    private final AlgorithmSegment loadBalancer;
+    private final Collection<String> ruleNames;
 }

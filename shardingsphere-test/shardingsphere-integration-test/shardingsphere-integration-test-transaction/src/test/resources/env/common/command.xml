@@ -96,8 +96,8 @@
     <alter-xa-transaction-rule>
         ALTER TRANSACTION RULE
         (
-        DEFAULT=XA,
-        TYPE(NAME=${providerType})
+        DEFAULT='XA',
+        TYPE(NAME='${providerType}')
         )
     </alter-xa-transaction-rule>
 

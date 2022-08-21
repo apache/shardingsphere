@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class JDBCConnectionWaitStrategy extends AbstractWaitStrategy {
+public final class JdbcConnectionWaitStrategy extends AbstractWaitStrategy {
     
     private final Callable<Connection> connectionSupplier;
     

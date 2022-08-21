@@ -15,22 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
+package org.apache.shardingsphere.test.integration.env.container.atomic.constants;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
-
-import java.util.Collection;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Drop traffic rule statement.
+ * Storage container constants.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DropTrafficRuleStatement extends UpdatableRALStatement {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class StorageContainerConstants {
     
-    private final boolean ifExists;
+    public static final String USERNAME = "test_user";
     
-    private final Collection<String> ruleNames;
+    public static final String PASSWORD = "Test@123";
+    
+    public static final String MYSQL_CONF_IN_CONTAINER = "/etc/mysql/my.cnf";
+    
+    public static final String POSTGRESQL_CONF_IN_CONTAINER = "/etc/postgresql/postgresql.conf";
+    
+    public static final String OPENGAUSS_CONF_IN_CONTAINER = "/usr/local/opengauss/share/postgresql/postgresql.conf.sample";
+    
+    public static final String OPENGAUSS_HBA_IN_CONF_CONTAINER = "/usr/local/opengauss/share/postgresql/pg_hba.conf.sample";
 }

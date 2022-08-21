@@ -37,6 +37,7 @@ import org.apache.shardingsphere.integration.data.pipeline.framework.container.c
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.NativeComposedContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.integration.data.pipeline.framework.watcher.ScalingWatcher;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
@@ -148,7 +149,7 @@ public abstract class BaseITCase {
             defaultDatabaseName = "postgres";
         }
         String jdbcUrl = composedContainer.getProxyJdbcUrl(defaultDatabaseName);
-        try (Connection connection = DriverManager.getConnection(jdbcUrl, "proxy", "Proxy@123")) {
+        try (Connection connection = DriverManager.getConnection(jdbcUrl, ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD)) {
             if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NATIVE) {
                 try {
                     connectionExecuteWithLog(connection, "DROP DATABASE sharding_db");
@@ -161,7 +162,7 @@ public abstract class BaseITCase {
             throw new IllegalStateException(ex);
         }
         sourceDataSource = getDataSource(getActualJdbcUrlTemplate(DS_0, false), username, password);
-        proxyDataSource = getDataSource(composedContainer.getProxyJdbcUrl("sharding_db"), "proxy", "Proxy@123");
+        proxyDataSource = getDataSource(composedContainer.getProxyJdbcUrl("sharding_db"), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD);
     }
     
     private DataSource getDataSource(final String jdbcUrl, final String username, final String password) {
@@ -170,14 +171,14 @@ public abstract class BaseITCase {
         result.setJdbcUrl(jdbcUrl);
         result.setUsername(username);
         result.setPassword(password);
-        result.setMaximumPoolSize(5);
+        result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return result;
     }
     
     @SneakyThrows(SQLException.class)
     protected void addSourceResource() {
-        try (Connection connection = DriverManager.getConnection(getComposedContainer().getProxyJdbcUrl("sharding_db"), "proxy", "Proxy@123")) {
+        try (Connection connection = DriverManager.getConnection(getComposedContainer().getProxyJdbcUrl("sharding_db"), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD)) {
             addSourceResource0(connection);
         }
     }
@@ -321,21 +322,8 @@ public abstract class BaseITCase {
         proxyExecuteWithLog(String.format("STOP MIGRATION '%s'", jobId), 5);
     }
     
-    protected void startMigration(final String jobId) {
+    protected void startMigrationByJob(final String jobId) {
         proxyExecuteWithLog(String.format("START MIGRATION '%s'", jobId), 10);
-    }
-    
-    protected void assertBeforeApplyScalingMetadataCorrectly() {
-        List<Map<String, Object>> previewResults = queryForListWithLog("PREVIEW SELECT COUNT(1) FROM t_order");
-        assertThat("data_source_name name not correct, it's effective early, search watcher failed get more info",
-                previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet()), is(new HashSet<>(Arrays.asList("ds_0", "ds_1"))));
-    }
-    
-    protected String getScalingJobId() {
-        List<Map<String, Object>> scalingListMap = queryForListWithLog("SHOW MIGRATION LIST");
-        String jobId = scalingListMap.get(0).get("id").toString();
-        log.info("jobId: {}", jobId);
-        return jobId;
     }
     
     protected List<String> listJobId() {

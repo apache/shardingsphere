@@ -15,30 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config;
+package org.apache.shardingsphere.infra.distsql.update;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
-import java.util.Collections;
-import java.util.Map;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Proxy cluster container configuration factory.
+ * RAL updater for global rule.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ProxyClusterContainerConfigurationFactory {
+@SingletonSPI
+public interface GlobalRuleRALUpdater extends TypedSPI {
     
     /**
-     * Create new instance of adaptor container configuration.
+     * Execute update.
      *
-     * @return created instance
+     * @param ruleMetaData rule meta data
+     * @param sqlStatement SQL statement
+     * @throws DistSQLException definition violation exception
      */
-    public static AdaptorContainerConfiguration newInstance() {
-        return new AdaptorContainerConfiguration("", getMountedResources());
-    }
-    
-    private static Map<String, String> getMountedResources() {
-        return Collections.singletonMap("/env/log/logback.xml", "/opt/shardingsphere-proxy/conf/logback.xml");
-    }
+    void executeUpdate(ShardingSphereRuleMetaData ruleMetaData, SQLStatement sqlStatement) throws DistSQLException;
 }

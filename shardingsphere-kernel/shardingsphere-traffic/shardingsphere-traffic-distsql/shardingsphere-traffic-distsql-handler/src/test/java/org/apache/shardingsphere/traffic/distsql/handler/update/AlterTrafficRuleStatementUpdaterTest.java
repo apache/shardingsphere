@@ -15,21 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
+package org.apache.shardingsphere.traffic.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.distsql.parser.segment.TrafficRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterTrafficRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.CreateTrafficRuleStatement;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
+import org.apache.shardingsphere.traffic.distsql.parser.segment.TrafficRuleSegment;
+import org.apache.shardingsphere.traffic.distsql.parser.statement.updatable.AlterTrafficRuleStatement;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.traffic.rule.TrafficStrategyRule;
 import org.junit.Test;
@@ -43,43 +39,39 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class AlterTrafficRuleHandlerTest extends ProxyContextRestorer {
+public final class AlterTrafficRuleStatementUpdaterTest {
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertExecuteWithNotExistRuleName() throws SQLException {
-        mockContextManager();
+        ShardingSphereRuleMetaData ruleMetaData = createRuleMetaData();
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment(
                 "rule_name_3", Arrays.asList("olap", "order_by"), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
-        AlterTrafficRuleHandler handler = new AlterTrafficRuleHandler();
-        handler.init(new AlterTrafficRuleStatement(Collections.singleton(trafficRuleSegment)), null);
-        handler.execute();
+        AlterTrafficRuleStatementUpdater updater = new AlterTrafficRuleStatementUpdater();
+        updater.executeUpdate(ruleMetaData, new AlterTrafficRuleStatement(Collections.singleton(trafficRuleSegment)));
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertExecuteWithInvalidAlgorithmType() throws SQLException {
-        mockContextManager();
+        ShardingSphereRuleMetaData ruleMetaData = createRuleMetaData();
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment(
                 "rule_name_1", Arrays.asList("olap", "order_by"), new AlgorithmSegment("invalid", new Properties()), new AlgorithmSegment("invalid", new Properties()));
-        AlterTrafficRuleHandler handler = new AlterTrafficRuleHandler();
-        handler.init(new AlterTrafficRuleStatement(Collections.singleton(trafficRuleSegment)), null);
-        handler.execute();
+        AlterTrafficRuleStatementUpdater updater = new AlterTrafficRuleStatementUpdater();
+        updater.executeUpdate(ruleMetaData, new AlterTrafficRuleStatement(Collections.singleton(trafficRuleSegment)));
     }
     
     @Test(expected = IllegalStateException.class)
     public void assertExecuteWithLoadBalancerCannotBeNull() throws SQLException {
-        mockContextManager();
-        TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("input_rule_name", Arrays.asList("olap", "order_by"),
+        ShardingSphereRuleMetaData ruleMetaData = createRuleMetaData();
+        TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("rule_name_1", Arrays.asList("olap", "order_by"),
                 new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), null);
-        CreateTrafficRuleHandler handler = new CreateTrafficRuleHandler();
-        handler.init(new CreateTrafficRuleStatement(Collections.singleton(trafficRuleSegment)), null);
+        AlterTrafficRuleStatementUpdater updater = new AlterTrafficRuleStatementUpdater();
         try {
-            handler.execute();
+            updater.executeUpdate(ruleMetaData, new AlterTrafficRuleStatement(Collections.singleton(trafficRuleSegment)));
         } catch (final IllegalStateException ex) {
-            TrafficRule currentRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
+            TrafficRule currentRule = ruleMetaData.getSingleRule(TrafficRule.class);
             assertNotNull(currentRule);
             throw ex;
         }
@@ -87,15 +79,14 @@ public final class AlterTrafficRuleHandlerTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecute() throws SQLException {
-        ContextManager contextManager = mockContextManager();
+        ShardingSphereRuleMetaData ruleMetaData = createRuleMetaData();
         TrafficRuleSegment trafficRuleSegment1 = new TrafficRuleSegment(
                 "rule_name_1", Arrays.asList("olap", "order_by"), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
         TrafficRuleSegment trafficRuleSegment2 = new TrafficRuleSegment(
                 "rule_name_2", Collections.emptyList(), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
-        AlterTrafficRuleHandler handler = new AlterTrafficRuleHandler();
-        handler.init(new AlterTrafficRuleStatement(Arrays.asList(trafficRuleSegment1, trafficRuleSegment2)), null);
-        handler.execute();
-        TrafficRuleConfiguration alteredConfig = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class).getConfiguration();
+        AlterTrafficRuleStatementUpdater updater = new AlterTrafficRuleStatementUpdater();
+        updater.executeUpdate(ruleMetaData, new AlterTrafficRuleStatement(Arrays.asList(trafficRuleSegment1, trafficRuleSegment2)));
+        TrafficRuleConfiguration alteredConfig = ruleMetaData.getSingleRule(TrafficRule.class).getConfiguration();
         assertThat(alteredConfig.getTrafficStrategies().size(), is(2));
         assertThat(alteredConfig.getLoadBalancers().size(), is(2));
         assertThat(alteredConfig.getTrafficAlgorithms().size(), is(2));
@@ -104,18 +95,13 @@ public final class AlterTrafficRuleHandlerTest extends ProxyContextRestorer {
         assertNotNull(alteredConfig.getLoadBalancers().get("rule_name_2_distsql.fixture"));
     }
     
-    private ContextManager mockContextManager() {
-        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        TrafficRule rule = mockTrafficRule();
-        when(rule.getConfiguration()).thenReturn(createTrafficRuleConfiguration());
-        ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(new LinkedList<>(Collections.singleton(rule)));
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
-        ProxyContext.init(result);
-        return result;
+    private ShardingSphereRuleMetaData createRuleMetaData() {
+        return new ShardingSphereRuleMetaData(new LinkedList<>(Collections.singleton(mockTrafficRule())));
     }
     
     private TrafficRule mockTrafficRule() {
         TrafficRule result = mock(TrafficRule.class);
+        when(result.getConfiguration()).thenReturn(createTrafficRuleConfiguration());
         TrafficStrategyRule strategyRule1 = mock(TrafficStrategyRule.class);
         when(strategyRule1.getName()).thenReturn("rule_name_1");
         TrafficStrategyRule strategyRule2 = mock(TrafficStrategyRule.class);

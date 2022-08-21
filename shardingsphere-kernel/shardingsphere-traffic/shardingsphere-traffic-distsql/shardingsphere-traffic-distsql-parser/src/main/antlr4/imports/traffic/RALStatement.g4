@@ -17,12 +17,56 @@
 
 grammar RALStatement;
 
-import Keyword, Literals;
+import BaseRule;
+
+createTrafficRule
+    : CREATE TRAFFIC RULE trafficRuleDefinition (COMMA trafficRuleDefinition)* 
+    ;
+
+alterTrafficRule
+    : ALTER TRAFFIC RULE trafficRuleDefinition (COMMA trafficRuleDefinition)* 
+    ;
+
+dropTrafficRule
+    : DROP TRAFFIC RULE ifExists? ruleName (COMMA ruleName)*
+    ;
 
 showTrafficRules
     : SHOW TRAFFIC (RULES | RULE ruleName)
     ;
 
+trafficRuleDefinition
+    : ruleName LP (labelDefinition COMMA)? trafficAlgorithmDefinition (COMMA loadBalancerDefinition)? RP
+    ;
+
+labelDefinition
+    : LABELS LP label (COMMA label)* RP
+    ;
+
+trafficAlgorithmDefinition
+    : TRAFFIC_ALGORITHM LP algorithmDefinition RP 
+    ;
+
+algorithmDefinition
+    : TYPE LP NAME EQ algorithmTypeName (COMMA propertiesDefinition)? RP
+    ;
+
+loadBalancerDefinition
+    : LOAD_BALANCER LP algorithmDefinition RP
+    ;
+
+algorithmTypeName
+    : STRING
+    ;
+
+label
+    : IDENTIFIER
+    ;
+
 ruleName
     : IDENTIFIER
+    ;
+
+ifExists
+    : IF EXISTS
     ;

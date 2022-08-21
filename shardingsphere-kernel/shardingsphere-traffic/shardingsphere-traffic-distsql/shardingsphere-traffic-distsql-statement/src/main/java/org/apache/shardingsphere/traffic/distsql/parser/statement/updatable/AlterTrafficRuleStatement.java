@@ -15,30 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config;
+package org.apache.shardingsphere.traffic.distsql.parser.statement.updatable;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableGlobalRuleRALStatement;
+import org.apache.shardingsphere.traffic.distsql.parser.segment.TrafficRuleSegment;
 
-import java.util.Collections;
-import java.util.Map;
+import java.util.Collection;
 
 /**
- * Proxy cluster container configuration factory.
+ * Alter traffic rule statement.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ProxyClusterContainerConfigurationFactory {
+@RequiredArgsConstructor
+@Getter
+public final class AlterTrafficRuleStatement extends UpdatableGlobalRuleRALStatement {
     
-    /**
-     * Create new instance of adaptor container configuration.
-     *
-     * @return created instance
-     */
-    public static AdaptorContainerConfiguration newInstance() {
-        return new AdaptorContainerConfiguration("", getMountedResources());
-    }
-    
-    private static Map<String, String> getMountedResources() {
-        return Collections.singletonMap("/env/log/logback.xml", "/opt/shardingsphere-proxy/conf/logback.xml");
-    }
+    private final Collection<TrafficRuleSegment> segments;
 }
