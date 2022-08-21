@@ -56,6 +56,10 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     }
     
     @Override
+    public void persistExclusiveEphemeral(final String key, final String value) {
+    }
+    
+    @Override
     public void delete(final String key) {
     }
     
@@ -68,7 +72,7 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     }
     
     @Override
-    public boolean tryLock(final String lockKey, final long timeoutMillis) {
+    public boolean persistLock(final String lockKey, final long timeoutMillis) {
         return false;
     }
     

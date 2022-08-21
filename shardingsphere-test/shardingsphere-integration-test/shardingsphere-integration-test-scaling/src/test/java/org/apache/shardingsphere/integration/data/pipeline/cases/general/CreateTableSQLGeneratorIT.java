@@ -21,16 +21,15 @@ import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGe
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.integration.data.pipeline.cases.entity.CreateTableSQLGeneratorAssertionEntity;
 import org.apache.shardingsphere.integration.data.pipeline.cases.entity.CreateTableSQLGeneratorAssertionsRootEntity;
 import org.apache.shardingsphere.integration.data.pipeline.cases.entity.CreateTableSQLGeneratorOutputEntity;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
-import org.apache.shardingsphere.integration.data.pipeline.framework.comtaner.config.ScalingStorageContainerConfigurationFactory;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainerFactory;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.StorageContainerConfigurationFactory;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -81,7 +80,7 @@ public final class CreateTableSQLGeneratorIT {
         rootEntity = JAXB.unmarshal(
                 Objects.requireNonNull(CreateTableSQLGeneratorIT.class.getClassLoader().getResource(parameterized.getScenario())), CreateTableSQLGeneratorAssertionsRootEntity.class);
         storageContainer = (DockerStorageContainer) StorageContainerFactory.newInstance(parameterized.getDatabaseType(), parameterized.getDockerImageName(), "",
-                ScalingStorageContainerConfigurationFactory.newInstance(parameterized.getDatabaseType(), ""));
+                StorageContainerConfigurationFactory.newInstance(parameterized.getDatabaseType()));
         storageContainer.start();
     }
     
@@ -113,9 +112,8 @@ public final class CreateTableSQLGeneratorIT {
             int majorVersion = connection.getMetaData().getDatabaseMajorVersion();
             for (CreateTableSQLGeneratorAssertionEntity each : rootEntity.getAssertions()) {
                 statement.execute(each.getInput().getSql());
-                Collection<String> multiSQL = CreateTableSQLGeneratorFactory.findInstance(parameterized.getDatabaseType())
-                        .orElseThrow(() -> new ShardingSphereException("Failed to get create table sql generator")).generate(each.getInput().getTable(), DEFAULT_SCHEMA, dataSource);
-                assertIsCorrect(multiSQL, getVersionOutput(each.getOutputs(), majorVersion));
+                Collection<String> actualDDLs = CreateTableSQLGeneratorFactory.getInstance(parameterized.getDatabaseType()).generate(dataSource, DEFAULT_SCHEMA, each.getInput().getTable());
+                assertIsCorrect(actualDDLs, getVersionOutput(each.getOutputs(), majorVersion));
             }
         }
     }

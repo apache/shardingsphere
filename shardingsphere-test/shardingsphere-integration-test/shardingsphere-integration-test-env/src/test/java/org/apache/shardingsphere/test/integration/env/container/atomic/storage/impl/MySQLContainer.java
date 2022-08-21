@@ -38,9 +38,9 @@ public final class MySQLContainer extends DockerStorageContainer {
     
     @Override
     protected void configure() {
-        setCommands(storageContainerConfiguration.getCommands());
-        addEnvs(storageContainerConfiguration.getEnvs());
-        mapResources(storageContainerConfiguration.getResourceMappings());
+        setCommands(storageContainerConfiguration.getContainerCommand());
+        addEnvs(storageContainerConfiguration.getContainerEnvironments());
+        mapResources(storageContainerConfiguration.getMountedResources());
         super.configure();
     }
     

@@ -23,6 +23,10 @@ Apache ShardingSphere needs to detect high availability solution of diversified 
 
 The main goal of Apache ShardingSphere high availability module which is ensuring 7 * 24-hour uninterrupted database service as much as possible.
 
+## Application Scenarios
+
+In most cases, high availability is used in conjunction with read/write splitting. When the relationship between users' write database and read database changes, ShardingSphere dynamically senses and corrects the internal primary/secondary relationship, thus ensuring the correct routing of the read and write traffic. At the same time, when the secondary database breaks down, ShardingSphere can also dynamically correct the state of storage nodes to ensure correct distribution of the read traffic.
+
 ## Related References
 
 [Java API](/en/user-manual/shardingsphere-jdbc/java-api/rules/ha)\

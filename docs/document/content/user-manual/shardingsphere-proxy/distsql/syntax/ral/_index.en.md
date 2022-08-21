@@ -20,20 +20,20 @@ RAL (Resource & Rule Administration Language) responsible for hint, circuit brea
 
 ## Scaling
 
-| Statement                                            | Function                                                          | Example                                  |
-|:---------------------------------------------------- |:----------------------------------------------------------------- |:---------------------------------------- |
-| SHOW SCALING LIST                                    | Query running list                                                | SHOW SCALING LIST                        |
-| SHOW SCALING STATUS jobId                            | Query scaling status, xx: jobId                                   | SHOW SCALING STATUS 1234                 |
-| START SCALING jobId                                  | Start scaling, xx: jobId                                          | START SCALING 1234                       |
-| STOP SCALING jobId                                   | Stop scaling, xx: jobId                                           | STOP SCALING 1234                        |
-| DROP SCALING jobId                                   | Drop scaling, xx: jobId                                           | DROP SCALING 1234                        |
-| RESET SCALING jobId                                  | reset progress, xx: jobId                                         | RESET SCALING 1234                       |
-| CHECK SCALING jobId                                  | Data consistency check with algorithm in `server.yaml`, xx: jobId | CHECK SCALING 1234                       |
-| SHOW SCALING CHECK ALGORITHMS                        | Show available consistency check algorithms                       | SHOW SCALING CHECK ALGORITHMS            |
-| CHECK SCALING {jobId} by type(name={algorithmType})  | Data consistency check with defined algorithm                     | CHECK SCALING 1234 by type(name=DEFAULT) |
-| STOP SCALING SOURCE WRITING jobId                    | The source ShardingSphere data source is discontinued, xx: jobId  | STOP SCALING SOURCE WRITING 1234         |
-| RESTORE SCALING SOURCE WRITING jobId                 | Restore source data source writing, xx: jobId                     | RESTORE SCALING SOURCE WRITING 1234      |
-| APPLY SCALING jobId                                  | Switch to target ShardingSphere metadata, xx: jobId               | APPLY SCALING 1234                       |
+| Statement                                             | Function                                                          | Example                                    |
+|:------------------------------------------------------|:------------------------------------------------------------------|:-------------------------------------------|
+| SHOW MIGRATION LIST                                     | Query running list                                                | SHOW MIGRATION LIST                          |
+| SHOW MIGRATION STATUS jobId                             | Query migration status, xx: jobId                                   | SHOW MIGRATION STATUS 1234                   |
+| START MIGRATION jobId                                   | Start migration, xx: jobId                                          | START MIGRATION 1234                         |
+| STOP MIGRATION jobId                                    | Stop migration, xx: jobId                                           | STOP MIGRATION 1234                          |
+| CLEAN MIGRATION jobId                                   | Clean migration, xx: jobId                                          | CLEAN MIGRATION 1234                         |
+| RESET MIGRATION jobId                                   | reset progress, xx: jobId                                         | RESET MIGRATION 1234                         |
+| CHECK MIGRATION jobId                                   | Data consistency check with algorithm in `server.yaml`, xx: jobId | CHECK MIGRATION 1234                         |
+| SHOW MIGRATION CHECK ALGORITHMS                         | Show available consistency check algorithms                       | SHOW MIGRATION CHECK ALGORITHMS              |
+| CHECK MIGRATION jobId (by type(name=algorithmTypeName)? | Data consistency check with defined algorithm                     | CHECK MIGRATION 1234 by type(name="DEFAULT") |
+| STOP MIGRATION SOURCE WRITING jobId                     | The source ShardingSphere data source is discontinued, xx: jobId  | STOP MIGRATION SOURCE WRITING 1234           |
+| RESTORE MIGRATION SOURCE WRITING jobId                  | Restore source data source writing, xx: jobId                     | RESTORE MIGRATION SOURCE WRITING 1234        |
+| APPLY MIGRATION jobId                                   | Switch to target ShardingSphere metadata, xx: jobId               | APPLY MIGRATION 1234                         |
 
 ## Circuit Breaker
 
@@ -66,7 +66,9 @@ RAL (Resource & Rule Administration Language) responsible for hint, circuit brea
 | SHOW ALL VARIABLES                                                        | Query proxy all properties configuration                                                                                                                | SHOW ALL VARIABLES                                        |
 | SHOW VARIABLE variable_name                                               | Query proxy variable, name is split by underscore                                                                                                       | SHOW VARIABLE sql_show                                    |
 | REFRESH TABLE METADATA                                                    | Refresh the metadata of all tables                                                                                                                      | REFRESH TABLE METADATA                                    |
-| REFRESH TABLE METADATA [tableName / tableName FROM RESOURCE resourceName] | Refresh the metadata of a table                                                                                                                         | REFRESH TABLE METADATA t_order FROM resource ds_1         |
+| REFRESH TABLE METADATA tableName                                          | Refresh the metadata of the specified table                                                                                                             | REFRESH TABLE METADATA t_order                            |
+| REFRESH TABLE METADATA tableName FROM RESOURCE resourceName               | Refresh the tables' metadata in the specified data source                                                                                               | REFRESH TABLE METADATA t_order FROM RESOURCE ds_1         |
+| REFRESH TABLE METADATA FROM RESOURCE resourceName SCHEMA schemaName       | Refresh the tables' metadata in a schema of a specified data source. If there are no tables in the schema, the schema will be deleted.                  | REFRESH TABLE METADATA FROM RESOURCE ds_1 SCHEMA db_schema|
 | SHOW TABLE METADATA tableName [, tableName] ...                           | Query table metadata                                                                                                                                    | SHOW TABLE METADATA t_order                               |
 | EXPORT DATABASE CONFIG [FROM database_name] [, file="file_path"]          | Export resources and rule configurations to YAML format                                                                                                 | EXPORT DATABASE CONFIG FROM readwrite_splitting_db        |
 | IMPORT DATABASE CONFIG FILE="file_path"                                   | Import resources and rule configuration from YAML, only supports import into an empty database                                                          | IMPORT DATABASE CONFIG FILE = "/xxx/config-sharding.yaml" |

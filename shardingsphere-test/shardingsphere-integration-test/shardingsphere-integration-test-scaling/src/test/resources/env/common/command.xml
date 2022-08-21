@@ -18,25 +18,25 @@
 <command>
     <create-database-sharding-algorithm>
         CREATE SHARDING ALGORITHM database_inline (
-        TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="ds_${user_id % 2}")))
+        TYPE(NAME="INLINE",PROPERTIES("algorithm-expression"="ds_${user_id % 2}")))
     </create-database-sharding-algorithm>
     
     <create-order-sharding-algorithm>
         CREATE SHARDING ALGORITHM t_order_inline (
-        TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="t_order_${order_id % 2}")))
+        TYPE(NAME="INLINE",PROPERTIES("algorithm-expression"="t_order_${order_id % 2}")))
     </create-order-sharding-algorithm>
     
     <create-order-item-sharding-algorithm>
         CREATE SHARDING ALGORITHM t_order_item_inline (
-        TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="t_order_item_${order_id % 2}")))
+        TYPE(NAME="INLINE",PROPERTIES("algorithm-expression"="t_order_item_${order_id % 2}")))
     </create-order-item-sharding-algorithm>
     
     <create-order-table-rule>
         CREATE SHARDING TABLE RULE t_order(
         RESOURCES(ds_0,ds_1),
         SHARDING_COLUMN=order_id,
-        TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=4)),
-        KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
+        TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="4")),
+        KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
         )
     </create-order-table-rule>
     
@@ -44,27 +44,27 @@
         CREATE SHARDING TABLE RULE t_order_item(
         RESOURCES(ds_0,ds_1),
         SHARDING_COLUMN=order_id,
-        TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=4)),
-        KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
+        TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="4")),
+        KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
         );
     </create-order-item-table-rule>
     
     <alter-sharding-algorithm>
         ALTER SHARDING ALGORITHM database_inline
-        (TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="ds_${user_id % 3 + 2}")))
+        (TYPE(NAME="INLINE",PROPERTIES("algorithm-expression"="ds_${user_id % 3 + 2}")))
     </alter-sharding-algorithm>
     
     <alter-order-with-item-auto-table-rule>
         ALTER SHARDING TABLE RULE t_order(
         RESOURCES(ds_2, ds_3, ds_4),
         SHARDING_COLUMN=order_id,
-        TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=6)),
-        KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
+        TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="6")),
+        KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
         ),t_order_item(
         RESOURCES(ds_2, ds_3, ds_4),
         SHARDING_COLUMN=order_id,
-        TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=6)),
-        KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
+        TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="6")),
+        KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
         )
     </alter-order-with-item-auto-table-rule>
     
@@ -72,8 +72,8 @@
         ALTER SHARDING TABLE RULE t_order(
         RESOURCES(ds_2, ds_3, ds_4),
         SHARDING_COLUMN=order_id,
-        TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=6)),
-        KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
+        TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="6")),
+        KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
         )
     </alter-order-auto-table-rule>
     

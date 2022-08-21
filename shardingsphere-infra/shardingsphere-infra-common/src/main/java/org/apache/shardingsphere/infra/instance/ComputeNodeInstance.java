@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.instance;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.state.StateContext;
@@ -30,7 +29,6 @@ import java.util.Collection;
 /**
  * Instance of compute node.
  */
-@RequiredArgsConstructor
 @Getter
 @Setter
 public final class ComputeNodeInstance {
@@ -42,6 +40,11 @@ public final class ComputeNodeInstance {
     private Collection<String> labels = new ArrayList<>();
     
     private volatile long workerId;
+    
+    public ComputeNodeInstance(final InstanceMetaData metaData) {
+        this.metaData = metaData;
+        workerId = -1L;
+    }
     
     /**
      * Set labels.

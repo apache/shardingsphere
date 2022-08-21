@@ -51,10 +51,8 @@ execute
     | showTableMetadata
     | showSQLParserRule
     | alterSQLParserRule
-    | showAuthorityRule
     | showTransactionRule
     | alterTransactionRule
-    | showTrafficRules
     | dropTrafficRule
     | createTrafficRule
     | alterTrafficRule
@@ -63,5 +61,8 @@ execute
     | importDatabaseConfiguration
     | convertYamlConfiguration
     | showSQLTranslatorRule
+    | showMigrationProcessConfiguration
+    | createMigrationProcessConfiguration
+    | alterMigrationProcessConfiguration
     ) SEMI?
     ;

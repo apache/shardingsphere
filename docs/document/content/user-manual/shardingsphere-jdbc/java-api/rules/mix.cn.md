@@ -3,108 +3,85 @@ title = "混合规则"
 weight = 9
 +++
 
-混合配置的规则项之间的叠加使用是通过数据源名称和表名称关联的。
+## 背景信息
 
-如果前一个规则是面向数据源聚合的，下一个规则在配置数据源时，则需要使用前一个规则配置的聚合后的逻辑数据源名称；
-同理，如果前一个规则是面向表聚合的，下一个规则在配置表时，则需要使用前一个规则配置的聚合后的逻辑表名称。
+ShardingSphere 涵盖了很多功能，例如，分库分片、读写分离、高可用、数据脱敏等。这些功能用户可以单独进行使用，也可以配合一起使用，下面是基于 JAVA API 的配置示例。
 
-## 配置项说明
+## 配置示例
 
 ```java
-/* 数据源配置 */
-HikariDataSource writeDataSource0 = new HikariDataSource();
-writeDataSource0.setDriverClassName("com.mysql.jdbc.Driver");
-writeDataSource0.setJdbcUrl("jdbc:mysql://localhost:3306/db0?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8");
-writeDataSource0.setUsername("root");
-writeDataSource0.setPassword("");
+// 分片配置
+private ShardingRuleConfiguration createShardingRuleConfiguration() {
+    ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+    result.getTables().add(getOrderTableRuleConfiguration());
+    result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "inline"));
+    result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "standard_test_tbl"));
+    Properties props = new Properties();
+    props.setProperty("algorithm-expression", "demo_ds_${user_id % 2}");
+    result.getShardingAlgorithms().put("inline", new AlgorithmConfiguration("INLINE", props));
+    result.getShardingAlgorithms().put("standard_test_tbl", new AlgorithmConfiguration("STANDARD_TEST_TBL", new Properties()));
+    result.getKeyGenerators().put("snowflake", new AlgorithmConfiguration("SNOWFLAKE", new Properties()));
+    return result;
+}
 
-HikariDataSource writeDataSource1 = new HikariDataSource();
-// ...忽略其他数据库配置项
+private ShardingTableRuleConfiguration getOrderTableRuleConfiguration() {
+    ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order", "demo_ds_${0..1}.t_order_${[0, 1]}");
+    result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake"));
+    return result;
+}
 
-HikariDataSource read0OfwriteDataSource0 = new HikariDataSource();
-// ...忽略其他数据库配置项
+// 动态读写分离配置
+private static ReadwriteSplittingRuleConfiguration createReadwriteSplittingConfiguration() {
+    ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfiguration1 = new ReadwriteSplittingDataSourceRuleConfiguration("replica_ds_0", new DynamicReadwriteSplittingStrategyConfiguration("readwrite_ds_0", true), "");
+    ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfiguration2 = new ReadwriteSplittingDataSourceRuleConfiguration("replica_ds_1", new DynamicReadwriteSplittingStrategyConfiguration("readwrite_ds_1", true), "");
+    Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedList<>();
+    dataSources.add(dataSourceRuleConfiguration1);
+    dataSources.add(dataSourceRuleConfiguration2);
+    return new ReadwriteSplittingRuleConfiguration(dataSources, Collections.emptyMap());
+}
 
-HikariDataSource read1OfwriteDataSource0 = new HikariDataSource();
-// ...忽略其他数据库配置项
+// 数据库发现配置
+private static DatabaseDiscoveryRuleConfiguration createDatabaseDiscoveryConfiguration() {
+    DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfiguration1 = new DatabaseDiscoveryDataSourceRuleConfiguration("readwrite_ds_0", Arrays.asList("ds_0, ds_1, ds_2"), "mgr-heartbeat", "mgr");
+    DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfiguration2 = new DatabaseDiscoveryDataSourceRuleConfiguration("readwrite_ds_1", Arrays.asList("ds_3, ds_4, ds_5"), "mgr-heartbeat", "mgr");
+    Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSources = new LinkedList<>();    
+    dataSources.add(dataSourceRuleConfiguration1);
+    dataSources.add(dataSourceRuleConfiguration2);
+    return new DatabaseDiscoveryRuleConfiguration(configs, createDiscoveryHeartbeats(), createDiscoveryTypes());
+}
 
-HikariDataSource read0OfwriteDataSource1 = new HikariDataSource();
-// ...忽略其他数据库配置项
+private static DatabaseDiscoveryRuleConfiguration createDatabaseDiscoveryConfiguration() {
+    DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfiguration = new DatabaseDiscoveryDataSourceRuleConfiguration("readwrite_ds_1", Arrays.asList("ds_3, ds_4, ds_5"), "mgr-heartbeat", "mgr");
+    return new DatabaseDiscoveryRuleConfiguration(Collections.singleton(dataSourceRuleConfiguration), createDiscoveryHeartbeats(), createDiscoveryTypes());
+}
 
-HikariDataSource read1OfwriteDataSource1 = new HikariDataSource();
-// ...忽略其他数据库配置项
+private static Map<String, AlgorithmConfiguration> createDiscoveryTypes() {
+    Map<String, AlgorithmConfiguration> result = new HashMap<>(1， 1);
+    Properties props = new Properties();
+    props.put("group-name", "558edd3c-02ec-11ea-9bb3-080027e39bd2");
+    discoveryTypes.put("mgr", new AlgorithmConfiguration("MGR", props));
+    return result;
+}
 
-Map<String, DataSource> datasourceMaps = new HashMap<>(6);
+private static Map<String, DatabaseDiscoveryHeartBeatConfiguration> createDiscoveryHeartbeats() {
+    Map<String, DatabaseDiscoveryHeartBeatConfiguration> result = new HashMap<>(1， 1);
+    Properties props = new Properties();
+    props.put("keep-alive-cron", "0/5 * * * * ?");
+    discoveryHeartBeatConfiguration.put("mgr-heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(props));
+    return result;
+}
 
-datasourceMaps.put("write_ds0", writeDataSource0);
-datasourceMaps.put("write_ds0_read0", read0OfwriteDataSource0);
-datasourceMaps.put("write_ds0_read1", read1OfwriteDataSource0);
-
-datasourceMaps.put("write_ds1", writeDataSource1);
-datasourceMaps.put("write_ds1_read0", read0OfwriteDataSource1);
-datasourceMaps.put("write_ds1_read1", read1OfwriteDataSource1);
-
-/* 分片规则配置 */
-// 表达式 ds_${0..1} 枚举值表示的是主从配置的逻辑数据源名称列表
-ShardingTableRuleConfiguration tOrderRuleConfiguration = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${[0, 1]}");
-tOrderRuleConfiguration.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake"));
-tOrderRuleConfiguration.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "tOrderInlineShardingAlgorithm"));
-Properties tOrderShardingInlineProps = new Properties();
-tOrderShardingInlineProps.setProperty("algorithm-expression", "t_order_${order_id % 2}");
-tOrderRuleConfiguration.getShardingAlgorithms().putIfAbsent("tOrderInlineShardingAlgorithm", new AlgorithmConfiguration("INLINE",tOrderShardingInlineProps));
-
-ShardingTableRuleConfiguration tOrderItemRuleConfiguration = new ShardingTableRuleConfiguration("t_order_item", "ds_${0..1}.t_order_item_${[0, 1]}");
-tOrderItemRuleConfiguration.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_item_id", "snowflake"));
-tOrderRuleConfiguration.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_item_id", "tOrderItemInlineShardingAlgorithm"));
-Properties tOrderItemShardingInlineProps = new Properties();
-tOrderItemShardingInlineProps.setProperty("algorithm-expression", "t_order_item_${order_item_id % 2}");
-tOrderRuleConfiguration.getShardingAlgorithms().putIfAbsent("tOrderItemInlineShardingAlgorithm", new AlgorithmConfiguration("INLINE",tOrderItemShardingInlineProps));
-
-ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-shardingRuleConfiguration.getTables().add(tOrderRuleConfiguration);
-shardingRuleConfiguration.getTables().add(tOrderItemRuleConfiguration);
-shardingRuleConfiguration.getBindingTableGroups().add("t_order, t_order_item");
-shardingRuleConfiguration.getBroadcastTables().add("t_bank");
-// 默认分库策略
-shardingRuleConfiguration.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "default_db_strategy_inline"));
-Properties defaultDatabaseStrategyInlineProps = new Properties();
-defaultDatabaseStrategyInlineProps.setProperty("algorithm-expression", "ds_${user_id % 2}");
-shardingRuleConfiguration.getShardingAlgorithms().put("default_db_strategy_inline", new AlgorithmConfiguration("INLINE", defaultDatabaseStrategyInlineProps));
-// 分布式序列算法配置
-Properties snowflakeProperties = new Properties();
-shardingRuleConfiguration.getKeyGenerators().put("snowflake", new AlgorithmConfiguration("SNOWFLAKE", snowflakeProperties));
-
-/* 数据加密规则配置 */
-Properties encryptProperties = new Properties();
-encryptProperties.setProperty("aes-key-value", "123456");
-EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("username", "username", "", "username_plain", "name_encryptor");
-EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", "pwd", "assisted_query_pwd", "", "pwd_encryptor");
-EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("t_user", Arrays.asList(columnConfigAes, columnConfigTest));
-
-Map<String, AlgorithmConfiguration> encryptAlgorithmConfigs = new LinkedHashMap<>(2, 1);
-encryptAlgorithmConfigs.put("name_encryptor", new AlgorithmConfiguration("AES", encryptProperties));
-encryptAlgorithmConfigs.put("pwd_encryptor", new AlgorithmConfiguration("assistedTest", encryptProperties));
-EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), encryptAlgorithmConfigs);
-
-/* 读写分离规则配置 */
-Properties readwriteProps1 = new Properties();
-readwriteProps1.setProperty("write-data-source-name", "write_ds0");
-readwriteProps1.setProperty("read-data-source-names", "write_ds0_read0, write_ds0_read1");
-ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfiguration1 = new ReadwriteSplittingDataSourceRuleConfiguration("ds_0", "Static", readwriteProps1, "roundRobin");
-Properties readwriteProps2 = new Properties();
-readwriteProps2.setProperty("write-data-source-name", "write_ds0");
-readwriteProps2.setProperty("read-data-source-names", "write_ds1_read0, write_ds1_read1");
-ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfiguration2 = new ReadwriteSplittingDataSourceRuleConfiguration("ds_1", "Static", readwriteProps2, "roundRobin");
-
-// 负载均衡算法
-Map<String, AlgorithmConfiguration> loadBalanceMaps = new HashMap<>();
-loadBalanceMaps.put("roundRobin", new AlgorithmConfiguration("ROUND_ROBIN", new Properties()));
-
-ReadwriteSplittingRuleConfiguration readWriteSplittingyRuleConfiguration = new ReadwriteSplittingRuleConfiguration(Arrays.asList(dataSourceConfiguration1, dataSourceConfiguration2), loadBalanceMaps);
-
-/* 其他配置 */
-Properties otherProperties = new Properties();
-otherProperties.setProperty("sql-show", "true");
-
-/* shardingDataSource 就是最终被 ORM 框架或其他 jdbc 框架引用的数据源名称 */
-DataSource shardingDataSource = ShardingSphereDataSourceFactory.createDataSource(datasourceMaps, Arrays.asList(shardingRuleConfiguration, readWriteSplittingyRuleConfiguration, encryptRuleConfiguration), otherProperties);
+// 数据脱敏配置
+public EncryptRuleConfiguration createEncryptRuleConfiguration() {
+    Properties props = new Properties();
+    props.setProperty("aes-key-value", "123456");
+    EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("username", "username", "", "username_plain", "name_encryptor", null);
+    EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", "pwd", "assisted_query_pwd", "", "pwd_encryptor", null);
+    EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("t_user", Arrays.asList(columnConfigAes, columnConfigTest), null);
+    Map<String, AlgorithmConfiguration> encryptAlgorithmConfigs = new LinkedHashMap<>(2, 1);
+    encryptAlgorithmConfigs.put("name_encryptor", new AlgorithmConfiguration("AES", props));
+    encryptAlgorithmConfigs.put("pwd_encryptor", new AlgorithmConfiguration("assistedTest", props));
+    EncryptRuleConfiguration result = new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), encryptAlgorithmConfigs);
+    return result;
+}
 ```

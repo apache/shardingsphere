@@ -22,9 +22,7 @@ import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.orderby.item.OrderByItemConverterUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBySegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
 
-import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -33,18 +31,9 @@ import java.util.Optional;
 public final class GroupByConverter implements SQLSegmentConverter<GroupBySegment, SqlNodeList> {
     
     @Override
-    public Optional<SqlNodeList> convertToSQLNode(final GroupBySegment segment) {
+    public Optional<SqlNodeList> convert(final GroupBySegment segment) {
         return null == segment || segment.getGroupByItems().isEmpty()
                 ? Optional.empty()
-                : Optional.of(new SqlNodeList(OrderByItemConverterUtil.convertToSQLNode(segment.getGroupByItems()), SqlParserPos.ZERO));
-    }
-    
-    @Override
-    public Optional<GroupBySegment> convertToSQLSegment(final SqlNodeList sqlNodeList) {
-        if (null == sqlNodeList || 0 == sqlNodeList.size()) {
-            return Optional.empty();
-        }
-        Collection<OrderByItemSegment> orderByItems = OrderByItemConverterUtil.convertToSQLSegment(sqlNodeList);
-        return Optional.of(new GroupBySegment(getStartIndex(sqlNodeList), getStopIndex(sqlNodeList), orderByItems));
+                : Optional.of(new SqlNodeList(OrderByItemConverterUtil.convert(segment.getGroupByItems()), SqlParserPos.ZERO));
     }
 }

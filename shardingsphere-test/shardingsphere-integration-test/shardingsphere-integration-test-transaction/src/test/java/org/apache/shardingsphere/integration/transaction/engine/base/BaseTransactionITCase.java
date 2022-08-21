@@ -20,10 +20,13 @@ package org.apache.shardingsphere.integration.transaction.engine.base;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.integration.transaction.framework.param.TransactionParameterized;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -171,6 +174,7 @@ public abstract class BaseTransactionITCase extends BaseITCase {
     }
     
     protected boolean waitExpectedTransactionRule(final TransactionType expectedTransType, final String expectedProviderType, final int maxWaitTimes) {
+        ThreadUtil.sleep(5, TimeUnit.SECONDS);
         Connection connection = getProxyConnection();
         int waitTimes = 0;
         do {
@@ -196,5 +200,24 @@ public abstract class BaseTransactionITCase extends BaseITCase {
         }
         statement.close();
         return result;
+    }
+    
+    protected void callTestCases(final TransactionParameterized parameterized) {
+        for (Class<? extends BaseTransactionTestCase> each : parameterized.getTransactionTestCaseClasses()) {
+            log.info("Transaction IT {} -> {} test begin.", parameterized, each.getSimpleName());
+            try {
+                each.getConstructor(BaseTransactionITCase.class, DataSource.class).newInstance(this, getDataSource()).execute();
+                // CHECKSTYLE:OFF
+            } catch (final Exception ex) {
+                // CHECKSTYLE:ON
+                log.error(String.format("Transaction IT %s -> %s test failed", parameterized, each.getSimpleName()), ex);
+                throw new ShardingSphereException(ex);
+            }
+            log.info("Transaction IT {} -> {} test end.", parameterized, each.getSimpleName());
+            try {
+                getDataSource().close();
+            } catch (final SQLException ignored) {
+            }
+        }
     }
 }

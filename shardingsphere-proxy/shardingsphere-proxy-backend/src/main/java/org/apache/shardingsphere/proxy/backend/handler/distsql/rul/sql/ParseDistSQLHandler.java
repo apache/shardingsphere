@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.SQLRULBackendHandler;
-import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
@@ -53,10 +52,6 @@ public final class ParseDistSQLHandler extends SQLRULBackendHandler<ParseStateme
     private SQLStatement parseSQL(final ContextManager contextManager) {
         SQLParserRule sqlParserRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         String databaseType = getConnectionSession().getDatabaseType().getType();
-        try {
-            return sqlParserRule.getSQLParserEngine(databaseType).parse(getSqlStatement().getSql(), false);
-        } catch (final SQLParsingException ex) {
-            throw new SQLParsingException("You have a syntax error in your parsed statement");
-        }
+        return sqlParserRule.getSQLParserEngine(databaseType).parse(getSqlStatement().getSql(), false);
     }
 }

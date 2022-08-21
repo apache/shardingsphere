@@ -74,7 +74,6 @@
                                 <literal-expression value="1" start-index="64" stop-index="64" />
                             </right>
                         </binary-operation-expression>
-                        <common-expression text="1-1" start-index="62" stop-index="64" />
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -141,7 +140,7 @@
 
     <select sql-case-id="select_count_with_binding_tables_without_join" parameters="1, 2, 9, 10">
         <from>
-            <join-table>
+            <join-table join-type="COMMA">
                 <left>
                     <simple-table name="t_order" alias="o" start-index="36" stop-index="44" />
                 </left>
@@ -244,7 +243,7 @@
 
     <select sql-case-id="select_count_with_binding_tables_with_join" parameters="1, 2, 9, 10">
         <from>
-            <join-table>
+            <join-table join-type="INNER">
                 <left>
                     <simple-table name="t_order" alias="o" start-index="36" stop-index="44" />
                 </left>

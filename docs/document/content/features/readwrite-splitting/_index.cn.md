@@ -27,6 +27,12 @@ chapter = true
 
 透明化读写分离所带来的影响，让使用方尽量像使用一个数据库一样使用主从数据库集群，是 Apache ShardingSphere 读写分离模块的主要设计目标。
 
+## 应用场景
+
+### 复杂的主从数据库架构
+
+许多系统通过采用主从数据库架构的配置来提高整个系统的吞吐量，但是主从的配置也给业务的使用带来了一定的复杂性。接入 ShardingSphere，可以利用读写分离功能管理主从数据库，实现透明化的读写分离功能，让用户像使用一个数据库一样使用主从架构的数据库。
+
 ## 相关参考
 
 [Java API](/cn/user-manual/shardingsphere-jdbc/java-api/rules/readwrite-splitting)\

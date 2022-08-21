@@ -21,6 +21,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
 import java.math.BigDecimal;
@@ -34,6 +35,17 @@ import java.util.concurrent.ThreadLocalRandom;
  * Scaling case helper, some config is different between different database.
  */
 public final class ScalingCaseHelper {
+    
+    private static final SnowflakeKeyGenerateAlgorithm SNOWFLAKE_KEY_GENERATE_ALGORITHM = new SnowflakeKeyGenerateAlgorithm();
+    
+    /**
+     * Generate snowflake key.
+     *
+     * @return snowflake key
+     */
+    public static long generateSnowflakeKey() {
+        return SNOWFLAKE_KEY_GENERATE_ALGORITHM.generateKey();
+    }
     
     /**
      * Generate MySQL insert data, contains full fields.
@@ -50,7 +62,7 @@ public final class ScalingCaseHelper {
         List<Object[]> orderData = new ArrayList<>(insertRows);
         List<Object[]> orderItemData = new ArrayList<>(insertRows);
         for (int i = 0; i < insertRows; i++) {
-            int orderId = generateInt(0, 6);
+            long orderId = generateSnowflakeKey();
             int userId = generateInt(0, 6);
             LocalDateTime now = LocalDateTime.now();
             int randomInt = generateInt(-100, 100);

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.integration.data.pipeline.cases.task;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseIncrementTask;
+import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingCaseHelper;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -32,7 +33,7 @@ public final class MySQLIncrementTask extends BaseIncrementTask {
     
     private final JdbcTemplate jdbcTemplate;
     
-    private final KeyGenerateAlgorithm keyGenerateAlgorithm;
+    private final KeyGenerateAlgorithm primaryKeyGenerateAlgorithm;
     
     private final Boolean incrementOrderItemTogether;
     
@@ -61,14 +62,16 @@ public final class MySQLIncrementTask extends BaseIncrementTask {
     private Object insertOrder() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         String status = random.nextInt() % 2 == 0 ? null : "NOT-NULL";
-        Object[] orderInsertDate = new Object[]{keyGenerateAlgorithm.generateKey(), random.nextInt(0, 6), random.nextInt(0, 6), random.nextInt(1, 99), status};
+        Object[] orderInsertDate = new Object[]{primaryKeyGenerateAlgorithm.generateKey(), ScalingCaseHelper.generateSnowflakeKey(), random.nextInt(0, 6),
+                random.nextInt(1, 99), status};
         jdbcTemplate.update("INSERT INTO t_order (id,order_id,user_id,t_unsigned_int,status) VALUES (?, ?, ?, ?, ?)", orderInsertDate);
         return orderInsertDate[0];
     }
     
     private Object insertOrderItem() {
-        String status = ThreadLocalRandom.current().nextInt() % 2 == 0 ? null : "NOT-NULL";
-        Object[] orderInsertItemDate = new Object[]{keyGenerateAlgorithm.generateKey(), ThreadLocalRandom.current().nextInt(0, 6), ThreadLocalRandom.current().nextInt(0, 6), status};
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        String status = random.nextInt() % 2 == 0 ? null : "NOT-NULL";
+        Object[] orderInsertItemDate = new Object[]{primaryKeyGenerateAlgorithm.generateKey(), ScalingCaseHelper.generateSnowflakeKey(), random.nextInt(0, 6), status};
         jdbcTemplate.update("INSERT INTO t_order_item(item_id,order_id,user_id,status) VALUES(?,?,?,?)", orderInsertItemDate);
         return orderInsertItemDate[0];
     }

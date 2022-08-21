@@ -17,20 +17,17 @@
 
 package org.apache.shardingsphere.data.pipeline.core.exception;
 
-import lombok.Getter;
+import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
 
 /**
  * Pipeline job not found exception.
  */
-@Getter
-public final class PipelineJobNotFoundException extends RuntimeException {
+public final class PipelineJobNotFoundException extends ShardingSphereSQLException {
     
     private static final long serialVersionUID = -903289953649758722L;
     
-    private final String jobId;
-    
-    public PipelineJobNotFoundException(final String message, final String jobId) {
-        super(message);
-        this.jobId = jobId;
+    public PipelineJobNotFoundException(final String jobId) {
+        super(XOpenSQLState.GENERAL_ERROR, 16000, "Can not find pipeline job `%s`", jobId);
     }
 }

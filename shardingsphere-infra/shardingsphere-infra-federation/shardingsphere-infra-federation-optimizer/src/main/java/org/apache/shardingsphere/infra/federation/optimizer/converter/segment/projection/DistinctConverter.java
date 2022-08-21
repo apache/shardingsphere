@@ -32,12 +32,7 @@ import java.util.Optional;
 public final class DistinctConverter implements SQLSegmentConverter<ProjectionsSegment, SqlNodeList> {
     
     @Override
-    public Optional<SqlNodeList> convertToSQLNode(final ProjectionsSegment segment) {
+    public Optional<SqlNodeList> convert(final ProjectionsSegment segment) {
         return segment.isDistinctRow() ? Optional.of(new SqlNodeList(Collections.singletonList(SqlSelectKeyword.DISTINCT.symbol(SqlParserPos.ZERO)), SqlParserPos.ZERO)) : Optional.empty();
-    }
-    
-    @Override
-    public Optional<ProjectionsSegment> convertToSQLSegment(final SqlNodeList sqlNode) {
-        return Optional.empty();
     }
 }

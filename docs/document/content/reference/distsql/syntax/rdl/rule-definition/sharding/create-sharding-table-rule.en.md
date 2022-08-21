@@ -62,14 +62,14 @@ algorithmName ::=
     - `RESOURCES` can only use resources that have been added to the current database, and the required resources can be
       specified by enumeration or INLINE expression;
     - Only auto sharding algorithm can be used, please refer
-      to [Auto Sharding Algorithm](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/#auto-sharding-algorithm).
+      to [Auto Sharding Algorithm](/en/user-manual/common-config/builtin-algorithm/sharding/#auto-sharding-algorithm).
 - `algorithmType` is the sharding algorithm type, please refer
   to [Sharding Algorithm](en/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding);
 - The auto-generated algorithm naming rule is `tableName` _ `strategyType` _ `shardingAlgorithmType`;
 - The auto-generated primary key strategy naming rule is `tableName` _ `strategyType`;
 - `KEY_GENERATE_STRATEGY` is used to specify the primary key generation strategy, which is optional. For the primary key
   generation strategy, please refer
-  to [Distributed Primary Key](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen/).
+  to [Distributed Primary Key](/en/user-manual/common-config/builtin-algorithm/keygen/).
 
 ### Example
 
@@ -80,16 +80,16 @@ algorithmName ::=
 ```SQL
 -- create sharding algorithms
 CREATE SHARDING ALGORITHM database_inline (
-    TYPE(NAME=inline, PROPERTIES("algorithm-expression"="t_order_${user_id % 2}"))
+    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${user_id % 2}"))
 ), table_inline (
-    TYPE(NAME=inline, PROPERTIES("algorithm-expression"="t_order_${order_id % 2}"))
+    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${order_id % 2}"))
 ); 
 
 -- create a sharding rule by specifying sharding algorithms
 CREATE SHARDING TABLE RULE t_order (
     DATANODES("ds_${0..1}.t_order_${0..1}"),
-    DATABASE_STRATEGY(TYPE=standard, SHARDING_COLUMN=user_id, SHARDING_ALGORITHM=database_inline),
-    TABLE_STRATEGY(TYPE=standard, SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=table_inline)
+    DATABASE_STRATEGY(TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM=database_inline),
+    TABLE_STRATEGY(TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=table_inline)
 );
 ```
 
@@ -98,20 +98,20 @@ CREATE SHARDING TABLE RULE t_order (
 ```sql
 -- create sharding algorithms
 CREATE SHARDING ALGORITHM database_inline (
-    TYPE(NAME=inline, PROPERTIES("algorithm-expression"="t_order_${user_id % 2}"))
+    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${user_id % 2}"))
 ), table_inline (
-    TYPE(NAME=inline, PROPERTIES("algorithm-expression"="t_order_${order_id % 2}"))
+    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${order_id % 2}"))
 ); 
 
 -- create a default sharding database strategy
 CREATE DEFAULT SHARDING DATABASE STRATEGY (
-    TYPE = standard, SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=database_inline
+    TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=database_inline
 );
 
 -- create a sharding table rule by specifying a sharding algorithm
 CREATE SHARDING TABLE RULE t_order (
     DATANODES("ds_${0..1}.t_order_${0..1}"),
-    TABLE_STRATEGY(TYPE=standard, SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=table_inline)
+    TABLE_STRATEGY(TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=table_inline)
 );
 ```
 
@@ -120,19 +120,19 @@ CREATE SHARDING TABLE RULE t_order (
 ```SQL
 -- create sharding algorithms
 CREATE SHARDING ALGORITHM database_inline (
-    TYPE(NAME=inline, PROPERTIES("algorithm-expression"="t_order_${user_id % 2}"))
+    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${user_id % 2}"))
 ), table_inline (
-    TYPE(NAME=inline, PROPERTIES("algorithm-expression"="t_order_${order_id % 2}"))
+    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${order_id % 2}"))
 ); 
 
 -- create a default sharding database strategy
 CREATE DEFAULT SHARDING DATABASE STRATEGY (
-    TYPE = standard, SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=database_inline
+    TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=database_inline
 );
 
 -- create a default sharding table strategy
 CREATE DEFAULT SHARDING TABLE STRATEGY (
-    TYPE = standard, SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=table_inline
+    TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=table_inline
 );
 
 -- create a sharding table rule 
@@ -146,8 +146,8 @@ CREATE SHARDING TABLE RULE t_order (
 ```sql
 CREATE SHARDING TABLE RULE t_order (
     DATANODES("ds_${0..1}.t_order_${0..1}"),
-    DATABASE_STRATEGY(TYPE=standard, SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME=inline, PROPERTIES("algorithm-expression"="ds_${user_id % 2}")))),
-    TABLE_STRATEGY(TYPE=standard, SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME=inline, PROPERTIES("algorithm-expression"="ds_${order_id % 2}"))))
+    DATABASE_STRATEGY(TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME="inline", PROPERTIES("algorithm-expression"="ds_${user_id % 2}")))),
+    TABLE_STRATEGY(TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME="inline", PROPERTIES("algorithm-expression"="ds_${order_id % 2}"))))
 );
 ```
 
@@ -158,7 +158,7 @@ CREATE SHARDING TABLE RULE t_order (
 ```sql
 CREATE SHARDING TABLE RULE t_order (
     RESOURCES(ds_0, ds_1),
-    SHARDING_COLUMN=order_id, TYPE(NAME=MOD, PROPERTIES("sharding-count"=4))
+    SHARDING_COLUMN=order_id, TYPE(NAME="MOD", PROPERTIES("sharding-count"="4"))
 );
 ```
 

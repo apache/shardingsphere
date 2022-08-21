@@ -23,11 +23,13 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
+import java.util.Collection;
+
 /**
  * Transaction test parameters.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class TransactionParameterized {
     
     private final DatabaseType databaseType;
@@ -40,10 +42,12 @@ public final class TransactionParameterized {
     
     private final String dockerImageName;
     
-    private final Class<? extends BaseTransactionTestCase> transactionTestCaseClass;
+    private final String group;
+    
+    private final Collection<Class<? extends BaseTransactionTestCase>> transactionTestCaseClasses;
     
     @Override
     public String toString() {
-        return String.format("%s -> %s -> %s -> %s -> %s -> %s", databaseType.getType(), adapter, transactionType, provider, dockerImageName, transactionTestCaseClass.getSimpleName());
+        return String.format("%s -> %s -> %s -> %s -> %s -> %s", databaseType.getType(), adapter, transactionType, provider, dockerImageName, group);
     }
 }

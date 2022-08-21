@@ -105,8 +105,8 @@ keyGeneratorDefinition:
     keyGeneratorName (algorithmDefinition)
 ```
 - `RESOURCES` 需使用 RDL 管理的数据源资源；
-- `shardingAlgorithmType` 指定自动分片算法类型，请参考  [自动分片算法](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/)；
-- `keyGenerateStrategyType` 指定分布式主键生成策略，请参考 [分布式主键](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen/)；
+- `shardingAlgorithmType` 指定自动分片算法类型，请参考  [自动分片算法](/cn/user-manual/common-config/builtin-algorithm/sharding/)；
+- `keyGenerateStrategyType` 指定分布式主键生成策略，请参考 [分布式主键](/cn/user-manual/common-config/builtin-algorithm/keygen/)；
 - 重复的 `tableName` 将无法被创建；
 - `shardingAlgorithm` 能够被不同的 `Sharding Table Rule` 复用，因此在执行 `DROP SHARDING TABLE RULE` 时，对应的 `shardingAlgorithm` 不会被移除；
 - 如需移除 `shardingAlgorithm`，请执行 `DROP SHARDING ALGORITHM`；
@@ -206,14 +206,14 @@ DROP SHARDING KEY GENERATOR snowflake_key_generator;
 ```sql
 CREATE SHARDING TABLE RULE t_order (
 RESOURCES(resource_0,resource_1),
-SHARDING_COLUMN=order_id,TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=4)),
-KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME=snowflake))
+SHARDING_COLUMN=order_id,TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="4")),
+KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake"))
 );
 
 ALTER SHARDING TABLE RULE t_order (
 RESOURCES(resource_0,resource_1,resource_2,resource_3),
-SHARDING_COLUMN=order_id,TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=16)),
-KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME=snowflake))
+SHARDING_COLUMN=order_id,TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="16")),
+KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake"))
 );
 
 DROP SHARDING TABLE RULE t_order;
@@ -225,26 +225,26 @@ DROP SHARDING ALGORITHM t_order_hash_mod;
 
 ```sql
 CREATE SHARDING ALGORITHM table_inline (
-TYPE(NAME=inline,PROPERTIES("algorithm-expression"="t_order_item_${order_id % 2}"))
+TYPE(NAME="inline",PROPERTIES("algorithm-expression"="t_order_item_${order_id % 2}"))
 );
 
 CREATE SHARDING TABLE RULE t_order_item (
 DATANODES("resource_${0..1}.t_order_item_${0..1}"),
-DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME=inline,PROPERTIES("algorithm-expression"="resource_${user_id % 2}")))),
-TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=table_inline),
+DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME="inline",PROPERTIES("algorithm-expression"="resource_${user_id % 2}")))),
+TABLE_STRATEGY(TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=table_inline),
 KEY_GENERATE_STRATEGY(COLUMN=another_id,KEY_GENERATOR=snowflake_key_generator)
 );
 
 ALTER SHARDING ALGORITHM database_inline (
-TYPE(NAME=inline,PROPERTIES("algorithm-expression"="resource_${user_id % 4}"))
+TYPE(NAME="inline",PROPERTIES("algorithm-expression"="resource_${user_id % 4}"))
 ),table_inline (
-TYPE(NAME=inline,PROPERTIES("algorithm-expression"="t_order_item_${order_id % 4}"))
+TYPE(NAME="inline",PROPERTIES("algorithm-expression"="t_order_item_${order_id % 4}"))
 );
 
 ALTER SHARDING TABLE RULE t_order_item (
 DATANODES("resource_${0..3}.t_order_item${0..3}"),
-DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
-TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=table_inline),
+DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+TABLE_STRATEGY(TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=table_inline),
 KEY_GENERATE_STRATEGY(COLUMN=another_id,KEY_GENERATOR=snowflake_key_generator)
 );
 
@@ -253,11 +253,11 @@ DROP SHARDING TABLE RULE t_order_item;
 DROP SHARDING ALGORITHM database_inline;
 
 CREATE DEFAULT SHARDING DATABASE STRATEGY (
-TYPE = standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=database_inline
+TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=database_inline
 );
 
 ALTER DEFAULT SHARDING DATABASE STRATEGY (
-TYPE = standard,SHARDING_COLUMN=another_id,SHARDING_ALGORITHM=database_inline
+TYPE="standard",SHARDING_COLUMN=another_id,SHARDING_ALGORITHM=database_inline
 );
 
 DROP DEFAULT SHARDING DATABASE STRATEGY;
@@ -293,15 +293,17 @@ DROP SHARDING BROADCAST TABLE RULES t_b;
 CREATE SHARDING SCALING RULE sharding_scaling(
 INPUT(
   WORKER_THREAD=40,
-  BATCH_SIZE=1000
+  BATCH_SIZE=1000,
+  RATE_LIMITER(TYPE(NAME=QPS, PROPERTIES("qps"=50)))
 ),
 OUTPUT(
   WORKER_THREAD=40,
-  BATCH_SIZE=1000
+  BATCH_SIZE=1000,
+  RATE_LIMITER(TYPE(NAME=TPS, PROPERTIES("tps"=2000)))
 ),
-STREAM_CHANNEL(TYPE(NAME=MEMORY, PROPERTIES("block-queue-size"=10000))),
-COMPLETION_DETECTOR(TYPE(NAME=IDLE, PROPERTIES("incremental-task-idle-seconds-threshold"=1800))),
-DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH, PROPERTIES("chunk-size"=1000)))
+STREAM_CHANNEL(TYPE(NAME="MEMORY", PROPERTIES("block-queue-size"="10000"))),
+COMPLETION_DETECTOR(TYPE(NAME="IDLE", PROPERTIES("incremental-task-idle-seconds-threshold"="1800"))),
+DATA_CONSISTENCY_CHECKER(TYPE(NAME="DATA_MATCH", PROPERTIES("chunk-size"="1000")))
 );
 
 ENABLE SHARDING SCALING RULE sharding_scaling;

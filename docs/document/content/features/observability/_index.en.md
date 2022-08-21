@@ -36,6 +36,30 @@ Tracing and metrics need to collect system information through event tracking. L
 
 The goal of Apache ShardingSphere observability module is providing as many performance and statistical indicators as possible and isolating kernel code and embedded code.
 
+## Application Scenarios
+
+ShardingSphere provides observability for applications through the Agent module, and this feature applies to the following scenarios:
+
+### Monitoring panel
+
+The system's static information (such as application version) and dynamic information (such as the number of threads and SQL processing information) are exposed to a third-party application (such as Prometheus) using a standard interface. Administrators can visually monitor the real-time system status.
+
+### Monitoring application performance
+
+In ShardingSphere, a SQL statement needs to go through the processes of parsing, routing, rewriting, execution, and result merging before it is finally executed and the response can be output. If a SQL statement is complex and the overall execution takes a long time, how do we know which procedure has room for optimization?
+
+Through Agent plus Tracing, administrators can learn about the time consumption of each step of SQL execution. Thus, they can easily locate performance risks and formulate targeted SQL optimization schemes.
+
+### Tracing application links
+
+In a distributed application plus data sharding scenario, it is tricky to figure out which node the SQL statement is issued from and which data source the statement is finally executed on. If an exception occurs during SQL execution, how do we locate the node where the exception occurred?
+
+Agent + Tracing can help users solve the above problems.
+
+Through tracing the full link of the SQL execution process, users can get complete information such as "where the SQL comes from and where it is sent to". 
+
+They can also visually observe the SQL routing situation through the generated topological graph, make timely responses, and quickly locate the root cause of problems.
+
 ## Related References
 
 - [Usage of observability](/en/user-manual/shardingsphere-proxy/observability/)

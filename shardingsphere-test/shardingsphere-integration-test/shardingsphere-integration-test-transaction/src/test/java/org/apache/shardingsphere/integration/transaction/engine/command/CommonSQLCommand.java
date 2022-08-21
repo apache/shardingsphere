@@ -79,5 +79,4 @@ public final class CommonSQLCommand {
     
     @XmlElement(name = "create-order-item-table")
     private String createOrderItemTable;
-    
 }

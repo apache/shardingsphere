@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.opengauss.packet.command.generic;
 
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
+import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
@@ -84,7 +84,7 @@ public final class OpenGaussErrorResponsePacketTest {
     private OpenGaussErrorResponsePacket createErrorResponsePacket() {
         Map<Character, String> serverErrorMessages = new LinkedHashMap<>();
         serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_SEVERITY, PostgreSQLMessageSeverityLevel.FATAL);
-        serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_CODE, PostgreSQLErrorCode.INVALID_CATALOG_NAME.getErrorCode());
+        serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_CODE, PostgreSQLVendorError.INVALID_CATALOG_NAME.getSqlState().getValue());
         serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_MESSAGE, "database \"test\" does not exist");
         serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_ERRORCODE, "-1");
         serverErrorMessages.put(OpenGaussErrorResponsePacket.FIELD_TYPE_DETAIL, "detail");

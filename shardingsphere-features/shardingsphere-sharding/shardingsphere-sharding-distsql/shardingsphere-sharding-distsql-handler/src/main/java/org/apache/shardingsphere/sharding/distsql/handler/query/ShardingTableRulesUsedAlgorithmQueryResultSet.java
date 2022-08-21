@@ -48,11 +48,11 @@ public final class ShardingTableRulesUsedAlgorithmQueryResultSet implements Data
     }
     
     private void requireResult(final ShowShardingTableRulesUsedAlgorithmStatement statement, final Collection<Collection<Object>> data, final ShardingRule rule) {
-        if (!statement.getAlgorithmName().isPresent()) {
+        if (!statement.getShardingAlgorithmName().isPresent()) {
             return;
         }
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) rule.getConfiguration();
-        String algorithmName = statement.getAlgorithmName().get();
+        String algorithmName = statement.getShardingAlgorithmName().get();
         boolean matchDefaultDatabaseShardingStrategy = null != config.getDefaultDatabaseShardingStrategy()
                 && algorithmName.equals(config.getDefaultDatabaseShardingStrategy().getShardingAlgorithmName());
         boolean matchDefaultTableShardingStrategy = null != config.getDefaultTableShardingStrategy()

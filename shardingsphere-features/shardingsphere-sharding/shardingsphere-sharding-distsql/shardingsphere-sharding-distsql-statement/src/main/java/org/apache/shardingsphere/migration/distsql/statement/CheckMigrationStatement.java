@@ -23,7 +23,7 @@ import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
 
 /**
- * Check scaling statement.
+ * Check migration statement.
  */
 @RequiredArgsConstructor
 @Getter

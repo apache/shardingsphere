@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.migration.distsql.handler.query;
 
-import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
-import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
+import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
  */
 public final class CheckMigrationQueryResultSet implements DatabaseDistSQLResultSet {
     
-    private static final RuleAlteredJobAPI RULE_ALTERED_JOB_API = RuleAlteredJobAPIFactory.getInstance();
+    private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
     
     private Iterator<Collection<Object>> data;
     
@@ -48,9 +48,9 @@ public final class CheckMigrationQueryResultSet implements DatabaseDistSQLResult
         Map<String, DataConsistencyCheckResult> checkResultMap;
         AlgorithmSegment typeStrategy = checkMigrationStatement.getTypeStrategy();
         if (null == typeStrategy) {
-            checkResultMap = RULE_ALTERED_JOB_API.dataConsistencyCheck(checkMigrationStatement.getJobId());
+            checkResultMap = JOB_API.dataConsistencyCheck(checkMigrationStatement.getJobId());
         } else {
-            checkResultMap = RULE_ALTERED_JOB_API.dataConsistencyCheck(checkMigrationStatement.getJobId(), typeStrategy.getName(), typeStrategy.getProps());
+            checkResultMap = JOB_API.dataConsistencyCheck(checkMigrationStatement.getJobId(), typeStrategy.getName(), typeStrategy.getProps());
         }
         data = checkResultMap.entrySet().stream()
                 .map(each -> {

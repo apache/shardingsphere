@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.api.job;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -40,10 +41,14 @@ public enum JobType {
     
     private final String typeName;
     
+    private final String lowercaseTypeName;
+    
     private final String typeCode;
     
     JobType(final String typeName, final String typeCode) {
+        Preconditions.checkArgument(StringUtils.isAlpha(typeName), "type name must be character of [a-z]");
         this.typeName = typeName;
+        this.lowercaseTypeName = typeName.toLowerCase();
         Preconditions.checkArgument(typeCode.length() == 2, "code length is not 2");
         this.typeCode = typeCode;
     }
@@ -52,7 +57,7 @@ public enum JobType {
      * Value of by code.
      *
      * @param typeCode type code
-     * @return job type
+     * @return job type, might be null
      */
     public static JobType valueOfByCode(final String typeCode) {
         return CODE_JOB_TYPE_MAP.get(typeCode);

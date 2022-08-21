@@ -56,5 +56,4 @@ public final class JDBCDataSource extends AutoDataSource {
     private Connection createConnection() throws SQLException {
         return composedContainer.getJdbcContainer().getTargetDataSource().getConnection();
     }
-    
 }

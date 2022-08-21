@@ -24,7 +24,6 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.session.ConnectionContext;
@@ -107,9 +106,6 @@ public final class ConnectionSession {
     public void setCurrentDatabase(final String databaseName) {
         if (null != databaseName && databaseName.equals(this.databaseName)) {
             return;
-        }
-        if (transactionStatus.isInTransaction()) {
-            throw new ShardingSphereException("Failed to switch database, please terminate current transaction.");
         }
         this.databaseName = databaseName;
     }

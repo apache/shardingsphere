@@ -18,19 +18,13 @@
 package org.apache.shardingsphere.data.pipeline.mysql.prepare.datasource;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeEntry;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
-import org.apache.shardingsphere.data.pipeline.core.metadata.generator.PipelineDDLGenerator;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.AbstractDataSourcePreparer;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Data source preparer for MySQL.
@@ -41,24 +35,13 @@ public final class MySQLDataSourcePreparer extends AbstractDataSourcePreparer {
     @Override
     public void prepareTargetTables(final PrepareTargetTablesParameter parameter) {
         PipelineDataSourceManager dataSourceManager = parameter.getDataSourceManager();
-        try (Connection targetConnection = getTargetCachedDataSource(parameter.getDataSourceConfig(), dataSourceManager).getConnection()) {
-            for (String each : getCreateTableSQL(parameter)) {
+        try (Connection targetConnection = getCachedDataSource(parameter.getTargetDataSourceConfig(), dataSourceManager).getConnection()) {
+            for (String each : listCreateLogicalTableSQL(parameter)) {
                 executeTargetTableSQL(targetConnection, addIfNotExistsForCreateTableSQL(each));
-                log.info("create target table '{}' success", each);
             }
         } catch (final SQLException ex) {
             throw new PipelineJobPrepareFailedException("prepare target tables failed.", ex);
         }
-    }
-    
-    private List<String> getCreateTableSQL(final PrepareTargetTablesParameter parameter) {
-        PipelineDDLGenerator generator = new PipelineDDLGenerator(PipelineContext.getContextManager());
-        List<String> result = new LinkedList<>();
-        for (JobDataNodeEntry each : parameter.getTablesFirstDataNodes().getEntries()) {
-            String schemaName = parameter.getTableNameSchemaNameMapping().getSchemaName(each.getLogicTableName());
-            result.add(generator.generateLogicDDLSQL(new MySQLDatabaseType(), parameter.getDatabaseName(), schemaName, each.getLogicTableName()));
-        }
-        return result;
     }
     
     @Override

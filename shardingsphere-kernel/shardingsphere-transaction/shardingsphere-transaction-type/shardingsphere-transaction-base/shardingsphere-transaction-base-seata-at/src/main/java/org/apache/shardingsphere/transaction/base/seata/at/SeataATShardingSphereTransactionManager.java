@@ -90,9 +90,9 @@ public final class SeataATShardingSphereTransactionManager implements ShardingSp
     }
     
     @Override
-    public Connection getConnection(final String dataSourceName) throws SQLException {
+    public Connection getConnection(final String databaseName, final String dataSourceName) throws SQLException {
         Preconditions.checkState(enableSeataAT, "sharding seata-at transaction has been disabled.");
-        return dataSourceMap.get(dataSourceName).getConnection();
+        return dataSourceMap.get(databaseName + "." + dataSourceName).getConnection();
     }
     
     @Override

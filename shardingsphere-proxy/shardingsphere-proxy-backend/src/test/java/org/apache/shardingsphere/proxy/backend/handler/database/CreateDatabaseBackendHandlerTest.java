@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.infra.exception.DBCreateExistsException;
+import org.apache.shardingsphere.dialect.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
@@ -66,7 +66,7 @@ public final class CreateDatabaseBackendHandlerTest extends ProxyContextRestorer
     }
     
     @SneakyThrows
-    @Test(expected = DBCreateExistsException.class)
+    @Test(expected = DatabaseCreateExistsException.class)
     public void assertExecuteCreateExistDatabase() {
         when(ProxyContext.getInstance().databaseExists("test_db")).thenReturn(true);
         when(statement.getDatabaseName()).thenReturn("test_db");

@@ -42,7 +42,7 @@ public final class KernelDistSQLStatementParserEngine {
     
     private SQLStatement getSQLStatement(final String sql, final ParseASTNode parseASTNode) {
         if (parseASTNode.getRootNode() instanceof ErrorNode) {
-            throw new SQLParsingException("Unsupported SQL of `%s`", sql);
+            throw new SQLParsingException(sql);
         }
         return (SQLStatement) (new KernelDistSQLStatementVisitor()).visit(parseASTNode.getRootNode());
     }

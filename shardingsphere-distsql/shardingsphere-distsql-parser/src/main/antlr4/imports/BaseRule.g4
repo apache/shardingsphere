@@ -19,6 +19,14 @@ grammar BaseRule;
 
 import Symbol, Keyword, Literals;
 
+algorithmDefinition
+    : TYPE LP NAME EQ algorithmTypeName (COMMA propertiesDefinition)? RP
+    ;
+
+algorithmTypeName
+    : STRING
+    ;
+
 propertiesDefinition
     : PROPERTIES LP properties? RP
     ;

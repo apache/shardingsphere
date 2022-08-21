@@ -1,6 +1,6 @@
 +++
 title = "YAML 配置"
-weight = 2
+weight = 1
 chapter = true
 +++
 

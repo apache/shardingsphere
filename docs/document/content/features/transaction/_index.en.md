@@ -81,5 +81,23 @@ The following table can be used for comparison to help developers choose the sui
 | Concurrent performance | no loss        | severe loss          | slight loss       |
 | Applied scenarios  | Inconsistent processing by the business side | short transaction & low-level concurrency | long transaction & high concurrency |
 
+## Application Scenarios
+
+The database's transactions can meet ACID business requirements in a standalone application scenario. However, in distributed scenarios, traditional database solutions cannot manage and control global transactions, and users may find data inconsistency on multiple database nodes.
+
+ShardingSphere distributed transaction makes it easier to process distributed transactions and provides flexible and diverse solutions. Users can select the distributed transaction solutions that best fit their business scenarios among LOCAL, XA, and BASE modes.
+
+### Application Scenarios for ShardingSphere XA Transactions
+
+Strong data consistency is guaranteed in a distributed environment in terms of XA transactions. However, its performance may be degraded due to the synchronous blocking problem. It applies to business scenarios that require strong data consistency and low concurrency performance.
+
+### Application Scenarios for ShardingSphere BASE Transaction
+
+In terms of BASE transactions, final data consistency is guaranteed in a distributed environment. Unlike XA transactions, resources are not locked during the whole transaction process, so its performance is relatively higher.
+
+### Application Scenarios for ShardingSphere LOCAL Transaction
+
+In terms of LOCAL transactions, the data consistency and isolation among database nodes are not guaranteed in a distributed environment. Therefore, the business sides need to handle the inconsistencies by themselves. This applies to business scenarios where users would like to handle data inconsistency in a distributed environment by themselves.
+
 ## Related references
 - [YAML distributed transaction configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/transaction/)

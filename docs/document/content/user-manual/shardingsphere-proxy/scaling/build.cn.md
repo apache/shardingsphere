@@ -18,7 +18,7 @@ mvn clean install -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Drat.skip=tr
 
 或者通过[下载页面]( https://shardingsphere.apache.org/document/current/cn/downloads/ )获取安装包。
 
-> Scaling还是实验性质的功能，建议使用master分支最新版本，点击此处[下载每日构建版本]( https://github.com/apache/shardingsphere#nightly-builds )
+> Scaling 还是实验性质的功能，建议使用 master 分支最新版本，点击此处[下载每日构建版本]( https://github.com/apache/shardingsphere#nightly-builds )
 
 2. 解压缩 proxy 发布包，修改配置文件 `conf/config-sharding.yaml`。详情请参见 [proxy 启动手册](/cn/user-manual/shardingsphere-proxy/startup/bin/)。
 
@@ -59,14 +59,16 @@ rules:
         workerThread: # 从源端摄取全量数据的线程池大小。如果不配置则使用默认值。
         batchSize: # 一次查询操作返回的最大记录数。如果不配置则使用默认值。
         rateLimiter: # 限流算法。如果不配置则不限流。
-          type: # 算法类型。可选项：
+          type: # 算法类型。可选项：QPS
           props: # 算法属性
+            qps: # qps属性。适用算法类型：QPS
       output: # 数据写入配置。如果不配置则部分参数默认生效。
         workerThread: # 数据写入到目标端的线程池大小。如果不配置则使用默认值。
         batchSize: # 一次批量写入操作的最大记录数。如果不配置则使用默认值。
         rateLimiter: # 限流算法。如果不配置则不限流。
-          type: # 算法类型。可选项：
+          type: # 算法类型。可选项：TPS
           props: # 算法属性
+            tps: # tps属性。适用算法类型：TPS
       streamChannel: # 数据通道，连接生产者和消费者，用于 input 和 output 环节。如果不配置则默认使用 MEMORY 类型
         type: # 算法类型。可选项：MEMORY
         props: # 算法属性
@@ -81,7 +83,7 @@ rules:
           chunk-size: # 一次查询操作返回的最大记录数
 ```
 
-`dataConsistencyChecker` 的 `type` 可以通过执行 DistSQL `SHOW SCALING CHECK ALGORITHMS` 查询到。简单对比：
+`dataConsistencyChecker` 的 `type` 可以通过执行 DistSQL `SHOW MIGRATION CHECK ALGORITHMS` 查询到。简单对比：
 - `DATA_MATCH`：支持所有数据库，但是性能不是最好的。
 - `CRC32_MATCH`：只支持 `MySQL`，但是性能更好。
 
@@ -97,9 +99,17 @@ rules:
       input:
         workerThread: 40
         batchSize: 1000
+        rateLimiter:
+          type: QPS
+          props:
+            qps: 50
       output:
         workerThread: 40
         batchSize: 1000
+        rateLimiter:
+          type: TPS
+          props:
+            tps: 2000
       streamChannel:
         type: MEMORY
         props:
@@ -146,15 +156,17 @@ rules:
 CREATE SHARDING SCALING RULE scaling_auto (
 INPUT(
   WORKER_THREAD=40,
-  BATCH_SIZE=1000
+  BATCH_SIZE=1000,
+  RATE_LIMITER(TYPE(NAME=QPS, PROPERTIES("qps"=50)))
 ),
 OUTPUT(
   WORKER_THREAD=40,
-  BATCH_SIZE=1000
+  BATCH_SIZE=1000,
+  RATE_LIMITER(TYPE(NAME=TPS, PROPERTIES("tps"=2000)))
 ),
-STREAM_CHANNEL(TYPE(NAME=MEMORY, PROPERTIES("block-queue-size"=10000))),
-COMPLETION_DETECTOR(TYPE(NAME=IDLE, PROPERTIES("incremental-task-idle-seconds-threshold"=1800))),
-DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH, PROPERTIES("chunk-size"=1000)))
+STREAM_CHANNEL(TYPE(NAME="MEMORY", PROPERTIES("block-queue-size"="10000"))),
+COMPLETION_DETECTOR(TYPE(NAME="IDLE", PROPERTIES("incremental-task-idle-seconds-threshold"="1800"))),
+DATA_CONSISTENCY_CHECKER(TYPE(NAME="DATA_MATCH", PROPERTIES("chunk-size"="1000")))
 );
 ```
 
@@ -169,8 +181,8 @@ OUTPUT(
   WORKER_THREAD=40,
   BATCH_SIZE=1000
 ),
-STREAM_CHANNEL(TYPE(NAME=MEMORY, PROPERTIES("block-queue-size"=10000))),
-DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH, PROPERTIES("chunk-size"=1000)))
+STREAM_CHANNEL(TYPE(NAME="MEMORY", PROPERTIES("block-queue-size"="10000"))),
+DATA_CONSISTENCY_CHECKER(TYPE(NAME="DATA_MATCH", PROPERTIES("chunk-size"="1000")))
 );
 ```
 

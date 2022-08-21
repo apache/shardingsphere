@@ -78,12 +78,13 @@ public final class ConnectionSessionTest extends ProxyContextRestorer {
         connectionSession.getTransactionStatus().setTransactionType(TransactionType.XA);
     }
     
-    @Test(expected = ShardingSphereException.class)
-    public void assertFailedSwitchSchemaWhileBegin() throws SQLException {
+    @Test
+    public void assertSwitchSchemaWhileBegin() throws SQLException {
         connectionSession.setCurrentDatabase("db");
         JDBCBackendTransactionManager transactionManager = new JDBCBackendTransactionManager(backendConnection);
         transactionManager.begin();
         connectionSession.setCurrentDatabase("newDB");
+        assertThat(connectionSession.getDefaultDatabaseName(), is("newDB"));
     }
     
     @Test

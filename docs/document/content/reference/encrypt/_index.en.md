@@ -1,7 +1,7 @@
 +++
-pre = "<b>7.9. </b>"
+pre = "<b>7.7. </b>"
 title = "Encryption"
-weight = 9
+weight = 7
 +++
 
 Apache ShardingSphere parses the SQL entered by users and rewrites the SQL according to the encryption rules provided by users, to encrypt the source data and store the source data (optional) and ciphertext data in the underlying database. 

@@ -53,6 +53,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.GroupB
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.GroupingExprListContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.GroupingSetsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.HavingClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InnerCrossJoinClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InsertContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InsertIntoClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InsertMultiTableContext;
@@ -60,6 +61,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Insert
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InsertValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IntoClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.JoinClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.LockTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeAssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeAssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeContext;
@@ -69,6 +71,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModelC
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MultiColumnForLoopContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MultiTableElementContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OrderByClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OuterJoinClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ParenthesisSelectSubqueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.QueryBlockContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.QueryNameContext;
@@ -100,7 +103,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Update
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UsingClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.WithClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.LockTableContext;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
@@ -147,10 +150,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.BooleanLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleDeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleLockTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleMergeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleUpdateStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleLockTableStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -704,7 +707,7 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
         }
         if (projection instanceof CommonExpressionSegment) {
             CommonExpressionSegment segment = (CommonExpressionSegment) projection;
-            ExpressionProjectionSegment result = new ExpressionProjectionSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getText());
+            ExpressionProjectionSegment result = new ExpressionProjectionSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getText(), segment);
             result.setAlias(alias);
             return result;
         }
@@ -722,15 +725,16 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
             return result;
         }
         if (projection instanceof BinaryOperationExpression) {
-            int startIndex = ((BinaryOperationExpression) projection).getStartIndex();
-            int stopIndex = null != alias ? alias.getStopIndex() : ((BinaryOperationExpression) projection).getStopIndex();
-            ExpressionProjectionSegment result = new ExpressionProjectionSegment(startIndex, stopIndex, ((BinaryOperationExpression) projection).getText());
+            BinaryOperationExpression binaryExpression = (BinaryOperationExpression) projection;
+            int startIndex = binaryExpression.getStartIndex();
+            int stopIndex = null != alias ? alias.getStopIndex() : binaryExpression.getStopIndex();
+            ExpressionProjectionSegment result = new ExpressionProjectionSegment(startIndex, stopIndex, binaryExpression.getText(), binaryExpression);
             result.setAlias(alias);
             return result;
         }
         LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
-        ExpressionProjectionSegment result = null == alias ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()))
-                : new ExpressionProjectionSegment(column.getStartIndex(), ctx.alias().stop.getStopIndex(), String.valueOf(column.getLiterals()));
+        ExpressionProjectionSegment result = null == alias ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()), column)
+                : new ExpressionProjectionSegment(column.getStartIndex(), ctx.alias().stop.getStopIndex(), String.valueOf(column.getLiterals()), column);
         result.setAlias(alias);
         return result;
     }
@@ -756,6 +760,7 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
         result.setStartIndex(tableSegment.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
         result.setLeft(tableSegment);
+        result.setJoinType(JoinType.COMMA.name());
         result.setRight((TableSegment) visit(ctx));
         return result;
     }
@@ -785,17 +790,18 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
         result.setLeft(tableSegment);
         result.setStartIndex(tableSegment.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
+        result.setJoinType(getJoinType(ctx));
         if (null != ctx.innerCrossJoinClause()) {
             TableSegment right = (TableSegment) visit(ctx.innerCrossJoinClause().selectTableReference());
             result.setRight(right);
             if (null != ctx.innerCrossJoinClause().selectJoinSpecification()) {
-                result = visitSelectJoinSpecification(ctx.innerCrossJoinClause().selectJoinSpecification(), result);
+                visitSelectJoinSpecification(ctx.innerCrossJoinClause().selectJoinSpecification(), result);
             }
         } else if (null != ctx.outerJoinClause()) {
             TableSegment right = (TableSegment) visit(ctx.outerJoinClause().selectTableReference());
             result.setRight(right);
             if (null != ctx.outerJoinClause().selectJoinSpecification()) {
-                result = visitSelectJoinSpecification(ctx.outerJoinClause().selectJoinSpecification(), result);
+                visitSelectJoinSpecification(ctx.outerJoinClause().selectJoinSpecification(), result);
             }
         } else {
             TableSegment right = (TableSegment) visit(ctx.crossOuterApplyClause());
@@ -804,7 +810,43 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
         return result;
     }
     
-    private JoinTableSegment visitSelectJoinSpecification(final SelectJoinSpecificationContext ctx, final JoinTableSegment joinTableSource) {
+    private String getJoinType(final SelectJoinOptionContext ctx) {
+        if (null != ctx.innerCrossJoinClause()) {
+            return getInnerCrossJoinType(ctx.innerCrossJoinClause());
+        }
+        if (null != ctx.outerJoinClause()) {
+            return getOuterJoinType(ctx.outerJoinClause());
+        }
+        if (null != ctx.crossOuterApplyClause()) {
+            return getCrossOuterApplyType(ctx.crossOuterApplyClause());
+        }
+        return JoinType.COMMA.name();
+    }
+    
+    private String getCrossOuterApplyType(final CrossOuterApplyClauseContext ctx) {
+        if (null != ctx.CROSS()) {
+            return JoinType.CROSS.name();
+        }
+        return JoinType.LEFT.name();
+    }
+    
+    private String getOuterJoinType(final OuterJoinClauseContext ctx) {
+        if (null != ctx.outerJoinType().FULL()) {
+            return JoinType.FULL.name();
+        } else if (null != ctx.outerJoinType().LEFT()) {
+            return JoinType.LEFT.name();
+        }
+        return JoinType.RIGHT.name();
+    }
+    
+    private static String getInnerCrossJoinType(final InnerCrossJoinClauseContext ctx) {
+        if (null != ctx.CROSS()) {
+            return JoinType.CROSS.name();
+        }
+        return JoinType.INNER.name();
+    }
+    
+    private void visitSelectJoinSpecification(final SelectJoinSpecificationContext ctx, final JoinTableSegment joinTableSource) {
         if (null != ctx.expr()) {
             ExpressionSegment condition = (ExpressionSegment) visit(ctx.expr());
             joinTableSource.setCondition(condition);
@@ -812,7 +854,6 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
         if (null != ctx.USING()) {
             joinTableSource.setUsing(ctx.columnNames().columnName().stream().map(each -> (ColumnSegment) visit(each)).collect(Collectors.toList()));
         }
-        return joinTableSource;
     }
     
     @Override

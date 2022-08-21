@@ -66,7 +66,7 @@
                 <subquery-expression start-index="20" stop-index="162">
                     <select>
                         <from>
-                            <join-table>
+                            <join-table join-type="COMMA">
                                 <left>
                                     <simple-table name="employees" alias="e" start-index="72" stop-index="82" />
                                 </left>
@@ -344,7 +344,7 @@
             </common-table-expression>
         </with>
         <from>
-            <join-table>
+            <join-table join-type="INNER">
                 <left>
                     <simple-table name="cte1" start-index="158" stop-index="161" />
                 </left>

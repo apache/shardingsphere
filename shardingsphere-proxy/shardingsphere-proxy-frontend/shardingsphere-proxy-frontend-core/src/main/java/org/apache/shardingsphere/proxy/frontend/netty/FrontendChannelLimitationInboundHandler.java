@@ -22,7 +22,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionLimitContext;
-import org.apache.shardingsphere.proxy.frontend.exception.FrontendTooManyConnectionsException;
+import org.apache.shardingsphere.dialect.exception.connection.TooManyConnectionsException;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 
 /**
@@ -42,7 +42,7 @@ public class FrontendChannelLimitationInboundHandler extends ChannelInboundHandl
         }
         log.debug("Closing channel {} due to the number of server connections has reached max connections {}", ctx.channel().remoteAddress(), ConnectionLimitContext.getInstance().getMaxConnections());
         // TODO This is not how actual databases does and should be refactored.
-        ctx.writeAndFlush(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(new FrontendTooManyConnectionsException()));
+        ctx.writeAndFlush(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(new TooManyConnectionsException()));
         ctx.close();
     }
     

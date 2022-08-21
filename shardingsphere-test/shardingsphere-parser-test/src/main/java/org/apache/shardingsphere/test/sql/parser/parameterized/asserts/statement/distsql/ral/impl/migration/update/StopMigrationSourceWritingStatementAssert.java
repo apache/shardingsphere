@@ -29,12 +29,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Stop scaling source writing statement assert.
+ * Stop migration source writing statement assert.
  */
 public final class StopMigrationSourceWritingStatementAssert {
     
     /**
-     * Assert stop scaling source writing statement is correct with expected parser result.
+     * Assert stop migration source writing statement is correct with expected parser result.
      *
      * @param assertContext assert context
      * @param actual actual stop migration source writing statement

@@ -38,7 +38,7 @@ spring.shardingsphere.rules.shadow
 | type | Shadow algorithm type | none|
 | props | Shadow algorithm configuration | none |
 
-For details, see [list of built-in shadow algorithms](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/shadow/)
+For details, see [list of built-in shadow algorithms](/en/user-manual/common-config/builtin-algorithm/shadow/)
 
 ## Procedure
 1. Create production and shadow data sources.

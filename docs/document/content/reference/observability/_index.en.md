@@ -1,7 +1,7 @@
 +++
-pre = "<b>7.11. </b>"
+pre = "<b>7.9. </b>"
 title = "Oberservability"
-weight = 11
+weight = 9
 +++
 
 ## How it works

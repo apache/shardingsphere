@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
+import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
@@ -164,7 +164,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
                 }
                 if (null == column) {
                     String reason = String.format("Column \"%s\" of relation \"%s\" does not exist. Please check the SQL or execute REFRESH TABLE METADATA.", columnName, logicTableName);
-                    throw new SQLException(reason, PostgreSQLErrorCode.UNDEFINED_COLUMN.getErrorCode());
+                    throw new SQLException(reason, PostgreSQLVendorError.UNDEFINED_COLUMN.getSqlState().getValue());
                 }
                 PostgreSQLColumnType parameterType = PostgreSQLColumnType.valueOfJDBCType(column.getDataType());
                 preparedStatement.getParameterTypes().set(parameterMarkerIndex++, parameterType);

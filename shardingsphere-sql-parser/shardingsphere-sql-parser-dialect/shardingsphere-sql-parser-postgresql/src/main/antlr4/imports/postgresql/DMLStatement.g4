@@ -388,18 +388,27 @@ tableReference
     ;
 
 joinedTable
-    : CROSS JOIN tableReference
-    | joinType JOIN tableReference joinQual
-    | JOIN tableReference joinQual
-    | NATURAL joinType JOIN tableReference
-    | NATURAL JOIN tableReference
+    : crossJoinType tableReference
+    | innerJoinType tableReference joinQual
+    | outerJoinType tableReference joinQual
+    | naturalJoinType tableReference
     ;
 
-joinType
-    : FULL joinOuter?
-    | LEFT joinOuter?
-    | RIGHT joinOuter?
-    | INNER
+crossJoinType
+    : CROSS JOIN
+    ;
+
+innerJoinType
+    : INNER? JOIN
+    ;
+
+outerJoinType
+    : (FULL | LEFT | RIGHT) OUTER? JOIN
+    ;
+    
+naturalJoinType
+    : NATURAL INNER? JOIN
+    | NATURAL (FULL | LEFT | RIGHT) OUTER? JOIN
     ;
 
 joinOuter

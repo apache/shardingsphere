@@ -16,7 +16,7 @@ SHOW UNUSED SHARDING ALGORITHMS [FROM databaseName]
     
 SHOW SHARDING AUDITORS [FROM databaseName]
 
-SHOW SHARDING TABLE RULES USED ALGORITHM algorithmName [FROM databaseName]
+SHOW SHARDING TABLE RULES USED ALGORITHM shardingAlgorithmName [FROM databaseName]
 
 SHOW SHARDING KEY GENERATORS [FROM databaseName]
 
@@ -216,7 +216,7 @@ mysql> SHOW SHARDING AUDITORS;
 2 row in set (0.01 sec)
 ```
 
-*SHOW SHARDING TABLE RULES USED ALGORITHM algorithmName*
+*SHOW SHARDING TABLE RULES USED ALGORITHM shardingAlgorithmName*
 ```sql
 mysql> SHOW SHARDING TABLE RULES USED ALGORITHM t_order_inline;
 +-------+---------+
@@ -320,7 +320,7 @@ mysql> SHOW SHARDING SCALING RULES;
 +------------------+----------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------+--------------------------------------------------------+-------------------------------------------------------------------------+-----------------------------------------------------+
 | name             | input                                                                                  | output                                                                                   | stream_channel                                         | completion_detector                                                     | data_consistency_checker                            |
 +------------------+----------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------+--------------------------------------------------------+-------------------------------------------------------------------------+-----------------------------------------------------+
-| sharding_scaling | {"workerThread":40,"batchSize":1000} | {"workerThread":40,"batchSize":1000} | {"type":"MEMORY","props":{"block-queue-size":"10000"}} | {"type":"IDLE","props":{"incremental-task-idle-seconds-threshold":"1800"}} | {"type":"DATA_MATCH","props":{"chunk-size":"1000"}} |
+| sharding_scaling | {"workerThread":40,"batchSize":1000,"rateLimiter":{"type":"QPS","props":{"qps":"50"}}} | {"workerThread":40,"batchSize":1000,"rateLimiter":{"type":"TPS","props":{"tps":"2000"}}} | {"type":"MEMORY","props":{"block-queue-size":"10000"}} | {"type":"IDLE","props":{"incremental-task-idle-seconds-threshold":"1800"}} | {"type":"DATA_MATCH","props":{"chunk-size":"1000"}} |
 +------------------+----------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------+--------------------------------------------------------+-------------------------------------------------------------------------+-----------------------------------------------------+
 1 row in set (0.00 sec)
 ```

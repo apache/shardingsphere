@@ -397,7 +397,7 @@ public final class ContextManager implements AutoCloseable {
     public synchronized void reloadSchema(final String databaseName, final String schemaName, final String dataSourceName) {
         try {
             ShardingSphereSchema reloadedSchema = loadSchema(databaseName, schemaName, dataSourceName);
-            if (null == reloadedSchema) {
+            if (reloadedSchema.getTables().isEmpty()) {
                 metaDataContexts.getMetaData().getDatabase(databaseName).removeSchema(schemaName);
                 metaDataContexts.getPersistService().getDatabaseMetaDataService().deleteSchema(metaDataContexts.getMetaData().getActualDatabaseName(databaseName), schemaName);
             } else {
@@ -458,9 +458,11 @@ public final class ContextManager implements AutoCloseable {
                 database.getResource().getDatabaseType(), dataSourceMap, database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps(), schemaName);
         ShardingSphereSchema schema = GenericSchemaBuilder.build(Collections.singletonList(tableName), materials).getOrDefault(schemaName, new ShardingSphereSchema());
         if (schema.containsTable(tableName)) {
-            database.getSchema(schemaName).put(tableName, schema.get(tableName));
-            metaDataContexts.getPersistService().getDatabaseMetaDataService().persistMetaData(database.getName(), schemaName, database.getSchema(schemaName));
+            alterTable(databaseName, schemaName, schema.get(tableName));
+        } else {
+            dropTable(databaseName, schemaName, tableName);
         }
+        metaDataContexts.getPersistService().getDatabaseMetaDataService().persistMetaData(database.getName(), schemaName, database.getSchema(schemaName));
     }
     
     @Override

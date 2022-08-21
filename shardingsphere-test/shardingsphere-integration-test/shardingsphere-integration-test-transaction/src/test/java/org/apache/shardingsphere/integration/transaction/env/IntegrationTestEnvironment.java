@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.transaction.engine.entity.JdbcInfoEntity;
 import org.apache.shardingsphere.integration.transaction.env.enums.TransactionITEnvTypeEnum;
 import org.apache.shardingsphere.integration.transaction.env.enums.TransactionTestCaseRegistry;
-import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -87,7 +86,7 @@ public final class IntegrationTestEnvironment {
     
     private Properties loadProperties() {
         Properties result = new Properties();
-        try (InputStream inputStream = IntegrationTestEnvironment.class.getClassLoader().getResourceAsStream("env/transaction-it-env.properties")) {
+        try (InputStream inputStream = IntegrationTestEnvironment.class.getClassLoader().getResourceAsStream("env/it-env.properties")) {
             result.load(inputStream);
         } catch (final IOException ex) {
             throw new RuntimeException(ex);
@@ -165,16 +164,10 @@ public final class IntegrationTestEnvironment {
      * @return actual data source username
      */
     public String getActualDataSourceUsername(final DatabaseType databaseType) {
-        String username;
-        if (DatabaseTypeUtil.isOpenGauss(databaseType)) {
-            username = "gaussdb";
-        } else {
-            username = "root";
-        }
-        if (itEnvType == TransactionITEnvTypeEnum.NATIVE) {
-            username = String.valueOf(props.getOrDefault(String.format("transaction.it.native.%s.username", databaseType.getType().toLowerCase()), username));
-        }
-        return username;
+        String username = "test_user";
+        return itEnvType == TransactionITEnvTypeEnum.NATIVE
+                ? String.valueOf(props.getOrDefault(String.format("transaction.it.native.%s.username", databaseType.getType().toLowerCase()), username))
+                : username;
     }
     
     /**
@@ -184,16 +177,10 @@ public final class IntegrationTestEnvironment {
      * @return actual data source username
      */
     public String getActualDataSourcePassword(final DatabaseType databaseType) {
-        String password;
-        if (DatabaseTypeUtil.isOpenGauss(databaseType)) {
-            password = "Root@123";
-        } else {
-            password = "root";
-        }
-        if (itEnvType == TransactionITEnvTypeEnum.NATIVE) {
-            password = props.getOrDefault(String.format("transaction.it.native.%s.password", databaseType.getType().toLowerCase()), password).toString();
-        }
-        return password;
+        String password = "Test@123";
+        return itEnvType == TransactionITEnvTypeEnum.NATIVE
+                ? props.getOrDefault(String.format("transaction.it.native.%s.password", databaseType.getType().toLowerCase()), password).toString()
+                : password;
     }
     
     /**
@@ -202,7 +189,8 @@ public final class IntegrationTestEnvironment {
      * @return proxy password
      */
     public String getProxyPassword() {
-        return props.getOrDefault("transaction.it.proxy.password", "root").toString();
+        // TODO this should extract into a constant
+        return props.getOrDefault("transaction.it.proxy.password", "Proxy@123").toString();
     }
     
     /**
@@ -211,7 +199,8 @@ public final class IntegrationTestEnvironment {
      * @return proxy userName
      */
     public String getProxyUserName() {
-        return props.getOrDefault("transaction.it.proxy.username", "root").toString();
+        // TODO this should extract into a constant
+        return props.getOrDefault("transaction.it.proxy.username", "proxy").toString();
     }
     
     /**

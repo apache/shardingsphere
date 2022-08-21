@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
+import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLParameterDescriptionPacket;
@@ -233,7 +233,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
         } catch (final SQLException ex) {
             actual = ex;
         }
-        assertThat(actual.getSQLState(), is(PostgreSQLErrorCode.UNDEFINED_COLUMN.getErrorCode()));
+        assertThat(actual.getSQLState(), is(PostgreSQLVendorError.UNDEFINED_COLUMN.getSqlState().getValue()));
         assertThat(actual.getMessage(), is("Column \"undefined_column\" of relation \"t_order\" does not exist. Please check the SQL or execute REFRESH TABLE METADATA."));
     }
     

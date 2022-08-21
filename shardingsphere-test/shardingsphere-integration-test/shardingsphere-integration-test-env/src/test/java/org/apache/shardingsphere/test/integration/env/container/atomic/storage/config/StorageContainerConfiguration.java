@@ -17,31 +17,21 @@
 
 package org.apache.shardingsphere.test.integration.env.container.atomic.storage.config;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 import java.util.Map;
 
 /**
  * Docker storage container configuration.
  */
-public interface StorageContainerConfiguration {
+@RequiredArgsConstructor
+@Getter
+public class StorageContainerConfiguration {
     
-    /**
-     * get docker container commands.
-     * 
-     * @return docker container commands
-     */
-    String[] getCommands();
+    private final String containerCommand;
     
-    /**
-     * get docker container environment variables.
-     * 
-     * @return docker container environments
-     */
-    Map<String, String> getEnvs();
+    private final Map<String, String> containerEnvironments;
     
-    /**
-     * get docker container mapping resources.
-     * 
-     * @return docker container resource mapping
-     */
-    Map<String, String> getResourceMappings();
+    private final Map<String, String> mountedResources;
 }

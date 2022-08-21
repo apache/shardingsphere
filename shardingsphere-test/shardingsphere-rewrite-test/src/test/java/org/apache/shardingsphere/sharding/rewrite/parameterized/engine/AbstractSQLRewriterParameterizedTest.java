@@ -128,7 +128,7 @@ public abstract class AbstractSQLRewriterParameterizedTest {
         }
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
         ConfigurationProperties props = new ConfigurationProperties(rootConfig.getProps());
-        RouteContext routeContext = new SQLRouteEngine(databaseRules, props).route(logicSQL, database);
+        RouteContext routeContext = new SQLRouteEngine(databaseRules, props).route(logicSQL, database, new ConnectionContext());
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(database, new ShardingSphereRuleMetaData(Collections.singleton(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()))), props);
         ConnectionContext connectionContext = mock(ConnectionContext.class);
         when(connectionContext.getCursorConnectionContext()).thenReturn(new CursorConnectionContext());

@@ -23,8 +23,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
-import java.util.Optional;
-
 /**
  * Create table SQL generator factory.
  */
@@ -36,12 +34,12 @@ public final class CreateTableSQLGeneratorFactory {
     }
     
     /**
-     * Find instance of create table SQL generator.
+     * Get instance of create table SQL generator.
      *
      * @param databaseType database type
-     * @return found instance
+     * @return got instance
      */
-    public static Optional<CreateTableSQLGenerator> findInstance(final DatabaseType databaseType) {
-        return TypedSPIRegistry.findRegisteredService(CreateTableSQLGenerator.class, databaseType.getType());
+    public static CreateTableSQLGenerator getInstance(final DatabaseType databaseType) {
+        return TypedSPIRegistry.getRegisteredService(CreateTableSQLGenerator.class, databaseType.getType());
     }
 }

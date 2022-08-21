@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.authentication.excep
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
+import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.proxy.frontend.exception.FrontendException;
 
 /**
@@ -31,7 +31,7 @@ public final class PostgreSQLAuthenticationException extends FrontendException {
     
     private static final long serialVersionUID = 1331782847269278560L;
     
-    private final PostgreSQLErrorCode errorCode;
+    private final PostgreSQLVendorError vendorError;
     
     private final String message;
 }

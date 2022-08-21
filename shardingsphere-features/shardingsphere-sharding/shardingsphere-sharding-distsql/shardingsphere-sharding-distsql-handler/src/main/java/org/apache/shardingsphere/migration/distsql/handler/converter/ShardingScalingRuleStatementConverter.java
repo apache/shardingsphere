@@ -21,8 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineInputConfiguration;
-import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineOutputConfiguration;
+import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineReadConfiguration;
+import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineWriteConfiguration;
 import org.apache.shardingsphere.infra.config.rule.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.migration.distsql.statement.segment.InputOrOutputSegment;
 import org.apache.shardingsphere.migration.distsql.statement.segment.ShardingScalingRuleConfigurationSegment;
@@ -40,26 +40,26 @@ public final class ShardingScalingRuleStatementConverter {
      * @return on rule altered action configuration
      */
     public static OnRuleAlteredActionConfiguration convert(final ShardingScalingRuleConfigurationSegment segment) {
-        PipelineInputConfiguration inputConfig = convertToInputConfiguration(segment.getInputSegment());
-        PipelineOutputConfiguration outputConfig = convertToOutputConfiguration(segment.getOutputSegment());
+        PipelineReadConfiguration inputConfig = convertToInputConfiguration(segment.getInputSegment());
+        PipelineWriteConfiguration outputConfig = convertToOutputConfiguration(segment.getOutputSegment());
         AlgorithmConfiguration streamChannel = convertToAlgorithm(segment.getStreamChannel());
         AlgorithmConfiguration completionDetector = convertToAlgorithm(segment.getCompletionDetector());
         AlgorithmConfiguration dataConsistencyChecker = convertToAlgorithm(segment.getDataConsistencyCalculator());
         return new OnRuleAlteredActionConfiguration(inputConfig, outputConfig, streamChannel, completionDetector, dataConsistencyChecker);
     }
     
-    private static PipelineInputConfiguration convertToInputConfiguration(final InputOrOutputSegment inputSegment) {
+    private static PipelineReadConfiguration convertToInputConfiguration(final InputOrOutputSegment inputSegment) {
         if (null == inputSegment) {
             return null;
         }
-        return new PipelineInputConfiguration(inputSegment.getWorkerThread(), inputSegment.getBatchSize(), inputSegment.getShardingSize(), convertToAlgorithm(inputSegment.getRateLimiter()));
+        return new PipelineReadConfiguration(inputSegment.getWorkerThread(), inputSegment.getBatchSize(), inputSegment.getShardingSize(), convertToAlgorithm(inputSegment.getRateLimiter()));
     }
     
-    private static PipelineOutputConfiguration convertToOutputConfiguration(final InputOrOutputSegment outputSegment) {
+    private static PipelineWriteConfiguration convertToOutputConfiguration(final InputOrOutputSegment outputSegment) {
         if (null == outputSegment) {
             return null;
         }
-        return new PipelineOutputConfiguration(outputSegment.getWorkerThread(), outputSegment.getBatchSize(), convertToAlgorithm(outputSegment.getRateLimiter()));
+        return new PipelineWriteConfiguration(outputSegment.getWorkerThread(), outputSegment.getBatchSize(), convertToAlgorithm(outputSegment.getRateLimiter()));
     }
     
     private static AlgorithmConfiguration convertToAlgorithm(final AlgorithmSegment segment) {

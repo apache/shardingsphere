@@ -88,7 +88,7 @@ algorithmDefinition
     ;
 
 algorithmName
-    : IDENTIFIER
+    : STRING
     ;
 
 algorithmProperties

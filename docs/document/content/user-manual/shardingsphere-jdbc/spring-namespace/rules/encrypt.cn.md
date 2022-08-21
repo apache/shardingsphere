@@ -45,7 +45,7 @@ weight = 4
 | type      | 属性  | 加密算法类型    |
 | props (?) | 标签  | 加密算法属性配置 |
 
-算法类型的详情，请参见[内置加密算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/encrypt)。
+算法类型的详情，请参见[内置加密算法列表](/cn/user-manual/common-config/builtin-algorithm/encrypt)。
 
 ## 操作步骤
 

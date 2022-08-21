@@ -25,7 +25,6 @@ import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.expression.ExpressionConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,28 +45,16 @@ public final class BetweenExpressionConverter implements SQLSegmentConverter<Bet
     }
     
     @Override
-    public Optional<SqlBasicCall> convertToSQLNode(final BetweenExpression expression) {
+    public Optional<SqlBasicCall> convert(final BetweenExpression expression) {
         if (null == expression) {
             return Optional.empty();
         }
         Collection<SqlNode> sqlNodes = new LinkedList<>();
         ExpressionConverter expressionConverter = new ExpressionConverter();
-        expressionConverter.convertToSQLNode(expression.getLeft()).ifPresent(sqlNodes::add);
-        expressionConverter.convertToSQLNode(expression.getBetweenExpr()).ifPresent(sqlNodes::add);
-        expressionConverter.convertToSQLNode(expression.getAndExpr()).ifPresent(sqlNodes::add);
+        expressionConverter.convert(expression.getLeft()).ifPresent(sqlNodes::add);
+        expressionConverter.convert(expression.getBetweenExpr()).ifPresent(sqlNodes::add);
+        expressionConverter.convert(expression.getAndExpr()).ifPresent(sqlNodes::add);
         SqlBasicCall sqlNode = new SqlBasicCall(SqlStdOperatorTable.BETWEEN, new ArrayList<>(sqlNodes), SqlParserPos.ZERO);
         return expression.isNot() ? Optional.of(new SqlBasicCall(SqlStdOperatorTable.NOT, Collections.singletonList(sqlNode), SqlParserPos.ZERO)) : Optional.of(sqlNode);
-    }
-    
-    @Override
-    public Optional<BetweenExpression> convertToSQLSegment(final SqlBasicCall sqlBasicCall) {
-        if (null == sqlBasicCall) {
-            return Optional.empty();
-        }
-        ExpressionConverter expressionConverter = new ExpressionConverter();
-        ExpressionSegment between = expressionConverter.convertToSQLSegment(sqlBasicCall.getOperandList().get(1)).orElseThrow(IllegalStateException::new);
-        ExpressionSegment and = expressionConverter.convertToSQLSegment(sqlBasicCall.getOperandList().get(2)).orElseThrow(IllegalStateException::new);
-        ExpressionSegment left = expressionConverter.convertToSQLSegment(sqlBasicCall.getOperandList().get(0)).orElseThrow(IllegalStateException::new);
-        return Optional.of(new BetweenExpression(left.getStartIndex(), and.getStopIndex(), left, between, and, not));
     }
 }

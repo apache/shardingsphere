@@ -27,6 +27,20 @@ In the real business scenario, the relevant business development team often need
 
 Provides a security and transparent data encryption solution, which is the main design goal of Apache ShardingSphere data encryption module.
 
+## Application Scenarios
+
+### Newly launched services
+
+For scenarios requiring the quick launch of new services while respecting encryption regulations. The ShardingSphere encryption feature can be used to quickly achieve compliant data encryption, without requiring users to develop complex encryption systems. 
+
+At the same time, its flexibility can also help users avoid complex rebuilding and modification risks caused by encryption scenario changes.
+
+### Existing services
+
+For mature services that have already been launched, users need to consider the historical data cleansing and the switchover between old and new features. 
+
+By accessing ShardingSphere encrypt, users can easily complete the encryption transformation of the system, and it can also help users securely and quickly switch between old and new features. Users can transparently use encryption and decryption features without changing any business logic and SQL.
+
 ## Related References
 
 - [Configuration: Data Encryption](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/encrypt/)

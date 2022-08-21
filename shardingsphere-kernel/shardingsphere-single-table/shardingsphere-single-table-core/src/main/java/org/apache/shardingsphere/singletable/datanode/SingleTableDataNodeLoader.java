@@ -87,7 +87,7 @@ public final class SingleTableDataNodeLoader {
         try {
             return SchemaTableNamesLoader.loadSchemaTableNames(databaseName, databaseType, dataSource);
         } catch (final SQLException ex) {
-            throw new ShardingSphereConfigurationException(String.format("Can not load table, databaseName: %s, dataSourceName: %s", databaseName, dataSourceName), ex);
+            throw new ShardingSphereConfigurationException("Can not load table, databaseName: %s, dataSourceName: %s", databaseName, dataSourceName);
         }
     }
 }

@@ -27,6 +27,14 @@ Though readwrite-splitting can enhance system throughput and availability, it al
 
 The main design goal of readwrite-splitting of Apache ShardingSphere is to try to reduce the influence of readwrite-splitting, in order to let users use primary-replica database group like one database.
 
+## Application Scenarios
+
+### Complex primary-secondary database architecture
+
+Many systems rely on the configuration of primary-secondary database architecture to improve the throughput of the whole system. Nevertheless, this configuration can make it more complex to use services. 
+
+After accessing ShardingSphere, the read/write splitting feature can be used to manage primary-secondary databases and achieve transparent read/write splitting, enabling users to use databases with primary/secondary architecture just like using one single database.
+
 ## Related References
 
 [Java API](/en/user-manual/shardingsphere-jdbc/java-api/rules/readwrite-splitting)\

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
-import org.apache.shardingsphere.infra.exception.NoDatabaseSelectedException;
+import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
 
 import java.util.Collection;
 import java.util.LinkedList;

@@ -5,16 +5,17 @@ weight = 11
 chapter = true
 +++
 
-## SPI 接口
+### 全限定类名
 
-| *SPI 名称*        | *详细说明* |
-| ---------------- | --------- |
-| SQLChecker       | SQL 检查器  |
+[`org.apache.shardingsphere.infra.executor.check.SQLChecker`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-infra/shardingsphere-infra-executor/src/main/java/org/apache/shardingsphere/infra/executor/check/SQLChecker.java)
 
-## 示例
-### SQLChecker
+### 定义
 
-| *已知实现类*           | *详细说明*   |
-| -------------------- | ----------- |
-| AuthorityChecker     | 权限检查器    |
-| ShardingAuditChecker | 分片审计检查器 |
+SQL 检查定义接口
+
+### 已知实现
+
+| *配置标识*           | *详细说明*    | *全限定类名* |
+|---------------------|--------------| ----------- |
+| AuthorityRule.class | 权限检查器    | [`org.apache.shardingsphere.authority.checker.AuthorityChecker`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-kernel/shardingsphere-authority/shardingsphere-authority-core/src/main/java/org/apache/shardingsphere/authority/checker/AuthorityChecker.java) |
+| ShardingRule.class  | 分片审计检查器 | [`org.apache.shardingsphere.sharding.checker.audit.ShardingAuditChecker`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-sharding/shardingsphere-sharding-core/src/main/java/org/apache/shardingsphere/sharding/checker/audit/ShardingAuditChecker.java) |

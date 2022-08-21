@@ -177,7 +177,7 @@ public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDisc
     
     @Override
     public ASTNode visitTypeDefinition(final TypeDefinitionContext ctx) {
-        return new AlgorithmSegment(getIdentifierValue(ctx.discoveryTypeName()), null == ctx.properties() ? new Properties() : getProperties(ctx.properties()));
+        return new AlgorithmSegment(getIdentifierValue(ctx.discoveryType()), null == ctx.properties() ? new Properties() : getProperties(ctx.properties()));
     }
     
     @Override

@@ -20,10 +20,10 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.work
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.exception.WorkIdAssignedException;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.node.WorkerIdNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryException;
 
@@ -67,7 +67,7 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     private Optional<Long> generateAvailableWorkerId() {
         Set<Long> assignedWorkerIds = registryCenter.getComputeNodeStatusService().getAssignedWorkerIds();
         if (assignedWorkerIds.size() > 1024) {
-            throw new ShardingSphereException("System assigned %s failed, Illegal max vibration offset.", WORKER_ID_KEY);
+            throw new WorkIdAssignedException();
         }
         Collection<Long> maxAvailableIds = new ArrayList<>(1024);
         for (int i = 0; i < 1024; i++) {
@@ -80,7 +80,7 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
         Long preselectedWorkerId = priorityQueue.poll();
         Preconditions.checkState(null != preselectedWorkerId, "Preselected worker-id can not be null.");
         try {
-            registryCenter.getRepository().persistEphemeral(WorkerIdNode.getWorkerIdGeneratorPath(preselectedWorkerId.toString()), instanceMetaData.getId());
+            registryCenter.getRepository().persistExclusiveEphemeral(WorkerIdNode.getWorkerIdGeneratorPath(preselectedWorkerId.toString()), instanceMetaData.getId());
             return Optional.of(preselectedWorkerId);
         } catch (final ClusterPersistRepositoryException ignore) {
             return Optional.empty();

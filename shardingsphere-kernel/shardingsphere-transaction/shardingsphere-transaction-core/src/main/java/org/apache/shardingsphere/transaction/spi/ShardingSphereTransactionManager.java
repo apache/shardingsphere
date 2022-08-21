@@ -56,11 +56,12 @@ public interface ShardingSphereTransactionManager extends AutoCloseable {
     /**
      * Get transactional connection.
      *
+     * @param databaseName database name
      * @param dataSourceName data source name
      * @return connection
      * @throws SQLException SQL exception
      */
-    Connection getConnection(String dataSourceName) throws SQLException;
+    Connection getConnection(String databaseName, String dataSourceName) throws SQLException;
     
     /**
      * Begin transaction.

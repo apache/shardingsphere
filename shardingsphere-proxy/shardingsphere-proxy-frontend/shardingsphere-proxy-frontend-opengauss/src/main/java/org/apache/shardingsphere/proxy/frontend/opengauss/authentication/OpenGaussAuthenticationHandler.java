@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
+import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
 import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -75,17 +75,17 @@ public final class OpenGaussAuthenticationHandler {
         String clientDigest = passwordMessagePacket.getDigest();
         Grantee grantee = new Grantee(username, "%");
         if (!Strings.isNullOrEmpty(databaseName) && !ProxyContext.getInstance().databaseExists(databaseName)) {
-            return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_CATALOG_NAME, String.format("database \"%s\" does not exist", databaseName));
+            return new PostgreSQLLoginResult(PostgreSQLVendorError.INVALID_CATALOG_NAME, String.format("database \"%s\" does not exist", databaseName));
         }
         if (!SQLCheckEngine.check(grantee, getRules(databaseName))) {
-            return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION, String.format("unknown username: %s", username));
+            return new PostgreSQLLoginResult(PostgreSQLVendorError.INVALID_AUTHORIZATION_SPECIFICATION, String.format("unknown username: %s", username));
         }
         if (!SQLCheckEngine.check(grantee, (a, b) -> isPasswordRight((ShardingSphereUser) a, (Object[]) b), new Object[]{clientDigest, salt, nonce, serverIteration}, getRules(databaseName))) {
-            return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_PASSWORD, String.format("password authentication failed for user \"%s\"", username));
+            return new PostgreSQLLoginResult(PostgreSQLVendorError.INVALID_PASSWORD, String.format("password authentication failed for user \"%s\"", username));
         }
         return null == databaseName || SQLCheckEngine.check(databaseName, getRules(databaseName), grantee)
-                ? new PostgreSQLLoginResult(PostgreSQLErrorCode.SUCCESSFUL_COMPLETION, null)
-                : new PostgreSQLLoginResult(PostgreSQLErrorCode.PRIVILEGE_NOT_GRANTED, String.format("Access denied for user '%s' to database '%s'", username, databaseName));
+                ? new PostgreSQLLoginResult(PostgreSQLVendorError.SUCCESSFUL_COMPLETION, null)
+                : new PostgreSQLLoginResult(PostgreSQLVendorError.PRIVILEGE_NOT_GRANTED, String.format("Access denied for user '%s' to database '%s'", username, databaseName));
     }
     
     private static Collection<ShardingSphereRule> getRules(final String databaseName) {

@@ -139,7 +139,7 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
     }
     
     private EncryptColumn getEncryptColumn(final String tableName, final String columnName) {
-        return encryptRule.findEncryptColumn(tableName, columnName).orElseThrow(() -> new ShardingSphereConfigurationException("Failed finding encrypt column."));
+        return encryptRule.findEncryptColumn(tableName, columnName).orElseThrow(() -> new ShardingSphereConfigurationException("Failed finding encrypt column"));
     }
     
     @SuppressWarnings("rawtypes")

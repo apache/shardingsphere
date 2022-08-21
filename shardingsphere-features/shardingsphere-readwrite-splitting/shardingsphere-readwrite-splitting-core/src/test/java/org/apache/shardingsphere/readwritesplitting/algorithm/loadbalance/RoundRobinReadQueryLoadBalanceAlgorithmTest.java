@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
-import org.apache.shardingsphere.transaction.TransactionHolder;
+import org.apache.shardingsphere.infra.session.transaction.TransactionConnectionContext;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -35,9 +35,10 @@ public final class RoundRobinReadQueryLoadBalanceAlgorithmTest {
         String readDataSourceName2 = "test_read_ds_2";
         RoundRobinReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = new RoundRobinReadQueryLoadBalanceAlgorithm();
         List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
-        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(readDataSourceName1));
-        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(readDataSourceName2));
-        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(readDataSourceName1));
+        TransactionConnectionContext context = new TransactionConnectionContext();
+        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context), is(readDataSourceName1));
+        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context), is(readDataSourceName2));
+        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context), is(readDataSourceName1));
     }
     
     @Test
@@ -47,8 +48,8 @@ public final class RoundRobinReadQueryLoadBalanceAlgorithmTest {
         String readDataSourceName2 = "test_read_ds_2";
         RoundRobinReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = new RoundRobinReadQueryLoadBalanceAlgorithm();
         List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
-        TransactionHolder.setInTransaction();
-        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(writeDataSourceName));
-        TransactionHolder.clear();
+        TransactionConnectionContext context = new TransactionConnectionContext();
+        context.setInTransaction(true);
+        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context), is(writeDataSourceName));
     }
 }

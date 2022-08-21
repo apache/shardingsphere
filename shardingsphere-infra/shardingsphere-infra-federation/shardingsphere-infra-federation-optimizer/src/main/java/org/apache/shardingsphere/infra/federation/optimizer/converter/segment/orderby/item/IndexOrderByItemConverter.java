@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.federation.optimizer.converter.segment.o
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.calcite.sql.SqlNumericLiteral;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.SQLSegmentConverter;
@@ -36,21 +35,11 @@ import java.util.Optional;
 public final class IndexOrderByItemConverter implements SQLSegmentConverter<IndexOrderByItemSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convertToSQLNode(final IndexOrderByItemSegment segment) {
+    public Optional<SqlNode> convert(final IndexOrderByItemSegment segment) {
         SqlNode sqlNode = SqlLiteral.createExactNumeric(String.valueOf(segment.getColumnIndex()), SqlParserPos.ZERO);
         if (OrderDirection.DESC.equals(segment.getOrderDirection())) {
             sqlNode = new SqlBasicCall(SqlStdOperatorTable.DESC, Collections.singletonList(sqlNode), SqlParserPos.ZERO);
         }
         return Optional.of(sqlNode);
-    }
-    
-    @Override
-    public Optional<IndexOrderByItemSegment> convertToSQLSegment(final SqlNode sqlNode) {
-        if (sqlNode instanceof SqlBasicCall && SqlStdOperatorTable.DESC.equals(((SqlBasicCall) sqlNode).getOperator())) {
-            SqlNumericLiteral sqlNumericLiteral = (SqlNumericLiteral) ((SqlBasicCall) sqlNode).getOperandList().get(0);
-            return Optional.of(new IndexOrderByItemSegment(getStartIndex(sqlNumericLiteral),
-                    getStopIndex(sqlNumericLiteral), sqlNumericLiteral.getValueAs(Integer.class), OrderDirection.DESC));
-        }
-        return Optional.empty();
     }
 }

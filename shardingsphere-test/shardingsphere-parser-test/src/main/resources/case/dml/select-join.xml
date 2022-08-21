@@ -19,7 +19,7 @@
 <sql-parser-test-cases>
     <select sql-case-id="select_inner_join_related_with_alias" parameters="1000">
         <from>
-            <join-table>
+            <join-table join-type="INNER">
                 <left>
                     <simple-table name="t_order" alias="o" start-index="16" stop-index="24" />
                 </left>
@@ -68,7 +68,7 @@
 
     <select sql-case-id="select_inner_join_related_with_name" parameters="1000">
         <from>
-            <join-table>
+            <join-table join-type="INNER">
                 <left>
                     <simple-table name="t_order" start-index="27" stop-index="33" />
                 </left>
@@ -117,7 +117,7 @@
 
     <select sql-case-id="select_join_using" parameters="1000">
         <from>
-            <join-table>
+            <join-table join-type="INNER">
                 <left>
                     <simple-table name="t_order" alias="o" start-index="16" stop-index="24" />
                 </left>
@@ -152,7 +152,7 @@
 
     <select sql-case-id="select_left_outer_join_related_with_alias">
         <from>
-            <join-table>
+            <join-table join-type="LEFT">
                 <left>
                     <simple-table name="departments" alias="d" start-index="41" stop-index="53" />
                 </left>
@@ -196,7 +196,7 @@
 
     <select sql-case-id="select_right_outer_join_related_with_alias">
         <from>
-            <join-table>
+            <join-table join-type="RIGHT">
                 <left>
                     <simple-table name="departments" alias="d" start-index="41" stop-index="53" />
                 </left>
@@ -240,7 +240,7 @@
 
     <select sql-case-id="select_full_outer_join_related_with_alias">
         <from>
-            <join-table>
+            <join-table join-type="FULL">
                 <left>
                     <simple-table name="departments" alias="d" start-index="84" stop-index="96" />
                 </left>
@@ -287,7 +287,7 @@
 
     <select sql-case-id="select_full_outer_join_using_related_with_alias">
         <from>
-            <join-table>
+            <join-table join-type="FULL">
                 <left>
                     <simple-table name="departments" alias="d" start-index="54" stop-index="66" />
                 </left>
@@ -313,7 +313,7 @@
 
     <select sql-case-id="select_cross_apply_join_related_with_alias">
         <from>
-            <join-table>
+            <join-table join-type="CROSS">
                 <left>
                     <simple-table name="departments" alias="d" start-index="58" stop-index="70" />
                 </left>

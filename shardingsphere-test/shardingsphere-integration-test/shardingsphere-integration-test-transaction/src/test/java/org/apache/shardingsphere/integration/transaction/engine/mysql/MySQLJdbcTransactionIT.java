@@ -27,7 +27,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 
@@ -59,13 +58,7 @@ public final class MySQLJdbcTransactionIT extends BaseTransactionITCase {
     }
     
     @Test
-    @SneakyThrows
     public void assertTransaction() {
-        callTestCases();
-    }
-    
-    @SneakyThrows
-    private void callTestCases() {
-        parameterized.getTransactionTestCaseClass().getConstructor(BaseTransactionITCase.class, DataSource.class).newInstance(this, getDataSource()).executeTest();
+        callTestCases(parameterized);
     }
 }

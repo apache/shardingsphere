@@ -24,7 +24,7 @@ import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.AuthorityRuleBuilder;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
+import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -92,14 +92,14 @@ public final class MySQLAuthenticationHandlerTest extends ProxyContextRestorer {
     public void assertLoginWithAbsentUser() {
         initProxyContext(new ShardingSphereUser("root", "root", ""), true);
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
-        assertThat(authenticationHandler.login("root1", "", authResponse, "db1").orElse(null), is(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR));
+        assertThat(authenticationHandler.login("root1", "", authResponse, "db1").orElse(null), is(MySQLVendorError.ER_ACCESS_DENIED_ERROR));
     }
     
     @Test
     public void assertLoginWithIncorrectPassword() {
         initProxyContext(new ShardingSphereUser("root", "root", ""), true);
         byte[] authResponse = {0, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
-        assertThat(authenticationHandler.login("root", "", authResponse, "db1").orElse(null), is(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR));
+        assertThat(authenticationHandler.login("root", "", authResponse, "db1").orElse(null), is(MySQLVendorError.ER_ACCESS_DENIED_ERROR));
     }
     
     @Test
@@ -113,7 +113,7 @@ public final class MySQLAuthenticationHandlerTest extends ProxyContextRestorer {
     public void assertLoginWithUnauthorizedSchema() {
         initProxyContext(new ShardingSphereUser("root", "root", ""), false);
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
-        assertThat(authenticationHandler.login("root", "", authResponse, "db11").orElse(null), is(MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR));
+        assertThat(authenticationHandler.login("root", "", authResponse, "db11").orElse(null), is(MySQLVendorError.ER_DBACCESS_DENIED_ERROR));
     }
     
     @Test

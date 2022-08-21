@@ -20,8 +20,8 @@ package org.apache.shardingsphere.proxy.frontend.exception;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
-import org.apache.shardingsphere.infra.exception.NoDatabaseSelectedException;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.CommonDistSQLException;
+import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.DistSQLException;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.junit.Test;
 
@@ -36,7 +36,7 @@ public final class ExpectedExceptionsTest {
         assertTrue(ExpectedExceptions.isExpected(ShardingSphereInsideException.class));
         assertTrue(ExpectedExceptions.isExpected(ShardingSphereConfigurationException.class));
         assertTrue(ExpectedExceptions.isExpected(SQLParsingException.class));
-        assertTrue(ExpectedExceptions.isExpected(CommonDistSQLException.class));
+        assertTrue(ExpectedExceptions.isExpected(DistSQLException.class));
         assertTrue(ExpectedExceptions.isExpected(NoDatabaseSelectedException.class));
         assertTrue(ExpectedExceptions.isExpected(UnsupportedPreparedStatementException.class));
     }

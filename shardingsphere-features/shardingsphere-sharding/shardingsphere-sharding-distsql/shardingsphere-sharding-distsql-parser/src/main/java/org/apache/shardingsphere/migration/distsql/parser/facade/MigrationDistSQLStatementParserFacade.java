@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.migration.distsql.parser.facade;
 
 import org.apache.shardingsphere.distsql.parser.engine.spi.FeaturedDistSQLStatementParserFacade;
-import org.apache.shardingsphere.migration.distsql.parser.core.MigrationDistSQLStatementVisitor;
-import org.apache.shardingsphere.migration.distsql.parser.core.MigrationDistSQLDistSQLLexer;
+import org.apache.shardingsphere.migration.distsql.parser.core.MigrationDistSQLLexer;
 import org.apache.shardingsphere.migration.distsql.parser.core.MigrationDistSQLParser;
+import org.apache.shardingsphere.migration.distsql.parser.core.MigrationDistSQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
@@ -32,7 +32,7 @@ public final class MigrationDistSQLStatementParserFacade implements FeaturedDist
     
     @Override
     public Class<? extends SQLLexer> getLexerClass() {
-        return MigrationDistSQLDistSQLLexer.class;
+        return MigrationDistSQLLexer.class;
     }
     
     @Override

@@ -17,16 +17,17 @@
 
 package org.apache.shardingsphere.infra.check;
 
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
 
 /**
  * SQL check exception.
  */
-public final class SQLCheckException extends ShardingSphereException {
+public final class SQLCheckException extends ShardingSphereSQLException {
     
     private static final long serialVersionUID = 4183020614721058122L;
     
     public SQLCheckException(final String errorMessage) {
-        super("SQL checking failed. Error message: %s.", errorMessage);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 13000, "SQL check failed, error message: %s", errorMessage);
     }
 }

@@ -19,13 +19,95 @@ package org.apache.shardingsphere.data.pipeline.core.metadata.node;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 
+import java.util.regex.Pattern;
+
 /**
- * Scaling meta data node.
+ * Pipeline meta data node.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PipelineMetaDataNode {
+    
+    private static final String JOB_PATTERN_PREFIX = DataPipelineConstants.DATA_PIPELINE_ROOT + "/jobs/(j\\d{2}[0-9a-f]+)";
+    
+    public static final Pattern CONFIG_PATTERN = Pattern.compile(JOB_PATTERN_PREFIX + "/config");
+    
+    public static final Pattern BARRIER_PATTERN = Pattern.compile(JOB_PATTERN_PREFIX + "/barrier/(enable|disable)/\\d+");
+    
+    /**
+     * Get metadata data sources path.
+     *
+     * @param jobType job type
+     * @return data sources path
+     */
+    public static String getMetaDataDataSourcesPath(final JobType jobType) {
+        return String.join("/", getMetaDataRootPath(jobType), "dataSources");
+    }
+    
+    private static String getMetaDataRootPath(final JobType jobType) {
+        if (null != jobType) {
+            return String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, jobType.getLowercaseTypeName(), "metadata");
+        } else {
+            return String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, "metadata");
+        }
+    }
+    
+    /**
+     * Get metadata process configuration path.
+     *
+     * @param jobType job type
+     * @return data sources path
+     */
+    public static String getMetaDataProcessConfigPath(final JobType jobType) {
+        return String.join("/", getMetaDataRootPath(jobType), "processConfig");
+    }
+    
+    /**
+     * Get ElasticJob namespace.
+     *
+     * @return namespace
+     */
+    public static String getElasticJobNamespace() {
+        // ElasticJob will persist job to namespace
+        return getJobsPath();
+    }
+    
+    private static String getJobsPath() {
+        return String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, "jobs");
+    }
+    
+    /**
+     * Get job root path.
+     *
+     * @param jobId job id.
+     * @return root path
+     */
+    public static String getJobRootPath(final String jobId) {
+        return String.join("/", getJobsPath(), jobId);
+    }
+    
+    /**
+     * Get job offset item path.
+     *
+     * @param jobId job id
+     * @param shardingItem sharding item
+     * @return job offset path
+     */
+    public static String getJobOffsetItemPath(final String jobId, final int shardingItem) {
+        return String.join("/", getJobOffsetPath(jobId), Integer.toString(shardingItem));
+    }
+    
+    /**
+     * Get job offset path.
+     *
+     * @param jobId job id
+     * @return job offset path
+     */
+    public static String getJobOffsetPath(final String jobId) {
+        return String.join("/", getJobRootPath(jobId), "offset");
+    }
     
     /**
      * Get job config path.
@@ -34,57 +116,36 @@ public final class PipelineMetaDataNode {
      * @return job config path.
      */
     public static String getJobConfigPath(final String jobId) {
-        return String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId, "config");
+        return String.join("/", getJobRootPath(jobId), "config");
     }
     
     /**
-     * Get scaling root path.
-     *
-     * @param jobId job id.
-     * @return root path
-     */
-    public static String getScalingJobPath(final String jobId) {
-        return String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId);
-    }
-    
-    /**
-     * Get scaling job offset path, include job id and sharding item.
-     *
-     * @param jobId job id.
-     * @param shardingItem sharding item.
-     * @return job offset path.
-     */
-    public static String getScalingJobOffsetPath(final String jobId, final int shardingItem) {
-        return String.join("/", getScalingJobOffsetPath(jobId), Integer.toString(shardingItem));
-    }
-    
-    /**
-     * Get scaling job offset path.
-     *
-     * @param jobId job id.
-     * @return job offset path.
-     */
-    public static String getScalingJobOffsetPath(final String jobId) {
-        return String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId, "offset");
-    }
-    
-    /**
-     * Get scaling job config path.
+     * Get job check result path.
      *
      * @param jobId job id.
      * @return job config path.
      */
-    public static String getScalingJobConfigPath(final String jobId) {
-        return String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId, "config");
+    public static String getJobCheckResultPath(final String jobId) {
+        return String.join("/", getJobRootPath(jobId), "check", "result");
     }
     
     /**
-     * Get scaling job config path.
+     * Get job barrier enable path.
      *
-     * @param jobId job id.
-     * @return job config path.
+     * @param jobId job id
+     * @return job barrier enable path
      */
-    public static String getScalingCheckResultPath(final String jobId) {
-        return String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId, "check", "result");
+    public static String getJobBarrierEnablePath(final String jobId) {
+        return String.join("/", getJobRootPath(jobId), "barrier", "enable");
+    }
+    
+    /**
+     * Get job barrier disable path.
+     *
+     * @param jobId job id
+     * @return job barrier disable path
+     */
+    public static String getJobBarrierDisablePath(final String jobId) {
+        return String.join("/", getJobRootPath(jobId), "barrier", "disable");
     }
 }

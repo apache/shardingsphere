@@ -31,5 +31,6 @@
     <modules>
         <module>shardingsphere-authority-api</module>
         <module>shardingsphere-authority-core</module>
+        <module>shardingsphere-authority-distsql</module>
     </modules>
 </project>

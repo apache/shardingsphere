@@ -25,7 +25,6 @@ import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePrepar
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.infra.session.ConnectionContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.transaction.TransactionHolder;
 
 import java.sql.Array;
 import java.sql.DatabaseMetaData;
@@ -147,7 +146,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     private void processLocalTransaction() throws SQLException {
         connectionManager.setAutoCommit(autoCommit);
         if (!autoCommit) {
-            TransactionHolder.setInTransaction();
+            connectionContext.getTransactionConnectionContext().setInTransaction(true);
         }
     }
     
@@ -156,7 +155,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
             case BEGIN:
                 connectionManager.close();
                 connectionManager.getConnectionTransaction().begin();
-                TransactionHolder.setInTransaction();
+                getConnectionContext().getTransactionConnectionContext().setInTransaction(true);
                 break;
             case COMMIT:
                 connectionManager.getConnectionTransaction().commit();
@@ -172,7 +171,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
             connectionManager.commit();
         } finally {
             connectionManager.getConnectionTransaction().setRollbackOnly(false);
-            TransactionHolder.clear();
+            connectionContext.clearTransactionConnectionContext();
             connectionContext.clearTrafficInstance();
             connectionContext.clearCursorConnectionContext();
         }
@@ -184,7 +183,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
             connectionManager.rollback();
         } finally {
             connectionManager.getConnectionTransaction().setRollbackOnly(false);
-            TransactionHolder.clear();
+            connectionContext.clearTransactionConnectionContext();
             connectionContext.clearTrafficInstance();
             connectionContext.clearCursorConnectionContext();
         }

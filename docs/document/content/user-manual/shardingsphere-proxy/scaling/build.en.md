@@ -58,14 +58,16 @@ rules:
         workerThread: # Worker thread pool size for inventory data ingestion from source. If it's not configured, then use system default value.
         batchSize: # Maximum records count of a DML select operation. If it's not configured, then use system default value.
         rateLimiter: # Rate limit algorithm. If it's not configured, then system will skip rate limit.
-          type: # Algorithm type. Options:
+          type: # Algorithm type. Options: QPS
           props: # Algorithm properties
+            qps: # QPS property. Available for types: QPS
       output: # Data write configuration. If it's not configured, then part of its configuration will take effect.
         workerThread: # Worker thread pool size for data importing to target. If it's not configured, then use system default value.
         batchSize: # Maximum records count of a DML insert/delete/update operation. If it's not configured, then use system default value.
         rateLimiter: # Rate limit algorithm. If it's not configured, then system will skip rate limit.
-          type: # Algorithm type. Options:
+          type: # Algorithm type. Options: TPS
           props: # Algorithm properties
+            tps: # TPS property. Available for types: TPS
       streamChannel: # Algorithm of channel that connect producer and consumer, used for input and output. If it's not configured, then system will use MEMORY type
         type: # Algorithm type. Options: MEMORY
         props: # Algorithm properties
@@ -96,9 +98,17 @@ rules:
       input:
         workerThread: 40
         batchSize: 1000
+        rateLimiter:
+          type: QPS
+          props:
+            qps: 50
       output:
         workerThread: 40
         batchSize: 1000
+        rateLimiter:
+          type: TPS
+          props:
+            tps: 2000
       streamChannel:
         type: MEMORY
         props:
@@ -125,9 +135,17 @@ rules:
       input:
         workerThread: 40
         batchSize: 1000
+        rateLimiter:
+          type: QPS
+          props:
+            qps: 50
       output:
         workerThread: 40
         batchSize: 1000
+        rateLimiter:
+          type: TPS
+          props:
+            tps: 2000
       streamChannel:
         type: MEMORY
         props:
@@ -145,15 +163,17 @@ Auto Mode Configuration Example:
 CREATE SHARDING SCALING RULE scaling_auto (
 INPUT(
   WORKER_THREAD=40,
-  BATCH_SIZE=1000
+  BATCH_SIZE=1000,
+  RATE_LIMITER(TYPE(NAME=QPS, PROPERTIES("qps"=50)))
 ),
 OUTPUT(
   WORKER_THREAD=40,
-  BATCH_SIZE=1000
+  BATCH_SIZE=1000,
+  RATE_LIMITER(TYPE(NAME=TPS, PROPERTIES("tps"=2000)))
 ),
-STREAM_CHANNEL(TYPE(NAME=MEMORY, PROPERTIES("block-queue-size"=10000))),
-COMPLETION_DETECTOR(TYPE(NAME=IDLE, PROPERTIES("incremental-task-idle-seconds-threshold"=1800))),
-DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH, PROPERTIES("chunk-size"=1000)))
+STREAM_CHANNEL(TYPE(NAME="MEMORY", PROPERTIES("block-queue-size"="10000"))),
+COMPLETION_DETECTOR(TYPE(NAME="IDLE", PROPERTIES("incremental-task-idle-seconds-threshold"="1800"))),
+DATA_CONSISTENCY_CHECKER(TYPE(NAME="DATA_MATCH", PROPERTIES("chunk-size"="1000")))
 );
 ```
 
@@ -168,8 +188,8 @@ OUTPUT(
   WORKER_THREAD=40,
   BATCH_SIZE=1000
 ),
-STREAM_CHANNEL(TYPE(NAME=MEMORY, PROPERTIES("block-queue-size"=10000))),
-DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH, PROPERTIES("chunk-size"=1000)))
+STREAM_CHANNEL(TYPE(NAME="MEMORY", PROPERTIES("block-queue-size"="10000"))),
+DATA_CONSISTENCY_CHECKER(TYPE(NAME="DATA_MATCH", PROPERTIES("chunk-size"="1000")))
 );
 ```
 

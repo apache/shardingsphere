@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
@@ -112,6 +113,7 @@ public final class TableAssert {
         assertIs(assertContext, actual.getLeft(), expected.getLeft());
         assertIs(assertContext, actual.getRight(), expected.getRight());
         ExpressionAssert.assertExpression(assertContext, actual.getCondition(), expected.getOnCondition());
+        assertJoinType(assertContext, actual.getJoinType(), expected.getJoinType());
         assertThat(assertContext.getText("Column size assertion error: "), actual.getUsing().size(), is(expected.getUsingColumns().size()));
         int count = 0;
         for (ExpectedColumn each : expected.getUsingColumns()) {
@@ -148,6 +150,14 @@ public final class TableAssert {
                 actualTables.size(), is(expectedTables.size()));
         for (int i = 0; i < actualTables.size(); i++) {
             assertIs(assertContext, actualTables.get(i), expectedTables.get(i));
+        }
+    }
+    
+    private static void assertJoinType(final SQLCaseAssertContext assertContext, final String actual, final String expected) {
+        if (Strings.isNullOrEmpty(expected)) {
+            assertTrue(assertContext.getText("Actual join-type should not exist."), Strings.isNullOrEmpty(actual));
+        } else {
+            assertThat(assertContext.getText("Actual join-type should exist."), actual, is(expected));
         }
     }
 }

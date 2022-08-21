@@ -20,16 +20,19 @@ package org.apache.shardingsphere.infra.session;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.session.cursor.CursorConnectionContext;
+import org.apache.shardingsphere.infra.session.transaction.TransactionConnectionContext;
 
 import java.util.Optional;
 
 /**
  * Connection context.
  */
+@Getter
 public final class ConnectionContext implements AutoCloseable {
     
-    @Getter
     private final CursorConnectionContext cursorConnectionContext = new CursorConnectionContext();
+    
+    private final TransactionConnectionContext transactionConnectionContext = new TransactionConnectionContext();
     
     @Setter
     private String trafficInstanceId;
@@ -47,6 +50,7 @@ public final class ConnectionContext implements AutoCloseable {
     public void close() {
         clearTrafficInstance();
         clearCursorConnectionContext();
+        clearTransactionConnectionContext();
     }
     
     /**
@@ -61,5 +65,12 @@ public final class ConnectionContext implements AutoCloseable {
      */
     public void clearCursorConnectionContext() {
         cursorConnectionContext.close();
+    }
+    
+    /**
+     * Clear transaction connection context.
+     */
+    public void clearTransactionConnectionContext() {
+        transactionConnectionContext.close();
     }
 }

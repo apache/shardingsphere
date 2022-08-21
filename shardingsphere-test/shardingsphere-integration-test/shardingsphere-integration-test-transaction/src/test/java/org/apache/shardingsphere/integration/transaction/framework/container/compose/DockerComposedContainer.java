@@ -22,13 +22,16 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
-import org.apache.shardingsphere.integration.transaction.factory.DatabaseContainerFactory;
-import org.apache.shardingsphere.integration.transaction.framework.container.database.DatabaseContainer;
+import org.apache.shardingsphere.integration.transaction.framework.container.config.StorageContainerConfigurationFactory;
+import org.apache.shardingsphere.integration.transaction.framework.container.config.proxy.ProxyClusterContainerConfigurationFactory;
 import org.apache.shardingsphere.integration.transaction.framework.container.jdbc.ShardingSphereJDBCContainer;
-import org.apache.shardingsphere.integration.transaction.framework.container.proxy.ShardingSphereProxyDockerContainer;
 import org.apache.shardingsphere.integration.transaction.framework.param.TransactionParameterized;
+import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.AdapterContainerFactory;
+import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.governance.GovernanceContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.governance.impl.ZookeeperContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 
 import java.util.Objects;
@@ -44,24 +47,26 @@ public final class DockerComposedContainer extends BaseComposedContainer {
     
     private final GovernanceContainer governanceContainer;
     
-    private final ShardingSphereProxyDockerContainer proxyContainer;
+    private final ShardingSphereProxyClusterContainer proxyContainer;
     
     private final ShardingSphereJDBCContainer jdbcContainer;
     
-    private final DatabaseContainer databaseContainer;
+    private final DockerStorageContainer storageContainer;
     
     public DockerComposedContainer(final TransactionParameterized parameterized) {
         this.databaseType = parameterized.getDatabaseType();
         governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
-        databaseContainer = getContainers().registerContainer(DatabaseContainerFactory.newInstance(this.databaseType, parameterized.getDockerImageName()));
+        storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, parameterized.getDockerImageName(), "",
+                StorageContainerConfigurationFactory.newInstance(databaseType)));
         if (TransactionTestConstants.PROXY.equalsIgnoreCase(parameterized.getAdapter())) {
-            this.jdbcContainer = null;
-            ShardingSphereProxyDockerContainer proxyContainer = new ShardingSphereProxyDockerContainer(this.databaseType);
-            proxyContainer.dependsOn(governanceContainer, databaseContainer);
-            this.proxyContainer = getContainers().registerContainer(proxyContainer);
+            jdbcContainer = null;
+            proxyContainer = (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance("Cluster", "proxy", databaseType, storageContainer, "",
+                    ProxyClusterContainerConfigurationFactory.newInstance(databaseType));
+            proxyContainer.dependsOn(governanceContainer, storageContainer);
+            getContainers().registerContainer(proxyContainer);
         } else {
-            this.proxyContainer = null;
-            ShardingSphereJDBCContainer jdbcContainer = new ShardingSphereJDBCContainer(databaseContainer,
+            proxyContainer = null;
+            ShardingSphereJDBCContainer jdbcContainer = new ShardingSphereJDBCContainer(storageContainer,
                     Objects.requireNonNull(ShardingSphereJDBCContainer.class.getClassLoader().getResource(getShardingSphereConfigResource(parameterized))).getFile());
             this.jdbcContainer = getContainers().registerContainer(jdbcContainer);
         }
@@ -97,5 +102,4 @@ public final class DockerComposedContainer extends BaseComposedContainer {
     public String getProxyJdbcUrl(final String databaseName) {
         return DataSourceEnvironment.getURL(databaseType, proxyContainer.getHost(), proxyContainer.getFirstMappedPort(), databaseName);
     }
-    
 }

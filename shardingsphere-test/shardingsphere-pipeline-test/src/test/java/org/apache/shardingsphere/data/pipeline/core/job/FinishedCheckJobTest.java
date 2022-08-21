@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.data.pipeline.core.job;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
-import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
-import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
+import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPI;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationProcessContext;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -35,6 +36,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -43,7 +45,10 @@ public final class FinishedCheckJobTest {
     private static FinishedCheckJob finishedCheckJob;
     
     @Mock
-    private RuleAlteredJobAPI ruleAlteredJobAPI;
+    private MigrationJobAPI jobAPI;
+    
+    @Mock
+    private MigrationProcessContext processContext;
     
     @BeforeClass
     public static void beforeClass() {
@@ -54,26 +59,27 @@ public final class FinishedCheckJobTest {
     @Before
     @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
-        ReflectionUtil.setFieldValue(finishedCheckJob, "ruleAlteredJobAPI", ruleAlteredJobAPI);
+        when(jobAPI.buildPipelineProcessContext(any())).thenReturn(processContext);
+        ReflectionUtil.setFieldValue(finishedCheckJob, "jobAPI", jobAPI);
     }
     
     @Test
     public void assertExecuteAllDisabledJob() {
-        Optional<String> jobId = RuleAlteredJobAPIFactory.getInstance().start(JobConfigurationBuilder.createJobConfiguration());
+        Optional<String> jobId = MigrationJobAPIFactory.getInstance().start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
-        List<JobInfo> jobInfos = RuleAlteredJobAPIFactory.getInstance().list();
+        List<PipelineJobInfo> jobInfos = MigrationJobAPIFactory.getInstance().list();
         jobInfos.forEach(each -> each.setActive(false));
-        when(ruleAlteredJobAPI.list()).thenReturn(jobInfos);
+        when(jobAPI.list()).thenReturn(jobInfos);
         finishedCheckJob.execute(null);
     }
     
     @Test
     public void assertExecuteActiveJob() {
-        Optional<String> jobId = RuleAlteredJobAPIFactory.getInstance().start(JobConfigurationBuilder.createJobConfiguration());
+        Optional<String> jobId = MigrationJobAPIFactory.getInstance().start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
-        List<JobInfo> jobInfos = RuleAlteredJobAPIFactory.getInstance().list();
+        List<PipelineJobInfo> jobInfos = MigrationJobAPIFactory.getInstance().list();
         jobInfos.forEach(each -> each.setActive(true));
-        when(ruleAlteredJobAPI.list()).thenReturn(jobInfos);
+        when(jobAPI.list()).thenReturn(jobInfos);
         finishedCheckJob.execute(null);
     }
 }

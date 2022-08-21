@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 
 /**
- * Restore scaling source writing statement.
+ * Restore migration source writing statement.
  */
 @RequiredArgsConstructor
 @Getter

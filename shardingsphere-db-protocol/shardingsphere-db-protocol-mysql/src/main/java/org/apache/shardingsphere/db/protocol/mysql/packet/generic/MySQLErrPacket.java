@@ -20,9 +20,9 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.generic;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.error.SQLErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.infra.util.exception.sql.vendor.VendorError;
 
 /**
  * ERR packet protocol for MySQL.
@@ -48,8 +48,8 @@ public final class MySQLErrPacket implements MySQLPacket {
     
     private final String errorMessage;
     
-    public MySQLErrPacket(final int sequenceId, final SQLErrorCode sqlErrorCode, final Object... errorMessageArguments) {
-        this(sequenceId, sqlErrorCode.getErrorCode(), sqlErrorCode.getSqlState(), String.format(sqlErrorCode.getErrorMessage(), errorMessageArguments));
+    public MySQLErrPacket(final int sequenceId, final VendorError vendorError, final Object... errorMessageArguments) {
+        this(sequenceId, vendorError.getVendorCode(), vendorError.getSqlState().getValue(), String.format(vendorError.getReason(), errorMessageArguments));
     }
     
     public MySQLErrPacket(final MySQLPacketPayload payload) {

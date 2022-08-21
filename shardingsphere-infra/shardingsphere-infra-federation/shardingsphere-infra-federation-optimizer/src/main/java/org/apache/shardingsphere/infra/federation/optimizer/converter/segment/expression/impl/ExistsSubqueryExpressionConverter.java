@@ -19,14 +19,11 @@ package org.apache.shardingsphere.infra.federation.optimizer.converter.segment.e
 
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.sql.SqlBasicCall;
-import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.statement.select.SelectStatementConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -44,25 +41,12 @@ public final class ExistsSubqueryExpressionConverter implements SQLSegmentConver
     }
     
     @Override
-    public Optional<SqlBasicCall> convertToSQLNode(final ExistsSubqueryExpression expression) {
+    public Optional<SqlBasicCall> convert(final ExistsSubqueryExpression expression) {
         if (null == expression) {
             return Optional.empty();
         }
         SqlBasicCall sqlNode = new SqlBasicCall(SqlStdOperatorTable.EXISTS,
-                Collections.singletonList(new SelectStatementConverter().convertToSQLNode(expression.getSubquery().getSelect())), SqlParserPos.ZERO);
+                Collections.singletonList(new SelectStatementConverter().convert(expression.getSubquery().getSelect())), SqlParserPos.ZERO);
         return expression.isNot() ? Optional.of(new SqlBasicCall(SqlStdOperatorTable.NOT, Collections.singletonList(sqlNode), SqlParserPos.ZERO)) : Optional.of(sqlNode);
-    }
-    
-    @Override
-    public Optional<ExistsSubqueryExpression> convertToSQLSegment(final SqlBasicCall sqlBasicCall) {
-        if (null == sqlBasicCall) {
-            return Optional.empty();
-        }
-        SqlNode subquerySqlNode = sqlBasicCall.getOperandList().get(0);
-        SelectStatement selectStatement = new SelectStatementConverter().convertToSQLStatement(subquerySqlNode);
-        SubquerySegment subquery = new SubquerySegment(getStartIndex(subquerySqlNode) - 1, getStopIndex(subquerySqlNode) + 1, selectStatement);
-        ExistsSubqueryExpression result = new ExistsSubqueryExpression(getStartIndex(sqlBasicCall), subquery.getStopIndex(), subquery);
-        result.setNot(not);
-        return Optional.of(result);
     }
 }

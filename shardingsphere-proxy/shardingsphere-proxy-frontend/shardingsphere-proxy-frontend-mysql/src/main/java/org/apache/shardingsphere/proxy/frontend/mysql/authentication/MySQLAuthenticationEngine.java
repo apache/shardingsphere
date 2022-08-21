@@ -24,7 +24,7 @@ import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCapabilityFlag;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCharacterSet;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConnectionPhase;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
+import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLStatusFlag;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIDGenerator;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
@@ -82,8 +82,8 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         } else if (MySQLConnectionPhase.AUTHENTICATION_METHOD_MISMATCH == connectionPhase) {
             authenticationMethodMismatch((MySQLPacketPayload) payload);
         }
-        Optional<MySQLServerErrorCode> errorCode = authenticationHandler.login(currentAuthResult.getUsername(), getHostAddress(context), authResponse, currentAuthResult.getDatabase());
-        context.writeAndFlush(errorCode.isPresent() ? createErrorPacket(errorCode.get(), context) : new MySQLOKPacket(++sequenceId, DEFAULT_STATUS_FLAG));
+        Optional<MySQLVendorError> vendorError = authenticationHandler.login(currentAuthResult.getUsername(), getHostAddress(context), authResponse, currentAuthResult.getDatabase());
+        context.writeAndFlush(vendorError.isPresent() ? createErrorPacket(vendorError.get(), context) : new MySQLOKPacket(++sequenceId, DEFAULT_STATUS_FLAG));
         return AuthenticationResultBuilder.finished(currentAuthResult.getUsername(), getHostAddress(context), currentAuthResult.getDatabase());
     }
     
@@ -95,7 +95,7 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(mySQLCharacterSet.getCharset());
         context.channel().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).set(mySQLCharacterSet);
         if (!Strings.isNullOrEmpty(packet.getDatabase()) && !ProxyContext.getInstance().databaseExists(packet.getDatabase())) {
-            context.writeAndFlush(new MySQLErrPacket(++sequenceId, MySQLServerErrorCode.ER_BAD_DB_ERROR, packet.getDatabase()));
+            context.writeAndFlush(new MySQLErrPacket(++sequenceId, MySQLVendorError.ER_BAD_DB_ERROR, packet.getDatabase()));
             return AuthenticationResultBuilder.continued();
         }
         MySQLAuthenticator authenticator = authenticationHandler.getAuthenticator(packet.getUsername(), getHostAddress(context));
@@ -117,10 +117,10 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         authResponse = packet.getAuthPluginResponse();
     }
     
-    private MySQLErrPacket createErrorPacket(final MySQLServerErrorCode errorCode, final ChannelHandlerContext context) {
-        return MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR == errorCode
-                ? new MySQLErrPacket(++sequenceId, MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR, currentAuthResult.getUsername(), getHostAddress(context), currentAuthResult.getDatabase())
-                : new MySQLErrPacket(++sequenceId, MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR, currentAuthResult.getUsername(), getHostAddress(context), getErrorMessage());
+    private MySQLErrPacket createErrorPacket(final MySQLVendorError vendorError, final ChannelHandlerContext context) {
+        return MySQLVendorError.ER_DBACCESS_DENIED_ERROR == vendorError
+                ? new MySQLErrPacket(++sequenceId, MySQLVendorError.ER_DBACCESS_DENIED_ERROR, currentAuthResult.getUsername(), getHostAddress(context), currentAuthResult.getDatabase())
+                : new MySQLErrPacket(++sequenceId, MySQLVendorError.ER_ACCESS_DENIED_ERROR, currentAuthResult.getUsername(), getHostAddress(context), getErrorMessage());
     }
     
     private String getErrorMessage() {

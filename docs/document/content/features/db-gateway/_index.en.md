@@ -18,3 +18,7 @@ Automatically translate different types of database dialects into the dialects u
 ## Goal
 
 The goal of database gateway for Apache ShardingSphere is translating SQL automatically among various databases.
+
+## Application Scenarios
+
+As business scenarios and database products of enterprises become increasingly diversified, the connection between business applications and various database products becomes extremely complex. ShardingSphere database gateway can shield the connection between business applications and the underlying diversified databases. At the same time, it provides a unified access protocol and syntax system for different business scenarios, which can help enterprises quickly build a unified data access platform.

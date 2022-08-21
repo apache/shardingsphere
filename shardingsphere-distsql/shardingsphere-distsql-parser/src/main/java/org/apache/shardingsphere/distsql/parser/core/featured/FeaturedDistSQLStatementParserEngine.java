@@ -52,7 +52,7 @@ public final class FeaturedDistSQLStatementParserEngine {
             } catch (final ParseCancellationException | SQLParsingException ignored) {
             }
         }
-        throw new SQLParsingException("You have an error in your SQL syntax.");
+        throw new SQLParsingException(sql);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
@@ -60,7 +60,7 @@ public final class FeaturedDistSQLStatementParserEngine {
     private SQLStatement getSQLStatement(final String sql, final String featureType, final ParseASTNode parseASTNode) {
         SQLVisitor visitor = FeaturedDistSQLStatementParserFacadeFactory.getInstance(featureType).getVisitorClass().getDeclaredConstructor().newInstance();
         if (parseASTNode.getRootNode() instanceof ErrorNode) {
-            throw new SQLParsingException("Unsupported SQL of `%s`", sql);
+            throw new SQLParsingException(sql);
         }
         return (SQLStatement) ((ParseTreeVisitor) visitor).visit(parseASTNode.getRootNode());
     }

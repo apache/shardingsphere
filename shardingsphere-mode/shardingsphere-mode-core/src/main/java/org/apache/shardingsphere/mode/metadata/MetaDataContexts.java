@@ -36,6 +36,7 @@ public final class MetaDataContexts implements AutoCloseable {
     
     @Override
     public void close() throws Exception {
+        persistService.getRepository().close();
         metaData.getGlobalRuleMetaData().findRules(ResourceHeldRule.class).forEach(ResourceHeldRule::closeStaleResource);
         metaData.getDatabases().values().forEach(each -> each.getRuleMetaData().findRules(ResourceHeldRule.class).forEach(ResourceHeldRule::closeStaleResource));
     }

@@ -45,13 +45,13 @@ public final class UtilityDistSQLStatementParserEngine {
         try {
             return SQLParserFactory.newInstance(sql, UtilityDistSQLLexer.class, UtilityDistSQLParser.class).parse();
         } catch (final ParseCancellationException | SQLParsingException ignored) {
-            throw new SQLParsingException("You have an error in your SQL syntax.");
+            throw new SQLParsingException(sql);
         }
     }
     
     private SQLStatement getSQLStatement(final String sql, final ParseASTNode parseASTNode) {
         if (parseASTNode.getRootNode() instanceof ErrorNode) {
-            throw new SQLParsingException("Unsupported SQL of `%s`", sql);
+            throw new SQLParsingException(sql);
         }
         return (SQLStatement) (new UtilityDistSQLStatementVisitor()).visit(parseASTNode.getRootNode());
     }

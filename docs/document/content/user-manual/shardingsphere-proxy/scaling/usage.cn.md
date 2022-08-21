@@ -127,19 +127,19 @@ mysql> preview SELECT COUNT(1) FROM t_order;
 ```sql
 ADD RESOURCE ds_2 (
     URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_2?serverTimezone=UTC&useSSL=false",
-    USER=root,
-    PASSWORD=root,
-    PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000")
+    USER="root",
+    PASSWORD="root",
+    PROPERTIES("maximumPoolSize"="10","idleTimeout"="30000")
 ), ds_3 (
     URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_3?serverTimezone=UTC&useSSL=false",
-    USER=root,
-    PASSWORD=root,
-    PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000")
+    USER="root",
+    PASSWORD="root",
+    PROPERTIES("maximumPoolSize"="10","idleTimeout"="30000")
 ), ds_4 (
     URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_4?serverTimezone=UTC&useSSL=false",
-    USER=root,
-    PASSWORD=root,
-    PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000")
+    USER="root",
+    PASSWORD="root",
+    PROPERTIES("maximumPoolSize"="10","idleTimeout"="30000")
 );
 ```
 
@@ -164,8 +164,8 @@ DistSQL 字段含义和 YAML 配置保持一致，详情请参见 [YAML 配置#�
 ALTER SHARDING TABLE RULE t_order (
 RESOURCES(ds_2, ds_3, ds_4),
 SHARDING_COLUMN=order_id,
-TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=6)),
-KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
+TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="6")),
+KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
 );
 ```
 
@@ -174,19 +174,19 @@ KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
 `TableRule` 修改示例：
 ```sql
 ALTER SHARDING ALGORITHM database_inline (
-TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="ds_${user_id % 3 + 2}"))
+TYPE(NAME="INLINE",PROPERTIES("algorithm-expression"="ds_${user_id % 3 + 2}"))
 );
 
 ALTER SHARDING TABLE RULE t_order (
 DATANODES("ds_${2..4}.t_order_${0..1}"),
-DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
-TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_inline),
-KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
+DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+TABLE_STRATEGY(TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_inline),
+KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
 ), t_order_item (
 DATANODES("ds_${2..4}.t_order_item_${0..1}"),
-DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
-TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_item_inline),
-KEY_GENERATE_STRATEGY(COLUMN=order_item_id,TYPE(NAME=snowflake))
+DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+TABLE_STRATEGY(TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_item_inline),
+KEY_GENERATE_STRATEGY(COLUMN=order_item_id,TYPE(NAME="snowflake"))
 );
 ```
 
@@ -200,12 +200,12 @@ KEY_GENERATE_STRATEGY(COLUMN=order_item_id,TYPE(NAME=snowflake))
 
 示例：
 ```sql
-show scaling list;
+SHOW MIGRATION LIST;
 ```
 
 返回信息：
 ```
-mysql> show scaling list;
+mysql> SHOW MIGRATION LIST;
 +--------------------+-----------------------+----------------------+--------+---------------------+---------------------+
 | id                 | tables                | sharding_total_count | active | create_time         | stop_time           |
 +--------------------+-----------------------+----------------------+--------+---------------------+---------------------+
@@ -219,12 +219,12 @@ mysql> show scaling list;
 
 示例：
 ```sql
-show scaling status {jobId};
+SHOW MIGRATION STATUS {jobId};
 ```
 
 返回信息：
 ```
-mysql> show scaling status 660152090995195904;
+mysql> SHOW MIGRATION STATUS 660152090995195904;
 +------+-------------+----------+-------------------------------+--------------------------+
 | item | data_source | status   | inventory_finished_percentage | incremental_idle_seconds |
 +------+-------------+----------+-------------------------------+--------------------------+
@@ -313,14 +313,14 @@ USE scaling_db
 ```sql
 ADD RESOURCE ds_0 (
     URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_0?serverTimezone=UTC&useSSL=false",
-    USER=root,
-    PASSWORD=root,
-    PROPERTIES("maximumPoolSize"=50,"idleTimeout"="60000")
+    USER="root",
+    PASSWORD="root",
+    PROPERTIES("maximumPoolSize"="50","idleTimeout"="60000")
 ), ds_1 (
     URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_1?serverTimezone=UTC&useSSL=false",
-    USER=root,
-    PASSWORD=root,
-    PROPERTIES("maximumPoolSize"=50,"idleTimeout"="60000")
+    USER="root",
+    PASSWORD="root",
+    PROPERTIES("maximumPoolSize"="50","idleTimeout"="60000")
 );
 ```
 
@@ -328,29 +328,29 @@ ADD RESOURCE ds_0 (
 把现有系统中的表配置到规则里，使用 tables 规则 INLINE 算法，方便适配已有的表名。
 ```sql
 CREATE SHARDING ALGORITHM database_inline (
-TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="ds_${user_id % 2}"))
+TYPE(NAME="INLINE",PROPERTIES("algorithm-expression"="ds_${user_id % 2}"))
 );
 CREATE SHARDING ALGORITHM t_order_inline (
-TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="t_order_${order_id % 2}"))
+TYPE(NAME="INLINE",PROPERTIES("algorithm-expression"="t_order_${order_id % 2}"))
 );
 CREATE SHARDING ALGORITHM t_order_item_inline (
-TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="t_order_item_${order_id % 2}"))
+TYPE(NAME="INLINE",PROPERTIES("algorithm-expression"="t_order_item_${order_id % 2}"))
 );
 
 CREATE SHARDING TABLE RULE t_order (
 DATANODES("ds_${0..1}.t_order_${0..1}"),
-DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
-TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_inline),
-KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
+DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+TABLE_STRATEGY(TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_inline),
+KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
 ), t_order_item (
 DATANODES("ds_${0..1}.t_order_item_${0..1}"),
-DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
-TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_item_inline),
-KEY_GENERATE_STRATEGY(COLUMN=order_item_id,TYPE(NAME=snowflake))
+DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+TABLE_STRATEGY(TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_item_inline),
+KEY_GENERATE_STRATEGY(COLUMN=order_item_id,TYPE(NAME="snowflake"))
 );
 
 CREATE SHARDING SCALING RULE scaling_manual2 (
-DATA_CONSISTENCY_CHECKER(TYPE(NAME=CRC32_MATCH))
+DATA_CONSISTENCY_CHECKER(TYPE(NAME="CRC32_MATCH"))
 );
 ```
 
@@ -396,44 +396,44 @@ CREATE DATABASE scaling_ds_12 DEFAULT CHARSET utf8;
 ```sql
 ADD RESOURCE ds_2 (
     URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_10?serverTimezone=UTC&useSSL=false",
-    USER=root,
-    PASSWORD=root,
-    PROPERTIES("maximumPoolSize"=50,"idleTimeout"="60000")
+    USER="root",
+    PASSWORD="root",
+    PROPERTIES("maximumPoolSize"="50","idleTimeout"="60000")
 ), ds_3 (
     URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_11?serverTimezone=UTC&useSSL=false",
-    USER=root,
-    PASSWORD=root,
-    PROPERTIES("maximumPoolSize"=50,"idleTimeout"="60000")
+    USER="root",
+    PASSWORD="root",
+    PROPERTIES("maximumPoolSize"="50","idleTimeout"="60000")
 ), ds_4 (
     URL="jdbc:mysql://127.0.0.1:3306/scaling_ds_12?serverTimezone=UTC&useSSL=false",
-    USER=root,
-    PASSWORD=root,
-    PROPERTIES("maximumPoolSize"=50,"idleTimeout"="60000")
+    USER="root",
+    PASSWORD="root",
+    PROPERTIES("maximumPoolSize"="50","idleTimeout"="60000")
 );
 ```
 
 修改分片规则触发迁移：
 ```sql
 ALTER SHARDING ALGORITHM database_inline (
-TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="ds_${user_id % 3 + 2}"))
+TYPE(NAME="INLINE",PROPERTIES("algorithm-expression"="ds_${user_id % 3 + 2}"))
 );
 
 ALTER SHARDING TABLE RULE t_order (
 DATANODES("ds_${2..4}.t_order_${0..1}"),
-DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
-TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_inline),
-KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
+DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+TABLE_STRATEGY(TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_inline),
+KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
 ), t_order_item (
 DATANODES("ds_${2..4}.t_order_item_${0..1}"),
-DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
-TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_item_inline),
-KEY_GENERATE_STRATEGY(COLUMN=order_item_id,TYPE(NAME=snowflake))
+DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+TABLE_STRATEGY(TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_item_inline),
+KEY_GENERATE_STRATEGY(COLUMN=order_item_id,TYPE(NAME="snowflake"))
 );
 ```
 
 查看当前迁移任务的进度：
 ```sql
-mysql> SHOW SCALING LIST;
+mysql> SHOW MIGRATION LIST;
 +--------------------------------------------+----------------------+----------------------+--------+---------------------+-----------+
 | id                                         | tables               | sharding_total_count | active | create_time         | stop_time |
 +--------------------------------------------+----------------------+----------------------+--------+---------------------+-----------+
@@ -441,7 +441,7 @@ mysql> SHOW SCALING LIST;
 +--------------------------------------------+----------------------+----------------------+--------+---------------------+-----------+
 1 row in set (0.34 sec)
 
-mysql> SHOW SCALING STATUS 0130317c30317c3054317c7363616c696e675f6462;
+mysql> SHOW MIGRATION STATUS "0130317c30317c3054317c7363616c696e675f6462";
 +------+-------------+--------------------------+--------+-------------------------------+--------------------------+
 | item | data_source | status                   | active | inventory_finished_percentage | incremental_idle_seconds |
 +------+-------------+--------------------------+--------+-------------------------------+--------------------------+
@@ -457,13 +457,13 @@ mysql> SHOW SCALING STATUS 0130317c30317c3054317c7363616c696e675f6462;
 
 proxy 停写：
 ```sql
-mysql> STOP SCALING SOURCE WRITING 0130317c30317c3054317c7363616c696e675f6462;
+mysql> STOP MIGRATION SOURCE WRITING "0130317c30317c3054317c7363616c696e675f6462";
 Query OK, 0 rows affected (0.07 sec)
 ```
 
 数据一致性校验：
 ```sql
-mysql> CHECK SCALING 0130317c30317c3054317c7363616c696e675f6462 BY TYPE (NAME=CRC32_MATCH);
+mysql> CHECK MIGRATION "0130317c30317c3054317c7363616c696e675f6462" BY TYPE (NAME="CRC32_MATCH");
 +--------------+----------------------+----------------------+-----------------------+-------------------------+
 | table_name   | source_records_count | target_records_count | records_count_matched | records_content_matched |
 +--------------+----------------------+----------------------+-----------------------+-------------------------+
@@ -475,7 +475,7 @@ mysql> CHECK SCALING 0130317c30317c3054317c7363616c696e675f6462 BY TYPE (NAME=CR
 
 切换元数据：
 ```sql
-mysql> APPLY SCALING 0130317c30317c3054317c7363616c696e675f6462;
+mysql> APPLY MIGRATION "0130317c30317c3054317c7363616c696e675f6462";
 Query OK, 0 rows affected (0.22 sec)
 ```
 

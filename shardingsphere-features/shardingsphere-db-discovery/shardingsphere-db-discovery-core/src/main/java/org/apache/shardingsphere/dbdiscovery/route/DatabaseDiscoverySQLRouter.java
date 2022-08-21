@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.session.ConnectionContext;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -40,7 +41,8 @@ import java.util.Optional;
 public final class DatabaseDiscoverySQLRouter implements SQLRouter<DatabaseDiscoveryRule> {
     
     @Override
-    public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereDatabase database, final DatabaseDiscoveryRule rule, final ConfigurationProperties props) {
+    public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereDatabase database,
+                                           final DatabaseDiscoveryRule rule, final ConfigurationProperties props, final ConnectionContext connectionContext) {
         RouteContext result = new RouteContext();
         DatabaseDiscoveryDataSourceRule singleDataSourceRule = rule.getSingleDataSourceRule();
         String dataSourceName = new DatabaseDiscoveryDataSourceRouter(singleDataSourceRule).route();
@@ -50,7 +52,8 @@ public final class DatabaseDiscoverySQLRouter implements SQLRouter<DatabaseDisco
     
     @Override
     public void decorateRouteContext(final RouteContext routeContext,
-                                     final LogicSQL logicSQL, final ShardingSphereDatabase database, final DatabaseDiscoveryRule rule, final ConfigurationProperties props) {
+                                     final LogicSQL logicSQL, final ShardingSphereDatabase database, final DatabaseDiscoveryRule rule,
+                                     final ConfigurationProperties props, final ConnectionContext connectionContext) {
         Collection<RouteUnit> toBeRemoved = new LinkedList<>();
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
         for (RouteUnit each : routeContext.getRouteUnits()) {

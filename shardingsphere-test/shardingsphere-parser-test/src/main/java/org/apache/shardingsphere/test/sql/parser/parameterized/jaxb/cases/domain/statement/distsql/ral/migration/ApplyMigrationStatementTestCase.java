@@ -25,7 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Apply scaling statement test case.
+ * Apply migration statement test case.
  */
 @Getter
 public final class ApplyMigrationStatementTestCase extends SQLParserTestCase {

@@ -38,7 +38,7 @@ algorithmType ::=
 
 ```sql
 CREATE SHARDING KEY GENERATOR snowflake_key_generator (
-    TYPE(NAME=SNOWFLAKE, PROPERTIES("max-vibration-offset"=3))
+    TYPE(NAME="SNOWFLAKE", PROPERTIES("max-vibration-offset"="3"))
 );
 ```
 

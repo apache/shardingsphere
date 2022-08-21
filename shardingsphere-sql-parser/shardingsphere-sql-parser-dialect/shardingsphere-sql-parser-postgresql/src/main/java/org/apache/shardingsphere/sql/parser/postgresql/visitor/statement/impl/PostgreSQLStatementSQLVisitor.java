@@ -68,7 +68,9 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Jo
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.LimitClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NameListContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NaturalJoinTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NumberLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.OuterJoinTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.OwnerContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ParameterMarkerContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.QualifiedNameContext;
@@ -103,6 +105,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Wi
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParserBaseVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.CombineType;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
@@ -180,6 +183,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -292,18 +296,38 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         if (null != ctx.patternMatchingOperator()) {
             return createPatternMatchingOperationSegment(ctx);
         }
-        if (null != ctx.comparisonOperator()) {
-            return createCommonBinaryOperationSegment(ctx, ctx.comparisonOperator().getText());
-        }
-        if (null != ctx.andOperator()) {
-            return createCommonBinaryOperationSegment(ctx, ctx.andOperator().getText());
-        }
-        if (null != ctx.orOperator()) {
-            return createCommonBinaryOperationSegment(ctx, ctx.orOperator().getText());
+        Optional<String> commonBinaryOperator = findCommonBinaryOperator(ctx);
+        if (commonBinaryOperator.isPresent()) {
+            return createCommonBinaryOperationSegment(ctx, commonBinaryOperator.get());
         }
         super.visitAExpr(ctx);
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
+    }
+    
+    private Optional<String> findCommonBinaryOperator(final AExprContext ctx) {
+        if (null != ctx.comparisonOperator()) {
+            return Optional.of(ctx.comparisonOperator().getText());
+        }
+        if (null != ctx.andOperator()) {
+            return Optional.of(ctx.andOperator().getText());
+        }
+        if (null != ctx.orOperator()) {
+            return Optional.of(ctx.orOperator().getText());
+        }
+        if (null != ctx.PLUS_()) {
+            return Optional.of(ctx.PLUS_().getText());
+        }
+        if (null != ctx.MINUS_()) {
+            return Optional.of(ctx.MINUS_().getText());
+        }
+        if (null != ctx.ASTERISK_()) {
+            return Optional.of(ctx.ASTERISK_().getText());
+        }
+        if (null != ctx.SLASH_()) {
+            return Optional.of(ctx.SLASH_().getText());
+        }
+        return Optional.empty();
     }
     
     private BinaryOperationExpression createPatternMatchingOperationSegment(final AExprContext ctx) {
@@ -331,16 +355,16 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         }
         if (null != ctx.parameterMarker()) {
             ParameterMarkerValue parameterMarker = (ParameterMarkerValue) visit(ctx.parameterMarker());
-            ParameterMarkerExpressionSegment segment = new ParameterMarkerExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), parameterMarker.getValue(), parameterMarker.getType());
-            parameterMarkerSegments.add(segment);
-            return segment;
+            ParameterMarkerExpressionSegment result = new ParameterMarkerExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), parameterMarker.getValue(), parameterMarker.getType());
+            parameterMarkerSegments.add(result);
+            return result;
         }
         if (null != ctx.aexprConst()) {
-            ASTNode astNode = visit(ctx.aexprConst());
-            if (astNode instanceof StringLiteralValue || astNode instanceof BooleanLiteralValue || astNode instanceof NumberLiteralValue) {
-                return new LiteralExpressionSegment(ctx.aexprConst().start.getStartIndex(), ctx.aexprConst().stop.getStopIndex(), ((LiteralValue) astNode).getValue());
+            ASTNode result = visit(ctx.aexprConst());
+            if (result instanceof StringLiteralValue || result instanceof BooleanLiteralValue || result instanceof NumberLiteralValue) {
+                return new LiteralExpressionSegment(ctx.aexprConst().start.getStartIndex(), ctx.aexprConst().stop.getStopIndex(), ((LiteralValue) result).getValue());
             }
-            return astNode;
+            return result;
         }
         if (null != ctx.aExpr()) {
             return visit(ctx.aExpr());
@@ -370,11 +394,11 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         if (null != ctx.functionExprCommonSubexpr()) {
             return visit(ctx.functionExprCommonSubexpr());
         }
-        Collection<ExpressionSegment> expressionSegments = getExpressionSegments(getTargetRuleContextFromParseTree(ctx, CExprContext.class));
+        Collection<ExpressionSegment> expressionSegments = getExpressionSegments(getTargetRuleContextFromParseTree(ctx, AExprContext.class));
         // TODO replace aggregation segment
         String aggregationType = ctx.funcApplication().funcName().getText();
         if (AggregationType.isAggregationType(aggregationType)) {
-            return createAggregationSegment(ctx.funcApplication(), aggregationType);
+            return createAggregationSegment(ctx.funcApplication(), aggregationType, expressionSegments);
         }
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcApplication().funcName().getText(), getOriginalText(ctx));
         result.getParameters().addAll(expressionSegments);
@@ -384,7 +408,7 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
     @Override
     public ASTNode visitFunctionExprCommonSubexpr(final FunctionExprCommonSubexprContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getText(), getOriginalText(ctx));
-        Collection<ExpressionSegment> expressionSegments = getExpressionSegments(getTargetRuleContextFromParseTree(ctx, CExprContext.class));
+        Collection<ExpressionSegment> expressionSegments = getExpressionSegments(getTargetRuleContextFromParseTree(ctx, AExprContext.class));
         result.getParameters().addAll(expressionSegments);
         return result;
     }
@@ -402,9 +426,9 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         return result;
     }
     
-    private Collection<ExpressionSegment> getExpressionSegments(final Collection<CExprContext> cexprContexts) {
+    private Collection<ExpressionSegment> getExpressionSegments(final Collection<AExprContext> aExprContexts) {
         Collection<ExpressionSegment> result = new LinkedList<>();
-        for (CExprContext each : cexprContexts) {
+        for (AExprContext each : aExprContexts) {
             result.add((ExpressionSegment) visit(each));
         }
         return result;
@@ -502,13 +526,18 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         return new LiteralExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
     }
     
-    private ProjectionSegment createAggregationSegment(final FuncApplicationContext ctx, final String aggregationType) {
+    private ProjectionSegment createAggregationSegment(final FuncApplicationContext ctx, final String aggregationType, final Collection<ExpressionSegment> expressionSegments) {
         AggregationType type = AggregationType.valueOf(aggregationType.toUpperCase());
         String innerExpression = ctx.start.getInputStream().getText(new Interval(ctx.LP_().getSymbol().getStartIndex(), ctx.stop.getStopIndex()));
         if (null == ctx.DISTINCT()) {
-            return new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression);
+            AggregationProjectionSegment result = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression);
+            result.getParameters().addAll(expressionSegments);
+            return result;
         }
-        return new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression, getDistinctExpression(ctx));
+        AggregationDistinctProjectionSegment result =
+                new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression, getDistinctExpression(ctx));
+        result.getParameters().addAll(expressionSegments);
+        return result;
     }
     
     private String getDistinctExpression(final FuncApplicationContext ctx) {
@@ -932,45 +961,53 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
     
     @Override
     public ASTNode visitTargetEl(final TargetElContext ctx) {
-        if (null != ctx.ASTERISK_()) {
-            return new ShorthandProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        }
-        if (null != ctx.DOT_ASTERISK_()) {
-            ShorthandProjectionSegment shorthandProjection = new ShorthandProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-            shorthandProjection.setOwner(new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText())));
-            if (null != ctx.identifier()) {
-                shorthandProjection.setAlias(new AliasSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), new IdentifierValue(ctx.identifier().getText())));
-            }
-            return shorthandProjection;
-        }
-        AExprContext expr = ctx.aExpr();
-        ProjectionSegment result = new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr));
-        if (null != expr.cExpr()) {
-            ASTNode projection = visit(expr.cExpr());
-            if (projection instanceof ColumnSegment) {
-                result = new ColumnProjectionSegment((ColumnSegment) projection);
-            }
-            if (projection instanceof FunctionSegment) {
-                result = new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr), (FunctionSegment) projection);
-            }
-            if (projection instanceof AggregationProjectionSegment) {
-                result = (AggregationProjectionSegment) projection;
-            }
-            if (projection instanceof SubqueryExpressionSegment) {
-                SubqueryExpressionSegment subqueryExpression = (SubqueryExpressionSegment) projection;
-                String text = ctx.start.getInputStream().getText(new Interval(subqueryExpression.getStartIndex(), subqueryExpression.getStopIndex()));
-                result = new SubqueryProjectionSegment(subqueryExpression.getSubquery(), text);
-            }
-            if (projection instanceof ExistsSubqueryExpression) {
-                ExistsSubqueryExpression existsSubqueryExpression = (ExistsSubqueryExpression) projection;
-                String text = ctx.start.getInputStream().getText(new Interval(existsSubqueryExpression.getStartIndex(), existsSubqueryExpression.getStopIndex()));
-                result = new SubqueryProjectionSegment(existsSubqueryExpression.getSubquery(), text);
-            }
-        }
+        ProjectionSegment result = createProjectionSegment(ctx, ctx.aExpr());
         if (null != ctx.identifier()) {
             ((AliasAvailable) result).setAlias(new AliasSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), new IdentifierValue(ctx.identifier().getText())));
         }
         return result;
+    }
+    
+    private ProjectionSegment createProjectionSegment(final TargetElContext ctx, final AExprContext expr) {
+        if (null != ctx.ASTERISK_()) {
+            return new ShorthandProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        }
+        if (null != ctx.DOT_ASTERISK_()) {
+            ShorthandProjectionSegment result = new ShorthandProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+            result.setOwner(new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText())));
+            return result;
+        }
+        if (null != ctx.aExpr().cExpr()) {
+            ASTNode projection = visit(expr.cExpr());
+            return findProjectionFromCExpr(ctx, expr, projection).orElseGet(() -> new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr), null));
+        }
+        return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr), null);
+    }
+    
+    private Optional<ProjectionSegment> findProjectionFromCExpr(final TargetElContext ctx, final AExprContext expr, final ASTNode projection) {
+        if (projection instanceof ColumnSegment) {
+            return Optional.of(new ColumnProjectionSegment((ColumnSegment) projection));
+        }
+        if (projection instanceof FunctionSegment) {
+            return Optional.of(new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr), (FunctionSegment) projection));
+        }
+        if (projection instanceof AggregationProjectionSegment) {
+            return Optional.of((AggregationProjectionSegment) projection);
+        }
+        if (projection instanceof SubqueryExpressionSegment) {
+            SubqueryExpressionSegment subqueryExpression = (SubqueryExpressionSegment) projection;
+            String text = ctx.start.getInputStream().getText(new Interval(subqueryExpression.getStartIndex(), subqueryExpression.getStopIndex()));
+            return Optional.of(new SubqueryProjectionSegment(subqueryExpression.getSubquery(), text));
+        }
+        if (projection instanceof ExistsSubqueryExpression) {
+            ExistsSubqueryExpression existsSubqueryExpression = (ExistsSubqueryExpression) projection;
+            String text = ctx.start.getInputStream().getText(new Interval(existsSubqueryExpression.getStartIndex(), existsSubqueryExpression.getStopIndex()));
+            return Optional.of(new SubqueryProjectionSegment(existsSubqueryExpression.getSubquery(), text));
+        }
+        if (projection instanceof LiteralExpressionSegment) {
+            return Optional.of(new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr), (LiteralExpressionSegment) projection));
+        }
+        return Optional.empty();
     }
     
     @Override
@@ -986,6 +1023,7 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
             result.setStopIndex(ctx.stop.getStopIndex());
             result.setLeft((TableSegment) visit(ctx.fromList()));
             result.setRight((TableSegment) visit(ctx.tableReference()));
+            result.setJoinType(JoinType.COMMA.name());
             return result;
         }
         return visit(ctx.tableReference());
@@ -1032,13 +1070,45 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
     }
     
     private JoinTableSegment visitJoinedTable(final JoinedTableContext ctx, final JoinTableSegment tableSegment) {
-        JoinTableSegment result = tableSegment;
         TableSegment right = (TableSegment) visit(ctx.tableReference());
-        result.setRight(right);
-        if (null != ctx.joinQual()) {
-            result = visitJoinQual(ctx.joinQual(), result);
+        tableSegment.setRight(right);
+        tableSegment.setJoinType(getJoinType(ctx));
+        return null != ctx.joinQual() ? visitJoinQual(ctx.joinQual(), tableSegment) : tableSegment;
+    }
+    
+    private String getJoinType(final JoinedTableContext ctx) {
+        if (null != ctx.crossJoinType()) {
+            return JoinType.CROSS.name();
         }
-        return result;
+        if (null != ctx.innerJoinType()) {
+            return JoinType.INNER.name();
+        }
+        if (null != ctx.outerJoinType()) {
+            return getOutJoinType(ctx.outerJoinType());
+        }
+        if (null != ctx.naturalJoinType()) {
+            return getNaturalJoinType(ctx.naturalJoinType());
+        }
+        return JoinType.COMMA.name();
+    }
+    
+    private static String getNaturalJoinType(final NaturalJoinTypeContext ctx) {
+        if (null != ctx.INNER()) {
+            return JoinType.INNER.name();
+        } else if (null != ctx.FULL()) {
+            return JoinType.FULL.name();
+        } else if (null != ctx.LEFT()) {
+            return JoinType.LEFT.name();
+        } else {
+            return JoinType.RIGHT.name();
+        }
+    }
+    
+    private static String getOutJoinType(final OuterJoinTypeContext ctx) {
+        if (null != ctx.FULL()) {
+            return JoinType.FULL.name();
+        }
+        return null != ctx.LEFT() ? JoinType.LEFT.name() : JoinType.RIGHT.name();
     }
     
     private JoinTableSegment visitJoinQual(final JoinQualContext ctx, final JoinTableSegment joinTableSource) {

@@ -97,7 +97,7 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
             }
         }
         if (availableDataSourceNames.isEmpty()) {
-            throw new ShardingSphereConfigurationException("Cannot find actual datasource intersection for logic tables: %s", logicTables);
+            throw new ShardingSphereConfigurationException("Cannot find actual datasource intersection for logic tables: %s", logicTables.toArray(new String[0]));
         }
         String dataSourceName = getRandomDataSourceName(availableDataSourceNames);
         routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), tableMappers));

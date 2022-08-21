@@ -24,22 +24,15 @@ import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
-import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.MemoryPipelineChannelCreator;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineProcessConfigurationUtils;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreatorFactory;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineInputConfiguration;
-import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineOutputConfiguration;
 import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineInputConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineOutputConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineProcessConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.data.pipeline.YamlPipelineProcessConfigurationSwapper;
-
-import java.util.Properties;
+import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineReadConfiguration;
+import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineWriteConfiguration;
 
 /**
  * Abstract pipeline process context.
@@ -48,13 +41,11 @@ import java.util.Properties;
 @Slf4j
 public abstract class AbstractPipelineProcessContext implements PipelineProcessContext {
     
-    private static final YamlPipelineProcessConfigurationSwapper SWAPPER = new YamlPipelineProcessConfigurationSwapper();
-    
     private final PipelineProcessConfiguration pipelineProcessConfig;
     
-    private final JobRateLimitAlgorithm inputRateLimitAlgorithm;
+    private final JobRateLimitAlgorithm readRateLimitAlgorithm;
     
-    private final JobRateLimitAlgorithm outputRateLimitAlgorithm;
+    private final JobRateLimitAlgorithm writeRateLimitAlgorithm;
     
     private final PipelineChannelCreator pipelineChannelCreator;
     
@@ -65,21 +56,21 @@ public abstract class AbstractPipelineProcessContext implements PipelineProcessC
     private final LazyInitializer<ExecuteEngine> importerExecuteEngineLazyInitializer;
     
     public AbstractPipelineProcessContext(final String jobId, final PipelineProcessConfiguration originalProcessConfig) {
-        PipelineProcessConfiguration processConfig = convertProcessConfig(originalProcessConfig);
+        PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.convertWithDefaultValue(originalProcessConfig);
         this.pipelineProcessConfig = processConfig;
-        PipelineInputConfiguration inputConfig = processConfig.getInput();
-        AlgorithmConfiguration inputRateLimiter = inputConfig.getRateLimiter();
-        inputRateLimitAlgorithm = null != inputRateLimiter ? JobRateLimitAlgorithmFactory.newInstance(inputRateLimiter) : null;
-        PipelineOutputConfiguration outputConfig = processConfig.getOutput();
-        AlgorithmConfiguration outputRateLimiter = outputConfig.getRateLimiter();
-        outputRateLimitAlgorithm = null != outputRateLimiter ? JobRateLimitAlgorithmFactory.newInstance(outputRateLimiter) : null;
+        PipelineReadConfiguration readConfig = processConfig.getRead();
+        AlgorithmConfiguration readRateLimiter = readConfig.getRateLimiter();
+        readRateLimitAlgorithm = null != readRateLimiter ? JobRateLimitAlgorithmFactory.newInstance(readRateLimiter) : null;
+        PipelineWriteConfiguration writeConfig = processConfig.getWrite();
+        AlgorithmConfiguration writeRateLimiter = writeConfig.getRateLimiter();
+        writeRateLimitAlgorithm = null != writeRateLimiter ? JobRateLimitAlgorithmFactory.newInstance(writeRateLimiter) : null;
         AlgorithmConfiguration streamChannel = processConfig.getStreamChannel();
         pipelineChannelCreator = PipelineChannelCreatorFactory.newInstance(streamChannel);
         inventoryDumperExecuteEngineLazyInitializer = new LazyInitializer<ExecuteEngine>() {
             
             @Override
             protected ExecuteEngine initialize() {
-                return ExecuteEngine.newFixedThreadInstance(inputConfig.getWorkerThread(), "Inventory-" + jobId);
+                return ExecuteEngine.newFixedThreadInstance(readConfig.getWorkerThread(), "Inventory-" + jobId);
             }
         };
         incrementalDumperExecuteEngineLazyInitializer = new LazyInitializer<ExecuteEngine>() {
@@ -93,27 +84,9 @@ public abstract class AbstractPipelineProcessContext implements PipelineProcessC
             
             @Override
             protected ExecuteEngine initialize() {
-                return ExecuteEngine.newFixedThreadInstance(outputConfig.getWorkerThread(), "Importer-" + jobId);
+                return ExecuteEngine.newFixedThreadInstance(writeConfig.getWorkerThread(), "Importer-" + jobId);
             }
         };
-    }
-    
-    private PipelineProcessConfiguration convertProcessConfig(final PipelineProcessConfiguration originalProcessConfig) {
-        YamlPipelineProcessConfiguration yamlActionConfig = SWAPPER.swapToYamlConfiguration(originalProcessConfig);
-        if (null == yamlActionConfig.getInput()) {
-            yamlActionConfig.setInput(YamlPipelineInputConfiguration.buildWithDefaultValue());
-        } else {
-            yamlActionConfig.getInput().fillInNullFieldsWithDefaultValue();
-        }
-        if (null == yamlActionConfig.getOutput()) {
-            yamlActionConfig.setOutput(YamlPipelineOutputConfiguration.buildWithDefaultValue());
-        } else {
-            yamlActionConfig.getOutput().fillInNullFieldsWithDefaultValue();
-        }
-        if (null == yamlActionConfig.getStreamChannel()) {
-            yamlActionConfig.setStreamChannel(new YamlAlgorithmConfiguration(MemoryPipelineChannelCreator.TYPE, new Properties()));
-        }
-        return SWAPPER.swapToObject(yamlActionConfig);
     }
     
     /**

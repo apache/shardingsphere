@@ -59,10 +59,6 @@ showTableMetadata
     : SHOW TABLE METADATA tableName (COMMA tableName*)? (FROM databaseName)?
     ;
 
-showAuthorityRule
-    : SHOW AUTHORITY RULE
-    ;
-
 showTransactionRule
     : SHOW TRANSACTION RULE
     ;
@@ -95,10 +91,6 @@ alterTrafficRule
     : ALTER TRAFFIC RULE trafficRuleDefinition (COMMA trafficRuleDefinition)* 
     ;
 
-showTrafficRules
-    : SHOW TRAFFIC (RULES | RULE ruleName)
-    ;
-
 dropTrafficRule
     : DROP TRAFFIC RULE ifExists? ruleName (COMMA ruleName)*
     ;
@@ -127,14 +119,6 @@ loadBalancerDefinition
     : LOAD_BALANCER LP algorithmDefinition RP
     ;
 
-algorithmDefinition
-    : TYPE LP NAME EQ typeName (COMMA propertiesDefinition)? RP
-    ;
-
-typeName
-    : IDENTIFIER
-    ;
-
 exportDatabaseConfiguration
     : EXPORT DATABASE (CONFIGURATION | CONFIG) (FROM databaseName)? (COMMA? FILE EQ filePath)?
     ;
@@ -151,6 +135,50 @@ showSQLTranslatorRule
     : SHOW SQL_TRANSLATOR RULE
     ;
 
+showMigrationProcessConfiguration
+    : SHOW MIGRATION PROCESS CONFIGURATION
+    ;
+
+createMigrationProcessConfiguration
+    : CREATE MIGRATION PROCESS CONFIGURATION migrationProcessConfiguration?
+    ;
+
+alterMigrationProcessConfiguration
+    : ALTER MIGRATION PROCESS CONFIGURATION migrationProcessConfiguration?
+    ;
+
+migrationProcessConfiguration
+    : LP readDefinition? (COMMA? writeDefinition)? (COMMA? streamChannel)? RP
+    ;
+
+readDefinition
+    : READ LP workerThread? (COMMA? batchSize)? (COMMA? shardingSize)? (COMMA? rateLimiter)? RP
+    ;
+
+writeDefinition
+    : WRITE LP workerThread? (COMMA? batchSize)? (COMMA? rateLimiter)? RP
+    ;
+
+workerThread
+    : WORKER_THREAD EQ intValue
+    ;
+
+batchSize
+    : BATCH_SIZE EQ intValue
+    ;
+
+shardingSize
+    : SHARDING_SIZE EQ intValue
+    ;
+
+rateLimiter
+    : RATE_LIMITER LP algorithmDefinition RP
+    ;
+
+streamChannel
+    : STREAM_CHANNEL LP algorithmDefinition RP
+    ;
+
 filePath
     : STRING
     ;
@@ -164,11 +192,11 @@ providerDefinition
     ;
 
 defaultType
-    : IDENTIFIER
+    : STRING
     ;
 
 providerName
-    : IDENTIFIER
+    : STRING
     ;
 
 sqlParserRuleDefinition
@@ -233,6 +261,10 @@ ruleName
 
 label
     : IDENTIFIER
+    ;
+
+intValue
+    : INT
     ;
 
 ifExists

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.admin.postgresql.executor;
 
 import org.apache.shardingsphere.db.protocol.CommonConstants;
-import org.apache.shardingsphere.infra.exception.InvalidParameterValueException;
+import org.apache.shardingsphere.dialect.exception.data.InvalidParameterValueException;
 import org.apache.shardingsphere.proxy.backend.handler.admin.postgresql.PostgreSQLCharacterSets;
 import org.apache.shardingsphere.proxy.backend.handler.admin.postgresql.PostgreSQLSessionVariableHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;

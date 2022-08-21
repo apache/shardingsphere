@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.authentication;
 
 import lombok.Getter;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
+import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
 import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -48,14 +48,14 @@ public final class MySQLAuthenticationHandler {
      * @param databaseName database name
      * @return login success or failure
      */
-    public Optional<MySQLServerErrorCode> login(final String username, final String hostname, final byte[] authenticationResponse, final String databaseName) {
+    public Optional<MySQLVendorError> login(final String username, final String hostname, final byte[] authenticationResponse, final String databaseName) {
         Grantee grantee = new Grantee(username, hostname);
         Collection<ShardingSphereRule> rules = ProxyContext.getInstance().getRules(databaseName);
         MySQLAuthenticator authenticator = getAuthenticator(username, hostname);
         if (!SQLCheckEngine.check(grantee, (a, b) -> authenticator.authenticate((ShardingSphereUser) a, (byte[]) b), authenticationResponse, rules)) {
-            return Optional.of(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR);
+            return Optional.of(MySQLVendorError.ER_ACCESS_DENIED_ERROR);
         }
-        return null == databaseName || SQLCheckEngine.check(databaseName, rules, grantee) ? Optional.empty() : Optional.of(MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR);
+        return null == databaseName || SQLCheckEngine.check(databaseName, rules, grantee) ? Optional.empty() : Optional.of(MySQLVendorError.ER_DBACCESS_DENIED_ERROR);
     }
     
     /**

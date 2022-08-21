@@ -24,7 +24,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.AuthorityRuleBuilder;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
+import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
@@ -90,21 +90,21 @@ public final class OpenGaussAuthenticationHandlerTest extends ProxyContextRestor
     public void assertLoginWithPassword() {
         initProxyContext(new ShardingSphereUser(username, password, "%"));
         PostgreSQLLoginResult postgreSQLLoginResult = OpenGaussAuthenticationHandler.loginWithSCRAMSha256Password(username, database, random64Code, token, serverIteration, passwordMessagePacket);
-        assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.SUCCESSFUL_COMPLETION));
+        assertThat(postgreSQLLoginResult.getVendorError(), is(PostgreSQLVendorError.SUCCESSFUL_COMPLETION));
     }
     
     @Test
     public void assertLoginWithAbsentUser() {
         initProxyContext(new ShardingSphereUser("username", password, "%"));
         PostgreSQLLoginResult postgreSQLLoginResult = OpenGaussAuthenticationHandler.loginWithSCRAMSha256Password(username, database, random64Code, token, serverIteration, passwordMessagePacket);
-        assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION));
+        assertThat(postgreSQLLoginResult.getVendorError(), is(PostgreSQLVendorError.INVALID_AUTHORIZATION_SPECIFICATION));
     }
     
     @Test
     public void assertLoginWithIncorrectPassword() {
         initProxyContext(new ShardingSphereUser(username, "password", "%"));
         PostgreSQLLoginResult postgreSQLLoginResult = OpenGaussAuthenticationHandler.loginWithSCRAMSha256Password(username, database, random64Code, token, serverIteration, passwordMessagePacket);
-        assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_PASSWORD));
+        assertThat(postgreSQLLoginResult.getVendorError(), is(PostgreSQLVendorError.INVALID_PASSWORD));
     }
     
     @Test
@@ -112,7 +112,7 @@ public final class OpenGaussAuthenticationHandlerTest extends ProxyContextRestor
         initProxyContext(new ShardingSphereUser(username, password, "%"));
         String database = "non_exist_database";
         PostgreSQLLoginResult postgreSQLLoginResult = OpenGaussAuthenticationHandler.loginWithSCRAMSha256Password(username, database, random64Code, token, serverIteration, passwordMessagePacket);
-        assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_CATALOG_NAME));
+        assertThat(postgreSQLLoginResult.getVendorError(), is(PostgreSQLVendorError.INVALID_CATALOG_NAME));
     }
     
     private void initProxyContext(final ShardingSphereUser user) {

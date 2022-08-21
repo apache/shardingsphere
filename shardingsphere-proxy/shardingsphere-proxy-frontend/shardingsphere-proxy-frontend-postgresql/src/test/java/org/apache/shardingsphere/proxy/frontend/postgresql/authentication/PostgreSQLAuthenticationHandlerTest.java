@@ -25,7 +25,7 @@ import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.AuthorityRuleBuilder;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLAuthenticationMethod;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
+import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
@@ -89,28 +89,28 @@ public final class PostgreSQLAuthenticationHandlerTest extends ProxyContextResto
     public void assertLoginWithPassword() {
         initProxyContext(new ShardingSphereUser(username, password, "%"));
         PostgreSQLLoginResult postgreSQLLoginResult = new PostgreSQLAuthenticationHandler().login(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
-        assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.SUCCESSFUL_COMPLETION));
+        assertThat(postgreSQLLoginResult.getVendorError(), is(PostgreSQLVendorError.SUCCESSFUL_COMPLETION));
     }
     
     @Test
     public void assertLoginWithAbsentUser() {
         initProxyContext(new ShardingSphereUser("username", password, "%"));
         PostgreSQLLoginResult postgreSQLLoginResult = new PostgreSQLAuthenticationHandler().login(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
-        assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION));
+        assertThat(postgreSQLLoginResult.getVendorError(), is(PostgreSQLVendorError.INVALID_AUTHORIZATION_SPECIFICATION));
     }
     
     @Test
     public void assertLoginWithIncorrectPassword() {
         initProxyContext(new ShardingSphereUser(username, "password", "%"));
         PostgreSQLLoginResult postgreSQLLoginResult = new PostgreSQLAuthenticationHandler().login(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
-        assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_PASSWORD));
+        assertThat(postgreSQLLoginResult.getVendorError(), is(PostgreSQLVendorError.INVALID_PASSWORD));
     }
     
     @Test
     public void assertLoginWithoutPassword() {
         initProxyContext(new ShardingSphereUser(username, null, "%"));
         PostgreSQLLoginResult postgreSQLLoginResult = new PostgreSQLAuthenticationHandler().login(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
-        assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_PASSWORD));
+        assertThat(postgreSQLLoginResult.getVendorError(), is(PostgreSQLVendorError.INVALID_PASSWORD));
     }
     
     @Test
@@ -118,7 +118,7 @@ public final class PostgreSQLAuthenticationHandlerTest extends ProxyContextResto
         initProxyContext(new ShardingSphereUser(username, password, "%"));
         String database = "non_exist_database";
         PostgreSQLLoginResult postgreSQLLoginResult = new PostgreSQLAuthenticationHandler().login(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
-        assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_CATALOG_NAME));
+        assertThat(postgreSQLLoginResult.getVendorError(), is(PostgreSQLVendorError.INVALID_CATALOG_NAME));
     }
     
     @Test

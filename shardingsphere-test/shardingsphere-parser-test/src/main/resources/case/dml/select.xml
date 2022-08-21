@@ -19,7 +19,11 @@
 <sql-parser-test-cases>
     <select sql-case-id="select_constant_without_table" >
         <projections start-index="7" stop-index="12">
-            <expression-projection text="1" alias="a" start-index="7" stop-index="12" />
+            <expression-projection text="1" alias="a" start-index="7" stop-index="12">
+                <expr>
+                    <literal-expression value="1" start-index="7" stop-index="7" />
+                </expr>
+            </expression-projection>
         </projections>
     </select>
 
@@ -783,6 +787,40 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_count_like_escape" parameters="'a',1,0">
+        <from>
+            <simple-table name="t_order" start-index="21" stop-index="27" />
+        </from>
+        <projections start-index="7" stop-index="14">
+            <aggregation-projection type="COUNT" inner-expression="(*)" start-index="7" stop-index="14" />
+        </projections>
+        <where start-index="29" stop-index="58" literal-stop-index="60">
+            <expr>
+                <binary-operation-expression start-index="35" stop-index="58" literal-stop-index="60">
+                    <left>
+                        <column name="status" start-index="35" stop-index="40" />
+                    </left>
+                    <operator>LIKE</operator>
+                    <right>
+                        <list-expression start-index="47" stop-index="58" literal-stop-index="60">
+                            <items>
+                                <literal-expression value="a" start-index="47" stop-index="49" />
+                                <parameter-marker-expression parameter-index="0" start-index="47" stop-index="47" />
+                            </items>
+                            <items>
+                                <literal-expression value="!" start-index="56" stop-index="58" literal-start-index="58" literal-stop-index="60"/>
+                            </items>
+                        </list-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <limit start-index="60" stop-index="75" literal-start-index="62" literal-stop-index="77">
+            <row-count value="1" parameter-index="1" start-index="66" stop-index="66" literal-start-index="68" literal-stop-index="68" />
+            <offset value="0" parameter-index="2" start-index="75" stop-index="75" literal-start-index="77" literal-stop-index="77" />
+        </limit>
+    </select>
     
     <select sql-case-id="select_count_like_concat" parameters="'init', 1, 2, 9, 10">
         <from>
@@ -1080,7 +1118,7 @@
 
     <select sql-case-id="select_sharding_route_with_binding_tables" parameters="1, 2, 9, 10">
         <from>
-            <join-table>
+            <join-table join-type="INNER">
                 <left>
                     <simple-table name="t_order" alias="o" start-index="16" stop-index="24" />
                 </left>
@@ -1185,7 +1223,7 @@
 
     <select sql-case-id="select_full_route_with_binding_tables">
         <from>
-            <join-table>
+            <join-table join-type="INNER">
                 <left>
                     <simple-table name="t_order" alias="o" start-index="16" stop-index="24" />
                 </left>
@@ -1243,9 +1281,9 @@
 
     <select sql-case-id="select_sharding_route_with_broadcast_table" parameters="1, 2, 9, 10, 'init'">
         <from>
-            <join-table>
+            <join-table join-type="INNER">
                 <left>
-                    <join-table>
+                    <join-table join-type="INNER">
                         <left>
                             <simple-table name="t_order" alias="o" start-index="16" stop-index="24" />
                         </left>
@@ -1389,9 +1427,9 @@
 
     <select sql-case-id="select_keyword_table_name_with_back_quotes" parameters="1, 2, 9, 10, 'init'">
         <from>
-            <join-table>
+            <join-table join-type="INNER">
                 <left>
-                    <join-table>
+                    <join-table join-type="INNER">
                         <left>
                             <simple-table name="t_order" alias="o" start-index="16" stop-index="24" />
                         </left>
@@ -1535,9 +1573,9 @@
 
     <select sql-case-id="select_keyword_table_name_with_double_quotes" parameters="1, 2, 9, 10, 'init'">
         <from>
-            <join-table>
+            <join-table join-type="INNER">
                 <left>
-                    <join-table>
+                    <join-table join-type="INNER">
                         <left>
                             <simple-table name="t_order" alias="o" start-index="16" stop-index="24" />
                         </left>
@@ -1681,9 +1719,9 @@
 
     <select sql-case-id="select_keyword_table_name_with_square_brackets" parameters="1, 2, 9, 10, 'init'">
         <from>
-            <join-table>
+            <join-table join-type="INNER">
                 <left>
-                    <join-table>
+                    <join-table join-type="INNER">
                         <left>
                             <simple-table name="t_order" alias="o" start-index="16" stop-index="24" />
                         </left>
@@ -1854,7 +1892,7 @@
 
     <select sql-case-id="select_with_force_index_join" parameters="1000">
         <from>
-            <join-table>
+            <join-table join-type="INNER">
                 <left>
                     <simple-table name="t_order" alias="o" start-index="16" stop-index="24" />
                 </left>
@@ -1937,21 +1975,7 @@
                                             <right>
                                                 <function function-name="ST_GeographyFromText" text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="60" stop-index="115" literal-start-index="78" literal-stop-index="137">
                                                     <parameter>
-                                                        <literal-expression value="SRID=4326;POINT(" literal-start-index="99" start-index="81" literal-stop-index="116" stop-index="98"/>
-                                                    </parameter>
-                                                    <parameter>
-                                                        <literal-expression value="100" literal-start-index="119" literal-stop-index="121"/>
-                                                        <parameter-marker-expression parameter-index="1" start-index="101" stop-index="101"/>
-                                                    </parameter>
-                                                    <parameter>
-                                                        <literal-expression value=" " literal-start-index="124" literal-stop-index="126" start-index="104" stop-index="106"/>
-                                                    </parameter>
-                                                    <parameter>
-                                                        <literal-expression value="200" literal-start-index="129" literal-stop-index="131"/>
-                                                        <parameter-marker-expression parameter-index="2" start-index="109" stop-index="109"/>
-                                                    </parameter>
-                                                    <parameter>
-                                                        <literal-expression value=")" literal-start-index="134" literal-stop-index="136" start-index="112" stop-index="114"/>
+                                                        <common-expression text="'SRID=4326;POINT('||?||' '||?||')'" literal-text="'SRID=4326;POINT('||100||' '||200||')'" literal-start-index="99" start-index="81" literal-stop-index="136" stop-index="114"/>
                                                     </parameter>
                                                 </function>
                                             </right>
@@ -2036,21 +2060,7 @@
                                             <right>
                                                 <function function-name="ST_GeographyFromText" text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="73" stop-index="128" literal-start-index="109" literal-stop-index="168">
                                                     <parameter>
-                                                        <literal-expression value="SRID=4326;POINT(" literal-start-index="130" start-index="94" literal-stop-index="147" stop-index="111"/>
-                                                    </parameter>
-                                                    <parameter>
-                                                        <literal-expression value="100" literal-start-index="150" literal-stop-index="152"/>
-                                                        <parameter-marker-expression parameter-index="2" start-index="114" stop-index="114"/>
-                                                    </parameter>
-                                                    <parameter>
-                                                        <literal-expression value=" " literal-start-index="155" literal-stop-index="157" start-index="117" stop-index="119"/>
-                                                    </parameter>
-                                                    <parameter>
-                                                        <literal-expression value="200" literal-start-index="160" literal-stop-index="162"/>
-                                                        <parameter-marker-expression parameter-index="3" start-index="122" stop-index="122"/>
-                                                    </parameter>
-                                                    <parameter>
-                                                        <literal-expression value=")" literal-start-index="165" literal-stop-index="167" start-index="125" stop-index="127"/>
+                                                        <common-expression text="'SRID=4326;POINT('||?||' '||?||')'" literal-text="'SRID=4326;POINT('||100||' '||200||')'" literal-start-index="130" start-index="94" literal-stop-index="167" stop-index="127"/>
                                                     </parameter>
                                                 </function>
                                             </right>
@@ -2137,21 +2147,7 @@
                                     <right>
                                         <function function-name="ST_GeographyFromText" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" start-index="79" stop-index="134" literal-start-index="115" literal-stop-index="174">
                                             <parameter>
-                                                <literal-expression value="SRID=4326;POINT(" literal-start-index="136" start-index="100" literal-stop-index="153" stop-index="117"/>
-                                            </parameter>
-                                            <parameter>
-                                                <literal-expression value="100" literal-start-index="156" literal-stop-index="158"/>
-                                                <parameter-marker-expression parameter-index="2" start-index="120" stop-index="120"/>
-                                            </parameter>
-                                            <parameter>
-                                                <literal-expression value=" " literal-start-index="161" literal-stop-index="163" start-index="123" stop-index="125"/>
-                                            </parameter>
-                                            <parameter>
-                                                <literal-expression value="200" literal-start-index="166" literal-stop-index="168"/>
-                                                <parameter-marker-expression parameter-index="3" start-index="128" stop-index="128"/>
-                                            </parameter>
-                                            <parameter>
-                                                <literal-expression value=")" literal-start-index="171" literal-stop-index="173" start-index="131" stop-index="133"/>
+                                                <common-expression text="'SRID=4326;POINT('||?||' '||?||')'" literal-text="'SRID=4326;POINT('||100||' '||200||')'" literal-start-index="136" start-index="100" literal-stop-index="173" stop-index="133"/>
                                             </parameter>
                                         </function>
                                     </right>
@@ -2261,7 +2257,7 @@
 
     <select sql-case-id="select_distinct_with_owner_star_without_order_by" >
         <from>
-            <join-table>
+            <join-table join-type="COMMA">
                 <left>
                     <simple-table name="t_order" start-index="54" stop-index="60" />
                 </left>
@@ -2380,7 +2376,7 @@
 
     <select sql-case-id="select_distinct_with_owner_star">
         <from>
-            <join-table>
+            <join-table join-type="COMMA">
                 <left>
                     <simple-table name="t_order" start-index="54" stop-index="60" />
                 </left>
@@ -3462,7 +3458,7 @@
 
     <select sql-case-id="select_with_binding_tables_with_subquery_without_join">
         <from>
-            <join-table>
+            <join-table join-type="COMMA">
                 <left>
                     <subquery-table alias="a">
                         <subquery>
@@ -3544,7 +3540,7 @@
 
     <select sql-case-id="select_with_binding_tables_without_join">
         <from>
-            <join-table>
+            <join-table join-type="COMMA">
                 <left>
                     <simple-table name="employees" start-index="74" stop-index="82" />
                 </left>
@@ -3586,7 +3582,7 @@
 
     <select sql-case-id="select_with_lateral_clause">
         <from>
-            <join-table>
+            <join-table join-type="COMMA">
                 <left>
                     <simple-table name="employees" alias="e" start-index="14" stop-index="24" />
                 </left>
@@ -4278,7 +4274,7 @@
 
     <select sql-case-id="select_with_for_xml_clause">
         <from>
-            <join-table>
+            <join-table join-type="INNER">
                 <left>
                     <simple-table name="t_order" alias="o" start-index="44" stop-index="52" />
                 </left>
