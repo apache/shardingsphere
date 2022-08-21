@@ -41,14 +41,14 @@ import java.util.Optional;
 /**
  * Abstract shadow DML statement route engine.
  */
+@Getter
 public abstract class AbstractShadowDMLStatementRouteEngine implements ShadowRouteEngine {
     
-    @Getter
     private final Map<String, String> tableAliasNameMappings = new LinkedHashMap<>();
     
     @Override
     public void route(final RouteContext routeContext, final ShadowRule shadowRule) {
-        shadowRouteDecorate(routeContext, shadowRule, findShadowDataSourceMappings(shadowRule));
+        decorateRouteContext(routeContext, shadowRule, findShadowDataSourceMappings(shadowRule));
     }
     
     private Map<String, String> findShadowDataSourceMappings(final ShadowRule shadowRule) {
