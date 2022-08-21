@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.binder;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 
@@ -43,7 +44,7 @@ public final class LogicSQL {
         this.sql = sql;
         this.parameters = parameters;
         if (sqlStatementContext instanceof TableAvailable) {
-            ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().ifPresent(databaseName -> sqlStatementDatabaseName = databaseName);
+            Optional.ofNullable(((TableAvailable) sqlStatementContext).getTablesContext()).flatMap(TablesContext::getDatabaseName).ifPresent(databaseName -> sqlStatementDatabaseName = databaseName);
         }
     }
     
