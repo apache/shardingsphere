@@ -52,5 +52,4 @@ public enum TransactionTestCaseRegistry {
     private final String dbType;
     
     private final String runningAdaptor;
-    
 }

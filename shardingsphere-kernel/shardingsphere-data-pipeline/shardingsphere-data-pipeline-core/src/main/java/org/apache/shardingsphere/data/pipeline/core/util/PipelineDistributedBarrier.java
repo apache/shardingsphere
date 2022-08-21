@@ -42,6 +42,7 @@ public final class PipelineDistributedBarrier {
     private static final PipelineDistributedBarrier INSTANCE = new PipelineDistributedBarrier();
     
     private static final LazyInitializer<ClusterPersistRepository> REPOSITORY_LAZY_INITIALIZER = new LazyInitializer<ClusterPersistRepository>() {
+        
         @Override
         protected ClusterPersistRepository initialize() {
             return (ClusterPersistRepository) PipelineContext.getContextManager().getMetaDataContexts().getPersistService().getRepository();

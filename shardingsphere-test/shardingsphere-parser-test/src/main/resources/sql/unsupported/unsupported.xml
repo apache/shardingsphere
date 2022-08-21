@@ -35,7 +35,6 @@
     <sql-case id="select_cast" value="SELECT cast( NULL AT TIME ZONE 'UTC' AS DATETIME );" db-types="MySQL" />
     <sql-case id="create_table_as_select" value="create table agg_data_2k as select g from generate_series(0, 1999) g;" db-types="PostgreSQL" />
     <sql-case id="create_server" value="CREATE SERVER alt_fserv1 FOREIGN DATA WRAPPER alt_fdw1;" db-types="PostgreSQL" />
-    <sql-case id="create_operator" value="CREATE OPERATOR @-@ ( leftarg = int4, rightarg = int4, procedure = int4mi )" db-types="PostgreSQL" />
     <sql-case id="create_statistics" value="CREATE STATISTICS alt_stat1 ON a, b FROM alt_regress_1" db-types="PostgreSQL" />
     <sql-case id="create_table_no_valid" value="create table nv_parent (d date, check (false) no inherit not valid)" db-types="PostgreSQL" />
     <sql-case id="create_as_select" value="create table attest1 as select * from atacc1" db-types="PostgreSQL" />
@@ -1165,8 +1164,6 @@
     <sql-case id="select_by_mysql_source_test_case665" value="SELECT attrs.* FROM t_json, JSON_TABLE(json_col, &apos;$[*]&apos; COLUMNS (nickname JSON PATH &apos;$.nickname&apos;)) as attrs" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case666" value="SELECT b, b IN (&apos;20161213&apos;), b in (&apos;20161213&apos;, 0) FROM t2" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case667" value="SELECT b, b in (&apos;121314&apos;), b in (&apos;121314&apos;, 0) FROM t3" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case669" value="SELECT bin_to_uuid(x&apos;&apos;)" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case670" value="SELECT bin_to_uuid(x&apos;&apos;, true)" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case671" value="SELECT bug18589_f1(REPEAT(&quot;a&quot;, 767))" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case672" value="SELECT c1 &lt;=  REPEAT( SUBSTR( UPPER(&apos;Rdlpikti&apos;) , 1 , 2 ), 8 ) FROM t1" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case676" value="SELECT cast( &apos;2019-10-10 10:11&apos; AT TIME ZONE &apos;UTC&apos; AS DATETIME )" db-types="MySQL" />
@@ -3455,37 +3452,6 @@
     <sql-case id="create_by_postgresql_source_test_case292" value="CREATE FUNCTION y_trigger() RETURNS trigger AS $$ begin   raise notice &apos;y_trigger: a = %&apos;, new.a;   return new; end; $$ LANGUAGE plpgsql;" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case297" value="CREATE INDEX IF NOT EXISTS ON onek USING btree(unique1 int4_ops);" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case298" value="CREATE INDEX brinidx_bloom ON brintest_bloom USING brin ( 	byteacol bytea_bloom_ops(n_distinct_per_range = -1.1) );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case338" value="CREATE OPERATOR !=- (    rightarg = int8,    procedure = factorial );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case339" value="CREATE OPERATOR !== (         PROCEDURE = int8ne,         LEFTARG = bigint,         RIGHTARG = bigint,         NEGATOR = ===,         COMMUTATOR = !== );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case340" value="CREATE OPERATOR ## (    leftarg = path,    rightarg = path,    function = path_inter,    commutator = ## );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case341" value="CREATE OPERATOR #%# (    leftarg = int8,		-- fail, postfix is no longer supported    procedure = factorial );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case342" value="CREATE OPERATOR #*# (    leftarg = SETOF int8,    procedure = factorial );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case343" value="CREATE OPERATOR #*# (    leftarg = int8,    rightarg = int8,    procedure = fn_op5 );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case344" value="CREATE OPERATOR #*# (    leftarg = int8,    rightarg = int8,    procedure = fn_op6 );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case345" value="CREATE OPERATOR #*# (    leftarg = int8,    rightarg = type_op4,    procedure = fn_op4 );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case346" value="CREATE OPERATOR #*# (    leftarg = type_op3,    rightarg = int8,    procedure = fn_op3 );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case347" value="CREATE OPERATOR #*# (    rightarg = SETOF int8,    procedure = factorial );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case348" value="CREATE OPERATOR #@%# (    procedure = factorial );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case349" value="CREATE OPERATOR #@%# (    rightarg = int8 );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case350" value="CREATE OPERATOR #@%# (    rightarg = int8,    procedure = factorial,    invalid_att = int8 );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case351" value="CREATE OPERATOR &lt;% (    leftarg = point,    rightarg = widget,    procedure = pt_in_widget,    commutator = &gt;% ,    negator = &gt;=% );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case352" value="CREATE OPERATOR &lt;&lt;&lt; (procedure = leak, leftarg = integer, rightarg = integer,                      restrict = scalarltsel);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case353" value="CREATE OPERATOR &lt;&lt;&lt; (procedure = op_leak, leftarg = int, rightarg = int,                      restrict = scalarltsel);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case354" value="CREATE OPERATOR &lt;&lt;&lt; (procedure = op_leak, leftarg = int, rightarg = int,                      restrict = scalarltsel);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case355" value="CREATE OPERATOR &lt;| (         PROCEDURE = int8lt,         LEFTARG = bigint,         RIGHTARG = bigint );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case356" value="CREATE OPERATOR = (procedure = ad_eq,                    leftarg = arrdomain, rightarg = arrdomain);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case357" value="CREATE OPERATOR = (procedure = inline_eq,                    leftarg = foodomain, rightarg = foodomain);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case358" value="CREATE OPERATOR === ( 	&quot;Leftarg&quot; = box, 	&quot;Rightarg&quot; = box, 	&quot;Procedure&quot; = area_equal_function, 	&quot;Commutator&quot; = ===, 	&quot;Negator&quot; = !==, 	&quot;Restrict&quot; = area_restriction_function, 	&quot;Join&quot; = area_join_function, 	&quot;Hashes&quot;, 	&quot;Merges&quot; );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case359" value="CREATE OPERATOR === (         PROCEDURE = int8eq,         LEFTARG = bigint,         RIGHTARG = bigint,         COMMUTATOR = === );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case360" value="CREATE OPERATOR === (     LEFTARG = boolean,     RIGHTARG = boolean,     PROCEDURE = alter_op_test_fn,     COMMUTATOR = ===,     NEGATOR = !==,     RESTRICT = customcontsel,     JOIN = contjoinsel,     HASHES, MERGES );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case361" value="CREATE OPERATOR === (     LEFTARG = boolean,     RIGHTARG = boolean,     PROCEDURE = fn_op2,     COMMUTATOR = ===,     NEGATOR = !==,     RESTRICT = contsel,     JOIN = contjoinsel,     SORT1, SORT2, LTCMP, GTCMP, HASHES, MERGES );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case362" value="CREATE OPERATOR =&gt; (    rightarg = int8,    procedure = factorial );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case363" value="CREATE OPERATOR &gt;&gt;&gt; (procedure = leak2, leftarg = integer, rightarg = integer,                      restrict = scalargtsel);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case364" value="CREATE OPERATOR @#@         (leftarg = int8, rightarg = int8, procedure = int8xor);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case365" value="CREATE OPERATOR @#@ (    rightarg = int8,		-- prefix    procedure = factorial );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case366" value="CREATE OPERATOR @+@ ( leftarg = int4, rightarg = int4, procedure = int4pl );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case367" value="CREATE OPERATOR @-@ ( leftarg = int4, rightarg = int4, procedure = int4mi );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case368" value="CREATE OPERATOR @-@ ( leftarg = int4, rightarg = int4, procedure = int4mi );" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case369" value="CREATE OPERATOR CLASS alt_opc1 FOR TYPE macaddr USING hash AS STORAGE macaddr;" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case370" value="CREATE OPERATOR CLASS alt_opc1 FOR TYPE uuid USING hash AS STORAGE uuid;" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case371" value="CREATE OPERATOR CLASS alt_opc2 FOR TYPE macaddr USING hash AS STORAGE macaddr;" db-types="PostgreSQL" />
@@ -3513,9 +3479,6 @@
     <sql-case id="create_by_postgresql_source_test_case393" value="CREATE OPERATOR FAMILY alt_opf7 USING btree;" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case394" value="CREATE OPERATOR FAMILY alt_opf8 USING btree;" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case395" value="CREATE OPERATOR FAMILY alt_opf9 USING gist;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case396" value="CREATE OPERATOR schema_op1.#*# (    rightarg = int8,    procedure = factorial );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case397" value="CREATE OPERATOR |&gt; (         PROCEDURE = int8gt,         LEFTARG = bigint,         RIGHTARG = bigint,         NEGATOR = &lt;|,         COMMUTATOR = &lt;| );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case398" value="CREATE OPERATOR |@| (PROCEDURE = unnest, RIGHTARG = ANYARRAY);" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case404" value="CREATE OR REPLACE FUNCTION   mylt2 (x text, y text) RETURNS boolean LANGUAGE plpgsql AS $$ declare   xx text COLLATE &quot;POSIX&quot; := x;   yy text := y; begin   return xx &lt; yy; end $$;" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case405" value="CREATE OR REPLACE FUNCTION compare_relfilenode_part(tabname text)   RETURNS TABLE (relname name, relkind &quot;char&quot;, state text) AS   $func$   BEGIN     RETURN QUERY EXECUTE       format(         &apos;SELECT  b.relname,                  b.relkind,                  CASE WHEN a.relfilenode = b.relfilenode THEN &apos;&apos;relfilenode is unchanged&apos;&apos;                  ELSE &apos;&apos;relfilenode has changed&apos;&apos; END            FROM %I b JOIN pg_class a ON b.relname = a.relname            ORDER BY 1;&apos;, tabname);   END   $func$ LANGUAGE plpgsql;" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case406" value="CREATE OR REPLACE FUNCTION create_relfilenode_part(relname text, indname text)   RETURNS VOID AS   $func$   BEGIN   EXECUTE format(&apos;     CREATE TABLE %I AS       SELECT oid, relname, relfilenode, relkind, reltoastrelid       FROM pg_class       WHERE oid IN          (SELECT relid FROM pg_partition_tree(&apos;&apos;%I&apos;&apos;));&apos;, 	 relname, indname);   END   $func$ LANGUAGE plpgsql;" db-types="PostgreSQL" />
@@ -3981,13 +3944,9 @@
     <sql-case id="create_by_postgresql_source_test_case866" value="CREATE TYPE city_budget (    internallength = 16,    input = int44in,    output = int44out,    element = int4,    category = &apos;x&apos;    preferred = tr );" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case867" value="CREATE TYPE hash_test_t2 AS (a money, b text);" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case869" value="CREATE TYPE tt_t0 AS (z inet, x int, y numeric(8,2));" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case870" value="CREATE VIEW atest12sbv WITH (security_barrier=true) AS   SELECT * FROM atest12 WHERE b &lt;&lt;&lt; 5;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case871" value="CREATE VIEW atest12v AS   SELECT * FROM atest12 WHERE b &lt;&lt;&lt; 5;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case872" value="CREATE VIEW iexit AS    SELECT ih.name, ih.thepath, 	interpt_pp(ih.thepath, r.thepath) AS exit    FROM ihighway ih, ramp r    WHERE ih.thepath ## r.thepath;" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case873" value="CREATE VIEW mysecview5 WITH (security_barrier=100)	-- Error        AS SELECT * FROM tbl1 WHERE a &gt; 100;" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case874" value="CREATE VIEW mysecview6 WITH (invalid_option)		-- Error        AS SELECT * FROM tbl1 WHERE a &lt; 100;" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case875" value="CREATE VIEW rw_view2 AS SELECT * FROM rw_view1 WHERE a &lt; 10   WITH CHECK OPTIO SELECT * FROM information_schema.views WHERE table_name = &apos;rw_view2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case876" value="CREATE VIEW street AS    SELECT r.name, r.thepath, c.cname AS cname    FROM ONLY road r, real_city c    WHERE c.outline ## r.thepath;" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case877" value="CREATE VIEW tableam_view_heap2 USING heap2 AS SELECT * FROM tableam_tbl_heap2;" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case878" value="CREATE foo;" db-types="PostgreSQL" />
     <sql-case id="ddd	42_by_postgresql_source_test_case1" value="DDD	42 drop trigger child1_insert_trig on child1;" db-types="PostgreSQL" />
@@ -4074,76 +4033,13 @@
     <sql-case id="explain_by_postgresql_source_test_case27" value="EXPLAIN (COSTS OFF) EXECUTE role_inval;" db-types="PostgreSQL" />
     <sql-case id="explain_by_postgresql_source_test_case28" value="EXPLAIN (COSTS OFF) EXECUTE role_inval;" db-types="PostgreSQL" />
     <sql-case id="explain_by_postgresql_source_test_case29" value="EXPLAIN (COSTS OFF) INSERT INTO t2 (SELECT * FROM t1);" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case30" value="EXPLAIN (COSTS OFF) SELECT * FROM atest12 WHERE a &gt;&gt;&gt; 0;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case31" value="EXPLAIN (COSTS OFF) SELECT * FROM atest12 x, atest12 y   WHERE x.a = y.b and abs(y.a) &lt;&lt;&lt; 5;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case32" value="EXPLAIN (COSTS OFF) SELECT * FROM atest12 x, atest12 y   WHERE x.a = y.b and abs(y.a) &lt;&lt;&lt; 5;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case33" value="EXPLAIN (COSTS OFF) SELECT * FROM atest12sbv x, atest12sbv y   WHERE x.a = y.b and abs(y.a) &lt;&lt;&lt; 5;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case34" value="EXPLAIN (COSTS OFF) SELECT * FROM atest12v x, atest12v y   WHERE x.a = y.b and abs(y.a) &lt;&lt;&lt; 5;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case35" value="EXPLAIN (COSTS OFF) SELECT * FROM box_temp WHERE f1 &amp;&lt; &apos;(10,4.333334),(5,100)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case36" value="EXPLAIN (COSTS OFF) SELECT * FROM box_temp WHERE f1 &amp;&lt;| &apos;(10,4.3333334),(5,1)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case37" value="EXPLAIN (COSTS OFF) SELECT * FROM box_temp WHERE f1 &amp;&gt; &apos;(40,30),(45,50)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case38" value="EXPLAIN (COSTS OFF) SELECT * FROM box_temp WHERE f1 &lt;&lt; &apos;(10,20),(30,40)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case39" value="EXPLAIN (COSTS OFF) SELECT * FROM box_temp WHERE f1 &lt;&lt;| &apos;(10,4.33334),(5,100)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case40" value="EXPLAIN (COSTS OFF) SELECT * FROM box_temp WHERE f1 &gt;&gt; &apos;(30,40),(40,30)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case41" value="EXPLAIN (COSTS OFF) SELECT * FROM box_temp WHERE f1 |&amp;&gt; &apos;(49.99,49.99),(49.99,49.99)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case42" value="EXPLAIN (COSTS OFF) SELECT * FROM box_temp WHERE f1 |&gt;&gt; &apos;(37,38),(39,40)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case43" value="EXPLAIN (COSTS OFF) SELECT * FROM box_temp WHERE f1 ~= &apos;(20,20),(40,40)&apos;;" db-types="PostgreSQL" />
     <sql-case id="explain_by_postgresql_source_test_case44" value="EXPLAIN (COSTS OFF) SELECT * FROM circle_tbl WHERE f1 &amp;&amp; circle(point(1,-2), 1)     ORDER BY area(f1);" db-types="PostgreSQL" />
     <sql-case id="explain_by_postgresql_source_test_case45" value="EXPLAIN (COSTS OFF) SELECT * FROM fast_emp4000     WHERE home_base &lt;@ &apos;(200,200),(2000,1000)&apos;::box     ORDER BY (home_base[0])[0];" db-types="PostgreSQL" />
     <sql-case id="explain_by_postgresql_source_test_case46" value="EXPLAIN (COSTS OFF) SELECT * FROM fast_emp4000     WHERE home_base &lt;@ &apos;(200,200),(2000,1000)&apos;::box     ORDER BY (home_base[0])[0];" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case47" value="EXPLAIN (COSTS OFF) SELECT * FROM gpolygon_tbl ORDER BY f1 &lt;-&gt; &apos;(0,0)&apos;::point LIMIT 10;" db-types="PostgreSQL" />
     <sql-case id="explain_by_postgresql_source_test_case48" value="EXPLAIN (COSTS OFF) SELECT * FROM inet_tbl WHERE &apos;192.168.1.0/24&apos;::cidr &gt;&gt; i;" db-types="PostgreSQL" />
     <sql-case id="explain_by_postgresql_source_test_case49" value="EXPLAIN (COSTS OFF) SELECT * FROM inet_tbl WHERE &apos;192.168.1.0/24&apos;::cidr &gt;&gt;= i;" db-types="PostgreSQL" />
     <sql-case id="explain_by_postgresql_source_test_case50" value="EXPLAIN (COSTS OFF) SELECT * FROM inet_tbl WHERE i&lt;&lt;&apos;192.168.1.0/24&apos;::cidr;" db-types="PostgreSQL" />
     <sql-case id="explain_by_postgresql_source_test_case51" value="EXPLAIN (COSTS OFF) SELECT * FROM inet_tbl WHERE i&lt;&lt;=&apos;192.168.1.0/24&apos;::cidr;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case52" value="EXPLAIN (COSTS OFF) SELECT * FROM point_tbl WHERE f1 &lt;@ &apos;(-10,-10),(10,10)&apos;:: box ORDER BY f1 &lt;-&gt; &apos;0,1&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case53" value="EXPLAIN (COSTS OFF) SELECT * FROM point_tbl WHERE f1 &lt;@ &apos;(-10,-10),(10,10)&apos;:: box ORDER BY f1 &lt;-&gt; &apos;0,1&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case54" value="EXPLAIN (COSTS OFF) SELECT * FROM polygon_tbl WHERE f1 @&gt; &apos;((1,1),(2,2),(2,1))&apos;::polygon     ORDER BY (poly_center(f1))[0];" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case55" value="EXPLAIN (COSTS OFF) SELECT circle_center(f1), round(radius(f1)) as radius FROM gcircle_tbl ORDER BY f1 &lt;-&gt; &apos;(200,300)&apos;::point LIMIT 10;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case56" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM fast_emp4000 WHERE home_base &amp;&amp; &apos;(1000,1000,0,0)&apos;::box;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case57" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM fast_emp4000 WHERE home_base &amp;&amp; &apos;(1000,1000,0,0)&apos;::box;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case58" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM gcircle_tbl WHERE f1 &amp;&amp; &apos;&lt;(500,500),500&gt;&apos;::circle;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case59" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM gpolygon_tbl WHERE f1 &amp;&amp; &apos;(1000,1000,0,0)&apos;::polygon;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case60" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM kd_point_tbl WHERE box &apos;(200,200,1000,1000)&apos; @&gt; p;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case61" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM kd_point_tbl WHERE box &apos;(200,200,1000,1000)&apos; @&gt; p;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case62" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM kd_point_tbl WHERE p &lt;&lt; &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case63" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM kd_point_tbl WHERE p &lt;&lt; &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case64" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM kd_point_tbl WHERE p &lt;&lt;| &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case65" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM kd_point_tbl WHERE p &lt;&lt;| &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case66" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM kd_point_tbl WHERE p &gt;&gt; &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case67" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM kd_point_tbl WHERE p &gt;&gt; &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case68" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM kd_point_tbl WHERE p |&gt;&gt; &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case69" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM kd_point_tbl WHERE p |&gt;&gt; &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case70" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM kd_point_tbl WHERE p ~= &apos;(4585, 365)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case71" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM kd_point_tbl WHERE p ~= &apos;(4585, 365)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case72" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM point_tbl WHERE box &apos;(0,0,100,100)&apos; @&gt; f1;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case73" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM point_tbl p WHERE p.f1 &lt;&lt; &apos;(0.0, 0.0)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case74" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM point_tbl p WHERE p.f1 &lt;&lt;| &apos;(0.0, 0.0)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case75" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM point_tbl p WHERE p.f1 &gt;&gt; &apos;(0.0, 0.0)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case76" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM point_tbl p WHERE p.f1 |&gt;&gt; &apos;(0.0, 0.0)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case77" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM point_tbl p WHERE p.f1 ~= &apos;(-5, -12)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case78" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM quad_point_tbl WHERE box &apos;(200,200,1000,1000)&apos; @&gt; p;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case79" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM quad_point_tbl WHERE box &apos;(200,200,1000,1000)&apos; @&gt; p;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case80" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM quad_point_tbl WHERE p &lt;&lt; &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case81" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM quad_point_tbl WHERE p &lt;&lt; &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case82" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM quad_point_tbl WHERE p &lt;&lt;| &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case83" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM quad_point_tbl WHERE p &lt;&lt;| &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case84" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM quad_point_tbl WHERE p &gt;&gt; &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case85" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM quad_point_tbl WHERE p &gt;&gt; &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case86" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM quad_point_tbl WHERE p |&gt;&gt; &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case87" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM quad_point_tbl WHERE p |&gt;&gt; &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case88" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM quad_point_tbl WHERE p ~= &apos;(4585, 365)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case89" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM quad_point_tbl WHERE p ~= &apos;(4585, 365)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case90" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM quad_poly_tbl WHERE p &amp;&amp; polygon &apos;((300,300),(400,600),(600,500),(700,200))&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case91" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM quad_poly_tbl WHERE p &amp;&lt; polygon &apos;((300,300),(400,600),(600,500),(700,200))&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case92" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM quad_poly_tbl WHERE p &amp;&lt;| polygon &apos;((300,300),(400,600),(600,500),(700,200))&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case93" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM quad_poly_tbl WHERE p &amp;&gt; polygon &apos;((300,300),(400,600),(600,500),(700,200))&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case94" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM quad_poly_tbl WHERE p &lt;&lt; polygon &apos;((300,300),(400,600),(600,500),(700,200))&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case95" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM quad_poly_tbl WHERE p &lt;&lt;| polygon &apos;((300,300),(400,600),(600,500),(700,200))&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case96" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM quad_poly_tbl WHERE p &gt;&gt; polygon &apos;((300,300),(400,600),(600,500),(700,200))&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case97" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM quad_poly_tbl WHERE p |&amp;&gt; polygon &apos;((300,300),(400,600),(600,500),(700,200))&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case98" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM quad_poly_tbl WHERE p |&gt;&gt; polygon &apos;((300,300),(400,600),(600,500),(700,200))&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case99" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM quad_poly_tbl WHERE p ~= polygon &apos;((200, 300),(210, 310),(230, 290))&apos;;" db-types="PostgreSQL" />
     <sql-case id="explain_by_postgresql_source_test_case100" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM radix_text_tbl WHERE t ^@	 &apos;Worth&apos;;" db-types="PostgreSQL" />
     <sql-case id="explain_by_postgresql_source_test_case101" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM radix_text_tbl WHERE t ^@	 &apos;Worth&apos;;" db-types="PostgreSQL" />
     <sql-case id="explain_by_postgresql_source_test_case102" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM radix_text_tbl WHERE t ~&lt;=~ &apos;Aztec                         Ct  &apos;;" db-types="PostgreSQL" />
@@ -4156,9 +4052,6 @@
     <sql-case id="explain_by_postgresql_source_test_case109" value="EXPLAIN (COSTS OFF) SELECT count(*) FROM radix_text_tbl WHERE t ~&gt;~  &apos;Worth                         St  &apos;;" db-types="PostgreSQL" />
     <sql-case id="explain_by_postgresql_source_test_case110" value="EXPLAIN (COSTS OFF) SELECT i FROM inet_tbl WHERE i &lt;&lt; &apos;192.168.1.0/24&apos;::cidr ORDER BY i;" db-types="PostgreSQL" />
     <sql-case id="explain_by_postgresql_source_test_case111" value="EXPLAIN (COSTS OFF) SELECT i FROM inet_tbl WHERE i &lt;&lt; &apos;192.168.1.0/24&apos;::cidr ORDER BY i;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case112" value="EXPLAIN (COSTS OFF) SELECT rank() OVER (ORDER BY b &lt;-&gt; point &apos;123,456&apos;) n, b &lt;-&gt; point &apos;123,456&apos; dist, id FROM quad_box_tbl WHERE b &lt;@ box &apos;((200,300),(500,600))&apos;;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case113" value="EXPLAIN (COSTS OFF) SELECT rank() OVER (ORDER BY b &lt;-&gt; point &apos;123,456&apos;) n, b &lt;-&gt; point &apos;123,456&apos; dist, id FROM quad_box_tbl;" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case114" value="EXPLAIN (COSTS OFF) SELECT rank() OVER (ORDER BY p &lt;-&gt; point &apos;123,456&apos;) n, p &lt;-&gt; point &apos;123,456&apos; dist, id FROM quad_poly_tbl WHERE p &lt;@ polygon &apos;((300,300),(400,600),(600,500),(700,200))&apos;;" db-types="PostgreSQL" />
     <sql-case id="explain_by_postgresql_source_test_case115" value="EXPLAIN (COSTS OFF) UPDATE current_check SET payload = payload WHERE CURRENT OF current_check_cursor;" db-types="PostgreSQL" />
     <sql-case id="explain_by_postgresql_source_test_case117" value="EXPLAIN (VERBOSE, COSTS OFF) UPDATE update_test t   SET (a, b) = (SELECT b, a FROM update_test s WHERE s.a = t.a)   WHERE CURRENT_USER = SESSION_USER;" db-types="PostgreSQL" />
     <sql-case id="import_by_postgresql_source_test_case1" value="IMPORT FOREIGN SCHEMA s1 EXCEPT (t1) FROM SERVER s9 INTO public;" db-types="PostgreSQL" />
@@ -4166,10 +4059,6 @@
     <sql-case id="import_by_postgresql_source_test_case3" value="IMPORT FOREIGN SCHEMA s1 FROM SERVER s9 INTO public;" db-types="PostgreSQL" />
     <sql-case id="import_by_postgresql_source_test_case4" value="IMPORT FOREIGN SCHEMA s1 LIMIT TO (t1) FROM SERVER s9 INTO public;" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case1" value="INSERT INTO 123 VALUES(123);" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case2" value="INSERT INTO BIT_SHIFT_TABLE SELECT b&gt;&gt;1 FROM BIT_SHIFT_TABLE;" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case3" value="INSERT INTO BIT_SHIFT_TABLE SELECT b&gt;&gt;2 FROM BIT_SHIFT_TABLE;" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case4" value="INSERT INTO BIT_SHIFT_TABLE SELECT b&gt;&gt;4 FROM BIT_SHIFT_TABLE;" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case5" value="INSERT INTO BIT_SHIFT_TABLE SELECT b&gt;&gt;8 FROM BIT_SHIFT_TABLE;" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case6" value="INSERT INTO BIT_SHIFT_TABLE VALUES (B&apos;1101100000000000&apos;);" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case7" value="INSERT INTO BIT_TABLE VALUES (B&apos;00000000000&apos;);" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case8" value="INSERT INTO BIT_TABLE VALUES (B&apos;01010101010&apos;);" db-types="PostgreSQL" />
@@ -4180,7 +4069,6 @@
     <sql-case id="insert_by_postgresql_source_test_case13" value="INSERT INTO INET_TBL (c, i) VALUES (cidr(&apos;ffff:ffff:ffff:ffff::/24&apos;), &apos;::192.168.1.226&apos;);" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case14" value="INSERT INTO LINE_TBL VALUES (line(point &apos;(1,0)&apos;, point &apos;(1,0)&apos;));" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case15" value="INSERT INTO LINE_TBL VALUES (line(point &apos;(3,1)&apos;, point &apos;(3,2)&apos;));" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case16" value="INSERT INTO LSEG_TBL VALUES (lseg(point(11, 22), point(33,44)));" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case31" value="INSERT INTO VARBIT_SHIFT_TABLE SELECT CAST(v || B&apos;0&apos; AS BIT VARYING(6)) &gt;&gt;1 FROM VARBIT_SHIFT_TABLE;" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case32" value="INSERT INTO VARBIT_SHIFT_TABLE SELECT CAST(v || B&apos;00&apos; AS BIT VARYING(8)) &gt;&gt;2 FROM VARBIT_SHIFT_TABLE;" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case33" value="INSERT INTO VARBIT_SHIFT_TABLE SELECT CAST(v || B&apos;0000&apos; AS BIT VARYING(12)) &gt;&gt;4 FROM VARBIT_SHIFT_TABLE;" db-types="PostgreSQL" />
@@ -4209,21 +4097,11 @@
     <sql-case id="insert_by_postgresql_source_test_case124" value="INSERT INTO copy_t (SELECT x, md5(x::text) FROM generate_series(0,10) x);" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case129" value="INSERT INTO default_test DEFAULT VALUES;" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case132" value="INSERT INTO domarrtest (testint4arr[1], testint4arr[3]) values (11,22);" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case136" value="INSERT INTO f_star (class, a, c, e, f)    VALUES (&apos;f&apos;, 19, &apos;hi claire&apos;::name, &apos;-5&apos;::int2, &apos;(1,3),(2,4)&apos;::polygon);" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case137" value="INSERT INTO f_star (class, a, c, f)    VALUES (&apos;f&apos;, 21, &apos;hi marcel&apos;::name, &apos;(11,44),(22,55),(33,66)&apos;::polygon);" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case138" value="INSERT INTO f_star (class, a, e, f)    VALUES (&apos;f&apos;, 22, &apos;-7&apos;::int2, &apos;(111,555),(222,666),(333,777),(444,888)&apos;::polygon);" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case139" value="INSERT INTO f_star (class, a, f)    VALUES (&apos;f&apos;, 26, &apos;(11111,33333),(22222,44444)&apos;::polygon);" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case140" value="INSERT INTO f_star (class, c, e, f)    VALUES (&apos;f&apos;, &apos;hi keith&apos;::name, &apos;-8&apos;::int2, 	   &apos;(1111,3333),(2222,4444)&apos;::polygon);" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case141" value="INSERT INTO f_star (class, c, f)    VALUES (&apos;f&apos;, &apos;hi jeff&apos;::name,            &apos;(111111,333333),(222222,444444)&apos;::polygon);" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case142" value="INSERT INTO f_star (class, e, f)    VALUES (&apos;f&apos;, &apos;-11&apos;::int2, &apos;(1111111,3333333),(2222222,4444444)&apos;::polygon);" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case143" value="INSERT INTO f_star (class, f)    VALUES (&apos;f&apos;, &apos;(11111111,33333333),(22222222,44444444)&apos;::polygon);" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case145" value="INSERT INTO foo AS bar DEFAULT VALUES RETURNING *;" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case146" value="INSERT INTO foo AS bar DEFAULT VALUES RETURNING bar.*;" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case147" value="INSERT INTO foo AS bar DEFAULT VALUES RETURNING bar.f3;" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case148" value="INSERT INTO foo AS bar DEFAULT VALUES RETURNING foo.*;" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case161" value="INSERT INTO inhf DEFAULT VALUES;" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case162" value="INSERT INTO iportaltest (i, d, p)    VALUES (1, 3.567, &apos;(3.0,1.0),(4.0,2.0)&apos;::polygon);" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case163" value="INSERT INTO iportaltest (i, d, p)    VALUES (2, 89.05, &apos;(4.0,2.0),(3.0,1.0)&apos;::polygon);" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case164" value="INSERT INTO itest1 DEFAULT VALUES;" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case165" value="INSERT INTO itest1 DEFAULT VALUES;" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case166" value="INSERT INTO itest2 DEFAULT VALUES;" db-types="PostgreSQL" />
@@ -4267,40 +4145,11 @@
     <sql-case id="insert_by_postgresql_source_test_case243" value="INSERT INTO numrange_test2 VALUES(numrange(1.1, 2.2));" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case244" value="INSERT INTO numrange_test2 VALUES(numrange(1.1, 2.2,&apos;()&apos;));" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case271" value="INSERT INTO point_tbl(f1[0]) VALUES(0) RETURNING *;" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case293" value="INSERT INTO pvactst SELECT i, array[1,2,3], point(i, i+1) FROM generate_series(1,1000) i;" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case294" value="INSERT INTO quad_box_tbl   SELECT (x - 1) * 100 + y, box(point(x * 10, y * 10), point(x * 10 + 5, y * 10 + 5))   FROM generate_series(1, 100) x,        generate_series(1, 100) y;" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case296" value="INSERT INTO quad_point_tbl     SELECT &apos;(333.0,400.0)&apos;::point FROM generate_series(1,1000);" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case297" value="INSERT INTO quad_poly_tbl 	SELECT (x - 1) * 100 + y, polygon(circle(point(x * 10, y * 10), 1 + (x + y) % 10)) 	FROM generate_series(1, 100) x, 		 generate_series(1, 100) y;" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case298" value="INSERT INTO quad_poly_tbl 	SELECT i, polygon &apos;((200, 300),(210, 310),(230, 290))&apos; 	FROM generate_series(10001, 11000) AS i;" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case307" value="INSERT INTO s1 (SELECT x, md5(x::text) FROM generate_series(-10,10) x);" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case308" value="INSERT INTO s2 (SELECT x, md5(x::text) FROM generate_series(-6,6) x);" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case311" value="INSERT INTO t DEFAULT VALUES;" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case312" value="INSERT INTO t1 (SELECT x, md5(x::text) FROM generate_series(0,20) x);" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case317" value="INSERT INTO t2 (SELECT * FROM t1);" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case320" value="INSERT INTO tbl SELECT 1, 2, 3*x, box(&apos;4,4,4,4&apos;) FROM generate_series(1,10) AS x;" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case321" value="INSERT INTO tbl SELECT 1, 2, 3*x, box(&apos;4,4,4,4&apos;) FROM generate_series(1,10) AS x;" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case322" value="INSERT INTO tbl SELECT 1, 2, 3*x, box(&apos;4,4,4,4&apos;) FROM generate_series(1,10) AS x;" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case323" value="INSERT INTO tbl SELECT 1, 2, 3*x, box(&apos;4,4,4,4&apos;) FROM generate_series(1,10) AS x;" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case324" value="INSERT INTO tbl SELECT 1, 2, 3*x, box(&apos;4,4,4,4&apos;) FROM generate_series(1,10) AS x;" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case325" value="INSERT INTO tbl SELECT 1, NULL, 3*x, box(&apos;4,4,4,4&apos;) FROM generate_series(1,10) AS x;" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case326" value="INSERT INTO tbl SELECT 1, NULL, 3*x, box(&apos;4,4,4,4&apos;) FROM generate_series(1,10) AS x;" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case327" value="INSERT INTO tbl SELECT x, 2*x, 3*x, box(&apos;4,4,4,4&apos;) FROM generate_series(1,10) AS x;" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case328" value="INSERT INTO tbl SELECT x, 2*x, 3*x, box(&apos;4,4,4,4&apos;) FROM generate_series(1,10) AS x;" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case329" value="INSERT INTO tbl SELECT x, 2*x, 3*x, box(&apos;4,4,4,4&apos;) FROM generate_series(1,1000) AS x;" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case333" value="INSERT INTO tbl_gist SELECT x, 2*x, 3*x, box(point(3*x,2*x),point(3*x+1,2*x+1)) FROM generate_series(1,10) AS x;" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case334" value="INSERT INTO tbl_gist SELECT x, 2*x, 3*x, box(point(x,x+1),point(2*x,2*x+1)) FROM generate_series(1,10) AS x;" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case335" value="INSERT INTO tbl_gist SELECT x, 2*x, 3*x, box(point(x,x+1),point(2*x,2*x+1)) FROM generate_series(1,10) AS x;" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case336" value="INSERT INTO tbl_gist SELECT x, 2*x, 3*x, box(point(x,x+1),point(2*x,2*x+1)) FROM generate_series(1,10) AS x;" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case337" value="INSERT INTO tbl_gist SELECT x, 2*x, 3*x, box(point(x,x+1),point(2*x,2*x+1)) FROM generate_series(1,10) AS x;" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case338" value="INSERT INTO tbl_gist SELECT x, 2*x, 3*x, box(point(x,x+1),point(2*x,2*x+1)) FROM generate_series(1,10) AS x;" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case339" value="INSERT INTO tbl_gist SELECT x, 2*x, 3*x, box(point(x,x+1),point(2*x,2*x+1)) FROM generate_series(1,8000) AS x;" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case340" value="INSERT INTO tbl_gist SELECT x, 2*x, 3*x, box(point(x,x+1),point(2*x,2*x+1)) FROM generate_series(1,8000) AS x;" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case341" value="INSERT INTO tbl_include_box SELECT 1, 2*x, 3*x, box(&apos;4,4,4,4&apos;) FROM generate_series(1,10) AS x;" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case342" value="INSERT INTO tbl_include_box_pk SELECT 1, 2, 3*x, box(&apos;4,4,4,4&apos;) FROM generate_series(1,10) AS x;" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case343" value="INSERT INTO tbl_include_pk SELECT 1, 2*x, 3*x, box(&apos;4,4,4,4&apos;) FROM generate_series(1,10) AS x;" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case344" value="INSERT INTO tbl_include_reg SELECT x, 2*x, 3*x, box(&apos;4,4,4,4&apos;) FROM generate_series(1,10) AS x;" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case345" value="INSERT INTO tbl_include_unique1 SELECT x, 2*x, 3*x, box(&apos;4,4,4,4&apos;) FROM generate_series(1,10) AS x;" db-types="PostgreSQL" />
-    <sql-case id="insert_by_postgresql_source_test_case346" value="INSERT INTO tbl_include_unique2 SELECT 1, 2, 3*x, box(&apos;4,4,4,4&apos;) FROM generate_series(1,10) AS x;" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case348" value="INSERT INTO test6 VALUES (1, U&amp;&apos;\00E4bc&apos;);" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case349" value="INSERT INTO test6 VALUES (2, U&amp;&apos;\0061\0308bc&apos;);" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case350" value="INSERT INTO test6a VALUES (1, ARRAY[U&amp;&apos;\00E4bc&apos;]);" db-types="PostgreSQL" />
@@ -4543,22 +4392,14 @@
     <sql-case id="select_by_postgresql_source_test_case202" value="SELECT &apos;wa:1D wb:2A&apos;::tsvector @@ &apos;w:*D &lt;-&gt; w:*A&apos;::tsquery as &quot;true&quot;;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case203" value="SELECT (&apos;127.0.0.1&apos;::inet + 257) - 257;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case204" value="SELECT (&apos;127::1&apos;::inet + 257) - 257;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case205" value="SELECT ((-1::int2&lt;&lt;15)+1::int2)::text;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case206" value="SELECT ((-1::int4&lt;&lt;31)+1)::text;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case207" value="SELECT ((-1::int8&lt;&lt;63)+1)::text;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case208" value="SELECT (-12345)::money;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case209" value="SELECT (-1234567890)::int4::money;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case210" value="SELECT (-1234567890)::money;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case211" value="SELECT (-12345678901234567)::int8::money;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case212" value="SELECT (-12345678901234567)::money;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case213" value="SELECT (-12345678901234567)::numeric::money;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case214" value="SELECT (-1::int2&lt;&lt;15)::text;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case215" value="SELECT (-1::int4&lt;&lt;31)::text;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case216" value="SELECT (-1::int8&lt;&lt;63)::text;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case217" value="SELECT (@@ f1) AS center    FROM POLYGON_TBL    WHERE (# f1) &gt; 2;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case218" value="SELECT (SELECT generate_series(1,3) LIMIT 1 OFFSET few.id) FROM few;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case219" value="SELECT (SELECT generate_series(1,3) LIMIT 1 OFFSET g.i) FROM generate_series(0,3) g(i);" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case220" value="SELECT (SELECT p FROM kd_point_tbl ORDER BY p &lt;-&gt; pt, p &lt;-&gt; &apos;0,0&apos; LIMIT 1) FROM (VALUES (point &apos;1,2&apos;), (NULL), (&apos;1234,5678&apos;)) pts(pt);" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case221" value="SELECT *    FROM arrtest    WHERE a[1] &lt; 5 and          c = &apos;{&quot;foobar&quot;}&apos;::_name;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case222" value="SELECT * FROM (J1_TBL JOIN J2_TBL USING (i) AS x) AS xx WHERE x.i = 1;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case223" value="SELECT * FROM (VALUES (1),(2),(3)) v(r) LEFT JOIN ROWS FROM( rngfunc_sql(11,13), rngfunc_mat(11,13) ) WITH ORDINALITY AS f(i1,s1,i2,s2,o) ON (r+i1+i2)&lt;100;" db-types="PostgreSQL" />
@@ -4567,23 +4408,12 @@
     <sql-case id="select_by_postgresql_source_test_case226" value="SELECT * FROM (VALUES (1),(2),(3)) v(r), ROWS FROM( rngfunc_sql(11,11), rngfunc_mat(10+r,13) );" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case233" value="SELECT * FROM ROWS FROM(generate_series(10,11), get_users()) WITH ORDINALITY;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case234" value="SELECT * FROM ROWS FROM(get_users(), generate_series(10,11)) WITH ORDINALITY;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case235" value="SELECT * FROM box_temp WHERE f1 &amp;&lt; &apos;(10,4.333334),(5,100)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case236" value="SELECT * FROM box_temp WHERE f1 &amp;&lt;| &apos;(10,4.3333334),(5,1)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case237" value="SELECT * FROM box_temp WHERE f1 &amp;&gt; &apos;(40,30),(45,50)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case238" value="SELECT * FROM box_temp WHERE f1 &lt;&lt; &apos;(10,20),(30,40)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case239" value="SELECT * FROM box_temp WHERE f1 &lt;&lt;| &apos;(10,4.33334),(5,100)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case240" value="SELECT * FROM box_temp WHERE f1 &gt;&gt; &apos;(30,40),(40,30)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case241" value="SELECT * FROM box_temp WHERE f1 |&amp;&gt; &apos;(49.99,49.99),(49.99,49.99)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case242" value="SELECT * FROM box_temp WHERE f1 |&gt;&gt; &apos;(37,38),(39,40)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case243" value="SELECT * FROM box_temp WHERE f1 ~= &apos;(20,20),(40,40)&apos;;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case244" value="SELECT * FROM circle_tbl WHERE f1 &amp;&amp; circle(point(1,-2), 1)     ORDER BY area(f1);" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case245" value="SELECT * FROM circle_tbl WHERE f1 &amp;&amp; circle(point(1,-2), 1)     ORDER BY area(f1);" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case246" value="SELECT * FROM fast_emp4000     WHERE home_base &lt;@ &apos;(200,200),(2000,1000)&apos;::box     ORDER BY (home_base[0])[0];" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case247" value="SELECT * FROM fast_emp4000     WHERE home_base &lt;@ &apos;(200,200),(2000,1000)&apos;::box     ORDER BY (home_base[0])[0];" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case248" value="SELECT * FROM fast_emp4000     WHERE home_base &lt;@ &apos;(200,200),(2000,1000)&apos;::box     ORDER BY (home_base[0])[0];" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case249" value="SELECT * FROM generate_series(1,2) r1, generate_series(r1,3) r2, ROWS FROM( rngfunc_sql(10+r1,13), rngfunc_mat(10+r2,13) );" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case250" value="SELECT * FROM gpolygon_tbl ORDER BY f1 &lt;-&gt; &apos;(0,0)&apos;::point LIMIT 10;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case251" value="SELECT * FROM gpolygon_tbl ORDER BY f1 &lt;-&gt; &apos;(0,0)&apos;::point LIMIT 10;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case252" value="SELECT * FROM inet_tbl WHERE &apos;192.168.1.0/24&apos;::cidr &gt;&gt; i;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case253" value="SELECT * FROM inet_tbl WHERE &apos;192.168.1.0/24&apos;::cidr &gt;&gt;= i;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case254" value="SELECT * FROM inet_tbl WHERE i &amp;&amp; &apos;192.168.1.0/24&apos;::cidr ORDER BY i;" db-types="PostgreSQL" />
@@ -4623,16 +4453,7 @@
     <sql-case id="select_by_postgresql_source_test_case288" value="SELECT * FROM nummultirange_test WHERE range_overlaps_multirange(numrange(4.0, 4.2), nmr);" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case289" value="SELECT * FROM numrange_test WHERE range_contained_by(numrange(-1e7,-10000.1), nr);" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case290" value="SELECT * FROM numrange_test WHERE range_contains(nr, numrange(1.9,1.91));" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case291" value="SELECT * FROM point_tbl WHERE f1 &lt;@ &apos;(-10,-10),(10,10)&apos;:: box ORDER BY f1 &lt;-&gt; &apos;0,1&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case292" value="SELECT * FROM point_tbl WHERE f1 &lt;@ &apos;(-10,-10),(10,10)&apos;:: box ORDER BY f1 &lt;-&gt; &apos;0,1&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case293" value="SELECT * FROM point_tbl WHERE f1 &lt;@ &apos;(-10,-10),(10,10)&apos;:: box ORDER BY f1 &lt;-&gt; &apos;0,1&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case294" value="SELECT * FROM polygon_tbl WHERE f1 @&gt; &apos;((1,1),(2,2),(2,1))&apos;::polygon     ORDER BY (poly_center(f1))[0];" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case295" value="SELECT * FROM polygon_tbl WHERE f1 @&gt; &apos;((1,1),(2,2),(2,1))&apos;::polygon     ORDER BY (poly_center(f1))[0];" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case296" value="SELECT * FROM rank() OVER (ORDER BY random());" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case297" value="SELECT * FROM rls_tbl WHERE a &lt;&lt;&lt; 1000;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case298" value="SELECT * FROM tststats.priv_test_tbl WHERE a &lt;&lt;&lt; 0 AND b &lt;&lt;&lt; 0;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case299" value="SELECT * FROM tststats.priv_test_tbl WHERE a &lt;&lt;&lt; 0 AND b &lt;&lt;&lt; 0;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case300" value="SELECT * FROM tststats.priv_test_view WHERE a &lt;&lt;&lt; 0 AND b &lt;&lt;&lt; 0;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case301" value="SELECT * FROM unnest(&apos;base hidden rebel spaceship strike&apos;::tsvector);" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case302" value="SELECT * FROM unnest(&apos;base:7 hidden:6 rebel:1 spaceship:2,33A,34B,35C,36D strike:3&apos;::tsvector);" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case303" value="SELECT 1 LIMIT generate_series(1,3);" db-types="PostgreSQL" />
@@ -4647,12 +4468,6 @@
     <sql-case id="select_by_postgresql_source_test_case312" value="SELECT 2 !=-- comment to be removed by psql   1;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case313" value="SELECT 2 \r SELECT 3 \p UNION SELECT 4 \p UNION SELECT 5 ORDER BY 1;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case314" value="SELECT CAST(&apos;42&apos; AS text COLLATE &quot;C&quot;);" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case315" value="SELECT COUNT(*) FROM point_gist_tbl WHERE f1 &lt;@ &apos;(0.0000009,0.0000009),(0.0000009,0.0000009)&apos;::box;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case316" value="SELECT COUNT(*) FROM point_gist_tbl WHERE f1 &lt;@ &apos;(0.0000009,0.0000009),(0.0000009,0.0000009)&apos;::box;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case317" value="SELECT COUNT(*) FROM point_gist_tbl WHERE f1 ~= &apos;(0.0000009,0.0000009)&apos;::point;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case318" value="SELECT COUNT(*) FROM point_gist_tbl WHERE f1 ~= &apos;(0.0000009,0.0000009)&apos;::point;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case319" value="SELECT COUNT(*) FROM point_gist_tbl WHERE f1 ~= &apos;(0.0000018,0.0000018)&apos;::point;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case320" value="SELECT COUNT(*) FROM point_gist_tbl WHERE f1 ~= &apos;(0.0000018,0.0000018)&apos;::point;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case321" value="SELECT DATE_TRUNC(&apos;CENTURY&apos;, DATE &apos;0002-02-04&apos;);" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case322" value="SELECT DATE_TRUNC(&apos;CENTURY&apos;, DATE &apos;0055-08-10 BC&apos;);" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case323" value="SELECT DATE_TRUNC(&apos;CENTURY&apos;, DATE &apos;1970-03-20&apos;);" db-types="PostgreSQL" />
@@ -4859,8 +4674,6 @@
     <sql-case id="select_by_postgresql_source_test_case544" value="SELECT a FROM (VALUES   (&apos;0.0.0.0/0&apos;::inet),   (&apos;0.0.0.0/1&apos;::inet),   (&apos;0.0.0.0/32&apos;::inet),   (&apos;0.0.0.1/0&apos;::inet),   (&apos;0.0.0.1/1&apos;::inet),   (&apos;127.126.127.127/0&apos;::inet),   (&apos;127.127.127.127/0&apos;::inet),   (&apos;127.128.127.127/0&apos;::inet),   (&apos;192.168.1.0/24&apos;::inet),   (&apos;192.168.1.0/25&apos;::inet),   (&apos;192.168.1.1/23&apos;::inet),   (&apos;192.168.1.1/5&apos;::inet),   (&apos;192.168.1.1/6&apos;::inet),   (&apos;192.168.1.1/25&apos;::inet),   (&apos;192.168.1.2/25&apos;::inet),   (&apos;192.168.1.1/26&apos;::inet),   (&apos;192.168.1.2/26&apos;::inet),   (&apos;192.168.1.2/23&apos;::inet),   (&apos;192.168.1.255/5&apos;::inet),   (&apos;192.168.1.255/6&apos;::inet),   (&apos;192.168.1.3/1&apos;::inet),   (&apos;192.168.1.3/23&apos;::inet),   (&apos;192.168.1.4/0&apos;::inet),   (&apos;192.168.1.5/0&apos;::inet),   (&apos;255.0.0.0/0&apos;::inet),   (&apos;255.1.0.0/0&apos;::inet),   (&apos;255.2.0.0/0&apos;::inet),   (&apos;255.255.000.000/0&apos;::inet),   (&apos;255.255.000.000/0&apos;::inet),   (&apos;255.255.000.000/15&apos;::inet),   (&apos;255.255.000.000/16&apos;::inet),   (&apos;255.255.255.254/32&apos;::inet),   (&apos;255.255.255.000/32&apos;::inet),   (&apos;255.255.255.001/31&apos;::inet),   (&apos;255.255.255.002/31&apos;::inet),   (&apos;255.255.255.003/31&apos;::inet),   (&apos;255.255.255.003/32&apos;::inet),   (&apos;255.255.255.001/32&apos;::inet),   (&apos;255.255.255.255/0&apos;::inet),   (&apos;255.255.255.255/0&apos;::inet),   (&apos;255.255.255.255/0&apos;::inet),   (&apos;255.255.255.255/1&apos;::inet),   (&apos;255.255.255.255/16&apos;::inet),   (&apos;255.255.255.255/16&apos;::inet),   (&apos;255.255.255.255/31&apos;::inet),   (&apos;255.255.255.255/32&apos;::inet),   (&apos;255.255.255.253/32&apos;::inet),   (&apos;255.255.255.252/32&apos;::inet),   (&apos;255.3.0.0/0&apos;::inet),   (&apos;0000:0000:0000:0000:0000:0000:0000:0000/0&apos;::inet),   (&apos;0000:0000:0000:0000:0000:0000:0000:0000/128&apos;::inet),   (&apos;0000:0000:0000:0000:0000:0000:0000:0001/128&apos;::inet),   (&apos;10:23::f1/64&apos;::inet),   (&apos;10:23::f1/65&apos;::inet),   (&apos;10:23::ffff&apos;::inet),   (&apos;127::1&apos;::inet),   (&apos;127::2&apos;::inet),   (&apos;8000:0000:0000:0000:0000:0000:0000:0000/1&apos;::inet),   (&apos;::1:ffff:ffff:ffff:ffff/128&apos;::inet),   (&apos;::2:ffff:ffff:ffff:ffff/128&apos;::inet),   (&apos;::4:3:2:0/24&apos;::inet),   (&apos;::4:3:2:1/24&apos;::inet),   (&apos;::4:3:2:2/24&apos;::inet),   (&apos;ffff:83e7:f118:57dc:6093:6d92:689d:58cf/70&apos;::inet),   (&apos;ffff:84b0:4775:536e:c3ed:7116:a6d6:34f0/44&apos;::inet),   (&apos;ffff:8566:f84:5867:47f1:7867:d2ba:8a1a/69&apos;::inet),   (&apos;ffff:8883:f028:7d2:4d68:d510:7d6b:ac43/73&apos;::inet),   (&apos;ffff:8ae8:7c14:65b3:196:8e4a:89ae:fb30/89&apos;::inet),   (&apos;ffff:8dd0:646:694c:7c16:7e35:6a26:171/104&apos;::inet),   (&apos;ffff:8eef:cbf:700:eda3:ae32:f4b4:318b/121&apos;::inet),   (&apos;ffff:90e7:e744:664:a93:8efe:1f25:7663/122&apos;::inet),   (&apos;ffff:9597:c69c:8b24:57a:8639:ec78:6026/111&apos;::inet),   (&apos;ffff:9e86:79ea:f16e:df31:8e4d:7783:532e/88&apos;::inet),   (&apos;ffff:a0c7:82d3:24de:f762:6e1f:316d:3fb2/23&apos;::inet),   (&apos;ffff:fffa:ffff:ffff:ffff:ffff:ffff:ffff/0&apos;::inet),   (&apos;ffff:fffb:ffff:ffff:ffff:ffff:ffff:ffff/0&apos;::inet),   (&apos;ffff:fffc:ffff:ffff:ffff:ffff:ffff:ffff/0&apos;::inet),   (&apos;ffff:fffd:ffff:ffff:ffff:ffff:ffff:ffff/0&apos;::inet),   (&apos;ffff:fffe:ffff:ffff:ffff:ffff:ffff:ffff/0&apos;::inet),   (&apos;ffff:ffff:ffff:fffa:ffff:ffff:ffff:ffff/0&apos;::inet),   (&apos;ffff:ffff:ffff:fffb:ffff:ffff:ffff:ffff/0&apos;::inet),   (&apos;ffff:ffff:ffff:fffc:ffff:ffff:ffff:ffff/0&apos;::inet),   (&apos;ffff:ffff:ffff:fffd::/128&apos;::inet),   (&apos;ffff:ffff:ffff:fffd:ffff:ffff:ffff:ffff/0&apos;::inet),   (&apos;ffff:ffff:ffff:fffe::/128&apos;::inet),   (&apos;ffff:ffff:ffff:fffe:ffff:ffff:ffff:ffff/0&apos;::inet),   (&apos;ffff:ffff:ffff:ffff:4:3:2:0/24&apos;::inet),   (&apos;ffff:ffff:ffff:ffff:4:3:2:1/24&apos;::inet),   (&apos;ffff:ffff:ffff:ffff:4:3:2:2/24&apos;::inet),   (&apos;ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff/0&apos;::inet),   (&apos;ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff/128&apos;::inet) ) AS i(a) ORDER BY a;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case545" value="SELECT a FROM arrtest WHERE a[2] IS NULL;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case546" value="SELECT a, b, gcd(a, b), gcd(a, -b), gcd(-b, a), gcd(-b, -a) FROM (VALUES (0::numeric, 0::numeric),              (0::numeric, numeric &apos;NaN&apos;),              (0::numeric, 46375::numeric),              (433125::numeric, 46375::numeric),              (43312.5::numeric, 4637.5::numeric),              (4331.250::numeric, 463.75000::numeric),              (&apos;inf&apos;, &apos;0&apos;),              (&apos;inf&apos;, &apos;42&apos;),              (&apos;inf&apos;, &apos;inf&apos;)      ) AS v(a, b);" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case547" value="SELECT a,a&lt;&lt;4 AS &quot;a&lt;&lt;4&quot;,b,b&gt;&gt;2 AS &quot;b&gt;&gt;2&quot; FROM bit_table;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case548" value="SELECT a,a&lt;&lt;4 AS &quot;a&lt;&lt;4&quot;,b,b&gt;&gt;2 AS &quot;b&gt;&gt;2&quot; FROM varbit_table;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case549" value="SELECT a,b, lcm(a, b), lcm(a, -b), lcm(-b, a), lcm(-b, -a) FROM (VALUES (0::numeric, 0::numeric),              (0::numeric, numeric &apos;NaN&apos;),              (0::numeric, 13272::numeric),              (13272::numeric, 13272::numeric),              (423282::numeric, 13272::numeric),              (42328.2::numeric, 1327.2::numeric),              (4232.820::numeric, 132.72000::numeric),              (&apos;inf&apos;, &apos;0&apos;),              (&apos;inf&apos;, &apos;42&apos;),              (&apos;inf&apos;, &apos;inf&apos;)      ) AS v(a, b);" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case550" value="SELECT a.aggfnoid, p.proname FROM pg_aggregate as a, pg_proc as p WHERE a.aggcombinefn = p.oid AND     (p.pronargs != 2 OR      p.prorettype != p.proargtypes[0] OR      p.prorettype != p.proargtypes[1] OR      NOT binary_coercible(a.aggtranstype, p.proargtypes[0]));" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case551" value="SELECT a.aggfnoid, p.proname FROM pg_aggregate as a, pg_proc as p WHERE a.aggdeserialfn = p.oid AND     (p.prorettype != &apos;internal&apos;::regtype OR p.pronargs != 2 OR      p.proargtypes[0] != &apos;bytea&apos;::regtype OR      p.proargtypes[1] != &apos;internal&apos;::regtype OR      NOT p.proisstrict);" db-types="PostgreSQL" />
@@ -4893,27 +4706,9 @@
     <sql-case id="select_by_postgresql_source_test_case578" value="SELECT atanh(float8 &apos;0.5&apos;);" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case579" value="SELECT atanh(float8 &apos;infinity&apos;);" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case580" value="SELECT atanh(float8 &apos;nan&apos;);" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case581" value="SELECT b, b &gt;&gt; 1 AS bsr, b &lt;&lt; 1 AS bsl        FROM BIT_SHIFT_TABLE ;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case582" value="SELECT b, b &gt;&gt; 8 AS bsr8, b &lt;&lt; 8 AS bsl8        FROM BIT_SHIFT_TABLE ;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case583" value="SELECT b.f1    FROM BOX_TBL b    WHERE b.f1 &amp;&amp; box &apos;(2.5,2.5,1.0,1.0)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case584" value="SELECT b.f1    FROM BOX_TBL b    WHERE b.f1 &lt; box &apos;(3.0,3.0,5.0,5.0)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case585" value="SELECT b.f1    FROM BOX_TBL b    WHERE b.f1 &lt;&lt; box &apos;(3.0,3.0,5.0,5.0)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case586" value="SELECT b.f1    FROM BOX_TBL b    WHERE b.f1 &lt;= box &apos;(3.0,3.0,5.0,5.0)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case587" value="SELECT b.f1    FROM BOX_TBL b    WHERE b.f1 = box &apos;(3.0,3.0,5.0,5.0)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case588" value="SELECT b.f1    FROM BOX_TBL b    WHERE box &apos;(0,0,3,3)&apos; @&gt; b.f1;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case589" value="SELECT b.f1    FROM BOX_TBL b    WHERE box &apos;(1,1,3,3)&apos; ~= b.f1;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case590" value="SELECT b.f1    FROM BOX_TBL b    WHERE box &apos;(3.0,3.0,5.0,5.0)&apos; &gt;&gt; b.f1;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case591" value="SELECT b.f1, p.f1, b.f1 * p.f1 FROM BOX_TBL b, POINT_TBL p WHERE p.f1[0] &gt; 1000;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case592" value="SELECT b.f1, p.f1, b.f1 * p.f1 FROM BOX_TBL b, POINT_TBL p WHERE p.f1[0] BETWEEN 1 AND 1000;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case593" value="SELECT b.f1, p.f1, b.f1 / p.f1 FROM BOX_TBL b, POINT_TBL p WHERE p.f1[0] BETWEEN 1 AND 1000;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case594" value="SELECT b1.*    FROM BOX_TBL b1    WHERE b1.f1 &amp;&lt; box &apos;(2.0,2.0,2.5,2.5)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case595" value="SELECT b1.*    FROM BOX_TBL b1    WHERE b1.f1 &amp;&gt; box &apos;(2.0,2.0,2.5,2.5)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case596" value="SELECT b1.*, b2.*    FROM BOX_TBL b1, BOX_TBL b2    WHERE b1.f1 @&gt; b2.f1 and not b1.f1 ~= b2.f1;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case597" value="SELECT b1.f1, b2.f1, b1.f1 # b2.f1 FROM BOX_TBL b1, BOX_TBL b2;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case598" value="SELECT b1.f1, b2.f1, b1.f1 &lt;^ b2.f1 FROM BOX_TBL b1, BOX_TBL b2;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case599" value="SELECT b1.f1, b2.f1, b1.f1 &gt;^ b2.f1 FROM BOX_TBL b1, BOX_TBL b2;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case600" value="SELECT b::bit(15), b::bit(15) &gt;&gt; 1 AS bsr, b::bit(15) &lt;&lt; 1 AS bsl        FROM BIT_SHIFT_TABLE ;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case601" value="SELECT b::bit(15), b::bit(15) &gt;&gt; 8 AS bsr8, b::bit(15) &lt;&lt; 8 AS bsl8        FROM BIT_SHIFT_TABLE ;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case602" value="SELECT b::macaddr &lt;= &apos;08:00:2b:01:02:04&apos; FROM macaddr8_data WHERE a = 1;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case603" value="SELECT b::macaddr &lt;&gt; &apos;08:00:2b:01:02:03&apos;::macaddr FROM macaddr8_data WHERE a = 1;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case604" value="SELECT b::macaddr &lt;&gt; &apos;08:00:2b:01:02:04&apos;::macaddr FROM macaddr8_data WHERE a = 1;" db-types="PostgreSQL" />
@@ -4955,22 +4750,10 @@
     <sql-case id="select_by_postgresql_source_test_case640" value="SELECT c AS cidr, network(c) AS &quot;network(cidr)&quot;,   i AS inet, network(i) AS &quot;network(inet)&quot; FROM INET_TBL;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case641" value="SELECT c.* FROM pg_cast c, pg_proc p WHERE c.castfunc = p.oid AND     ((p.pronargs &gt; 1 AND p.proargtypes[1] != &apos;int4&apos;::regtype) OR      (p.pronargs &gt; 2 AND p.proargtypes[2] != &apos;bool&apos;::regtype));" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case642" value="SELECT c.* FROM pg_cast c, pg_proc p WHERE c.castfunc = p.oid AND     (p.pronargs &lt; 1 OR p.pronargs &gt; 3      OR NOT (binary_coercible(c.castsource, p.proargtypes[0])              OR (c.castsource = &apos;character&apos;::regtype AND                  p.proargtypes[0] = &apos;text&apos;::regtype))      OR NOT binary_coercible(p.prorettype, c.casttarget));" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case643" value="SELECT c.f1, p.f1, c.f1 / p.f1 FROM CIRCLE_TBL c, POINT_TBL p WHERE p.f1 ~= &apos;(0,0)&apos;::point;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case644" value="SELECT c.f1, p.f1, c.f1 / p.f1 FROM CIRCLE_TBL c, POINT_TBL p WHERE p.f1[0] &gt; 1000;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case645" value="SELECT c.f1, p.f1, c.f1 / p.f1 FROM CIRCLE_TBL c, POINT_TBL p WHERE p.f1[0] BETWEEN 1 AND 1000;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case646" value="SELECT c0 FROM ONLY expr_stats_incompatible_test WHERE (   upper(&apos;x&apos;) LIKE (&apos;x&apos;||(&apos;[0,1]&apos;::int4range))   AND   (c0 IN (0, 1) OR c1) );" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case647" value="SELECT c1.f1 AS circle, p1.f1 AS point, (p1.f1 &lt;-&gt; c1.f1) AS distance    FROM CIRCLE_TBL c1, POINT_TBL p1    WHERE (p1.f1 &lt;-&gt; c1.f1) &gt; 0    ORDER BY distance, area(c1.f1), p1.f1[0];" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case648" value="SELECT c1.f1, c2.f1 FROM CIRCLE_TBL c1, CIRCLE_TBL c2 WHERE c1.f1 &amp;&lt; c2.f1;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case649" value="SELECT c1.f1, c2.f1 FROM CIRCLE_TBL c1, CIRCLE_TBL c2 WHERE c1.f1 &amp;&lt;| c2.f1;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case650" value="SELECT c1.f1, c2.f1 FROM CIRCLE_TBL c1, CIRCLE_TBL c2 WHERE c1.f1 &amp;&gt; c2.f1;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case651" value="SELECT c1.f1, c2.f1 FROM CIRCLE_TBL c1, CIRCLE_TBL c2 WHERE c1.f1 &lt;&lt; c2.f1;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case652" value="SELECT c1.f1, c2.f1 FROM CIRCLE_TBL c1, CIRCLE_TBL c2 WHERE c1.f1 &lt;&lt;| c2.f1;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case653" value="SELECT c1.f1, c2.f1 FROM CIRCLE_TBL c1, CIRCLE_TBL c2 WHERE c1.f1 &gt;&gt; c2.f1;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case654" value="SELECT c1.f1, c2.f1 FROM CIRCLE_TBL c1, CIRCLE_TBL c2 WHERE c1.f1 |&amp;&gt; c2.f1;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case655" value="SELECT c1.f1, c2.f1 FROM CIRCLE_TBL c1, CIRCLE_TBL c2 WHERE c1.f1 |&gt;&gt; c2.f1;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case656" value="SELECT c1.f1, c2.f1 FROM CIRCLE_TBL c1, CIRCLE_TBL c2 WHERE c1.f1 ~= c2.f1;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case663" value="SELECT circle_center(f1), round(radius(f1)) as radius FROM gcircle_tbl ORDER BY f1 &lt;-&gt; &apos;(200,300)&apos;::point LIMIT 10;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case664" value="SELECT circle_center(f1), round(radius(f1)) as radius FROM gcircle_tbl ORDER BY f1 &lt;-&gt; &apos;(200,300)&apos;::point LIMIT 10;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case665" value="SELECT cosh(float8 &apos;-infinity&apos;);" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case666" value="SELECT cosh(float8 &apos;1&apos;);" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case667" value="SELECT cosh(float8 &apos;infinity&apos;);" db-types="PostgreSQL" />
@@ -4986,76 +4769,6 @@
     <sql-case id="select_by_postgresql_source_test_case677" value="SELECT count(*) AS two FROM TIMESTAMPTZ_TBL WHERE d1 = timestamp(2) with time zone &apos;now&apos;;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case678" value="SELECT count(*) AS two FROM TIMESTAMP_TBL WHERE d1 = timestamp(2) without time zone &apos;now&apos;;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case679" value="SELECT count(*) FROM dupindexcols   WHERE f1 BETWEEN &apos;WA&apos; AND &apos;ZZZ&apos; and id &lt; 1000 and f1 ~&lt;~ &apos;YX&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case680" value="SELECT count(*) FROM fast_emp4000 WHERE home_base &amp;&amp; &apos;(1000,1000,0,0)&apos;::box;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case681" value="SELECT count(*) FROM fast_emp4000 WHERE home_base &amp;&amp; &apos;(1000,1000,0,0)&apos;::box;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case682" value="SELECT count(*) FROM fast_emp4000 WHERE home_base &amp;&amp; &apos;(1000,1000,0,0)&apos;::box;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case683" value="SELECT count(*) FROM gcircle_tbl WHERE f1 &amp;&amp; &apos;&lt;(500,500),500&gt;&apos;::circle;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case684" value="SELECT count(*) FROM gcircle_tbl WHERE f1 &amp;&amp; &apos;&lt;(500,500),500&gt;&apos;::circle;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case685" value="SELECT count(*) FROM gpolygon_tbl WHERE f1 &amp;&amp; &apos;(1000,1000,0,0)&apos;::polygon;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case686" value="SELECT count(*) FROM gpolygon_tbl WHERE f1 &amp;&amp; &apos;(1000,1000,0,0)&apos;::polygon;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case687" value="SELECT count(*) FROM kd_point_tbl WHERE box &apos;(200,200,1000,1000)&apos; @&gt; p;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case688" value="SELECT count(*) FROM kd_point_tbl WHERE box &apos;(200,200,1000,1000)&apos; @&gt; p;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case689" value="SELECT count(*) FROM kd_point_tbl WHERE p &lt;&lt; &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case690" value="SELECT count(*) FROM kd_point_tbl WHERE p &lt;&lt; &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case691" value="SELECT count(*) FROM kd_point_tbl WHERE p &lt;&lt;| &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case692" value="SELECT count(*) FROM kd_point_tbl WHERE p &lt;&lt;| &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case693" value="SELECT count(*) FROM kd_point_tbl WHERE p &gt;&gt; &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case694" value="SELECT count(*) FROM kd_point_tbl WHERE p &gt;&gt; &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case695" value="SELECT count(*) FROM kd_point_tbl WHERE p |&gt;&gt; &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case696" value="SELECT count(*) FROM kd_point_tbl WHERE p |&gt;&gt; &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case697" value="SELECT count(*) FROM kd_point_tbl WHERE p ~= &apos;(4585, 365)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case698" value="SELECT count(*) FROM kd_point_tbl WHERE p ~= &apos;(4585, 365)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case699" value="SELECT count(*) FROM point_tbl WHERE box &apos;(0,0,100,100)&apos; @&gt; f1;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case700" value="SELECT count(*) FROM point_tbl WHERE box &apos;(0,0,100,100)&apos; @&gt; f1;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case701" value="SELECT count(*) FROM point_tbl p WHERE p.f1 &lt;&lt; &apos;(0.0, 0.0)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case702" value="SELECT count(*) FROM point_tbl p WHERE p.f1 &lt;&lt; &apos;(0.0, 0.0)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case703" value="SELECT count(*) FROM point_tbl p WHERE p.f1 &lt;&lt;| &apos;(0.0, 0.0)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case704" value="SELECT count(*) FROM point_tbl p WHERE p.f1 &lt;&lt;| &apos;(0.0, 0.0)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case705" value="SELECT count(*) FROM point_tbl p WHERE p.f1 &gt;&gt; &apos;(0.0, 0.0)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case706" value="SELECT count(*) FROM point_tbl p WHERE p.f1 &gt;&gt; &apos;(0.0, 0.0)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case707" value="SELECT count(*) FROM point_tbl p WHERE p.f1 |&gt;&gt; &apos;(0.0, 0.0)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case708" value="SELECT count(*) FROM point_tbl p WHERE p.f1 |&gt;&gt; &apos;(0.0, 0.0)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case709" value="SELECT count(*) FROM point_tbl p WHERE p.f1 ~= &apos;(-5, -12)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case710" value="SELECT count(*) FROM point_tbl p WHERE p.f1 ~= &apos;(-5, -12)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case711" value="SELECT count(*) FROM quad_box_tbl WHERE b &amp;&amp;  box &apos;((100,200),(300,500))&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case712" value="SELECT count(*) FROM quad_box_tbl WHERE b &amp;&lt;  box &apos;((100,200),(300,500))&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case713" value="SELECT count(*) FROM quad_box_tbl WHERE b &amp;&lt;| box &apos;((100,200),(300,500))&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case714" value="SELECT count(*) FROM quad_box_tbl WHERE b &amp;&gt;  box &apos;((100,200),(300,500))&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case715" value="SELECT count(*) FROM quad_box_tbl WHERE b &lt;&lt;  box &apos;((100,200),(300,500))&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case716" value="SELECT count(*) FROM quad_box_tbl WHERE b &lt;&lt;| box &apos;((100,200),(300,500))&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case717" value="SELECT count(*) FROM quad_box_tbl WHERE b &gt;&gt;  box &apos;((100,200),(300,500))&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case718" value="SELECT count(*) FROM quad_box_tbl WHERE b &gt;&gt;  box &apos;((100,200),(300,500))&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case719" value="SELECT count(*) FROM quad_box_tbl WHERE b |&amp;&gt; box &apos;((100,200),(300,500))&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case720" value="SELECT count(*) FROM quad_box_tbl WHERE b |&gt;&gt; box &apos;((100,200),(300,500))&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case721" value="SELECT count(*) FROM quad_box_tbl WHERE b ~=  box &apos;((200,300),(205,305))&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case722" value="SELECT count(*) FROM quad_point_tbl WHERE box &apos;(200,200,1000,1000)&apos; @&gt; p;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case723" value="SELECT count(*) FROM quad_point_tbl WHERE box &apos;(200,200,1000,1000)&apos; @&gt; p;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case724" value="SELECT count(*) FROM quad_point_tbl WHERE box &apos;(200,200,1000,1000)&apos; @&gt; p;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case725" value="SELECT count(*) FROM quad_point_tbl WHERE p &lt;&lt; &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case726" value="SELECT count(*) FROM quad_point_tbl WHERE p &lt;&lt; &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case727" value="SELECT count(*) FROM quad_point_tbl WHERE p &lt;&lt; &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case728" value="SELECT count(*) FROM quad_point_tbl WHERE p &lt;&lt;| &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case729" value="SELECT count(*) FROM quad_point_tbl WHERE p &lt;&lt;| &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case730" value="SELECT count(*) FROM quad_point_tbl WHERE p &lt;&lt;| &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case731" value="SELECT count(*) FROM quad_point_tbl WHERE p &gt;&gt; &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case732" value="SELECT count(*) FROM quad_point_tbl WHERE p &gt;&gt; &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case733" value="SELECT count(*) FROM quad_point_tbl WHERE p &gt;&gt; &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case734" value="SELECT count(*) FROM quad_point_tbl WHERE p |&gt;&gt; &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case735" value="SELECT count(*) FROM quad_point_tbl WHERE p |&gt;&gt; &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case736" value="SELECT count(*) FROM quad_point_tbl WHERE p |&gt;&gt; &apos;(5000, 4000)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case737" value="SELECT count(*) FROM quad_point_tbl WHERE p ~= &apos;(4585, 365)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case738" value="SELECT count(*) FROM quad_point_tbl WHERE p ~= &apos;(4585, 365)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case739" value="SELECT count(*) FROM quad_point_tbl WHERE p ~= &apos;(4585, 365)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case740" value="SELECT count(*) FROM quad_poly_tbl WHERE p &amp;&amp; polygon &apos;((300,300),(400,600),(600,500),(700,200))&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case741" value="SELECT count(*) FROM quad_poly_tbl WHERE p &amp;&lt; polygon &apos;((300,300),(400,600),(600,500),(700,200))&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case742" value="SELECT count(*) FROM quad_poly_tbl WHERE p &amp;&lt;| polygon &apos;((300,300),(400,600),(600,500),(700,200))&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case743" value="SELECT count(*) FROM quad_poly_tbl WHERE p &amp;&gt; polygon &apos;((300,300),(400,600),(600,500),(700,200))&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case744" value="SELECT count(*) FROM quad_poly_tbl WHERE p &lt;&lt; polygon &apos;((300,300),(400,600),(600,500),(700,200))&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case745" value="SELECT count(*) FROM quad_poly_tbl WHERE p &lt;&lt;| polygon &apos;((300,300),(400,600),(600,500),(700,200))&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case746" value="SELECT count(*) FROM quad_poly_tbl WHERE p &gt;&gt; polygon &apos;((300,300),(400,600),(600,500),(700,200))&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case747" value="SELECT count(*) FROM quad_poly_tbl WHERE p |&amp;&gt; polygon &apos;((300,300),(400,600),(600,500),(700,200))&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case748" value="SELECT count(*) FROM quad_poly_tbl WHERE p |&gt;&gt; polygon &apos;((300,300),(400,600),(600,500),(700,200))&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case749" value="SELECT count(*) FROM quad_poly_tbl WHERE p ~= polygon &apos;((200, 300),(210, 310),(230, 290))&apos;;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case750" value="SELECT count(*) FROM radix_text_tbl WHERE t ^@	 &apos;Worth&apos;;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case751" value="SELECT count(*) FROM radix_text_tbl WHERE t ^@	 &apos;Worth&apos;;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case752" value="SELECT count(*) FROM radix_text_tbl WHERE t ^@  &apos;Worth&apos;;" db-types="PostgreSQL" />
@@ -5111,19 +4824,9 @@
     <sql-case id="select_by_postgresql_source_test_case813" value="SELECT f.f1, |/f.f1 AS sqrt_f1    FROM FLOAT8_TBL f    WHERE f.f1 &gt; &apos;0.0&apos;;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case814" value="SELECT f.f1, ||/f.f1 AS cbrt_f1 FROM FLOAT8_TBL f;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case816" value="SELECT f1 + time with time zone &apos;00:01&apos; AS &quot;Illegal&quot; FROM TIMETZ_TBL;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case817" value="SELECT f1 AS open_path, polygon( pclose(f1)) AS polygon    FROM PATH_TBL    WHERE isopen(f1);" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case818" value="SELECT f1 as &quot;date&quot;,     date_part(&apos;year&apos;, f1) AS year,     date_part(&apos;month&apos;, f1) AS month,     date_part(&apos;day&apos;, f1) AS day,     date_part(&apos;quarter&apos;, f1) AS quarter,     date_part(&apos;decade&apos;, f1) AS decade,     date_part(&apos;century&apos;, f1) AS century,     date_part(&apos;millennium&apos;, f1) AS millennium,     date_part(&apos;isoyear&apos;, f1) AS isoyear,     date_part(&apos;week&apos;, f1) AS week,     date_part(&apos;dow&apos;, f1) AS dow,     date_part(&apos;isodow&apos;, f1) AS isodow,     date_part(&apos;doy&apos;, f1) AS doy,     date_part(&apos;julian&apos;, f1) AS julian,     date_part(&apos;epoch&apos;, f1) AS epoch     FROM date_tbl;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case819" value="SELECT f1,     EXTRACT(MICROSECOND FROM f1) AS MICROSECOND,     EXTRACT(MILLISECOND FROM f1) AS MILLISECOND,     EXTRACT(SECOND FROM f1) AS SECOND,     EXTRACT(MINUTE FROM f1) AS MINUTE,     EXTRACT(HOUR FROM f1) AS HOUR,     EXTRACT(DAY FROM f1) AS DAY,     EXTRACT(MONTH FROM f1) AS MONTH,     EXTRACT(QUARTER FROM f1) AS QUARTER,     EXTRACT(YEAR FROM f1) AS YEAR,     EXTRACT(DECADE FROM f1) AS DECADE,     EXTRACT(CENTURY FROM f1) AS CENTURY,     EXTRACT(MILLENNIUM FROM f1) AS MILLENNIUM,     EXTRACT(EPOCH FROM f1) AS EPOCH     FROM INTERVAL_TBL;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case820" value="SELECT f1,     date_part(&apos;microsecond&apos;, f1) AS microsecond,     date_part(&apos;millisecond&apos;, f1) AS millisecond,     date_part(&apos;second&apos;, f1) AS second,     date_part(&apos;epoch&apos;, f1) AS epoch     FROM INTERVAL_TBL;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case821" value="SELECT f1, @-@ f1 FROM PATH_TBL;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case823" value="SELECT f1, f1::box FROM POLYGON_TBL;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case825" value="SELECT f1, f1::polygon FROM CIRCLE_TBL WHERE f1 &gt;= &apos;&lt;(0,0),1&gt;&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case826" value="SELECT f1, f1::polygon FROM PATH_TBL WHERE isclosed(f1);" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case827" value="SELECT f1, f1::polygon FROM PATH_TBL WHERE isopen(f1);" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case828" value="SELECT f1, polygon(1, f1) FROM CIRCLE_TBL WHERE f1 &gt;= &apos;&lt;(0,0),1&gt;&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case829" value="SELECT f1, polygon(10, f1) FROM CIRCLE_TBL WHERE f1 &lt; &apos;&lt;(0,0),1&gt;&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case830" value="SELECT f1, polygon(8, f1) FROM CIRCLE_TBL WHERE f1 &gt;= &apos;&lt;(0,0),1&gt;&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case831" value="SELECT f1::box 	FROM POINT_TBL;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case832" value="SELECT f1[0:1] FROM POINT_TBL;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case833" value="SELECT f1[0:] FROM POINT_TBL;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case834" value="SELECT f1[:1] FROM POINT_TBL;" db-types="PostgreSQL" />
@@ -5139,7 +4842,6 @@
     <sql-case id="select_by_postgresql_source_test_case846" value="SELECT i AS inet, host(i), text(i), family(i) FROM INET_TBL;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case847" value="SELECT i FROM inet_tbl WHERE i &lt;&lt; &apos;192.168.1.0/24&apos;::cidr ORDER BY i;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case848" value="SELECT i FROM inet_tbl WHERE i &lt;&lt; &apos;192.168.1.0/24&apos;::cidr ORDER BY i;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case850" value="SELECT i, c,   i &lt; c AS lt, i &lt;= c AS le, i = c AS eq,   i &gt;= c AS ge, i &gt; c AS gt, i &lt;&gt; c AS ne,   i &lt;&lt; c AS sb, i &lt;&lt;= c AS sbe,   i &gt;&gt; c AS sup, i &gt;&gt;= c AS spe,   i &amp;&amp; c AS ovr   FROM INET_TBL;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case851" value="SELECT i, ~i AS &quot;~i&quot; FROM inet_tbl;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case852" value="SELECT i,SUM(v::money) OVER (ORDER BY i ROWS BETWEEN CURRENT ROW AND UNBOUNDED FOLLOWING)   FROM (VALUES(1,&apos;1.10&apos;),(2,&apos;2.20&apos;),(3,NULL),(4,NULL)) t(i,v);" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case853" value="SELECT i.* FROM INT2_TBL i WHERE (i.f1 % int2 &apos;2&apos;) = int2 &apos;1&apos;;" db-types="PostgreSQL" />
@@ -5207,22 +4909,10 @@
     <sql-case id="select_by_postgresql_source_test_case915" value="SELECT jsonb_path_query_first(&apos;[{&quot;a&quot;: 1}, {&quot;a&quot;: 2}, {&quot;a&quot;: 3}, {&quot;a&quot;: 5}]&apos;, &apos;$[*].a ? (@ &gt; $min &amp;&amp; @ &lt; $max)&apos;, vars =&gt; &apos;{&quot;min&quot;: 1, &quot;max&quot;: 4}&apos;);" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case916" value="SELECT jsonb_path_query_first(&apos;[{&quot;a&quot;: 1}, {&quot;a&quot;: 2}, {&quot;a&quot;: 3}, {&quot;a&quot;: 5}]&apos;, &apos;$[*].a ? (@ &gt; $min &amp;&amp; @ &lt; $max)&apos;, vars =&gt; &apos;{&quot;min&quot;: 3, &quot;max&quot;: 4}&apos;);" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case917" value="SELECT jsonb_path_query_first(&apos;[{&quot;a&quot;: 1}, {&quot;a&quot;: 2}, {}]&apos;, &apos;strict $[*].a&apos;, silent =&gt; true);" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case921" value="SELECT l.s, b.f1 FROM LINE_TBL l, BOX_TBL b WHERE l.s ?# b.f1;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case922" value="SELECT l.s, b.f1 FROM LSEG_TBL l, BOX_TBL b WHERE l.s ?# b.f1;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case923" value="SELECT l.s, b.f1, l.s ## b.f1 FROM LINE_TBL l, BOX_TBL b;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case924" value="SELECT l.s, b.f1, l.s ## b.f1 FROM LSEG_TBL l, BOX_TBL b;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case925" value="SELECT l.s, l1.s FROM LSEG_TBL l, LINE_TBL l1 WHERE l.s ?# l1.s;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case926" value="SELECT l.s, l1.s, l.s ## l1.s FROM LINE_TBL l, LSEG_TBL l1;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case927" value="SELECT l.s, l1.s, l.s ## l1.s FROM LSEG_TBL l, LINE_TBL l1;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case928" value="SELECT l1.s, l2.s FROM LINE_TBL l1, LINE_TBL l2 WHERE l1.s ?# l2.s;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case929" value="SELECT l1.s, l2.s, l1.s # l2.s FROM LINE_TBL l1, LINE_TBL l2;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case930" value="SELECT l1.s, l2.s, l1.s # l2.s FROM LSEG_TBL l1, LSEG_TBL l2;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case931" value="SELECT l1.s, l2.s, l1.s ## l2.s FROM LSEG_TBL l1, LSEG_TBL l2;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case932" value="SELECT length(a[1]), length(a[2]) from parse_ident(&apos;&quot;xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx&quot;.yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy&apos;) as a ;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case933" value="SELECT lexeme, positions[1] from unnest(&apos;base:7 hidden:6 rebel:1 spaceship:2,33A,34B,35C,36D strike:3&apos;::tsvector);" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case934" value="SELECT m / &apos;2&apos;::money FROM money_data;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case935" value="SELECT macaddr8_set7bit(&apos;00:08:2b:01:02:03&apos;::macaddr8);" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case936" value="SELECT name, #thepath FROM iexit ORDER BY name COLLATE &quot;C&quot;, 2;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case937" value="SELECT noabort_increasing, noabort_decreasing FROM abbrev_abort_uuids ORDER BY noabort_decreasing NULLS FIRST OFFSET 20000 - 4;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case938" value="SELECT noabort_increasing, noabort_decreasing FROM abbrev_abort_uuids ORDER BY noabort_increasing OFFSET 20000 - 4;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case939" value="SELECT normalize(U&amp;&apos;\0061\0308\24D1c&apos;) = U&amp;&apos;\00E4\24D1c&apos; COLLATE &quot;C&quot; AS test_default;" db-types="PostgreSQL" />
@@ -5232,17 +4922,14 @@
     <sql-case id="select_by_postgresql_source_test_case943" value="SELECT normalize(U&amp;&apos;\00E4\24D1c&apos;, NFKD) = U&amp;&apos;\0061\0308bc&apos; COLLATE &quot;C&quot; AS test_nfkd;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case944" value="SELECT normalize(U&amp;&apos;\00E4bc&apos;, NFC) = U&amp;&apos;\00E4bc&apos; COLLATE &quot;C&quot; AS test_nfc_idem;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case945" value="SELECT not bool &apos;f&apos; AS true;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case946" value="SELECT npoints(f1) AS npoints, f1 AS polygon    FROM POLYGON_TBL;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case947" value="SELECT num, val,     val IS NFC NORMALIZED AS NFC,     val IS NFD NORMALIZED AS NFD,     val IS NFKC NORMALIZED AS NFKC,     val IS NFKD NORMALIZED AS NFKD FROM   (VALUES (1, U&amp;&apos;\00E4bc&apos;),           (2, U&amp;&apos;\0061\0308bc&apos;),           (3, U&amp;&apos;\00E4\24D1c&apos;),           (4, U&amp;&apos;\0061\0308\24D1c&apos;),           (5, &apos;&apos;)) vals (num, val) ORDER BY num;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case948" value="SELECT num_nonnulls(1, 2, NULL::text, NULL::point, &apos;&apos;, int8 &apos;9&apos;, 1.0 / NULL);" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case949" value="SELECT num_nulls(1, 2, NULL::text, NULL::point, &apos;&apos;, int8 &apos;9&apos;, 1.0 / NULL);" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case950" value="SELECT nummultirange() &amp;&amp; &apos;empty&apos;::numrange;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case951" value="SELECT nummultirange() &amp;&amp; nummultirange(numrange(1,2));" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case952" value="SELECT nummultirange() &amp;&lt; &apos;empty&apos;::numrange;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case953" value="SELECT nummultirange() &amp;&lt; nummultirange();" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case954" value="SELECT nummultirange() &amp;&lt; nummultirange(numrange(1,2));" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case955" value="SELECT nummultirange() &amp;&gt; &apos;empty&apos;::numrange;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case956" value="SELECT nummultirange() &amp;&gt; nummultirange();" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case957" value="SELECT nummultirange() &amp;&gt; nummultirange(numrange(1,2));" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case958" value="SELECT nummultirange() * nummultirange(numrange(1,2));" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case959" value="SELECT nummultirange() + nummultirange(numrange(1,2));" db-types="PostgreSQL" />
@@ -5354,39 +5041,13 @@
     <sql-case id="select_by_postgresql_source_test_case1065" value="SELECT overlay(B&apos;0101011100&apos; placing &apos;001&apos; from 11);" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case1066" value="SELECT overlay(B&apos;0101011100&apos; placing &apos;001&apos; from 20);" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case1067" value="SELECT overlay(B&apos;0101011100&apos; placing &apos;101&apos; from 6);" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case1068" value="SELECT p.* FROM POINT_TBL p    WHERE box &apos;(0,0,100,100)&apos; @&gt; p.f1;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case1069" value="SELECT p.* FROM POINT_TBL p    WHERE not box &apos;(0,0,100,100)&apos; @&gt; p.f1;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case1070" value="SELECT p.* FROM POINT_TBL p WHERE &apos;(0.0,0.0)&apos; &gt;&gt; p.f1;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case1071" value="SELECT p.* FROM POINT_TBL p WHERE &apos;(0.0,0.0)&apos; |&gt;&gt; p.f1;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case1072" value="SELECT p.* FROM POINT_TBL p WHERE p.f1 &lt;&lt; &apos;(0.0, 0.0)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case1073" value="SELECT p.* FROM POINT_TBL p WHERE p.f1 &lt;&lt;| &apos;(0.0, 0.0)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case1074" value="SELECT p.* FROM POINT_TBL p WHERE p.f1 ~= &apos;(5.1, 34.5)&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case1075" value="SELECT p.f1, b.f1, p.f1 ## b.f1 FROM POINT_TBL p, BOX_TBL b;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case1076" value="SELECT p.f1, l.s, l.s # p.f1 AS intersection    FROM LSEG_TBL l, POINT_TBL p;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case1077" value="SELECT p.f1, l.s, p.f1 ## l.s FROM POINT_TBL p, LINE_TBL l;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case1078" value="SELECT p.f1, l.s, p.f1 ## l.s FROM POINT_TBL p, LSEG_TBL l;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case1079" value="SELECT p.f1, p.f1 &lt;-&gt; point &apos;(0,0)&apos; AS dist    FROM POINT_TBL p    ORDER BY dist;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case1080" value="SELECT p.f1, p1.f1, p.f1 / p1.f1 FROM PATH_TBL p, POINT_TBL p1 WHERE p1.f1 ~= &apos;(0,0)&apos;::point;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case1081" value="SELECT p.f1, p1.f1, p.f1 / p1.f1 FROM PATH_TBL p, POINT_TBL p1 WHERE p1.f1[0] BETWEEN 1 AND 1000;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case1082" value="SELECT p.oid, p.proname, c.oid, c.conname FROM pg_proc p, pg_conversion c WHERE p.oid = c.conproc AND     (p.prorettype != &apos;int4&apos;::regtype OR p.proretset OR      p.pronargs != 6 OR      p.proargtypes[0] != &apos;int4&apos;::regtype OR      p.proargtypes[1] != &apos;int4&apos;::regtype OR      p.proargtypes[2] != &apos;cstring&apos;::regtype OR      p.proargtypes[3] != &apos;internal&apos;::regtype OR      p.proargtypes[4] != &apos;int4&apos;::regtype OR      p.proargtypes[5] != &apos;bool&apos;::regtype);" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case1083" value="SELECT p1.f1    FROM POINT_TBL p1    WHERE ishorizontal(p1.f1, point &apos;(0,0)&apos;);" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case1084" value="SELECT p1.f1    FROM POINT_TBL p1    WHERE isvertical(p1.f1, point &apos;(5.1,34.5)&apos;);" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case1085" value="SELECT p1.f1 AS point1, p2.f1 AS point2, (p1.f1 &lt;-&gt; p2.f1) AS distance    FROM POINT_TBL p1, POINT_TBL p2    WHERE (p1.f1 &lt;-&gt; p2.f1) &gt; 3 and p1.f1 &lt;&lt; p2.f1    ORDER BY distance, p1.f1[0], p2.f1[0];" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case1086" value="SELECT p1.f1 AS point1, p2.f1 AS point2, (p1.f1 &lt;-&gt; p2.f1) AS distance    FROM POINT_TBL p1, POINT_TBL p2    WHERE (p1.f1 &lt;-&gt; p2.f1) &gt; 3 and p1.f1 &lt;&lt; p2.f1 and p1.f1 |&gt;&gt; p2.f1    ORDER BY distance;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case1087" value="SELECT p1.f1 AS point1, p2.f1 AS point2, p1.f1 &lt;-&gt; p2.f1 AS dist    FROM POINT_TBL p1, POINT_TBL p2    ORDER BY dist, p1.f1[0], p2.f1[0];" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case1088" value="SELECT p1.f1, p2.f1 FROM POLYGON_TBL p1, POLYGON_TBL p2 WHERE p1.f1 &amp;&lt; p2.f1;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case1089" value="SELECT p1.f1, p2.f1 FROM POLYGON_TBL p1, POLYGON_TBL p2 WHERE p1.f1 &amp;&lt;| p2.f1;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case1090" value="SELECT p1.f1, p2.f1 FROM POLYGON_TBL p1, POLYGON_TBL p2 WHERE p1.f1 &amp;&gt; p2.f1;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case1091" value="SELECT p1.f1, p2.f1 FROM POLYGON_TBL p1, POLYGON_TBL p2 WHERE p1.f1 &lt;&lt; p2.f1;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case1092" value="SELECT p1.f1, p2.f1 FROM POLYGON_TBL p1, POLYGON_TBL p2 WHERE p1.f1 &lt;&lt;| p2.f1;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case1093" value="SELECT p1.f1, p2.f1 FROM POLYGON_TBL p1, POLYGON_TBL p2 WHERE p1.f1 &gt;&gt; p2.f1;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case1094" value="SELECT p1.f1, p2.f1 FROM POLYGON_TBL p1, POLYGON_TBL p2 WHERE p1.f1 |&amp;&gt; p2.f1;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case1095" value="SELECT p1.f1, p2.f1 FROM POLYGON_TBL p1, POLYGON_TBL p2 WHERE p1.f1 |&gt;&gt; p2.f1;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case1096" value="SELECT p1.f1, p2.f1 FROM POLYGON_TBL p1, POLYGON_TBL p2 WHERE p1.f1 ~= p2.f1;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case1097" value="SELECT p1.f1, p2.f1, line(p1.f1, p2.f1)   FROM POINT_TBL p1, POINT_TBL p2 WHERE p1.f1 &lt;&gt; p2.f1;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case1098" value="SELECT p1.f1, p2.f1, p1.f1 * p2.f1 FROM POINT_TBL p1, POINT_TBL p2 WHERE p1.f1[0] &lt; 1;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case1099" value="SELECT p1.f1, p2.f1, p1.f1 * p2.f1 FROM POINT_TBL p1, POINT_TBL p2 WHERE p1.f1[0] BETWEEN 1 AND 1000;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case1100" value="SELECT p1.f1, p2.f1, p1.f1 / p2.f1 FROM POINT_TBL p1, POINT_TBL p2 WHERE p2.f1 ~= &apos;(0,0)&apos;::point;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case1101" value="SELECT p1.f1, p2.f1, p1.f1 / p2.f1 FROM POINT_TBL p1, POINT_TBL p2 WHERE p2.f1[0] &gt; 1000;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case1102" value="SELECT p1.f1, p2.f1, p1.f1 / p2.f1 FROM POINT_TBL p1, POINT_TBL p2 WHERE p2.f1[0] BETWEEN 1 AND 1000;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case1103" value="SELECT p1.oid, p1.amname, p2.oid, p2.proname FROM pg_am AS p1, pg_proc AS p2 WHERE p2.oid = p1.amhandler AND p1.amtype = &apos;i&apos; AND     (p2.prorettype != &apos;index_am_handler&apos;::regtype      OR p2.proretset      OR p2.pronargs != 1      OR p2.proargtypes[0] != &apos;internal&apos;::regtype);" db-types="PostgreSQL" />
@@ -5447,7 +5108,6 @@
     <sql-case id="select_by_postgresql_source_test_case1158" value="SELECT power(float8 &apos;inf&apos;, float8 &apos;2&apos;);" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case1159" value="SELECT power(float8 &apos;inf&apos;, float8 &apos;inf&apos;);" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case1160" value="SELECT q1, float8(q1) FROM INT8_TBL;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case1161" value="SELECT q1, q1 &lt;&lt; 2 AS &quot;shl&quot;, q1 &gt;&gt; 3 AS &quot;shr&quot; FROM INT8_TBL;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case1162" value="SELECT q1, q2, q1 &amp; q2 AS &quot;and&quot;, q1 | q2 AS &quot;or&quot;, q1 # q2 AS &quot;xor&quot;, ~q1 AS &quot;not&quot; FROM INT8_TBL;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case1164" value="SELECT q2, float8(q2) FROM INT8_TBL;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case1165" value="SELECT range_merge(nummultirange(numrange(1,2)));" db-types="PostgreSQL" />
@@ -5458,8 +5118,6 @@
     <sql-case id="select_by_postgresql_source_test_case1182" value="SELECT reloptions FROM pg_class WHERE oid = :toast_oid;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case1183" value="SELECT reltoastrelid as toast_oid 	FROM pg_class WHERE oid = &apos;reloptions_test&apos;::regclass \gset SELECT reloptions FROM pg_class WHERE oid = :toast_oid;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case1184" value="SELECT row_to_json(x.*) FROM J1_TBL JOIN J2_TBL USING (i) AS x WHERE J1_TBL.t = &apos;one&apos;;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case1185" value="SELECT s, @-@ s FROM LSEG_TBL;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case1186" value="SELECT s, s::point FROM LSEG_TBL;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case1187" value="SELECT set_bit(&apos;\x1234567890abcdef00&apos;::bytea, 43, 0);" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case1188" value="SELECT set_bit(&apos;\x1234567890abcdef00&apos;::bytea, 99, 0);" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case1189" value="SELECT set_bit(B&apos;0101011000100100&apos;, 15, 1);" db-types="PostgreSQL" />
@@ -5559,8 +5217,6 @@
     <sql-case id="select_by_postgresql_source_test_case1283" value="SELECT v as value, hashinet(v)::bit(32) as standard,        hashinetextended(v, 0)::bit(32) as extended0,        hashinetextended(v, 1)::bit(32) as extended1 FROM   (VALUES (NULL::inet), (&apos;192.168.100.128/25&apos;), (&apos;192.168.100.0/8&apos;),         (&apos;172.168.10.126/16&apos;), (&apos;172.18.103.126/24&apos;), (&apos;192.188.13.16/32&apos;)) x(v) WHERE  hashinet(v)::bit(32) != hashinetextended(v, 0)::bit(32)        OR hashinet(v)::bit(32) = hashinetextended(v, 1)::bit(32);" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case1284" value="SELECT v as value, hashmacaddr(v)::bit(32) as standard,        hashmacaddrextended(v, 0)::bit(32) as extended0,        hashmacaddrextended(v, 1)::bit(32) as extended1 FROM   (VALUES (NULL::macaddr), (&apos;08:00:2b:01:02:04&apos;), (&apos;08:00:2b:01:02:04&apos;),         (&apos;e2:7f:51:3e:70:49&apos;), (&apos;d6:a9:4a:78:1c:d5&apos;),         (&apos;ea:29:b1:5e:1f:a5&apos;)) x(v) WHERE  hashmacaddr(v)::bit(32) != hashmacaddrextended(v, 0)::bit(32)        OR hashmacaddr(v)::bit(32) = hashmacaddrextended(v, 1)::bit(32);" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case1285" value="SELECT v as value, hashmacaddr8(v)::bit(32) as standard,        hashmacaddr8extended(v, 0)::bit(32) as extended0,        hashmacaddr8extended(v, 1)::bit(32) as extended1 FROM   (VALUES (NULL::macaddr8), (&apos;08:00:2b:01:02:04:36:49&apos;),         (&apos;08:00:2b:01:02:04:f0:e8&apos;), (&apos;e2:7f:51:3e:70:49:16:29&apos;),         (&apos;d6:a9:4a:78:1c:d5:47:32&apos;), (&apos;ea:29:b1:5e:1f:a5&apos;)) x(v) WHERE  hashmacaddr8(v)::bit(32) != hashmacaddr8extended(v, 0)::bit(32)        OR hashmacaddr8(v)::bit(32) = hashmacaddr8extended(v, 1)::bit(32);" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case1286" value="SELECT v, v &gt;&gt; 1 AS vsr, v &lt;&lt; 1 AS vsl        FROM VARBIT_SHIFT_TABLE ;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case1287" value="SELECT v, v &gt;&gt; 8 AS vsr8, v &lt;&lt; 8 AS vsl8        FROM VARBIT_SHIFT_TABLE ;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case1288" value="SELECT xmlelement(name foo, bytea &apos;bar&apos;);" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case1289" value="SELECT xmlelement(name foo, bytea &apos;bar&apos;);" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case1290" value="SELECT ||/ float8 &apos;27&apos; AS three;" db-types="PostgreSQL" />
@@ -5936,23 +5592,12 @@
     <sql-case id="low_create_by_postgresql_source_test_case301" value="create function wait_for_stats() returns void as $$ declare   start_time timestamptz := clock_timestamp();   updated1 bool;   updated2 bool;   updated3 bool;   updated4 bool; begin   for i in 1 .. 300 loop     SELECT (st.seq_scan &gt;= pr.seq_scan + 1) INTO updated1       FROM pg_stat_user_tables AS st, pg_class AS cl, prevstats AS pr      WHERE st.relname=&apos;tenk2&apos; AND cl.relname=&apos;tenk2&apos;;     SELECT (st.idx_scan &gt;= pr.idx_scan + 1) INTO updated2       FROM pg_stat_user_tables AS st, pg_class AS cl, prevstats AS pr      WHERE st.relname=&apos;tenk2&apos; AND cl.relname=&apos;tenk2&apos;;     SELECT (n_tup_ins &gt; 0) INTO updated3       FROM pg_stat_user_tables WHERE relname=&apos;trunc_stats_test4&apos;;     SELECT (pr.snap_ts &lt; pg_stat_get_snapshot_timestamp()) INTO updated4       FROM prevstats AS pr;     exit when updated1 and updated2 and updated3 and updated4;     perform pg_sleep_for(&apos;100 milliseconds&apos;);     perform pg_stat_clear_snapshot();   end loop;   raise log &apos;wait_for_stats delayed % seconds&apos;,     extract(epoch from clock_timestamp() - start_time); end $$ language plpgsql;" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case302" value="create function zero_divide() returns int as $$ declare v int := 0; begin   return 10 / v; end; $$ language plpgsql;" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case303" value="create index on test_range_elem using spgist(int4range(i,i+10));" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case307" value="create operator &lt; (     procedure = int8alias1lt,     leftarg = int8alias1, rightarg = int8alias1 );" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case308" value="create operator &lt;&gt; (   leftarg    = myint,   rightarg   = myint,   commutator = &lt;&gt;,   negator    = =,   procedure  = myintne,   restrict   = eqsel,   join       = eqjoinsel,   merges );" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case309" value="create operator = (     procedure = int8alias1eq,     leftarg = int8, rightarg = int8alias1,     restrict = eqsel, join = eqjoinsel,     merges );" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case310" value="create operator = (     procedure = int8alias1eq,     leftarg = int8alias1, rightarg = int8alias1,     commutator = =,     restrict = eqsel, join = eqjoinsel,     merges );" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case311" value="create operator = (     procedure = int8alias1eq,     leftarg = int8alias1, rightarg = int8alias2,     restrict = eqsel, join = eqjoinsel,     merges );" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case312" value="create operator = (     procedure = int8alias2eq,     leftarg = int8alias2, rightarg = int8alias2,     commutator = =,     restrict = eqsel, join = eqjoinsel,     merges );" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case313" value="create operator = (   leftarg    = myint,   rightarg   = myint,   commutator = =,   negator    = &lt;&gt;,   procedure  = myinteq,   restrict   = eqsel,   join       = eqjoinsel,   merges );" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case314" value="create operator = (procedure=bogus_int8_text_eq, leftarg=int8, rightarg=text);" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case315" value="create operator === (    leftarg = int4,    rightarg = int4,    procedure = int4eq,    commutator = ===,    hashes );" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case316" value="create operator alter1.=(procedure = alter1.same, leftarg  = alter1.ctype, rightarg = alter1.ctype);" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case317" value="create operator class alter1.ctype_hash_ops default for type alter1.ctype using hash as   operator 1 alter1.=(alter1.ctype, alter1.ctype);" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case318" value="create operator class custom_opclass for type int4 using hash as operator 1 = , function 2 dummy_hashint4(int4, int8);" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case319" value="create operator class myint_ops default for type myint using hash as   operator    1   =  (myint, myint),   function    1   myinthash(myint);" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case320" value="create operator class part_test_int4_ops for type int4 using hash as operator 1 =, function 2 part_hashint4_noop(int4, int8);" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case321" value="create operator class part_test_int4_ops2 for type int4 using hash as operator 1 ===, function 2 part_hashint4_noop(int4, int8);" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case322" value="create operator class part_test_text_ops for type text using hash as operator 1 =, function 2 part_hashtext_length(text, int8);" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case323" value="create operator pg_temp.@@ (leftarg = int4, rightarg = int4, procedure = int4mi);" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case324" value="create or replace function array_elem_check(int) returns int as $$ declare   x orderedpair := &apos;{1,2}&apos;; begin   x[2] := $1;   return x[2]; end$$ language plpgsql;" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case325" value="create or replace function array_elem_check(numeric) returns numeric as $$ declare   x mynums2; begin   x[1] := $1;   return x[1]; end$$ language plpgsql;" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case326" value="create or replace function array_elem_check(numeric) returns numeric as $$ declare   x mynums; begin   x[1] := $1;   return x[1]; end$$ language plpgsql;" db-types="PostgreSQL" />
@@ -6180,15 +5825,10 @@
     <sql-case id="low_create_by_postgresql_source_test_case548" value="create temporary view vw_ord as select * from rows from(unnest(array[10,20],array[&apos;foo&apos;,&apos;bar&apos;]), generate_series(1,2)) as z(a,b,c);" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case549" value="create temporary view vw_ord as select * from rows from(unnest(array[10,20],array[&apos;foo&apos;,&apos;bar&apos;],array[1.0])) as z(a,b,c);" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case550" value="create temporary view vw_rngfunc as   select * from rows from(getrngfunc9(1),                       getrngfunc7(1) AS (rngfuncid int, rngfuncsubid int, rngfuncname text),                       getrngfunc1(1))                 with ordinality as t1(a,b,c,d,e,f,g,n);" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case551" value="create type cantcompare as (p point, r float8);" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case552" value="create type cashrange as range (subtype = money);" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case553" value="create type ct1 as (f1 money);" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case554" value="create type testtype4 as (a int, b point);" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case555" value="create type testtype6 as (a int, b point);" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case556" value="create type testtype6 as (a int, b point);" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case558" value="create view insertconflictv as   select * from insertconflict with cascaded check option;" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case559" value="create view tt201v as select   extract(day from now()) as extr,   (now(), &apos;1 day&apos;::interval) overlaps     (current_timestamp(2), &apos;1 day&apos;::interval) as o,   &apos;foo&apos; is normalized isn,   &apos;foo&apos; is nfkc normalized isnn,   normalize(&apos;foo&apos;) as n,   normalize(&apos;foo&apos;, nfkd) as nfkd,   overlay(&apos;foo&apos; placing &apos;bar&apos; from 2) as ovl,   overlay(&apos;foo&apos; placing &apos;bar&apos; from 2 for 3) as ovl2,   position(&apos;foo&apos; in &apos;foobar&apos;) as p,   substring(&apos;foo&apos; from 2 for 3) as s,   substring(&apos;foo&apos; similar &apos;f&apos; escape &apos;#&apos;) as ss,   substring(&apos;foo&apos; from &apos;oo&apos;) as ssf   trim(&apos; &apos; from &apos; foo &apos;) as bt,   trim(leading &apos; &apos; from &apos; foo &apos;) as lt,   trim(trailing &apos; foo &apos;) as rt,   trim(E&apos;\\000&apos;::bytea from E&apos;\\000Tom\\000&apos;::bytea) as btb,   trim(leading E&apos;\\000&apos;::bytea from E&apos;\\000Tom\\000&apos;::bytea) as ltb,   trim(trailing E&apos;\\000&apos;::bytea from E&apos;\\000Tom\\000&apos;::bytea) as rtb;" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case560" value="create view tt26v as select x + y + z as c1,        (x * y) + z as c2,        x + (y * z) as c3,        (x + y) * z as c4,        x * (y + z) as c5,        x + (y + z) as c6,        x + (y # z) as c7,        (x &gt; y) AND (y &gt; z OR x &gt; z) as c8,        (x &gt; y) OR (y &gt; z AND NOT (x &gt; z)) as c9,        (x,y) &lt;&gt; ALL (values(1,2),(3,4)) as c10,        (x,y) &lt;= ANY (values(1,2),(3,4)) as c11 from (values(1,2,3)) v(x,y,z);" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case561" value="create view view_of_joins_2d as select * from (tbl1 join tbl1a using (a) as x) as y;" db-types="PostgreSQL" />
     <sql-case id="low_delete_by_postgresql_source_test_case1" value="delete from;" db-types="PostgreSQL" />
     <sql-case id="low_do_by_postgresql_source_test_case1" value="do $$   declare r integer;   begin     select dfunc(a=&gt;-- comment       1) into r;     raise info &apos;r = %&apos;, r;   end; $$;" db-types="PostgreSQL" />
@@ -6394,8 +6034,6 @@
     <sql-case id="low_insert_by_postgresql_source_test_case21" value="insert into domdeftest default values;" db-types="PostgreSQL" />
     <sql-case id="low_insert_by_postgresql_source_test_case22" value="insert into domdeftest default values;" db-types="PostgreSQL" />
     <sql-case id="low_insert_by_postgresql_source_test_case23" value="insert into domnotnull default values;" db-types="PostgreSQL" />
-    <sql-case id="low_insert_by_postgresql_source_test_case35" value="insert into gist_point_tbl (id, p) select g+100000, point(g*10+1, g*10+1) from generate_series(1, 10000) g;" db-types="PostgreSQL" />
-    <sql-case id="low_insert_by_postgresql_source_test_case36" value="insert into gist_point_tbl (id, p) select g,        point(g*10, g*10) from generate_series(1, 10000) g;" db-types="PostgreSQL" />
     <sql-case id="low_insert_by_postgresql_source_test_case38" value="insert into gstest4 values (1,1,b&apos;0000&apos;,&apos;1&apos;), (2,2,b&apos;0001&apos;,&apos;1&apos;),        (3,4,b&apos;0010&apos;,&apos;2&apos;), (4,8,b&apos;0011&apos;,&apos;2&apos;),        (5,16,b&apos;0000&apos;,&apos;2&apos;), (6,32,b&apos;0001&apos;,&apos;2&apos;),        (7,64,b&apos;0010&apos;,&apos;1&apos;), (8,128,b&apos;0011&apos;,&apos;1&apos;);" db-types="PostgreSQL" />
     <sql-case id="low_insert_by_postgresql_source_test_case39" value="insert into i8mr_array values (42, array[int8multirange(int8range(1,10)), int8multirange(int8range(2,20))]);" db-types="PostgreSQL" />
     <sql-case id="low_insert_by_postgresql_source_test_case40" value="insert into i8r_array values (42, array[int8range(1,10), int8range(2,20)]);" db-types="PostgreSQL" />
@@ -6415,9 +6053,6 @@
     <sql-case id="low_insert_by_postgresql_source_test_case68" value="insert into public.brintest_multi (float4col) values (real &apos;nan&apos;);" db-types="PostgreSQL" />
     <sql-case id="low_insert_by_postgresql_source_test_case69" value="insert into public.brintest_multi (float8col) values (real &apos;nan&apos;);" db-types="PostgreSQL" />
     <sql-case id="low_insert_by_postgresql_source_test_case70" value="insert into reservations values (1, daterange(&apos;2018-07-01&apos;, &apos;2018-07-07&apos;)), (1, daterange(&apos;2018-07-07&apos;, &apos;2018-07-14&apos;)), (1, daterange(&apos;2018-07-20&apos;, &apos;2018-07-22&apos;)), (2, daterange(&apos;2018-07-01&apos;, &apos;2018-07-03&apos;)), (3, NULL), (4, NULL), (4, NULL), (5, NULL), (5, daterange(&apos;2018-07-01&apos;, &apos;2018-07-03&apos;)), (6, daterange(&apos;2018-07-01&apos;, &apos;2018-07-07&apos;)), (6, daterange(&apos;2018-07-05&apos;, &apos;2018-07-10&apos;)), (7, daterange(&apos;2018-07-01&apos;, &apos;2018-07-07&apos;)), (7, daterange(&apos;2018-07-07&apos;, &apos;2018-07-14&apos;)), (8, &apos;empty&apos;::daterange) ;" db-types="PostgreSQL" />
-    <sql-case id="low_insert_by_postgresql_source_test_case90" value="insert into spgist_point_tbl (id, p) select g+100000, point(g*10+1, g*10+1) from generate_series(1, 10000) g;" db-types="PostgreSQL" />
-    <sql-case id="low_insert_by_postgresql_source_test_case91" value="insert into spgist_point_tbl (id, p) select g,      point(g*10, g*10) from generate_series(1, 10000) g;" db-types="PostgreSQL" />
-    <sql-case id="low_insert_by_postgresql_source_test_case92" value="insert into spgist_point_tbl (id, p) select g, point(g*10, g*10) from generate_series(1, 10) g;" db-types="PostgreSQL" />
     <sql-case id="low_insert_by_postgresql_source_test_case94" value="insert into spgist_text_tbl (id, t) select g, &apos;f&apos; || repeat(&apos;o&apos;, 100) || g from generate_series(1, 10000) g union all select g, &apos;baaaaaaaaaaaaaar&apos; || g from generate_series(1, 1000) g;" db-types="PostgreSQL" />
     <sql-case id="low_insert_by_postgresql_source_test_case105" value="insert into test_mode select 1 from generate_series(1,1000) union all select 2;" db-types="PostgreSQL" />
     <sql-case id="low_insert_by_postgresql_source_test_case107" value="insert into test_multirange_gist select int4multirange(int4range(NULL, g*10, &apos;(]&apos;), int4range(g*10, g*20, &apos;(]&apos;)) from generate_series(1,100) g;" db-types="PostgreSQL" />
@@ -6466,8 +6101,6 @@
     <sql-case id="low_select_by_postgresql_source_test_case20" value="select (row(1, 2.0)).*;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case21" value="select (select (a.*)::text) from view_a a;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case22" value="select (w).size = :segsize as ok from (select pg_ls_waldir() w) ss where length((w).name) = 24 limit 1;" db-types="PostgreSQL" />
-    <sql-case id="low_select_by_postgresql_source_test_case23" value="select * from array_to_set(array[&apos;one&apos;, &apos;two&apos;]) as t(f1 point,f2 text);" db-types="PostgreSQL" />
-    <sql-case id="low_select_by_postgresql_source_test_case24" value="select * from array_to_set(array[&apos;one&apos;, &apos;two&apos;]) as t(f1 point,f2 text);" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case25" value="select * from duplic(int4range(42,49));" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case30" value="select * from inoutparam_succeed(int4range(1,2));" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case31" value="select * from int8_tbl i where i.* in (values(i.*::int8_tbl));" db-types="PostgreSQL" />
@@ -6539,23 +6172,18 @@
     <sql-case id="low_select_by_postgresql_source_test_case97" value="select array(select row(v.a,s1.*) from (select two,four, count(*) from onek group by grouping sets(two,four) order by two,four) s1) from (values (1),(2)) v(a);" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case98" value="select conname, obj_description(oid, &apos;pg_constraint&apos;) as desc   from pg_constraint where conname like &apos;at_partitioned%&apos;   order by conname;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case99" value="select conname, obj_description(oid, &apos;pg_constraint&apos;) as desc   from pg_constraint where conname like &apos;at_partitioned%&apos;   order by conname;" db-types="PostgreSQL" />
-    <sql-case id="low_select_by_postgresql_source_test_case100" value="select count(*)   from (values (point(5,5)),(point(8,8)),(point(12,12))) v(p)  where exists(select * from spgist_box_tbl b where b.b &amp;&amp; box(v.p,v.p));" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case101" value="select count(*) from test_multirange_gist where mr &amp;&amp; &apos;empty&apos;::int4range;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case102" value="select count(*) from test_multirange_gist where mr &amp;&amp; &apos;empty&apos;::int4range;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case103" value="select count(*) from test_multirange_gist where mr &amp;&amp; int4range(10,20);" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case104" value="select count(*) from test_multirange_gist where mr &amp;&amp; int4range(10,20);" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case105" value="select count(*) from test_multirange_gist where mr &amp;&lt; &apos;empty&apos;::int4range;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case106" value="select count(*) from test_multirange_gist where mr &amp;&lt; &apos;empty&apos;::int4range;" db-types="PostgreSQL" />
-    <sql-case id="low_select_by_postgresql_source_test_case107" value="select count(*) from test_multirange_gist where mr &amp;&lt; &apos;{}&apos;::int4multirange;" db-types="PostgreSQL" />
-    <sql-case id="low_select_by_postgresql_source_test_case108" value="select count(*) from test_multirange_gist where mr &amp;&lt; &apos;{}&apos;::int4multirange;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case109" value="select count(*) from test_multirange_gist where mr &amp;&lt; int4multirange(int4range(100,200), int4range(400,500));" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case110" value="select count(*) from test_multirange_gist where mr &amp;&lt; int4multirange(int4range(100,200), int4range(400,500));" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case111" value="select count(*) from test_multirange_gist where mr &amp;&lt; int4range(100,500);" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case112" value="select count(*) from test_multirange_gist where mr &amp;&lt; int4range(100,500);" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case113" value="select count(*) from test_multirange_gist where mr &amp;&gt; &apos;empty&apos;::int4range;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case114" value="select count(*) from test_multirange_gist where mr &amp;&gt; &apos;empty&apos;::int4range;" db-types="PostgreSQL" />
-    <sql-case id="low_select_by_postgresql_source_test_case115" value="select count(*) from test_multirange_gist where mr &amp;&gt; &apos;{}&apos;::int4multirange;" db-types="PostgreSQL" />
-    <sql-case id="low_select_by_postgresql_source_test_case116" value="select count(*) from test_multirange_gist where mr &amp;&gt; &apos;{}&apos;::int4multirange;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case117" value="select count(*) from test_multirange_gist where mr &amp;&gt; int4multirange(int4range(100,200), int4range(400,500));" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case118" value="select count(*) from test_multirange_gist where mr &amp;&gt; int4multirange(int4range(100,200), int4range(400,500));" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case119" value="select count(*) from test_multirange_gist where mr &amp;&gt; int4range(100,500);" db-types="PostgreSQL" />
@@ -6568,8 +6196,6 @@
     <sql-case id="low_select_by_postgresql_source_test_case126" value="select count(*) from test_multirange_gist where mr -|- int4range(100,500);" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case127" value="select count(*) from test_multirange_gist where mr &lt;&lt; &apos;empty&apos;::int4range;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case128" value="select count(*) from test_multirange_gist where mr &lt;&lt; &apos;empty&apos;::int4range;" db-types="PostgreSQL" />
-    <sql-case id="low_select_by_postgresql_source_test_case129" value="select count(*) from test_multirange_gist where mr &lt;&lt; &apos;{}&apos;::int4multirange;" db-types="PostgreSQL" />
-    <sql-case id="low_select_by_postgresql_source_test_case130" value="select count(*) from test_multirange_gist where mr &lt;&lt; &apos;{}&apos;::int4multirange;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case131" value="select count(*) from test_multirange_gist where mr &lt;&lt; int4multirange(int4range(100,200), int4range(400,500));" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case132" value="select count(*) from test_multirange_gist where mr &lt;&lt; int4multirange(int4range(100,200), int4range(400,500));" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case133" value="select count(*) from test_multirange_gist where mr &lt;&lt; int4range(100,500);" db-types="PostgreSQL" />
@@ -6580,8 +6206,6 @@
     <sql-case id="low_select_by_postgresql_source_test_case138" value="select count(*) from test_multirange_gist where mr = int4multirange(int4range(10,20), int4range(30,40), int4range(50,60));" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case139" value="select count(*) from test_multirange_gist where mr &gt;&gt; &apos;empty&apos;::int4range;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case140" value="select count(*) from test_multirange_gist where mr &gt;&gt; &apos;empty&apos;::int4range;" db-types="PostgreSQL" />
-    <sql-case id="low_select_by_postgresql_source_test_case141" value="select count(*) from test_multirange_gist where mr &gt;&gt; &apos;{}&apos;::int4multirange;" db-types="PostgreSQL" />
-    <sql-case id="low_select_by_postgresql_source_test_case142" value="select count(*) from test_multirange_gist where mr &gt;&gt; &apos;{}&apos;::int4multirange;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case143" value="select count(*) from test_multirange_gist where mr &gt;&gt; int4multirange(int4range(100,200), int4range(400,500));" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case144" value="select count(*) from test_multirange_gist where mr &gt;&gt; int4multirange(int4range(100,200), int4range(400,500));" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case145" value="select count(*) from test_multirange_gist where mr &gt;&gt; int4range(100,500);" db-types="PostgreSQL" />
@@ -6709,7 +6333,6 @@
     <sql-case id="low_select_by_postgresql_source_test_case268" value="select f1(int4range(42, 49), 11, 2::smallint) as int, f1(float8range(4.5, 7.8), 7.8, 11::real) as num;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case269" value="select f1(int4range(42, 49), 11, 4.5) as fail;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case270" value="select f1(int4range(42, 49), array[11]) as int, f1(float8range(4.5, 7.8), array[7]) as num;" db-types="PostgreSQL" />
-    <sql-case id="low_select_by_postgresql_source_test_case271" value="select f1(point(3,4));" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case272" value="select f1, f1[1], (f1[1])[1] from dposintatable;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case273" value="select f1, f1[1], (f1[2])[1] from dposintatable;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case279" value="select format(&apos;create index on gexec_test(%I)&apos;, attname) from pg_attribute where attrelid = &apos;gexec_test&apos;::regclass and attnum &gt; 0 order by attnum \gexec select &apos;select 1 as ones&apos;, &apos;select x.y, x.y*2 as double from generate_series(1,4) as x(y)&apos; union all select &apos;drop table gexec_test&apos;, NULL union all select &apos;drop table gexec_test&apos;, &apos;select &apos;&apos;2000-01-01&apos;&apos;::date as party_over&apos; \gexec \unset FETCH_COUNT prepare q as select array_to_string(array_agg(repeat(&apos;x&apos;,2*n)),E&apos;\n&apos;) as &quot;ab c&quot;, array_to_string(array_agg(repeat(&apos;y&apos;,20-2*n)),E&apos;\n&apos;) as &quot;a bc&quot; from generate_series(1,10) as n(n) group by n&gt;1 order by n&gt;1;" db-types="PostgreSQL" />
@@ -6768,11 +6391,9 @@
     <sql-case id="low_select_by_postgresql_source_test_case334" value="select multirangetypes_sql(int4multirange(int4range(1,10)), ARRAY[2,20]);" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case335" value="select multirangetypes_sql(nummultirange(numrange(1,10)), ARRAY[2,20]);" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case336" value="select nummultirange() &lt;&lt; &apos;empty&apos;::numrange;" db-types="PostgreSQL" />
-    <sql-case id="low_select_by_postgresql_source_test_case337" value="select nummultirange() &lt;&lt; nummultirange();" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case338" value="select nummultirange() &lt;&lt; nummultirange(numrange(1,2));" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case339" value="select nummultirange() &lt;&lt; numrange(1,2);" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case340" value="select nummultirange() &gt;&gt; &apos;empty&apos;::numrange;" db-types="PostgreSQL" />
-    <sql-case id="low_select_by_postgresql_source_test_case341" value="select nummultirange() &gt;&gt; nummultirange();" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case342" value="select nummultirange() &gt;&gt; nummultirange(numrange(1,2));" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case343" value="select nummultirange() &gt;&gt; numrange(1,2);" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case344" value="select nummultirange(numrange(-4,-2), numrange(0,2)) &lt;&lt; numrange(3,6);" db-types="PostgreSQL" />
@@ -6817,7 +6438,6 @@
     <sql-case id="low_select_by_postgresql_source_test_case392" value="select polyf(multirange(int4range(42, 49)), 11, 2::smallint) as int, polyf(multirange(float8range(4.5, 7.8)), 7.8, 11::real) as num;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case393" value="select polyf(multirange(int4range(42, 49)), 11, 4.5) as fail;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case394" value="select polyf(multirange(int4range(42, 49)), array[11]) as int, polyf(multirange(float8range(4.5, 7.8)), array[7]) as num;" db-types="PostgreSQL" />
-    <sql-case id="low_select_by_postgresql_source_test_case395" value="select polyf(point(3,4));" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case396" value="select q1, float8(count(*)) / (select count(*) from int8_tbl) from int8_tbl group by q1 order by q1;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case397" value="select r, r is null as isnull, r is not null as isnotnull from (values (1,row(1,2)), (1,row(null,null)), (1,null),              (null,row(1,2)), (null,row(null,null)), (null,null) ) r(a,b);" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case398" value="select range_add_bounds(int4multirange(int4range(1, 17)));" db-types="PostgreSQL" />
@@ -6882,24 +6502,16 @@
     <sql-case id="low_select_by_postgresql_source_test_case457" value="select x from (values (array[100::money]), (array[200::money])) _(x) union select x from (values (array[100::money]), (array[300::money])) _(x);" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case458" value="select x from (values (row(100::money)), (row(200::money))) _(x) union select x from (values (row(100::money)), (row(300::money))) _(x);" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case459" value="select x from (values (row(100::money)::ct1), (row(200::money)::ct1)) _(x) union select x from (values (row(100::money)::ct1), (row(300::money)::ct1)) _(x);" db-types="PostgreSQL" />
-    <sql-case id="low_select_by_postgresql_source_test_case460" value="select x, pg_typeof(x) from anyctest(11, &apos;{1,2}&apos;, point(1,2), &apos;(3,4)&apos;) x;" db-types="PostgreSQL" />
-    <sql-case id="low_select_by_postgresql_source_test_case461" value="select x, pg_typeof(x) from anyctest(11, array[1, 2], point(1,2), point(3,4)) x;" db-types="PostgreSQL" />
-    <sql-case id="low_select_by_postgresql_source_test_case462" value="select x, pg_typeof(x) from anyctest(11, array[point(1,2)]) x;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case463" value="select x, pg_typeof(x) from anyctest(11, int4range(4,7)) x;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case464" value="select x, pg_typeof(x) from anyctest(11, multirange(int4range(4,7))) x;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case465" value="select x, pg_typeof(x) from anyctest(11, multirange(numrange(4,7))) x;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case466" value="select x, pg_typeof(x) from anyctest(11, numrange(4,7)) x;" db-types="PostgreSQL" />
-    <sql-case id="low_select_by_postgresql_source_test_case467" value="select x, pg_typeof(x) from anyctest(11, point(1,2)) x;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case468" value="select x, pg_typeof(x) from anyctest(11.2, int4range(4,7)) x;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case469" value="select x, pg_typeof(x) from anyctest(11.2, multirange(int4range(4,7))) x;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case470" value="select x, pg_typeof(x) from anyctest(int4range(11,12), int4range(4,7)) x;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case471" value="select x, pg_typeof(x) from anyctest(int4range(11,12), numrange(4,7)) x;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case472" value="select x, pg_typeof(x) from anyctest(multirange(int4range(11,12)), multirange(int4range(4,7))) x;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case473" value="select x, pg_typeof(x) from anyctest(multirange(int4range(11,12)), multirange(numrange(4,7))) x;" db-types="PostgreSQL" />
-    <sql-case id="low_select_by_postgresql_source_test_case474" value="select x, pg_typeof(x), y, pg_typeof(y)   from f1(11, &apos;{1,2}&apos;, point(1,2), &apos;(3,4)&apos;);" db-types="PostgreSQL" />
-    <sql-case id="low_select_by_postgresql_source_test_case475" value="select x, pg_typeof(x), y, pg_typeof(y)   from f1(11, array[1, 2], point(1,2), point(3,4));" db-types="PostgreSQL" />
-    <sql-case id="low_select_by_postgresql_source_test_case476" value="select x, pg_typeof(x), y, pg_typeof(y)   from polyf(11, &apos;{1,2}&apos;, point(1,2), &apos;(3,4)&apos;);" db-types="PostgreSQL" />
-    <sql-case id="low_select_by_postgresql_source_test_case477" value="select x, pg_typeof(x), y, pg_typeof(y)   from polyf(11, array[1, 2], point(1,2), point(3,4));" db-types="PostgreSQL" />
     <sql-case id="low_short_by_postgresql_source_test_case1" value="short select * from basictest;" db-types="PostgreSQL" />
     <sql-case id="low_still_by_postgresql_source_test_case1" value="still not okay \g select     42     (bogus   forty_two;" db-types="PostgreSQL" />
     <sql-case id="low_test1_by_postgresql_source_test_case1" value="test1 CREATE FUNCTION fun_instead_of_insert_tbl() RETURNS trigger AS $$ BEGIN   INSERT INTO instead_of_insert_tbl (name) VALUES (NEW.str);   RETURN NULL; END; $$ LANGUAGE plpgsql;" db-types="PostgreSQL" />

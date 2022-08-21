@@ -20,21 +20,24 @@ grammar MigrationDistSQLStatement;
 import Symbol, RALStatement, RDLStatement, RQLStatement;
 
 execute
-    : (showScalingList
-    | showScalingStatus
-    | startScaling
-    | stopScaling
-    | dropScaling
-    | resetScaling
-    | checkScaling
-    | showScalingCheckAlgorithms
-    | stopScalingSourceWriting
-    | restoreScalingSourceWriting
-    | applyScaling
+    : (showMigrationList
+    | showMigrationStatus
+    | migrateTable
+    | startMigration
+    | stopMigration
+    | cleanMigration
+    | resetMigration
+    | checkMigration
+    | showMigrationCheckAlgorithms
+    | stopMigrationSourceWriting
+    | restoreMigrationSourceWriting
+    | applyMigration
     | showShardingScalingRules
     | createShardingScalingRule
     | dropShardingScalingRule
     | enableShardingScalingRule
     | disableShardingScalingRule
+    | addMigrationSourceResource
+    | dropMigrationSourceResource
     ) SEMI?
     ;

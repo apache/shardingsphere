@@ -29,7 +29,7 @@ import java.util.Map;
 @Getter
 public class StorageContainerConfiguration {
     
-    private final String[] commands;
+    private final String containerCommand;
     
     private final Map<String, String> containerEnvironments;
     

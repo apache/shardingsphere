@@ -19,50 +19,122 @@ grammar RALStatement;
 
 import BaseRule;
 
-showScalingList
-    : SHOW SCALING LIST
+migrateTable
+    : MIGRATE TABLE sourceTableName INTO targetTableName
     ;
 
-showScalingStatus
-    : SHOW SCALING STATUS jobId
+showMigrationList
+    : SHOW MIGRATION LIST
     ;
 
-startScaling
-    : START SCALING jobId
+showMigrationStatus
+    : SHOW MIGRATION STATUS jobId
     ;
 
-stopScaling
-    : STOP SCALING jobId
+startMigration
+    : START MIGRATION jobId
     ;
 
-dropScaling
-    : DROP SCALING jobId
+stopMigration
+    : STOP MIGRATION jobId
     ;
 
-resetScaling
-    : RESET SCALING jobId
+cleanMigration
+    : CLEAN MIGRATION jobId
     ;
 
-checkScaling
-    : CHECK SCALING jobId (BY algorithmDefinition)?
+resetMigration
+    : RESET MIGRATION jobId
     ;
 
-showScalingCheckAlgorithms
-    : SHOW SCALING CHECK ALGORITHMS
+checkMigration
+    : CHECK MIGRATION jobId (BY algorithmDefinition)?
     ;
 
-stopScalingSourceWriting
-    : STOP SCALING SOURCE WRITING jobId
+showMigrationCheckAlgorithms
+    : SHOW MIGRATION CHECK ALGORITHMS
     ;
 
-restoreScalingSourceWriting
-    : RESTORE SCALING SOURCE WRITING jobId
+stopMigrationSourceWriting
+    : STOP MIGRATION SOURCE WRITING jobId
     ;
 
-applyScaling
-    : APPLY SCALING jobId
+restoreMigrationSourceWriting
+    : RESTORE MIGRATION SOURCE WRITING jobId
+    ;
+
+applyMigration
+    : APPLY MIGRATION jobId
     ;
 
 jobId
     : INT | STRING
+    ;
+
+sourceTableName
+    : (owner DOT)? name
+    ;
+
+targetTableName
+    : (owner DOT)? name
+    ;
+
+owner
+    : identifier
+    ;
+
+name
+    : identifier
+    ;
+
+identifier
+    : IDENTIFIER
+    ;
+
+resourceDefinition
+    : resourceName LP (simpleSource | urlSource) COMMA USER EQ user (COMMA PASSWORD EQ password)? (COMMA propertiesDefinition)? RP
+    ;
+
+resourceName
+    : IDENTIFIER
+    ;
+
+simpleSource
+    : HOST EQ hostname COMMA PORT EQ port COMMA DB EQ dbName
+    ;
+
+urlSource
+    : URL EQ url
+    ;
+
+hostname
+    : STRING
+    ;
+
+port
+    : INT
+    ;
+
+dbName
+    : STRING
+    ;
+
+url
+    : STRING
+    ;
+
+user
+    : STRING
+    ;
+
+password
+    : STRING
+    ;
+
+addMigrationSourceResource
+    : ADD MIGRATION SOURCE RESOURCE resourceDefinition (COMMA resourceDefinition)*
+    ;
+    
+dropMigrationSourceResource
+    : DROP MIGRATION SOURCE RESOURCE resourceName (COMMA resourceName)*
     ;

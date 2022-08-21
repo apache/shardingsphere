@@ -24,7 +24,8 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
-import org.apache.shardingsphere.test.integration.env.container.wait.JDBCConnectionWaitStrategy;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.StorageContainerConstants;
+import org.apache.shardingsphere.test.integration.env.container.wait.JdbcConnectionWaitStrategy;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.env.runtime.scenario.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.integration.env.runtime.scenario.path.ScenarioDataPath;
@@ -73,16 +74,14 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
             withClasspathResourceMapping(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
         }
         withExposedPorts(getPort());
-        setWaitStrategy(new JDBCConnectionWaitStrategy(
+        setWaitStrategy(new JdbcConnectionWaitStrategy(
                 () -> DriverManager.getConnection(getDefaultDatabaseName().isPresent()
                         ? DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort(), getDefaultDatabaseName().get())
                         : DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort()), getUsername(), getUnifiedPassword())));
     }
     
-    protected final void setCommands(final String[] commands) {
-        for (String each : commands) {
-            setCommand(each);
-        }
+    protected final void setCommands(final String command) {
+        setCommand(command);
     }
     
     protected final void addEnvs(final Map<String, String> envs) {
@@ -135,7 +134,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
      * @return username
      */
     public final String getUsername() {
-        return "test_user";
+        return StorageContainerConstants.USERNAME;
     }
     
     /**
@@ -151,7 +150,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
      * @return unified database access password
      */
     public final String getUnifiedPassword() {
-        return "Test@123";
+        return StorageContainerConstants.PASSWORD;
     }
     
     protected abstract Optional<String> getDefaultDatabaseName();

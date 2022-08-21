@@ -47,7 +47,7 @@ public final class OrderByItemConverterUtil {
             if (each instanceof ColumnOrderByItemSegment) {
                 new ColumnOrderByItemConverter().convert((ColumnOrderByItemSegment) each).ifPresent(result::add);
             } else if (each instanceof ExpressionOrderByItemSegment) {
-                throw new UnsupportedOperationException("unsupported ExpressionOrderByItemSegment");
+                new ExpressionOrderByItemConverter().convert((ExpressionOrderByItemSegment) each).ifPresent(result::add);
             } else if (each instanceof IndexOrderByItemSegment) {
                 new IndexOrderByItemConverter().convert((IndexOrderByItemSegment) each).ifPresent(result::add);
             } else if (each instanceof TextOrderByItemSegment) {

@@ -30,7 +30,7 @@ public final class ResetMigrationUpdater implements RALUpdater<ResetMigrationSta
     private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
     
     @Override
-    public void executeUpdate(final ResetMigrationStatement sqlStatement) {
+    public void executeUpdate(final String databaseName, final ResetMigrationStatement sqlStatement) {
         JOB_API.reset(sqlStatement.getJobId());
     }
     

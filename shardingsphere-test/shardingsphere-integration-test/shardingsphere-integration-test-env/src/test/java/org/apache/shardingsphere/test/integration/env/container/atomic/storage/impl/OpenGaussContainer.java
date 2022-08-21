@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.integration.env.container.atomic.storage.
 import com.google.common.base.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
@@ -40,7 +41,7 @@ public final class OpenGaussContainer extends DockerStorageContainer {
     
     @Override
     protected void configure() {
-        setCommands(storageContainerConfiguration.getCommands());
+        setCommands(storageContainerConfiguration.getContainerCommand());
         addEnvs(storageContainerConfiguration.getContainerEnvironments());
         mapResources(storageContainerConfiguration.getMountedResources());
         withPrivilegedMode(true);
@@ -54,11 +55,11 @@ public final class OpenGaussContainer extends DockerStorageContainer {
     
     @Override
     protected Optional<String> getDefaultDatabaseName() {
-        return Optional.of("test_user");
+        return Optional.of(StorageContainerConstants.USERNAME);
     }
     
     @Override
     public String getJdbcUrl(final String dataSourceName) {
-        return DataSourceEnvironment.getURL(getDatabaseType(), getHost(), getMappedPort(getPort()), StringUtils.isNotEmpty(dataSourceName) ? dataSourceName : "test_user");
+        return DataSourceEnvironment.getURL(getDatabaseType(), getHost(), getMappedPort(getPort()), StringUtils.isNotEmpty(dataSourceName) ? dataSourceName : StorageContainerConstants.USERNAME);
     }
 }

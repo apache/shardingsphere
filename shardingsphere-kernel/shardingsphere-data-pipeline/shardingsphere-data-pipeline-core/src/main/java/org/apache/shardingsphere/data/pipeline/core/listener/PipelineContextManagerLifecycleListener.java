@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.listener;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.PipelineJobWorker;
+import org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobWorker;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
@@ -42,6 +42,6 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
         PipelineContext.initModeConfig(modeConfig);
         PipelineContext.initContextManager(contextManager);
         // TODO init worker only if necessary, e.g. 1) rule altered action configured, 2) enabled job exists, 3) stopped job restarted
-        PipelineJobWorker.initWorkerIfNecessary();
+        PipelineJobWorker.initialize();
     }
 }

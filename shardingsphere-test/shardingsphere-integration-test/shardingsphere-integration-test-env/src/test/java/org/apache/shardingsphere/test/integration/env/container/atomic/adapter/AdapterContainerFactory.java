@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
-import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.impl.ShardingSphereJDBCContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.impl.ShardingSphereJdbcContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.impl.ShardingSphereProxyStandaloneContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainer;
@@ -47,10 +47,11 @@ public final class AdapterContainerFactory {
                                                final StorageContainer storageContainer, final String scenario, final AdaptorContainerConfiguration containerConfig) {
         switch (adapter) {
             case "proxy":
-                return "Cluster".equalsIgnoreCase(mode) ? new ShardingSphereProxyClusterContainer(databaseType, scenario, storageContainer, containerConfig)
-                        : new ShardingSphereProxyStandaloneContainer(databaseType, scenario);
+                return "Cluster".equalsIgnoreCase(mode)
+                        ? new ShardingSphereProxyClusterContainer(databaseType, containerConfig)
+                        : new ShardingSphereProxyStandaloneContainer(databaseType, containerConfig);
             case "jdbc":
-                return new ShardingSphereJDBCContainer(storageContainer, scenario);
+                return new ShardingSphereJdbcContainer(storageContainer, scenario);
             default:
                 throw new RuntimeException(String.format("Adapter [%s] is unknown.", adapter));
         }

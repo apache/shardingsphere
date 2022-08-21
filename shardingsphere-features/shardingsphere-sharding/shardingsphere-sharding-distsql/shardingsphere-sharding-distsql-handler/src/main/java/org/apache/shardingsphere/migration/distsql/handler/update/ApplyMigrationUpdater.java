@@ -30,7 +30,7 @@ public final class ApplyMigrationUpdater implements RALUpdater<ApplyMigrationSta
     private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
     
     @Override
-    public void executeUpdate(final ApplyMigrationStatement sqlStatement) {
+    public void executeUpdate(final String databaseName, final ApplyMigrationStatement sqlStatement) {
         JOB_API.switchClusterConfiguration(sqlStatement.getJobId());
     }
     

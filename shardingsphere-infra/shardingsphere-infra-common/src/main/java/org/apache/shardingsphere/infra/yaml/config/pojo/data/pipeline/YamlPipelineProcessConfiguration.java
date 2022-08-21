@@ -31,9 +31,47 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmC
 @ToString
 public final class YamlPipelineProcessConfiguration implements YamlConfiguration {
     
-    private YamlPipelineInputConfiguration input;
+    private YamlPipelineReadConfiguration read;
     
-    private YamlPipelineOutputConfiguration output;
+    private YamlPipelineWriteConfiguration write;
     
     private YamlAlgorithmConfiguration streamChannel;
+    
+    /**
+     * Copy non-null fields from another.
+     *
+     * @param another another configuration
+     */
+    // TODO add unit test
+    public void copyNonNullFields(final YamlPipelineProcessConfiguration another) {
+        if (null == another) {
+            return;
+        }
+        if (isAllFieldsNull(another)) {
+            setAllFieldsNull(this);
+        }
+        if (null == read) {
+            read = another.read;
+        } else {
+            read.copyNonNullFields(another.read);
+        }
+        if (null == write) {
+            write = another.write;
+        } else {
+            write.copyNonNullFields(another.write);
+        }
+        if (null == streamChannel) {
+            streamChannel = another.streamChannel;
+        }
+    }
+    
+    private boolean isAllFieldsNull(final YamlPipelineProcessConfiguration config) {
+        return null == config.read && null == config.write && null == config.streamChannel;
+    }
+    
+    private void setAllFieldsNull(final YamlPipelineProcessConfiguration config) {
+        config.read = null;
+        config.write = null;
+        config.streamChannel = null;
+    }
 }

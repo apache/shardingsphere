@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.api.config.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlMigrationJobConfiguration;
@@ -35,24 +35,29 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
-import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
+import org.apache.shardingsphere.data.pipeline.api.pojo.MigrationJobInfo;
+import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobItemAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.AbstractPipelineJobAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.InventoryIncrementalJobItemAPIImpl;
+import org.apache.shardingsphere.data.pipeline.core.api.impl.PipelineDataSourcePersistService;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCalculateAlgorithmFactory;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
+import org.apache.shardingsphere.data.pipeline.core.exception.AddMigrationSourceResourceException;
+import org.apache.shardingsphere.data.pipeline.core.exception.DropMigrationSourceResourceException;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineVerifyFailedException;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparerFactory;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
 import org.apache.shardingsphere.mode.lock.ExclusiveLockDefinition;
@@ -61,6 +66,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,6 +84,13 @@ import java.util.stream.Stream;
 public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implements MigrationJobAPI {
     
     private final PipelineJobItemAPI jobItemAPI = new InventoryIncrementalJobItemAPIImpl();
+    
+    private final PipelineDataSourcePersistService dataSourcePersistService = new PipelineDataSourcePersistService();
+    
+    @Override
+    protected JobType getJobType() {
+        return JobType.MIGRATION;
+    }
     
     @Override
     protected String marshalJobIdLeftPart(final PipelineJobId pipelineJobId) {
@@ -107,7 +120,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     
     private String generateJobId(final YamlMigrationJobConfiguration config) {
         MigrationJobId jobId = new MigrationJobId();
-        jobId.setTypeCode(JobType.MIGRATION.getTypeCode());
+        jobId.setTypeCode(getJobType().getTypeCode());
         jobId.setFormatVersion(MigrationJobId.CURRENT_VERSION);
         jobId.setCurrentMetadataVersion(config.getActiveVersion());
         jobId.setNewMetadataVersion(config.getNewVersion());
@@ -130,23 +143,23 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     }
     
     @Override
-    public List<JobInfo> list() {
-        checkModeConfig();
-        return getJobBriefInfos().map(each -> getJobInfo(each.getJobName())).collect(Collectors.toList());
+    public TaskConfiguration buildTaskConfiguration(final MigrationJobConfiguration jobConfig, final int jobShardingItem, final PipelineProcessConfiguration pipelineProcessConfig) {
+        return RuleAlteredJobConfigurationPreparerFactory.getInstance().createTaskConfiguration(jobConfig, jobShardingItem, pipelineProcessConfig);
     }
     
-    private void checkModeConfig() {
-        ModeConfiguration modeConfig = PipelineContext.getModeConfig();
-        Preconditions.checkNotNull(modeConfig, "Mode configuration is required.");
-        Preconditions.checkArgument("Cluster".equalsIgnoreCase(modeConfig.getType()), "Mode must be `Cluster`.");
+    @Override
+    public MigrationProcessContext buildPipelineProcessContext(final PipelineJobConfiguration pipelineJobConfig) {
+        // TODO cache process config on local
+        PipelineProcessConfiguration processConfig = showProcessConfiguration();
+        return new MigrationProcessContext(pipelineJobConfig.getJobId(), processConfig);
     }
     
     private Stream<JobBriefInfo> getJobBriefInfos() {
         return PipelineAPIFactory.getJobStatisticsAPI().getAllJobsBriefInfo().stream().filter(each -> !each.getJobName().startsWith("_"));
     }
     
-    private JobInfo getJobInfo(final String jobName) {
-        JobInfo result = new JobInfo(jobName);
+    protected PipelineJobInfo getJobInfo(final String jobName) {
+        MigrationJobInfo result = new MigrationJobInfo(jobName);
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(result.getJobId());
         MigrationJobConfiguration jobConfig = getJobConfiguration(jobConfigPOJO);
         result.setActive(!jobConfigPOJO.isDisabled());
@@ -193,8 +206,8 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     }
     
     private void verifyManualMode(final MigrationJobConfiguration jobConfig) {
-        MigrationContext migrationContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
-        if (null != migrationContext.getCompletionDetectAlgorithm()) {
+        MigrationProcessContext processContext = buildPipelineProcessContext(jobConfig);
+        if (null != processContext.getCompletionDetectAlgorithm()) {
             throw new PipelineVerifyFailedException("It's not necessary to do it in auto mode.");
         }
     }
@@ -277,12 +290,12 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     
     @Override
     public boolean isDataConsistencyCheckNeeded(final MigrationJobConfiguration jobConfig) {
-        MigrationContext migrationContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
-        return isDataConsistencyCheckNeeded(migrationContext);
+        MigrationProcessContext processContext = buildPipelineProcessContext(jobConfig);
+        return isDataConsistencyCheckNeeded(processContext);
     }
     
-    private boolean isDataConsistencyCheckNeeded(final MigrationContext migrationContext) {
-        return null != migrationContext.getDataConsistencyCalculateAlgorithm();
+    private boolean isDataConsistencyCheckNeeded(final MigrationProcessContext processContext) {
+        return null != processContext.getDataConsistencyCalculateAlgorithm();
     }
     
     @Override
@@ -296,12 +309,12 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     
     @Override
     public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final MigrationJobConfiguration jobConfig) {
-        MigrationContext migrationContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
-        if (!isDataConsistencyCheckNeeded(migrationContext)) {
+        MigrationProcessContext processContext = buildPipelineProcessContext(jobConfig);
+        if (!isDataConsistencyCheckNeeded(processContext)) {
             log.info("DataConsistencyCalculatorAlgorithm is not configured, data consistency check is ignored.");
             return Collections.emptyMap();
         }
-        return dataConsistencyCheck(jobConfig, migrationContext.getDataConsistencyCalculateAlgorithm());
+        return dataConsistencyCheck(jobConfig, processContext.getDataConsistencyCalculateAlgorithm());
     }
     
     @Override
@@ -315,7 +328,8 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     
     private Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final MigrationJobConfiguration jobConfig, final DataConsistencyCalculateAlgorithm calculator) {
         String jobId = jobConfig.getJobId();
-        Map<String, DataConsistencyCheckResult> result = new DataConsistencyChecker(jobConfig).check(calculator);
+        JobRateLimitAlgorithm readRateLimitAlgorithm = buildPipelineProcessContext(jobConfig).getReadRateLimitAlgorithm();
+        Map<String, DataConsistencyCheckResult> result = new DataConsistencyChecker(jobConfig, readRateLimitAlgorithm).check(calculator);
         log.info("Scaling job {} with check algorithm '{}' data consistency checker result {}", jobId, calculator.getType(), result);
         PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobCheckResult(jobId, aggregateDataConsistencyCheckResults(jobId, result));
         return result;
@@ -357,9 +371,9 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     @Override
     public void switchClusterConfiguration(final MigrationJobConfiguration jobConfig) {
         String jobId = jobConfig.getJobId();
-        MigrationContext migrationContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
+        MigrationProcessContext processContext = buildPipelineProcessContext(jobConfig);
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
-        if (isDataConsistencyCheckNeeded(migrationContext)) {
+        if (isDataConsistencyCheckNeeded(processContext)) {
             Optional<Boolean> checkResult = repositoryAPI.getJobCheckResult(jobId);
             if (!checkResult.isPresent() || !checkResult.get()) {
                 throw new PipelineVerifyFailedException("Data consistency check is not finished or failed.");
@@ -384,7 +398,38 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     }
     
     @Override
+    public void addMigrationSourceResources(final Map<String, DataSourceProperties> dataSourcePropsMap) {
+        log.info("Add migration source resources {}", dataSourcePropsMap.keySet());
+        Map<String, DataSourceProperties> existDataSources = dataSourcePersistService.load(getJobType());
+        Collection<String> duplicateDataSourceNames = new HashSet<>(dataSourcePropsMap.size(), 1);
+        for (Entry<String, DataSourceProperties> entry : dataSourcePropsMap.entrySet()) {
+            if (existDataSources.containsKey(entry.getKey())) {
+                duplicateDataSourceNames.add(entry.getKey());
+            }
+        }
+        if (!duplicateDataSourceNames.isEmpty()) {
+            throw new AddMigrationSourceResourceException(String.format("Duplicate resource names %s.", duplicateDataSourceNames));
+        }
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>(existDataSources);
+        result.putAll(dataSourcePropsMap);
+        dataSourcePersistService.persist(getJobType(), result);
+    }
+    
+    @Override
+    public void dropMigrationSourceResources(final Collection<String> resourceNames) {
+        Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(getJobType());
+        List<String> noExistResources = resourceNames.stream().filter(each -> !metaDataDataSource.containsKey(each)).collect(Collectors.toList());
+        if (!noExistResources.isEmpty()) {
+            throw new DropMigrationSourceResourceException(String.format("Resource names %s not exist.", resourceNames));
+        }
+        for (String each : resourceNames) {
+            metaDataDataSource.remove(each);
+        }
+        dataSourcePersistService.persist(getJobType(), metaDataDataSource);
+    }
+    
+    @Override
     public String getType() {
-        return JobType.MIGRATION.getTypeName();
+        return getJobType().getTypeName();
     }
 }

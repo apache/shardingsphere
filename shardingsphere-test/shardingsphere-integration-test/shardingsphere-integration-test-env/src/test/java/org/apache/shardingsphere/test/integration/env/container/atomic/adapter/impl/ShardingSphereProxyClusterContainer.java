@@ -22,8 +22,8 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
-import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainer;
-import org.apache.shardingsphere.test.integration.env.container.wait.JDBCConnectionWaitStrategy;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.ProxyContainerConstants;
+import org.apache.shardingsphere.test.integration.env.container.wait.JdbcConnectionWaitStrategy;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.testcontainers.containers.BindMode;
 
@@ -37,23 +37,17 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public final class ShardingSphereProxyClusterContainer extends DockerITContainer implements AdapterContainer {
     
-    private static final String AGENT_HOME_IN_CONTAINER = "/usr/local/shardingsphere-agent";
-    
     private static final String PROPERTY_AGENT_HOME = "AGENT_HOME";
     
     private final DatabaseType databaseType;
-    
-    private final String scenario;
     
     private final AdaptorContainerConfiguration config;
     
     private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
     
-    public ShardingSphereProxyClusterContainer(final DatabaseType databaseType, final String scenario, final StorageContainer storageContainer,
-                                               final AdaptorContainerConfiguration config) {
+    public ShardingSphereProxyClusterContainer(final DatabaseType databaseType, final AdaptorContainerConfiguration config) {
         super("ShardingSphere-Proxy", "apache/shardingsphere-proxy-test");
         this.databaseType = databaseType;
-        this.scenario = scenario;
         this.config = config;
     }
     
@@ -64,8 +58,8 @@ public final class ShardingSphereProxyClusterContainer extends DockerITContainer
      * @return self
      */
     public ShardingSphereProxyClusterContainer withAgent(final String agentHome) {
-        withEnv(PROPERTY_AGENT_HOME, AGENT_HOME_IN_CONTAINER);
-        withFileSystemBind(agentHome, AGENT_HOME_IN_CONTAINER, BindMode.READ_ONLY);
+        withEnv(PROPERTY_AGENT_HOME, ProxyContainerConstants.AGENT_HOME_IN_CONTAINER);
+        withFileSystemBind(agentHome, ProxyContainerConstants.AGENT_HOME_IN_CONTAINER, BindMode.READ_ONLY);
         return this;
     }
     
@@ -73,8 +67,8 @@ public final class ShardingSphereProxyClusterContainer extends DockerITContainer
     protected void configure() {
         withExposedPorts(3307);
         mountConfigurationFiles();
-        setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType,
-                getHost(), getMappedPort(3307), config.getProxyDataSourceName()), "proxy", "Proxy@123")));
+        setWaitStrategy(new JdbcConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType,
+                getHost(), getMappedPort(3307), config.getProxyDataSourceName()), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD)));
     }
     
     private void mountConfigurationFiles() {
@@ -93,9 +87,9 @@ public final class ShardingSphereProxyClusterContainer extends DockerITContainer
     private DataSource createProxyDataSource() {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
-        result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), scenario));
-        result.setUsername("proxy");
-        result.setPassword("Proxy@123");
+        result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), config.getProxyDataSourceName()));
+        result.setUsername(ProxyContainerConstants.USERNAME);
+        result.setPassword(ProxyContainerConstants.PASSWORD);
         result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return result;

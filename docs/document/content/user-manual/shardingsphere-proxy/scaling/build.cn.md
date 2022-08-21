@@ -59,14 +59,16 @@ rules:
         workerThread: # 从源端摄取全量数据的线程池大小。如果不配置则使用默认值。
         batchSize: # 一次查询操作返回的最大记录数。如果不配置则使用默认值。
         rateLimiter: # 限流算法。如果不配置则不限流。
-          type: # 算法类型。可选项：
+          type: # 算法类型。可选项：QPS
           props: # 算法属性
+            qps: # qps属性。适用算法类型：QPS
       output: # 数据写入配置。如果不配置则部分参数默认生效。
         workerThread: # 数据写入到目标端的线程池大小。如果不配置则使用默认值。
         batchSize: # 一次批量写入操作的最大记录数。如果不配置则使用默认值。
         rateLimiter: # 限流算法。如果不配置则不限流。
-          type: # 算法类型。可选项：
+          type: # 算法类型。可选项：TPS
           props: # 算法属性
+            tps: # tps属性。适用算法类型：TPS
       streamChannel: # 数据通道，连接生产者和消费者，用于 input 和 output 环节。如果不配置则默认使用 MEMORY 类型
         type: # 算法类型。可选项：MEMORY
         props: # 算法属性
@@ -81,7 +83,7 @@ rules:
           chunk-size: # 一次查询操作返回的最大记录数
 ```
 
-`dataConsistencyChecker` 的 `type` 可以通过执行 DistSQL `SHOW SCALING CHECK ALGORITHMS` 查询到。简单对比：
+`dataConsistencyChecker` 的 `type` 可以通过执行 DistSQL `SHOW MIGRATION CHECK ALGORITHMS` 查询到。简单对比：
 - `DATA_MATCH`：支持所有数据库，但是性能不是最好的。
 - `CRC32_MATCH`：只支持 `MySQL`，但是性能更好。
 
@@ -97,9 +99,17 @@ rules:
       input:
         workerThread: 40
         batchSize: 1000
+        rateLimiter:
+          type: QPS
+          props:
+            qps: 50
       output:
         workerThread: 40
         batchSize: 1000
+        rateLimiter:
+          type: TPS
+          props:
+            tps: 2000
       streamChannel:
         type: MEMORY
         props:
@@ -146,11 +156,13 @@ rules:
 CREATE SHARDING SCALING RULE scaling_auto (
 INPUT(
   WORKER_THREAD=40,
-  BATCH_SIZE=1000
+  BATCH_SIZE=1000,
+  RATE_LIMITER(TYPE(NAME=QPS, PROPERTIES("qps"=50)))
 ),
 OUTPUT(
   WORKER_THREAD=40,
-  BATCH_SIZE=1000
+  BATCH_SIZE=1000,
+  RATE_LIMITER(TYPE(NAME=TPS, PROPERTIES("tps"=2000)))
 ),
 STREAM_CHANNEL(TYPE(NAME="MEMORY", PROPERTIES("block-queue-size"="10000"))),
 COMPLETION_DETECTOR(TYPE(NAME="IDLE", PROPERTIES("incremental-task-idle-seconds-threshold"="1800"))),

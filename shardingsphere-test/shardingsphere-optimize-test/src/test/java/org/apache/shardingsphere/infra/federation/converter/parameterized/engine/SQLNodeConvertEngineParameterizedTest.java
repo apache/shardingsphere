@@ -99,6 +99,12 @@ public final class SQLNodeConvertEngineParameterizedTest {
         SUPPORTED_SQL_CASE_IDS.add("select_count_with_binding_tables_with_join");
         SUPPORTED_SQL_CASE_IDS.add("select_join_using");
         SUPPORTED_SQL_CASE_IDS.add("select_count_with_escape_character");
+        SUPPORTED_SQL_CASE_IDS.add("select_group_by_with_order_by_and_limit");
+        SUPPORTED_SQL_CASE_IDS.add("select_count_with_sub");
+        SUPPORTED_SQL_CASE_IDS.add("select_current_user");
+        SUPPORTED_SQL_CASE_IDS.add("select_database");
+        SUPPORTED_SQL_CASE_IDS.add("select_distinct_with_count_calculation");
+        SUPPORTED_SQL_CASE_IDS.add("select_count_like_escape");
     }
     
     private final String sqlCaseId;

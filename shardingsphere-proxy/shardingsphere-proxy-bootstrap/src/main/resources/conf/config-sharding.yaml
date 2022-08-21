@@ -110,9 +110,17 @@
 #      input:
 #        workerThread: 40
 #        batchSize: 1000
+#        rateLimiter:
+#          type: QPS
+#          props:
+#            qps: 50
 #      output:
 #        workerThread: 40
 #        batchSize: 1000
+#        rateLimiter:
+#          type: TPS
+#          props:
+#            tps: 2000
 #      streamChannel:
 #        type: MEMORY
 #        props:
@@ -220,9 +228,17 @@
 #      input:
 #        workerThread: 40
 #        batchSize: 1000
+#        rateLimiter:
+#          type: QPS
+#          props:
+#            qps: 50
 #      output:
 #        workerThread: 40
 #        batchSize: 1000
+#        rateLimiter:
+#          type: TPS
+#          props:
+#            tps: 2000
 #      streamChannel:
 #        type: MEMORY
 #        props:

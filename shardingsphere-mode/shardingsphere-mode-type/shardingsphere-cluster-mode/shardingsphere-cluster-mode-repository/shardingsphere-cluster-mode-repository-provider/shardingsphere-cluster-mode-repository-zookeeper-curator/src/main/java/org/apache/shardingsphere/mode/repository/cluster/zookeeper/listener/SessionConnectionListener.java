@@ -58,7 +58,9 @@ public final class SessionConnectionListener implements ConnectionStateListener 
     private boolean reRegister(final CuratorFramework client) {
         try {
             if (client.getZookeeperClient().blockUntilConnectedOrTimedOut()) {
-                instanceContext.generateWorkerId(new Properties());
+                if (isNeedGenerateWorkerId()) {
+                    instanceContext.generateWorkerId(new Properties());
+                }
                 repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceContext.getInstance().getCurrentInstanceId(),
                         instanceContext.getInstance().getMetaData().getType()), instanceContext.getInstance().getMetaData().getAttributes());
                 return true;
@@ -69,6 +71,10 @@ public final class SessionConnectionListener implements ConnectionStateListener 
             CuratorZookeeperExceptionHandler.handleException(ex);
             return true;
         }
+    }
+    
+    private boolean isNeedGenerateWorkerId() {
+        return -1L != instanceContext.getInstance().getWorkerId();
     }
     
     @SneakyThrows(InterruptedException.class)

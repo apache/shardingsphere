@@ -19,6 +19,7 @@ package org.apache.shardingsphere.integration.transaction.framework.container.co
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
 
 import java.util.Collections;
@@ -37,14 +38,11 @@ public final class MySQLContainerConfigurationFactory {
      * @return created instance
      */
     public static StorageContainerConfiguration newInstance() {
-        return new StorageContainerConfiguration(getCommands(), getContainerEnvironments(), getMountedResources());
+        return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources());
     }
     
-    private static String[] getCommands() {
-        String[] result = new String[2];
-        result[0] = "--sql_mode=";
-        result[1] = "--default-authentication-plugin=mysql_native_password";
-        return result;
+    private static String getCommand() {
+        return "--sql_mode= --default-authentication-plugin=mysql_native_password";
     }
     
     private static Map<String, String> getContainerEnvironments() {
@@ -56,6 +54,6 @@ public final class MySQLContainerConfigurationFactory {
     }
     
     private static Map<String, String> getMountedResources() {
-        return Collections.singletonMap("/env/mysql/my.cnf", "/etc/mysql/my.cnf");
+        return Collections.singletonMap("/env/mysql/my.cnf", StorageContainerConstants.MYSQL_CONF_IN_CONTAINER);
     }
 }

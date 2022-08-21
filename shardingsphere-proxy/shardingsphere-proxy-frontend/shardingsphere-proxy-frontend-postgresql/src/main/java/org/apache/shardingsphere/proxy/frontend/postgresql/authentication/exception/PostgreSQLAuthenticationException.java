@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.authentication.excep
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.error.postgresql.code.PostgreSQLVendorError;
+import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.proxy.frontend.exception.FrontendException;
 
 /**
