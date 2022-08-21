@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.encrypt.rewrite.condition;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.encrypt.exception.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptEqualCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInCondition;
 import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
@@ -148,7 +148,7 @@ public final class EncryptConditionEngine {
             return createInEncryptCondition(tableName, (InExpression) expression, ((InExpression) expression).getRight());
         }
         if (expression instanceof BetweenExpression) {
-            throw new ShardingSphereException("The SQL clause 'BETWEEN...AND...' is unsupported in encrypt rule.");
+            throw new UnsupportedEncryptSQLException("BETWEEN...AND...");
         }
         return Optional.empty();
     }
@@ -159,7 +159,7 @@ public final class EncryptConditionEngine {
             if (SUPPORTED_COMPARE_OPERATOR.contains(operator)) {
                 return createCompareEncryptCondition(tableName, expression, expression.getRight());
             }
-            throw new ShardingSphereException("The SQL clause '%s' is unsupported in encrypt rule.", operator);
+            throw new UnsupportedEncryptSQLException(operator);
         }
         return Optional.empty();
     }
