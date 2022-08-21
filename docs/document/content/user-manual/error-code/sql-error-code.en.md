@@ -18,7 +18,8 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 44000     | 13000       | SQL check failed, error message: %s |
 | HY000     | 14000       | The table \`%s\` of schema \`%s\` is locked |
 | HY000     | 14001       | The table \`%s\` of schema \`%s\` lock wait timeout of %s ms exceeded |
-| HY000     | 14010       | Load datetime from database failed, reason: %s |
+| HY000     | 14010       | Can not find \`%s\` file for datetime initialize |
+| HY000     | 14011       | Load datetime from database failed, reason: %s |
 | HY000     | 15000       | Work ID assigned failed, which can not exceed 1024 |
 | HY000     | 16000       | Can not find pipeline job \`%s\` |
 | HY000     | 16001       | Failed to get DDL for table \`%s\` |
