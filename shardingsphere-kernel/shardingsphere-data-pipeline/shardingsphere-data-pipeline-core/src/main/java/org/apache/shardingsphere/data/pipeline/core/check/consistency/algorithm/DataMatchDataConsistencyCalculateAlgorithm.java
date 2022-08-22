@@ -120,7 +120,8 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         String logicTableName = parameter.getLogicTableName();
         String schemaName = parameter.getTableNameSchemaNameMapping().getSchemaName(logicTableName);
         String uniqueKey = parameter.getUniqueKey();
-        String cacheKey = schemaName.toLowerCase() + "." + logicTableName.toLowerCase();
+        String cacheKey = DatabaseTypeFactory.getInstance(parameter.getDatabaseType()).isSchemaAvailable() ? schemaName.toLowerCase() + "." + logicTableName.toLowerCase()
+                : logicTableName.toLowerCase();
         if (null == parameter.getPreviousCalculatedResult()) {
             return firstSQLCache.computeIfAbsent(cacheKey, s -> sqlBuilder.buildChunkedQuerySQL(schemaName, logicTableName, uniqueKey, true));
         } else {

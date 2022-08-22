@@ -20,10 +20,8 @@ package org.apache.shardingsphere.data.pipeline.core.util;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.AddMigrationSourceResourceException;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -31,39 +29,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
- * Schema table util.
+ * Pipeline schema table util.
  */
 @Slf4j
-public final class SchemaTableUtil {
+public final class PipelineSchemaTableUtil {
     
-    /**
-     * Get schema table map.
-     *
-     * @param databaseName database name
-     * @param logicTables logic tables
-     * @return schema table map
-     */
-    public static Map<String, List<String>> getSchemaTablesMap(final String databaseName, final Set<String> logicTables) {
-        // TODO get by search_path
-        ShardingSphereDatabase database = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName);
-        Map<String, List<String>> result = new LinkedHashMap<>();
-        database.getSchemas().forEach((schemaName, schema) -> {
-            for (String each : schema.getAllTableNames()) {
-                if (!logicTables.contains(each)) {
-                    continue;
-                }
-                result.computeIfAbsent(schemaName, unused -> new LinkedList<>()).add(each);
-            }
-        });
-        log.info("getSchemaTablesMap, result={}", result);
-        return result;
+    private PipelineSchemaTableUtil() {
     }
     
     /**

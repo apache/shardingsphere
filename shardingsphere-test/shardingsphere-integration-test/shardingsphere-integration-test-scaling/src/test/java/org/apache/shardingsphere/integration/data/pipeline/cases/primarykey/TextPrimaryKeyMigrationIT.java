@@ -75,7 +75,7 @@ public class TextPrimaryKeyMigrationIT extends BaseExtraSQLITCase {
         startMigrationOrder();
         String jobId = listJobId().get(0);
         waitMigrationFinished(jobId);
-        stopMigration(jobId);
+        stopMigrationByJobId(jobId);
         assertCheckScalingSuccess(jobId);
     }
     
