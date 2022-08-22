@@ -3039,3 +3039,27 @@ COMPATIBILITY
 MATERIALIZE
     : M A T E R I A L I Z E
     ;
+
+SUBTYPE
+    : S U B T Y P E
+    ;
+
+RECORD
+    : R E C O R D
+    ;
+
+CONSTANT
+    : C O N S T A N T
+    ;
+
+CURSOR
+    : C U R S O R
+    ;
+
+OTHERS
+    : O T H E R S
+    ;
+
+EXCEPTION
+    : E X C E P T I O N
+    ;
