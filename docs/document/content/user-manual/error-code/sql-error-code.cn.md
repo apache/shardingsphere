@@ -26,5 +26,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | HY004     | 24000       | Encrypt algorithm \`%s\` initialize failed, reason is: %s |
 | HY004     | 24001       | The SQL clause \`%s\` is unsupported in encrypt rule |
 | 44000     | 24002       | Altered column \`%s\` must use same encrypt algorithm with previous column \`%s\` in table \`%s\` |
+| 42000     | 24003       | Insert value of index \`%s\` can not support for encrypt |
 | HY004     | 25000       | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type |
 | 42000     | 30000       | Unknown exception: %s |
