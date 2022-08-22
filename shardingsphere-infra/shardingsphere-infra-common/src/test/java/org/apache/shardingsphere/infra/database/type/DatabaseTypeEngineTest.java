@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.dialect.MariaDBDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
+import org.apache.shardingsphere.infra.util.exception.sql.SQLWrapperException;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
@@ -87,7 +87,7 @@ public final class DatabaseTypeEngineTest {
         DatabaseTypeEngine.getDatabaseType(dataSources);
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = SQLWrapperException.class)
     public void assertGetDatabaseTypeWhenGetConnectionError() throws SQLException {
         DataSource dataSource = mock(DataSource.class);
         when(dataSource.getConnection()).thenThrow(SQLException.class);

@@ -79,6 +79,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRul
 import org.apache.shardingsphere.infra.rule.identifier.type.RawExecutionRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StorageConnectorReusableRule;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.util.exception.sql.SQLWrapperException;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -463,7 +464,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         try {
             return statement.getResultSet();
         } catch (final SQLException ex) {
-            throw new ShardingSphereException(ex);
+            throw new SQLWrapperException(ex);
         }
     }
     

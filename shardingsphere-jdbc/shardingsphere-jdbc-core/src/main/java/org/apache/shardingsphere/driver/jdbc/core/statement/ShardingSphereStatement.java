@@ -73,6 +73,7 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.RawExecutionRule;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.util.exception.sql.SQLWrapperException;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -554,7 +555,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         try {
             return statement.getResultSet();
         } catch (final SQLException ex) {
-            throw new ShardingSphereException(ex);
+            throw new SQLWrapperException(ex);
         }
     }
     

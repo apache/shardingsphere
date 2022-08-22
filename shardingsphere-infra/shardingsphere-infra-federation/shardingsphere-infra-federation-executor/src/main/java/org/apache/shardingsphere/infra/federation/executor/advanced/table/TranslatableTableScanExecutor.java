@@ -47,7 +47,6 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
@@ -62,14 +61,14 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.dr
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
 import org.apache.shardingsphere.infra.federation.executor.FederationContext;
-import org.apache.shardingsphere.infra.federation.executor.common.row.EmptyRowEnumerator;
 import org.apache.shardingsphere.infra.federation.executor.common.row.CommonRowEnumerator;
+import org.apache.shardingsphere.infra.federation.executor.common.row.EmptyRowEnumerator;
 import org.apache.shardingsphere.infra.federation.executor.common.table.CommonTableScanExecutorContext;
 import org.apache.shardingsphere.infra.federation.executor.original.SQLDialectFactory;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
-import org.apache.shardingsphere.infra.federation.optimizer.executor.TableScanExecutor;
 import org.apache.shardingsphere.infra.federation.optimizer.executor.ScanNodeExecutorContext;
+import org.apache.shardingsphere.infra.federation.optimizer.executor.TableScanExecutor;
 import org.apache.shardingsphere.infra.federation.optimizer.executor.TranslatableScanNodeExecutorContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.filter.FilterableSchema;
 import org.apache.shardingsphere.infra.federation.optimizer.planner.QueryOptimizePlannerFactory;
@@ -82,6 +81,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.session.ConnectionContext;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.util.exception.sql.SQLWrapperException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.Connection;
@@ -146,7 +146,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
             Collection<Statement> statements = getStatements(executionGroupContext.getInputGroups());
             return createEnumerable(mergedResult, queryResults.get(0).getMetaData(), statements);
         } catch (final SQLException ex) {
-            throw new ShardingSphereException(ex);
+            throw new SQLWrapperException(ex);
         } finally {
             ExecuteProcessEngine.clean();
         }
