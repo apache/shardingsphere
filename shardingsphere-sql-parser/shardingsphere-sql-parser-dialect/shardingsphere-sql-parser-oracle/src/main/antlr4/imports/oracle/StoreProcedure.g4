@@ -45,7 +45,7 @@ statement
         | insert
         | lockTable
         | merge
-        ) SEMI_?
+        ) SEMI_
     ;
 
 exceptionHandler
