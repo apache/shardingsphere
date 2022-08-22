@@ -17,10 +17,13 @@
 
 package org.apache.shardingsphere.data.pipeline.api.config.job.yaml;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
+
+import java.util.Collections;
 
 /**
  * YAML migration job configuration swapper.
@@ -57,7 +60,7 @@ public final class YamlMigrationJobConfigurationSwapper implements YamlConfigura
         return new MigrationJobConfiguration(yamlConfig.getJobId(), yamlConfig.getTargetDatabaseName(), yamlConfig.getSourceDataSourceName(),
                 yamlConfig.getSourceDatabaseType(), yamlConfig.getTargetDatabaseType(),
                 dataSourceConfigSwapper.swapToObject(yamlConfig.getSource()), dataSourceConfigSwapper.swapToObject(yamlConfig.getTarget()),
-                yamlConfig.getSchemaTablesMap(), yamlConfig.getSourceTableName(), yamlConfig.getTargetTableName(),
+                ObjectUtils.defaultIfNull(yamlConfig.getSchemaTablesMap(), Collections.emptyMap()), yamlConfig.getSourceTableName(), yamlConfig.getTargetTableName(),
                 yamlConfig.getTablesFirstDataNodes(), yamlConfig.getJobShardingDataNodes(),
                 yamlConfig.getConcurrency(), yamlConfig.getRetryTimes());
     }
