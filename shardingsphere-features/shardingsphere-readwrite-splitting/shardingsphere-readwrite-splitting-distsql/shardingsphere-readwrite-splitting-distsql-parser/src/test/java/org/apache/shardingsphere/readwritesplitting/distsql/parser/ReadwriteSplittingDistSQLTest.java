@@ -23,6 +23,7 @@ import org.apache.shardingsphere.distsql.parser.core.featured.FeaturedDistSQLSta
 import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.facade.ReadwriteSplittingDistSQLStatementParserFacade;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.AlterReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
@@ -38,10 +39,22 @@ public final class ReadwriteSplittingDistSQLTest {
     
     @Test
     public void assertCreateReadwriteSplitting() {
-        String sql = "CREATE READWRITE_SPLITTING RULE ms_group_0 (WRITE_RESOURCE=primary_ds, READ_RESOURCES(replica_ds_0,replica_ds_1), TYPE(NAME=random)))";
+        String sql = "CREATE READWRITE_SPLITTING RULE ms_group_0 (WRITE_RESOURCE=primary_ds, READ_RESOURCES(replica_ds_0,replica_ds_1), TYPE(NAME='random')))";
         CreateReadwriteSplittingRuleStatement distSQLStatement = (CreateReadwriteSplittingRuleStatement) getShadowDistSQLStatement(sql);
         assertThat(distSQLStatement.getRules().size(), is(1));
-        ReadwriteSplittingRuleSegment readwriteSplittingRule = distSQLStatement.getRules().iterator().next();
+        assertReadwriteSplittingRuleSegment(distSQLStatement.getRules().iterator().next());
+        
+    }
+    
+    @Test
+    public void assertAlterReadwriteSplitting() {
+        String sql = "ALTER READWRITE_SPLITTING RULE ms_group_0 (WRITE_RESOURCE=primary_ds, READ_RESOURCES(replica_ds_0,replica_ds_1), TYPE(NAME='random')))";
+        AlterReadwriteSplittingRuleStatement distSQLStatement = (AlterReadwriteSplittingRuleStatement) getShadowDistSQLStatement(sql);
+        assertThat(distSQLStatement.getRules().size(), is(1));
+        assertReadwriteSplittingRuleSegment(distSQLStatement.getRules().iterator().next());
+    }
+    
+    private void assertReadwriteSplittingRuleSegment(final ReadwriteSplittingRuleSegment readwriteSplittingRule) {
         assertThat(readwriteSplittingRule.getName(), is("ms_group_0"));
         assertThat(readwriteSplittingRule.getWriteDataSource(), is("primary_ds"));
         assertThat(readwriteSplittingRule.getLoadBalancer(), is("random"));
