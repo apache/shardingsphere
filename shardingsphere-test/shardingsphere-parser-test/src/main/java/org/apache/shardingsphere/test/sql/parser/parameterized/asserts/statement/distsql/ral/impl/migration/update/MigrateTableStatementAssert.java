@@ -37,7 +37,8 @@ public final class MigrateTableStatementAssert {
      * @param expected expected migrate table statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MigrateTableStatement actual, final MigrateTableStatementTestCase expected) {
-        assertThat(assertContext.getText("source database name does not match"), actual.getSourceDatabaseName(), is(expected.getSourceDatabaseName()));
+        assertThat(assertContext.getText("source database name does not match"), actual.getSourceResourceName(), is(expected.getSourceResourceName()));
+        assertThat(assertContext.getText("source schema name does not match"), actual.getSourceSchemaName(), is(expected.getSourceSchemaName()));
         assertThat(assertContext.getText("source table name does not match"), actual.getSourceTableName(), is(expected.getSourceTableName()));
         assertThat(assertContext.getText("target database name does not match"), actual.getTargetDatabaseName(), is(expected.getTargetDatabaseName()));
         assertThat(assertContext.getText("target table name does not match"), actual.getTargetTableName(), is(expected.getTargetTableName()));

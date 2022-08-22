@@ -72,7 +72,7 @@ jobId
     ;
 
 sourceTableName
-    : (owner DOT)? name
+    : owner DOT (schema DOT)? name
     ;
 
 targetTableName
@@ -80,6 +80,10 @@ targetTableName
     ;
 
 owner
+    : identifier
+    ;
+
+schema
     : identifier
     ;
 

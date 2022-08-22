@@ -26,6 +26,8 @@ public final class CreateMigrationJobParameter {
     
     private final String sourceResourceName;
     
+    private final String sourceSchemaName;
+    
     private final String sourceTableName;
     
     private final String targetDatabaseName;
