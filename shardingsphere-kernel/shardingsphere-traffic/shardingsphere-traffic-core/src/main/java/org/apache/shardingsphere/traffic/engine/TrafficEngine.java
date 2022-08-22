@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.traffic.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
@@ -42,12 +42,12 @@ public final class TrafficEngine {
     /**
      * Dispatch.
      *
-     * @param logicSQL logic SQL
+     * @param queryContext query context
      * @param inTransaction is in transaction
      * @return instance id
      */
-    public Optional<String> dispatch(final LogicSQL logicSQL, final boolean inTransaction) {
-        Optional<TrafficStrategyRule> strategyRule = trafficRule.findMatchedStrategyRule(logicSQL, inTransaction);
+    public Optional<String> dispatch(final QueryContext queryContext, final boolean inTransaction) {
+        Optional<TrafficStrategyRule> strategyRule = trafficRule.findMatchedStrategyRule(queryContext, inTransaction);
         if (!strategyRule.isPresent() || isInvalidStrategyRule(strategyRule.get())) {
             return Optional.empty();
         }

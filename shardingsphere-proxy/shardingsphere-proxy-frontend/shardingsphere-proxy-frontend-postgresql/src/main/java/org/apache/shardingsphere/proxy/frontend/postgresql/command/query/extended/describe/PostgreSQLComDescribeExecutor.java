@@ -26,7 +26,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.Pos
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.describe.PostgreSQLComDescribePacket;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
@@ -197,10 +197,10 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         String databaseName = connectionSession.getDatabaseName();
         SQLStatementContext<?> sqlStatementContext =
                 SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData().getDatabases(), preparedStatement.getSqlStatement(), databaseName);
-        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, preparedStatement.getSql(), Collections.emptyList());
+        QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), Collections.emptyList());
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
         ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(
-                logicSQL, database, metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps(), connectionSession.getConnectionContext());
+                queryContext, database, metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps(), connectionSession.getConnectionContext());
         ExecutionUnit executionUnitSample = executionContext.getExecutionUnits().iterator().next();
         JDBCBackendConnection backendConnection = (JDBCBackendConnection) connectionSession.getBackendConnection();
         Connection connection = backendConnection.getConnections(executionUnitSample.getDataSourceName(), 1, ConnectionMode.CONNECTION_STRICTLY).iterator().next();

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.communication;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
@@ -72,8 +72,8 @@ public final class DatabaseCommunicationEngineFactoryTest extends ProxyContextRe
         when(backendConnection.getConnectionSession().getDatabaseName()).thenReturn("db");
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
-        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, "schemaName", Collections.emptyList());
-        DatabaseCommunicationEngine engine = DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(logicSQL, backendConnection, false);
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList());
+        DatabaseCommunicationEngine engine = DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(queryContext, backendConnection, false);
         assertThat(engine, instanceOf(DatabaseCommunicationEngine.class));
     }
     
@@ -83,7 +83,8 @@ public final class DatabaseCommunicationEngineFactoryTest extends ProxyContextRe
         when(backendConnection.getConnectionSession().getDatabaseName()).thenReturn("db");
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
-        assertThat(DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(new LogicSQL(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, false),
+        assertThat(
+                DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, false),
                 instanceOf(DatabaseCommunicationEngine.class));
     }
 }

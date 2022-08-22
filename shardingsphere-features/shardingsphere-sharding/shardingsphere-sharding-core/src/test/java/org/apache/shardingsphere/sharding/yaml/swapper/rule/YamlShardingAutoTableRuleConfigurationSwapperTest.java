@@ -28,8 +28,6 @@ import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStan
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collections;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -45,7 +43,7 @@ public final class YamlShardingAutoTableRuleConfigurationSwapperTest {
     public void setUp() {
         ShardingAutoTableAlgorithm shardingAlgorithm = mock(ShardingAutoTableAlgorithm.class);
         when(shardingAlgorithm.getAutoTablesAmount()).thenReturn(2);
-        swapper = new YamlShardingAutoTableRuleConfigurationSwapper(Collections.singletonMap("foo_algorithm", shardingAlgorithm), Collections.emptyMap());
+        swapper = new YamlShardingAutoTableRuleConfigurationSwapper();
     }
     
     @Test
@@ -63,34 +61,17 @@ public final class YamlShardingAutoTableRuleConfigurationSwapperTest {
         shardingTableRuleConfig.setActualTablePrefix("tmp_");
         shardingTableRuleConfig.setShardingStrategy(mock(StandardShardingStrategyConfiguration.class));
         shardingTableRuleConfig.setKeyGenerateStrategy(mock(KeyGenerateStrategyConfiguration.class));
-        shardingTableRuleConfig.setActualDataNodes("ds0.tbl_0");
         YamlShardingAutoTableRuleConfiguration actual = swapper.swapToYamlConfiguration(shardingTableRuleConfig);
         assertThat(actual.getLogicTable(), is("tbl"));
         assertThat(actual.getActualDataSources(), is("ds0,ds1"));
         assertThat(actual.getActualTablePrefix(), is("tmp_"));
-        assertThat(actual.getActualDataNodes(), is("ds0.tbl_0"));
-        assertNotNull(actual.getShardingStrategy());
-        assertNotNull(actual.getKeyGenerateStrategy());
-    }
-    
-    @Test
-    public void assertSwapToYamlConfigurationWithAutoAddActualDataNodes() {
-        ShardingAutoTableRuleConfiguration shardingTableRuleConfig = new ShardingAutoTableRuleConfiguration("tbl", "ds0,ds1");
-        shardingTableRuleConfig.setActualTablePrefix("tmp_");
-        shardingTableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("col", "foo_algorithm"));
-        shardingTableRuleConfig.setKeyGenerateStrategy(mock(KeyGenerateStrategyConfiguration.class));
-        YamlShardingAutoTableRuleConfiguration actual = swapper.swapToYamlConfiguration(shardingTableRuleConfig);
-        assertThat(actual.getLogicTable(), is("tbl"));
-        assertThat(actual.getActualDataSources(), is("ds0,ds1"));
-        assertThat(actual.getActualTablePrefix(), is("tmp_"));
-        assertThat(actual.getActualDataNodes(), is("ds0.tbl_0,ds1.tbl_1"));
         assertNotNull(actual.getShardingStrategy());
         assertNotNull(actual.getKeyGenerateStrategy());
     }
     
     @Test(expected = NullPointerException.class)
     public void assertSwapToObjectWithoutLogicTable() {
-        new YamlShardingAutoTableRuleConfigurationSwapper(Collections.emptyMap(), Collections.emptyMap()).swapToObject(new YamlShardingAutoTableRuleConfiguration());
+        new YamlShardingAutoTableRuleConfigurationSwapper().swapToObject(new YamlShardingAutoTableRuleConfiguration());
     }
     
     @Test
@@ -107,7 +88,7 @@ public final class YamlShardingAutoTableRuleConfigurationSwapperTest {
         keyGenerateStrategy.setColumn("col");
         configuration.setKeyGenerateStrategy(keyGenerateStrategy);
         configuration.setActualTablePrefix("tmp_");
-        ShardingAutoTableRuleConfiguration actual = new YamlShardingAutoTableRuleConfigurationSwapper(Collections.emptyMap(), Collections.emptyMap()).swapToObject(configuration);
+        ShardingAutoTableRuleConfiguration actual = new YamlShardingAutoTableRuleConfigurationSwapper().swapToObject(configuration);
         assertThat(actual.getLogicTable(), is("tbl"));
         assertThat(actual.getActualDataSources(), is("ds0,ds1"));
         assertThat(actual.getActualTablePrefix(), is("tmp_"));

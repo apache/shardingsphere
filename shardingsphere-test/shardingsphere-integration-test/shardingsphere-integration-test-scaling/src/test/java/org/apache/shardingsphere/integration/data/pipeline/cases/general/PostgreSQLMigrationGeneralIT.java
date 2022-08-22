@@ -31,24 +31,25 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * PostgreSQL general scaling test case. include openGauss type, same process.
  */
 @Slf4j
 @RunWith(Parameterized.class)
-public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
+public final class PostgreSQLMigrationGeneralIT extends BaseExtraSQLITCase {
     
     private final ScalingParameterized parameterized;
     
-    public PostgreSQLGeneralScalingIT(final ScalingParameterized parameterized) {
+    public PostgreSQLMigrationGeneralIT(final ScalingParameterized parameterized) {
         super(parameterized);
         this.parameterized = parameterized;
         log.info("parameterized:{}", parameterized);
@@ -70,36 +71,46 @@ public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
     }
     
     @Test
-    public void assertManualScalingSuccess() throws InterruptedException {
-        addSourceResource();
-        initShardingAlgorithm();
-        assertTrue(waitShardingAlgorithmEffect(15));
+    public void assertMigrationSuccess() {
         createScalingRule();
-        createSchema("test");
-        createOrderTableRule();
-        createOrderItemTableRule();
-        createOrderTable();
-        createOrderItemTable();
-        // TODO wait kernel support create index if not exists
-        // createTableIndexList("test");
-        executeWithLog("COMMENT ON COLUMN test.t_order.user_id IS 'user id';");
+        createSourceSchema("test");
+        createSourceOrderTable();
+        createSourceOrderItemTable();
+        createSourceTableIndexList("test");
+        createSourceCommentOnList("test");
+        addSourceResource();
+        addTargetResource();
+        createTargetOrderTableRule();
+        createTargetOrderItemTableRule();
         SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
         Pair<List<Object[]>, List<Object[]>> dataPair = ScalingCaseHelper.generateFullInsertData(keyGenerateAlgorithm, parameterized.getDatabaseType(), TABLE_INIT_ROW_COUNT);
-        getJdbcTemplate().batchUpdate(getExtraSQLCommand().getFullInsertOrder(), dataPair.getLeft());
-        getJdbcTemplate().batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
-        addTargetResource();
-        startIncrementTask(new PostgreSQLIncrementTask(getJdbcTemplate(), new SnowflakeKeyGenerateAlgorithm(), "test", true, 20));
-        executeWithLog(getCommonSQLCommand().getAlterOrderWithItemAutoTableRule());
-        String jobId = getScalingJobId();
-        waitScalingFinished(jobId);
-        stopScaling(jobId);
-        executeWithLog(String.format("INSERT INTO test.t_order (id,order_id,user_id,status) VALUES (%s, %s, %s, '%s')", keyGenerateAlgorithm.generateKey(), System.currentTimeMillis(),
-                1, "afterStopScaling"));
-        startScaling(jobId);
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(getSourceDataSource());
+        jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrder(), dataPair.getLeft());
+        jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
+        checkOrderMigration(jdbcTemplate);
+        checkOrderItemMigration();
+        for (String each : listJobId()) {
+            cleanMigrationByJobId(each);
+        }
+        List<String> lastJobIds = listJobId();
+        assertThat(lastJobIds.size(), is(0));
+        assertGreaterThanOrderTableInitRows(TABLE_INIT_ROW_COUNT, "test");
+    }
+    
+    private void checkOrderMigration(final JdbcTemplate jdbcTemplate) {
+        startMigrationOrder();
+        startIncrementTask(new PostgreSQLIncrementTask(jdbcTemplate, "test", false, 20));
+        String jobId = getJobIdByTableName("t_order");
+        waitMigrationFinished(jobId);
         assertCheckScalingSuccess(jobId);
-        assertGreaterThanInitTableInitRows(TABLE_INIT_ROW_COUNT, "test");
-        applyScaling(jobId);
-        assertPreviewTableSuccess("t_order", Arrays.asList("ds_2", "ds_3", "ds_4"));
-        assertPreviewTableSuccess("t_order_item", Arrays.asList("ds_2", "ds_3", "ds_4"));
+        stopMigrationByJobId(jobId);
+    }
+    
+    private void checkOrderItemMigration() {
+        startMigrationOrderItem();
+        String jobId = getJobIdByTableName("t_order_item");
+        waitMigrationFinished(jobId);
+        assertCheckScalingSuccess(jobId);
+        stopMigrationByJobId(jobId);
     }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.route.fixture.router;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.SQLRouter;
@@ -32,7 +32,7 @@ import java.util.Collections;
 public final class SQLRouterFixture implements SQLRouter<RouteRuleFixture> {
     
     @Override
-    public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereDatabase database, final RouteRuleFixture rule,
+    public RouteContext createRouteContext(final QueryContext queryContext, final ShardingSphereDatabase database, final RouteRuleFixture rule,
                                            final ConfigurationProperties props, final ConnectionContext connectionContext) {
         RouteContext result = new RouteContext();
         result.getRouteUnits().add(new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.emptyList()));
@@ -41,7 +41,7 @@ public final class SQLRouterFixture implements SQLRouter<RouteRuleFixture> {
     
     @Override
     public void decorateRouteContext(final RouteContext routeContext,
-                                     final LogicSQL logicSQL, final ShardingSphereDatabase database, final RouteRuleFixture rule,
+                                     final QueryContext queryContext, final ShardingSphereDatabase database, final RouteRuleFixture rule,
                                      final ConfigurationProperties props, final ConnectionContext connectionContext) {
         routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.emptyList()));
     }

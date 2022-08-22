@@ -94,7 +94,7 @@ public final class ShadowInsertStatementRoutingEngine extends AbstractShadowDMLS
         private Optional<Collection<Comparable<?>>> getColumnValues(final List<InsertValueContext> insertValueContexts, final int index) {
             Collection<Comparable<?>> result = new LinkedList<>();
             for (InsertValueContext each : insertValueContexts) {
-                Optional<Object> valueObject = each.getValue(index);
+                Optional<Object> valueObject = each.getLiteralValue(index);
                 if (valueObject.isPresent() && valueObject.get() instanceof Comparable<?>) {
                     result.add((Comparable<?>) valueObject.get());
                 } else {

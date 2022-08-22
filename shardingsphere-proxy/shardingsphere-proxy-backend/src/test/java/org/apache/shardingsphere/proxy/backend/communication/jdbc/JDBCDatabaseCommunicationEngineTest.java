@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -137,7 +137,7 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
         SQLStatementContext<?> sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         JDBCDatabaseCommunicationEngine engine =
-                DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(new LogicSQL(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, true);
+                DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, true);
         Field kernelProcessorField = DatabaseCommunicationEngine.class.getDeclaredField("kernelProcessor");
         kernelProcessorField.setAccessible(true);
         KernelProcessor kernelProcessor = mock(KernelProcessor.class);
@@ -171,7 +171,7 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
         JDBCDatabaseCommunicationEngine engine =
-                DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(new LogicSQL(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, true);
+                DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, true);
         assertNotNull(engine);
         assertThat(engine, instanceOf(DatabaseCommunicationEngine.class));
         Field queryHeadersField = DatabaseCommunicationEngine.class.getDeclaredField("queryHeaders");
@@ -227,7 +227,7 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
         JDBCDatabaseCommunicationEngine engine =
-                DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(new LogicSQL(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, false);
+                DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, false);
         engine.add(statement);
         Collection<?> actual = getField(engine, "cachedStatements");
         assertThat(actual.size(), is(1));
@@ -239,7 +239,7 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
         JDBCDatabaseCommunicationEngine engine =
-                DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(new LogicSQL(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, false);
+                DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, false);
         engine.add(resultSet);
         Collection<?> actual = getField(engine, "cachedResultSets");
         assertThat(actual.size(), is(1));
@@ -251,7 +251,7 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
         JDBCDatabaseCommunicationEngine engine =
-                DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(new LogicSQL(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, false);
+                DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, false);
         Collection<ResultSet> cachedResultSets = getField(engine, "cachedResultSets");
         cachedResultSets.add(resultSet);
         Collection<Statement> cachedStatements = getField(engine, "cachedStatements");
@@ -269,7 +269,7 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
         JDBCDatabaseCommunicationEngine engine =
-                DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(new LogicSQL(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, false);
+                DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, false);
         Collection<ResultSet> cachedResultSets = getField(engine, "cachedResultSets");
         SQLException sqlExceptionByResultSet = new SQLException("ResultSet");
         doThrow(sqlExceptionByResultSet).when(resultSet).close();

@@ -99,11 +99,11 @@ public final class AdvancedFederationExecutor implements FederationExecutor {
     @Override
     public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                   final JDBCExecutorCallback<? extends ExecuteResult> callback, final FederationContext federationContext) throws SQLException {
-        SQLStatementContext<?> sqlStatementContext = federationContext.getLogicSQL().getSqlStatementContext();
+        SQLStatementContext<?> sqlStatementContext = federationContext.getQueryContext().getSqlStatementContext();
         Preconditions.checkArgument(sqlStatementContext instanceof SelectStatementContext, "SQL statement context must be select statement context.");
         ShardingSphereSchema schema = federationContext.getDatabases().get(databaseName.toLowerCase()).getSchema(schemaName);
         TranslatableSchema translatableSchema = createTranslatableSchema(prepareEngine, schema, callback, federationContext);
-        Map<String, Object> parameters = createParameters(federationContext.getLogicSQL().getParameters());
+        Map<String, Object> parameters = createParameters(federationContext.getQueryContext().getParameters());
         Enumerator<Object[]> enumerator = execute(sqlStatementContext.getSqlStatement(), translatableSchema, parameters).enumerator();
         resultSet = new FederationResultSet(enumerator, schema, translatableSchema, sqlStatementContext);
         return resultSet;

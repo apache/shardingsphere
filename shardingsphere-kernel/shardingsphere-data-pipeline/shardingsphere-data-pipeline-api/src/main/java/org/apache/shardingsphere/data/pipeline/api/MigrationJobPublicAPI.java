@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.api;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.api.pojo.CreateMigrationJobParameter;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
@@ -126,4 +127,11 @@ public interface MigrationJobPublicAPI extends PipelineJobPublicAPI, RequiredSPI
      * @param resourceNames resource names
      */
     void dropMigrationSourceResources(Collection<String> resourceNames);
+    
+    /**
+     * Create job migration config and start.
+     *
+     * @param parameter create migration job parameter
+     */
+    void createJobAndStart(CreateMigrationJobParameter parameter);
 }

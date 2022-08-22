@@ -15,18 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.rulealtered;
+package org.apache.shardingsphere.datetime.database.exception;
 
-import org.apache.shardingsphere.data.pipeline.spi.fixture.RuleAlteredJobConfigurationPreparerFixture;
-import org.junit.Test;
+import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
+import java.sql.SQLException;
 
-public final class RuleAlteredJobConfigurationPreparerFactoryTest {
+/**
+ * Datetime loading exception.
+ */
+public final class DatetimeLoadingException extends ShardingSphereSQLException {
     
-    @Test
-    public void assertGetInstance() {
-        assertThat(RuleAlteredJobConfigurationPreparerFactory.getInstance(), instanceOf(RuleAlteredJobConfigurationPreparerFixture.class));
+    private static final long serialVersionUID = 7844267165522132993L;
+    
+    public DatetimeLoadingException(final SQLException cause) {
+        super(XOpenSQLState.GENERAL_ERROR, 14011, "Load datetime from database failed, reason: %s", cause.getMessage());
     }
 }

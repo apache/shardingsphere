@@ -26,7 +26,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.Pos
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLPortalSuspendedPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLParameterStatusPacket;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
@@ -36,14 +36,14 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.frontend.postgresql.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
@@ -112,7 +112,7 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
         mockedStatic = mockStatic(ProxyBackendHandlerFactory.class);
         mockedStatic.when(() -> ProxyBackendHandlerFactory.newInstance(any(PostgreSQLDatabaseType.class), anyString(), any(SQLStatement.class), eq(connectionSession)))
                 .thenReturn(proxyBackendHandler);
-        mockedStatic.when(() -> ProxyBackendHandlerFactory.newInstance(any(PostgreSQLDatabaseType.class), any(LogicSQL.class), eq(connectionSession), anyBoolean()))
+        mockedStatic.when(() -> ProxyBackendHandlerFactory.newInstance(any(PostgreSQLDatabaseType.class), any(QueryContext.class), eq(connectionSession), anyBoolean()))
                 .thenReturn(proxyBackendHandler);
     }
     
@@ -136,7 +136,8 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
         when(proxyBackendHandler.next()).thenReturn(true, true, false);
         when(proxyBackendHandler.getRowData()).thenReturn(new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 0))),
                 new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 1))));
-        PostgreSQLPreparedStatement preparedStatement = new PostgreSQLPreparedStatement("", new PostgreSQLSelectStatement(), mock(SelectStatementContext.class), Collections.emptyList());
+        PostgreSQLPreparedStatement preparedStatement =
+                new PostgreSQLPreparedStatement("", new PostgreSQLSelectStatement(), mock(SelectStatementContext.class, RETURNS_DEEP_STUBS), Collections.emptyList());
         List<PostgreSQLValueFormat> resultFormats = new ArrayList<>(Arrays.asList(PostgreSQLValueFormat.TEXT, PostgreSQLValueFormat.BINARY));
         JDBCPortal portal = new JDBCPortal("", preparedStatement, Collections.emptyList(), resultFormats, backendConnection);
         portal.bind();
@@ -159,7 +160,8 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
         when(proxyBackendHandler.getRowData()).thenReturn(
                 new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 0))),
                 new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 1))));
-        PostgreSQLPreparedStatement preparedStatement = new PostgreSQLPreparedStatement("", new PostgreSQLSelectStatement(), mock(SelectStatementContext.class), Collections.emptyList());
+        PostgreSQLPreparedStatement preparedStatement =
+                new PostgreSQLPreparedStatement("", new PostgreSQLSelectStatement(), mock(SelectStatementContext.class, RETURNS_DEEP_STUBS), Collections.emptyList());
         List<PostgreSQLValueFormat> resultFormats = new ArrayList<>(Arrays.asList(PostgreSQLValueFormat.TEXT, PostgreSQLValueFormat.BINARY));
         JDBCPortal portal = new JDBCPortal("", preparedStatement, Collections.emptyList(), resultFormats, backendConnection);
         portal.bind();
@@ -176,7 +178,8 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
     public void assertExecuteUpdate() throws SQLException {
         when(proxyBackendHandler.execute()).thenReturn(mock(UpdateResponseHeader.class));
         when(proxyBackendHandler.next()).thenReturn(false);
-        PostgreSQLPreparedStatement preparedStatement = new PostgreSQLPreparedStatement("", new PostgreSQLInsertStatement(), mock(InsertStatementContext.class), Collections.emptyList());
+        PostgreSQLPreparedStatement preparedStatement =
+                new PostgreSQLPreparedStatement("", new PostgreSQLInsertStatement(), mock(InsertStatementContext.class, RETURNS_DEEP_STUBS), Collections.emptyList());
         JDBCPortal portal = new JDBCPortal("insert into t values (1)", preparedStatement, Collections.emptyList(), Collections.emptyList(), backendConnection);
         portal.bind();
         assertThat(portal.describe(), is(PostgreSQLNoDataPacket.getInstance()));

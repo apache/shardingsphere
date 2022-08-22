@@ -18,21 +18,41 @@
 package org.apache.shardingsphere.infra.binder;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
- * Logic SQL.
+ * Query context.
  */
-@RequiredArgsConstructor
 @Getter
-public final class LogicSQL {
+public final class QueryContext {
     
     private final SQLStatementContext<?> sqlStatementContext;
     
     private final String sql;
     
     private final List<Object> parameters;
+    
+    private String sqlStatementDatabaseName;
+    
+    public QueryContext(final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> parameters) {
+        this.sqlStatementContext = sqlStatementContext;
+        this.sql = sql;
+        this.parameters = parameters;
+        if (sqlStatementContext instanceof TableAvailable) {
+            ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().ifPresent(optional -> sqlStatementDatabaseName = optional);
+        }
+    }
+    
+    /**
+     * Find sql statement database name.
+     * 
+     * @return database name
+     */
+    public Optional<String> findSqlStatementDatabaseName() {
+        return Optional.ofNullable(sqlStatementDatabaseName);
+    }
 }

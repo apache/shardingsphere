@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
@@ -76,12 +75,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(database, ruleConfigClass).orElse(null);
         ruleDefinitionUpdater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
         Optional<RuleDefinitionAlterPreprocessor> preprocessor = RuleDefinitionAlterPreprocessorFactory.findInstance(sqlStatement);
-        if (!RuleAlteredJobWorker.isOnRuleAlteredActionEnabled(currentRuleConfig)) {
-            if (RULE_ALTERED_ACTIONS.contains(sqlStatement.getClass().getCanonicalName())) {
-                // TODO throw new RuntimeException("scaling is not enabled");
-                log.warn("rule altered and scaling is not enabled.");
-            }
-        } else if (preprocessor.isPresent()) {
+        if (preprocessor.isPresent()) {
             prepareScaling(database, sqlStatement, (RuleDefinitionAlterUpdater) ruleDefinitionUpdater, currentRuleConfig, preprocessor.get());
             return new UpdateResponseHeader(sqlStatement);
         }

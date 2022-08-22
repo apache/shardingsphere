@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.admin.mysql;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
@@ -84,7 +84,7 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecuto
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases(),
                 sqlStatement, connectionSession.getDefaultDatabaseName());
         DatabaseBackendHandler databaseBackendHandler = DatabaseCommunicationEngineFactory.getInstance()
-                .newDatabaseCommunicationEngine(new LogicSQL(sqlStatementContext, sql, Collections.emptyList()), connectionSession.getBackendConnection(), false);
+                .newDatabaseCommunicationEngine(new QueryContext(sqlStatementContext, sql, Collections.emptyList()), connectionSession.getBackendConnection(), false);
         try {
             databaseBackendHandler.execute();
         } finally {

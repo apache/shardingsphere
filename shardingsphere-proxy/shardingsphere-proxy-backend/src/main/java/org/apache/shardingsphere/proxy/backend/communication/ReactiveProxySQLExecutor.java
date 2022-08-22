@@ -124,7 +124,7 @@ public final class ReactiveProxySQLExecutor {
                                                            final int maxConnectionsSizePerQuery) throws SQLException {
         VertxBackendStatement statementManager = (VertxBackendStatement) backendConnection.getConnectionSession().getStatementManager();
         DriverExecutionPrepareEngine<VertxExecutionUnit, Future<? extends SqlClient>> prepareEngine = new DriverExecutionPrepareEngine<>(
-                TYPE, maxConnectionsSizePerQuery, backendConnection, statementManager, new VertxExecutionContext(), rules);
+                TYPE, maxConnectionsSizePerQuery, backendConnection, statementManager, new VertxExecutionContext(), rules, backendConnection.getConnectionSession().getDatabaseType());
         ExecutionGroupContext<VertxExecutionUnit> executionGroupContext;
         try {
             executionGroupContext = prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits());
@@ -133,7 +133,7 @@ public final class ReactiveProxySQLExecutor {
         }
         executionGroupContext.setDatabaseName(backendConnection.getConnectionSession().getDatabaseName());
         executionGroupContext.setGrantee(backendConnection.getConnectionSession().getGrantee());
-        return reactiveExecutor.execute(executionContext.getLogicSQL(), executionGroupContext);
+        return reactiveExecutor.execute(executionContext.getQueryContext(), executionGroupContext);
     }
     
     private List<ExecuteResult> getSaneExecuteResults(final ExecutionContext executionContext, final SQLException originalException) throws SQLException {

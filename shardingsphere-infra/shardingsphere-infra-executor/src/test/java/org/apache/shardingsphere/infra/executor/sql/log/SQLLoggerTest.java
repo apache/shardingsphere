@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.log;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -49,7 +49,7 @@ public final class SQLLoggerTest {
     
     private static List<LoggingEvent> appenderList;
     
-    private final LogicSQL logicSQL = new LogicSQL(mock(SQLStatementContext.class), SQL, Collections.emptyList());
+    private final QueryContext queryContext = new QueryContext(mock(SQLStatementContext.class), SQL, Collections.emptyList());
     
     private Collection<ExecutionUnit> executionUnits;
     
@@ -73,7 +73,7 @@ public final class SQLLoggerTest {
     
     @Test
     public void assertLogNormalSQLWithoutParameter() {
-        SQLLogger.logSQL(logicSQL, false, new ExecutionContext(logicSQL, executionUnits, mock(RouteContext.class)));
+        SQLLogger.logSQL(queryContext, false, new ExecutionContext(queryContext, executionUnits, mock(RouteContext.class)));
         assertThat(appenderList.size(), is(5));
         assertTrue(appenderList.stream().allMatch(loggingEvent -> Level.INFO == loggingEvent.getLevel()));
         assertThat(appenderList.get(0).getFormattedMessage(), is("Logic SQL: SELECT * FROM t_user"));
@@ -86,7 +86,7 @@ public final class SQLLoggerTest {
     @Test
     public void assertLogNormalSQLWithParameters() {
         executionUnits.forEach(each -> each.getSqlUnit().getParameters().add("parameter"));
-        SQLLogger.logSQL(logicSQL, false, new ExecutionContext(logicSQL, executionUnits, mock(RouteContext.class)));
+        SQLLogger.logSQL(queryContext, false, new ExecutionContext(queryContext, executionUnits, mock(RouteContext.class)));
         assertThat(appenderList.size(), is(5));
         assertTrue(appenderList.stream().allMatch(loggingEvent -> Level.INFO == loggingEvent.getLevel()));
         assertThat(appenderList.get(0).getFormattedMessage(), is("Logic SQL: SELECT * FROM t_user"));
@@ -98,7 +98,7 @@ public final class SQLLoggerTest {
     
     @Test
     public void assertLogSimpleSQL() {
-        SQLLogger.logSQL(logicSQL, true, new ExecutionContext(logicSQL, executionUnits, mock(RouteContext.class)));
+        SQLLogger.logSQL(queryContext, true, new ExecutionContext(queryContext, executionUnits, mock(RouteContext.class)));
         assertThat(appenderList.size(), is(3));
         assertTrue(appenderList.stream().allMatch(loggingEvent -> Level.INFO == loggingEvent.getLevel()));
         assertThat(appenderList.get(0).getFormattedMessage(), is("Logic SQL: SELECT * FROM t_user"));
