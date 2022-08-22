@@ -88,9 +88,9 @@ public final class DataNode {
     }
     
     /**
-     * Format DataNode as string.
+     * Format data node as string.
      *
-     * @return formatted string
+     * @return formatted data node
      */
     public String format() {
         return dataSourceName + DELIMITER + tableName;
@@ -108,7 +108,7 @@ public final class DataNode {
     /**
      * Is Actual data nodes three tier structure.
      *
-     * @param actualDataNodes dataSource map
+     * @param actualDataNodes data source map
      * @return boolean
      */
     public static boolean isActualDataNodesIncludedDataSourceInstance(final String actualDataNodes) {

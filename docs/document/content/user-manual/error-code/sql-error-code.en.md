@@ -14,6 +14,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 42000     | 11001       | configuration error |
 | 42000     | 11002       | Resource does not exist |
 | 42000     | 11003       | Rule does not exist |
+| 42000     | 11004       | Can not support 3-tier structure for actual data node \`%s\` with JDBC \`%s\` |
 | 42000     | 12000       | Unsupported command: %s |
 | 44000     | 13000       | SQL check failed, error message: %s |
 | HY000     | 14000       | The table \`%s\` of schema \`%s\` is locked |
