@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.binder.decider.engine.SQLFederationDecide
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
-import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
@@ -60,7 +59,6 @@ import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.proxy.backend.communication.SQLStatementDatabaseHolder;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
@@ -103,10 +101,8 @@ public final class PreviewHandler extends SQLRULBackendHandler<PreviewStatement>
         SQLParserRule sqlParserRule = globalRuleMetaData.getSingleRule(SQLParserRule.class);
         SQLStatement previewedStatement = sqlParserRule.getSQLParserEngine(databaseType).parse(getSqlStatement().getSql(), false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData().getDatabases(), previewedStatement, databaseName);
-        // TODO optimize SQLStatementDatabaseHolder
-        if (sqlStatementContext instanceof TableAvailable) {
-            ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().ifPresent(SQLStatementDatabaseHolder::set);
-        }
+        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, getSqlStatement().getSql(), Collections.emptyList());
+        getConnectionSession().setLogicSQL(logicSQL);
         if (sqlStatementContext instanceof CursorAvailable && sqlStatementContext instanceof CursorDefinitionAware) {
             setUpCursorDefinition(sqlStatementContext);
         }
@@ -114,7 +110,6 @@ public final class PreviewHandler extends SQLRULBackendHandler<PreviewStatement>
         if (!database.isComplete()) {
             throw new RuleNotExistedException();
         }
-        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, getSqlStatement().getSql(), Collections.emptyList());
         ConfigurationProperties props = metaDataContexts.getMetaData().getProps();
         SQLFederationDeciderContext deciderContext = decide(logicSQL, props, metaDataContexts.getMetaData().getDatabase(getConnectionSession().getDatabaseName()));
         Collection<ExecutionUnit> executionUnits = deciderContext.isUseSQLFederation() ? getFederationExecutionUnits(logicSQL, databaseName, metaDataContexts)
@@ -175,7 +170,8 @@ public final class PreviewHandler extends SQLRULBackendHandler<PreviewStatement>
         int maxConnectionsSizePerQuery = metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, (JDBCBackendConnection) getConnectionSession().getBackendConnection(),
                 (JDBCBackendStatement) getConnectionSession().getStatementManager(), new StatementOption(isReturnGeneratedKeys),
-                metaDataContexts.getMetaData().getDatabase(getDatabaseName()).getRuleMetaData().getRules());
+                metaDataContexts.getMetaData().getDatabase(getDatabaseName()).getRuleMetaData().getRules(),
+                metaDataContexts.getMetaData().getDatabase(getDatabaseName()).getResource().getDatabaseType());
     }
     
     private String getDatabaseName() {
