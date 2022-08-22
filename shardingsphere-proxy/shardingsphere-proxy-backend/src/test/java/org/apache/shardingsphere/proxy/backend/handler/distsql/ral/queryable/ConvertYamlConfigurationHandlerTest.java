@@ -1,0 +1,120 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
+
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertYamlConfigurationStatement;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+
+public class ConvertYamlConfigurationHandlerTest extends ProxyContextRestorer {
+    
+    private final String resourceFilePath = "/conf/convert/config-resource.yaml";
+
+    private final String resourceExpectedFilePath = "/expected/convert-add-resource.yaml";
+    
+    private final String resource = "resource";
+    
+    private final Map<String, String> featureMap = new HashMap<>(1, 1);
+
+    @Before
+    public void setup() {
+        featureMap.put(resource, resourceFilePath);
+    }
+
+    @Before
+    public void init() {
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ProxyContext.init(contextManager);
+    }
+    
+    @Test
+    public void assertExecuteWithAddResource() throws SQLException {
+        ConvertYamlConfigurationHandler handler = new ConvertYamlConfigurationHandler();
+        handler.init(new ConvertYamlConfigurationStatement(Objects.requireNonNull(ConvertYamlConfigurationHandlerTest.class.getResource(featureMap.get(resource))).getPath()),
+                mock(ConnectionSession.class));
+        assertQueryResponseHeader((QueryResponseHeader) handler.execute());
+        assertTrue(handler.next());
+        assertRowData(handler.getRowData().getData());
+        assertFalse(handler.next());
+    }
+
+    private void assertQueryResponseHeader(final QueryResponseHeader actual) {
+        assertThat(actual.getQueryHeaders().size(), is(1));
+        assertQueryHeader(actual.getQueryHeaders().get(0));
+    }
+    
+    private void assertQueryHeader(final QueryHeader actual) {
+        assertThat(actual.getSchema(), is(""));
+        assertThat(actual.getTable(), is(""));
+        assertThat(actual.getColumnLabel(), is("distsql"));
+        assertThat(actual.getColumnName(), is("distsql"));
+        assertThat(actual.getColumnType(), is(1));
+        assertThat(actual.getColumnTypeName(), is("CHAR"));
+        assertThat(actual.getColumnLength(), is(255));
+        assertThat(actual.getDecimals(), is(0));
+        assertFalse(actual.isSigned());
+        assertFalse(actual.isPrimaryKey());
+        assertFalse(actual.isNotNull());
+        assertFalse(actual.isAutoIncrement());
+    }
+    
+    private void assertRowData(final Collection<Object> actual) {
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next(), is(loadExpectedRow()));
+    }
+    
+    @SneakyThrows(IOException.class)
+    private String loadExpectedRow() {
+        StringBuilder result = new StringBuilder();
+        String fileName = Objects.requireNonNull(ConvertYamlConfigurationHandlerTest.class.getResource(resourceExpectedFilePath)).getFile();
+        try (
+                FileReader fileReader = new FileReader(fileName);
+                BufferedReader reader = new BufferedReader(fileReader)) {
+            String line;
+            while (null != (line = reader.readLine())) {
+                if (!line.startsWith("#") && !"".equals(line.trim())) {
+                    result.append(line).append(System.lineSeparator());
+                }
+            }
+        }
+        return result.toString();
+    }
+}
