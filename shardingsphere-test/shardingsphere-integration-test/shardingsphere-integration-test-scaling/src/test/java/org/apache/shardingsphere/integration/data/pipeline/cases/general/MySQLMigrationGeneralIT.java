@@ -90,9 +90,9 @@ public final class MySQLMigrationGeneralIT extends BaseExtraSQLITCase {
         for (String each : listJobId()) {
             cleanMigrationByJobId(each);
         }
-        assertGreaterThanOrderTableInitRows(TABLE_INIT_ROW_COUNT, "");
         List<String> lastJobIds = listJobId();
         assertThat(lastJobIds.size(), is(0));
+        assertGreaterThanOrderTableInitRows(TABLE_INIT_ROW_COUNT, "");
     }
     
     private void checkOrderMigration(final KeyGenerateAlgorithm keyGenerateAlgorithm, final JdbcTemplate jdbcTemplate) {

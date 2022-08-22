@@ -89,12 +89,12 @@ public final class PostgreSQLMigrationGeneralIT extends BaseExtraSQLITCase {
         jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
         checkOrderMigration(jdbcTemplate);
         checkOrderItemMigration();
-        assertGreaterThanOrderTableInitRows(TABLE_INIT_ROW_COUNT, "test");
         for (String each : listJobId()) {
             cleanMigrationByJobId(each);
         }
         List<String> lastJobIds = listJobId();
         assertThat(lastJobIds.size(), is(0));
+        assertGreaterThanOrderTableInitRows(TABLE_INIT_ROW_COUNT, "test");
     }
     
     private void checkOrderMigration(final JdbcTemplate jdbcTemplate) {
