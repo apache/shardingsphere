@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class KillProcessIdRequestEvent {
+public final class KillProcessIdRequestEvent {
     
     private final String processId;
 }

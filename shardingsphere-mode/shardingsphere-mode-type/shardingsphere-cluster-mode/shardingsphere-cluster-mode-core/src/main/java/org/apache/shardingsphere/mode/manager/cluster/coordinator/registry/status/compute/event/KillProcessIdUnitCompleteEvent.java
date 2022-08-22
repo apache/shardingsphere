@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.Gover
  */
 @RequiredArgsConstructor
 @Getter
-public class KillProcessIdUnitCompleteEvent implements GovernanceEvent {
+public final class KillProcessIdUnitCompleteEvent implements GovernanceEvent {
     
     private final String showProcessListId;
 }

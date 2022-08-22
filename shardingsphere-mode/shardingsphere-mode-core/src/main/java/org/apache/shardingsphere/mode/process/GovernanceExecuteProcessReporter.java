@@ -76,9 +76,9 @@ public final class GovernanceExecuteProcessReporter implements ExecuteProcessRep
     }
     
     private List<Statement> collectProcessStatement(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
-        List<Statement> statements = new ArrayList<>();
+        List<Statement> result = new ArrayList<>();
         if (null == executionGroupContext.getInputGroups()) {
-            return statements;
+            return result;
         }
         for (ExecutionGroup<? extends SQLExecutionUnit> inputGroup : executionGroupContext.getInputGroups()) {
             if (null == inputGroup.getInputs()) {
@@ -87,10 +87,10 @@ public final class GovernanceExecuteProcessReporter implements ExecuteProcessRep
             for (SQLExecutionUnit executionUnit : inputGroup.getInputs()) {
                 if (executionUnit instanceof JDBCExecutionUnit) {
                     JDBCExecutionUnit jdbcExecutionUnit = (JDBCExecutionUnit) executionUnit;
-                    statements.add(jdbcExecutionUnit.getStorageResource());
+                    result.add(jdbcExecutionUnit.getStorageResource());
                 }
             }
         }
-        return statements;
+        return result;
     }
 }
