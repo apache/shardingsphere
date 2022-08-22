@@ -47,18 +47,25 @@ import static org.mockito.Mockito.mock;
 public class ConvertYamlConfigurationHandlerTest extends ProxyContextRestorer {
     
     private final String resourceFilePath = "/conf/convert/config-resource.yaml";
-
+    
+    private final String shardingFilePath = "/conf/convert/config-sharding.yaml";
+    
     private final String resourceExpectedFilePath = "/expected/convert-add-resource.yaml";
+    
+    private final String shardingExpectedFilePath = "/expected/convert-create-sharding.yaml";
     
     private final String resource = "resource";
     
-    private final Map<String, String> featureMap = new HashMap<>(1, 1);
-
+    private final String sharding = "sharding";
+    
+    private final Map<String, String> featureMap = new HashMap<>(2, 1);
+    
     @Before
     public void setup() {
         featureMap.put(resource, resourceFilePath);
+        featureMap.put(sharding, shardingFilePath);
     }
-
+    
     @Before
     public void init() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
@@ -67,15 +74,24 @@ public class ConvertYamlConfigurationHandlerTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecuteWithAddResource() throws SQLException {
+        assertExecute(resource, resourceExpectedFilePath);
+    }
+    
+    @Test
+    public void assertExecuteWithCreateSharding() throws SQLException {
+        assertExecute(sharding, shardingExpectedFilePath);
+    }
+    
+    public void assertExecute(final String feature, final String expectedFilePath) throws SQLException {
         ConvertYamlConfigurationHandler handler = new ConvertYamlConfigurationHandler();
-        handler.init(new ConvertYamlConfigurationStatement(Objects.requireNonNull(ConvertYamlConfigurationHandlerTest.class.getResource(featureMap.get(resource))).getPath()),
+        handler.init(new ConvertYamlConfigurationStatement(Objects.requireNonNull(ConvertYamlConfigurationHandlerTest.class.getResource(featureMap.get(feature))).getPath()),
                 mock(ConnectionSession.class));
         assertQueryResponseHeader((QueryResponseHeader) handler.execute());
         assertTrue(handler.next());
-        assertRowData(handler.getRowData().getData());
+        assertRowData(handler.getRowData().getData(), expectedFilePath);
         assertFalse(handler.next());
     }
-
+    
     private void assertQueryResponseHeader(final QueryResponseHeader actual) {
         assertThat(actual.getQueryHeaders().size(), is(1));
         assertQueryHeader(actual.getQueryHeaders().get(0));
@@ -96,15 +112,15 @@ public class ConvertYamlConfigurationHandlerTest extends ProxyContextRestorer {
         assertFalse(actual.isAutoIncrement());
     }
     
-    private void assertRowData(final Collection<Object> actual) {
+    private void assertRowData(final Collection<Object> actual, final String expectedFilePath) {
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), is(loadExpectedRow()));
+        assertThat(actual.iterator().next(), is(loadExpectedRow(expectedFilePath)));
     }
     
     @SneakyThrows(IOException.class)
-    private String loadExpectedRow() {
+    private String loadExpectedRow(final String expectedFilePath) {
         StringBuilder result = new StringBuilder();
-        String fileName = Objects.requireNonNull(ConvertYamlConfigurationHandlerTest.class.getResource(resourceExpectedFilePath)).getFile();
+        String fileName = Objects.requireNonNull(ConvertYamlConfigurationHandlerTest.class.getResource(expectedFilePath)).getFile();
         try (
                 FileReader fileReader = new FileReader(fileName);
                 BufferedReader reader = new BufferedReader(fileReader)) {
