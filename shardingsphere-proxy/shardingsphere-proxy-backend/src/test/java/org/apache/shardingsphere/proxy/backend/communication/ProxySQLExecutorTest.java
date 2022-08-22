@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.communication;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.TruncateStatementContext;
@@ -84,14 +84,14 @@ public final class ProxySQLExecutorTest extends ProxyContextRestorer {
     @Test(expected = TableModifyInTransactionException.class)
     public void assertCheckExecutePrerequisitesWhenExecuteDDLInXATransaction() {
         ExecutionContext executionContext = new ExecutionContext(
-                new LogicSQL(createMySQLCreateTableStatementContext(), "", Collections.emptyList()), Collections.emptyList(), mock(RouteContext.class));
+                new QueryContext(createMySQLCreateTableStatementContext(), "", Collections.emptyList()), Collections.emptyList(), mock(RouteContext.class));
         new ProxySQLExecutor(JDBCDriverType.STATEMENT, backendConnection, mock(JDBCDatabaseCommunicationEngine.class)).checkExecutePrerequisites(executionContext);
     }
     
     @Test(expected = TableModifyInTransactionException.class)
     public void assertCheckExecutePrerequisitesWhenExecuteTruncateInMySQLXATransaction() {
         ExecutionContext executionContext = new ExecutionContext(
-                new LogicSQL(createMySQLTruncateStatementContext(), "", Collections.emptyList()), Collections.emptyList(), mock(RouteContext.class));
+                new QueryContext(createMySQLTruncateStatementContext(), "", Collections.emptyList()), Collections.emptyList(), mock(RouteContext.class));
         new ProxySQLExecutor(JDBCDriverType.STATEMENT, backendConnection, mock(JDBCDatabaseCommunicationEngine.class)).checkExecutePrerequisites(executionContext);
     }
     
@@ -99,14 +99,14 @@ public final class ProxySQLExecutorTest extends ProxyContextRestorer {
     public void assertCheckExecutePrerequisitesWhenExecuteTruncateInMySQLLocalTransaction() {
         when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
         ExecutionContext executionContext = new ExecutionContext(
-                new LogicSQL(createMySQLTruncateStatementContext(), "", Collections.emptyList()), Collections.emptyList(), mock(RouteContext.class));
+                new QueryContext(createMySQLTruncateStatementContext(), "", Collections.emptyList()), Collections.emptyList(), mock(RouteContext.class));
         new ProxySQLExecutor(JDBCDriverType.STATEMENT, backendConnection, mock(JDBCDatabaseCommunicationEngine.class)).checkExecutePrerequisites(executionContext);
     }
     
     @Test
     public void assertCheckExecutePrerequisitesWhenExecuteDMLInXATransaction() {
         ExecutionContext executionContext = new ExecutionContext(
-                new LogicSQL(createMySQLInsertStatementContext(), "", Collections.emptyList()), Collections.emptyList(), mock(RouteContext.class));
+                new QueryContext(createMySQLInsertStatementContext(), "", Collections.emptyList()), Collections.emptyList(), mock(RouteContext.class));
         new ProxySQLExecutor(JDBCDriverType.STATEMENT, backendConnection, mock(JDBCDatabaseCommunicationEngine.class)).checkExecutePrerequisites(executionContext);
     }
     
@@ -114,7 +114,7 @@ public final class ProxySQLExecutorTest extends ProxyContextRestorer {
     public void assertCheckExecutePrerequisitesWhenExecuteDDLInBaseTransaction() {
         when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.BASE);
         ExecutionContext executionContext = new ExecutionContext(
-                new LogicSQL(createMySQLCreateTableStatementContext(), "", Collections.emptyList()), Collections.emptyList(), mock(RouteContext.class));
+                new QueryContext(createMySQLCreateTableStatementContext(), "", Collections.emptyList()), Collections.emptyList(), mock(RouteContext.class));
         new ProxySQLExecutor(JDBCDriverType.STATEMENT, backendConnection, mock(JDBCDatabaseCommunicationEngine.class)).checkExecutePrerequisites(executionContext);
     }
     
@@ -122,7 +122,7 @@ public final class ProxySQLExecutorTest extends ProxyContextRestorer {
     public void assertCheckExecutePrerequisitesWhenExecuteDDLNotInXATransaction() {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(false);
         ExecutionContext executionContext = new ExecutionContext(
-                new LogicSQL(createMySQLCreateTableStatementContext(), "", Collections.emptyList()), Collections.emptyList(), mock(RouteContext.class));
+                new QueryContext(createMySQLCreateTableStatementContext(), "", Collections.emptyList()), Collections.emptyList(), mock(RouteContext.class));
         new ProxySQLExecutor(JDBCDriverType.STATEMENT, backendConnection, mock(JDBCDatabaseCommunicationEngine.class)).checkExecutePrerequisites(executionContext);
     }
     
@@ -130,7 +130,7 @@ public final class ProxySQLExecutorTest extends ProxyContextRestorer {
     public void assertCheckExecutePrerequisitesWhenExecuteDDLInPostgreSQLTransaction() {
         when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
         ExecutionContext executionContext = new ExecutionContext(
-                new LogicSQL(createPostgreSQLCreateTableStatementContext(), "", Collections.emptyList()), Collections.emptyList(), mock(RouteContext.class));
+                new QueryContext(createPostgreSQLCreateTableStatementContext(), "", Collections.emptyList()), Collections.emptyList(), mock(RouteContext.class));
         new ProxySQLExecutor(JDBCDriverType.STATEMENT, backendConnection, mock(JDBCDatabaseCommunicationEngine.class)).checkExecutePrerequisites(executionContext);
     }
     
@@ -138,7 +138,7 @@ public final class ProxySQLExecutorTest extends ProxyContextRestorer {
     public void assertCheckExecutePrerequisitesWhenExecuteTruncateInPostgreSQLTransaction() {
         when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
         ExecutionContext executionContext = new ExecutionContext(
-                new LogicSQL(createPostgreSQLTruncateStatementContext(), "", Collections.emptyList()), Collections.emptyList(), mock(RouteContext.class));
+                new QueryContext(createPostgreSQLTruncateStatementContext(), "", Collections.emptyList()), Collections.emptyList(), mock(RouteContext.class));
         new ProxySQLExecutor(JDBCDriverType.STATEMENT, backendConnection, mock(JDBCDatabaseCommunicationEngine.class)).checkExecutePrerequisites(executionContext);
     }
     
@@ -146,7 +146,7 @@ public final class ProxySQLExecutorTest extends ProxyContextRestorer {
     public void assertCheckExecutePrerequisitesWhenExecuteDMLInPostgreSQLTransaction() {
         when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
         ExecutionContext executionContext = new ExecutionContext(
-                new LogicSQL(createPostgreSQLInsertStatementContext(), "", Collections.emptyList()), Collections.emptyList(), mock(RouteContext.class));
+                new QueryContext(createPostgreSQLInsertStatementContext(), "", Collections.emptyList()), Collections.emptyList(), mock(RouteContext.class));
         new ProxySQLExecutor(JDBCDriverType.STATEMENT, backendConnection, mock(JDBCDatabaseCommunicationEngine.class)).checkExecutePrerequisites(executionContext);
     }
     
@@ -154,7 +154,7 @@ public final class ProxySQLExecutorTest extends ProxyContextRestorer {
     public void assertCheckExecutePrerequisitesWhenExecuteDDLInMySQLTransaction() {
         when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
         ExecutionContext executionContext = new ExecutionContext(
-                new LogicSQL(createMySQLCreateTableStatementContext(), "", Collections.emptyList()), Collections.emptyList(), mock(RouteContext.class));
+                new QueryContext(createMySQLCreateTableStatementContext(), "", Collections.emptyList()), Collections.emptyList(), mock(RouteContext.class));
         new ProxySQLExecutor(JDBCDriverType.STATEMENT, backendConnection, mock(JDBCDatabaseCommunicationEngine.class)).checkExecutePrerequisites(executionContext);
     }
     
@@ -163,7 +163,7 @@ public final class ProxySQLExecutorTest extends ProxyContextRestorer {
         when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(false);
         ExecutionContext executionContext = new ExecutionContext(
-                new LogicSQL(createPostgreSQLCreateTableStatementContext(), "", Collections.emptyList()), Collections.emptyList(), mock(RouteContext.class));
+                new QueryContext(createPostgreSQLCreateTableStatementContext(), "", Collections.emptyList()), Collections.emptyList(), mock(RouteContext.class));
         new ProxySQLExecutor(JDBCDriverType.STATEMENT, backendConnection, mock(JDBCDatabaseCommunicationEngine.class)).checkExecutePrerequisites(executionContext);
     }
     

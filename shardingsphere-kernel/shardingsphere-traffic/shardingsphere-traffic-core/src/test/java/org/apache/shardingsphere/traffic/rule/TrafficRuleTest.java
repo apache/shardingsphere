@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.traffic.rule;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
@@ -51,7 +51,7 @@ public final class TrafficRuleTest {
     @Test
     public void assertFindMatchedStrategyRuleWhenSQLHintMatch() {
         TrafficRule trafficRule = new TrafficRule(createTrafficRuleConfig());
-        Optional<TrafficStrategyRule> actual = trafficRule.findMatchedStrategyRule(createLogicSQL(true), false);
+        Optional<TrafficStrategyRule> actual = trafficRule.findMatchedStrategyRule(createQueryContext(true), false);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getName(), is("sql_hint_traffic"));
         assertThat(actual.get().getLabels(), is(new HashSet<>(Arrays.asList("OLTP", "OLAP"))));
@@ -61,13 +61,13 @@ public final class TrafficRuleTest {
     
     @Test
     public void assertFindMatchedStrategyRuleWhenSQLHintNotMatch() {
-        assertFalse(new TrafficRule(createTrafficRuleConfig()).findMatchedStrategyRule(createLogicSQL(false), false).isPresent());
+        assertFalse(new TrafficRule(createTrafficRuleConfig()).findMatchedStrategyRule(createQueryContext(false), false).isPresent());
     }
     
     @Test
     public void assertFindMatchedStrategyRuleWhenInTransaction() {
         TrafficRule trafficRule = new TrafficRule(createTrafficRuleConfig());
-        Optional<TrafficStrategyRule> actual = trafficRule.findMatchedStrategyRule(createLogicSQL(false), true);
+        Optional<TrafficStrategyRule> actual = trafficRule.findMatchedStrategyRule(createQueryContext(false), true);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getName(), is("transaction_traffic"));
         assertThat(actual.get().getLabels(), is(Collections.singleton("OLAP")));
@@ -81,8 +81,8 @@ public final class TrafficRuleTest {
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private LogicSQL createLogicSQL(final boolean includeComments) {
-        LogicSQL result = mock(LogicSQL.class);
+    private QueryContext createQueryContext(final boolean includeComments) {
+        QueryContext result = mock(QueryContext.class);
         MySQLSelectStatement sqlStatement = mock(MySQLSelectStatement.class);
         when(sqlStatement.getCommentSegments()).thenReturn(includeComments ? Collections.singleton(new CommentSegment("/* ShardingSphere hint: useTraffic=true */", 0, 0)) : Collections.emptyList());
         when(sqlStatement.getProjections()).thenReturn(new ProjectionsSegment(0, 0));

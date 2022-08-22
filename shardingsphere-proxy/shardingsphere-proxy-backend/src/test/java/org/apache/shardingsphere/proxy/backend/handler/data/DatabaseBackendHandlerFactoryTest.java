@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.data;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -50,7 +50,7 @@ public final class DatabaseBackendHandlerFactoryTest extends ProxyContextRestore
         String sql = "DESC tbl";
         SQLStatementContext<DALStatement> context = mock(SQLStatementContext.class);
         when(context.getSqlStatement()).thenReturn(mock(DALStatement.class));
-        DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(new LogicSQL(context, sql, Collections.emptyList()), mock(ConnectionSession.class), false);
+        DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(new QueryContext(context, sql, Collections.emptyList()), mock(ConnectionSession.class), false);
         assertThat(actual, instanceOf(UnicastDatabaseBackendHandler.class));
     }
     
@@ -59,7 +59,7 @@ public final class DatabaseBackendHandlerFactoryTest extends ProxyContextRestore
         String sql = "SELECT 1";
         SQLStatementContext<SelectStatement> context = mock(SQLStatementContext.class);
         when(context.getSqlStatement()).thenReturn(mock(SelectStatement.class));
-        DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(new LogicSQL(context, sql, Collections.emptyList()), mock(ConnectionSession.class), false);
+        DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(new QueryContext(context, sql, Collections.emptyList()), mock(ConnectionSession.class), false);
         assertThat(actual, instanceOf(UnicastDatabaseBackendHandler.class));
     }
     
@@ -80,7 +80,7 @@ public final class DatabaseBackendHandlerFactoryTest extends ProxyContextRestore
         when(connectionSession.getBackendConnection()).thenReturn(mock(JDBCBackendConnection.class));
         when(connectionSession.getBackendConnection().getConnectionSession()).thenReturn(connectionSession);
         try (MockedConstruction<JDBCDatabaseCommunicationEngine> unused = mockConstruction(JDBCDatabaseCommunicationEngine.class)) {
-            DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(new LogicSQL(context, sql, Collections.emptyList()), connectionSession, false);
+            DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(new QueryContext(context, sql, Collections.emptyList()), connectionSession, false);
             assertThat(actual, instanceOf(DatabaseCommunicationEngine.class));
         }
     }

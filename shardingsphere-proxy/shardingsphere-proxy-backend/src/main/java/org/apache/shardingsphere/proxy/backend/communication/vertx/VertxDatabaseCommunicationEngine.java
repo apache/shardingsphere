@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.communication.vertx;
 
 import io.vertx.core.Future;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDeciderContext;
 import org.apache.shardingsphere.infra.binder.decider.engine.SQLFederationDeciderEngine;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -43,8 +43,8 @@ public final class VertxDatabaseCommunicationEngine extends DatabaseCommunicatio
     
     private final ReactiveProxySQLExecutor reactiveProxySQLExecutor;
     
-    public VertxDatabaseCommunicationEngine(final ShardingSphereDatabase database, final LogicSQL logicSQL, final VertxBackendConnection vertxBackendConnection) {
-        super("Vert.x", database, logicSQL, vertxBackendConnection);
+    public VertxDatabaseCommunicationEngine(final ShardingSphereDatabase database, final QueryContext queryContext, final VertxBackendConnection vertxBackendConnection) {
+        super("Vert.x", database, queryContext, vertxBackendConnection);
         reactiveProxySQLExecutor = new ReactiveProxySQLExecutor(vertxBackendConnection);
     }
     
@@ -58,11 +58,11 @@ public final class VertxDatabaseCommunicationEngine extends DatabaseCommunicatio
     public Future<ResponseHeader> executeFuture() {
         try {
             ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
-            SQLFederationDeciderContext deciderContext = decide(getLogicSQL(), metaData.getProps(), getDatabase());
+            SQLFederationDeciderContext deciderContext = decide(getQueryContext(), metaData.getProps(), getDatabase());
             if (deciderContext.isUseSQLFederation()) {
                 return Future.failedFuture(new UnsupportedOperationException("Executing federated query by Vert.x is not supported yet."));
             }
-            ExecutionContext executionContext = getKernelProcessor().generateExecutionContext(getLogicSQL(), getDatabase(), metaData.getGlobalRuleMetaData(),
+            ExecutionContext executionContext = getKernelProcessor().generateExecutionContext(getQueryContext(), getDatabase(), metaData.getGlobalRuleMetaData(),
                     metaData.getProps(), getBackendConnection().getConnectionSession().getConnectionContext());
             if (executionContext.getExecutionUnits().isEmpty()) {
                 return Future.succeededFuture(new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement()));
@@ -86,9 +86,9 @@ public final class VertxDatabaseCommunicationEngine extends DatabaseCommunicatio
         }
     }
     
-    private static SQLFederationDeciderContext decide(final LogicSQL logicSQL, final ConfigurationProperties props, final ShardingSphereDatabase database) {
+    private static SQLFederationDeciderContext decide(final QueryContext queryContext, final ConfigurationProperties props, final ShardingSphereDatabase database) {
         SQLFederationDeciderEngine deciderEngine = new SQLFederationDeciderEngine(database.getRuleMetaData().getRules(), props);
-        return deciderEngine.decide(logicSQL, database);
+        return deciderEngine.decide(queryContext, database);
     }
     
     @Override

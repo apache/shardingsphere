@@ -24,7 +24,7 @@ import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rul.RULStatement;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -110,27 +110,27 @@ public final class ProxyBackendHandlerFactory {
         }
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases(),
                 sqlStatement, connectionSession.getDefaultDatabaseName());
-        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, sql, Collections.emptyList());
-        connectionSession.setLogicSQL(logicSQL);
-        return newInstance(databaseType, logicSQL, connectionSession, false);
+        QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList());
+        connectionSession.setQueryContext(queryContext);
+        return newInstance(databaseType, queryContext, connectionSession, false);
     }
     
     /**
      * Create new instance of backend handler.
      *
      * @param databaseType database type
-     * @param logicSQL logic SQL
+     * @param queryContext query context
      * @param connectionSession connection session
      * @param preferPreparedStatement use prepared statement as possible
      * @return created instance
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("unchecked")
-    public static ProxyBackendHandler newInstance(final DatabaseType databaseType, final LogicSQL logicSQL, final ConnectionSession connectionSession,
+    public static ProxyBackendHandler newInstance(final DatabaseType databaseType, final QueryContext queryContext, final ConnectionSession connectionSession,
                                                   final boolean preferPreparedStatement) throws SQLException {
-        SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
+        SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        String sql = logicSQL.getSql();
+        String sql = queryContext.getSql();
         handleAutoCommit(sqlStatement, connectionSession);
         if (sqlStatement instanceof TCLStatement) {
             return TransactionBackendHandlerFactory.newInstance((SQLStatementContext<TCLStatement>) sqlStatementContext, sql, connectionSession);
@@ -153,7 +153,7 @@ public final class ProxyBackendHandlerFactory {
         SQLCheckEngine.check(sqlStatementContext, Collections.emptyList(),
                 getRules(databaseName), databaseName, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases(), connectionSession.getGrantee());
         backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession);
-        return backendHandler.orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(logicSQL, connectionSession, preferPreparedStatement));
+        return backendHandler.orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement));
     }
     
     private static void checkUnsupportedDistSQLStatementInTransaction(final SQLStatement sqlStatement, final ConnectionSession connectionSession) {

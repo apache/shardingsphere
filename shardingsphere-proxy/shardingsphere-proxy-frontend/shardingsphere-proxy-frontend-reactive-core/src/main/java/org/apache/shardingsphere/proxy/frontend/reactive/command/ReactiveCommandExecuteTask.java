@@ -101,7 +101,7 @@ public final class ReactiveCommandExecuteTask implements Runnable {
         } catch (final Exception ignored) {
             // CHECKSTYLE:ON
         }
-        connectionSession.setLogicSQL(null);
+        connectionSession.clearQueryContext();
         return ((Future<Void>) connectionSession.getBackendConnection().closeExecutionResources()).onComplete(this::doFlushIfNecessary);
     }
     

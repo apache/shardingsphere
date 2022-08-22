@@ -32,7 +32,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ext
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLParameterStatusPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -97,9 +97,9 @@ public final class JDBCPortal implements Portal<Void> {
             ((ParameterAware) sqlStatementContext).setUpParameters(parameters);
         }
         DatabaseType databaseType = getDatabaseType(databaseName);
-        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, preparedStatement.getSql(), parameters);
-        backendConnection.getConnectionSession().setLogicSQL(logicSQL);
-        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(databaseType, logicSQL, backendConnection.getConnectionSession(), true);
+        QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), parameters);
+        backendConnection.getConnectionSession().setQueryContext(queryContext);
+        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(databaseType, queryContext, backendConnection.getConnectionSession(), true);
     }
     
     private static DatabaseType getDatabaseType(final String databaseName) {

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.route.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -45,14 +45,14 @@ public final class SQLRouteEngine {
     /**
      * Route SQL.
      *
-     * @param logicSQL logic SQL
-     * @param database database
      * @param connectionContext connection context
+     * @param queryContext query context
+     * @param database database
      * @return route context
      */
-    public RouteContext route(final LogicSQL logicSQL, final ShardingSphereDatabase database, final ConnectionContext connectionContext) {
-        SQLRouteExecutor executor = isNeedAllSchemas(logicSQL.getSqlStatementContext().getSqlStatement()) ? new AllSQLRouteExecutor() : new PartialSQLRouteExecutor(rules, props);
-        return executor.route(logicSQL, database, connectionContext);
+    public RouteContext route(final ConnectionContext connectionContext, final QueryContext queryContext, final ShardingSphereDatabase database) {
+        SQLRouteExecutor executor = isNeedAllSchemas(queryContext.getSqlStatementContext().getSqlStatement()) ? new AllSQLRouteExecutor() : new PartialSQLRouteExecutor(rules, props);
+        return executor.route(connectionContext, queryContext, database);
     }
     
     // TODO use dynamic config to judge UnconfiguredSchema

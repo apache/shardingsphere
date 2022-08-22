@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.communication;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
@@ -50,22 +50,23 @@ public final class DatabaseCommunicationEngineFactory {
      * Create new instance of {@link DatabaseCommunicationEngine}.
      *
      * @param <T> type of DatabaseCommunicationEngine
-     * @param logicSQL Logic SQL
+     * @param queryContext query context
      * @param backendConnection backend connection
      * @param preferPreparedStatement use prepared statement as possible
      * @return created instance
      */
-    public <T extends DatabaseCommunicationEngine> T newDatabaseCommunicationEngine(final LogicSQL logicSQL, final BackendConnection<?> backendConnection, final boolean preferPreparedStatement) {
+    public <T extends DatabaseCommunicationEngine> T newDatabaseCommunicationEngine(final QueryContext queryContext, final BackendConnection<?> backendConnection,
+                                                                                    final boolean preferPreparedStatement) {
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(backendConnection.getConnectionSession().getDatabaseName());
         T result;
         if (backendConnection instanceof JDBCBackendConnection) {
             JDBCBackendConnection jdbcBackendConnection = (JDBCBackendConnection) backendConnection;
-            String driverType = preferPreparedStatement || !logicSQL.getParameters().isEmpty() ? JDBCDriverType.PREPARED_STATEMENT : JDBCDriverType.STATEMENT;
-            result = (T) new JDBCDatabaseCommunicationEngine(driverType, database, logicSQL, jdbcBackendConnection);
+            String driverType = preferPreparedStatement || !queryContext.getParameters().isEmpty() ? JDBCDriverType.PREPARED_STATEMENT : JDBCDriverType.STATEMENT;
+            result = (T) new JDBCDatabaseCommunicationEngine(driverType, database, queryContext, jdbcBackendConnection);
             jdbcBackendConnection.add(result);
         } else {
             VertxBackendConnection vertxBackendConnection = (VertxBackendConnection) backendConnection;
-            result = (T) new VertxDatabaseCommunicationEngine(database, logicSQL, vertxBackendConnection);
+            result = (T) new VertxDatabaseCommunicationEngine(database, queryContext, vertxBackendConnection);
         }
         return result;
     }

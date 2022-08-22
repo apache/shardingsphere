@@ -31,7 +31,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.e
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.MySQLComStmtExecutePacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
@@ -92,8 +92,8 @@ public final class ReactiveMySQLComStmtExecuteExecutor implements ReactiveComman
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).setUpParameters(parameters);
         }
-        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, preparedStatement.getSql(), parameters);
-        connectionSession.setLogicSQL(logicSQL);
+        QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), parameters);
+        connectionSession.setQueryContext(queryContext);
         SQLStatement sqlStatement = preparedStatement.getSqlStatement();
         String databaseName = connectionSession.getDatabaseName();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
@@ -103,7 +103,7 @@ public final class ReactiveMySQLComStmtExecuteExecutor implements ReactiveComman
         if (sqlStatement instanceof TCLStatement) {
             proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(DatabaseTypeFactory.getInstance("MySQL"), preparedStatement.getSql(), sqlStatement, connectionSession);
         } else {
-            databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(logicSQL, connectionSession.getBackendConnection(), true);
+            databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(queryContext, connectionSession.getBackendConnection(), true);
         }
         return (null != databaseCommunicationEngine ? databaseCommunicationEngine.executeFuture() : proxyBackendHandler.executeFuture()).compose(responseHeader -> {
             Collection<DatabasePacket<?>> headerPackets = responseHeader instanceof QueryResponseHeader ? processQuery((QueryResponseHeader) responseHeader, characterSet)

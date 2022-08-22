@@ -84,7 +84,7 @@ public final class CommandExecutorTask implements Runnable {
             // CHECKSTYLE:ON
             processException(new RuntimeException(error));
         } finally {
-            connectionSession.setLogicSQL(null);
+            connectionSession.clearQueryContext();
             Collection<SQLException> exceptions = Collections.emptyList();
             try {
                 connectionSession.getBackendConnection().closeExecutionResources();
