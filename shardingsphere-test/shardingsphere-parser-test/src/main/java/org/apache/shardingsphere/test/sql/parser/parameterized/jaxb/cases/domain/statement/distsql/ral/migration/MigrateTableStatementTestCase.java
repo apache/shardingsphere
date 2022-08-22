@@ -36,6 +36,9 @@ public final class MigrateTableStatementTestCase extends SQLParserTestCase {
     @XmlElement(name = "source-table-name")
     private String sourceTableName;
     
+    @XmlElement(name = "source-schema-name")
+    private String sourceSchemaName;
+    
     @XmlElement(name = "target-database-name")
     private String targetDatabaseName;
     

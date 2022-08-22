@@ -32,6 +32,8 @@ public final class MigrateTableStatement extends UpdatableScalingRALStatement {
     
     private final String sourceDatabaseName;
     
+    private final String sourceSchemaName;
+    
     private final String sourceTableName;
     
     private final String targetDatabaseName;
