@@ -29,6 +29,10 @@ weight = 3
 
 `CREATE`、`ENCRYPT`、`RULE`、`COLUMNS`、`NAME`、`CIPHER`、`PLAIN`、`QUERY_WITH_CIPHER_COLUMN`、`TYPE`、`TRUE`、`FALSE`
 
+#### Database Discovery
+
+`CREATE`、`DB_DISCOVERY`、`RULE`、`RESOURCES`、`TYPE`、`NAME`、`PROPERTIES`、`HEARTBEAT`
+
 ### 补充说明
 
 - 上述保留字大小写不敏感

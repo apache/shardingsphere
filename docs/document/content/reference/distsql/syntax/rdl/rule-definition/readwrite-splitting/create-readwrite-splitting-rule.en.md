@@ -37,10 +37,10 @@ resourceName ::=
 
 ### Supplement
 
-- Support the creation of static readwrite-splitting rules and dynamic readwrite-splitting rules
-- Dynamic readwrite-splitting rules rely on database discovery rules
-- `loadBanlancerType` specifies the load balancing algorithm type, please refer to Load Balance Algorithm
-- Duplicate `ruleName` will not be created
+- Support the creation of static readwrite-splitting rules and dynamic readwrite-splitting rules;
+- Dynamic readwrite-splitting rules rely on database discovery rules;
+- `loadBanlancerType` specifies the load balancing algorithm type, please refer to Load Balance Algorithm;
+- Duplicate `ruleName` will not be created.
 
 ### Example
 
