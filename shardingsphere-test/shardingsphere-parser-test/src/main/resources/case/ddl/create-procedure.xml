@@ -30,4 +30,5 @@
     <create-procedure sql-case-id="create_procedure_with_create_view_as_select_into_outfile" />
     <create-procedure sql-case-id="create_procedure_with_sqlexception_and_create_view" />
     <create-procedure sql-case-id="create_procedure_with_deterministic_create_view" />
+<!--    <create-procedure sql-case-id="create_procedure_with_update_statement_oracle" />-->
 </sql-parser-test-cases>

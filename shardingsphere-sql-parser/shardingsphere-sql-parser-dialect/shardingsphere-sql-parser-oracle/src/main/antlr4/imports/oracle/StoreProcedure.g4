@@ -29,7 +29,7 @@ createProcedure
 
 plsqlProcedureSource
     : (schemaName DOT_)? procedureName ( LP_ parameterDeclaration ( COMMA_ parameterDeclaration )* RP_)? sharingClause?
-    ((defaultCollationClause | invokerRightsClause | accessibleByClause)*)? (IS | AS) (callSpec | declareSection? body) SEMI_
+    ((defaultCollationClause | invokerRightsClause | accessibleByClause)*)? (IS | AS) (callSpec | declareSection? body)
     ;
 
 body
@@ -45,7 +45,7 @@ statement
         | insert
         | lockTable
         | merge
-        )
+        ) SEMI_?
     ;
 
 exceptionHandler

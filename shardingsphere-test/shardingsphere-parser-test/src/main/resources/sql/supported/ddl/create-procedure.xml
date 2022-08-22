@@ -42,4 +42,5 @@
     <sql-case id="create_procedure_with_create_view_as_select_into_outfile" value="CREATE PROCEDURE bug20953() CREATE VIEW v AS SELECT 1 INTO OUTFILE &quot;file&quot;" db-types="MySQL" />
     <sql-case id="create_procedure_with_sqlexception_and_create_view" value="create procedure p() begin declare continue handler for sqlexception begin end; create view a as select 1; end" db-types="MySQL" />
     <sql-case id="create_procedure_with_deterministic_create_view" value="create procedure p1 () deterministic begin create view v1 as select 1; end;" db-types="MySQL" />
+<!--    <sql-case id="create_procedure_with_update_statement_oracle" value="CREATE PROCEDURE update_order (order_id NUMBER,status NUMBER) AS BEGIN  UPDATE t_order SET status = status WHERE order_id = order_id;END;" db-types="Oracle" />-->
 </sql-cases>
