@@ -101,7 +101,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     @Override
     public PreparedStatement prepareStatement(final String sql, final String[] columnNames) throws SQLException {
-        return new ShardingSpherePreparedStatement(this, sql, Statement.RETURN_GENERATED_KEYS);
+        return new ShardingSpherePreparedStatement(this, sql, columnNames);
     }
     
     @Override

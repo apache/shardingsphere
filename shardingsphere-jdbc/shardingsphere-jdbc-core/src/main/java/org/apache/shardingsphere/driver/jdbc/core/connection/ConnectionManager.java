@@ -23,6 +23,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.driver.jdbc.adapter.invocation.MethodInvocationRecorder;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
@@ -319,7 +320,7 @@ public final class ConnectionManager implements ExecutorJDBCManager, AutoCloseab
     @Override
     public PreparedStatement createStorageResource(final String sql, final List<Object> parameters,
                                                    final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
-        return option.isReturnGeneratedKeys() ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+        return option.isReturnGeneratedKeys() ? (ArrayUtils.isNotEmpty(option.getColumns()) ? connection.prepareStatement(sql, option.getColumns()) : connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
                 : connection.prepareStatement(sql, option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
     }
     
