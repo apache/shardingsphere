@@ -44,7 +44,7 @@ public final class ShadowRouteEngineFactory {
     /**
      * Create new instance of shadow route engine.
      *
-     * @param queryContext logic SQL
+     * @param queryContext query context
      * @return created instance
      */
     public static ShadowRouteEngine newInstance(final QueryContext queryContext) {

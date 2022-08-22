@@ -119,7 +119,7 @@ public final class ProxyBackendHandlerFactory {
      * Create new instance of backend handler.
      *
      * @param databaseType database type
-     * @param queryContext logic SQL
+     * @param queryContext query context
      * @param connectionSession connection session
      * @param preferPreparedStatement use prepared statement as possible
      * @return created instance

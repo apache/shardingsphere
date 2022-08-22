@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Logic SQL.
+ * Query context.
  */
 @Getter
 public final class QueryContext {

@@ -35,7 +35,7 @@ public interface SQLFederationDecider<T extends ShardingSphereRule> extends Orde
      * Judge whether to use sql federation engine.
      *
      * @param deciderContext decider context
-     * @param queryContext logic SQL
+     * @param queryContext query context
      * @param database database metadata
      * @param rule rule
      * @param props props

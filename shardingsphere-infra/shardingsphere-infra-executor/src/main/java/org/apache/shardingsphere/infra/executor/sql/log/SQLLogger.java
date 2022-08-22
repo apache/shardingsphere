@@ -38,7 +38,7 @@ public final class SQLLogger {
     /**
      * Log SQL.
      * 
-     * @param queryContext logic SQL
+     * @param queryContext query context
      * @param showSimple whether show SQL in simple style
      * @param executionContext Execution context
      */

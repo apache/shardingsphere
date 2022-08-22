@@ -119,7 +119,7 @@ public final class TrafficRule implements GlobalRule {
     /**
      * Find matched strategy rule.
      * 
-     * @param queryContext logic SQL
+     * @param queryContext query context
      * @param inTransaction is in transaction
      * @return matched strategy rule
      */

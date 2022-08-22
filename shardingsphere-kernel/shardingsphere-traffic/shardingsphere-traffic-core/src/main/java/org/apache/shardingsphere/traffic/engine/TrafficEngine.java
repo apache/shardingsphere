@@ -42,7 +42,7 @@ public final class TrafficEngine {
     /**
      * Dispatch.
      *
-     * @param queryContext logic SQL
+     * @param queryContext query context
      * @param inTransaction is in transaction
      * @return instance id
      */

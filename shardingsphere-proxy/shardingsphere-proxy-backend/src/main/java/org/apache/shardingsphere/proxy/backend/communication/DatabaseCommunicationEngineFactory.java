@@ -50,7 +50,7 @@ public final class DatabaseCommunicationEngineFactory {
      * Create new instance of {@link DatabaseCommunicationEngine}.
      *
      * @param <T> type of DatabaseCommunicationEngine
-     * @param queryContext Logic SQL
+     * @param queryContext query context
      * @param backendConnection backend connection
      * @param preferPreparedStatement use prepared statement as possible
      * @return created instance

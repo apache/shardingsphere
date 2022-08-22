@@ -52,7 +52,7 @@ public final class RawExecutor {
      * Execute.
      *
      * @param executionGroupContext execution group context
-     * @param queryContext logic SQL
+     * @param queryContext query context
      * @param callback raw SQL executor callback
      * @return execute results
      * @throws SQLException SQL exception

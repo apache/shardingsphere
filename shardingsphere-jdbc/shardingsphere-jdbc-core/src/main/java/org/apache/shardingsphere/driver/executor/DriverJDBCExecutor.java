@@ -91,7 +91,7 @@ public final class DriverJDBCExecutor {
      * Execute update.
      *
      * @param executionGroupContext execution group context
-     * @param queryContext logic SQL
+     * @param queryContext query context
      * @param routeUnits route units
      * @param callback JDBC executor callback
      * @return effected records count
@@ -132,7 +132,7 @@ public final class DriverJDBCExecutor {
      * Execute SQL.
      *
      * @param executionGroupContext execution group context
-     * @param queryContext logic SQL
+     * @param queryContext query context
      * @param routeUnits route units
      * @param callback JDBC executor callback
      * @return return true if is DQL, false if is DML

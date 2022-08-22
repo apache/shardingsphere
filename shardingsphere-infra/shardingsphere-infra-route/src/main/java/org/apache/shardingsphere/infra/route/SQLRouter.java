@@ -37,7 +37,7 @@ public interface SQLRouter<T extends ShardingSphereRule> extends OrderedSPI<T> {
     /**
      * Create route context.
      *
-     * @param queryContext logic SQL
+     * @param queryContext query context
      * @param database database
      * @param rule rule
      * @param props configuration properties
@@ -49,7 +49,7 @@ public interface SQLRouter<T extends ShardingSphereRule> extends OrderedSPI<T> {
     /**
      * Decorate route context.
      *  @param routeContext route context
-     * @param queryContext logic SQL
+     * @param queryContext query context
      * @param database database
      * @param rule rule
      * @param props configuration properties

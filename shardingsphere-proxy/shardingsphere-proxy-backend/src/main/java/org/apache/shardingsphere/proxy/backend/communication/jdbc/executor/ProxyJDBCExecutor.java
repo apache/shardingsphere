@@ -54,7 +54,7 @@ public final class ProxyJDBCExecutor {
     /**
      * Execute.
      * 
-     * @param queryContext logic SQL
+     * @param queryContext query context
      * @param executionGroupContext execution group context
      * @param isReturnGeneratedKeys is return generated keys
      * @param isExceptionThrown is exception thrown

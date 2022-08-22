@@ -51,7 +51,7 @@ public final class SQLFederationDeciderEngine {
     /**
      * Decide.
      * 
-     * @param queryContext logic SQL
+     * @param queryContext query context
      * @param database ShardingSphere database
      * @return SQL federation decider context
      */

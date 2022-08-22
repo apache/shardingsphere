@@ -45,7 +45,7 @@ public final class ProxyReactiveExecutor {
     /**
      * Execute.
      *
-     * @param queryContext logic SQL
+     * @param queryContext query context
      * @param executionGroupContext execution group context
      * @return execute results
      * @throws SQLException SQL exception

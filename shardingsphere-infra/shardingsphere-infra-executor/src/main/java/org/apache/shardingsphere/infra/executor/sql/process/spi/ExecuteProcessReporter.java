@@ -33,7 +33,7 @@ public interface ExecuteProcessReporter extends OptionalSPI {
     
     /**
      * Report the summary of this task.
-     * @param queryContext logic SQL
+     * @param queryContext query context
      * @param executionGroupContext execution group context
      * @param constants constants
      * @param eventBusContext event bus context                 

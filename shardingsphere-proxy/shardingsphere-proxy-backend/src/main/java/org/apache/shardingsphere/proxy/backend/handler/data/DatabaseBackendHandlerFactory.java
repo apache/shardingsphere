@@ -42,7 +42,7 @@ public final class DatabaseBackendHandlerFactory {
     /**
      * New instance of database backend handler.
      *
-     * @param queryContext Logic SQL
+     * @param queryContext query context
      * @param connectionSession connection session
      * @param preferPreparedStatement use prepared statement as possible
      * @return created instance
