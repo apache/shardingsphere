@@ -24,7 +24,6 @@ import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.pojo.CreateMigrationJobParameter;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
 import org.apache.shardingsphere.migration.distsql.statement.MigrateTableStatement;
-import org.apache.shardingsphere.sharding.yaml.swapper.YamlShardingRuleConfigurationSwapper;
 
 /**
  * Migrate table updater.
@@ -33,8 +32,6 @@ import org.apache.shardingsphere.sharding.yaml.swapper.YamlShardingRuleConfigura
 public final class MigrateTableUpdater implements RALUpdater<MigrateTableStatement> {
     
     private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
-    
-    private static final YamlShardingRuleConfigurationSwapper SHARDING_RULE_CONFIG_SWAPPER = new YamlShardingRuleConfigurationSwapper();
     
     @Override
     public void executeUpdate(final String databaseName, final MigrateTableStatement sqlStatement) {
