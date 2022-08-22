@@ -43,7 +43,7 @@ public abstract class ShardingSphereSQLException extends ShardingSphereInsideExc
     public ShardingSphereSQLException(final String sqlState, final int vendorCode, final String reason, final String... messageArguments) {
         this.sqlState = sqlState;
         this.vendorCode = vendorCode;
-        this.reason = String.format(reason, messageArguments);
+        this.reason = null == reason ? null : String.format(reason, messageArguments);
     }
     
     /**
