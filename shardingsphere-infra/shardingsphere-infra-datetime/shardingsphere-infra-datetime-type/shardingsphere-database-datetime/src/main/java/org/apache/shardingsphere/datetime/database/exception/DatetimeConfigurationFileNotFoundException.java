@@ -20,16 +20,14 @@ package org.apache.shardingsphere.datetime.database.exception;
 import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
 
-import java.sql.SQLException;
-
 /**
- * Datetime loading exception.
+ * Datetime configuration file not found exception.
  */
-public final class DatetimeLoadingException extends ShardingSphereSQLException {
+public final class DatetimeConfigurationFileNotFoundException extends ShardingSphereSQLException {
     
-    private static final long serialVersionUID = 7844267165522132993L;
+    private static final long serialVersionUID = 4820838154441059833L;
     
-    public DatetimeLoadingException(final SQLException cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 14011, "Load datetime from database failed, reason: %s", cause.getMessage());
+    public DatetimeConfigurationFileNotFoundException(final String configurationFile) {
+        super(XOpenSQLState.GENERAL_ERROR, 14010, "Can not find `%s` file for datetime initialize", configurationFile);
     }
 }

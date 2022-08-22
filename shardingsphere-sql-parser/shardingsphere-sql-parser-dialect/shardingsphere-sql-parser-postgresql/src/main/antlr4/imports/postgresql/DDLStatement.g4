@@ -1120,11 +1120,11 @@ alterTextSearchDictionary
     ;
 
 alterTextSearchParser
-    : ALTER TEXT SEARCH PARSER (anyName RENAME TO name | SET SCHEMA name)
+    : ALTER TEXT SEARCH PARSER anyName (RENAME TO name | SET SCHEMA name)
     ;
 
 alterTextSearchTemplate
-    : ALTER TEXT SEARCH TEMPLATE (anyName RENAME TO name | SET SCHEMA name)
+    : ALTER TEXT SEARCH TEMPLATE anyName (RENAME TO name | SET SCHEMA name)
     ;
 
 alterTrigger

@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.datetime.database.exception;
+package org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc;
 
-import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
-import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
-
-import java.sql.SQLException;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 /**
- * Datetime loading exception.
+ * Database type aware.
  */
-public final class DatetimeLoadingException extends ShardingSphereSQLException {
+public interface DatabaseTypeAware {
     
-    private static final long serialVersionUID = 7844267165522132993L;
-    
-    public DatetimeLoadingException(final SQLException cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 14011, "Load datetime from database failed, reason: %s", cause.getMessage());
-    }
+    /**
+     * Set database type.
+     * 
+     * @param databaseType database type
+     */
+    void setDatabaseType(DatabaseType databaseType);
 }

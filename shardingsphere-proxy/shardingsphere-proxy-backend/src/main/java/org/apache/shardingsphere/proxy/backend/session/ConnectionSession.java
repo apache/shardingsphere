@@ -21,13 +21,13 @@ import io.netty.util.AttributeMap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.session.ConnectionContext;
 import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.SQLStatementDatabaseHolder;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.communication.vertx.VertxBackendConnection;
@@ -36,6 +36,8 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionIsolationLevel;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+
+import java.util.Optional;
 
 /**
  * Connection session.
@@ -73,6 +75,9 @@ public final class ConnectionSession {
     
     private final ConnectionContext connectionContext;
     
+    // TODO rename to QueryContext
+    private LogicSQL logicSQL;
+    
     private final RequiredSessionVariableRecorder requiredSessionVariableRecorder = new RequiredSessionVariableRecorder();
     
     public ConnectionSession(final DatabaseType databaseType, final TransactionType initialTransactionType, final AttributeMap attributeMap) {
@@ -103,9 +108,6 @@ public final class ConnectionSession {
         if (null != databaseName && databaseName.equals(this.databaseName)) {
             return;
         }
-        if (statementManager instanceof JDBCBackendStatement) {
-            ((JDBCBackendStatement) statementManager).setDatabaseName(databaseName);
-        }
         this.databaseName = databaseName;
     }
     
@@ -115,7 +117,7 @@ public final class ConnectionSession {
      * @return database name
      */
     public String getDatabaseName() {
-        return null == SQLStatementDatabaseHolder.get() ? databaseName : SQLStatementDatabaseHolder.get();
+        return Optional.ofNullable(logicSQL).flatMap(LogicSQL::getSqlStatementDatabaseName).orElse(databaseName);
     }
     
     /**

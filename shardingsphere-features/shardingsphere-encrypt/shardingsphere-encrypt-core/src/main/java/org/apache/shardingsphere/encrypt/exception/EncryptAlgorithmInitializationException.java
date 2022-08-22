@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.datetime.database.exception;
+package org.apache.shardingsphere.encrypt.exception;
 
 import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
 
-import java.sql.SQLException;
-
 /**
- * Datetime loading exception.
+ * Encrypt algorithm initialization exception.
  */
-public final class DatetimeLoadingException extends ShardingSphereSQLException {
+public final class EncryptAlgorithmInitializationException extends ShardingSphereSQLException {
     
-    private static final long serialVersionUID = 7844267165522132993L;
+    private static final long serialVersionUID = -2004166948563207100L;
     
-    public DatetimeLoadingException(final SQLException cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 14011, "Load datetime from database failed, reason: %s", cause.getMessage());
+    public EncryptAlgorithmInitializationException(final String encryptorType, final String reason) {
+        super(XOpenSQLState.GENERAL_ERROR, 24000, "Encrypt algorithm `%s` initialization failed, reason is: %s", encryptorType, reason);
     }
 }
