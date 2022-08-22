@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.shardingsphere.infra.federation.optimizer.converter.exception.OptimizationSQLNodeConvertException;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.statement.select.SelectStatementConverter;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.type.CombineOperatorConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
@@ -51,6 +52,6 @@ public final class SQLNodeConverterEngine {
             }
             return sqlNode;
         }
-        throw new UnsupportedOperationException("Unsupported SQL node conversion.");
+        throw new OptimizationSQLNodeConvertException(statement);
     }
 }
