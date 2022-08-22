@@ -100,7 +100,7 @@ public final class ShardingSphereOptimizerTest {
         tables.put("t_user_info", createUserInfoTableMetaData());
         ShardingSphereSchema schema = new ShardingSphereSchema(tables);
         SqlToRelConverter converter = createSqlToRelConverter(schema);
-        optimizer = new ShardingSphereOptimizer(converter, QueryOptimizePlannerFactory.createHepPlanner());
+        optimizer = new ShardingSphereOptimizer(converter, QueryOptimizePlannerFactory.createHepPlannerWithoutCalc() , QueryOptimizePlannerFactory.createHepPlannerWithCalc());
     }
     
     private static SqlToRelConverter createSqlToRelConverter(final ShardingSphereSchema schema) {

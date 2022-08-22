@@ -31,6 +31,8 @@ import org.apache.calcite.rel.RelCollationTraitDef;
 import org.apache.calcite.rel.rules.AggregateExpandDistinctAggregatesRule;
 import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.rules.ProjectRemoveRule;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.translatable.TranslatableProjectFilterRule;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.translatable.TranslatableProjectRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -59,11 +61,28 @@ public final class QueryOptimizePlannerFactory {
      *
      * @return hep planner instance
      */
+    public static RelOptPlanner createHepPlannerWithoutCalc() {
+        HepProgramBuilder builder = new HepProgramBuilder();
+        builder.addGroupBegin().addRuleCollection(getSubQueryRules()).addGroupEnd().addMatchOrder(HepMatchOrder.DEPTH_FIRST);
+        builder.addGroupBegin().addRuleCollection(getFilterRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
+        builder.addGroupBegin().addRuleCollection(getProjectRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
+        builder.addMatchLimit(DEFAULT_MATCH_LIMIT);
+        return new HepPlanner(builder.build());
+    }
+    
+    public static RelOptPlanner createHepPlannerWithCalc() {
+        HepProgramBuilder builder = new HepProgramBuilder();
+        builder.addGroupBegin().addRuleCollection(getCalcRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
+        builder.addMatchLimit(DEFAULT_MATCH_LIMIT);
+        return new HepPlanner(builder.build());
+    }
+    
     public static RelOptPlanner createHepPlanner() {
         HepProgramBuilder builder = new HepProgramBuilder();
         builder.addGroupBegin().addRuleCollection(getSubQueryRules()).addGroupEnd().addMatchOrder(HepMatchOrder.DEPTH_FIRST);
         builder.addGroupBegin().addRuleCollection(getFilterRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
         builder.addGroupBegin().addRuleCollection(getProjectRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
+        builder.addGroupBegin().addRuleCollection(getCalcRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
         builder.addMatchLimit(DEFAULT_MATCH_LIMIT);
         return new HepPlanner(builder.build());
     }
@@ -77,8 +96,11 @@ public final class QueryOptimizePlannerFactory {
         planner.addRule(EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE);
         planner.addRule(EnumerableRules.ENUMERABLE_AGGREGATE_RULE);
         planner.addRule(EnumerableRules.ENUMERABLE_FILTER_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_PROJECT_RULE);
         planner.addRule(EnumerableRules.ENUMERABLE_CORRELATE_RULE);
         planner.addRule(EnumerableRules.ENUMERABLE_UNION_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_FILTER_TO_CALC_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_PROJECT_TO_CALC_RULE);
     }
     
     private static Collection<RelOptRule> getSubQueryRules() {
@@ -89,14 +111,21 @@ public final class QueryOptimizePlannerFactory {
         return result;
     }
     
-    private static Collection<RelOptRule> getProjectRules() {
+    private static Collection<RelOptRule> getCalcRules() {
         Collection<RelOptRule> result = new LinkedList<>();
         result.add(AggregateExpandDistinctAggregatesRule.Config.DEFAULT.toRule());
-        // TODO PROJECT_TO_CALC and FILTER_TO_CALC better be removed when using TranslatableTableScan.
         result.add(CoreRules.PROJECT_TO_CALC);
         result.add(CoreRules.FILTER_TO_CALC);
         result.add(CoreRules.PROJECT_CALC_MERGE);
         result.add(CoreRules.FILTER_CALC_MERGE);
+        result.add(EnumerableRules.ENUMERABLE_FILTER_TO_CALC_RULE);
+        result.add(EnumerableRules.ENUMERABLE_PROJECT_TO_CALC_RULE);
+        return result;
+    }
+    
+    private static Collection<RelOptRule> getProjectRules() {
+        Collection<RelOptRule> result = new LinkedList<>();
+        result.add(AggregateExpandDistinctAggregatesRule.Config.DEFAULT.toRule());
         result.add(CoreRules.PROJECT_CORRELATE_TRANSPOSE);
         result.add(CoreRules.PROJECT_SET_OP_TRANSPOSE);
         result.add(CoreRules.PROJECT_JOIN_TRANSPOSE);
@@ -104,6 +133,7 @@ public final class QueryOptimizePlannerFactory {
         result.add(CoreRules.PROJECT_FILTER_TRANSPOSE);
         result.add(CoreRules.PROJECT_REDUCE_EXPRESSIONS);
         result.add(ProjectRemoveRule.Config.DEFAULT.toRule());
+        result.add(TranslatableProjectRule.INSTANCE);
         return result;
     }
     
@@ -118,6 +148,8 @@ public final class QueryOptimizePlannerFactory {
         result.add(CoreRules.FILTER_REDUCE_EXPRESSIONS);
         result.add(CoreRules.JOIN_PUSH_EXPRESSIONS);
         result.add(CoreRules.JOIN_PUSH_TRANSITIVE_PREDICATES);
+        result.add(TranslatableProjectRule.INSTANCE);
+        result.add(TranslatableProjectFilterRule.INSTANCE);
         return result;
     }
 }
