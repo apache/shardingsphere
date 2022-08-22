@@ -174,7 +174,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         Map<LogicTableName, String> tableNameSchemaMap = TableNameSchemaNameMapping.convert(jobConfig.getSchemaTablesMap());
         TableNameSchemaNameMapping tableNameSchemaNameMapping = new TableNameSchemaNameMapping(tableNameSchemaMap);
         DumperConfiguration dumperConfig = createDumperConfiguration(jobConfig.getJobId(), jobConfig.getSourceDataSourceName(), jobConfig.getSource(), tableNameMap, tableNameSchemaNameMapping);
-        // TODO now shardingColumnsMap always empty, 
+        // TODO now shardingColumnsMap always empty,
         ImporterConfiguration importerConfig = createImporterConfiguration(jobConfig, pipelineProcessConfig, Collections.emptyMap(), tableNameSchemaNameMapping);
         TaskConfiguration result = new TaskConfiguration(dumperConfig, importerConfig);
         log.info("createTaskConfiguration, dataSourceName={}, result={}", jobConfig.getSourceDataSourceName(), result);

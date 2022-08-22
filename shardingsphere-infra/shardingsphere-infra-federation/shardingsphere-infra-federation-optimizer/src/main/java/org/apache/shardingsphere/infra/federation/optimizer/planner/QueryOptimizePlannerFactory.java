@@ -57,7 +57,7 @@ public final class QueryOptimizePlannerFactory {
     }
     
     /**
-     * Create new instance of hep planner.
+     * Create new instance of hep planner without calc rules.
      *
      * @return hep planner instance
      */
@@ -70,6 +70,11 @@ public final class QueryOptimizePlannerFactory {
         return new HepPlanner(builder.build());
     }
     
+    /**
+     * Create new instance of hep planner with calc rules.
+     *
+     * @return hep planner instance
+     */
     public static RelOptPlanner createHepPlannerWithCalc() {
         HepProgramBuilder builder = new HepProgramBuilder();
         builder.addGroupBegin().addRuleCollection(getCalcRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
@@ -77,6 +82,11 @@ public final class QueryOptimizePlannerFactory {
         return new HepPlanner(builder.build());
     }
     
+    /**
+     * Create new instance of hep planner.
+     *
+     * @return hep planner instance
+     */
     public static RelOptPlanner createHepPlanner() {
         HepProgramBuilder builder = new HepProgramBuilder();
         builder.addGroupBegin().addRuleCollection(getSubQueryRules()).addGroupEnd().addMatchOrder(HepMatchOrder.DEPTH_FIRST);
@@ -120,6 +130,7 @@ public final class QueryOptimizePlannerFactory {
         result.add(CoreRules.FILTER_CALC_MERGE);
         result.add(EnumerableRules.ENUMERABLE_FILTER_TO_CALC_RULE);
         result.add(EnumerableRules.ENUMERABLE_PROJECT_TO_CALC_RULE);
+        result.add(CoreRules.CALC_MERGE);
         return result;
     }
     

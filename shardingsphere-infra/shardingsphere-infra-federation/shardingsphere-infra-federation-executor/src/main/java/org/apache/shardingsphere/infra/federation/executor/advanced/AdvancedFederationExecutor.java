@@ -133,7 +133,8 @@ public final class AdvancedFederationExecutor implements FederationExecutor {
         CalciteCatalogReader catalogReader = OptimizerPlannerContextFactory.createCatalogReader(schemaName, translatableSchema, relDataTypeFactory, connectionConfig);
         SqlValidator validator = OptimizerPlannerContextFactory.createValidator(catalogReader, relDataTypeFactory, connectionConfig);
         SqlToRelConverter converter = OptimizerPlannerContextFactory.createConverter(catalogReader, validator, relDataTypeFactory);
-        RelNode bestPlan = new ShardingSphereOptimizer(converter, QueryOptimizePlannerFactory.createHepPlannerWithoutCalc(), QueryOptimizePlannerFactory.createHepPlannerWithCalc()).optimize(sqlStatement);
+        RelNode bestPlan =
+                new ShardingSphereOptimizer(converter, QueryOptimizePlannerFactory.createHepPlannerWithoutCalc(), QueryOptimizePlannerFactory.createHepPlannerWithCalc()).optimize(sqlStatement);
         Bindable<Object[]> executablePlan = EnumerableInterpretable.toBindable(Collections.emptyMap(), null, (EnumerableRel) bestPlan, EnumerableRel.Prefer.ARRAY);
         return executablePlan.bind(new CommonExecuteDataContext(validator, converter, parameters));
     }
