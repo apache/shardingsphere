@@ -158,9 +158,6 @@ public final class TableRule {
     }
     
     private List<String> getDataNodes(final ShardingAutoTableRuleConfiguration tableRuleConfig, final ShardingAutoTableAlgorithm shardingAlgorithm, final Collection<String> dataSourceNames) {
-        if (null != tableRuleConfig.getActualDataNodes() && !tableRuleConfig.getActualDataNodes().isEmpty()) {
-            return new InlineExpressionParser(tableRuleConfig.getActualDataNodes()).splitAndEvaluate();
-        }
         if (null == tableShardingStrategyConfig) {
             return new LinkedList<>();
         }

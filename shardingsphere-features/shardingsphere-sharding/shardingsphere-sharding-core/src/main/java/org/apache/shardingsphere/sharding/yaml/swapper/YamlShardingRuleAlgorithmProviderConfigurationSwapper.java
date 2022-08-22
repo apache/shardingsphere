@@ -30,7 +30,6 @@ import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlKeyGenerateS
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlShardingAuditStrategyConfigurationSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlShardingStrategyConfigurationSwapper;
 
-import java.util.Collections;
 import java.util.Map.Entry;
 
 /**
@@ -46,12 +45,13 @@ public final class YamlShardingRuleAlgorithmProviderConfigurationSwapper impleme
     
     private final YamlShardingAuditStrategyConfigurationSwapper auditStrategySwapper = new YamlShardingAuditStrategyConfigurationSwapper();
     
+    private final YamlShardingAutoTableRuleConfigurationSwapper autoTableYamlSwapper = new YamlShardingAutoTableRuleConfigurationSwapper();
+    
     @Override
     public YamlShardingRuleConfiguration swapToYamlConfiguration(final AlgorithmProvidedShardingRuleConfiguration data) {
         YamlShardingRuleConfiguration result = new YamlShardingRuleConfiguration();
         data.getTables().forEach(each -> result.getTables().put(each.getLogicTable(), tableSwapper.swapToYamlConfiguration(each)));
-        data.getAutoTables().forEach(each -> result.getAutoTables().put(each.getLogicTable(), new YamlShardingAutoTableRuleConfigurationSwapper(data.getShardingAlgorithms(), Collections.emptyMap())
-                .swapToYamlConfiguration(each)));
+        data.getAutoTables().forEach(each -> result.getAutoTables().put(each.getLogicTable(), autoTableYamlSwapper.swapToYamlConfiguration(each)));
         result.getBindingTables().addAll(data.getBindingTableGroups());
         result.getBroadcastTables().addAll(data.getBroadcastTables());
         setYamlStrategies(data, result);
@@ -99,7 +99,7 @@ public final class YamlShardingRuleAlgorithmProviderConfigurationSwapper impleme
         for (Entry<String, YamlShardingAutoTableRuleConfiguration> entry : yamlConfig.getAutoTables().entrySet()) {
             YamlShardingAutoTableRuleConfiguration tableRuleConfig = entry.getValue();
             tableRuleConfig.setLogicTable(entry.getKey());
-            result.getAutoTables().add(new YamlShardingAutoTableRuleConfigurationSwapper(Collections.emptyMap(), Collections.emptyMap()).swapToObject(tableRuleConfig));
+            result.getAutoTables().add(autoTableYamlSwapper.swapToObject(tableRuleConfig));
         }
         result.getBindingTableGroups().addAll(yamlConfig.getBindingTables());
         result.getBroadcastTables().addAll(yamlConfig.getBroadcastTables());
