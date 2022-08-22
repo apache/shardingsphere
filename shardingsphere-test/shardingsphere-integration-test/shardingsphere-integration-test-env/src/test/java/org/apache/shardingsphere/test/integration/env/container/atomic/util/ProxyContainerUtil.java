@@ -15,26 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.container.atomic.constants;
+package org.apache.shardingsphere.test.integration.env.container.atomic.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
- * Proxy container constants.
+ * Proxy container util.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ProxyContainerConstants {
+public class ProxyContainerUtil {
     
-    public static final String USERNAME = "proxy";
+    private static final AtomicInteger ATOMIC_PROXY_CONTAINER_ID = new AtomicInteger(1);
     
-    public static final String PASSWORD = "Proxy@123";
-    
-    public static final String AGENT_HOME_IN_CONTAINER = "/usr/local/shardingsphere-agent";
-    
-    public static final String PROXY_CONTAINER_NAME_PREFIX = "ShardingSphere-Proxy";
-    
-    public static final String PROXY_CONTAINER_IMAGE = "apache/shardingsphere-proxy-test";
-    
-    public static final String PROXY_CONTAINER_ABBREVIATION = "proxy";
+    /**
+     * Generate a unique proxy container id.
+     *
+     * @return unique proxy container id
+     */
+    public static int generateContainerId() {
+        return ATOMIC_PROXY_CONTAINER_ID.getAndIncrement();
+    }
 }
