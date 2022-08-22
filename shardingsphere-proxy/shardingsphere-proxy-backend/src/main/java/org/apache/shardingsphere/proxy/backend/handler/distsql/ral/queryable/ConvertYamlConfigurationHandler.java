@@ -105,7 +105,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
             DataSourceProperties dataSourceProperties = DataSourcePropertiesCreator.create(HikariDataSource.class.getName(), dataSourceConfigSwapper.swap(entry.getValue()));
             appendResource(entry.getKey(), dataSourceProperties, stringBuilder);
             if (iterator.hasNext()) {
-                stringBuilder.append(DistSQLScriptConstants.COMMA).append(System.lineSeparator());
+                stringBuilder.append(DistSQLScriptConstants.COMMA);
             }
         }
         stringBuilder.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator());
