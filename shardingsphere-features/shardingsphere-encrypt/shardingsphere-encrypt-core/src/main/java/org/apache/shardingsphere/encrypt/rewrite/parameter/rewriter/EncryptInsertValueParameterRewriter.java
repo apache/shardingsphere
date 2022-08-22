@@ -84,7 +84,7 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
                 ExpressionSegment expressionSegment = insertStatementContext.getInsertValueContexts().get(count).getValueExpressions().get(columnIndex);
                 if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
                     encryptInsertValue(
-                            encryptAlgorithm, assistEncryptAlgorithm, parameterIndex, insertStatementContext.getInsertValueContexts().get(count).getValue(columnIndex)
+                            encryptAlgorithm, assistEncryptAlgorithm, parameterIndex, insertStatementContext.getInsertValueContexts().get(count).getLiteralValue(columnIndex)
                                     .orElseThrow(() -> new ShardingSphereException("Not support for encrypt!")),
                             standardParameterBuilder, encryptContext);
                 }
