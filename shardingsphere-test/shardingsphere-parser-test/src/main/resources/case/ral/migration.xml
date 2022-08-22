@@ -38,27 +38,27 @@
     </show-migration-status>
     
     <migrate-table sql-case-id="migrate-table-without-schema-target-db">
-        <source-database-name>ds_0</source-database-name>
+        <source-resource-name>ds_0</source-resource-name>
         <source-table-name>t_order</source-table-name>
         <target-table-name>t_order</target-table-name>
     </migrate-table>
     
     <migrate-table sql-case-id="migrate-table-with-schema">
-        <source-database-name>ds_0</source-database-name>
+        <source-resource-name>ds_0</source-resource-name>
         <source-schema-name>public</source-schema-name>
         <source-table-name>t_order</source-table-name>
         <target-table-name>t_order</target-table-name>
     </migrate-table>
     
     <migrate-table sql-case-id="migrate-table-with-target-db">
-        <source-database-name>ds_0</source-database-name>
+        <source-resource-name>ds_0</source-resource-name>
         <source-table-name>t_order</source-table-name>
         <target-database-name>sharding_db</target-database-name>
         <target-table-name>t_order</target-table-name>
     </migrate-table>
     
     <migrate-table sql-case-id="migrate-table-with-schema-target-db">
-        <source-database-name>ds_0</source-database-name>
+        <source-resource-name>ds_0</source-resource-name>
         <source-schema-name>public</source-schema-name>
         <source-table-name>t_order</source-table-name>
         <target-database-name>sharding_db</target-database-name>

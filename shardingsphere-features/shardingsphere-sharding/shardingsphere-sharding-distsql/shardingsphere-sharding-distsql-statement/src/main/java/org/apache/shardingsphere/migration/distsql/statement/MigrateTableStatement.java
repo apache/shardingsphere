@@ -30,7 +30,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableS
 @ToString
 public final class MigrateTableStatement extends UpdatableScalingRALStatement {
     
-    private final String sourceDatabaseName;
+    private final String sourceResourceName;
     
     private final String sourceSchemaName;
     
