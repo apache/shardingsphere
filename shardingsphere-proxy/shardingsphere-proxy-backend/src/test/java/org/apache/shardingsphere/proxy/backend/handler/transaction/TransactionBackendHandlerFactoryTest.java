@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.transaction;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -103,7 +103,7 @@ public final class TransactionBackendHandlerFactoryTest extends ProxyContextRest
         try (MockedStatic<DatabaseCommunicationEngineFactory> mockedStatic = mockStatic(DatabaseCommunicationEngineFactory.class)) {
             DatabaseCommunicationEngineFactory mockFactory = mock(DatabaseCommunicationEngineFactory.class);
             mockedStatic.when(DatabaseCommunicationEngineFactory::getInstance).thenReturn(mockFactory);
-            when(mockFactory.newDatabaseCommunicationEngine(any(LogicSQL.class), nullable(BackendConnection.class), anyBoolean())).thenReturn(mock(DatabaseCommunicationEngine.class));
+            when(mockFactory.newDatabaseCommunicationEngine(any(QueryContext.class), nullable(BackendConnection.class), anyBoolean())).thenReturn(mock(DatabaseCommunicationEngine.class));
             assertThat(TransactionBackendHandlerFactory.newInstance(context, null, mock(ConnectionSession.class)), instanceOf(DatabaseCommunicationEngine.class));
         }
     }

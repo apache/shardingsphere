@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.federation.executor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
@@ -38,7 +38,7 @@ public final class FederationContext {
     
     private final boolean preview;
     
-    private final LogicSQL logicSQL;
+    private final QueryContext queryContext;
     
     private final Map<String, ShardingSphereDatabase> databases;
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.data.impl;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
@@ -88,7 +88,7 @@ public final class UnicastDatabaseBackendHandlerTest extends ProxyContextRestore
         when(connectionSession.getDefaultDatabaseName()).thenReturn(String.format(DATABASE_PATTERN, 0));
         when(connectionSession.getBackendConnection()).thenReturn(mock(BackendConnection.class));
         mockDatabaseCommunicationEngine(new UpdateResponseHeader(mock(SQLStatement.class)));
-        unicastDatabaseBackendHandler = new UnicastDatabaseBackendHandler(new LogicSQL(mock(SQLStatementContext.class), EXECUTE_SQL, Collections.emptyList()), connectionSession);
+        unicastDatabaseBackendHandler = new UnicastDatabaseBackendHandler(new QueryContext(mock(SQLStatementContext.class), EXECUTE_SQL, Collections.emptyList()), connectionSession);
         setBackendHandlerFactory(unicastDatabaseBackendHandler);
     }
     
@@ -105,7 +105,7 @@ public final class UnicastDatabaseBackendHandlerTest extends ProxyContextRestore
     
     private void mockDatabaseCommunicationEngine(final ResponseHeader responseHeader) throws SQLException {
         when(databaseCommunicationEngine.execute()).thenReturn(responseHeader);
-        when(databaseCommunicationEngineFactory.newDatabaseCommunicationEngine(any(LogicSQL.class), any(BackendConnection.class), eq(false))).thenReturn(databaseCommunicationEngine);
+        when(databaseCommunicationEngineFactory.newDatabaseCommunicationEngine(any(QueryContext.class), any(BackendConnection.class), eq(false))).thenReturn(databaseCommunicationEngine);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

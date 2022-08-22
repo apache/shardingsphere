@@ -21,7 +21,7 @@ import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
 import org.apache.shardingsphere.agent.metrics.api.fixture.FixtureWrapper;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -46,31 +46,31 @@ public final class SQLRouteEngineAdviceTest extends MetricsAdviceBaseTest {
     
     @Test
     public void assertInsertRoute() {
-        LogicSQL logicSQL = new LogicSQL(new CommonSQLStatementContext<>(new MySQLInsertStatement()), "", Collections.emptyList());
-        assertRoute(MetricIds.ROUTE_SQL_INSERT, logicSQL);
+        QueryContext queryContext = new QueryContext(new CommonSQLStatementContext<>(new MySQLInsertStatement()), "", Collections.emptyList());
+        assertRoute(MetricIds.ROUTE_SQL_INSERT, queryContext);
     }
     
     @Test
     public void assertSelectRoute() {
-        LogicSQL logicSQL = new LogicSQL(new CommonSQLStatementContext<>(new MySQLSelectStatement()), "", Collections.emptyList());
-        assertRoute(MetricIds.ROUTE_SQL_SELECT, logicSQL);
+        QueryContext queryContext = new QueryContext(new CommonSQLStatementContext<>(new MySQLSelectStatement()), "", Collections.emptyList());
+        assertRoute(MetricIds.ROUTE_SQL_SELECT, queryContext);
     }
     
     @Test
     public void assertDeleteRoute() {
-        LogicSQL logicSQL = new LogicSQL(new CommonSQLStatementContext<>(new MySQLDeleteStatement()), "", Collections.emptyList());
-        assertRoute(MetricIds.ROUTE_SQL_DELETE, logicSQL);
+        QueryContext queryContext = new QueryContext(new CommonSQLStatementContext<>(new MySQLDeleteStatement()), "", Collections.emptyList());
+        assertRoute(MetricIds.ROUTE_SQL_DELETE, queryContext);
     }
     
     @Test
     public void assertUpdateRoute() {
-        LogicSQL logicSQL = new LogicSQL(new CommonSQLStatementContext<>(new MySQLUpdateStatement()), "", Collections.emptyList());
-        assertRoute(MetricIds.ROUTE_SQL_UPDATE, logicSQL);
+        QueryContext queryContext = new QueryContext(new CommonSQLStatementContext<>(new MySQLUpdateStatement()), "", Collections.emptyList());
+        assertRoute(MetricIds.ROUTE_SQL_UPDATE, queryContext);
     }
     
-    public void assertRoute(final String metricIds, final LogicSQL logicSQL) {
+    public void assertRoute(final String metricIds, final QueryContext queryContext) {
         MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
-        sqlRouteEngineAdvice.beforeMethod(targetObject, mock(Method.class), new Object[]{logicSQL}, new MethodInvocationResult());
+        sqlRouteEngineAdvice.beforeMethod(targetObject, mock(Method.class), new Object[]{queryContext}, new MethodInvocationResult());
         FixtureWrapper wrapper = (FixtureWrapper) MetricsPool.get(metricIds).get();
         assertTrue(MetricsPool.get(metricIds).isPresent());
         assertThat(((FixtureWrapper) MetricsPool.get(metricIds).get()).getFixtureValue(), is(1.0));

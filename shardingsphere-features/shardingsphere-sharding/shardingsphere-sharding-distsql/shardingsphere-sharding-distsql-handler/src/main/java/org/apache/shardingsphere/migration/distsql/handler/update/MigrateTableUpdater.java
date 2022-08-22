@@ -17,22 +17,29 @@
 
 package org.apache.shardingsphere.migration.distsql.handler.update;
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
+import org.apache.shardingsphere.data.pipeline.api.pojo.CreateMigrationJobParameter;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
 import org.apache.shardingsphere.migration.distsql.statement.MigrateTableStatement;
 
 /**
  * Migrate table updater.
  */
+@Slf4j
 public final class MigrateTableUpdater implements RALUpdater<MigrateTableStatement> {
     
     private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
     
     @Override
     public void executeUpdate(final String databaseName, final MigrateTableStatement sqlStatement) {
-        // TODO implement migrate table
-        JOB_API.getType();
+        log.info("start migrate job by {}", sqlStatement);
+        String targetDatabaseName = ObjectUtils.defaultIfNull(sqlStatement.getTargetDatabaseName(), databaseName);
+        CreateMigrationJobParameter createMigrationJobParameter = new CreateMigrationJobParameter(sqlStatement.getSourceResourceName(), sqlStatement.getSourceSchemaName(),
+                sqlStatement.getSourceTableName(), targetDatabaseName, sqlStatement.getTargetTableName());
+        JOB_API.createJobAndStart(createMigrationJobParameter);
     }
     
     @Override

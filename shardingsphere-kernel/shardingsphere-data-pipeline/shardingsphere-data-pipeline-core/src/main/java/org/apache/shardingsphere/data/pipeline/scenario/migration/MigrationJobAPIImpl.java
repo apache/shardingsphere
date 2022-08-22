@@ -19,25 +19,36 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.api.config.TaskConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlMigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlPipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
+import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeEntry;
+import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
+import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
+import org.apache.shardingsphere.data.pipeline.api.pojo.CreateMigrationJobParameter;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.MigrationJobInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
-import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobItemAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.AbstractPipelineJobAPIImpl;
@@ -49,39 +60,52 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.AddMigrationSourceResourceException;
 import org.apache.shardingsphere.data.pipeline.core.exception.DropMigrationSourceResourceException;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineVerifyFailedException;
-import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineSchemaTableUtil;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
-import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparerFactory;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
-import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.lock.ExclusiveLockDefinition;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
 
+import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 /**
  * Migration job API impl.
  */
 @Slf4j
 public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implements MigrationJobAPI {
+    
+    private static final YamlRuleConfigurationSwapperEngine RULE_CONFIG_SWAPPER_ENGINE = new YamlRuleConfigurationSwapperEngine();
+    
+    private static final YamlDataSourceConfigurationSwapper DATA_SOURCE_CONFIG_SWAPPER = new YamlDataSourceConfigurationSwapper();
+    
+    private static final YamlPipelineDataSourceConfigurationSwapper PIPELINE_DATA_SOURCE_CONFIG_SWAPPER = new YamlPipelineDataSourceConfigurationSwapper();
     
     private final PipelineJobItemAPI jobItemAPI = new InventoryIncrementalJobItemAPIImpl();
     
@@ -95,16 +119,13 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     @Override
     protected String marshalJobIdLeftPart(final PipelineJobId pipelineJobId) {
         MigrationJobId jobId = (MigrationJobId) pipelineJobId;
-        String text = jobId.getFormatVersion() + "|" + jobId.getCurrentMetadataVersion() + "T" + jobId.getNewMetadataVersion() + "|" + jobId.getDatabaseName();
-        return Hex.encodeHexString(text.getBytes(StandardCharsets.UTF_8), true);
+        String text = jobId.getDatabaseName() + "|" + jobId.getTableName() + "|" + jobId.getSourceDataSourceName();
+        return DigestUtils.md5Hex(text.getBytes(StandardCharsets.UTF_8));
     }
     
     @Override
     public void extendYamlJobConfiguration(final YamlPipelineJobConfiguration yamlJobConfig) {
         YamlMigrationJobConfiguration config = (YamlMigrationJobConfiguration) yamlJobConfig;
-        if (null == config.getJobShardingDataNodes()) {
-            RuleAlteredJobConfigurationPreparerFactory.getInstance().extendJobConfiguration(config);
-        }
         if (null == yamlJobConfig.getJobId()) {
             config.setJobId(generateJobId(config));
         }
@@ -116,15 +137,19 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
             PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(config.getTarget().getType(), config.getTarget().getParameter());
             config.setTargetDatabaseType(targetDataSourceConfig.getDatabaseType().getType());
         }
+        JobDataNodeEntry nodeEntry = new JobDataNodeEntry(config.getSourceTableName(),
+                Collections.singletonList(new DataNode(config.getSourceDataSourceName(), config.getSourceTableName())));
+        String dataNodeLine = new JobDataNodeLine(Collections.singletonList(nodeEntry)).marshal();
+        config.setTablesFirstDataNodes(dataNodeLine);
+        config.setJobShardingDataNodes(Collections.singletonList(dataNodeLine));
     }
     
     private String generateJobId(final YamlMigrationJobConfiguration config) {
         MigrationJobId jobId = new MigrationJobId();
         jobId.setTypeCode(getJobType().getTypeCode());
-        jobId.setFormatVersion(MigrationJobId.CURRENT_VERSION);
-        jobId.setCurrentMetadataVersion(config.getActiveVersion());
-        jobId.setNewMetadataVersion(config.getNewVersion());
-        jobId.setDatabaseName(config.getDatabaseName());
+        jobId.setSourceDataSourceName(config.getSourceDataSourceName());
+        jobId.setTableName(config.getSourceTableName());
+        jobId.setDatabaseName(config.getTargetDatabaseName());
         return marshalJobId(jobId);
     }
     
@@ -144,7 +169,44 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     
     @Override
     public TaskConfiguration buildTaskConfiguration(final MigrationJobConfiguration jobConfig, final int jobShardingItem, final PipelineProcessConfiguration pipelineProcessConfig) {
-        return RuleAlteredJobConfigurationPreparerFactory.getInstance().createTaskConfiguration(jobConfig, jobShardingItem, pipelineProcessConfig);
+        Map<ActualTableName, LogicTableName> tableNameMap = new LinkedHashMap<>();
+        tableNameMap.put(new ActualTableName(jobConfig.getSourceTableName()), new LogicTableName(jobConfig.getSourceTableName()));
+        Map<LogicTableName, String> tableNameSchemaMap = TableNameSchemaNameMapping.convert(jobConfig.getSchemaTablesMap());
+        TableNameSchemaNameMapping tableNameSchemaNameMapping = new TableNameSchemaNameMapping(tableNameSchemaMap);
+        DumperConfiguration dumperConfig = createDumperConfiguration(jobConfig.getJobId(), jobConfig.getSourceDataSourceName(), jobConfig.getSource(), tableNameMap, tableNameSchemaNameMapping);
+        // TODO now shardingColumnsMap always empty,
+        ImporterConfiguration importerConfig = createImporterConfiguration(jobConfig, pipelineProcessConfig, Collections.emptyMap(), tableNameSchemaNameMapping);
+        TaskConfiguration result = new TaskConfiguration(dumperConfig, importerConfig);
+        log.info("createTaskConfiguration, dataSourceName={}, result={}", jobConfig.getSourceDataSourceName(), result);
+        return result;
+    }
+    
+    private static DumperConfiguration createDumperConfiguration(final String jobId, final String dataSourceName, final PipelineDataSourceConfiguration sourceDataSource,
+                                                                 final Map<ActualTableName, LogicTableName> tableNameMap, final TableNameSchemaNameMapping tableNameSchemaNameMapping) {
+        DumperConfiguration result = new DumperConfiguration();
+        result.setJobId(jobId);
+        result.setDataSourceName(dataSourceName);
+        result.setDataSourceConfig(sourceDataSource);
+        result.setTableNameMap(tableNameMap);
+        result.setTableNameSchemaNameMapping(tableNameSchemaNameMapping);
+        return result;
+    }
+    
+    private static ImporterConfiguration createImporterConfiguration(final MigrationJobConfiguration jobConfig, final PipelineProcessConfiguration pipelineProcessConfig,
+                                                                     final Map<LogicTableName, Set<String>> shardingColumnsMap, final TableNameSchemaNameMapping tableNameSchemaNameMapping) {
+        PipelineDataSourceConfiguration dataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getTarget().getType(), jobConfig.getTarget().getParameter());
+        int batchSize = pipelineProcessConfig.getWrite().getBatchSize();
+        int retryTimes = jobConfig.getRetryTimes();
+        int concurrency = jobConfig.getConcurrency();
+        return new ImporterConfiguration(dataSourceConfig, unmodifiable(shardingColumnsMap), tableNameSchemaNameMapping, batchSize, retryTimes, concurrency);
+    }
+    
+    private static Map<LogicTableName, Set<String>> unmodifiable(final Map<LogicTableName, Set<String>> shardingColumnsMap) {
+        Map<LogicTableName, Set<String>> result = new HashMap<>(shardingColumnsMap.size());
+        for (Entry<LogicTableName, Set<String>> entry : shardingColumnsMap.entrySet()) {
+            result.put(entry.getKey(), Collections.unmodifiableSet(entry.getValue()));
+        }
+        return Collections.unmodifiableMap(result);
     }
     
     @Override
@@ -154,17 +216,13 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         return new MigrationProcessContext(pipelineJobConfig.getJobId(), processConfig);
     }
     
-    private Stream<JobBriefInfo> getJobBriefInfos() {
-        return PipelineAPIFactory.getJobStatisticsAPI().getAllJobsBriefInfo().stream().filter(each -> !each.getJobName().startsWith("_"));
-    }
-    
     protected PipelineJobInfo getJobInfo(final String jobName) {
         MigrationJobInfo result = new MigrationJobInfo(jobName);
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(result.getJobId());
         MigrationJobConfiguration jobConfig = getJobConfiguration(jobConfigPOJO);
         result.setActive(!jobConfigPOJO.isDisabled());
         result.setShardingTotalCount(jobConfig.getJobShardingCount());
-        result.setTables(jobConfig.getLogicTables());
+        result.setTables(jobConfig.getSourceTableName());
         result.setCreateTime(jobConfigPOJO.getProps().getProperty("create_time"));
         result.setStopTime(jobConfigPOJO.getProps().getProperty("stop_time"));
         result.setJobParameter(jobConfigPOJO.getJobParameter());
@@ -232,7 +290,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     
     @Override
     public void stopClusterWriteDB(final MigrationJobConfiguration jobConfig) {
-        String databaseName = jobConfig.getDatabaseName();
+        String databaseName = jobConfig.getTargetDatabaseName();
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
         LockDefinition lockDefinition = new ExclusiveLockDefinition(databaseName);
         if (lockContext.isLocked(lockDefinition)) {
@@ -258,7 +316,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     
     @Override
     public void restoreClusterWriteDB(final MigrationJobConfiguration jobConfig) {
-        String databaseName = jobConfig.getDatabaseName();
+        String databaseName = jobConfig.getTargetDatabaseName();
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
         LockDefinition lockDefinition = new ExclusiveLockDefinition(databaseName);
         if (lockContext.isLocked(lockDefinition)) {
@@ -370,23 +428,6 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     
     @Override
     public void switchClusterConfiguration(final MigrationJobConfiguration jobConfig) {
-        String jobId = jobConfig.getJobId();
-        MigrationProcessContext processContext = buildPipelineProcessContext(jobConfig);
-        GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
-        if (isDataConsistencyCheckNeeded(processContext)) {
-            Optional<Boolean> checkResult = repositoryAPI.getJobCheckResult(jobId);
-            if (!checkResult.isPresent() || !checkResult.get()) {
-                throw new PipelineVerifyFailedException("Data consistency check is not finished or failed.");
-            }
-        }
-        ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(jobConfig.getDatabaseName(), jobConfig.getActiveVersion(), jobConfig.getNewVersion());
-        PipelineContext.getContextManager().getInstanceContext().getEventBusContext().post(taskFinishedEvent);
-        for (int each : repositoryAPI.getShardingItems(jobId)) {
-            PipelineJobCenter.getJobItemContext(jobId, each).ifPresent(jobItemContext -> jobItemContext.setStatus(JobStatus.FINISHED));
-            updateJobItemStatus(jobId, each, JobStatus.FINISHED);
-        }
-        PipelineJobCenter.stop(jobId);
-        stop(jobId);
     }
     
     @Override
@@ -426,6 +467,53 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
             metaDataDataSource.remove(each);
         }
         dataSourcePersistService.persist(getJobType(), metaDataDataSource);
+    }
+    
+    @Override
+    public void createJobAndStart(final CreateMigrationJobParameter parameter) {
+        YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
+        Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(JobType.MIGRATION);
+        Map<String, Object> sourceDataSourceProps = DATA_SOURCE_CONFIG_SWAPPER.swapToMap(metaDataDataSource.get(parameter.getSourceResourceName()));
+        YamlPipelineDataSourceConfiguration sourcePipelineDataSourceConfiguration = createYamlPipelineDataSourceConfiguration(StandardPipelineDataSourceConfiguration.TYPE,
+                YamlEngine.marshal(sourceDataSourceProps));
+        result.setSource(sourcePipelineDataSourceConfiguration);
+        result.setSourceDatabaseType(new StandardPipelineDataSourceConfiguration(sourceDataSourceProps).getDatabaseType().getType());
+        result.setSourceDataSourceName(parameter.getSourceResourceName());
+        result.setSourceTableName(parameter.getSourceTableName());
+        Map<String, Map<String, Object>> targetDataSourceProperties = new HashMap<>();
+        ShardingSphereDatabase targetDatabase = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabase(parameter.getTargetDatabaseName());
+        for (Entry<String, DataSource> entry : targetDatabase.getResource().getDataSources().entrySet()) {
+            Map<String, Object> dataSourceProps = DATA_SOURCE_CONFIG_SWAPPER.swapToMap(DataSourcePropertiesCreator.create(entry.getValue()));
+            targetDataSourceProperties.put(entry.getKey(), dataSourceProps);
+        }
+        String targetDatabaseName = parameter.getTargetDatabaseName();
+        YamlRootConfiguration targetRootConfig = getYamlRootConfiguration(targetDatabaseName, targetDataSourceProperties, targetDatabase.getRuleMetaData().getConfigurations());
+        PipelineDataSourceConfiguration targetPipelineDataSource = new ShardingSpherePipelineDataSourceConfiguration(targetRootConfig);
+        result.setTarget(createYamlPipelineDataSourceConfiguration(targetPipelineDataSource.getType(), YamlEngine.marshal(targetPipelineDataSource.getDataSourceConfiguration())));
+        result.setTargetDatabaseType(targetPipelineDataSource.getDatabaseType().getType());
+        result.setTargetDatabaseName(targetDatabaseName);
+        result.setTargetTableName(parameter.getTargetTableName());
+        result.setSchemaTablesMap(PipelineSchemaTableUtil.getSchemaTablesMapFromActual(PIPELINE_DATA_SOURCE_CONFIG_SWAPPER.swapToObject(sourcePipelineDataSourceConfiguration),
+                parameter.getSourceTableName()));
+        extendYamlJobConfiguration(result);
+        MigrationJobConfiguration jobConfiguration = new YamlMigrationJobConfigurationSwapper().swapToObject(result);
+        start(jobConfiguration);
+    }
+    
+    private YamlRootConfiguration getYamlRootConfiguration(final String databaseName, final Map<String, Map<String, Object>> yamlDataSources, final Collection<RuleConfiguration> rules) {
+        YamlRootConfiguration result = new YamlRootConfiguration();
+        result.setDatabaseName(databaseName);
+        result.setDataSources(yamlDataSources);
+        Collection<YamlRuleConfiguration> yamlRuleConfigurations = RULE_CONFIG_SWAPPER_ENGINE.swapToYamlRuleConfigurations(rules);
+        result.setRules(yamlRuleConfigurations);
+        return result;
+    }
+    
+    private YamlPipelineDataSourceConfiguration createYamlPipelineDataSourceConfiguration(final String type, final String parameter) {
+        YamlPipelineDataSourceConfiguration result = new YamlPipelineDataSourceConfiguration();
+        result.setType(type);
+        result.setParameter(parameter);
+        return result;
     }
     
     @Override

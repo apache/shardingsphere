@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.executor;
 
 import org.apache.shardingsphere.driver.executor.callback.ExecuteQueryCallback;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefreshEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
@@ -70,15 +70,15 @@ public final class DriverJDBCExecutor {
      * Execute query.
      *
      * @param executionGroupContext execution group context
-     * @param logicSQL logic SQL
+     * @param queryContext query context
      * @param callback execute query callback
      * @return query results
      * @throws SQLException SQL exception
      */
     public List<QueryResult> executeQuery(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext,
-                                          final LogicSQL logicSQL, final ExecuteQueryCallback callback) throws SQLException {
+                                          final QueryContext queryContext, final ExecuteQueryCallback callback) throws SQLException {
         try {
-            ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, eventBusContext);
+            ExecuteProcessEngine.initialize(queryContext, executionGroupContext, eventBusContext);
             List<QueryResult> result = jdbcExecutor.execute(executionGroupContext, callback);
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID(), eventBusContext);
             return result;
@@ -91,17 +91,17 @@ public final class DriverJDBCExecutor {
      * Execute update.
      *
      * @param executionGroupContext execution group context
-     * @param logicSQL logic SQL
+     * @param queryContext query context
      * @param routeUnits route units
      * @param callback JDBC executor callback
      * @return effected records count
      * @throws SQLException SQL exception
      */
     public int executeUpdate(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext,
-                             final LogicSQL logicSQL, final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Integer> callback) throws SQLException {
+                             final QueryContext queryContext, final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Integer> callback) throws SQLException {
         try {
-            ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, eventBusContext);
-            SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
+            ExecuteProcessEngine.initialize(queryContext, executionGroupContext, eventBusContext);
+            SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
             List<Integer> results = doExecute(executionGroupContext, sqlStatementContext, routeUnits, callback);
             int result = isNeedAccumulate(metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules(), sqlStatementContext) ? accumulate(results) : results.get(0);
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID(), eventBusContext);
@@ -132,17 +132,17 @@ public final class DriverJDBCExecutor {
      * Execute SQL.
      *
      * @param executionGroupContext execution group context
-     * @param logicSQL logic SQL
+     * @param queryContext query context
      * @param routeUnits route units
      * @param callback JDBC executor callback
      * @return return true if is DQL, false if is DML
      * @throws SQLException SQL exception
      */
-    public boolean execute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final LogicSQL logicSQL,
+    public boolean execute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final QueryContext queryContext,
                            final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Boolean> callback) throws SQLException {
         try {
-            ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, eventBusContext);
-            List<Boolean> results = doExecute(executionGroupContext, logicSQL.getSqlStatementContext(), routeUnits, callback);
+            ExecuteProcessEngine.initialize(queryContext, executionGroupContext, eventBusContext);
+            List<Boolean> results = doExecute(executionGroupContext, queryContext.getSqlStatementContext(), routeUnits, callback);
             boolean result = null != results && !results.isEmpty() && null != results.get(0) && results.get(0);
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID(), eventBusContext);
             return result;

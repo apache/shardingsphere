@@ -30,10 +30,9 @@ public final class PipelineJobIdUtilsTest {
     public void assertCodec() {
         MigrationJobId pipelineJobId = new MigrationJobId();
         pipelineJobId.setTypeCode(JobType.MIGRATION.getTypeCode());
-        pipelineJobId.setFormatVersion(MigrationJobId.CURRENT_VERSION);
         pipelineJobId.setDatabaseName("sharding_db");
-        pipelineJobId.setCurrentMetadataVersion(0);
-        pipelineJobId.setNewMetadataVersion(1);
+        pipelineJobId.setSourceDataSourceName("new_0");
+        pipelineJobId.setTableName("t_order");
         String jobId = PipelineJobIdUtils.marshalJobIdCommonPrefix(pipelineJobId) + "abcd";
         JobType actualJobType = PipelineJobIdUtils.parseJobType(jobId);
         assertThat(actualJobType, is(JobType.MIGRATION));

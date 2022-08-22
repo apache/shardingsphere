@@ -133,7 +133,7 @@ public final class ReactiveProxySQLExecutor {
         }
         executionGroupContext.setDatabaseName(backendConnection.getConnectionSession().getDatabaseName());
         executionGroupContext.setGrantee(backendConnection.getConnectionSession().getGrantee());
-        return reactiveExecutor.execute(executionContext.getLogicSQL(), executionGroupContext);
+        return reactiveExecutor.execute(executionContext.getQueryContext(), executionGroupContext);
     }
     
     private List<ExecuteResult> getSaneExecuteResults(final ExecutionContext executionContext, final SQLException originalException) throws SQLException {

@@ -21,7 +21,7 @@ import io.netty.util.AttributeMap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
@@ -36,8 +36,6 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionIsolationLevel;
 import org.apache.shardingsphere.transaction.core.TransactionType;
-
-import java.util.Optional;
 
 /**
  * Connection session.
@@ -75,10 +73,9 @@ public final class ConnectionSession {
     
     private final ConnectionContext connectionContext;
     
-    // TODO rename to QueryContext
-    private LogicSQL logicSQL;
-    
     private final RequiredSessionVariableRecorder requiredSessionVariableRecorder = new RequiredSessionVariableRecorder();
+    
+    private QueryContext queryContext;
     
     public ConnectionSession(final DatabaseType databaseType, final TransactionType initialTransactionType, final AttributeMap attributeMap) {
         this.databaseType = databaseType;
@@ -117,7 +114,7 @@ public final class ConnectionSession {
      * @return database name
      */
     public String getDatabaseName() {
-        return Optional.ofNullable(logicSQL).flatMap(LogicSQL::getSqlStatementDatabaseName).orElse(databaseName);
+        return null == queryContext ? databaseName : queryContext.findSqlStatementDatabaseName().orElse(databaseName);
     }
     
     /**
@@ -127,5 +124,12 @@ public final class ConnectionSession {
      */
     public String getDefaultDatabaseName() {
         return databaseName;
+    }
+    
+    /**
+     * Clear query context.
+     */
+    public void clearQueryContext() {
+        queryContext = null;
     }
 }

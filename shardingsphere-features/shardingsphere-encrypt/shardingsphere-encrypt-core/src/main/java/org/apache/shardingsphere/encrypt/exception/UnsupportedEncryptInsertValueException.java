@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.rulealtered;
+package org.apache.shardingsphere.encrypt.exception;
 
-import org.apache.shardingsphere.data.pipeline.spi.fixture.RuleAlteredJobConfigurationPreparerFixture;
-import org.junit.Test;
+import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-
-public final class RuleAlteredJobConfigurationPreparerFactoryTest {
+/**
+ * Unsupported encrypt insert value exception.
+ */
+public final class UnsupportedEncryptInsertValueException extends ShardingSphereSQLException {
     
-    @Test
-    public void assertGetInstance() {
-        assertThat(RuleAlteredJobConfigurationPreparerFactory.getInstance(), instanceOf(RuleAlteredJobConfigurationPreparerFixture.class));
+    private static final long serialVersionUID = 5004882561157380582L;
+    
+    public UnsupportedEncryptInsertValueException(final int columnIndex) {
+        super(XOpenSQLState.SYNTAX_ERROR, 24003, "Insert value of index `%s` can not support for encrypt", String.valueOf(columnIndex));
     }
 }

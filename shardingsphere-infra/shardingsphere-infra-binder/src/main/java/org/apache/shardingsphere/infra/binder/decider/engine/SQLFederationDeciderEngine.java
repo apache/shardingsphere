@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.decider.engine;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.decider.SQLFederationDecider;
 import org.apache.shardingsphere.infra.binder.decider.SQLFederationDeciderFactory;
 import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDeciderContext;
@@ -51,14 +51,14 @@ public final class SQLFederationDeciderEngine {
     /**
      * Decide.
      * 
-     * @param logicSQL logic SQL
+     * @param queryContext query context
      * @param database ShardingSphere database
      * @return SQL federation decider context
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public SQLFederationDeciderContext decide(final LogicSQL logicSQL, final ShardingSphereDatabase database) {
+    public SQLFederationDeciderContext decide(final QueryContext queryContext, final ShardingSphereDatabase database) {
         SQLFederationDeciderContext result = new SQLFederationDeciderContext();
-        SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
+        SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
         // TODO move this logic to SQLFederationDecider implement class when we remove sqlFederationEnabled
         if (isSelectStatementContainsSystemSchema(sqlStatementContext, database)) {
             result.setUseSQLFederation(true);
@@ -70,7 +70,7 @@ public final class SQLFederationDeciderEngine {
         }
         for (Entry<ShardingSphereRule, SQLFederationDecider> entry : deciders.entrySet()) {
             if (!result.isUseSQLFederation()) {
-                entry.getValue().decide(result, logicSQL, database, entry.getKey(), props);
+                entry.getValue().decide(result, queryContext, database, entry.getKey(), props);
             }
         }
         return result;

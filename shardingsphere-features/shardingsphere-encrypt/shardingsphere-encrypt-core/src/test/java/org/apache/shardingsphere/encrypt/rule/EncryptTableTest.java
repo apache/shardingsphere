@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.rule;
 
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.encrypt.exception.EncryptLogicColumnNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -62,7 +62,7 @@ public final class EncryptTableTest {
         assertNotNull(encryptTable.getLogicColumnByCipherColumn("cipherColumn"));
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = EncryptLogicColumnNotFoundException.class)
     public void assertGetLogicColumnByCipherColumnWhenNotFind() {
         encryptTable.getLogicColumnByCipherColumn("invalidColumn");
     }
@@ -72,7 +72,7 @@ public final class EncryptTableTest {
         assertNotNull(encryptTable.getLogicColumnByPlainColumn("plainColumn"));
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = EncryptLogicColumnNotFoundException.class)
     public void assertGetLogicColumnByPlainColumnWhenNotFind() {
         encryptTable.getLogicColumnByPlainColumn("invalidColumn");
     }

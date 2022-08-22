@@ -101,7 +101,7 @@ public final class PipelineJobPreparerUtils {
         }
         String databaseType = dumperConfig.getDataSourceConfig().getDatabaseType().getType();
         DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
-        return PositionInitializerFactory.getInstance(databaseType).init(dataSource);
+        return PositionInitializerFactory.getInstance(databaseType).init(dataSource, dumperConfig.getJobId());
     }
     
     /**
@@ -141,10 +141,11 @@ public final class PipelineJobPreparerUtils {
     /**
      * Cleanup job preparer.
      *
+     * @param jobId job id
      * @param pipelineDataSourceConfig pipeline data source config
      * @throws SQLException sql exception
      */
-    public static void destroyPosition(final PipelineDataSourceConfiguration pipelineDataSourceConfig) throws SQLException {
+    public static void destroyPosition(final String jobId, final PipelineDataSourceConfiguration pipelineDataSourceConfig) throws SQLException {
         DatabaseType databaseType = pipelineDataSourceConfig.getDatabaseType();
         PositionInitializer positionInitializer = PositionInitializerFactory.getInstance(databaseType.getType());
         log.info("Cleanup database type:{}, data source type:{}", databaseType.getType(), pipelineDataSourceConfig.getType());
@@ -152,7 +153,7 @@ public final class PipelineJobPreparerUtils {
             ShardingSpherePipelineDataSourceConfiguration dataSourceConfig = (ShardingSpherePipelineDataSourceConfiguration) pipelineDataSourceConfig;
             for (DataSourceProperties each : new YamlDataSourceConfigurationSwapper().getDataSourcePropertiesMap(dataSourceConfig.getRootConfig()).values()) {
                 try (PipelineDataSourceWrapper dataSource = new PipelineDataSourceWrapper(DataSourcePoolCreator.create(each), databaseType)) {
-                    positionInitializer.destroy(dataSource);
+                    positionInitializer.destroy(dataSource, jobId);
                 }
             }
         }
@@ -161,7 +162,7 @@ public final class PipelineJobPreparerUtils {
             try (
                     PipelineDataSourceWrapper dataSource = new PipelineDataSourceWrapper(
                             DataSourcePoolCreator.create((DataSourceProperties) dataSourceConfig.getDataSourceConfiguration()), databaseType)) {
-                positionInitializer.destroy(dataSource);
+                positionInitializer.destroy(dataSource, jobId);
             }
         }
     }

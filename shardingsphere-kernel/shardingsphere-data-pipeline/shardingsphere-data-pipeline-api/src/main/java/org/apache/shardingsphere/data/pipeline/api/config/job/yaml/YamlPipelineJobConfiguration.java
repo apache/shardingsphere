@@ -36,5 +36,5 @@ public interface YamlPipelineJobConfiguration extends YamlConfiguration {
      *
      * @return database name
      */
-    String getDatabaseName();
+    String getTargetDatabaseName();
 }

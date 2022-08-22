@@ -19,6 +19,7 @@ package org.apache.shardingsphere.migration.distsql.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 
 /**
@@ -26,9 +27,12 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableS
  */
 @RequiredArgsConstructor
 @Getter
+@ToString
 public final class MigrateTableStatement extends UpdatableScalingRALStatement {
     
-    private final String sourceDatabaseName;
+    private final String sourceResourceName;
+    
+    private final String sourceSchemaName;
     
     private final String sourceTableName;
     

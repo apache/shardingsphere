@@ -100,7 +100,12 @@ public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStat
     public ASTNode visitMigrateTable(final MigrateTableContext ctx) {
         List<String> source = Splitter.on('.').splitToList(getIdentifierValue(ctx.sourceTableName()));
         List<String> target = Splitter.on('.').splitToList(getIdentifierValue(ctx.targetTableName()));
-        return new MigrateTableStatement(source.size() > 1 ? source.get(0) : null, source.get(source.size() - 1), target.size() > 1 ? target.get(0) : null, target.get(target.size() - 1));
+        String sourceResourceName = source.get(0);
+        String sourceSchemaName = 3 == source.size() ? source.get(1) : null;
+        String sourceTableName = source.get(source.size() - 1);
+        String targetDatabaseName = target.size() > 1 ? target.get(0) : null;
+        String targetTableName = target.get(target.size() - 1);
+        return new MigrateTableStatement(sourceResourceName, sourceSchemaName, sourceTableName, targetDatabaseName, targetTableName);
     }
     
     @Override

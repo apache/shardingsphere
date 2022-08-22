@@ -22,8 +22,6 @@ import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlMigration
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlMigrationJobConfigurationSwapper;
 import org.junit.Test;
 
-import java.util.Arrays;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -35,22 +33,13 @@ public final class MigrationJobConfigurationTest {
     public void assertGetJobShardingCountByNull() {
         YamlMigrationJobConfiguration yamlJobConfig = new YamlMigrationJobConfiguration();
         MigrationJobConfiguration jobConfig = JOB_CONFIG_SWAPPER.swapToObject(yamlJobConfig);
-        assertThat(jobConfig.getJobShardingCount(), is(0));
+        assertThat(jobConfig.getJobShardingCount(), is(1));
     }
     
     @Test
     public void assertGetJobShardingCount() {
         YamlMigrationJobConfiguration yamlJobConfig = new YamlMigrationJobConfiguration();
-        yamlJobConfig.setJobShardingDataNodes(Arrays.asList("node1", "node2"));
         MigrationJobConfiguration jobConfig = JOB_CONFIG_SWAPPER.swapToObject(yamlJobConfig);
-        assertThat(jobConfig.getJobShardingCount(), is(2));
-    }
-    
-    @Test
-    public void assertSplitLogicTableNames() {
-        YamlMigrationJobConfiguration yamlJobConfig = new YamlMigrationJobConfiguration();
-        yamlJobConfig.setLogicTables("foo_tbl,bar_tbl");
-        MigrationJobConfiguration jobConfig = JOB_CONFIG_SWAPPER.swapToObject(yamlJobConfig);
-        assertThat(jobConfig.splitLogicTableNames(), is(Arrays.asList("foo_tbl", "bar_tbl")));
+        assertThat(jobConfig.getJobShardingCount(), is(1));
     }
 }
