@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.datasource.registry.GlobalDataSourceRegistry;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.database.schema.exception.UnsupportedActualDataNodeStructureException;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.SchemaMetaDataLoaderMaterials;
 
 import java.util.Collection;
@@ -66,9 +66,8 @@ public class SchemaMetaDataUtil {
     
     private static void checkDataSourceTypeIncludeInstanceAndSetDatabaseTableMap(final DatabaseType databaseType, final DataNodes dataNodes, final String tableName) {
         for (DataNode dataNode : dataNodes.getDataNodes(tableName)) {
-            if (databaseType.getType() != null && !databaseType.getType().equals("MySQL") && dataNode.getDataSourceName().contains(".")) {
-                throw new ShardingSphereException("Unsupported jdbc: '%s', actualDataNode:'%s', database type is not mysql, but actual data is three-tier structure",
-                        databaseType.getJdbcUrlPrefixes(), dataNode.getDataSourceName());
+            if (null != databaseType.getType() && !"MySQL".equals(databaseType.getType()) && dataNode.getDataSourceName().contains(".")) {
+                throw new UnsupportedActualDataNodeStructureException(dataNode, databaseType.getJdbcUrlPrefixes());
             }
             if (dataNode.getDataSourceName().contains(".")) {
                 String database = dataNode.getDataSourceName().split("\\.")[1];
