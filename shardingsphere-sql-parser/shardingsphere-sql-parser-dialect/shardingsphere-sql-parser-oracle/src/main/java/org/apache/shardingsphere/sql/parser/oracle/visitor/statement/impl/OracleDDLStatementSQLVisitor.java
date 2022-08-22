@@ -978,7 +978,8 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     public ASTNode visitAlterPluggableDatabase(final AlterPluggableDatabaseContext ctx) {
         return new OracleAlterPluggableDatabaseStatement();
     }
-    
+
+    @Override
     public ASTNode visitCreateProcedure(final CreateProcedureContext ctx) {
         OracleCreateProcedureStatement result = new OracleCreateProcedureStatement();
         return result;
