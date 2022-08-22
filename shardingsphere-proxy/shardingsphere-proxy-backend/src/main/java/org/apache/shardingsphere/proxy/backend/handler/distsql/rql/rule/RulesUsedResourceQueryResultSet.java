@@ -137,7 +137,7 @@ public final class RulesUsedResourceQueryResultSet implements DatabaseDistSQLRes
         }
         ShadowRuleConfiguration config = (ShadowRuleConfiguration) rule.get().getConfiguration();
         return config.getDataSources().entrySet().stream()
-                .filter(entry -> entry.getValue().getShadowDataSourceName().equalsIgnoreCase(resourceName) || entry.getValue().getSourceDataSourceName().equalsIgnoreCase(resourceName))
+                .filter(entry -> entry.getValue().getShadowDataSourceName().equalsIgnoreCase(resourceName) || entry.getValue().getProductionDataSourceName().equalsIgnoreCase(resourceName))
                 .map(entry -> buildRow(SHADOW, entry.getKey())).collect(Collectors.toList());
     }
     

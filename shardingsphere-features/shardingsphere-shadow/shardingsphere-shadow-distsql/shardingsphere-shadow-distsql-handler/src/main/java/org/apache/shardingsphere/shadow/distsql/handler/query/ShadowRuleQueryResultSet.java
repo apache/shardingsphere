@@ -86,7 +86,7 @@ public final class ShadowRuleQueryResultSet implements DatabaseDistSQLResultSet 
     private Map<String, String> convertToDataSourceMap(final Entry<String, ShadowDataSourceConfiguration> dataSource) {
         Map<String, String> result = new HashMap<>();
         result.put(RULE_NAME, dataSource.getKey());
-        result.put(SOURCE_NAME, dataSource.getValue().getSourceDataSourceName());
+        result.put(SOURCE_NAME, dataSource.getValue().getProductionDataSourceName());
         result.put(SHADOW_NAME, dataSource.getValue().getShadowDataSourceName());
         return result;
     }

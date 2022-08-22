@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class ShadowDataSourceRule {
     
-    private final String sourceDataSource;
+    private final String productionDataSource;
     
     private final String shadowDataSource;
 }

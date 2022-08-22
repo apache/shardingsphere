@@ -34,7 +34,7 @@ public final class ShadowRuleBeanDefinitionTag {
     
     public static final String SHADOW_NAME_ATTRIBUTE = "name";
     
-    public static final String SOURCE_DATA_SOURCE_NAME_ATTRIBUTE = "source-data-source-name";
+    public static final String PRODUCTION_DATA_SOURCE_NAME_ATTRIBUTE = "production-data-source-name";
     
     public static final String SHADOW_DATA_SOURCE_NAME_ATTRIBUTE = "shadow-data-source-name";
     
