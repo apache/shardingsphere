@@ -35,7 +35,6 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsis
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
-import org.apache.shardingsphere.data.pipeline.core.util.PipelineSchemaTableUtil;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -55,7 +54,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -84,8 +82,7 @@ public final class DataConsistencyChecker {
     public DataConsistencyChecker(final MigrationJobConfiguration jobConfig, final JobRateLimitAlgorithm readRateLimitAlgorithm) {
         this.jobConfig = jobConfig;
         logicTableNames = Collections.singletonList(jobConfig.getTargetTableName());
-        Map<String, List<String>> schemaTablesMap = PipelineSchemaTableUtil.getSchemaTablesMapFromActual(jobConfig.getSource(), jobConfig.getSourceTableName());
-        tableNameSchemaNameMapping = new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(schemaTablesMap));
+        tableNameSchemaNameMapping = new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(jobConfig.getSchemaTablesMap()));
         this.readRateLimitAlgorithm = readRateLimitAlgorithm;
     }
     

@@ -37,6 +37,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 /**
  * General scaling test case, includes multiple cases.
  */
@@ -84,6 +87,12 @@ public final class MySQLMigrationGeneralIT extends BaseExtraSQLITCase {
         startMigrationOrderItem();
         checkOrderMigration(keyGenerateAlgorithm, jdbcTemplate);
         checkOrderItemMigration();
+        for (String each : listJobId()) {
+            cleanMigrationByJobId(each);
+        }
+        assertGreaterThanOrderTableInitRows(TABLE_INIT_ROW_COUNT, "");
+        List<String> lastJobIds = listJobId();
+        assertThat(lastJobIds.size(), is(0));
     }
     
     private void checkOrderMigration(final KeyGenerateAlgorithm keyGenerateAlgorithm, final JdbcTemplate jdbcTemplate) {
@@ -92,7 +101,7 @@ public final class MySQLMigrationGeneralIT extends BaseExtraSQLITCase {
         String jobId = getJobIdByTableName("t_order");
         waitMigrationFinished(jobId);
         assertCheckScalingSuccess(jobId);
-        assertGreaterThanInitTableInitRows(TABLE_INIT_ROW_COUNT, "");
+        stopMigrationByJobId(jobId);
     }
     
     private void checkOrderItemMigration() {
@@ -100,5 +109,6 @@ public final class MySQLMigrationGeneralIT extends BaseExtraSQLITCase {
         String jobId = getJobIdByTableName("t_order_item");
         waitMigrationFinished(jobId);
         assertCheckScalingSuccess(jobId);
+        stopMigrationByJobId(jobId);
     }
 }

@@ -171,8 +171,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     public TaskConfiguration buildTaskConfiguration(final MigrationJobConfiguration jobConfig, final int jobShardingItem, final PipelineProcessConfiguration pipelineProcessConfig) {
         Map<ActualTableName, LogicTableName> tableNameMap = new LinkedHashMap<>();
         tableNameMap.put(new ActualTableName(jobConfig.getSourceTableName()), new LogicTableName(jobConfig.getSourceTableName()));
-        Map<LogicTableName, String> tableNameSchemaMap = TableNameSchemaNameMapping.convert(PipelineSchemaTableUtil.getSchemaTablesMapFromActual(jobConfig.getSource(), 
-                jobConfig.getSourceTableName()));
+        Map<LogicTableName, String> tableNameSchemaMap = TableNameSchemaNameMapping.convert(jobConfig.getSchemaTablesMap());
         TableNameSchemaNameMapping tableNameSchemaNameMapping = new TableNameSchemaNameMapping(tableNameSchemaMap);
         DumperConfiguration dumperConfig = createDumperConfiguration(jobConfig.getJobId(), jobConfig.getSourceDataSourceName(), jobConfig.getSource(), tableNameMap, tableNameSchemaNameMapping);
         // TODO now shardingColumnsMap always empty, 

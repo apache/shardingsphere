@@ -283,6 +283,7 @@ public abstract class BaseITCase {
     }
     
     protected List<Map<String, Object>> queryForListWithLog(final String sql) {
+        log.info("proxy query for list:{}", sql);
         int retryNumber = 0;
         while (retryNumber <= 3) {
             try (Connection connection = proxyDataSource.getConnection()) {
@@ -316,13 +317,17 @@ public abstract class BaseITCase {
         getIncreaseTaskThread().start();
     }
     
-    protected void stopMigration(final String jobId) {
+    protected void stopMigrationByJobId(final String jobId) {
         proxyExecuteWithLog(String.format("STOP MIGRATION '%s'", jobId), 5);
     }
     
     // TODO reopen later
-    protected void startMigrationByJob(final String jobId) {
+    protected void startMigrationByJobId(final String jobId) {
         proxyExecuteWithLog(String.format("START MIGRATION '%s'", jobId), 10);
+    }
+    
+    protected void cleanMigrationByJobId(final String jobId) {
+        proxyExecuteWithLog(String.format("CLEAN MIGRATION '%s'", jobId), 1);
     }
     
     protected List<String> listJobId() {
@@ -357,7 +362,7 @@ public abstract class BaseITCase {
         }
     }
     
-    protected void assertGreaterThanInitTableInitRows(final int tableInitRows, final String schema) {
+    protected void assertGreaterThanOrderTableInitRows(final int tableInitRows, final String schema) {
         proxyExecuteWithLog("REFRESH TABLE METADATA", 2);
         String countSQL = StringUtils.isBlank(schema) ? "SELECT COUNT(*) as count FROM t_order" : String.format("SELECT COUNT(*) as count FROM %s.t_order", schema);
         Map<String, Object> actual = queryForListWithLog(countSQL).get(0);

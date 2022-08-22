@@ -37,6 +37,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 /**
  * PostgreSQL general scaling test case. include openGauss type, same process.
  */
@@ -86,6 +89,12 @@ public final class PostgreSQLMigrationGeneralIT extends BaseExtraSQLITCase {
         jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
         checkOrderMigration(jdbcTemplate);
         checkOrderItemMigration();
+        assertGreaterThanOrderTableInitRows(TABLE_INIT_ROW_COUNT, "test");
+        for (String each : listJobId()) {
+            cleanMigrationByJobId(each);
+        }
+        List<String> lastJobIds = listJobId();
+        assertThat(lastJobIds.size(), is(0));
     }
     
     private void checkOrderMigration(final JdbcTemplate jdbcTemplate) {
@@ -94,7 +103,7 @@ public final class PostgreSQLMigrationGeneralIT extends BaseExtraSQLITCase {
         String jobId = getJobIdByTableName("t_order");
         waitMigrationFinished(jobId);
         assertCheckScalingSuccess(jobId);
-        assertGreaterThanInitTableInitRows(TABLE_INIT_ROW_COUNT, "test");
+        stopMigrationByJobId(jobId);
     }
     
     private void checkOrderItemMigration() {
@@ -102,5 +111,6 @@ public final class PostgreSQLMigrationGeneralIT extends BaseExtraSQLITCase {
         String jobId = getJobIdByTableName("t_order_item");
         waitMigrationFinished(jobId);
         assertCheckScalingSuccess(jobId);
+        stopMigrationByJobId(jobId);
     }
 }
