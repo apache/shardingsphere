@@ -1,6 +1,6 @@
 +++
 title = "Spring 命名空间"
-weight = 5
+weight = 4
 chapter = true
 +++
 
