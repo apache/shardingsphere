@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.metadata.generator;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGeneratorFactory;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.AlterTableStatementContext;
@@ -75,8 +75,8 @@ public final class PipelineDDLGenerator {
         log.info("generateLogicDDLSQL, databaseType={}, schemaName={}, tableName={}", databaseType.getType(), schemaName, logicTableName);
         StringBuilder result = new StringBuilder();
         for (String each : CreateTableSQLGeneratorFactory.getInstance(databaseType).generate(sourceDataSource, schemaName, actualTableName)) {
-            Optional<String> logicSQL = decorate(databaseType, sourceDataSource, schemaName, logicTableName, parserEngine, each);
-            logicSQL.ifPresent(ddlSQL -> result.append(ddlSQL).append(DELIMITER).append(System.lineSeparator()));
+            Optional<String> queryContext = decorate(databaseType, sourceDataSource, schemaName, logicTableName, parserEngine, each);
+            queryContext.ifPresent(ddlSQL -> result.append(ddlSQL).append(DELIMITER).append(System.lineSeparator()));
         }
         return result.toString();
     }
@@ -99,8 +99,8 @@ public final class PipelineDDLGenerator {
     }
     
     private String decorateActualSQL(final String databaseName, final String logicTableName, final ShardingSphereSQLParserEngine parserEngine, final String sql) {
-        LogicSQL logicSQL = getLogicSQL(databaseName, parserEngine, sql);
-        SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
+        QueryContext queryContext = getQueryContext(databaseName, parserEngine, sql);
+        SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
         Map<SQLSegment, String> replaceMap = new TreeMap<>(Comparator.comparing(SQLSegment::getStartIndex));
         if (sqlStatementContext instanceof CreateTableStatementContext) {
             appendFromIndexAndConstraint(replaceMap, logicTableName, sqlStatementContext);
@@ -120,9 +120,9 @@ public final class PipelineDDLGenerator {
         return doDecorateActualTable(replaceMap, sql);
     }
     
-    private LogicSQL getLogicSQL(final String databaseName, final ShardingSphereSQLParserEngine parserEngine, final String sql) {
+    private QueryContext getQueryContext(final String databaseName, final ShardingSphereSQLParserEngine parserEngine, final String sql) {
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(null, parserEngine.parse(sql, false), databaseName);
-        return new LogicSQL(sqlStatementContext, sql, Collections.emptyList());
+        return new QueryContext(sqlStatementContext, sql, Collections.emptyList());
     }
     
     private void appendFromIndexAndConstraint(final Map<SQLSegment, String> replaceMap, final String logicTableName, final SQLStatementContext<?> sqlStatementContext) {
@@ -169,17 +169,17 @@ public final class PipelineDDLGenerator {
     }
     
     // TODO remove it after set search_path is supported.
-    private Optional<String> decorateOpenGauss(final String databaseName, final String schemaName, final String logicSQL,
+    private Optional<String> decorateOpenGauss(final String databaseName, final String schemaName, final String queryContext,
                                                final ShardingSphereSQLParserEngine parserEngine) {
-        if (logicSQL.toLowerCase().startsWith(SET_SEARCH_PATH_PREFIX)) {
+        if (queryContext.toLowerCase().startsWith(SET_SEARCH_PATH_PREFIX)) {
             return Optional.empty();
         }
-        return Optional.of(replaceTableNameWithPrefix(logicSQL, schemaName + ".", databaseName, parserEngine));
+        return Optional.of(replaceTableNameWithPrefix(queryContext, schemaName + ".", databaseName, parserEngine));
     }
     
     private String replaceTableNameWithPrefix(final String sql, final String prefix, final String databaseName, final ShardingSphereSQLParserEngine parserEngine) {
-        LogicSQL logicSQL = getLogicSQL(databaseName, parserEngine, sql);
-        SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
+        QueryContext queryContext = getQueryContext(databaseName, parserEngine, sql);
+        SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
         if (sqlStatementContext instanceof CreateTableStatementContext || sqlStatementContext instanceof CommentStatementContext
                 || sqlStatementContext instanceof CreateIndexStatementContext || sqlStatementContext instanceof AlterTableStatementContext) {
             if (!sqlStatementContext.getTablesContext().getTables().isEmpty()) {

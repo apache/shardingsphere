@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.route;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -37,23 +37,23 @@ public interface SQLRouter<T extends ShardingSphereRule> extends OrderedSPI<T> {
     /**
      * Create route context.
      *
-     * @param logicSQL logic SQL
+     * @param queryContext logic SQL
      * @param database database
      * @param rule rule
      * @param props configuration properties
      * @param connectionContext connection context
      * @return route context
      */
-    RouteContext createRouteContext(LogicSQL logicSQL, ShardingSphereDatabase database, T rule, ConfigurationProperties props, ConnectionContext connectionContext);
+    RouteContext createRouteContext(QueryContext queryContext, ShardingSphereDatabase database, T rule, ConfigurationProperties props, ConnectionContext connectionContext);
     
     /**
      * Decorate route context.
      *  @param routeContext route context
-     * @param logicSQL logic SQL
+     * @param queryContext logic SQL
      * @param database database
      * @param rule rule
      * @param props configuration properties
      * @param connectionContext connection context
      */
-    void decorateRouteContext(RouteContext routeContext, LogicSQL logicSQL, ShardingSphereDatabase database, T rule, ConfigurationProperties props, ConnectionContext connectionContext);
+    void decorateRouteContext(RouteContext routeContext, QueryContext queryContext, ShardingSphereDatabase database, T rule, ConfigurationProperties props, ConnectionContext connectionContext);
 }

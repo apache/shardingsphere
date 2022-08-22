@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.data;
 import io.vertx.core.Future;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -42,16 +42,16 @@ public final class DatabaseBackendHandlerFactory {
     /**
      * New instance of database backend handler.
      *
-     * @param logicSQL Logic SQL
+     * @param queryContext Logic SQL
      * @param connectionSession connection session
      * @param preferPreparedStatement use prepared statement as possible
      * @return created instance
      */
-    public static DatabaseBackendHandler newInstance(final LogicSQL logicSQL, final ConnectionSession connectionSession, final boolean preferPreparedStatement) {
-        SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
+    public static DatabaseBackendHandler newInstance(final QueryContext queryContext, final ConnectionSession connectionSession, final boolean preferPreparedStatement) {
+        SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof DoStatement) {
-            return new UnicastDatabaseBackendHandler(logicSQL, connectionSession);
+            return new UnicastDatabaseBackendHandler(queryContext, connectionSession);
         }
         if (sqlStatement instanceof SetStatement && null == connectionSession.getDatabaseName()) {
             return new DatabaseBackendHandler() {
@@ -68,8 +68,8 @@ public final class DatabaseBackendHandlerFactory {
             };
         }
         if (sqlStatement instanceof DALStatement || (sqlStatement instanceof SelectStatement && null == ((SelectStatement) sqlStatement).getFrom())) {
-            return new UnicastDatabaseBackendHandler(logicSQL, connectionSession);
+            return new UnicastDatabaseBackendHandler(queryContext, connectionSession);
         }
-        return DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(logicSQL, connectionSession.getBackendConnection(), preferPreparedStatement);
+        return DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(queryContext, connectionSession.getBackendConnection(), preferPreparedStatement);
     }
 }

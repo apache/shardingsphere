@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shadow.route.engine;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
@@ -44,41 +44,41 @@ public final class ShadowRouteEngineFactory {
     /**
      * Create new instance of shadow route engine.
      *
-     * @param logicSQL logic SQL
+     * @param queryContext logic SQL
      * @return created instance
      */
-    public static ShadowRouteEngine newInstance(final LogicSQL logicSQL) {
-        SQLStatement sqlStatement = logicSQL.getSqlStatementContext().getSqlStatement();
+    public static ShadowRouteEngine newInstance(final QueryContext queryContext) {
+        SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         if (sqlStatement instanceof InsertStatement) {
-            return createShadowInsertStatementRoutingEngine(logicSQL);
+            return createShadowInsertStatementRoutingEngine(queryContext);
         } else if (sqlStatement instanceof DeleteStatement) {
-            return createShadowDeleteStatementRoutingEngine(logicSQL);
+            return createShadowDeleteStatementRoutingEngine(queryContext);
         } else if (sqlStatement instanceof UpdateStatement) {
-            return createShadowUpdateStatementRoutingEngine(logicSQL);
+            return createShadowUpdateStatementRoutingEngine(queryContext);
         } else if (sqlStatement instanceof SelectStatement) {
-            return createShadowSelectStatementRoutingEngine(logicSQL);
+            return createShadowSelectStatementRoutingEngine(queryContext);
         } else {
-            return createShadowNonMDLStatementRoutingEngine(logicSQL);
+            return createShadowNonMDLStatementRoutingEngine(queryContext);
         }
     }
     
-    private static ShadowRouteEngine createShadowNonMDLStatementRoutingEngine(final LogicSQL logicSQL) {
-        return new ShadowNonDMLStatementRoutingEngine(logicSQL.getSqlStatementContext());
+    private static ShadowRouteEngine createShadowNonMDLStatementRoutingEngine(final QueryContext queryContext) {
+        return new ShadowNonDMLStatementRoutingEngine(queryContext.getSqlStatementContext());
     }
     
-    private static ShadowRouteEngine createShadowSelectStatementRoutingEngine(final LogicSQL logicSQL) {
-        return new ShadowSelectStatementRoutingEngine((SelectStatementContext) logicSQL.getSqlStatementContext(), logicSQL.getParameters());
+    private static ShadowRouteEngine createShadowSelectStatementRoutingEngine(final QueryContext queryContext) {
+        return new ShadowSelectStatementRoutingEngine((SelectStatementContext) queryContext.getSqlStatementContext(), queryContext.getParameters());
     }
     
-    private static ShadowRouteEngine createShadowUpdateStatementRoutingEngine(final LogicSQL logicSQL) {
-        return new ShadowUpdateStatementRoutingEngine((UpdateStatementContext) logicSQL.getSqlStatementContext(), logicSQL.getParameters());
+    private static ShadowRouteEngine createShadowUpdateStatementRoutingEngine(final QueryContext queryContext) {
+        return new ShadowUpdateStatementRoutingEngine((UpdateStatementContext) queryContext.getSqlStatementContext(), queryContext.getParameters());
     }
     
-    private static ShadowRouteEngine createShadowDeleteStatementRoutingEngine(final LogicSQL logicSQL) {
-        return new ShadowDeleteStatementRoutingEngine((DeleteStatementContext) logicSQL.getSqlStatementContext(), logicSQL.getParameters());
+    private static ShadowRouteEngine createShadowDeleteStatementRoutingEngine(final QueryContext queryContext) {
+        return new ShadowDeleteStatementRoutingEngine((DeleteStatementContext) queryContext.getSqlStatementContext(), queryContext.getParameters());
     }
     
-    private static ShadowRouteEngine createShadowInsertStatementRoutingEngine(final LogicSQL logicSQL) {
-        return new ShadowInsertStatementRoutingEngine((InsertStatementContext) logicSQL.getSqlStatementContext());
+    private static ShadowRouteEngine createShadowInsertStatementRoutingEngine(final QueryContext queryContext) {
+        return new ShadowInsertStatementRoutingEngine((InsertStatementContext) queryContext.getSqlStatementContext());
     }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.process.spi;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
@@ -33,12 +33,12 @@ public interface ExecuteProcessReporter extends OptionalSPI {
     
     /**
      * Report the summary of this task.
-     * @param logicSQL logic SQL
+     * @param queryContext logic SQL
      * @param executionGroupContext execution group context
      * @param constants constants
      * @param eventBusContext event bus context                 
      */
-    void report(LogicSQL logicSQL, ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, ExecuteProcessConstants constants, EventBusContext eventBusContext);
+    void report(QueryContext queryContext, ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, ExecuteProcessConstants constants, EventBusContext eventBusContext);
     
     /**
      * Report a unit of this task.

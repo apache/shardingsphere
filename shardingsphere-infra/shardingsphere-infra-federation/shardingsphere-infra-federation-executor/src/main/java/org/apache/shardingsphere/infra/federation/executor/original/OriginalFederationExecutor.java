@@ -81,8 +81,8 @@ public final class OriginalFederationExecutor implements FederationExecutor {
     public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                   final JDBCExecutorCallback<? extends ExecuteResult> callback, final FederationContext federationContext) throws SQLException {
         Connection connection = createConnection(prepareEngine, callback, federationContext);
-        PreparedStatement preparedStatement = connection.prepareStatement(SQLUtil.trimSemicolon(federationContext.getLogicSQL().getSql()));
-        setParameters(preparedStatement, federationContext.getLogicSQL().getParameters());
+        PreparedStatement preparedStatement = connection.prepareStatement(SQLUtil.trimSemicolon(federationContext.getQueryContext().getSql()));
+        setParameters(preparedStatement, federationContext.getQueryContext().getParameters());
         this.statement = preparedStatement;
         return preparedStatement.executeQuery();
     }

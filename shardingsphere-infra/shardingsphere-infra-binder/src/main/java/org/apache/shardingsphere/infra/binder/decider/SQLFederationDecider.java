@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.decider;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDeciderContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -35,10 +35,10 @@ public interface SQLFederationDecider<T extends ShardingSphereRule> extends Orde
      * Judge whether to use sql federation engine.
      *
      * @param deciderContext decider context
-     * @param logicSQL logic SQL
+     * @param queryContext logic SQL
      * @param database database metadata
      * @param rule rule
      * @param props props
      */
-    void decide(SQLFederationDeciderContext deciderContext, LogicSQL logicSQL, ShardingSphereDatabase database, T rule, ConfigurationProperties props);
+    void decide(SQLFederationDeciderContext deciderContext, QueryContext queryContext, ShardingSphereDatabase database, T rule, ConfigurationProperties props);
 }

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.binder;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 
@@ -29,7 +28,7 @@ import java.util.Optional;
  * Logic SQL.
  */
 @Getter
-public final class LogicSQL {
+public final class QueryContext {
     
     private final SQLStatementContext<?> sqlStatementContext;
     
@@ -39,21 +38,21 @@ public final class LogicSQL {
     
     private String sqlStatementDatabaseName;
     
-    public LogicSQL(final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> parameters) {
+    public QueryContext(final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> parameters) {
         this.sqlStatementContext = sqlStatementContext;
         this.sql = sql;
         this.parameters = parameters;
         if (sqlStatementContext instanceof TableAvailable) {
-            Optional.ofNullable(((TableAvailable) sqlStatementContext).getTablesContext()).flatMap(TablesContext::getDatabaseName).ifPresent(databaseName -> sqlStatementDatabaseName = databaseName);
+            ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().ifPresent(optional -> sqlStatementDatabaseName = optional);
         }
     }
     
     /**
-     * Get sql statement database name.
+     * Find sql statement database name.
      * 
      * @return database name
      */
-    public Optional<String> getSqlStatementDatabaseName() {
+    public Optional<String> findSqlStatementDatabaseName() {
         return Optional.ofNullable(sqlStatementDatabaseName);
     }
 }

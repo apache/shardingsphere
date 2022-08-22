@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rul.sql;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.parser.statement.rul.sql.PreviewStatement;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.aware.CursorDefinitionAware;
 import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDeciderContext;
@@ -101,8 +101,8 @@ public final class PreviewHandler extends SQLRULBackendHandler<PreviewStatement>
         SQLParserRule sqlParserRule = globalRuleMetaData.getSingleRule(SQLParserRule.class);
         SQLStatement previewedStatement = sqlParserRule.getSQLParserEngine(databaseType).parse(getSqlStatement().getSql(), false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData().getDatabases(), previewedStatement, databaseName);
-        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, getSqlStatement().getSql(), Collections.emptyList());
-        getConnectionSession().setLogicSQL(logicSQL);
+        QueryContext queryContext = new QueryContext(sqlStatementContext, getSqlStatement().getSql(), Collections.emptyList());
+        getConnectionSession().setQueryContext(queryContext);
         if (sqlStatementContext instanceof CursorAvailable && sqlStatementContext instanceof CursorDefinitionAware) {
             setUpCursorDefinition(sqlStatementContext);
         }
@@ -111,15 +111,15 @@ public final class PreviewHandler extends SQLRULBackendHandler<PreviewStatement>
             throw new RuleNotExistedException();
         }
         ConfigurationProperties props = metaDataContexts.getMetaData().getProps();
-        SQLFederationDeciderContext deciderContext = decide(logicSQL, props, metaDataContexts.getMetaData().getDatabase(getConnectionSession().getDatabaseName()));
-        Collection<ExecutionUnit> executionUnits = deciderContext.isUseSQLFederation() ? getFederationExecutionUnits(logicSQL, databaseName, metaDataContexts)
-                : kernelProcessor.generateExecutionContext(logicSQL, database, globalRuleMetaData, props, getConnectionSession().getConnectionContext()).getExecutionUnits();
+        SQLFederationDeciderContext deciderContext = decide(queryContext, props, metaDataContexts.getMetaData().getDatabase(getConnectionSession().getDatabaseName()));
+        Collection<ExecutionUnit> executionUnits = deciderContext.isUseSQLFederation() ? getFederationExecutionUnits(queryContext, databaseName, metaDataContexts)
+                : kernelProcessor.generateExecutionContext(queryContext, database, globalRuleMetaData, props, getConnectionSession().getConnectionContext()).getExecutionUnits();
         return executionUnits.stream().map(this::buildRow).collect(Collectors.toList());
     }
     
-    private static SQLFederationDeciderContext decide(final LogicSQL logicSQL, final ConfigurationProperties props, final ShardingSphereDatabase database) {
+    private static SQLFederationDeciderContext decide(final QueryContext queryContext, final ConfigurationProperties props, final ShardingSphereDatabase database) {
         SQLFederationDeciderEngine deciderEngine = new SQLFederationDeciderEngine(database.getRuleMetaData().getRules(), props);
-        return deciderEngine.decide(logicSQL, database);
+        return deciderEngine.decide(queryContext, database);
     }
     
     private void setUpCursorDefinition(final SQLStatementContext<?> sqlStatementContext) {
@@ -136,13 +136,13 @@ public final class PreviewHandler extends SQLRULBackendHandler<PreviewStatement>
         return new LocalDataQueryResultRow(unit.getDataSourceName(), unit.getSqlUnit().getSql());
     }
     
-    private Collection<ExecutionUnit> getFederationExecutionUnits(final LogicSQL logicSQL, final String databaseName, final MetaDataContexts metaDataContexts) throws SQLException {
-        SQLStatement sqlStatement = logicSQL.getSqlStatementContext().getSqlStatement();
+    private Collection<ExecutionUnit> getFederationExecutionUnits(final QueryContext queryContext, final String databaseName, final MetaDataContexts metaDataContexts) throws SQLException {
+        SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         boolean isReturnGeneratedKeys = sqlStatement instanceof MySQLInsertStatement;
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(isReturnGeneratedKeys, metaDataContexts);
-        FederationContext context = new FederationContext(true, logicSQL, metaDataContexts.getMetaData().getDatabases());
+        FederationContext context = new FederationContext(true, queryContext, metaDataContexts.getMetaData().getDatabases());
         DatabaseType databaseType = metaDataContexts.getMetaData().getDatabase(getDatabaseName()).getResource().getDatabaseType();
-        String schemaName = logicSQL.getSqlStatementContext().getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(databaseType, databaseName));
+        String schemaName = queryContext.getSqlStatementContext().getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(databaseType, databaseName));
         EventBusContext eventBusContext = ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext();
         OptimizerContext optimizerContext = OptimizerContextFactory.create(metaDataContexts.getMetaData().getDatabases(), metaDataContexts.getMetaData().getGlobalRuleMetaData());
         FederationExecutor executor = FederationExecutorFactory.newInstance(databaseName, schemaName, optimizerContext, metaDataContexts.getMetaData().getGlobalRuleMetaData(),

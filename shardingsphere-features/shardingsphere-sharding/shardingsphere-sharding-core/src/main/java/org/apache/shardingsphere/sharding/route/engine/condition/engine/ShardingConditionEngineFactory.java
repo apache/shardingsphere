@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.impl.InsertClauseShardingConditionEngine;
@@ -35,12 +35,13 @@ public final class ShardingConditionEngineFactory {
     /**
      * Create new instance of sharding condition engine.
      *
-     * @param logicSQL logic SQL
+     * @param queryContext query context
      * @param database database
      * @param rule sharding rule 
      * @return created instance
      */
-    public static ShardingConditionEngine<?> createShardingConditionEngine(final LogicSQL logicSQL, final ShardingSphereDatabase database, final ShardingRule rule) {
-        return logicSQL.getSqlStatementContext() instanceof InsertStatementContext ? new InsertClauseShardingConditionEngine(rule, database) : new WhereClauseShardingConditionEngine(rule, database);
+    public static ShardingConditionEngine<?> createShardingConditionEngine(final QueryContext queryContext, final ShardingSphereDatabase database, final ShardingRule rule) {
+        return queryContext.getSqlStatementContext() instanceof InsertStatementContext ? new InsertClauseShardingConditionEngine(rule, database)
+                : new WhereClauseShardingConditionEngine(rule, database);
     }
 }

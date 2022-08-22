@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.process;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
@@ -56,9 +56,9 @@ public final class GovernanceExecuteProcessReporterTest {
     
     @Test
     public void assertReport() {
-        LogicSQL logicSQL = new LogicSQL(null, null, null);
+        QueryContext queryContext = new QueryContext(null, null, null);
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = mockExecutionGroupContext();
-        reporter.report(logicSQL, executionGroupContext, ExecuteProcessConstants.EXECUTE_ID, EventBusContextHolderFixture.EVENT_BUS_CONTEXT);
+        reporter.report(queryContext, executionGroupContext, ExecuteProcessConstants.EXECUTE_ID, EventBusContextHolderFixture.EVENT_BUS_CONTEXT);
         verify(showProcessListManager, times(1)).putProcessContext(eq(executionGroupContext.getExecutionID()), any());
     }
     
