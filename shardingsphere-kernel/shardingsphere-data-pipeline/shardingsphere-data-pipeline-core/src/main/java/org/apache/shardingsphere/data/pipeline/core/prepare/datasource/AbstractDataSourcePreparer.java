@@ -103,6 +103,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         try (Statement statement = targetConnection.createStatement()) {
             statement.execute(sql);
         } catch (final SQLException ex) {
+            log.warn("execute target table sql failed", ex);
             for (String ignoreMessage : IGNORE_EXCEPTION_MESSAGE) {
                 if (ex.getMessage().contains(ignoreMessage)) {
                     return;

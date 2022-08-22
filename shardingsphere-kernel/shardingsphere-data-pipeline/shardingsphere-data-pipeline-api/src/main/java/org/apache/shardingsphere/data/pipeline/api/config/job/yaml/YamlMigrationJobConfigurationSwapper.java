@@ -36,16 +36,15 @@ public final class YamlMigrationJobConfigurationSwapper implements YamlConfigura
     public YamlMigrationJobConfiguration swapToYamlConfiguration(final MigrationJobConfiguration data) {
         YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
         result.setJobId(data.getJobId());
-        result.setDatabaseName(data.getDatabaseName());
-        result.setActiveVersion(data.getActiveVersion());
-        result.setNewVersion(data.getNewVersion());
+        result.setTargetDatabaseName(data.getTargetDatabaseName());
         result.setSourceDatabaseType(data.getSourceDatabaseType());
+        result.setSourceTableName(data.getSourceTableName());
+        result.setSourceDataSourceName(data.getSourceDataSourceName());
         result.setTargetDatabaseType(data.getTargetDatabaseType());
         result.setSource(dataSourceConfigSwapper.swapToYamlConfiguration(data.getSource()));
         result.setTarget(dataSourceConfigSwapper.swapToYamlConfiguration(data.getTarget()));
-        result.setAlteredRuleYamlClassNameTablesMap(data.getAlteredRuleYamlClassNameTablesMap());
         result.setSchemaTablesMap(data.getSchemaTablesMap());
-        result.setLogicTables(data.getLogicTables());
+        result.setTargetTableName(data.getTargetTableName());
         result.setTablesFirstDataNodes(data.getTablesFirstDataNodes());
         result.setJobShardingDataNodes(data.getJobShardingDataNodes());
         result.setConcurrency(data.getConcurrency());
@@ -55,11 +54,10 @@ public final class YamlMigrationJobConfigurationSwapper implements YamlConfigura
     
     @Override
     public MigrationJobConfiguration swapToObject(final YamlMigrationJobConfiguration yamlConfig) {
-        return new MigrationJobConfiguration(yamlConfig.getJobId(), yamlConfig.getDatabaseName(),
-                yamlConfig.getActiveVersion(), yamlConfig.getNewVersion(),
+        return new MigrationJobConfiguration(yamlConfig.getJobId(), yamlConfig.getTargetDatabaseName(), yamlConfig.getSourceDataSourceName(),
                 yamlConfig.getSourceDatabaseType(), yamlConfig.getTargetDatabaseType(),
                 dataSourceConfigSwapper.swapToObject(yamlConfig.getSource()), dataSourceConfigSwapper.swapToObject(yamlConfig.getTarget()),
-                yamlConfig.getAlteredRuleYamlClassNameTablesMap(), yamlConfig.getSchemaTablesMap(), yamlConfig.getLogicTables(),
+                yamlConfig.getSchemaTablesMap(), yamlConfig.getSourceTableName(), yamlConfig.getTargetTableName(),
                 yamlConfig.getTablesFirstDataNodes(), yamlConfig.getJobShardingDataNodes(),
                 yamlConfig.getConcurrency(), yamlConfig.getRetryTimes());
     }

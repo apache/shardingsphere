@@ -61,8 +61,8 @@ public final class PostgreSQLPositionInitializerTest {
         when(connection.getCatalog()).thenReturn("sharding_db");
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         PreparedStatement lsn96PreparedStatement = mockPostgreSQL96LSN();
-        when(connection.prepareStatement(String.format("SELECT * FROM pg_create_logical_replication_slot('%s', '%s')", PostgreSQLPositionInitializer.getUniqueSlotName(connection), "test_decoding")))
-                .thenReturn(mock(PreparedStatement.class));
+        when(connection.prepareStatement(String.format("SELECT * FROM pg_create_logical_replication_slot('%s', '%s')", PostgreSQLPositionInitializer.getUniqueSlotName(connection, ""),
+                "test_decoding"))).thenReturn(mock(PreparedStatement.class));
         when(connection.prepareStatement("SELECT PG_CURRENT_XLOG_LOCATION()")).thenReturn(lsn96PreparedStatement);
         PreparedStatement lsn10PreparedStatement = mockPostgreSQL10LSN();
         when(connection.prepareStatement("SELECT PG_CURRENT_WAL_LSN()")).thenReturn(lsn10PreparedStatement);
@@ -73,7 +73,7 @@ public final class PostgreSQLPositionInitializerTest {
         mockSlotExistsOrNot(false);
         when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(9);
         when(databaseMetaData.getDatabaseMinorVersion()).thenReturn(6);
-        WalPosition actual = new PostgreSQLPositionInitializer().init(dataSource);
+        WalPosition actual = new PostgreSQLPositionInitializer().init(dataSource, "");
         assertThat(actual.getLogSequenceNumber().get(), is(LogSequenceNumber.valueOf(POSTGRESQL_96_LSN)));
     }
     
@@ -81,7 +81,7 @@ public final class PostgreSQLPositionInitializerTest {
     public void assertGetCurrentPositionOnPostgreSQL10() throws SQLException {
         mockSlotExistsOrNot(false);
         when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(10);
-        WalPosition actual = new PostgreSQLPositionInitializer().init(dataSource);
+        WalPosition actual = new PostgreSQLPositionInitializer().init(dataSource, "");
         assertThat(actual.getLogSequenceNumber().get(), is(LogSequenceNumber.valueOf(POSTGRESQL_10_LSN)));
     }
     
@@ -90,7 +90,7 @@ public final class PostgreSQLPositionInitializerTest {
         mockSlotExistsOrNot(false);
         when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(9);
         when(databaseMetaData.getDatabaseMinorVersion()).thenReturn(4);
-        new PostgreSQLPositionInitializer().init(dataSource);
+        new PostgreSQLPositionInitializer().init(dataSource, "");
     }
     
     @SneakyThrows(SQLException.class)
@@ -127,7 +127,7 @@ public final class PostgreSQLPositionInitializerTest {
         mockSlotExistsOrNot(true);
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(connection.prepareStatement("SELECT pg_drop_replication_slot(?)")).thenReturn(preparedStatement);
-        new PostgreSQLPositionInitializer().destroy(dataSource);
+        new PostgreSQLPositionInitializer().destroy(dataSource, "");
         verify(preparedStatement).execute();
     }
 }

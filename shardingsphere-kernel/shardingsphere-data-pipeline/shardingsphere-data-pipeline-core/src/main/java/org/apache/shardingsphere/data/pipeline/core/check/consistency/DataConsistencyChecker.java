@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 
 import com.google.common.base.Preconditions;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyContentCheckResult;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
+import org.apache.shardingsphere.data.pipeline.core.util.SchemaTableUtil;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -51,6 +53,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -64,6 +67,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Data consistency checker.
  */
+@Slf4j
 public final class DataConsistencyChecker {
     
     // TODO remove jobConfig for common usage
@@ -77,8 +81,10 @@ public final class DataConsistencyChecker {
     
     public DataConsistencyChecker(final MigrationJobConfiguration jobConfig, final JobRateLimitAlgorithm readRateLimitAlgorithm) {
         this.jobConfig = jobConfig;
-        logicTableNames = jobConfig.splitLogicTableNames();
-        tableNameSchemaNameMapping = new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(jobConfig.getSchemaTablesMap()));
+        logicTableNames = Collections.singletonList(jobConfig.getTargetTableName());
+        // TODO need get from actual data source.
+        Map<String, List<String>> schemaTablesMap = SchemaTableUtil.getSchemaTablesMap(jobConfig.getTargetDatabaseName(), Collections.singleton(jobConfig.getTargetTableName()));
+        tableNameSchemaNameMapping = new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(schemaTablesMap));
         this.readRateLimitAlgorithm = readRateLimitAlgorithm;
     }
     
@@ -166,7 +172,7 @@ public final class DataConsistencyChecker {
             String sourceDatabaseType = sourceDataSourceConfig.getDatabaseType().getType();
             String targetDatabaseType = targetDataSourceConfig.getDatabaseType().getType();
             for (String each : logicTableNames) {
-                ShardingSphereTable table = getTableMetaData(jobConfig.getDatabaseName(), each);
+                ShardingSphereTable table = getTableMetaData(jobConfig.getTargetDatabaseName(), each);
                 if (null == table) {
                     throw new PipelineDataConsistencyCheckFailedException("Can not get metadata for table " + each);
                 }
