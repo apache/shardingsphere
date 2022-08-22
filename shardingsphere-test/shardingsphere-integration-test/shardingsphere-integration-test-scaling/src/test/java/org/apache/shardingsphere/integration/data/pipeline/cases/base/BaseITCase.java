@@ -358,6 +358,7 @@ public abstract class BaseITCase {
     }
     
     protected void assertGreaterThanInitTableInitRows(final int tableInitRows, final String schema) {
+        proxyExecuteWithLog("REFRESH TABLE METADATA", 2);
         String countSQL = StringUtils.isBlank(schema) ? "SELECT COUNT(*) as count FROM t_order" : String.format("SELECT COUNT(*) as count FROM %s.t_order", schema);
         Map<String, Object> actual = queryForListWithLog(countSQL).get(0);
         assertTrue("actual count " + actual.get("count"), Integer.parseInt(actual.get("count").toString()) > tableInitRows);
@@ -376,7 +377,6 @@ public abstract class BaseITCase {
         }
         boolean secondCheckJobResult = checkJobIncrementTaskFinished(jobId);
         log.info("second check job result: {}", secondCheckJobResult);
-        proxyExecuteWithLog("REFRESH TABLE METADATA", 2);
         List<Map<String, Object>> checkScalingResults = queryForListWithLog(String.format("CHECK MIGRATION '%s' BY TYPE (NAME='DATA_MATCH')", jobId));
         log.info("checkScalingResults: {}", checkScalingResults);
         for (Map<String, Object> entry : checkScalingResults) {
