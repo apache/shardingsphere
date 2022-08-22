@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.postgresql.util.FreemarkerManager;
+import org.apache.shardingsphere.data.pipeline.postgresql.util.PostgreSQLPipelineFreemarkerManager;
 import org.postgresql.jdbc.PgArray;
 
 import java.sql.Connection;
@@ -74,9 +74,9 @@ public final class PostgresIndexSQLGenerator extends AbstractPostgresDDLAdapter 
     }
     
     private String doGenerateIndexSql(final Map<String, Object> indexData) {
-        String result = FreemarkerManager.getSQLByPgVersion(indexData, "indexes/%s/create.ftl", getMajorVersion(), getMinorVersion());
+        String result = PostgreSQLPipelineFreemarkerManager.getSQLByVersion(indexData, "indexes/%s/create.ftl", getMajorVersion(), getMinorVersion());
         result += System.lineSeparator();
-        result += FreemarkerManager.getSQLByPgVersion(indexData, "indexes/%s/alter.ftl", getMajorVersion(), getMinorVersion());
+        result += PostgreSQLPipelineFreemarkerManager.getSQLByVersion(indexData, "indexes/%s/alter.ftl", getMajorVersion(), getMinorVersion());
         return result;
     }
     
