@@ -19,24 +19,16 @@ package org.apache.shardingsphere.data.pipeline.api.pojo;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-
-import javax.sql.DataSource;
-import java.util.Map;
 
 @Data
 @RequiredArgsConstructor
 public final class CreateMigrationJobParameter {
     
-    private final String sourceDataSourceName;
+    private final String sourceResourceName;
     
     private final String sourceTableName;
     
     private final String targetDatabaseName;
     
     private final String targetTableName;
-    
-    private final YamlRuleConfiguration targetShardingRuleConfig;
-    
-    private final Map<String, DataSource> targetDataSources;
 }

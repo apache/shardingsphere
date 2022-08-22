@@ -22,15 +22,9 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.pojo.CreateMigrationJobParameter;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.migration.distsql.statement.MigrateTableStatement;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.YamlShardingRuleConfigurationSwapper;
-
-import java.util.Objects;
 
 /**
  * Migrate table updater.
@@ -45,14 +39,9 @@ public final class MigrateTableUpdater implements RALUpdater<MigrateTableStateme
     @Override
     public void executeUpdate(final String databaseName, final MigrateTableStatement sqlStatement) {
         log.info("start migrate job by {}", sqlStatement);
-        ShardingSphereDatabase targetDatabase = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabase(sqlStatement.getTargetDatabaseName());
-        ShardingRuleConfiguration targetShardingRule = targetDatabase.getRuleMetaData().getConfigurations().stream().filter(each -> each instanceof ShardingRuleConfiguration)
-                .map(each -> (ShardingRuleConfiguration) each).findFirst().orElseThrow(() -> new PipelineJobCreationException("No sharding rule found."));
-        targetShardingRule.getTables().removeIf(each -> !Objects.equals(each.getLogicTable(), sqlStatement.getTargetTableName()));
-        targetShardingRule.getAutoTables().removeIf(each -> !Objects.equals(each.getLogicTable(), sqlStatement.getTargetTableName()));
+        String targetDatabaseName = ObjectUtils.defaultIfNull(sqlStatement.getTargetDatabaseName(), databaseName);
         CreateMigrationJobParameter createMigrationJobParameter = new CreateMigrationJobParameter(sqlStatement.getSourceDatabaseName(), sqlStatement.getSourceTableName(),
-                ObjectUtils.defaultIfNull(sqlStatement.getTargetDatabaseName(), sqlStatement.getSourceDatabaseName()), sqlStatement.getTargetTableName(),
-                SHARDING_RULE_CONFIG_SWAPPER.swapToYamlConfiguration(targetShardingRule), targetDatabase.getResource().getDataSources());
+                targetDatabaseName, sqlStatement.getTargetTableName());
         JOB_API.createJobAndStart(createMigrationJobParameter);
     }
     

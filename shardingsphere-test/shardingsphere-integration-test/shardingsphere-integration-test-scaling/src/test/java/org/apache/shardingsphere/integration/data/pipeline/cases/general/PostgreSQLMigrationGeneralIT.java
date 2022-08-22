@@ -99,7 +99,7 @@ public final class PostgreSQLMigrationGeneralIT extends BaseExtraSQLITCase {
     
     private void checkOrderItemMigration() {
         startMigrationOrderItem();
-        String jobId = getJobIdByTableName("t_order");
+        String jobId = getJobIdByTableName("t_order_item");
         waitMigrationFinished(jobId);
         assertCheckScalingSuccess(jobId);
     }

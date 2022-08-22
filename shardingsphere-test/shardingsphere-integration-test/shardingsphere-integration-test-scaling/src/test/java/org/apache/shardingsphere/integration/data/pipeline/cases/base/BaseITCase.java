@@ -80,8 +80,6 @@ public abstract class BaseITCase {
     
     protected static final String DS_0 = "scaling_it_0";
     
-    protected static final String DS_1 = "scaling_it_1";
-    
     protected static final String DS_2 = "scaling_it_2";
     
     protected static final String DS_3 = "scaling_it_3";
@@ -322,6 +320,7 @@ public abstract class BaseITCase {
         proxyExecuteWithLog(String.format("STOP MIGRATION '%s'", jobId), 5);
     }
     
+    // TODO reopen later
     protected void startMigrationByJob(final String jobId) {
         proxyExecuteWithLog(String.format("START MIGRATION '%s'", jobId), 10);
     }
@@ -377,6 +376,7 @@ public abstract class BaseITCase {
         }
         boolean secondCheckJobResult = checkJobIncrementTaskFinished(jobId);
         log.info("second check job result: {}", secondCheckJobResult);
+        proxyExecuteWithLog("REFRESH TABLE METADATA", 2);
         List<Map<String, Object>> checkScalingResults = queryForListWithLog(String.format("CHECK MIGRATION '%s' BY TYPE (NAME='DATA_MATCH')", jobId));
         log.info("checkScalingResults: {}", checkScalingResults);
         for (Map<String, Object> entry : checkScalingResults) {

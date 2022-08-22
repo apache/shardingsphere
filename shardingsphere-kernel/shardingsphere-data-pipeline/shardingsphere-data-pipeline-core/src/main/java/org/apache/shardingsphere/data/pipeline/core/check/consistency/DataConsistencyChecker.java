@@ -82,6 +82,7 @@ public final class DataConsistencyChecker {
     public DataConsistencyChecker(final MigrationJobConfiguration jobConfig, final JobRateLimitAlgorithm readRateLimitAlgorithm) {
         this.jobConfig = jobConfig;
         logicTableNames = Collections.singletonList(jobConfig.getTargetTableName());
+        // TODO need get from actual data source.
         Map<String, List<String>> schemaTablesMap = SchemaTableUtil.getSchemaTablesMap(jobConfig.getTargetDatabaseName(), Collections.singleton(jobConfig.getTargetTableName()));
         tableNameSchemaNameMapping = new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(schemaTablesMap));
         this.readRateLimitAlgorithm = readRateLimitAlgorithm;
