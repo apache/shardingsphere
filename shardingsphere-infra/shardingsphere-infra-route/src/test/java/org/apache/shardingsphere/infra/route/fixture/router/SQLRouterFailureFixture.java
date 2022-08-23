@@ -19,11 +19,11 @@ package org.apache.shardingsphere.infra.route.fixture.router;
 
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.fixture.rule.RouteFailureRuleFixture;
-import org.apache.shardingsphere.infra.session.ConnectionContext;
 
 public final class SQLRouterFailureFixture implements SQLRouter<RouteFailureRuleFixture> {
     

@@ -15,35 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
+package org.apache.shardingsphere.infra.context.cursor;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
-import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 
 import java.util.List;
-import java.util.Properties;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Fixed primary read query load-balance algorithm.
+ * Cursor connection context.
  */
-public final class FixedPrimaryReadQueryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
+@Getter
+public final class CursorConnectionContext implements AutoCloseable {
     
-    @Getter
-    private Properties props;
+    private final Map<String, List<FetchGroup>> orderByValueGroups = new ConcurrentHashMap<>();
+    
+    private final Map<String, Long> minGroupRowCounts = new ConcurrentHashMap<>();
+    
+    private final Map<String, CursorDefinition> cursorDefinitions = new ConcurrentHashMap<>();
     
     @Override
-    public void init(final Properties props) {
-        this.props = props;
+    public void close() {
+        orderByValueGroups.clear();
+        minGroupRowCounts.clear();
+        cursorDefinitions.clear();
     }
     
-    @Override
-    public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames, final TransactionConnectionContext context) {
-        return writeDataSourceName;
-    }
-    
-    @Override
-    public String getType() {
-        return "FIXED_PRIMARY";
+    /**
+     * Remove cursor name.
+     * 
+     * @param name cursor name
+     */
+    public void removeCursorName(final String name) {
+        orderByValueGroups.remove(name);
+        minGroupRowCounts.remove(name);
+        cursorDefinitions.remove(name);
     }
 }
