@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -39,16 +40,15 @@ public final class ReadwriteSplittingDistSQLTest {
     
     @Test
     public void assertCreateReadwriteSplitting() {
-        String sql = "CREATE READWRITE_SPLITTING RULE ms_group_0 (WRITE_RESOURCE=primary_ds, READ_RESOURCES(replica_ds_0,replica_ds_1), TYPE(NAME='random')))";
+        String sql = "CREATE READWRITE_SPLITTING RULE ms_group_0 (WRITE_RESOURCE=primary_ds, READ_RESOURCES(replica_ds_0,replica_ds_1), TYPE(NAME='random', PROPERTIES('read_weight'='2:1'))))";
         CreateReadwriteSplittingRuleStatement distSQLStatement = (CreateReadwriteSplittingRuleStatement) getShadowDistSQLStatement(sql);
         assertThat(distSQLStatement.getRules().size(), is(1));
         assertReadwriteSplittingRuleSegment(distSQLStatement.getRules().iterator().next());
-        
     }
     
     @Test
     public void assertAlterReadwriteSplitting() {
-        String sql = "ALTER READWRITE_SPLITTING RULE ms_group_0 (WRITE_RESOURCE=primary_ds, READ_RESOURCES(replica_ds_0,replica_ds_1), TYPE(NAME='random')))";
+        String sql = "ALTER READWRITE_SPLITTING RULE ms_group_0 (WRITE_RESOURCE=primary_ds, READ_RESOURCES(replica_ds_0,replica_ds_1), TYPE(NAME='random', PROPERTIES('read_weight'='2:1'))))";
         AlterReadwriteSplittingRuleStatement distSQLStatement = (AlterReadwriteSplittingRuleStatement) getShadowDistSQLStatement(sql);
         assertThat(distSQLStatement.getRules().size(), is(1));
         assertReadwriteSplittingRuleSegment(distSQLStatement.getRules().iterator().next());
@@ -59,6 +59,9 @@ public final class ReadwriteSplittingDistSQLTest {
         assertThat(readwriteSplittingRule.getWriteDataSource(), is("primary_ds"));
         assertThat(readwriteSplittingRule.getLoadBalancer(), is("random"));
         assertThat(readwriteSplittingRule.getReadDataSources(), is(Arrays.asList("replica_ds_0", "replica_ds_1")));
+        Properties props = new Properties();
+        props.put("read_weight", "2:1");
+        assertThat(readwriteSplittingRule.getProps(), is(props));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
