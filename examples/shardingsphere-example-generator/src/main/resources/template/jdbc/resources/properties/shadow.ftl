@@ -15,7 +15,7 @@
   ~ limitations under the License.
   -->
 
-spring.shardingsphere.rules.shadow.data-sources.shadow-data-source.source-data-source-name=ds-0
+spring.shardingsphere.rules.shadow.data-sources.shadow-data-source.production-data-source-name=ds-0
 spring.shardingsphere.rules.shadow.data-sources.shadow-data-source.shadow-data-source-name=ds-1
 
 spring.shardingsphere.rules.shadow.tables.t_order.data-source-names=shadow-data-source

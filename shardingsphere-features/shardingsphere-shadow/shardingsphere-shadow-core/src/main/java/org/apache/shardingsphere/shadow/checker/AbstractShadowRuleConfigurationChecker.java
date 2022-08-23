@@ -51,7 +51,7 @@ public abstract class AbstractShadowRuleConfigurationChecker<T extends RuleConfi
         Set<String> dataSource = dataSourceMap.keySet();
         for (Entry<String, ShadowDataSourceConfiguration> entry : shadowDataSources.entrySet()) {
             ShadowDataSourceConfiguration shadowConfiguration = entry.getValue();
-            boolean shadowDataSourceState = dataSource.contains(shadowConfiguration.getSourceDataSourceName()) && dataSource.contains(shadowConfiguration.getShadowDataSourceName());
+            boolean shadowDataSourceState = dataSource.contains(shadowConfiguration.getProductionDataSourceName()) && dataSource.contains(shadowConfiguration.getShadowDataSourceName());
             Preconditions.checkState(shadowDataSourceState, "No available data source for shadow data source mapping configuration");
         }
     }

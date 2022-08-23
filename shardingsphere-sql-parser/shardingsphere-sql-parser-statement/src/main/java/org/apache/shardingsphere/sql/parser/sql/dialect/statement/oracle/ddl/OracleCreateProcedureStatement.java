@@ -15,20 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.yaml.config.datasource;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateProcedureStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
-/**
- * Shadow data source configuration for YAML.
- */
-@Getter
 @Setter
-public final class YamlShadowDataSourceConfiguration implements YamlConfiguration {
-    
-    private String productionDataSourceName;
-    
-    private String shadowDataSourceName;
+@ToString(callSuper = true)
+public class OracleCreateProcedureStatement extends CreateProcedureStatement implements OracleStatement {
 }

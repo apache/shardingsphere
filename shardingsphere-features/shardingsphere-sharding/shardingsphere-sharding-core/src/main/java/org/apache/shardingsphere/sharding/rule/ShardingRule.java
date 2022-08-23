@@ -19,11 +19,9 @@ package org.apache.shardingsphere.sharding.rule;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.InstanceAwareAlgorithm;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
@@ -117,7 +115,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     public ShardingRule(final ShardingRuleConfiguration config, final Collection<String> dataSourceNames, final InstanceContext instanceContext) {
         configuration = config;
         this.dataSourceNames = getDataSourceNames(config.getTables(), config.getAutoTables(), dataSourceNames);
-        config.getShardingAlgorithms().forEach((key, value) -> shardingAlgorithms.put(key, createShardingAlgorithm(key, value, config.getTables(), config.getAutoTables())));
+        config.getShardingAlgorithms().forEach((key, value) -> shardingAlgorithms.put(key, ShardingAlgorithmFactory.newInstance(value)));
         config.getKeyGenerators().forEach((key, value) -> keyGenerators.put(key, KeyGenerateAlgorithmFactory.newInstance(value)));
         config.getAuditors().forEach((key, value) -> auditors.put(key, ShardingAuditAlgorithmFactory.newInstance(value)));
         tableRules.putAll(createTableRules(config.getTables(), config.getDefaultKeyGenerateStrategy()));
@@ -782,34 +780,6 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         }
         BinaryOperationExpression binaryExpression = (BinaryOperationExpression) expression;
         return binaryExpression.getLeft() instanceof ColumnSegment && binaryExpression.getRight() instanceof ColumnSegment && "=".equals(binaryExpression.getOperator());
-    }
-    
-    private ShardingAlgorithm createShardingAlgorithm(final String name, final AlgorithmConfiguration config, final Collection<ShardingTableRuleConfiguration> tables,
-                                                      final Collection<ShardingAutoTableRuleConfiguration> autoTables) {
-        Map<String, String> algorithmTablePrefixMap = getAlgorithmTablePrefixMap(tables, autoTables);
-        if (algorithmTablePrefixMap.containsKey(name)) {
-            String algorithmExpression = config.getProps().getProperty(ALGORITHM_EXPRESSION_KEY);
-            String actualTablePrefix = algorithmTablePrefixMap.get(name);
-            if (!Strings.isNullOrEmpty(algorithmExpression) && !algorithmExpression.startsWith(actualTablePrefix)) {
-                config.getProps().setProperty(ALGORITHM_EXPRESSION_KEY, actualTablePrefix + algorithmExpression);
-            }
-        }
-        return ShardingAlgorithmFactory.newInstance(config);
-    }
-    
-    private Map<String, String> getAlgorithmTablePrefixMap(final Collection<ShardingTableRuleConfiguration> tables, final Collection<ShardingAutoTableRuleConfiguration> autoTables) {
-        Map<String, String> result = new LinkedHashMap<>(tables.size() + autoTables.size(), 1);
-        for (ShardingTableRuleConfiguration each : tables) {
-            if (null != each.getActualTablePrefix() && null != each.getTableShardingStrategy()) {
-                result.put(each.getTableShardingStrategy().getShardingAlgorithmName(), each.getActualTablePrefix());
-            }
-        }
-        for (ShardingAutoTableRuleConfiguration each : autoTables) {
-            if (null != each.getActualTablePrefix() && null != each.getShardingStrategy()) {
-                result.put(each.getShardingStrategy().getShardingAlgorithmName(), each.getActualTablePrefix());
-            }
-        }
-        return result;
     }
     
     @Override
