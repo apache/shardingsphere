@@ -47,7 +47,7 @@ public final class FederationExecutorFactory {
     public static FederationExecutor newInstance(final String databaseName, final String schemaName, final OptimizerContext optimizerContext,
                                                  final ShardingSphereRuleMetaData globalRuleMetaData, final ConfigurationProperties props, final JDBCExecutor jdbcExecutor,
                                                  final EventBusContext eventBusContext) {
-        // TODO Consider about AdvancedFederationExecutor and TranslatableFederationExecutor
+        // TODO Consider about AdvancedFederationExecutor
         return new OriginalFederationExecutor(databaseName, schemaName, optimizerContext, globalRuleMetaData, props, jdbcExecutor, eventBusContext);
     }
 }

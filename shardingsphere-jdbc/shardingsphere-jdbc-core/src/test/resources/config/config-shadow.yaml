@@ -24,7 +24,7 @@ rules:
 - !SHADOW
   dataSources:
     shadowDataSource0:
-      sourceDataSourceName: shadow_jdbc_0
+      productionDataSourceName: shadow_jdbc_0
       shadowDataSourceName: shadow_jdbc_1
   tables:
     t_encrypt:

@@ -34,7 +34,9 @@ public final class ShardingSphereOptimizer {
     
     private final SqlToRelConverter converter;
     
-    private final RelOptPlanner hepPlanner;
+    private final RelOptPlanner hepPlannerWithoutCalc;
+    
+    private final RelOptPlanner hepPlannerWithCalc;
     
     /**
      * Optimize query execution plan.
@@ -45,8 +47,9 @@ public final class ShardingSphereOptimizer {
     public RelNode optimize(final SQLStatement sqlStatement) {
         SqlNode sqlNode = SQLNodeConverterEngine.convert(sqlStatement);
         RelNode logicPlan = converter.convertQuery(sqlNode, true, true).rel;
-        RelNode bestPlan = optimizeWithRBO(logicPlan, hepPlanner);
-        return optimizeWithCBO(bestPlan, converter);
+        RelNode ruleBasedPlan = optimizeWithRBO(logicPlan, hepPlannerWithoutCalc);
+        RelNode costBasedPlan = optimizeWithCBO(ruleBasedPlan, converter);
+        return optimizeWithRBO(costBasedPlan, hepPlannerWithCalc);
     }
     
     private static RelNode optimizeWithRBO(final RelNode logicPlan, final RelOptPlanner hepPlanner) {

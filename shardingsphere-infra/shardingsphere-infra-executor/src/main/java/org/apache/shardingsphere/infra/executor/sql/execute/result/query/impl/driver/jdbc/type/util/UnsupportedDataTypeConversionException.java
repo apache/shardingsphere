@@ -15,25 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.session.transaction;
+package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
+
+import java.util.Objects;
 
 /**
- * Transaction connection context.
+ * Unsupported data type conversion exception.
  */
-@Getter
-@Setter
-public final class TransactionConnectionContext implements AutoCloseable {
+public final class UnsupportedDataTypeConversionException extends ShardingSphereSQLException {
     
-    private volatile boolean inTransaction;
+    private static final long serialVersionUID = 4808672149254705863L;
     
-    private volatile String readWriteSplitReplicaRoute;
-    
-    @Override
-    public void close() {
-        inTransaction = false;
-        readWriteSplitReplicaRoute = null;
+    public UnsupportedDataTypeConversionException(final Class<?> convertType, final Object value) {
+        super(XOpenSQLState.INVALID_DATA_TYPE, 10004, "Unsupported conversion data type `%s` for value `%s`", convertType.getName(), Objects.toString(value));
     }
 }

@@ -15,10 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.session.cursor;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-/**
- * Cursor definition.
- */
-public interface CursorDefinition {
+import lombok.Setter;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateProcedureStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
+
+@Setter
+@ToString(callSuper = true)
+public class OracleCreateProcedureStatement extends CreateProcedureStatement implements OracleStatement {
 }

@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 @Setter
 public final class YamlShadowDataSourceConfiguration implements YamlConfiguration {
     
-    private String sourceDataSourceName;
+    private String productionDataSourceName;
     
     private String shadowDataSourceName;
 }

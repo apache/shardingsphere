@@ -12,10 +12,14 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 08000     | 10001       | The URL \`%s\` is not recognized, please refer to the pattern \`%s\` |
 | 42000     | 10002       | Can not support 3-tier structure for actual data node \`%s\` with JDBC \`%s\` |
 | 42000     | 10003       | Unsupported SQL node conversion for SQL statement \`%s\` |
+| HY004     | 10004       | Unsupported conversion data type \`%s\` for value \`%s\` |
 | 42000     | 11000       | You have an error in your SQL syntax: %s |
 | 42000     | 11001       | configuration error |
 | 42000     | 11002       | Resource does not exist |
 | 42000     | 11003       | Rule does not exist |
+| HY000     | 11004       | File access failed, reason is: %s |
+| 42000     | 11200       | Can not support database \`%s\` in SQL translation |
+| 42000     | 11201       | Translation error, SQL is: %s |
 | 42000     | 12000       | Unsupported command: %s |
 | 44000     | 13000       | SQL check failed, error message: %s |
 | HY000     | 14000       | The table \`%s\` of schema \`%s\` is locked |

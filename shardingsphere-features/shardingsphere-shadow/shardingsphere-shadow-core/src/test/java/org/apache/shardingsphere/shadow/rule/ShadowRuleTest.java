@@ -127,9 +127,9 @@ public final class ShadowRuleTest {
     
     private void assertShadowDataSourceMappings(final Map<String, ShadowDataSourceRule> shadowDataSourceMappings) {
         assertThat(shadowDataSourceMappings.size(), is(2));
-        assertThat(shadowDataSourceMappings.get("shadow-data-source-0").getSourceDataSource(), is("ds"));
+        assertThat(shadowDataSourceMappings.get("shadow-data-source-0").getProductionDataSource(), is("ds"));
         assertThat(shadowDataSourceMappings.get("shadow-data-source-0").getShadowDataSource(), is("ds_shadow"));
-        assertThat(shadowDataSourceMappings.get("shadow-data-source-1").getSourceDataSource(), is("ds1"));
+        assertThat(shadowDataSourceMappings.get("shadow-data-source-1").getProductionDataSource(), is("ds1"));
         assertThat(shadowDataSourceMappings.get("shadow-data-source-1").getShadowDataSource(), is("ds1_shadow"));
     }
     

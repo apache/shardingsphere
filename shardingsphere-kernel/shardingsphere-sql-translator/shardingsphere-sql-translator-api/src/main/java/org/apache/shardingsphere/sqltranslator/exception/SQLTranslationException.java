@@ -17,18 +17,17 @@
 
 package org.apache.shardingsphere.sqltranslator.exception;
 
+import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
+
 /**
  * SQL translation exception.
  */
-public class SQLTranslationException extends Exception {
+public abstract class SQLTranslationException extends ShardingSphereSQLException {
     
     private static final long serialVersionUID = -7227697280221442049L;
     
-    public SQLTranslationException(final String message) {
-        super(message);
-    }
-    
-    public SQLTranslationException(final String message, final Exception cause) {
-        super(message, cause);
+    public SQLTranslationException(final int vendorCode, final String reason, final String... messageArguments) {
+        super(XOpenSQLState.SYNTAX_ERROR, vendorCode, reason, messageArguments);
     }
 }
