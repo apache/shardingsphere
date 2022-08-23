@@ -26,6 +26,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 
@@ -42,14 +43,14 @@ public final class MySQLInventoryDumper extends AbstractInventoryDumper {
     }
     
     @Override
-    public Object readValue(final ResultSet resultSet, final int index) throws SQLException {
-        if (isYearDataType(resultSet.getMetaData().getColumnTypeName(index))) {
+    public Object readValue(final ResultSet resultSet, final ResultSetMetaData resultSetMetaData, final int index) throws SQLException {
+        if (isYearDataType(resultSetMetaData.getColumnTypeName(index))) {
             Object result = resultSet.getObject(index);
             return resultSet.wasNull() ? null : result;
-        } else if (isDateTimeValue(resultSet.getMetaData().getColumnType(index))) {
+        } else if (isDateTimeValue(resultSetMetaData.getColumnType(index))) {
             return resultSet.getString(index);
         } else {
-            return resultSet.getObject(index);
+            return super.readValue(resultSet, resultSetMetaData, index);
         }
     }
     

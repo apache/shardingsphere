@@ -27,6 +27,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 
@@ -52,11 +53,11 @@ public final class PostgreSQLInventoryDumper extends AbstractInventoryDumper {
     }
     
     @Override
-    protected Object readValue(final ResultSet resultSet, final int index) throws SQLException {
-        if (isPgMoneyType(resultSet, index)) {
+    protected Object readValue(final ResultSet resultSet, final ResultSetMetaData resultSetMetaData, final int index) throws SQLException {
+        if (isPgMoneyType(resultSetMetaData, index)) {
             return resultSet.getBigDecimal(index);
         }
-        if (isPgBitType(resultSet, index)) {
+        if (isPgBitType(resultSetMetaData, index)) {
             PGobject result = new PGobject();
             result.setType("bit");
             Object resultSetObject = resultSet.getObject(index);
@@ -67,16 +68,16 @@ public final class PostgreSQLInventoryDumper extends AbstractInventoryDumper {
             }
             return result;
         }
-        return resultSet.getObject(index);
+        return super.readValue(resultSet, resultSetMetaData, index);
     }
     
-    private boolean isPgMoneyType(final ResultSet resultSet, final int index) throws SQLException {
-        return PG_MONEY_TYPE.equalsIgnoreCase(resultSet.getMetaData().getColumnTypeName(index));
+    private boolean isPgMoneyType(final ResultSetMetaData resultSetMetaData, final int index) throws SQLException {
+        return PG_MONEY_TYPE.equalsIgnoreCase(resultSetMetaData.getColumnTypeName(index));
     }
     
-    private boolean isPgBitType(final ResultSet resultSet, final int index) throws SQLException {
-        if (Types.BIT == resultSet.getMetaData().getColumnType(index)) {
-            return PG_BIT_TYPE.equalsIgnoreCase(resultSet.getMetaData().getColumnTypeName(index));
+    private boolean isPgBitType(final ResultSetMetaData resultSetMetaData, final int index) throws SQLException {
+        if (Types.BIT == resultSetMetaData.getColumnType(index)) {
+            return PG_BIT_TYPE.equalsIgnoreCase(resultSetMetaData.getColumnTypeName(index));
         }
         return false;
     }

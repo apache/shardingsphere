@@ -54,6 +54,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Optional;
 
 /**
@@ -159,18 +160,18 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
                 throw new IllegalArgumentException("Unsupported uniqueKeyDataType: " + uniqueKeyDataType);
             }
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                ResultSetMetaData metaData = resultSet.getMetaData();
+                ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
                 int rowCount = 0;
                 Object maxUniqueKeyValue = null;
                 String logicTableName = dumperConfig.getLogicTableName();
                 while (resultSet.next()) {
-                    DataRecord record = new DataRecord(newPosition(resultSet), metaData.getColumnCount());
+                    DataRecord record = new DataRecord(newPosition(resultSet), resultSetMetaData.getColumnCount());
                     record.setType(IngestDataChangeType.INSERT);
                     record.setTableName(logicTableName);
-                    maxUniqueKeyValue = readValue(resultSet, tableMetaData.getColumnMetaData(uniqueKey).getOrdinalPosition());
-                    for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                    maxUniqueKeyValue = readValue(resultSet, resultSetMetaData, tableMetaData.getColumnMetaData(uniqueKey).getOrdinalPosition());
+                    for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
                         boolean isUniqueKey = tableMetaData.isUniqueKey(i - 1);
-                        record.addColumn(new Column(metaData.getColumnName(i), readValue(resultSet, i), true, isUniqueKey));
+                        record.addColumn(new Column(resultSetMetaData.getColumnName(i), readValue(resultSet, resultSetMetaData, i), true, isUniqueKey));
                     }
                     pushRecord(record);
                     rowCount++;
@@ -202,8 +203,18 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     
     protected abstract PreparedStatement createPreparedStatement(Connection connection, String sql) throws SQLException;
     
-    protected Object readValue(final ResultSet resultSet, final int index) throws SQLException {
-        return resultSet.getObject(index);
+    protected Object readValue(final ResultSet resultSet, final ResultSetMetaData resultSetMetaData, final int index) throws SQLException {
+        int columnType = resultSet.getMetaData().getColumnType(index);
+        switch (columnType) {
+            case Types.TIME:
+                return resultSet.getTime(index);
+            case Types.DATE:
+                return resultSet.getDate(index);
+            case Types.TIMESTAMP:
+                return resultSet.getTimestamp(index);
+            default:
+                return resultSet.getObject(index);
+        }
     }
     
     private void pushRecord(final Record record) {

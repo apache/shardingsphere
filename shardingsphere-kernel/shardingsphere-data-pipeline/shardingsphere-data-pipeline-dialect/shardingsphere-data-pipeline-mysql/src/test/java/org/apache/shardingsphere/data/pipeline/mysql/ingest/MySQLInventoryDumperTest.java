@@ -97,9 +97,9 @@ public final class MySQLInventoryDumperTest {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.TIMESTAMP);
         when(resultSetMetaData.getColumnType(2)).thenReturn(Types.VARCHAR);
         when(resultSetMetaData.getColumnTypeName(3)).thenReturn(yearDataType);
-        String resultTimeStamp = (String) mysqlJdbcDumper.readValue(resultSet, 1);
-        Object resultObject = mysqlJdbcDumper.readValue(resultSet, 2);
-        Date resultDate = (Date) mysqlJdbcDumper.readValue(resultSet, 3);
+        String resultTimeStamp = (String) mysqlJdbcDumper.readValue(resultSet, resultSetMetaData, 1);
+        Object resultObject = mysqlJdbcDumper.readValue(resultSet, resultSetMetaData, 2);
+        Date resultDate = (Date) mysqlJdbcDumper.readValue(resultSet, resultSetMetaData, 3);
         assertThat(resultTimeStamp, is(mockDateString));
         assertThat(resultObject, is(mockObject));
         assertThat(resultDate, is(mockDate));
