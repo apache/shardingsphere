@@ -35,7 +35,7 @@ import static org.mockito.Mockito.mock;
 public final class ClusterStatementHandlerTest {
     
     @Test
-    public void assertSimpleTableSegmentWithTableSegment() {
+    public void assertGetSimpleTableSegmentWithTableSegment() {
         PostgreSQLClusterStatement statement = new PostgreSQLClusterStatement();
         statement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(""))));
         Optional<SimpleTableSegment> actual = ClusterStatementHandler.getSimpleTableSegment(statement);
@@ -43,7 +43,7 @@ public final class ClusterStatementHandlerTest {
     }
     
     @Test
-    public void assertSimpleTableSegmentWithoutTableSegment() {
+    public void assertGetSimpleTableSegmentWithoutTableSegment() {
         ClusterStatement statement = mock(ClusterStatement.class);
         Optional<SimpleTableSegment> actual = ClusterStatementHandler.getSimpleTableSegment(statement);
         assertFalse(actual.isPresent());
