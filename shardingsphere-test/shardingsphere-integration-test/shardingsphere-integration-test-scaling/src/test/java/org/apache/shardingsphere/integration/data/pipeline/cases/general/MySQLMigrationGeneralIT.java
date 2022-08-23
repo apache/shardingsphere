@@ -84,7 +84,7 @@ public final class MySQLMigrationGeneralIT extends BaseExtraSQLITCase {
             jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrder(), dataPair.getLeft());
             jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
         }
-        startMigrationOrderItem();
+        startMigrationOrderItem(false);
         checkOrderMigration(keyGenerateAlgorithm, jdbcTemplate);
         checkOrderItemMigration();
         for (String each : listJobId()) {
@@ -96,7 +96,7 @@ public final class MySQLMigrationGeneralIT extends BaseExtraSQLITCase {
     }
     
     private void checkOrderMigration(final KeyGenerateAlgorithm keyGenerateAlgorithm, final JdbcTemplate jdbcTemplate) {
-        startMigrationOrder();
+        startMigrationOrder(false);
         startIncrementTask(new MySQLIncrementTask(jdbcTemplate, keyGenerateAlgorithm, true, 20));
         String jobId = getJobIdByTableName("t_order");
         waitMigrationFinished(jobId);
@@ -105,7 +105,7 @@ public final class MySQLMigrationGeneralIT extends BaseExtraSQLITCase {
     }
     
     private void checkOrderItemMigration() {
-        startMigrationOrderItem();
+        startMigrationOrderItem(false);
         String jobId = getJobIdByTableName("t_order_item");
         waitMigrationFinished(jobId);
         assertCheckScalingSuccess(jobId);
