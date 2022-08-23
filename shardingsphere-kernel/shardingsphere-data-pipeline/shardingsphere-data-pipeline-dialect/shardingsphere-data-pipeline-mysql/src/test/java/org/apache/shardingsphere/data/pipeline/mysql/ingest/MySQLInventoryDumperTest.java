@@ -31,16 +31,11 @@ import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Types;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -79,33 +74,6 @@ public final class MySQLInventoryDumperTest {
             statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id VARCHAR(12))");
             statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");
         }
-    }
-    
-    @Test
-    public void assertReadValue() throws SQLException {
-        String mockDateString = "2022-6-30";
-        Object mockObject = new Object();
-        Date mockDate = Date.valueOf(mockDateString);
-        ResultSet resultSet = mock(ResultSet.class);
-        String yearDataType = "YEAR";
-        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
-        when(resultSet.wasNull()).thenReturn(false);
-        when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
-        when(resultSet.getString(1)).thenReturn(mockDateString);
-        when(resultSet.getObject(2)).thenReturn(mockObject);
-        when(resultSet.getObject(3)).thenReturn(mockDate);
-        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.TIMESTAMP);
-        when(resultSetMetaData.getColumnType(2)).thenReturn(Types.VARCHAR);
-        when(resultSetMetaData.getColumnTypeName(3)).thenReturn(yearDataType);
-        String resultTimeStamp = (String) mysqlJdbcDumper.readValue(resultSet, resultSetMetaData, 1);
-        Object resultObject = mysqlJdbcDumper.readValue(resultSet, resultSetMetaData, 2);
-        Date resultDate = (Date) mysqlJdbcDumper.readValue(resultSet, resultSetMetaData, 3);
-        assertThat(resultTimeStamp, is(mockDateString));
-        assertThat(resultObject, is(mockObject));
-        assertThat(resultDate, is(mockDate));
-        verify(resultSet).getString(1);
-        verify(resultSet).getObject(2);
-        verify(resultSet).getObject(3);
     }
     
     @Test

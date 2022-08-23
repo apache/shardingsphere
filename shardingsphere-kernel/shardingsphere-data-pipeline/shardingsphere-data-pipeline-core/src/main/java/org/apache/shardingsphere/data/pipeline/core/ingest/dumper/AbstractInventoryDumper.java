@@ -44,6 +44,7 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTabl
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueReader;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.InventoryDumper;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
@@ -54,7 +55,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.Optional;
 
 /**
@@ -69,6 +69,8 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     private final PipelineChannel channel;
     
     private final PipelineSQLBuilder pipelineSQLBuilder;
+    
+    private final ColumnValueReader columnValueReader;
     
     private final DataSource dataSource;
     
@@ -86,6 +88,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         this.dumperConfig = inventoryDumperConfig;
         this.channel = channel;
         pipelineSQLBuilder = PipelineSQLBuilderFactory.getInstance(inventoryDumperConfig.getDataSourceConfig().getDatabaseType().getType());
+        columnValueReader = ColumnValueReaderFactory.getInstance(inventoryDumperConfig.getDataSourceConfig().getDatabaseType().getType());
         this.dataSource = dataSource;
         batchSize = inventoryDumperConfig.getBatchSize();
         rateLimitAlgorithm = inventoryDumperConfig.getRateLimitAlgorithm();
@@ -168,10 +171,10 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
                     DataRecord record = new DataRecord(newPosition(resultSet), resultSetMetaData.getColumnCount());
                     record.setType(IngestDataChangeType.INSERT);
                     record.setTableName(logicTableName);
-                    maxUniqueKeyValue = readValue(resultSet, resultSetMetaData, tableMetaData.getColumnMetaData(uniqueKey).getOrdinalPosition());
+                    maxUniqueKeyValue = columnValueReader.readValue(resultSet, resultSetMetaData, tableMetaData.getColumnMetaData(uniqueKey).getOrdinalPosition());
                     for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
                         boolean isUniqueKey = tableMetaData.isUniqueKey(i - 1);
-                        record.addColumn(new Column(resultSetMetaData.getColumnName(i), readValue(resultSet, resultSetMetaData, i), true, isUniqueKey));
+                        record.addColumn(new Column(resultSetMetaData.getColumnName(i), columnValueReader.readValue(resultSet, resultSetMetaData, i), true, isUniqueKey));
                     }
                     pushRecord(record);
                     rowCount++;
@@ -202,20 +205,6 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     }
     
     protected abstract PreparedStatement createPreparedStatement(Connection connection, String sql) throws SQLException;
-    
-    protected Object readValue(final ResultSet resultSet, final ResultSetMetaData resultSetMetaData, final int index) throws SQLException {
-        int columnType = resultSet.getMetaData().getColumnType(index);
-        switch (columnType) {
-            case Types.TIME:
-                return resultSet.getTime(index);
-            case Types.DATE:
-                return resultSet.getDate(index);
-            case Types.TIMESTAMP:
-                return resultSet.getTimestamp(index);
-            default:
-                return resultSet.getObject(index);
-        }
-    }
     
     private void pushRecord(final Record record) {
         channel.pushRecord(record);
