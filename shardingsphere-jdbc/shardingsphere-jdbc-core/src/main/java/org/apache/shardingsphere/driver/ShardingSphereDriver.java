@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.driver;
 
 import org.apache.shardingsphere.driver.jdbc.core.driver.DriverDataSourceCache;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import java.sql.Connection;
 import java.sql.Driver;
@@ -43,7 +42,7 @@ public final class ShardingSphereDriver implements Driver {
         try {
             DriverManager.registerDriver(new ShardingSphereDriver());
         } catch (final SQLException ex) {
-            throw new ShardingSphereException("Can not register driver.", ex);
+            throw new DriverRegisterException(ex);
         }
     }
     
