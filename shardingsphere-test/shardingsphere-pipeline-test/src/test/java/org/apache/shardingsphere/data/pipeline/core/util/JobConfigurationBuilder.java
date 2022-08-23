@@ -29,6 +29,8 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPi
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 
+import java.util.HashMap;
+
 /**
  * Job configuration builder.
  */
@@ -50,6 +52,7 @@ public final class JobConfigurationBuilder {
                 ConfigurationFileUtil.readFile("migration_sharding_sphere_jdbc_target.yaml"))));
         result.setSourceTableName("t_order");
         result.setTargetTableName("t_order");
+        result.setSchemaTablesMap(new HashMap<>());
         PipelineAPIFactory.getPipelineJobAPI(JobType.MIGRATION).extendYamlJobConfiguration(result);
         return new YamlMigrationJobConfigurationSwapper().swapToObject(result);
     }
