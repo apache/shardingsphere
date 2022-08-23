@@ -119,7 +119,7 @@
     <alter-readwrite-splitting-rule sql-case-id="alter-readwrite-splitting-rule">
         <rule name="ms_group_0" auto-aware-resource="group_0" load-balancer="random">
             <properties>
-                <property key="read_weight" value="'2:1'" />
+                <property key="read_weight" value="2:1" />
             </properties>
         </rule>
         <rule name="ms_group_1" write-data-source="primary_ds" load-balancer="random">
