@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.api.config.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
@@ -80,9 +81,11 @@ public final class MigrationJobPreparer {
         }
         // TODO check metadata
         try {
-            initIncrementalTasks(jobItemContext);
-            if (jobItemContext.isStopping()) {
-                throw new PipelineIgnoredException("Job stopping, jobId=" + jobItemContext.getJobId());
+            if (PipelineJobPreparerUtils.isIncrementalSupported(jobItemContext.getJobConfig().getSourceDatabaseType())) {
+                initIncrementalTasks(jobItemContext);
+                if (jobItemContext.isStopping()) {
+                    throw new PipelineIgnoredException("Job stopping, jobId=" + jobItemContext.getJobId());
+                }
             }
             initInventoryTasks(jobItemContext);
             log.info("prepare, jobId={}, shardingItem={}, inventoryTasks={}, incrementalTasks={}",
@@ -123,7 +126,10 @@ public final class MigrationJobPreparer {
     }
     
     private void prepareAndCheckTarget(final MigrationJobItemContext jobItemContext) throws SQLException {
-        prepareTarget(jobItemContext);
+        if (jobItemContext.isSourceTargetDatabaseTheSame()) {
+            log.info("prepare target ...");
+            prepareTarget(jobItemContext);
+        }
         InventoryIncrementalJobItemProgress initProgress = jobItemContext.getInitProgress();
         if (null == initProgress || initProgress.getStatus() == JobStatus.PREPARING_FAILURE) {
             PipelineDataSourceWrapper targetDataSource = jobItemContext.getDataSourceManager().getDataSource(jobItemContext.getTaskConfig().getImporterConfig().getDataSourceConfig());
@@ -136,7 +142,7 @@ public final class MigrationJobPreparer {
         MigrationJobConfiguration jobConfig = jobItemContext.getJobConfig();
         TableNameSchemaNameMapping tableNameSchemaNameMapping = jobItemContext.getTaskConfig().getDumperConfig().getTableNameSchemaNameMapping();
         String targetDatabaseType = jobConfig.getTargetDatabaseType();
-        if (isSourceAndTargetSchemaAvailable(jobConfig)) {
+        if (isSourceAndTargetSchemaAvailable(jobConfig) && StringUtils.isNotBlank(jobConfig.getSourceSchemaName())) {
             PrepareTargetSchemasParameter prepareTargetSchemasParameter = new PrepareTargetSchemasParameter(Collections.singletonList(jobConfig.getTargetTableName()),
                     DatabaseTypeFactory.getInstance(targetDatabaseType), jobConfig.getTargetDatabaseName(),
                     jobItemContext.getTaskConfig().getImporterConfig().getDataSourceConfig(), jobItemContext.getDataSourceManager(), tableNameSchemaNameMapping);

@@ -15,10 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.session.cursor;
+package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util;
+
+import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
+
+import java.util.Objects;
 
 /**
- * Cursor definition.
+ * Unsupported data type conversion exception.
  */
-public interface CursorDefinition {
+public final class UnsupportedDataTypeConversionException extends ShardingSphereSQLException {
+    
+    private static final long serialVersionUID = 4808672149254705863L;
+    
+    public UnsupportedDataTypeConversionException(final Class<?> convertType, final Object value) {
+        super(XOpenSQLState.INVALID_DATA_TYPE, 10004, "Unsupported conversion data type `%s` for value `%s`", convertType.getName(), Objects.toString(value));
+    }
 }

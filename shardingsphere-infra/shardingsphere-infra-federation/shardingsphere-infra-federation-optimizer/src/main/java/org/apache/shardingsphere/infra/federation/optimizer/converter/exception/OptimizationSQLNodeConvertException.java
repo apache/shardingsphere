@@ -15,25 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.session.transaction;
+package org.apache.shardingsphere.infra.federation.optimizer.converter.exception;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Transaction connection context.
+ * Optimization SQL node convert exception.
  */
-@Getter
-@Setter
-public final class TransactionConnectionContext implements AutoCloseable {
+public final class OptimizationSQLNodeConvertException extends ShardingSphereSQLException {
     
-    private volatile boolean inTransaction;
+    private static final long serialVersionUID = -5486229929620713984L;
     
-    private volatile String readWriteSplitReplicaRoute;
-    
-    @Override
-    public void close() {
-        inTransaction = false;
-        readWriteSplitReplicaRoute = null;
+    public OptimizationSQLNodeConvertException(final SQLStatement statement) {
+        super(XOpenSQLState.SYNTAX_ERROR, 10003, "Unsupported SQL node conversion for SQL statement `%s`", statement.toString());
     }
 }

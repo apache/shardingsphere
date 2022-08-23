@@ -42,14 +42,30 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSour
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Pipeline job preparer utils.
  */
 @Slf4j
 public final class PipelineJobPreparerUtils {
+    
+    private static final Set<String> INCREMENTAL_SUPPORTED_DATABASES = new HashSet<>(Arrays.asList("MySQL", "PostgreSQL", "openGauss"));
+    
+    /**
+     * Is incremental supported.
+     *
+     * @param databaseType database type
+     * @return true if supported, otherwise false
+     */
+    public static boolean isIncrementalSupported(final String databaseType) {
+        // TODO check by IncrementalDumperCreator SPI
+        return INCREMENTAL_SUPPORTED_DATABASES.contains(databaseType);
+    }
     
     /**
      * Prepare target schema.

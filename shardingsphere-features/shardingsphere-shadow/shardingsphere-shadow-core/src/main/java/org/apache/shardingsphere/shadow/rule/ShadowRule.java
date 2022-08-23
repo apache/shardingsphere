@@ -75,7 +75,7 @@ public final class ShadowRule implements DatabaseRule, DataSourceContainedRule {
     }
     
     private void initShadowDataSourceMappings(final Map<String, ShadowDataSourceConfiguration> dataSources) {
-        dataSources.forEach((key, value) -> shadowDataSourceMappings.put(key, new ShadowDataSourceRule(value.getSourceDataSourceName(), value.getShadowDataSourceName())));
+        dataSources.forEach((key, value) -> shadowDataSourceMappings.put(key, new ShadowDataSourceRule(value.getProductionDataSourceName(), value.getShadowDataSourceName())));
     }
     
     private void initShadowAlgorithmConfigurations(final Map<String, AlgorithmConfiguration> shadowAlgorithmConfigs) {
@@ -205,7 +205,7 @@ public final class ShadowRule implements DatabaseRule, DataSourceContainedRule {
         Collection<String> shadowDataSources = shadowTableRules.get(tableName).getShadowDataSources();
         for (String each : shadowDataSources) {
             ShadowDataSourceRule shadowDataSourceRule = shadowDataSourceMappings.get(each);
-            result.put(shadowDataSourceRule.getSourceDataSource(), shadowDataSourceRule.getShadowDataSource());
+            result.put(shadowDataSourceRule.getProductionDataSource(), shadowDataSourceRule.getShadowDataSource());
         }
         return result;
     }
@@ -219,7 +219,7 @@ public final class ShadowRule implements DatabaseRule, DataSourceContainedRule {
         Map<String, String> result = new LinkedHashMap<>();
         for (Entry<String, ShadowDataSourceRule> entry : shadowDataSourceMappings.entrySet()) {
             ShadowDataSourceRule rule = entry.getValue();
-            result.put(rule.getSourceDataSource(), rule.getShadowDataSource());
+            result.put(rule.getProductionDataSource(), rule.getShadowDataSource());
         }
         return result;
     }
@@ -232,7 +232,7 @@ public final class ShadowRule implements DatabaseRule, DataSourceContainedRule {
      */
     public Optional<String> getSourceDataSourceName(final String actualDataSourceName) {
         ShadowDataSourceRule shadowDataSourceRule = shadowDataSourceMappings.get(actualDataSourceName);
-        return shadowDataSourceRule == null ? Optional.empty() : Optional.of(shadowDataSourceRule.getSourceDataSource());
+        return shadowDataSourceRule == null ? Optional.empty() : Optional.of(shadowDataSourceRule.getProductionDataSource());
     }
     
     @Override
@@ -244,7 +244,7 @@ public final class ShadowRule implements DatabaseRule, DataSourceContainedRule {
     
     private Collection<String> createShadowDataSources(final ShadowDataSourceRule shadowDataSourceRule) {
         Collection<String> result = new LinkedList<>();
-        result.add(shadowDataSourceRule.getSourceDataSource());
+        result.add(shadowDataSourceRule.getProductionDataSource());
         result.add(shadowDataSourceRule.getShadowDataSource());
         return result;
     }

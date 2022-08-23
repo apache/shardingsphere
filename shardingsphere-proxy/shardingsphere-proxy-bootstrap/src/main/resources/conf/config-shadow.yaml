@@ -48,7 +48,7 @@
 #- !SHADOW
 #  dataSources:
 #    shadowDataSource:
-#      sourceDataSourceName: ds
+#      productionDataSourceName: ds
 #      shadowDataSourceName: shadow_ds
 #  tables:
 #    t_order:
@@ -127,7 +127,7 @@
 #- !SHADOW
 #  dataSources:
 #    shadowDataSource:
-#      sourceDataSourceName: ds
+#      productionDataSourceName: ds
 #      shadowDataSourceName: shadow_ds
 #  tables:
 #    t_order:

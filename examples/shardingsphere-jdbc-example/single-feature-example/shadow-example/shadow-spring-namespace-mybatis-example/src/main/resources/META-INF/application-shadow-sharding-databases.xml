@@ -108,8 +108,8 @@
     </shadow:shadow-algorithm>
     
     <shadow:rule id="shadowRule">
-        <shadow:data-source id="shadow-data-source-0" source-data-source-name="ds_0" shadow-data-source-name="ds_shadow_0"/>
-        <shadow:data-source id="shadow-data-source-1" source-data-source-name="ds_1" shadow-data-source-name="ds_shadow_1"/>
+        <shadow:data-source id="shadow-data-source-0" production-data-source-name="ds_0" shadow-data-source-name="ds_shadow_0"/>
+        <shadow:data-source id="shadow-data-source-1" production-data-source-name="ds_1" shadow-data-source-name="ds_shadow_1"/>
         <shadow:shadow-table name="t_user" data-sources="shadow-data-source-0,shadow-data-source-1">
             <shadow:algorithm shadow-algorithm-ref="user-id-insert-match-algorithm" />
             <shadow:algorithm shadow-algorithm-ref="user-id-delete-match-algorithm" />

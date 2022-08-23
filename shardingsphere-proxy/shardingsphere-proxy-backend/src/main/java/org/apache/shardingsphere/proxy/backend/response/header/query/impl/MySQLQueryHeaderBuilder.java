@@ -66,7 +66,7 @@ public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
                 return logicTable.get();
             }
         }
-        return "";
+        return actualTableName;
     }
     
     @Override

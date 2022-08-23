@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware;
 
-import org.apache.shardingsphere.infra.session.ConnectionContext;
+import org.apache.shardingsphere.infra.context.ConnectionContext;
 
 /**
  * Connection context aware.

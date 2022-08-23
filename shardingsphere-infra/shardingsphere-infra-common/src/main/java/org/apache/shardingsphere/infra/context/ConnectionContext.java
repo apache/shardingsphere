@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.session;
+package org.apache.shardingsphere.infra.context;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.session.cursor.CursorConnectionContext;
-import org.apache.shardingsphere.infra.session.transaction.TransactionConnectionContext;
+import org.apache.shardingsphere.infra.context.cursor.CursorConnectionContext;
+import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
 
 import java.util.Optional;
 

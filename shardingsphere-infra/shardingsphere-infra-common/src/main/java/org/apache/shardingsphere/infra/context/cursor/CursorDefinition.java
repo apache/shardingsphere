@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.session.cursor;
+package org.apache.shardingsphere.infra.context.cursor;
 
 /**
- * Fetch group.
+ * Cursor definition.
  */
-public interface FetchGroup {
+public interface CursorDefinition {
 }

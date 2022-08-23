@@ -29,7 +29,7 @@
     </shadow:shadow-algorithm>
 
     <shadow:rule id="shadowRule">
-        <shadow:data-source id="shadow-data-source" source-data-source-name="ds" shadow-data-source-name="ds-shadow" />
+        <shadow:data-source id="shadow-data-source" production-data-source-name="ds" shadow-data-source-name="ds-shadow" />
         <shadow:default-shadow-algorithm-name name="simple-hint-algorithm" />
     </shadow:rule>
 </beans>
