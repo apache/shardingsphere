@@ -21,6 +21,9 @@ import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropProcedureStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
+/**
+ * Oracle drop procedure statement.
+ */
 @ToString(callSuper = true)
-public class OracleDropProcedureStatement extends DropProcedureStatement implements OracleStatement {
+public final class OracleDropProcedureStatement extends DropProcedureStatement implements OracleStatement {
 }

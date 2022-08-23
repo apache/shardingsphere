@@ -21,6 +21,9 @@ import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterProcedureStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
+/**
+ * Oracle alter procedure statement.
+ */
 @ToString(callSuper = true)
-public class OracleAlterProcedureStatement extends AlterProcedureStatement implements OracleStatement {
+public final class OracleAlterProcedureStatement extends AlterProcedureStatement implements OracleStatement {
 }

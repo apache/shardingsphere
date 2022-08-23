@@ -24,11 +24,11 @@ call
     ;
 
 alterProcedure
-    : ALTER PROCEDURE (schemaName DOT_)? procedureName ( procedureCompileClause | ( EDITIONABLE | NONEDITIONABLE ) )
+    : ALTER PROCEDURE (schemaName DOT_)? procedureName (procedureCompileClause | (EDITIONABLE | NONEDITIONABLE))
     ;
 
 procedureCompileClause
-    : COMPILE DEBUG? ( compilerParametersClause )* ( REUSE SETTINGS )?
+    : COMPILE DEBUG? (compilerParametersClause)* (REUSE SETTINGS)?
     ;
 
 compilerParametersClause
@@ -44,7 +44,7 @@ createProcedure
     ;
 
 plsqlProcedureSource
-    : (schemaName DOT_)? procedureName ( LP_ parameterDeclaration ( COMMA_ parameterDeclaration )* RP_)? sharingClause?
+    : (schemaName DOT_)? procedureName (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? sharingClause?
     ((defaultCollationClause | invokerRightsClause | accessibleByClause)*)? (IS | AS) (callSpec | declareSection? body)
     ;
 
@@ -54,8 +54,8 @@ body
 
 //need add more statement type according to the doc
 statement
-    : ( SIGNED_LEFT_SHIFT_ label SIGNED_RIGHT_SHIFT_ ( SIGNED_LEFT_SHIFT_ label SIGNED_RIGHT_SHIFT_ ) *)?
-        ( select
+    : (SIGNED_LEFT_SHIFT_ label SIGNED_RIGHT_SHIFT_ (SIGNED_LEFT_SHIFT_ label SIGNED_RIGHT_SHIFT_) *)?
+        (select
         | update
         | delete
         | insert
@@ -65,7 +65,7 @@ statement
     ;
 
 exceptionHandler
-    : WHEN ( (typeName (OR typeName)* )| OTHERS ) THEN statement+
+    : WHEN ((typeName (OR typeName)*)| OTHERS) THEN statement+
     ;
 
 declareSection
@@ -78,11 +78,11 @@ itemList2
     ;
 
 cursorDefinition
-    : CURSOR variableName ( LP_ cursorParameterDec ( COMMA_ cursorParameterDec )* RP_)? ( RETURN rowtype)? IS select SEMI_
+    : CURSOR variableName (LP_ cursorParameterDec (COMMA_ cursorParameterDec)* RP_)? (RETURN rowtype)? IS select SEMI_
     ;
 
 functionDefinition
-    : functionHeading ( DETERMINISTIC | PIPELINED | PARALLEL_ENABLE | resultCacheClause )+  ( IS | AS ) ( declareSection ? body | callSpec )
+    : functionHeading (DETERMINISTIC | PIPELINED | PARALLEL_ENABLE | resultCacheClause)+  (IS | AS) (declareSection ? body | callSpec)
     ;
 
 procedureDefinition
@@ -90,15 +90,15 @@ procedureDefinition
     ;
 
 itemList1
-    :( typeDefinition | cursorDeclaration | itemDeclaration | functionDeclaration | procedureDeclaration )*
+    :(typeDefinition | cursorDeclaration | itemDeclaration | functionDeclaration | procedureDeclaration)*
     ;
 
 cursorDeclaration
-    : CURSOR variableName ( ( cursorParameterDec (COMMA_ cursorParameterDec )* ) )? RETURN rowtype SEMI_
+    : CURSOR variableName ((cursorParameterDec (COMMA_ cursorParameterDec)*))? RETURN rowtype SEMI_
     ;
 
 cursorParameterDec
-    : variableName IN? dataType ( (COLON_ EQ_ | DEFAULT) expr )?
+    : variableName IN? dataType ((COLON_ EQ_ | DEFAULT) expr)?
     ;
 
 rowtype
@@ -113,8 +113,8 @@ itemDeclaration
 collectionVariableDecl
     : variableName
       (
-      typeName ( COLON_ EQ_ ( qualifiedExpression | functionCall | variableName ) )?
-      | typeName ( COLON_ EQ_  ( collectionConstructor | variableName ) )?
+      typeName (COLON_ EQ_ (qualifiedExpression | functionCall | variableName))?
+      | typeName (COLON_ EQ_  (collectionConstructor | variableName))?
       | typeName MOD_ TYPE
       )
       SEMI_
@@ -149,11 +149,11 @@ typemark
     ;
 
 collectionConstructor
-    : typeName LP_ ( identifier (COMMA_ identifier)* )? RP_
+    : typeName LP_ (identifier (COMMA_ identifier)*)? RP_
     ;
 
 constantDeclaration
-    : variableName CONSTANT dataType ( NOT NULL )? ( COLON_ EQ_ | DEFAULT ) expr SEMI_
+    : variableName CONSTANT dataType (NOT NULL)? (COLON_ EQ_ | DEFAULT) expr SEMI_
     ;
 
 cursorVariableDeclaration
@@ -165,11 +165,11 @@ exceptionDeclaration
     ;
 
 recordVariableDeclaration
-    : variableName ( typeName | rowtypeAttribute | typeName MOD_ TYPE ) SEMI_
+    : variableName (typeName | rowtypeAttribute | typeName MOD_ TYPE) SEMI_
     ;
 
 variableDeclaration
-    : variableName dataType ( ( NOT NULL )? ( COLON_ EQ_ | DEFAULT ) expr )? SEMI_
+    : variableName dataType ((NOT NULL)? (COLON_ EQ_ | DEFAULT) expr)? SEMI_
     ;
 
 typeDefinition
@@ -177,22 +177,22 @@ typeDefinition
     ;
 
 recordTypeDefinition
-    : TYPE typeName IS RECORD  LP_ fieldDefinition ( COMMA_ fieldDefinition )* RP_ SEMI_
+    : TYPE typeName IS RECORD  LP_ fieldDefinition (COMMA_ fieldDefinition)* RP_ SEMI_
     ;
 
 fieldDefinition
-    : typeName dataType ( ( NOT NULL )? ( COLON_ EQ_ | DEFAULT ) expr )?
+    : typeName dataType ((NOT NULL)? (COLON_ EQ_ | DEFAULT) expr)?
     ;
 
 refCursorTypeDefinition
-    : TYPE typeName IS REF CURSOR ( RETURN (
+    : TYPE typeName IS REF CURSOR (RETURN (
     (typeName MOD_ ROWTYPE)
     | (typeName (MOD_ TYPE)?)
-    ) )? SEMI_
+    ))? SEMI_
     ;
 
 subtypeDefinition
-    : SUBTYPE typeName IS dataType ( constraint | characterSetClause )? ( NOT NULL )?
+    : SUBTYPE typeName IS dataType (constraint | characterSetClause)? (NOT NULL)?
     ;
 
 constraint
@@ -200,25 +200,25 @@ constraint
     ;
 
 collectionTypeDefinition
-    : TYPE typeName IS ( assocArrayTypeDef | varrayTypeDef | nestedTableTypeDef ) SEMI_
+    : TYPE typeName IS (assocArrayTypeDef | varrayTypeDef | nestedTableTypeDef) SEMI_
     ;
 
 varrayTypeDef
-    : ( VARRAY | (VARYING? ARRAY) ) LP_ INTEGER_ RP_ OF dataType ( NOT NULL )?
+    : (VARRAY | (VARYING? ARRAY)) LP_ INTEGER_ RP_ OF dataType (NOT NULL)?
     ;
 
 nestedTableTypeDef
-    : TABLE OF dataType ( NOT NULL )?
+    : TABLE OF dataType (NOT NULL)?
     ;
 
 assocArrayTypeDef
-    : TABLE OF dataType ( NOT NULL )?  INDEX BY ( PLS_INTEGER | BINARY_INTEGER | ( VARCHAR2 | VARCHAR2 | STRING ) LP_ INTEGER_ RP_ | LONG | typeAttribute | rowtypeAttribute )
+    : TABLE OF dataType (NOT NULL)?  INDEX BY (PLS_INTEGER | BINARY_INTEGER | (VARCHAR2 | VARCHAR2 | STRING) LP_ INTEGER_ RP_ | LONG | typeAttribute | rowtypeAttribute)
     ;
 
 typeAttribute
-    : ( variableName | objectName ) MOD_ TYPE
+    : (variableName | objectName) MOD_ TYPE
     ;
 
 rowtypeAttribute
-    : ( variableName | objectName ) MOD_ ROWTYPE
+    : (variableName | objectName) MOD_ ROWTYPE
     ;
