@@ -17,7 +17,7 @@
 
 grammar MigrationDistSQLStatement;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import Symbol, RALStatement, RQLStatement;
 
 execute
     : (showMigrationList
