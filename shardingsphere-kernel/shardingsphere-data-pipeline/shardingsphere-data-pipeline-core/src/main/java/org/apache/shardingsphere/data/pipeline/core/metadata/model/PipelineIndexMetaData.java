@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.metadata.model;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.api.metadata.PipelineColumnMetaData;
 
 import java.util.List;
 

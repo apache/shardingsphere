@@ -109,8 +109,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                         record.add(columnValueReader.readValue(resultSet, resultSetMetaData, columnIndex));
                     }
                     records.add(record);
-                    // TODO use ColumnValueReader
-                    maxUniqueKeyValue = resultSet.getObject(parameter.getUniqueKey());
+                    maxUniqueKeyValue = columnValueReader.readValue(resultSet, resultSetMetaData, parameter.getUniqueKey().getOrdinalPosition());
                 }
             }
             return records.isEmpty() ? Optional.empty() : Optional.of(new CalculatedResult(maxUniqueKeyValue, records.size(), records));
@@ -123,7 +122,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.getInstance(parameter.getDatabaseType());
         String logicTableName = parameter.getLogicTableName();
         String schemaName = parameter.getTableNameSchemaNameMapping().getSchemaName(logicTableName);
-        String uniqueKey = parameter.getUniqueKey();
+        String uniqueKey = parameter.getUniqueKey().getName();
         String cacheKey = parameter.getDatabaseType() + "-" + (DatabaseTypeFactory.getInstance(parameter.getDatabaseType()).isSchemaAvailable()
                 ? schemaName.toLowerCase() + "." + logicTableName.toLowerCase() : logicTableName.toLowerCase());
         if (null == parameter.getPreviousCalculatedResult()) {

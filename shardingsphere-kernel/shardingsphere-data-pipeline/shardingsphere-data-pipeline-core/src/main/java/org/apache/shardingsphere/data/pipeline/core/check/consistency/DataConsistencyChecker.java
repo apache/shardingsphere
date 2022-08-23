@@ -29,6 +29,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSource
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
+import org.apache.shardingsphere.data.pipeline.api.metadata.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
@@ -175,7 +176,7 @@ public final class DataConsistencyChecker {
                     throw new PipelineDataConsistencyCheckFailedException("Can not get metadata for table " + each);
                 }
                 Collection<String> columnNames = tableMetaData.getColumnNames();
-                String uniqueKey = tableMetaData.getPrimaryKeyColumns().get(0);
+                PipelineColumnMetaData uniqueKey = tableMetaData.getColumnMetaData(tableMetaData.getPrimaryKeyColumns().get(0));
                 DataConsistencyCalculateParameter sourceParameter = buildParameter(sourceDataSource, tableNameSchemaNameMapping, each, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey);
                 DataConsistencyCalculateParameter targetParameter = buildParameter(targetDataSource, tableNameSchemaNameMapping, each, columnNames, targetDatabaseType, sourceDatabaseType, uniqueKey);
                 Iterator<Object> sourceCalculatedResults = calculator.calculate(sourceParameter).iterator();
@@ -230,8 +231,9 @@ public final class DataConsistencyChecker {
         return schema.get(logicTableName);
     }
     
-    private DataConsistencyCalculateParameter buildParameter(final PipelineDataSourceWrapper sourceDataSource, final TableNameSchemaNameMapping tableNameSchemaNameMapping, final String tableName,
-                                                             final Collection<String> columnNames, final String sourceDatabaseType, final String targetDatabaseType, final String uniqueKey) {
+    private DataConsistencyCalculateParameter buildParameter(final PipelineDataSourceWrapper sourceDataSource, final TableNameSchemaNameMapping tableNameSchemaNameMapping,
+                                                             final String tableName, final Collection<String> columnNames,
+                                                             final String sourceDatabaseType, final String targetDatabaseType, final PipelineColumnMetaData uniqueKey) {
         return new DataConsistencyCalculateParameter(sourceDataSource, tableNameSchemaNameMapping, tableName, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey);
     }
 }

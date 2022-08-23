@@ -24,6 +24,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.api.metadata.PipelineColumnMetaData;
 
 import java.util.Collection;
 
@@ -57,7 +58,7 @@ public final class DataConsistencyCalculateParameter {
      * It could be primary key.
      * It could be used in order by clause.
      */
-    private final String uniqueKey;
+    private final PipelineColumnMetaData uniqueKey;
     
     /**
      * Used for range query.
