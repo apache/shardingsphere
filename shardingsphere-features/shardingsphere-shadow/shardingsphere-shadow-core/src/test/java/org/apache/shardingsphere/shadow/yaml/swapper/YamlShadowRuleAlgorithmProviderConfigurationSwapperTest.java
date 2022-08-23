@@ -51,7 +51,7 @@ public final class YamlShadowRuleAlgorithmProviderConfigurationSwapperTest {
         actual.getDataSources().forEach((key, value) -> {
             ShadowDataSourceConfiguration dataSourceConfig = expected.getDataSources().get(key);
             assertThat(value.getShadowDataSourceName(), is(dataSourceConfig.getShadowDataSourceName()));
-            assertThat(value.getSourceDataSourceName(), is(dataSourceConfig.getSourceDataSourceName()));
+            assertThat(value.getProductionDataSourceName(), is(dataSourceConfig.getProductionDataSourceName()));
         });
         actual.getTables().forEach((key, value) -> {
             ShadowTableConfiguration shadowTableConfig = expected.getTables().get(key);
@@ -78,7 +78,7 @@ public final class YamlShadowRuleAlgorithmProviderConfigurationSwapperTest {
         actual.getDataSources().forEach((key, value) -> {
             YamlShadowDataSourceConfiguration yamlShadowDataSourceConfig = expected.getDataSources().get(key);
             assertThat(value.getShadowDataSourceName(), is(yamlShadowDataSourceConfig.getShadowDataSourceName()));
-            assertThat(value.getSourceDataSourceName(), is(yamlShadowDataSourceConfig.getSourceDataSourceName()));
+            assertThat(value.getProductionDataSourceName(), is(yamlShadowDataSourceConfig.getProductionDataSourceName()));
         });
         actual.getTables().forEach((key, value) -> assertThat(value.getShadowAlgorithmNames(), is(expected.getTables().get(key).getShadowAlgorithmNames())));
         actual.getShadowAlgorithms().forEach((key, value) -> assertThat(value.getType(), is(expected.getShadowAlgorithms().get(key).getType())));
@@ -87,7 +87,7 @@ public final class YamlShadowRuleAlgorithmProviderConfigurationSwapperTest {
     private YamlShadowRuleConfiguration buildYamlShadowRuleConfiguration() {
         YamlShadowRuleConfiguration result = new YamlShadowRuleConfiguration();
         YamlShadowDataSourceConfiguration yamlShadowDataSourceConfig = new YamlShadowDataSourceConfiguration();
-        yamlShadowDataSourceConfig.setSourceDataSourceName("ds");
+        yamlShadowDataSourceConfig.setProductionDataSourceName("ds");
         yamlShadowDataSourceConfig.setShadowDataSourceName("ds-shadow");
         result.getDataSources().put("shadow-data-source", yamlShadowDataSourceConfig);
         YamlShadowTableConfiguration yamlShadowTableConfig = new YamlShadowTableConfiguration();

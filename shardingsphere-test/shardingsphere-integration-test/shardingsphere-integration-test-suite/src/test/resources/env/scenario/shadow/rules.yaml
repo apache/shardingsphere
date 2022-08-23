@@ -19,7 +19,7 @@ rules:
 - !SHADOW
   dataSources:
     shadowDataSource:
-      sourceDataSourceName: db
+      productionDataSourceName: db
       shadowDataSourceName: shadow_db
   tables:
     t_shadow:

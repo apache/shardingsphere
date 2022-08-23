@@ -30,17 +30,17 @@ public final class YamlShadowDataSourceConfigurationSwapperTest {
     public void assertSwapToYamlConfiguration() {
         ShadowDataSourceConfiguration shadowDataSourceConfig = new ShadowDataSourceConfiguration("ds", "shadow_ds");
         YamlShadowDataSourceConfiguration actual = new YamlShadowDataSourceConfigurationSwapper().swapToYamlConfiguration(shadowDataSourceConfig);
-        assertThat(actual.getSourceDataSourceName(), is("ds"));
+        assertThat(actual.getProductionDataSourceName(), is("ds"));
         assertThat(actual.getShadowDataSourceName(), is("shadow_ds"));
     }
     
     @Test
     public void assertSwapToObject() {
         YamlShadowDataSourceConfiguration yamlConfig = new YamlShadowDataSourceConfiguration();
-        yamlConfig.setSourceDataSourceName("ds");
+        yamlConfig.setProductionDataSourceName("ds");
         yamlConfig.setShadowDataSourceName("shadow_ds");
         ShadowDataSourceConfiguration actual = new YamlShadowDataSourceConfigurationSwapper().swapToObject(yamlConfig);
-        assertThat(actual.getSourceDataSourceName(), is("ds"));
+        assertThat(actual.getProductionDataSourceName(), is("ds"));
         assertThat(actual.getShadowDataSourceName(), is("shadow_ds"));
     }
 }

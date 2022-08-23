@@ -35,7 +35,7 @@ public final class ShadowRuleStatementConverterTest {
     @Test
     public void assertConvert() {
         ShadowRuleConfiguration config = ShadowRuleStatementConverter.convert(Collections.singleton(createTableRuleSegment()));
-        assertThat(config.getDataSources().get("ruleName").getSourceDataSourceName(), is("source"));
+        assertThat(config.getDataSources().get("ruleName").getProductionDataSourceName(), is("source"));
         assertThat(config.getDataSources().get("ruleName").getShadowDataSourceName(), is("shadow"));
         assertThat(config.getTables().size(), is(1));
         assertThat(config.getShadowAlgorithms().size(), is(1));
