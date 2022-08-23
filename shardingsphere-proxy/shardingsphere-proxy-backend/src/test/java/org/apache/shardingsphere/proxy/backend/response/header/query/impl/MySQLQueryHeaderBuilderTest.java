@@ -94,7 +94,7 @@ public final class MySQLQueryHeaderBuilderTest {
         QueryHeader actual = new MySQLQueryHeaderBuilder().build(
                 queryResultMetaData, mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), queryResultMetaData.getColumnName(1), queryResultMetaData.getColumnLabel(1), 1);
         assertFalse(actual.isPrimaryKey());
-        assertThat(actual.getTable(), is(""));
+        assertThat(actual.getTable(), is(actual.getTable()));
     }
     
     private ShardingSphereDatabase createDatabase() {
