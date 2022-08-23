@@ -58,13 +58,11 @@ public final class YamlShardingAutoTableRuleConfigurationSwapperTest {
     @Test
     public void assertSwapToYamlConfigurationWithMaxProperties() {
         ShardingAutoTableRuleConfiguration shardingTableRuleConfig = new ShardingAutoTableRuleConfiguration("tbl", "ds0,ds1");
-        shardingTableRuleConfig.setActualTablePrefix("tmp_");
         shardingTableRuleConfig.setShardingStrategy(mock(StandardShardingStrategyConfiguration.class));
         shardingTableRuleConfig.setKeyGenerateStrategy(mock(KeyGenerateStrategyConfiguration.class));
         YamlShardingAutoTableRuleConfiguration actual = swapper.swapToYamlConfiguration(shardingTableRuleConfig);
         assertThat(actual.getLogicTable(), is("tbl"));
         assertThat(actual.getActualDataSources(), is("ds0,ds1"));
-        assertThat(actual.getActualTablePrefix(), is("tmp_"));
         assertNotNull(actual.getShardingStrategy());
         assertNotNull(actual.getKeyGenerateStrategy());
     }
@@ -87,11 +85,9 @@ public final class YamlShardingAutoTableRuleConfigurationSwapperTest {
         YamlKeyGenerateStrategyConfiguration keyGenerateStrategy = new YamlKeyGenerateStrategyConfiguration();
         keyGenerateStrategy.setColumn("col");
         configuration.setKeyGenerateStrategy(keyGenerateStrategy);
-        configuration.setActualTablePrefix("tmp_");
         ShardingAutoTableRuleConfiguration actual = new YamlShardingAutoTableRuleConfigurationSwapper().swapToObject(configuration);
         assertThat(actual.getLogicTable(), is("tbl"));
         assertThat(actual.getActualDataSources(), is("ds0,ds1"));
-        assertThat(actual.getActualTablePrefix(), is("tmp_"));
         assertNotNull(actual.getShardingStrategy());
         assertNotNull(actual.getKeyGenerateStrategy());
     }
