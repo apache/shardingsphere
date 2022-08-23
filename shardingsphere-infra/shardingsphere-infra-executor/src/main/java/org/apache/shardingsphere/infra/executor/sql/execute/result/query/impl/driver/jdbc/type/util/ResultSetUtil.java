@@ -178,31 +178,25 @@ public final class ResultSetUtil {
             case "boolean":
                 return longToBoolean(number.longValue());
             case "byte":
+            case "java.lang.Byte":
                 return number.byteValue();
             case "short":
+            case "java.lang.Short":
                 return number.shortValue();
             case "int":
+            case "java.lang.Integer":
                 return number.intValue();
             case "long":
+            case "java.lang.Long":
                 return number.longValue();
             case "double":
+            case "java.lang.Double":
                 return number.doubleValue();
             case "float":
+            case "java.lang.Float":
                 return number.floatValue();
             case "java.math.BigDecimal":
                 return new BigDecimal(number.toString());
-            case "java.lang.Byte":
-                return Byte.valueOf(number.byteValue());
-            case "java.lang.Short":
-                return Short.valueOf(number.shortValue());
-            case "java.lang.Integer":
-                return Integer.valueOf(number.intValue());
-            case "java.lang.Long":
-                return Long.valueOf(number.longValue());
-            case "java.lang.Double":
-                return Double.valueOf(number.doubleValue());
-            case "java.lang.Float":
-                return Float.valueOf(number.floatValue());
             case "java.lang.Object":
                 return value;
             case "java.lang.String":
