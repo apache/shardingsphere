@@ -64,8 +64,8 @@ public final class ShadowSelectStatementRoutingEngine extends AbstractShadowDMLS
     }
     
     @Override
-    protected Iterator<Optional<ShadowColumnCondition>> getShadowColumnConditionIterator() {
-        return new ShadowColumnConditionIterator(parseWhereSegment(), parameters);
+    protected Iterator<Optional<ShadowColumnCondition>> getShadowColumnConditionIterator(final String shadowColumn) {
+        return new ShadowColumnConditionIterator(shadowColumn, parseWhereSegment());
     }
     
     private Collection<ExpressionSegment> parseWhereSegment() {
@@ -78,33 +78,15 @@ public final class ShadowSelectStatementRoutingEngine extends AbstractShadowDMLS
         return result;
     }
     
-    private class ShadowColumnConditionIterator implements Iterator<Optional<ShadowColumnCondition>> {
+    private final class ShadowColumnConditionIterator extends AbstractWhereSegmentShadowColumnConditionIterator {
         
-        private final Iterator<ExpressionSegment> iterator;
-        
-        private final List<Object> parameters;
-        
-        ShadowColumnConditionIterator(final Collection<ExpressionSegment> predicates, final List<Object> parameters) {
-            this.iterator = predicates.iterator();
-            this.parameters = parameters;
+        ShadowColumnConditionIterator(final String shadowColumn, final Collection<ExpressionSegment> predicates) {
+            super(shadowColumn, predicates.iterator());
         }
         
         @Override
-        public boolean hasNext() {
-            return iterator.hasNext();
-        }
-        
-        @Override
-        public Optional<ShadowColumnCondition> next() {
-            ExpressionSegment expressionSegment = iterator.next();
-            Optional<ColumnSegment> columnSegment = ShadowExtractor.extractColumn(expressionSegment);
-            if (columnSegment.isPresent()) {
-                Optional<Collection<Comparable<?>>> values = ShadowExtractor.extractValues(expressionSegment, parameters);
-                if (values.isPresent()) {
-                    return Optional.of(new ShadowColumnCondition(extractOwnerName(columnSegment.get()), columnSegment.get().getIdentifier().getValue(), values.get()));
-                }
-            }
-            return Optional.empty();
+        protected Optional<ShadowColumnCondition> nextShadowColumnCondition(final ExpressionSegment expressionSegment, final ColumnSegment columnSegment) {
+            return ShadowExtractor.extractValues(expressionSegment, parameters).map(values -> new ShadowColumnCondition(extractOwnerName(columnSegment), getShadowColumn(), values));
         }
         
         private String extractOwnerName(final ColumnSegment columnSegment) {

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueC
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
+import org.apache.shardingsphere.shadow.route.exception.UnsupportedShadowInsertValueException;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
@@ -56,8 +57,8 @@ public final class ShadowInsertStatementRoutingEngine extends AbstractShadowDMLS
     }
     
     @Override
-    protected Iterator<Optional<ShadowColumnCondition>> getShadowColumnConditionIterator() {
-        return new ShadowColumnConditionIterator(parseColumnNames().iterator(), insertStatementContext.getInsertValueContexts());
+    protected Iterator<Optional<ShadowColumnCondition>> getShadowColumnConditionIterator(final String shadowColumn) {
+        return new ShadowColumnConditionIterator(shadowColumn, parseColumnNames().iterator(), insertStatementContext.getInsertValueContexts());
     }
     
     private Collection<String> parseColumnNames() {
@@ -68,14 +69,17 @@ public final class ShadowInsertStatementRoutingEngine extends AbstractShadowDMLS
         
         private int index;
         
+        private final String shadowColumn;
+        
         private final Iterator<String> iterator;
         
         private final List<InsertValueContext> insertValueContexts;
         
-        ShadowColumnConditionIterator(final Iterator<String> iterator, final List<InsertValueContext> insertValueContexts) {
+        ShadowColumnConditionIterator(final String shadowColumn, final Iterator<String> iterator, final List<InsertValueContext> insertValueContexts) {
+            index = 0;
+            this.shadowColumn = shadowColumn;
             this.iterator = iterator;
             this.insertValueContexts = insertValueContexts;
-            this.index = 0;
         }
         
         @Override
@@ -86,17 +90,20 @@ public final class ShadowInsertStatementRoutingEngine extends AbstractShadowDMLS
         @Override
         public Optional<ShadowColumnCondition> next() {
             String columnName = iterator.next();
+            if (!shadowColumn.equals(columnName)) {
+                return Optional.empty();
+            }
             Optional<Collection<Comparable<?>>> columnValues = getColumnValues(insertValueContexts, index);
             index++;
             return columnValues.map(each -> new ShadowColumnCondition(getSingleTableName(), columnName, each));
         }
         
-        private Optional<Collection<Comparable<?>>> getColumnValues(final List<InsertValueContext> insertValueContexts, final int index) {
+        private Optional<Collection<Comparable<?>>> getColumnValues(final List<InsertValueContext> insertValueContexts, final int columnIndex) {
             Collection<Comparable<?>> result = new LinkedList<>();
             for (InsertValueContext each : insertValueContexts) {
-                Optional<Object> valueObject = each.getLiteralValue(index);
-                if (valueObject.isPresent() && valueObject.get() instanceof Comparable<?>) {
-                    result.add((Comparable<?>) valueObject.get());
+                Object valueObject = each.getLiteralValue(columnIndex).orElseThrow(() -> new UnsupportedShadowInsertValueException(columnIndex));
+                if (valueObject instanceof Comparable<?>) {
+                    result.add((Comparable<?>) valueObject);
                 } else {
                     return Optional.empty();
                 }
@@ -104,5 +111,4 @@ public final class ShadowInsertStatementRoutingEngine extends AbstractShadowDMLS
             return result.isEmpty() ? Optional.empty() : Optional.of(result);
         }
     }
-    
 }
