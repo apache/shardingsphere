@@ -22,12 +22,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CommentStat
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCommentStatement;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import java.util.Optional;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 public final class CommentStatementHandlerTest {
     
@@ -41,7 +41,7 @@ public final class CommentStatementHandlerTest {
     
     @Test
     public void assertGetIndexTypeSegmentWithoutIndexTypeSegment() {
-        CommentStatement statement = Mockito.mock(CommentStatement.class);
+        CommentStatement statement = mock(CommentStatement.class);
         Optional<IndexTypeSegment> actual = CommentStatementHandler.getIndexType(statement);
         assertFalse(actual.isPresent());
     }
