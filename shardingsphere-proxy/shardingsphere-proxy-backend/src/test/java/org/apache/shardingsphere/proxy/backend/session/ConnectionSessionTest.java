@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.session;
 
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
@@ -27,6 +26,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JD
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.exception.SwitchTypeInTransactionException;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,7 +73,7 @@ public final class ConnectionSessionTest extends ProxyContextRestorer {
         assertThat(connectionSession.getDatabaseName(), is("currentDatabase"));
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = SwitchTypeInTransactionException.class)
     public void assertFailedSwitchTransactionTypeWhileBegin() throws SQLException {
         connectionSession.setCurrentDatabase("db");
         JDBCBackendTransactionManager transactionManager = new JDBCBackendTransactionManager(backendConnection);
