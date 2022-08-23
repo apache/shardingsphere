@@ -69,7 +69,9 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
      * @return add quote string
      */
     public String quote(final String item) {
-        return getLeftIdentifierQuoteString() + item + getRightIdentifierQuoteString();
+        // TODO quote by database type and keyword. need to compatible with case-sensitive table and column name
+        // return getLeftIdentifierQuoteString() + item + getRightIdentifierQuoteString();
+        return item;
     }
     
     @Override
