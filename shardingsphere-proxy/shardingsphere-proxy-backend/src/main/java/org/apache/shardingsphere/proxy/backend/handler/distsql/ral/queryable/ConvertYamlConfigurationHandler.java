@@ -26,22 +26,22 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.props.custom.CustomDataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.synonym.PoolPropertySynonyms;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.proxy.backend.exception.FileIOException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.QueryableRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.constant.DistSQLScriptConstants;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.YamlShardingRuleConfigurationSwapper;
 
@@ -55,9 +55,9 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
- * Convert yaml configuration handler.
+ * Convert YAML configuration handler.
  */
-public class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<ConvertYamlConfigurationStatement> {
+public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<ConvertYamlConfigurationStatement> {
     
     private final YamlProxyDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlProxyDataSourceConfigurationSwapper();
     
@@ -73,7 +73,7 @@ public class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<
         try {
             yamlConfig = YamlEngine.unmarshal(file, YamlProxyDatabaseConfiguration.class);
         } catch (final IOException ex) {
-            throw new ShardingSphereException(ex);
+            throw new FileIOException(ex);
         }
         Preconditions.checkNotNull(yamlConfig, "Invalid yaml file `%s`", file.getName());
         Preconditions.checkNotNull(yamlConfig.getDatabaseName(), "`databaseName` in file `%s` is required.", file.getName());
