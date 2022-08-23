@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
 import com.google.common.base.Strings;
+import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
@@ -66,7 +67,9 @@ import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorit
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
+import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
@@ -82,11 +85,13 @@ import org.apache.shardingsphere.mode.lock.ExclusiveLockDefinition;
 
 import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -465,6 +470,43 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
             metaDataDataSource.remove(each);
         }
         dataSourcePersistService.persist(getJobType(), metaDataDataSource);
+    }
+    
+    @Override
+    public Collection<Collection<Object>> listMigrationSourceResources() {
+        Map<String, DataSourceProperties> dataSourcePropertiesMap = dataSourcePersistService.load(getJobType());
+        Collection<Collection<Object>> result = new ArrayList<>(dataSourcePropertiesMap.size());
+        for (Entry<String, DataSourceProperties> entry : dataSourcePropertiesMap.entrySet()) {
+            String dataSourceName = entry.getKey();
+            DataSourceProperties value = entry.getValue();
+            Collection<Object> props = new LinkedList<>();
+            props.add(dataSourceName);
+            String url = String.valueOf(value.getConnectionPropertySynonyms().getStandardProperties().get("url"));
+            DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(url);
+            props.add(databaseType.getType());
+            DataSourceMetaData metaData = databaseType.getDataSourceMetaData(url, "");
+            props.add(metaData.getHostname());
+            props.add(metaData.getPort());
+            props.add(metaData.getCatalog());
+            Map<String, Object> standardProps = value.getPoolPropertySynonyms().getStandardProperties();
+            props.add(getStandardProperty(standardProps, "connectionTimeoutMilliseconds"));
+            props.add(getStandardProperty(standardProps, "idleTimeoutMilliseconds"));
+            props.add(getStandardProperty(standardProps, "maxLifetimeMilliseconds"));
+            props.add(getStandardProperty(standardProps, "maxPoolSize"));
+            props.add(getStandardProperty(standardProps, "minPoolSize"));
+            props.add(getStandardProperty(standardProps, "readOnly"));
+            Map<String, Object> otherProps = value.getCustomDataSourceProperties().getProperties();
+            props.add(otherProps.isEmpty() ? "" : new Gson().toJson(otherProps));
+            result.add(props);
+        }
+        return result;
+    }
+    
+    private String getStandardProperty(final Map<String, Object> standardProps, final String key) {
+        if (standardProps.containsKey(key) && null != standardProps.get(key)) {
+            return standardProps.get(key).toString();
+        }
+        return "";
     }
     
     @Override
