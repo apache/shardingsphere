@@ -40,13 +40,7 @@ public final class EncryptRuleConfiguration implements DatabaseRuleConfiguration
     
     private final boolean queryWithCipherColumn;
     
-    private final String dataConverterName;
-    
     public EncryptRuleConfiguration(final Collection<EncryptTableRuleConfiguration> tables, final Map<String, AlgorithmConfiguration> encryptors) {
         this(tables, encryptors, true);
-    }
-    
-    public EncryptRuleConfiguration(final Collection<EncryptTableRuleConfiguration> tables, final Map<String, AlgorithmConfiguration> encryptors, final boolean queryWithCipherColumn) {
-        this(tables, encryptors, queryWithCipherColumn, null);
     }
 }

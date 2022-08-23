@@ -93,8 +93,9 @@
 <!--        <assertion expected-data-file="alter_binding_rules.xml">-->
 <!--            <initial-sql sql="CREATE SHARDING TABLE RULE t_user (-->
 <!--                RESOURCES(&quot;encrypt_write_ds_${0..9}&quot;),-->
-<!--                SHARDING_COLUMN=user_id, TYPE(NAME=MOD, PROPERTIES(&quot;sharding-count&quot;=40)))));"/>-->
-<!--            <destroy-sql sql="DROP SHARDING BINDING TABLE RULES;DROP SHARDING TABLE RULE t_user" />-->
+<!--                SHARDING_COLUMN=user_id, TYPE(NAME=MOD, PROPERTIES(&quot;sharding-count&quot;=40)))));-->
+<!--                ALTER SHARDING BINDING TABLE RULES (t_user,t_user_item);"/>-->
+<!--            <destroy-sql sql="DROP SHARDING BINDING TABLE RULES;DROP SHARDING TABLE RULE t_user;DROP SHARDING SCALING RULE default_scaling" />-->
 <!--        </assertion>-->
 <!--    </test-case>-->
 <!--    -->

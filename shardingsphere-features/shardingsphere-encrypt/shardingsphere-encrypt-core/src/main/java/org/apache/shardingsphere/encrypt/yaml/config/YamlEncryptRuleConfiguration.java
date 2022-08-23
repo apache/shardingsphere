@@ -40,8 +40,6 @@ public final class YamlEncryptRuleConfiguration implements YamlRuleConfiguration
     
     private boolean queryWithCipherColumn = true;
     
-    private String dataConverterName;
-    
     @Override
     public Class<EncryptRuleConfiguration> getRuleConfigurationType() {
         return EncryptRuleConfiguration.class;
