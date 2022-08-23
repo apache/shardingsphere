@@ -203,7 +203,7 @@
     <create-readwrite-splitting-rule sql-case-id="create-dynamic-readwrite-splitting-rule">
         <rule name="ms_group_1" auto-aware-resource="group_0" load-balancer="random">
             <properties>
-                <property key="read_weight" value="'2:1'" />
+                <property key="read_weight" value="2:1" />
             </properties>
         </rule>
     </create-readwrite-splitting-rule>
