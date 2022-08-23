@@ -26,9 +26,7 @@ public final class UnsupportedTranslatedDatabaseException extends SQLTranslation
     
     private static final long serialVersionUID = -8311552562051028033L;
     
-    private static final String ERROR_MESSAGE = "Can not support database `%s` in SQL translation.";
-    
     public UnsupportedTranslatedDatabaseException(final DatabaseType databaseType) {
-        super(String.format(ERROR_MESSAGE, databaseType.getType()));
+        super(11200, "Can not support database `%s` in SQL translation", databaseType.getType());
     }
 }
