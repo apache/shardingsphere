@@ -98,7 +98,7 @@ public final class PostgreSQLMigrationGeneralIT extends BaseExtraSQLITCase {
     }
     
     private void checkOrderMigration(final JdbcTemplate jdbcTemplate) {
-        startMigrationOrder();
+        startMigrationOrder(true);
         startIncrementTask(new PostgreSQLIncrementTask(jdbcTemplate, "test", false, 20));
         String jobId = getJobIdByTableName("t_order");
         waitMigrationFinished(jobId);
@@ -107,7 +107,7 @@ public final class PostgreSQLMigrationGeneralIT extends BaseExtraSQLITCase {
     }
     
     private void checkOrderItemMigration() {
-        startMigrationOrderItem();
+        startMigrationOrderItem(true);
         String jobId = getJobIdByTableName("t_order_item");
         waitMigrationFinished(jobId);
         assertCheckScalingSuccess(jobId);

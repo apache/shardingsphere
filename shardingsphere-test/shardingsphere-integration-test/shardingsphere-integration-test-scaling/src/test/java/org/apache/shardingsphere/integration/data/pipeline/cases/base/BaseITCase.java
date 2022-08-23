@@ -228,12 +228,20 @@ public abstract class BaseITCase {
         proxyExecuteWithLog(migrationDistSQLCommand.getCreateTargetOrderItemTableRule(), 3);
     }
     
-    protected void startMigrationOrder() {
-        proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderSingleTable(), 5);
+    protected void startMigrationOrder(final boolean withSchema) {
+        if (withSchema) {
+            proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderSingleTableWithSchema(), 5);
+        } else {
+            proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderSingleTable(), 5);
+        }
     }
     
-    protected void startMigrationOrderItem() {
-        proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderItemSingleTable(), 5);
+    protected void startMigrationOrderItem(final boolean withSchema) {
+        if (withSchema) {
+            proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderItemSingleTableWithSchema(), 5);
+        } else {
+            proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderItemSingleTable(), 5);
+        }
     }
     
     // TODO use new DistSQL
