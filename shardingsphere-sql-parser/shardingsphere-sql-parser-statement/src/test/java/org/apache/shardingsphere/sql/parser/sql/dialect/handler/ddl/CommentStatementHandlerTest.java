@@ -29,20 +29,20 @@ import java.util.Optional;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class CommentStatementHandlerTest {
+public final class CommentStatementHandlerTest {
     
     @Test
     public void assertGetIndexTypeSegmentWithIndexTypeSegment() {
         OracleCommentStatement statement = new OracleCommentStatement();
         statement.setIndexType(new IndexTypeSegment(0, 0, new IdentifierValue("")));
-        Optional<IndexTypeSegment> indexTypeSegment = CommentStatementHandler.getIndexType(statement);
-        assertTrue(indexTypeSegment.isPresent());
+        Optional<IndexTypeSegment> actual = CommentStatementHandler.getIndexType(statement);
+        assertTrue(actual.isPresent());
     }
     
     @Test
     public void assertGetIndexTypeSegmentWithoutIndexTypeSegment() {
         CommentStatement statement = Mockito.mock(CommentStatement.class);
-        Optional<IndexTypeSegment> indexTypeSegment = CommentStatementHandler.getIndexType(statement);
-        assertFalse(indexTypeSegment.isPresent());
+        Optional<IndexTypeSegment> actual = CommentStatementHandler.getIndexType(statement);
+        assertFalse(actual.isPresent());
     }
 }
