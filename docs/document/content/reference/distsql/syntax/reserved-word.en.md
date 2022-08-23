@@ -33,6 +33,10 @@ weight = 3
 
 `CREATE`, `DB_DISCOVERY`, `RULE`, `RESOURCES`, `TYPE`, `NAME`, `PROPERTIES`, `HEARTBEAT`
 
+#### Shadow
+
+`CREATE`, `SHARDING`, `SINGLE`, `TABLE`, `RULE`, `RESOURCE`
+
 ### Supplement
 
 - The above reserved words are not case-sensitive
