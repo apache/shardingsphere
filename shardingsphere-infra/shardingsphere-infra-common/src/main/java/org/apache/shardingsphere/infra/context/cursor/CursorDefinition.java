@@ -15,25 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.session.transaction;
-
-import lombok.Getter;
-import lombok.Setter;
+package org.apache.shardingsphere.infra.context.cursor;
 
 /**
- * Transaction connection context.
+ * Cursor definition.
  */
-@Getter
-@Setter
-public final class TransactionConnectionContext implements AutoCloseable {
-    
-    private volatile boolean inTransaction;
-    
-    private volatile String readWriteSplitReplicaRoute;
-    
-    @Override
-    public void close() {
-        inTransaction = false;
-        readWriteSplitReplicaRoute = null;
-    }
+public interface CursorDefinition {
 }
