@@ -24,7 +24,6 @@
     <row values="sharding_table| 0"/>
     <row values="sharding_binding_table| 0"/>
     <row values="sharding_broadcast_table| 0"/>
-    <row values="sharding_scaling| 0"/>
     <row values="readwrite_splitting| 0"/>
     <row values="db_discovery| 0"/>
     <row values="encrypt| 2"/>

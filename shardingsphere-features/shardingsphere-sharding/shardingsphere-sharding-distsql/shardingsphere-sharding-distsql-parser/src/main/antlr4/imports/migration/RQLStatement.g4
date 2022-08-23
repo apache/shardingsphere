@@ -19,14 +19,6 @@ grammar RQLStatement;
 
 import BaseRule;
 
-showShardingScalingRules
-    : SHOW SHARDING SCALING RULES (FROM schemaName)?
-    ;
-
-schemaName
-    : IDENTIFIER
-    ;
-
 showMigrationSourceResources
     : SHOW MIGRATION SOURCE RESOURCES
     ;

@@ -53,8 +53,6 @@ public final class DatabaseRulesCountResultSet implements DatabaseDistSQLResultS
     
     private static final String SHARDING_BROADCAST_TABLE = "sharding_broadcast_table";
     
-    private static final String SHARDING_SCALING = "sharding_scaling";
-    
     private static final String READWRITE_SPLITTING = "readwrite_splitting";
     
     private static final String DB_DISCOVERY = "db_discovery";
@@ -89,18 +87,15 @@ public final class DatabaseRulesCountResultSet implements DatabaseDistSQLResultS
         int shardingTableCount = 0;
         int shardingBindingTableCount = 0;
         int shardingBroadcastTableCount = 0;
-        int shardingScalingCount = 0;
         if (rule.isPresent()) {
             ShardingRuleConfiguration config = (ShardingRuleConfiguration) rule.get().getConfiguration();
             shardingTableCount = config.getTables().size() + config.getAutoTables().size();
             shardingBindingTableCount = config.getBindingTableGroups().size();
             shardingBroadcastTableCount = config.getBroadcastTables().size();
-            shardingScalingCount = config.getScaling().size();
         }
         addData(dataMap, SHARDING_TABLE, shardingTableCount);
         addData(dataMap, SHARDING_BINDING_TABLE, shardingBindingTableCount);
         addData(dataMap, SHARDING_BROADCAST_TABLE, shardingBroadcastTableCount);
-        addData(dataMap, SHARDING_SCALING, shardingScalingCount);
     }
     
     private void addReadwriteSplittingData(final ShardingSphereDatabase database, final Map<String, Collection<Object>> dataMap) {

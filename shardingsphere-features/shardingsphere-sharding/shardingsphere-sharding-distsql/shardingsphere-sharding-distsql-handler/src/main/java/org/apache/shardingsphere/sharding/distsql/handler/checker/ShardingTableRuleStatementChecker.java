@@ -327,8 +327,6 @@ public final class ShardingTableRuleStatementChecker {
         toBeCheckedRuleConfig.setDefaultShardingColumn(currentRuleConfig.getDefaultShardingColumn());
         toBeCheckedRuleConfig.setShardingAlgorithms(new LinkedHashMap<>(currentRuleConfig.getShardingAlgorithms()));
         toBeCheckedRuleConfig.setKeyGenerators(new LinkedHashMap<>(currentRuleConfig.getKeyGenerators()));
-        toBeCheckedRuleConfig.setScalingName(currentRuleConfig.getScalingName());
-        toBeCheckedRuleConfig.setScaling(new LinkedHashMap<>(currentRuleConfig.getScaling()));
         removeRuleConfiguration(toBeCheckedRuleConfig, toBeAlteredRuleConfig);
         addRuleConfiguration(toBeCheckedRuleConfig, toBeAlteredRuleConfig);
         Collection<String> dataSourceNames = getRequiredResource(toBeCheckedRuleConfig);

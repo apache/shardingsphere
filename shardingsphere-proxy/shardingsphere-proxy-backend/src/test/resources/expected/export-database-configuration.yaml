@@ -38,7 +38,6 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-  scalingName: default_scaling
   shardingAlgorithms:
     ds_inline:
       props:

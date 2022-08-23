@@ -32,11 +32,6 @@ execute
     | stopMigrationSourceWriting
     | restoreMigrationSourceWriting
     | applyMigration
-    | showShardingScalingRules
-    | createShardingScalingRule
-    | dropShardingScalingRule
-    | enableShardingScalingRule
-    | disableShardingScalingRule
     | addMigrationSourceResource
     | dropMigrationSourceResource
     | showMigrationSourceResources

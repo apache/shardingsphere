@@ -22,11 +22,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
-import org.apache.shardingsphere.infra.config.rule.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -44,13 +42,11 @@ public final class EncryptRuleConfiguration implements DatabaseRuleConfiguration
     
     private final String dataConverterName;
     
-    private final Map<String, OnRuleAlteredActionConfiguration> dataConverters;
-    
     public EncryptRuleConfiguration(final Collection<EncryptTableRuleConfiguration> tables, final Map<String, AlgorithmConfiguration> encryptors) {
         this(tables, encryptors, true);
     }
     
     public EncryptRuleConfiguration(final Collection<EncryptTableRuleConfiguration> tables, final Map<String, AlgorithmConfiguration> encryptors, final boolean queryWithCipherColumn) {
-        this(tables, encryptors, queryWithCipherColumn, null, Collections.emptyMap());
+        this(tables, encryptors, queryWithCipherColumn, null);
     }
 }

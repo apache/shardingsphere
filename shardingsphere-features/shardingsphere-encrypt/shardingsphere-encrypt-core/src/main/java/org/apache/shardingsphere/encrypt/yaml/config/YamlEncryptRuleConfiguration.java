@@ -21,9 +21,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlOnRuleAlteredActionConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -42,8 +41,6 @@ public final class YamlEncryptRuleConfiguration implements YamlRuleConfiguration
     private boolean queryWithCipherColumn = true;
     
     private String dataConverterName;
-    
-    private Map<String, YamlOnRuleAlteredActionConfiguration> dataConverters = new LinkedHashMap<>();
     
     @Override
     public Class<EncryptRuleConfiguration> getRuleConfigurationType() {

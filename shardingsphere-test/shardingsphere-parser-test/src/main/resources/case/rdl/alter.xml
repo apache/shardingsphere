@@ -297,7 +297,4 @@
         <strategy default-type="TABLE" strategy-type="complex" sharding-column="order_id,user_id" sharding-algorithm-name="algorithms_name">
         </strategy>
     </alter-default-sharding-strategy>
-
-    <enable-sharding-scaling-rule sql-case-id="enable-sharding-scaling-rule" scaling-name="scalingName" />
-    <disable-sharding-scaling-rule sql-case-id="disable-sharding-scaling-rule" scaling-name="scalingName" />
 </sql-parser-test-cases>

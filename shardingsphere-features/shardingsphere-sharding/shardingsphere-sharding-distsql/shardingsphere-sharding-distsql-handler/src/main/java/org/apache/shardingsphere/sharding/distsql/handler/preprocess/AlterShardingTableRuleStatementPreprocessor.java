@@ -24,7 +24,6 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterSharding
 
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.LinkedHashMap;
 
 /**
  * Alter sharding table rule statement preprocessor.
@@ -44,8 +43,6 @@ public final class AlterShardingTableRuleStatementPreprocessor implements RuleDe
         result.setBroadcastTables(new LinkedList<>(currentRuleConfig.getBroadcastTables()));
         result.setDefaultKeyGenerateStrategy(getKeyGenerateStrategyConfiguration(currentRuleConfig));
         result.setKeyGenerators(new HashMap<>(currentRuleConfig.getKeyGenerators()));
-        result.setScalingName(currentRuleConfig.getScalingName());
-        result.setScaling(new LinkedHashMap<>(currentRuleConfig.getScaling()));
         return result;
     }
     
