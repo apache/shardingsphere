@@ -73,7 +73,7 @@ public final class DataConsistencyChecker {
     // TODO remove jobConfig for common usage
     private final MigrationJobConfiguration jobConfig;
     
-    private final Collection<String> logicTableNames;
+    private final String sourceTableName;
     
     private final TableNameSchemaNameMapping tableNameSchemaNameMapping;
     
@@ -81,8 +81,8 @@ public final class DataConsistencyChecker {
     
     public DataConsistencyChecker(final MigrationJobConfiguration jobConfig, final JobRateLimitAlgorithm readRateLimitAlgorithm) {
         this.jobConfig = jobConfig;
-        logicTableNames = Collections.singletonList(jobConfig.getTargetTableName());
-        tableNameSchemaNameMapping = new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(jobConfig.getSourceSchemaName(), Collections.singletonList(jobConfig.getTargetTableName())));
+        this.sourceTableName = jobConfig.getSourceTableName();
+        tableNameSchemaNameMapping = new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(jobConfig.getSourceSchemaName(), Collections.singletonList(jobConfig.getSourceTableName())));
         this.readRateLimitAlgorithm = readRateLimitAlgorithm;
     }
     
@@ -109,11 +109,11 @@ public final class DataConsistencyChecker {
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
         PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getSource().getType(), jobConfig.getSource().getParameter());
         PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getTarget().getType(), jobConfig.getTarget().getParameter());
-        Map<String, DataConsistencyCountCheckResult> result = new LinkedHashMap<>(logicTableNames.size(), 1);
+        Map<String, DataConsistencyCountCheckResult> result = new LinkedHashMap<>(1, 1);
         try (
                 PipelineDataSourceWrapper sourceDataSource = PipelineDataSourceFactory.newInstance(sourceDataSourceConfig);
                 PipelineDataSourceWrapper targetDataSource = PipelineDataSourceFactory.newInstance(targetDataSourceConfig)) {
-            for (String each : logicTableNames) {
+            for (String each : Collections.singletonList(sourceTableName)) {
                 result.put(each, checkCount(each, sourceDataSource, targetDataSource, executor));
             }
             return result;
@@ -163,13 +163,13 @@ public final class DataConsistencyChecker {
         PipelineDataSourceConfiguration targetDataSourceConfig = jobConfig.getTarget();
         ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job-" + getJobIdDigest(jobConfig.getJobId()) + "-data-check-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
-        Map<String, DataConsistencyContentCheckResult> result = new HashMap<>(logicTableNames.size(), 1);
+        Map<String, DataConsistencyContentCheckResult> result = new HashMap<>(1, 1);
         try (
                 PipelineDataSourceWrapper sourceDataSource = PipelineDataSourceFactory.newInstance(sourceDataSourceConfig);
                 PipelineDataSourceWrapper targetDataSource = PipelineDataSourceFactory.newInstance(targetDataSourceConfig)) {
             String sourceDatabaseType = sourceDataSourceConfig.getDatabaseType().getType();
             String targetDatabaseType = targetDataSourceConfig.getDatabaseType().getType();
-            for (String each : logicTableNames) {
+            for (String each : Collections.singletonList(sourceTableName)) {
                 PipelineTableMetaData tableMetaData = new PipelineTableMetaDataLoader(sourceDataSource).getTableMetaData(tableNameSchemaNameMapping.getSchemaName(each), each);
                 if (null == tableMetaData) {
                     throw new PipelineDataConsistencyCheckFailedException("Can not get metadata for table " + each);

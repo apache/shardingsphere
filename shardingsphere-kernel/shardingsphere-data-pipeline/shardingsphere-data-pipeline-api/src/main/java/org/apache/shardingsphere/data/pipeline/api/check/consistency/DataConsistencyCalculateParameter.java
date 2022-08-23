@@ -42,6 +42,7 @@ public final class DataConsistencyCalculateParameter {
      */
     private final PipelineDataSourceWrapper dataSource;
     
+    // TODO replace to schemaName
     private final TableNameSchemaNameMapping tableNameSchemaNameMapping;
     
     private final String logicTableName;

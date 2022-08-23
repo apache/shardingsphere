@@ -26,7 +26,9 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.ColumnValueReaderFactory;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueReader;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
@@ -98,14 +100,16 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
             Collection<Collection<Object>> records = new LinkedList<>();
             Object maxUniqueKeyValue = null;
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                ColumnValueReader columnValueReader = ColumnValueReaderFactory.getInstance(parameter.getDatabaseType());
                 while (resultSet.next()) {
                     ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
                     int columnCount = resultSetMetaData.getColumnCount();
                     Collection<Object> record = new LinkedList<>();
                     for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-                        record.add(resultSet.getObject(columnIndex));
+                        record.add(columnValueReader.readValue(resultSet, resultSetMetaData, columnIndex));
                     }
                     records.add(record);
+                    // TODO use ColumnValueReader
                     maxUniqueKeyValue = resultSet.getObject(parameter.getUniqueKey());
                 }
             }
@@ -120,8 +124,8 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         String logicTableName = parameter.getLogicTableName();
         String schemaName = parameter.getTableNameSchemaNameMapping().getSchemaName(logicTableName);
         String uniqueKey = parameter.getUniqueKey();
-        String cacheKey = DatabaseTypeFactory.getInstance(parameter.getDatabaseType()).isSchemaAvailable() ? schemaName.toLowerCase() + "." + logicTableName.toLowerCase()
-                : logicTableName.toLowerCase();
+        String cacheKey = parameter.getDatabaseType() + "-" + (DatabaseTypeFactory.getInstance(parameter.getDatabaseType()).isSchemaAvailable()
+                ? schemaName.toLowerCase() + "." + logicTableName.toLowerCase() : logicTableName.toLowerCase());
         if (null == parameter.getPreviousCalculatedResult()) {
             return firstSQLCache.computeIfAbsent(cacheKey, s -> sqlBuilder.buildChunkedQuerySQL(schemaName, logicTableName, uniqueKey, true));
         } else {
@@ -194,7 +198,9 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                         return ((Integer) thisResult).longValue() == (Long) thatResult;
                     }
                     if (!new EqualsBuilder().append(thisResult, thatResult).isEquals()) {
-                        log.warn("record column value not match, value1={}, value2={}, record1={}, record2={}", thisResult, thatResult, thisNext, thatNext);
+                        log.warn("record column value not match, value1={}, value2={}, value1.class={}, value2.class={}, record1={}, record2={}", thisResult, thatResult,
+                                null != thisResult ? thisResult.getClass().getName() : "", null != thatResult ? thatResult.getClass().getName() : "",
+                                thisNext, thatNext);
                         return false;
                     }
                 }
