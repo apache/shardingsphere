@@ -23,6 +23,22 @@ call
     : CALL 
     ;
 
+alterProcedure
+    : ALTER PROCEDURE (schemaName DOT_)? procedureName ( procedureCompileClause | ( EDITIONABLE | NONEDITIONABLE ) )
+    ;
+
+procedureCompileClause
+    : COMPILE DEBUG? ( compilerParametersClause )* ( REUSE SETTINGS )?
+    ;
+
+compilerParametersClause
+    : parameterName EQ_ parameterName
+    ;
+
+dropProcedure
+    : DROP PROCEDURE (schemaName DOT_)? procedureName
+    ;
+
 createProcedure
     : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? PROCEDURE plsqlProcedureSource
     ;
