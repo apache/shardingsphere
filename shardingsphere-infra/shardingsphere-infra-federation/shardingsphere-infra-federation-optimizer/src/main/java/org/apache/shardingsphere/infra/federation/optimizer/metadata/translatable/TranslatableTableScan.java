@@ -55,20 +55,20 @@ import java.util.List;
 @Getter
 public class TranslatableTableScan extends TableScan implements EnumerableRel {
     
-    private final TranslatableTable translatableTable;
+    private final FederationTranslatableTable translatableTable;
     
     private final int[] fields;
     
     private final List<RexNode> filters;
     
-    public TranslatableTableScan(final RelOptCluster cluster, final RelOptTable table, final TranslatableTable translatableTable, final int[] fields) {
+    public TranslatableTableScan(final RelOptCluster cluster, final RelOptTable table, final FederationTranslatableTable translatableTable, final int[] fields) {
         super(cluster, cluster.traitSetOf(EnumerableConvention.INSTANCE), ImmutableList.of(), table);
         this.translatableTable = translatableTable;
         this.fields = fields;
         this.filters = null;
     }
     
-    public TranslatableTableScan(final RelOptCluster cluster, final RelOptTable table, final TranslatableTable translatableTable,
+    public TranslatableTableScan(final RelOptCluster cluster, final RelOptTable table, final FederationTranslatableTable translatableTable,
                                  final List<RexNode> filters, final int[] fields) {
         super(cluster, cluster.traitSetOf(EnumerableConvention.INSTANCE), ImmutableList.of(), table);
         this.translatableTable = translatableTable;
@@ -135,10 +135,10 @@ public class TranslatableTableScan extends TableScan implements EnumerableRel {
         if (null != filters) {
             String[] filterValues = new String[fields.length];
             addFilter(filters, filterValues);
-            return implementor.result(physType, Blocks.toBlock(Expressions.call(table.getExpression(TranslatableTable.class),
+            return implementor.result(physType, Blocks.toBlock(Expressions.call(table.getExpression(FederationTranslatableTable.class),
                     "projectAndFilter", implementor.getRootExpression(), Expressions.constant(filterValues), Expressions.constant(fields))));
         }
-        return implementor.result(physType, Blocks.toBlock(Expressions.call(table.getExpression(TranslatableTable.class),
+        return implementor.result(physType, Blocks.toBlock(Expressions.call(table.getExpression(FederationTranslatableTable.class),
                 "project", implementor.getRootExpression(), Expressions.constant(fields))));
     }
     

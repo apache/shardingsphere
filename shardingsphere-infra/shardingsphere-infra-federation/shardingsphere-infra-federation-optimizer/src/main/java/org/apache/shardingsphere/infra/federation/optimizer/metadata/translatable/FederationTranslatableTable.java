@@ -34,6 +34,7 @@ import org.apache.calcite.schema.QueryableTable;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.Schemas;
 import org.apache.calcite.schema.Statistic;
+import org.apache.calcite.schema.TranslatableTable;
 import org.apache.calcite.schema.impl.AbstractTable;
 import org.apache.shardingsphere.infra.federation.optimizer.executor.TableScanExecutor;
 import org.apache.shardingsphere.infra.federation.optimizer.executor.TranslatableScanNodeExecutorContext;
@@ -44,10 +45,10 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import java.lang.reflect.Type;
 
 /**
- * Translatable table.
+ * Federation translatable table.
  */
 @RequiredArgsConstructor
-public final class TranslatableTable extends AbstractTable implements QueryableTable, org.apache.calcite.schema.TranslatableTable {
+public final class FederationTranslatableTable extends AbstractTable implements QueryableTable, TranslatableTable {
     
     private final ShardingSphereTable table;
     
