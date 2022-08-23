@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.check.datasource;
 
-import org.apache.shardingsphere.data.pipeline.spi.fixture.FixtureDataSourceChecker;
+import org.apache.shardingsphere.data.pipeline.core.check.datasource.DataSourceCheckerFactory;
+import org.apache.shardingsphere.data.pipeline.core.fixture.FixtureDataSourceChecker;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -27,6 +28,6 @@ public final class DataSourceCheckerFactoryTest {
     
     @Test
     public void assertGetInstance() {
-        assertThat(DataSourceCheckerFactory.getInstance("FIXTURE"), instanceOf(FixtureDataSourceChecker.class));
+        assertThat(DataSourceCheckerFactory.getInstance("H2"), instanceOf(FixtureDataSourceChecker.class));
     }
 }

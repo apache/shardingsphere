@@ -15,12 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.check.datasource;
+package org.apache.shardingsphere.data.pipeline.core.check.datasource;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+
+import java.util.Optional;
 
 /**
  * Data source checker.
@@ -39,6 +42,7 @@ public final class DataSourceCheckerFactory {
      * @return got instance
      */
     public static DataSourceChecker getInstance(final String databaseType) {
-        return TypedSPIRegistry.getRegisteredService(DataSourceChecker.class, databaseType);
+        Optional<DataSourceChecker> checker = TypedSPIRegistry.findRegisteredService(DataSourceChecker.class, databaseType);
+        return checker.orElseGet(() -> new BasicDataSourceChecker(databaseType));
     }
 }
