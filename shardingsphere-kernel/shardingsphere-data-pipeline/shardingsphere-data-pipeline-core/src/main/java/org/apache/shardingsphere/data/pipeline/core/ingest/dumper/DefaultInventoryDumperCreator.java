@@ -15,40 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.postgresql;
+package org.apache.shardingsphere.data.pipeline.core.ingest.dumper;
 
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.InventoryDumperCreator;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLInventoryDumper;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.InventoryDumper;
 
 import javax.sql.DataSource;
-import java.util.Collection;
-import java.util.Collections;
 
 /**
- * PostgreSQL inventory dumper creator.
+ * Default inventory dumper creator.
  */
-public class PostgreSQLInventoryDumperCreator implements InventoryDumperCreator {
-    
-    private static final Collection<String> TYPE_ALIASES = Collections.singletonList("openGauss");
+public final class DefaultInventoryDumperCreator implements InventoryDumperCreator {
     
     @Override
-    public InventoryDumper createInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig,
-                                                 final PipelineChannel channel, final DataSource sourceDataSource,
-                                                 final PipelineTableMetaDataLoader sourceMetaDataLoader) {
-        return new PostgreSQLInventoryDumper(inventoryDumperConfig, channel, sourceDataSource, sourceMetaDataLoader);
-    }
-    
-    @Override
-    public String getType() {
-        return "PostgreSQL";
-    }
-    
-    @Override
-    public Collection<String> getTypeAliases() {
-        return TYPE_ALIASES;
+    public InventoryDumper createInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final PipelineChannel channel,
+                                                 final DataSource sourceDataSource, final PipelineTableMetaDataLoader sourceMetaDataLoader) {
+        return new DefaultInventoryDumper(inventoryDumperConfig, channel, sourceDataSource, sourceMetaDataLoader);
     }
 }
