@@ -129,6 +129,13 @@ public interface MigrationJobPublicAPI extends PipelineJobPublicAPI, RequiredSPI
     void dropMigrationSourceResources(Collection<String> resourceNames);
     
     /**
+     * Query migration source resources list.
+     *
+     * @return migration source resources
+     */
+    Collection<Collection<Object>> listMigrationSourceResources();
+    
+    /**
      * Create job migration config and start.
      *
      * @param parameter create migration job parameter

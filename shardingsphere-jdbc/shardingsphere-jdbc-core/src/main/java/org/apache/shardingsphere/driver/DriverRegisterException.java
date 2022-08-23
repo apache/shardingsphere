@@ -15,30 +15,21 @@
  * limitations under the License.
  */
 
-grammar MigrationDistSQLStatement;
+package org.apache.shardingsphere.driver;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
 
-execute
-    : (showMigrationList
-    | showMigrationStatus
-    | migrateTable
-    | startMigration
-    | stopMigration
-    | cleanMigration
-    | resetMigration
-    | checkMigration
-    | showMigrationCheckAlgorithms
-    | stopMigrationSourceWriting
-    | restoreMigrationSourceWriting
-    | applyMigration
-    | showShardingScalingRules
-    | createShardingScalingRule
-    | dropShardingScalingRule
-    | enableShardingScalingRule
-    | disableShardingScalingRule
-    | addMigrationSourceResource
-    | dropMigrationSourceResource
-    | showMigrationSourceResources
-    ) SEMI?
-    ;
+import java.sql.SQLException;
+
+/**
+ * Driver register exception.
+ */
+public final class DriverRegisterException extends ShardingSphereSQLException {
+    
+    private static final long serialVersionUID = -8091239932993280564L;
+    
+    public DriverRegisterException(final SQLException cause) {
+        super(XOpenSQLState.GENERAL_ERROR, 10100, "Can not register driver, reason is: %s", cause.getMessage());
+    }
+}

@@ -28,6 +28,7 @@ org.apache.shardingsphere.migration.distsql.handler.query.CheckMigrationQueryRes
 org.apache.shardingsphere.migration.distsql.handler.query.ShowMigrationListQueryResultSet
 org.apache.shardingsphere.migration.distsql.handler.query.ShowMigrationJobStatusQueryResultSet
 org.apache.shardingsphere.migration.distsql.handler.query.ShowMigrationCheckAlgorithmsQueryResultSet
+org.apache.shardingsphere.migration.distsql.handler.query.ShowMigrationSourceResourceQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.UnusedShardingAlgorithmsQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.UnusedShardingKeyGeneratorsQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableRulesUsedAlgorithmQueryResultSet

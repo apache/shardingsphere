@@ -18,6 +18,7 @@
 
 <sql-cases>
     <distsql-case id="show-migration-list" value="SHOW MIGRATION LIST;" />
+    <distsql-case id="show-migration-source-resources" value="SHOW MIGRATION SOURCE RESOURCES;" />
     <distsql-case id="show-migration-check-algorithms" value="SHOW MIGRATION CHECK ALGORITHMS;" />
     <distsql-case id="check-migration" value="CHECK MIGRATION 123;" />
     <distsql-case id="show-migration-status" value="SHOW MIGRATION STATUS 123;" />

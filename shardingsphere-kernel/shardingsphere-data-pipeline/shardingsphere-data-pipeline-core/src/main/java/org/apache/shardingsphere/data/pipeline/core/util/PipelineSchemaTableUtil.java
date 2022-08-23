@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.util;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
@@ -71,19 +72,18 @@ public final class PipelineSchemaTableUtil {
     }
     
     /**
-     * get default schema by connection.getSchema().
+     * Get default schema by connection.getSchema().
      *
-     * @param pipelineDataSourceConfig pipeline data source config
+     * @param dataSourceConfig pipeline data source config
      * @return schema
      */
-    public static String getDefaultSchema(final PipelineDataSourceConfiguration pipelineDataSourceConfig) {
-        try (PipelineDataSourceWrapper dataSource = PipelineDataSourceFactory.newInstance(pipelineDataSourceConfig)) {
+    @SneakyThrows(SQLException.class)
+    public static String getDefaultSchema(final PipelineDataSourceConfiguration dataSourceConfig) {
+        try (PipelineDataSourceWrapper dataSource = PipelineDataSourceFactory.newInstance(dataSourceConfig)) {
             try (Connection connection = dataSource.getConnection()) {
+                log.info("get default schema {}", connection.getSchema());
                 return connection.getSchema();
             }
-        } catch (final SQLException ex) {
-            log.error("get default schema name error", ex);
-            throw new RuntimeException(ex.getMessage());
         }
     }
 }

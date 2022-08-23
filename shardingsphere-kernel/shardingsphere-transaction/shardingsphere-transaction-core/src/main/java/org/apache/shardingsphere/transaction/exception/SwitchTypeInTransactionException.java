@@ -15,30 +15,19 @@
  * limitations under the License.
  */
 
-grammar MigrationDistSQLStatement;
+package org.apache.shardingsphere.transaction.exception;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
 
-execute
-    : (showMigrationList
-    | showMigrationStatus
-    | migrateTable
-    | startMigration
-    | stopMigration
-    | cleanMigration
-    | resetMigration
-    | checkMigration
-    | showMigrationCheckAlgorithms
-    | stopMigrationSourceWriting
-    | restoreMigrationSourceWriting
-    | applyMigration
-    | showShardingScalingRules
-    | createShardingScalingRule
-    | dropShardingScalingRule
-    | enableShardingScalingRule
-    | disableShardingScalingRule
-    | addMigrationSourceResource
-    | dropMigrationSourceResource
-    | showMigrationSourceResources
-    ) SEMI?
-    ;
+/**
+ * Switch type in transaction exception.
+ */
+public final class SwitchTypeInTransactionException extends ShardingSphereSQLException {
+    
+    private static final long serialVersionUID = 5333976223578960845L;
+    
+    public SwitchTypeInTransactionException() {
+        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 11320, "Switch transaction type failed, please terminate the current transaction");
+    }
+}
