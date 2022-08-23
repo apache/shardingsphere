@@ -17,15 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.core.fixture;
 
-import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumper;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 
 public final class H2ScalingEntryFixture implements ScalingEntry {
-    
-    @Override
-    public Class<? extends IncrementalDumper> getIncrementalDumperClass() {
-        return FixtureIncrementalDumper.class;
-    }
     
     @Override
     public String getType() {
