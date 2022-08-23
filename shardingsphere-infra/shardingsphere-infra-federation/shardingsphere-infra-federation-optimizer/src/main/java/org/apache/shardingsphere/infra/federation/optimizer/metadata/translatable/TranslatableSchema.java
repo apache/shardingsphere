@@ -47,7 +47,7 @@ public final class TranslatableSchema extends AbstractSchema {
         Map<String, Table> result = new LinkedHashMap<>(schema.getTables().size(), 1);
         for (ShardingSphereTable each : schema.getTables().values()) {
             // TODO implement table statistic logic after using custom operators
-            result.put(each.getName(), new FederationTranslatableTable(each, executor, new FederationStatistic()));
+            result.put(each.getName(), new TranslatableTable(each, executor, new FederationStatistic()));
         }
         return result;
     }

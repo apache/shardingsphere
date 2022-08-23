@@ -25,6 +25,7 @@ import org.apache.calcite.linq4j.QueryProvider;
 import org.apache.calcite.linq4j.Queryable;
 import org.apache.calcite.linq4j.tree.Expression;
 import org.apache.calcite.plan.RelOptTable;
+import org.apache.calcite.plan.RelOptTable.ToRelContext;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
@@ -33,10 +34,9 @@ import org.apache.calcite.schema.QueryableTable;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.Schemas;
 import org.apache.calcite.schema.Statistic;
-import org.apache.calcite.schema.TranslatableTable;
 import org.apache.calcite.schema.impl.AbstractTable;
-import org.apache.shardingsphere.infra.federation.optimizer.executor.TranslatableScanNodeExecutorContext;
 import org.apache.shardingsphere.infra.federation.optimizer.executor.TableScanExecutor;
+import org.apache.shardingsphere.infra.federation.optimizer.executor.TranslatableScanNodeExecutorContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.statistic.FederationStatistic;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
@@ -44,10 +44,10 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import java.lang.reflect.Type;
 
 /**
- * Federation Translatable table.
+ * Translatable table.
  */
 @RequiredArgsConstructor
-public final class FederationTranslatableTable extends AbstractTable implements QueryableTable, TranslatableTable {
+public final class TranslatableTable extends AbstractTable implements QueryableTable, org.apache.calcite.schema.TranslatableTable {
     
     private final ShardingSphereTable table;
     
@@ -84,8 +84,7 @@ public final class FederationTranslatableTable extends AbstractTable implements 
     }
     
     @Override
-    public Expression getExpression(final SchemaPlus schema, final String tableName,
-                                    final Class clazz) {
+    public Expression getExpression(final SchemaPlus schema, final String tableName, final Class clazz) {
         return Schemas.tableExpression(schema, getElementType(), tableName, clazz);
     }
     
@@ -95,18 +94,13 @@ public final class FederationTranslatableTable extends AbstractTable implements 
     }
     
     @Override
-    public <T> Queryable<T> asQueryable(final QueryProvider queryProvider,
-                                        final SchemaPlus schema, final String tableName) {
+    public <T> Queryable<T> asQueryable(final QueryProvider queryProvider, final SchemaPlus schema, final String tableName) {
         throw new UnsupportedOperationException();
     }
     
     @Override
-    public RelNode toRel(
-                         final RelOptTable.ToRelContext context,
-                         final RelOptTable relOptTable) {
-        // Request all fields.
-        final int fieldCount = relOptTable.getRowType().getFieldCount();
-        final int[] fields = identityList(fieldCount);
+    public RelNode toRel(final ToRelContext context, final RelOptTable relOptTable) {
+        int[] fields = getFieldIndexes(relOptTable.getRowType().getFieldCount());
         return new TranslatableTableScan(context.getCluster(), relOptTable, this, fields);
     }
     
@@ -120,12 +114,12 @@ public final class FederationTranslatableTable extends AbstractTable implements 
         return statistic;
     }
     
-    private int[] identityList(final int n) {
-        int[] integers = new int[n];
-        for (int i = 0; i < n; i++) {
-            integers[i] = i;
+    private int[] getFieldIndexes(final int fieldCount) {
+        int[] result = new int[fieldCount];
+        for (int index = 0; index < fieldCount; index++) {
+            result[index] = index;
         }
-        return integers;
+        return result;
     }
     
     private RelDataType createRelDataType(final ShardingSphereTable table, final RelDataTypeFactory typeFactory) {

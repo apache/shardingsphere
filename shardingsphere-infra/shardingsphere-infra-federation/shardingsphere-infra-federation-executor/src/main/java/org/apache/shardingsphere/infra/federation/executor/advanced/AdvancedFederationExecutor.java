@@ -127,7 +127,6 @@ public final class AdvancedFederationExecutor implements FederationExecutor {
     
     @SuppressWarnings("unchecked")
     private Enumerable<Object[]> execute(final SQLStatement sqlStatement, final TranslatableSchema translatableSchema, final Map<String, Object> parameters) {
-        // TODO remove OptimizerPlannerContextFactory call and use setup executor to handle this logic
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(OptimizerPlannerContextFactory.createConnectionProperties());
         RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
         CalciteCatalogReader catalogReader = OptimizerPlannerContextFactory.createCatalogReader(schemaName, translatableSchema, relDataTypeFactory, connectionConfig);

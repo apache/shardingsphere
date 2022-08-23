@@ -34,14 +34,8 @@ public class TranslatableProjectRule extends RelOptRule {
     
     public static final TranslatableProjectRule INSTANCE = new TranslatableProjectRule(RelFactories.LOGICAL_BUILDER);
     
-    /**
-     * Creates a TranslatableProjectRule.
-     *
-     * @param relBuilderFactory Builder for relational expressions
-     */
     public TranslatableProjectRule(final RelBuilderFactory relBuilderFactory) {
-        super(operand(LogicalProject.class, operand(TranslatableTableScan.class, none())),
-                relBuilderFactory, "TranslatableProjectRule");
+        super(operand(LogicalProject.class, operand(TranslatableTableScan.class, none())), relBuilderFactory, "TranslatableProjectRule");
     }
     
     @Override
@@ -52,21 +46,15 @@ public class TranslatableProjectRule extends RelOptRule {
         if (fields == null) {
             return;
         }
-        call.transformTo(
-                new TranslatableTableScan(
-                        scan.getCluster(),
-                        scan.getTable(),
-                        scan.getTranslatableTable(),
-                        scan.getFilters(),
-                        fields));
+        call.transformTo(new TranslatableTableScan(scan.getCluster(), scan.getTable(), scan.getTranslatableTable(), scan.getFilters(), fields));
     }
     
-    private int[] getProjectFields(final List<RexNode> exps) {
-        final int[] result = new int[exps.size()];
-        for (int i = 0; i < exps.size(); i++) {
-            final RexNode exp = exps.get(i);
+    private int[] getProjectFields(final List<RexNode> rexNodes) {
+        final int[] result = new int[rexNodes.size()];
+        for (int index = 0; index < rexNodes.size(); index++) {
+            RexNode exp = rexNodes.get(index);
             if (exp instanceof RexInputRef) {
-                result[i] = ((RexInputRef) exp).getIndex();
+                result[index] = ((RexInputRef) exp).getIndex();
             } else {
                 return null;
             }
