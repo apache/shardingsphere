@@ -19,8 +19,8 @@ package org.apache.shardingsphere.sqltranslator.rule;
 
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
+import org.apache.shardingsphere.sqltranslator.exception.UnsupportedTranslatedDatabaseException;
 import org.junit.Test;
 
 import java.util.Locale;
@@ -59,7 +59,7 @@ public final class SQLTranslatorRuleTest {
         assertThat(actual, is(expected));
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = UnsupportedTranslatedDatabaseException.class)
     public void assertNotUseOriginalSQLWhenTranslatingFailed() {
         new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("ALWAYS_FAILED", false)).translate("", null, new PostgreSQLDatabaseType(), new MySQLDatabaseType());
     }
