@@ -3,9 +3,18 @@ title = "Build"
 weight = 1
 +++
 
-## Build&Deployment
+## Background
 
-1. Execute the following command to compile and generate the ShardingSphere-Proxy binary package:
+For systems running on a single database that urgently need to securely and simply migrate data to a horizontally sharded database.
+
+## Prerequisites
+
+-  Proxy is developed in JAVA, and JDK version 1.8 or later is recommended. 
+- Data migration adopts the cluster mode, and ZooKeeper is currently supported as the registry.
+
+## Procedure
+
+1. Run the following command to compile the ShardingSphere-Proxy binary package: 
 
 ```
 git clone --depth 1 https://github.com/apache/shardingsphere.git
@@ -13,19 +22,18 @@ cd shardingsphere
 mvn clean install -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs -DskipTests -Prelease
 ```
 
-The binary packages:
+Release package：
 - /shardingsphere-distribution/shardingsphere-proxy-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-proxy-bin.tar.gz
 
-Or get binary package from [download page]( https://shardingsphere.apache.org/document/current/en/downloads/ ).
+Or you can get the installation package through the [Download Page](https://shardingsphere.apache.org/document/current/en/downloads/)
 
-> Scaling is an experimental feature, if scaling job fail, you could try nightly version, click here to [download nightly build]( https://github.com/apache/shardingsphere#nightly-builds ).
+2. Decompress the proxy release package and modify the configuration file `conf/config-sharding.yaml`. Please refer to [proxy startup guide](/en/user-manual/shardingsphere-proxy/startup/bin/) for details.
 
-2. Unzip the proxy distribution package, modify the configuration file `conf/config-sharding.yaml`. Please refer to [proxy startup manual](/en/user-manual/shardingsphere-proxy/startup/bin/) for more details.
+3. Modify the configuration file `conf/server.yaml`. Please refer to [mode configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/mode/) for details.
 
-3. Modify the configuration file `conf/server.yaml`. Please refer to [Mode Configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/mode/) for more details.
-Type of `mode` must be `Cluster` for now, please start the registry center before running proxy.
+Currently, `mode` must be `Cluster`, and the corresponding registry must be started in advance.
 
-Configuration Example:
+Configuration sample:
 ```yaml
 mode:
   type: Cluster
@@ -41,184 +49,136 @@ mode:
   overwrite: false
 ```
 
-4. Enable scaling
+4. Introduce JDBC driver.
 
-Way 1. Modify `scalingName` and `scaling` configuration in `conf/config-sharding.yaml`. 
+If the backend is connected to the following databases, download the corresponding JDBC driver jar package and put it into the `${shardingsphere-proxy}/lib` directory.
 
-Configuration Items Explanation:
-```yaml
-rules:
-- !SHARDING
-  # ignored configuration
-  
-  scalingName: # Enabled scaling action config name
-  scaling:
-    <scaling-action-config-name> (+):
-      input: # Data read configuration. If it's not configured, then part of its configuration will take effect.
-        workerThread: # Worker thread pool size for inventory data ingestion from source. If it's not configured, then use system default value.
-        batchSize: # Maximum records count of a DML select operation. If it's not configured, then use system default value.
-        rateLimiter: # Rate limit algorithm. If it's not configured, then system will skip rate limit.
-          type: # Algorithm type. Options: QPS
-          props: # Algorithm properties
-            qps: # QPS property. Available for types: QPS
-      output: # Data write configuration. If it's not configured, then part of its configuration will take effect.
-        workerThread: # Worker thread pool size for data importing to target. If it's not configured, then use system default value.
-        batchSize: # Maximum records count of a DML insert/delete/update operation. If it's not configured, then use system default value.
-        rateLimiter: # Rate limit algorithm. If it's not configured, then system will skip rate limit.
-          type: # Algorithm type. Options: TPS
-          props: # Algorithm properties
-            tps: # TPS property. Available for types: TPS
-      streamChannel: # Algorithm of channel that connect producer and consumer, used for input and output. If it's not configured, then system will use MEMORY type
-        type: # Algorithm type. Options: MEMORY
-        props: # Algorithm properties
-          block-queue-size: # Property: data channel block queue size. Available for types: MEMORY
-      completionDetector: # Completion detect algorithm. If it's not configured, then system won't continue to do next steps automatically.
-        type: # Algorithm type. Options: IDLE
-        props: # Algorithm properties
-          incremental-task-idle-seconds-threshold: # If incremental tasks is idle more than so much seconds, then it could be considered as almost completed. Available for types: IDLE
-      dataConsistencyChecker: # Data consistency check algorithm. If it's not configured, then system will skip this step.
-        type: # Algorithm type. Options: DATA_MATCH, CRC32_MATCH
-        props: # Algorithm properties
-          chunk-size: # Maximum records count of a query operation for check
-```
+| Database              | JDBC Driver                                                                                                                                                        | Reference                                                                                        |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| MySQL                 | [mysql-connector-java-5.1.47.jar]( https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar )                              | [Connector/J Versions]( https://dev.mysql.com/doc/connector-j/5.1/en/connector-j-versions.html ) |
+| openGauss             | [opengauss-jdbc-2.0.1-compatibility.jar]( https://repo1.maven.org/maven2/org/opengauss/opengauss-jdbc/2.0.1-compatibility/opengauss-jdbc-2.0.1-compatibility.jar ) |                                                                                                  |
 
-`type` of `dataConsistencyChecker` could be got by executing DistSQL `SHOW SCALING CHECK ALGORITHMS`. Simple comparison:
-- `DATA_MATCH` : Support all types of databases, but it's not the best performant one.
-- `CRC32_MATCH` : Support `MySQL`, performance is better than `DATA_MATCH`.
-
-Auto Mode Configuration Example:
-```yaml
-rules:
-- !SHARDING
-  # ignored configuration
-  
-  scalingName: scaling_auto
-  scaling:
-    scaling_auto:
-      input:
-        workerThread: 40
-        batchSize: 1000
-        rateLimiter:
-          type: QPS
-          props:
-            qps: 50
-      output:
-        workerThread: 40
-        batchSize: 1000
-        rateLimiter:
-          type: TPS
-          props:
-            tps: 2000
-      streamChannel:
-        type: MEMORY
-        props:
-          block-queue-size: 10000
-      completionDetector:
-        type: IDLE
-        props:
-          incremental-task-idle-seconds-threshold: 1800
-      dataConsistencyChecker:
-        type: DATA_MATCH
-        props:
-          chunk-size: 1000
-```
-
-Manual Mode Configuration Example:
-```yaml
-rules:
-- !SHARDING
-  # ignored configuration
-  
-  scalingName: scaling_manual
-  scaling:
-    scaling_manual:
-      input:
-        workerThread: 40
-        batchSize: 1000
-        rateLimiter:
-          type: QPS
-          props:
-            qps: 50
-      output:
-        workerThread: 40
-        batchSize: 1000
-        rateLimiter:
-          type: TPS
-          props:
-            tps: 2000
-      streamChannel:
-        type: MEMORY
-        props:
-          block-queue-size: 10000
-      dataConsistencyChecker:
-        type: DATA_MATCH
-        props:
-          chunk-size: 1000
-```
-
-Way 2: Configure scaling by DistSQL
-
-Auto Mode Configuration Example:
-```sql
-CREATE SHARDING SCALING RULE scaling_auto (
-INPUT(
-  WORKER_THREAD=40,
-  BATCH_SIZE=1000,
-  RATE_LIMITER(TYPE(NAME=QPS, PROPERTIES("qps"=50)))
-),
-OUTPUT(
-  WORKER_THREAD=40,
-  BATCH_SIZE=1000,
-  RATE_LIMITER(TYPE(NAME=TPS, PROPERTIES("tps"=2000)))
-),
-STREAM_CHANNEL(TYPE(NAME="MEMORY", PROPERTIES("block-queue-size"="10000"))),
-COMPLETION_DETECTOR(TYPE(NAME="IDLE", PROPERTIES("incremental-task-idle-seconds-threshold"="1800"))),
-DATA_CONSISTENCY_CHECKER(TYPE(NAME="DATA_MATCH", PROPERTIES("chunk-size"="1000")))
-);
-```
-
-Manual Mode Configuration Example:
-```sql
-CREATE SHARDING SCALING RULE scaling_manual (
-INPUT(
-  WORKER_THREAD=40,
-  BATCH_SIZE=1000
-),
-OUTPUT(
-  WORKER_THREAD=40,
-  BATCH_SIZE=1000
-),
-STREAM_CHANNEL(TYPE(NAME="MEMORY", PROPERTIES("block-queue-size"="10000"))),
-DATA_CONSISTENCY_CHECKER(TYPE(NAME="DATA_MATCH", PROPERTIES("chunk-size"="1000")))
-);
-```
-
-Please refer to [RDL#Sharding](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/sharding/) for more details.
-
-5. Import JDBC driver dependency
-
-If the backend database is in following table, please download JDBC driver jar and put it into `${shardingsphere-proxy}/lib` directory.
-
-| RDBMS                 | JDBC driver                          | Reference            |
-| --------------------- | ------------------------------------ | -------------------- |
-| MySQL                 | [mysql-connector-java-5.1.47.jar]( https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar ) | [Connector/J Versions]( https://dev.mysql.com/doc/connector-j/5.1/en/connector-j-versions.html ) |
-
-6. Start up ShardingSphere-Proxy:
+5. Start ShardingSphere-Proxy:
 
 ```
 sh bin/start.sh
 ```
 
-7. Check proxy log `logs/stdout.log`:
+6. View the proxy log `logs/stdout.log`. If you see the following statements:
 
 ```
 [INFO ] [main] o.a.s.p.frontend.ShardingSphereProxy - ShardingSphere-Proxy start success
 ```
 
-It means `proxy` start up successfully.
+The startup will have been successful.
 
-## Shutdown
+7. Configure and migrate on demand.
 
+7.1. Query configuration.
+
+```sql
+SHOW MIGRATION PROCESS CONFIGURATION;
 ```
-sh bin/stop.sh
+
+The default configuration is as follows.
+
+```sql
++--------------------------------------------------------------+--------------------------------------+------------------------------------------------------+
+| read                                                         | write                                | stream_channel                                       |
++--------------------------------------------------------------+--------------------------------------+------------------------------------------------------+
+| {"workerThread":40,"batchSize":1000,"shardingSize":10000000} | {"workerThread":40,"batchSize":1000} | {"type":"MEMORY","props":{"block-queue-size":10000}} |
++--------------------------------------------------------------+--------------------------------------+------------------------------------------------------+
 ```
+
+7.2. New configuration (Optional).
+
+A default value is available if there is no configuration.
+
+A completely configured DistSQL is as follows.
+
+```sql
+CREATE MIGRATION PROCESS CONFIGURATION (
+READ(
+  WORKER_THREAD=40,
+  BATCH_SIZE=1000,
+  SHARDING_SIZE=10000000,
+  RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='500')))
+),
+WRITE(
+  WORKER_THREAD=40,
+  BATCH_SIZE=1000,
+  RATE_LIMITER (TYPE(NAME='TPS',PROPERTIES('tps'='2000')))
+),
+STREAM_CHANNEL (TYPE(NAME='MEMORY',PROPERTIES('block-queue-size'='10000')))
+);
+```
+
+Configuration item description:
+
+```sql
+CREATE MIGRATION PROCESS CONFIGURATION (
+READ( -- Data reading configuration. If it is not configured, part of the parameters will take effect by default.
+  WORKER_THREAD=40, -- Obtain the thread pool size of all the data from the source side. If it is not configured, the default value is used.
+  BATCH_SIZE=1000, -- The maximum number of records returned by a query operation. If it is not configured, the default value is used.
+  SHARDING_SIZE=10000000, -- Sharding size of all the data. If it is not configured, the default value is used.
+  RATE_LIMITER ( -- Traffic limit algorithm. If it is not configured, traffic is not limited.
+  TYPE( -- Algorithm type. Option: QPS
+  NAME='QPS',
+  PROPERTIES( -- Algorithm property
+  'qps'='500'
+  )))
+),
+WRITE( -- Data writing configuration. If it is not configured, part of the parameters will take effect by default.
+  WORKER_THREAD=40, -- The size of the thread pool on which data is written into the target side. If it is not configured, the default value is used.
+  BATCH_SIZE=1000, -- The maximum number of records for a batch write operation. If it is not configured, the default value is used.
+  RATE_LIMITER ( -- Traffic limit algorithm. If it is not configured, traffic is not limited.
+  TYPE( -- Algorithm type. Option: TPS
+  NAME='TPS',
+  PROPERTIES( -- Algorithm property.
+  'tps'='2000'
+  )))
+),
+STREAM_CHANNEL ( -- Data channel. It connects producers and consumers, used for reading and writing procedures. If it is not configured, the MEMORY type is used by default.
+TYPE( -- Algorithm type. Option: MEMORY
+NAME='MEMORY',
+PROPERTIES( -- Algorithm property
+'block-queue-size'='10000' -- Property: blocking queue size.
+)))
+);
+```
+
+DistSQL sample: configure `READ` for traffic limit.
+
+```sql
+CREATE MIGRATION PROCESS CONFIGURATION (
+READ(
+  RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='500')))
+)
+);
+```
+
+Configure data reading for traffic limit. Other configurations use default values.
+
+7.3. Modify configuration.
+
+`ALTER MIGRATION PROCESS CONFIGURATION`, and its internal structure is the same as that of `CREATE MIGRATION PROCESS CONFIGURATION`.
+
+DistSQL sample: modify traffic limit parameter
+
+```sql
+ALTER MIGRATION PROCESS CONFIGURATION (
+READ(
+  RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='1000')))
+)
+);
+---
+ALTER MIGRATION PROCESS CONFIGURATION (
+READ(
+  RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='1000')))
+), WRITE(
+  RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='1000')))
+)
+);
+```
+
+DistSQL sample: clear the configuration of `READ` and restore it to the default value.
