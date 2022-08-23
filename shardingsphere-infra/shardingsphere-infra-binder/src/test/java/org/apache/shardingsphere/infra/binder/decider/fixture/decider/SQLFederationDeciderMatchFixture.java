@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.decider.fixture.decider;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.decider.SQLFederationDecider;
 import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDeciderContext;
 import org.apache.shardingsphere.infra.binder.decider.fixture.rule.SQLFederationDeciderRuleMatchFixture;
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 public final class SQLFederationDeciderMatchFixture implements SQLFederationDecider<SQLFederationDeciderRuleMatchFixture> {
     
     @Override
-    public void decide(final SQLFederationDeciderContext deciderContext, final LogicSQL logicSQL, final ShardingSphereDatabase database, final SQLFederationDeciderRuleMatchFixture rule,
+    public void decide(final SQLFederationDeciderContext deciderContext, final QueryContext queryContext, final ShardingSphereDatabase database, final SQLFederationDeciderRuleMatchFixture rule,
                        final ConfigurationProperties props) {
         deciderContext.setUseSQLFederation(true);
     }

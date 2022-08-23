@@ -46,7 +46,6 @@ public final class InventoryDumperConfiguration extends DumperConfiguration {
     private JobRateLimitAlgorithm rateLimitAlgorithm;
     
     public InventoryDumperConfiguration(final DumperConfiguration dumperConfig) {
-        setDatabaseName(dumperConfig.getDatabaseName());
         setDataSourceName(dumperConfig.getDataSourceName());
         setDataSourceConfig(dumperConfig.getDataSourceConfig());
         setTableNameMap(dumperConfig.getTableNameMap());

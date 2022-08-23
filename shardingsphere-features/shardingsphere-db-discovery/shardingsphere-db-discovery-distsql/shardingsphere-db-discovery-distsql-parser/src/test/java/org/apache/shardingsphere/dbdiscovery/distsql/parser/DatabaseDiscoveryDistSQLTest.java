@@ -17,10 +17,6 @@
 
 package org.apache.shardingsphere.dbdiscovery.distsql.parser;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
 import lombok.SneakyThrows;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.facade.DatabaseDiscoveryDistSQLStatementParserFacade;
@@ -40,6 +36,10 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Properties;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class DatabaseDiscoveryDistSQLTest {
     

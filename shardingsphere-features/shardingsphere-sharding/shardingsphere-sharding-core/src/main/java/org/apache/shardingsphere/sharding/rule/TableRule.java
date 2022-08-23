@@ -53,7 +53,7 @@ import java.util.stream.Collectors;
  * Table rule.
  */
 @Getter
-@ToString(exclude = {"dataNodeIndexMap", "actualTables", "actualTablePrefix", "actualDataSourceNames", "dataSourceDataNode", "tableDataNode"})
+@ToString(exclude = {"dataNodeIndexMap", "actualTables", "actualDataSourceNames", "dataSourceDataNode", "tableDataNode"})
 public final class TableRule {
     
     private static final Pattern DATA_NODE_SUFFIX_PATTERN = Pattern.compile("(\\d+[\\-_]){0,}(\\d+$)");
@@ -63,8 +63,6 @@ public final class TableRule {
     private final String logicTable;
     
     private final List<DataNode> actualDataNodes;
-    
-    private final String actualTablePrefix;
     
     @Getter(AccessLevel.NONE)
     private final Set<String> actualTables;
@@ -94,8 +92,7 @@ public final class TableRule {
     public TableRule(final Collection<String> dataSourceNames, final String logicTableName) {
         logicTable = logicTableName;
         dataNodeIndexMap = new HashMap<>(dataSourceNames.size(), 1);
-        actualTablePrefix = null;
-        actualDataNodes = generateDataNodes(logicTableName, dataSourceNames, null);
+        actualDataNodes = generateDataNodes(logicTableName, dataSourceNames);
         actualTables = getActualTables();
         databaseShardingStrategyConfig = null;
         tableShardingStrategyConfig = null;
@@ -110,9 +107,7 @@ public final class TableRule {
         logicTable = tableRuleConfig.getLogicTable();
         List<String> dataNodes = new InlineExpressionParser(tableRuleConfig.getActualDataNodes()).splitAndEvaluate();
         dataNodeIndexMap = new HashMap<>(dataNodes.size(), 1);
-        actualTablePrefix = tableRuleConfig.getActualTablePrefix();
-        actualDataNodes = isEmptyDataNodes(dataNodes) ? generateDataNodes(tableRuleConfig.getLogicTable(), dataSourceNames, actualTablePrefix)
-                : generateDataNodes(dataNodes, dataSourceNames, actualTablePrefix);
+        actualDataNodes = isEmptyDataNodes(dataNodes) ? generateDataNodes(tableRuleConfig.getLogicTable(), dataSourceNames) : generateDataNodes(dataNodes, dataSourceNames);
         actualTables = getActualTables();
         databaseShardingStrategyConfig = tableRuleConfig.getDatabaseShardingStrategy();
         tableShardingStrategyConfig = tableRuleConfig.getTableShardingStrategy();
@@ -133,9 +128,7 @@ public final class TableRule {
         auditStrategyConfig = tableRuleConfig.getAuditStrategy();
         List<String> dataNodes = getDataNodes(tableRuleConfig, shardingAutoTableAlgorithm, dataSourceNames);
         dataNodeIndexMap = new HashMap<>(dataNodes.size(), 1);
-        actualTablePrefix = tableRuleConfig.getActualTablePrefix();
-        actualDataNodes = isEmptyDataNodes(dataNodes) ? generateDataNodes(tableRuleConfig.getLogicTable(), dataSourceNames, actualTablePrefix)
-                : generateDataNodes(dataNodes, dataSourceNames, actualTablePrefix);
+        actualDataNodes = isEmptyDataNodes(dataNodes) ? generateDataNodes(tableRuleConfig.getLogicTable(), dataSourceNames) : generateDataNodes(dataNodes, dataSourceNames);
         actualTables = getActualTables();
         KeyGenerateStrategyConfiguration keyGeneratorConfig = tableRuleConfig.getKeyGenerateStrategy();
         generateKeyColumn = null != keyGeneratorConfig && !Strings.isNullOrEmpty(keyGeneratorConfig.getColumn()) ? keyGeneratorConfig.getColumn() : defaultGenerateKeyColumn;
@@ -158,9 +151,6 @@ public final class TableRule {
     }
     
     private List<String> getDataNodes(final ShardingAutoTableRuleConfiguration tableRuleConfig, final ShardingAutoTableAlgorithm shardingAlgorithm, final Collection<String> dataSourceNames) {
-        if (null != tableRuleConfig.getActualDataNodes() && !tableRuleConfig.getActualDataNodes().isEmpty()) {
-            return new InlineExpressionParser(tableRuleConfig.getActualDataNodes()).splitAndEvaluate();
-        }
         if (null == tableShardingStrategyConfig) {
             return new LinkedList<>();
         }
@@ -181,12 +171,11 @@ public final class TableRule {
         return null == dataNodes || dataNodes.isEmpty();
     }
     
-    private List<DataNode> generateDataNodes(final String logicTable, final Collection<String> dataSourceNames, final String actualTablePrefix) {
+    private List<DataNode> generateDataNodes(final String logicTable, final Collection<String> dataSourceNames) {
         List<DataNode> result = new LinkedList<>();
         int index = 0;
         for (String each : dataSourceNames) {
-            String actualTable = Strings.isNullOrEmpty(actualTablePrefix) ? logicTable : actualTablePrefix + logicTable;
-            DataNode dataNode = new DataNode(each, actualTable);
+            DataNode dataNode = new DataNode(each, logicTable);
             result.add(dataNode);
             dataNodeIndexMap.put(dataNode, index);
             actualDataSourceNames.add(each);
@@ -196,11 +185,11 @@ public final class TableRule {
         return result;
     }
     
-    private List<DataNode> generateDataNodes(final List<String> actualDataNodes, final Collection<String> dataSourceNames, final String actualTablePrefix) {
+    private List<DataNode> generateDataNodes(final List<String> actualDataNodes, final Collection<String> dataSourceNames) {
         List<DataNode> result = new LinkedList<>();
         int index = 0;
         for (String each : actualDataNodes) {
-            DataNode dataNode = generateDataNode(each, actualTablePrefix);
+            DataNode dataNode = new DataNode(each);
             if (!dataSourceNames.contains(dataNode.getDataSourceName())) {
                 throw new ShardingSphereException("Cannot find data source in sharding rule, invalid actual data node is: '%s'", each);
             }
@@ -211,14 +200,6 @@ public final class TableRule {
             index++;
         }
         return result;
-    }
-    
-    private DataNode generateDataNode(final String dataNode, final String actualTablePrefix) {
-        DataNode result = new DataNode(dataNode);
-        if (Strings.isNullOrEmpty(actualTablePrefix)) {
-            return result;
-        }
-        return new DataNode(result.getDataSourceName(), actualTablePrefix + result.getTableName());
     }
     
     /**

@@ -38,7 +38,7 @@
     <xsd:element name="data-source">
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required"/>
-            <xsd:attribute name="source-data-source-name" type="xsd:string" use="required"/>
+            <xsd:attribute name="production-data-source-name" type="xsd:string" use="required"/>
             <xsd:attribute name="shadow-data-source-name" type="xsd:string" use="required"/>
         </xsd:complexType>
     </xsd:element>

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.singletable.decider;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.decider.SQLFederationDecider;
 import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDeciderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -44,9 +44,9 @@ import java.util.Optional;
 public final class SingleTableSQLFederationDecider implements SQLFederationDecider<SingleTableRule> {
     
     @Override
-    public void decide(final SQLFederationDeciderContext deciderContext, final LogicSQL logicSQL,
+    public void decide(final SQLFederationDeciderContext deciderContext, final QueryContext queryContext,
                        final ShardingSphereDatabase database, final SingleTableRule rule, final ConfigurationProperties props) {
-        SelectStatementContext select = (SelectStatementContext) logicSQL.getSqlStatementContext();
+        SelectStatementContext select = (SelectStatementContext) queryContext.getSqlStatementContext();
         Collection<QualifiedTable> singleTableNames = getSingleTableNames(select, database, rule);
         if (singleTableNames.isEmpty()) {
             return;

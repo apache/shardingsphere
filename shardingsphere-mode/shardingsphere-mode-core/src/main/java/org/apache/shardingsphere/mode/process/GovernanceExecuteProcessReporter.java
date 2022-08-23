@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.process;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
@@ -40,9 +40,9 @@ import java.util.List;
 public final class GovernanceExecuteProcessReporter implements ExecuteProcessReporter {
     
     @Override
-    public void report(final LogicSQL logicSQL, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext,
+    public void report(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext,
                        final ExecuteProcessConstants constants, final EventBusContext eventBusContext) {
-        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(logicSQL.getSql(), executionGroupContext, constants);
+        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(queryContext.getSql(), executionGroupContext, constants);
         ShowProcessListManager.getInstance().putProcessContext(executeProcessContext.getExecutionID(), new YamlExecuteProcessContext(executeProcessContext));
         ShowProcessListManager.getInstance().putProcessStatement(executeProcessContext.getExecutionID(), collectProcessStatement(executionGroupContext));
     }
@@ -74,7 +74,7 @@ public final class GovernanceExecuteProcessReporter implements ExecuteProcessRep
     public void reportClean(final String executionID) {
         ShowProcessListManager.getInstance().removeProcessContext(executionID);
     }
-    
+
     private List<Statement> collectProcessStatement(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
         List<Statement> result = new ArrayList<>();
         if (null == executionGroupContext.getInputGroups()) {

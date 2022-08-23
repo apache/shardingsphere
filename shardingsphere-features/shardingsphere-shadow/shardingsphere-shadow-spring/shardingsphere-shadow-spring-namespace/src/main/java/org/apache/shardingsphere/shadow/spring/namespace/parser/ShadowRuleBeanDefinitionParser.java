@@ -109,7 +109,7 @@ public final class ShadowRuleBeanDefinitionParser extends AbstractBeanDefinition
     
     private BeanDefinition parseDataSourceConfiguration(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShadowDataSourceConfiguration.class);
-        factory.addConstructorArgValue(element.getAttribute(ShadowRuleBeanDefinitionTag.SOURCE_DATA_SOURCE_NAME_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(ShadowRuleBeanDefinitionTag.PRODUCTION_DATA_SOURCE_NAME_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(ShadowRuleBeanDefinitionTag.SHADOW_DATA_SOURCE_NAME_ATTRIBUTE));
         return factory.getBeanDefinition();
     }

@@ -29,6 +29,14 @@ weight = 3
 
 `CREATE`, `ENCRYPT`, `RULE`, `COLUMNS`, `NAME`, `CIPHER`, `PLAIN`, `QUERY_WITH_CIPHER_COLUMN`, `TYPE`, `TRUE`, `FALSE`
 
+#### Database Discovery
+
+`CREATE`, `DB_DISCOVERY`, `RULE`, `RESOURCES`, `TYPE`, `NAME`, `PROPERTIES`, `HEARTBEAT`
+
+#### Shadow
+
+`CREATE`, `SHARDING`, `SINGLE`, `TABLE`, `RULE`, `RESOURCE`
+
 ### Supplement
 
 - The above reserved words are not case-sensitive

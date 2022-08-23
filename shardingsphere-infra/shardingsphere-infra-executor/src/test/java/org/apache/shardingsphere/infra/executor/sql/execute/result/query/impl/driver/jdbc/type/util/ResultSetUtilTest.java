@@ -21,7 +21,6 @@ import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 import com.google.common.primitives.Shorts;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -93,7 +92,7 @@ public final class ResultSetUtilTest {
         assertThat(ResultSetUtil.convertValue(1, Float.class), is(Float.valueOf("1")));
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = UnsupportedDataTypeConversionException.class)
     public void assertConvertNumberValueError() throws SQLException {
         ResultSetUtil.convertValue(1, Date.class);
     }
@@ -144,14 +143,14 @@ public final class ResultSetUtilTest {
     @SneakyThrows(MalformedURLException.class)
     @Test
     public void assertConvertURLValue() throws SQLException {
-        String urlString = "http://apache.org";
+        String urlString = "https://shardingsphere.apache.org/";
         URL url = (URL) ResultSetUtil.convertValue(urlString, URL.class);
         assertThat(url, is(new URL(urlString)));
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = UnsupportedDataTypeConversionException.class)
     public void assertConvertURLValueError() throws SQLException {
-        String urlString = "no-exist:apache.org";
+        String urlString = "no-exist:shardingsphere.apache.org/";
         ResultSetUtil.convertValue(urlString, URL.class);
     }
     
@@ -173,12 +172,12 @@ public final class ResultSetUtilTest {
         assertThat(bigDecimal, is(BigDecimal.valueOf(12.24)));
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = UnsupportedDataTypeConversionException.class)
     public void assertConvertBigDecimalValueError() {
         ResultSetUtil.convertBigDecimalValue(new Date(), true, 2);
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = UnsupportedDataTypeConversionException.class)
     public void assertConvertDateValueError() throws SQLException {
         ResultSetUtil.convertValue(new Date(), int.class);
     }

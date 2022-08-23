@@ -24,22 +24,15 @@ import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
-import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.MemoryPipelineChannelCreator;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineProcessConfigurationUtils;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreatorFactory;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
 import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineReadConfiguration;
 import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineWriteConfiguration;
-import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineReadConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineWriteConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineProcessConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.data.pipeline.YamlPipelineProcessConfigurationSwapper;
-
-import java.util.Properties;
 
 /**
  * Abstract pipeline process context.
@@ -47,8 +40,6 @@ import java.util.Properties;
 @Getter
 @Slf4j
 public abstract class AbstractPipelineProcessContext implements PipelineProcessContext {
-    
-    private static final YamlPipelineProcessConfigurationSwapper SWAPPER = new YamlPipelineProcessConfigurationSwapper();
     
     private final PipelineProcessConfiguration pipelineProcessConfig;
     
@@ -65,7 +56,7 @@ public abstract class AbstractPipelineProcessContext implements PipelineProcessC
     private final LazyInitializer<ExecuteEngine> importerExecuteEngineLazyInitializer;
     
     public AbstractPipelineProcessContext(final String jobId, final PipelineProcessConfiguration originalProcessConfig) {
-        PipelineProcessConfiguration processConfig = convertProcessConfig(originalProcessConfig);
+        PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.convertWithDefaultValue(originalProcessConfig);
         this.pipelineProcessConfig = processConfig;
         PipelineReadConfiguration readConfig = processConfig.getRead();
         AlgorithmConfiguration readRateLimiter = readConfig.getRateLimiter();
@@ -96,24 +87,6 @@ public abstract class AbstractPipelineProcessContext implements PipelineProcessC
                 return ExecuteEngine.newFixedThreadInstance(writeConfig.getWorkerThread(), "Importer-" + jobId);
             }
         };
-    }
-    
-    private PipelineProcessConfiguration convertProcessConfig(final PipelineProcessConfiguration originalProcessConfig) {
-        YamlPipelineProcessConfiguration yamlActionConfig = SWAPPER.swapToYamlConfiguration(originalProcessConfig);
-        if (null == yamlActionConfig.getRead()) {
-            yamlActionConfig.setRead(YamlPipelineReadConfiguration.buildWithDefaultValue());
-        } else {
-            yamlActionConfig.getRead().fillInNullFieldsWithDefaultValue();
-        }
-        if (null == yamlActionConfig.getWrite()) {
-            yamlActionConfig.setWrite(YamlPipelineWriteConfiguration.buildWithDefaultValue());
-        } else {
-            yamlActionConfig.getWrite().fillInNullFieldsWithDefaultValue();
-        }
-        if (null == yamlActionConfig.getStreamChannel()) {
-            yamlActionConfig.setStreamChannel(new YamlAlgorithmConfiguration(MemoryPipelineChannelCreator.TYPE, new Properties()));
-        }
-        return SWAPPER.swapToObject(yamlActionConfig);
     }
     
     /**

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.decider;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.decider.SQLFederationDecider;
 import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDeciderContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
@@ -39,15 +39,15 @@ import java.util.List;
 public final class ShardingSQLFederationDecider implements SQLFederationDecider<ShardingRule> {
     
     @Override
-    public void decide(final SQLFederationDeciderContext deciderContext, final LogicSQL logicSQL,
+    public void decide(final SQLFederationDeciderContext deciderContext, final QueryContext queryContext,
                        final ShardingSphereDatabase database, final ShardingRule rule, final ConfigurationProperties props) {
-        SelectStatementContext select = (SelectStatementContext) logicSQL.getSqlStatementContext();
+        SelectStatementContext select = (SelectStatementContext) queryContext.getSqlStatementContext();
         Collection<String> tableNames = rule.getShardingLogicTableNames(select.getTablesContext().getTableNames());
         if (tableNames.isEmpty()) {
             return;
         }
         addTableDataNodes(deciderContext, rule, tableNames);
-        ShardingConditions shardingConditions = createShardingConditions(logicSQL, database, rule);
+        ShardingConditions shardingConditions = createShardingConditions(queryContext, database, rule);
         if (select.getPaginationContext().isHasPagination() || (shardingConditions.isNeedMerge() && shardingConditions.isSameShardingCondition())) {
             return;
         }
@@ -69,10 +69,10 @@ public final class ShardingSQLFederationDecider implements SQLFederationDecider<
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static ShardingConditions createShardingConditions(final LogicSQL logicSQL, final ShardingSphereDatabase database, final ShardingRule rule) {
-        ShardingConditionEngine shardingConditionEngine = ShardingConditionEngineFactory.createShardingConditionEngine(logicSQL, database, rule);
-        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(logicSQL.getSqlStatementContext(), logicSQL.getParameters());
-        return new ShardingConditions(shardingConditions, logicSQL.getSqlStatementContext(), rule);
+    private static ShardingConditions createShardingConditions(final QueryContext queryContext, final ShardingSphereDatabase database, final ShardingRule rule) {
+        ShardingConditionEngine shardingConditionEngine = ShardingConditionEngineFactory.createShardingConditionEngine(queryContext, database, rule);
+        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(queryContext.getSqlStatementContext(), queryContext.getParameters());
+        return new ShardingConditions(shardingConditions, queryContext.getSqlStatementContext(), rule);
     }
     
     @Override

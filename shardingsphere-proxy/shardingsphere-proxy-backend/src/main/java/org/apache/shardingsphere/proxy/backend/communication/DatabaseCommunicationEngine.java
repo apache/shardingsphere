@@ -22,7 +22,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.aware.CursorDefinitionAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CloseStatementContext;
@@ -70,7 +70,7 @@ public abstract class DatabaseCommunicationEngine implements DatabaseBackendHand
     
     private final ShardingSphereDatabase database;
     
-    private final LogicSQL logicSQL;
+    private final QueryContext queryContext;
     
     private final KernelProcessor kernelProcessor = new KernelProcessor();
     
@@ -82,12 +82,12 @@ public abstract class DatabaseCommunicationEngine implements DatabaseBackendHand
     
     private final BackendConnection<?> backendConnection;
     
-    public DatabaseCommunicationEngine(final String driverType, final ShardingSphereDatabase database, final LogicSQL logicSQL, final BackendConnection<?> backendConnection) {
-        SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
+    public DatabaseCommunicationEngine(final String driverType, final ShardingSphereDatabase database, final QueryContext queryContext, final BackendConnection<?> backendConnection) {
+        SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
         failedIfBackendNotReady(backendConnection.getConnectionSession(), sqlStatementContext);
         this.driverType = driverType;
         this.database = database;
-        this.logicSQL = logicSQL;
+        this.queryContext = queryContext;
         this.backendConnection = backendConnection;
         metadataRefreshEngine = new MetaDataRefreshEngine(database, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps());
         if (sqlStatementContext instanceof CursorAvailable) {

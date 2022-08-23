@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -98,7 +98,7 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
         ShardingSphereSQLParserEngine sqlParserEngine = getSQLParserEngine();
         for (String each : extractMultiStatements(pattern, sql)) {
             SQLStatement eachSQLStatement = sqlParserEngine.parse(each, false);
-            ExecutionContext executionContext = createExecutionContext(createLogicSQL(each, eachSQLStatement));
+            ExecutionContext executionContext = createExecutionContext(createQueryContext(each, eachSQLStatement));
             if (null == anyExecutionContext) {
                 anyExecutionContext = executionContext;
             }
@@ -120,26 +120,26 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
         return Arrays.asList(pattern.split(sql));
     }
     
-    private LogicSQL createLogicSQL(final String sql, final SQLStatement sqlStatement) {
+    private QueryContext createQueryContext(final String sql, final SQLStatement sqlStatement) {
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
                 metaDataContexts.getMetaData().getDatabases(), Collections.emptyList(), sqlStatement, connectionSession.getDatabaseName());
-        return new LogicSQL(sqlStatementContext, sql, Collections.emptyList());
+        return new QueryContext(sqlStatementContext, sql, Collections.emptyList());
     }
     
-    private ExecutionContext createExecutionContext(final LogicSQL logicSQL) {
-        SQLCheckEngine.check(logicSQL.getSqlStatementContext(), logicSQL.getParameters(),
+    private ExecutionContext createExecutionContext(final QueryContext queryContext) {
+        SQLCheckEngine.check(queryContext.getSqlStatementContext(), queryContext.getParameters(),
                 metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getRuleMetaData().getRules(),
                 connectionSession.getDatabaseName(), metaDataContexts.getMetaData().getDatabases(), null);
-        return kernelProcessor.generateExecutionContext(logicSQL, metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()),
+        return kernelProcessor.generateExecutionContext(queryContext, metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()),
                 metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps(), connectionSession.getConnectionContext());
     }
     
     @Override
     public ResponseHeader execute() throws SQLException {
         Collection<ShardingSphereRule> rules = metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getRuleMetaData().getRules();
-        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(
-                JDBCDriverType.STATEMENT, metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY),
-                (JDBCBackendConnection) connectionSession.getBackendConnection(), (JDBCBackendStatement) connectionSession.getStatementManager(), new StatementOption(false), rules);
+        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, metaDataContexts.getMetaData().getProps()
+                .<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), (JDBCBackendConnection) connectionSession.getBackendConnection(),
+                (JDBCBackendStatement) connectionSession.getStatementManager(), new StatementOption(false), rules, connectionSession.getDatabaseType());
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(anyExecutionContext.getRouteContext(), samplingExecutionUnit());
         for (ExecutionGroup<JDBCExecutionUnit> eachGroup : executionGroupContext.getInputGroups()) {
             for (JDBCExecutionUnit each : eachGroup.getInputs()) {

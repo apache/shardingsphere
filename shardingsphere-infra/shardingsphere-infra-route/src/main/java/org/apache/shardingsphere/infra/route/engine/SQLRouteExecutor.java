@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.infra.route.engine;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
+import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.session.ConnectionContext;
 
 /**
  * SQL route executor.
@@ -29,11 +29,11 @@ public interface SQLRouteExecutor {
     
     /**
      * Route.
-     * 
-     * @param logicSQL logic SQL
-     * @param database database
+     *
      * @param connectionContext connection context
+     * @param queryContext query context
+     * @param database database
      * @return route context
      */
-    RouteContext route(LogicSQL logicSQL, ShardingSphereDatabase database, ConnectionContext connectionContext);
+    RouteContext route(ConnectionContext connectionContext, QueryContext queryContext, ShardingSphereDatabase database);
 }

@@ -122,5 +122,6 @@ execute
     | alterHierarchy
     | alterLockdownProfile
     | alterPluggableDatabase
+    | createProcedure
     ) SEMI_?
     ;

@@ -18,9 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.execute;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -44,8 +41,6 @@ public final class PipelineJobWorker {
                 return;
             }
             log.info("start worker initialization");
-            EventBusContext eventBusContext = PipelineContext.getContextManager().getInstanceContext().getEventBusContext();
-            eventBusContext.register(RuleAlteredJobWorker.getInstance());
             new FinishedCheckJobExecutor().start();
             new PipelineJobExecutor().start();
             WORKER_INITIALIZED.set(true);

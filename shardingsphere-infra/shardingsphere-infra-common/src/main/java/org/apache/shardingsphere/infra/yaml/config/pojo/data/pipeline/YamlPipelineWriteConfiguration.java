@@ -57,4 +57,37 @@ public final class YamlPipelineWriteConfiguration implements YamlConfiguration {
             batchSize = DEFAULT_BATCH_SIZE;
         }
     }
+    
+    /**
+     * Copy non-null fields from another.
+     *
+     * @param another another configuration
+     */
+    public void copyNonNullFields(final YamlPipelineWriteConfiguration another) {
+        if (null == another) {
+            return;
+        }
+        if (isAllFieldsNull(another)) {
+            setAllFieldsNull(this);
+        }
+        if (null != another.workerThread) {
+            workerThread = another.workerThread;
+        }
+        if (null != another.batchSize) {
+            batchSize = another.batchSize;
+        }
+        if (null != another.rateLimiter) {
+            rateLimiter = another.rateLimiter;
+        }
+    }
+    
+    private boolean isAllFieldsNull(final YamlPipelineWriteConfiguration config) {
+        return null == config.workerThread && null == config.batchSize && null == config.rateLimiter;
+    }
+    
+    private void setAllFieldsNull(final YamlPipelineWriteConfiguration config) {
+        config.workerThread = null;
+        config.batchSize = null;
+        config.rateLimiter = null;
+    }
 }

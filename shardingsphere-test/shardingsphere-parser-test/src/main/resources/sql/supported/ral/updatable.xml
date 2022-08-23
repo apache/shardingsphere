@@ -26,11 +26,11 @@
     <distsql-case id="refresh-table-metadata-table-with-schema" value="REFRESH TABLE METADATA t_order FROM RESOURCE ds_0 SCHEMA public" />
     
     <distsql-case id="alter-sql-parser-rule" value="ALTER SQL_PARSER RULE SQL_COMMENT_PARSE_ENABLE=false,PARSE_TREE_CACHE(INITIAL_CAPACITY=10, MAXIMUM_SIZE=11,CONCURRENCY_LEVEL=1), SQL_STATEMENT_CACHE(INITIAL_CAPACITY=11, MAXIMUM_SIZE=11,CONCURRENCY_LEVEL=100)" />
-    <distsql-case id="alter-local-transaction-rule" value="ALTER TRANSACTION RULE (DEFAULT=LOCAL)" />
-    <distsql-case id="alter-xa-transaction-rule" value="ALTER TRANSACTION RULE(DEFAULT=XA, TYPE(NAME=Atomikos))" />
+    <distsql-case id="alter-local-transaction-rule" value="ALTER TRANSACTION RULE (DEFAULT='LOCAL')" />
+    <distsql-case id="alter-xa-transaction-rule" value="ALTER TRANSACTION RULE(DEFAULT='XA', TYPE(NAME='Atomikos'))" />
     
-    <distsql-case id="create-traffic-rule" value="CREATE TRAFFIC RULE sql_match_traffic (LABELS(OLTP),TRAFFIC_ALGORITHM(TYPE(NAME=SQL_MATCH,PROPERTIES('sql' = 'SELECT * FROM t_order WHERE order_id = ?; UPDATE t_order SET order_id = ?;'))), LOAD_BALANCER(TYPE(NAME=RANDOM, PROPERTIES('key'='value'))) )" />
-    <distsql-case id="alter-traffic-rule" value="ALTER TRAFFIC RULE sql_match_traffic (LABELS(OLTP),TRAFFIC_ALGORITHM(TYPE(NAME=SQL_MATCH,PROPERTIES('sql' = 'SELECT * FROM t_order WHERE order_id = ?; UPDATE t_order SET order_id = ?;'))), LOAD_BALANCER(TYPE(NAME=RANDOM, PROPERTIES('key'='value'))) )" />
+    <distsql-case id="create-traffic-rule" value="CREATE TRAFFIC RULE sql_match_traffic (LABELS(OLTP),TRAFFIC_ALGORITHM(TYPE(NAME='SQL_MATCH',PROPERTIES('sql' = 'SELECT * FROM t_order WHERE order_id = ?; UPDATE t_order SET order_id = ?;'))), LOAD_BALANCER(TYPE(NAME='RANDOM', PROPERTIES('key'='value'))) )" />
+    <distsql-case id="alter-traffic-rule" value="ALTER TRAFFIC RULE sql_match_traffic (LABELS(OLTP),TRAFFIC_ALGORITHM(TYPE(NAME='SQL_MATCH',PROPERTIES('sql' = 'SELECT * FROM t_order WHERE order_id = ?; UPDATE t_order SET order_id = ?;'))), LOAD_BALANCER(TYPE(NAME='RANDOM', PROPERTIES('key'='value'))) )" />
     <distsql-case id="drop-traffic-rule" value="DROP TRAFFIC RULE rule_name" />
     
     <distsql-case id="alter-instance-xa-recovery-nodes" value="ALTER INSTANCE instance_xa_recovery SET XA_RECOVERY_NODES='instance_1'" />

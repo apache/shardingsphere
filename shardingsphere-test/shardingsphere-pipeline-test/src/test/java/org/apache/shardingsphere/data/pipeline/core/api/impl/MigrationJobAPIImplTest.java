@@ -28,11 +28,10 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDat
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
+import org.apache.shardingsphere.data.pipeline.api.pojo.CreateMigrationJobParameter;
+import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
-import org.apache.shardingsphere.data.pipeline.core.api.PipelineResourceAPI;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreatorFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineVerifyFailedException;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
@@ -42,13 +41,17 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAP
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobItemContext;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -65,6 +68,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @Slf4j
+@RunWith(MockitoJUnitRunner.class)
 public final class MigrationJobAPIImplTest {
     
     private static MigrationJobAPI jobAPI;
@@ -73,24 +77,36 @@ public final class MigrationJobAPIImplTest {
     public static void beforeClass() {
         PipelineContextUtil.mockModeConfigAndContextManager();
         jobAPI = MigrationJobAPIFactory.getInstance();
+        Map<String, Object> props = new HashMap<>();
+        props.put("jdbcUrl", "jdbc:mysql://localhost:3306/test");
+        props.put("username", "root");
+        props.put("password", "root");
+        Map<String, DataSourceProperties> expect = new LinkedHashMap<>(1, 1);
+        expect.put("ds_0", new DataSourceProperties("com.zaxxer.hikari.HikariDataSource", props));
+        jobAPI.addMigrationSourceResources(expect);
+    }
+    
+    @AfterClass
+    public static void afterClass() {
+        jobAPI.dropMigrationSourceResources(Collections.singletonList("ds_0"));
     }
     
     @Test
     public void assertStartAndList() {
         Optional<String> jobId = jobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
-        JobInfo jobInfo = getNonNullJobInfo(jobId.get());
+        PipelineJobInfo jobInfo = getNonNullJobInfo(jobId.get());
         assertTrue(jobInfo.isActive());
         assertThat(jobInfo.getTables(), is("t_order"));
         assertThat(jobInfo.getShardingTotalCount(), is(1));
     }
     
-    private Optional<JobInfo> getJobInfo(final String jobId) {
+    private Optional<PipelineJobInfo> getJobInfo(final String jobId) {
         return jobAPI.list().stream().filter(each -> Objects.equals(each.getJobId(), jobId)).reduce((a, b) -> a);
     }
     
-    private JobInfo getNonNullJobInfo(final String jobId) {
-        Optional<JobInfo> result = getJobInfo(jobId);
+    private PipelineJobInfo getNonNullJobInfo(final String jobId) {
+        Optional<PipelineJobInfo> result = getJobInfo(jobId);
         assertTrue(result.isPresent());
         return result.get();
     }
@@ -204,7 +220,7 @@ public final class MigrationJobAPIImplTest {
         Optional<String> jobId = jobAPI.start(jobConfig);
         assertTrue(jobId.isPresent());
         final GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
-        MigrationJobItemContext jobItemContext = new MigrationJobItemContext(jobConfig, 0, new InventoryIncrementalJobItemProgress(), new DefaultPipelineDataSourceManager());
+        MigrationJobItemContext jobItemContext = PipelineContextUtil.mockMigrationJobItemContext(jobConfig);
         jobAPI.persistJobItemProgress(jobItemContext);
         repositoryAPI.persistJobCheckResult(jobId.get(), true);
         jobAPI.updateJobItemStatus(jobId.get(), 0, JobStatus.FINISHED);
@@ -217,14 +233,13 @@ public final class MigrationJobAPIImplTest {
         Optional<String> jobId = jobAPI.start(jobConfig);
         assertTrue(jobId.isPresent());
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
-        MigrationJobItemContext jobItemContext = new MigrationJobItemContext(jobConfig, 0, new InventoryIncrementalJobItemProgress(), new DefaultPipelineDataSourceManager());
+        MigrationJobItemContext jobItemContext = PipelineContextUtil.mockMigrationJobItemContext(jobConfig);
         jobAPI.persistJobItemProgress(jobItemContext);
         repositoryAPI.persistJobCheckResult(jobId.get(), true);
         jobAPI.updateJobItemStatus(jobId.get(), jobItemContext.getShardingItem(), JobStatus.EXECUTE_INVENTORY_TASK);
-        jobAPI.switchClusterConfiguration(jobId.get());
         Map<Integer, InventoryIncrementalJobItemProgress> progress = jobAPI.getJobProgress(jobId.get());
         for (Entry<Integer, InventoryIncrementalJobItemProgress> entry : progress.entrySet()) {
-            assertSame(entry.getValue().getStatus(), JobStatus.FINISHED);
+            assertSame(entry.getValue().getStatus(), JobStatus.EXECUTE_INVENTORY_TASK);
         }
     }
     
@@ -253,15 +268,15 @@ public final class MigrationJobAPIImplTest {
                 Connection connection = pipelineDataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
-            statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id VARCHAR(12))");
-            statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");
+            statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id INT(11))");
+            statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 0), (999, 15)");
         }
     }
     
     @Test
     public void assertRenewJobStatus() {
         final MigrationJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
-        MigrationJobItemContext jobItemContext = new MigrationJobItemContext(jobConfig, 0, new InventoryIncrementalJobItemProgress(), new DefaultPipelineDataSourceManager());
+        MigrationJobItemContext jobItemContext = PipelineContextUtil.mockMigrationJobItemContext(jobConfig);
         jobAPI.persistJobItemProgress(jobItemContext);
         jobAPI.updateJobItemStatus(jobConfig.getJobId(), 0, JobStatus.FINISHED);
         InventoryIncrementalJobItemProgress actual = jobAPI.getJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem());
@@ -271,15 +286,22 @@ public final class MigrationJobAPIImplTest {
     
     @Test
     public void assertAddMigrationSourceResources() {
-        Map<String, Object> props = new HashMap<>();
-        props.put("jdbcUrl", "jdbc:mysql://localhost:3306/test");
-        props.put("username", "root");
-        props.put("password", "root");
-        Map<String, DataSourceProperties> expect = new LinkedHashMap<>(1, 1);
-        expect.put("ds_0", new DataSourceProperties("com.zaxxer.hikari.HikariDataSource", props));
-        jobAPI.addMigrationSourceResources(expect);
-        PipelineResourceAPI pipelineResourceAPI = new PipelineResourceAPIImpl();
-        Map<String, DataSourceProperties> actual = pipelineResourceAPI.getMetaDataDataSource(JobType.MIGRATION);
+        PipelineDataSourcePersistService persistService = new PipelineDataSourcePersistService();
+        Map<String, DataSourceProperties> actual = persistService.load(JobType.MIGRATION);
         assertTrue(actual.containsKey("ds_0"));
+    }
+    
+    @Test
+    public void assertCreateJobConfig() {
+        CreateMigrationJobParameter parameter = new CreateMigrationJobParameter("ds_0", null, "t_order", "logic_db", "t_order");
+        jobAPI.createJobAndStart(parameter);
+    }
+    
+    @Test
+    public void assertShowMigrationSourceResources() {
+        Collection<Collection<Object>> actual = jobAPI.listMigrationSourceResources();
+        assertThat(actual.size(), is(1));
+        Collection<Object> objects = actual.iterator().next();
+        assertThat(objects.toArray()[0], is("ds_0"));
     }
 }

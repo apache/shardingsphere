@@ -130,6 +130,10 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
     }
     
     private synchronized void executeIncrementalTask() {
+        if (incrementalTasks.isEmpty()) {
+            log.info("incrementalTasks empty, ignore");
+            return;
+        }
         if (JobStatus.EXECUTE_INCREMENTAL_TASK == jobItemContext.getStatus()) {
             log.info("job status already EXECUTE_INCREMENTAL_TASK, ignore");
             return;

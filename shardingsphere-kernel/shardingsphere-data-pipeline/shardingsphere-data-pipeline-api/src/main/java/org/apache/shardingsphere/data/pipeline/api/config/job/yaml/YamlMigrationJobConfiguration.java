@@ -20,11 +20,11 @@ package org.apache.shardingsphere.data.pipeline.api.config.job.yaml;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Migration job configuration for YAML.
@@ -32,15 +32,16 @@ import java.util.Map;
 @Getter
 @Setter
 @Slf4j
+@ToString(exclude = {"source", "target", "schemaTablesMap"})
 public final class YamlMigrationJobConfiguration implements YamlPipelineJobConfiguration {
     
     private String jobId;
     
-    private String databaseName;
+    private String targetDatabaseName;
     
-    private Integer activeVersion;
+    private String sourceDataSourceName;
     
-    private Integer newVersion;
+    private String sourceSchemaName;
     
     private String sourceDatabaseType;
     
@@ -50,17 +51,9 @@ public final class YamlMigrationJobConfiguration implements YamlPipelineJobConfi
     
     private YamlPipelineDataSourceConfiguration target;
     
-    /**
-     * Map{altered rule yaml class name, re-shard needed table names}.
-     */
-    private Map<String, List<String>> alteredRuleYamlClassNameTablesMap;
+    private String sourceTableName;
     
-    /**
-     * Map{schema name, logic table names}.
-     */
-    private Map<String, List<String>> schemaTablesMap;
-    
-    private String logicTables;
+    private String targetTableName;
     
     /**
      * Collection of each logic table's first data node.
@@ -101,14 +94,5 @@ public final class YamlMigrationJobConfiguration implements YamlPipelineJobConfi
         Preconditions.checkNotNull(yamlConfig);
         Preconditions.checkNotNull(yamlConfig.getType());
         Preconditions.checkNotNull(yamlConfig.getParameter());
-    }
-    
-    @Override
-    public String toString() {
-        return "YamlMigrationJobConfiguration{"
-                + "jobId='" + jobId + '\'' + ", databaseName='" + databaseName + '\''
-                + ", activeVersion=" + activeVersion + ", newVersion=" + newVersion
-                + ", sourceDatabaseType='" + sourceDatabaseType + '\'' + ", targetDatabaseType='" + targetDatabaseType + '\''
-                + '}';
     }
 }

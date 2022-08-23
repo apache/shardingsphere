@@ -17,19 +17,23 @@
   -->
 
 <sql-cases>
-    <distsql-case id="show-scaling-list" value="SHOW SCALING LIST;" />
-    <distsql-case id="show-scaling-check-algorithms" value="SHOW SCALING CHECK ALGORITHMS;" />
-    <distsql-case id="check-scaling" value="CHECK SCALING 123;" />
-    <distsql-case id="show-scaling-status" value="SHOW SCALING STATUS 123;" />
-    <distsql-case id="check-scaling-with-type" value="CHECK SCALING 123 by TYPE(name='DEFAULT', PROPERTIES('test-property'='4'));" />
+    <distsql-case id="show-migration-list" value="SHOW MIGRATION LIST;" />
+    <distsql-case id="show-migration-source-resources" value="SHOW MIGRATION SOURCE RESOURCES;" />
+    <distsql-case id="show-migration-check-algorithms" value="SHOW MIGRATION CHECK ALGORITHMS;" />
+    <distsql-case id="check-migration" value="CHECK MIGRATION 123;" />
+    <distsql-case id="show-migration-status" value="SHOW MIGRATION STATUS 123;" />
+    <distsql-case id="check-migration-with-type" value="CHECK MIGRATION 123 by TYPE(name='DEFAULT', PROPERTIES('test-property'='4'));" />
     
-    <distsql-case id="migrate-table-without-target-db" value="MIGRATE TABLE ds_0.t_order INTO t_order;" />
+    <distsql-case id="migrate-table-without-schema-target-db" value="MIGRATE TABLE ds_0.t_order INTO t_order;" />
+    <distsql-case id="migrate-table-with-schema" value="MIGRATE TABLE ds_0.public.t_order INTO t_order;" />
     <distsql-case id="migrate-table-with-target-db" value="MIGRATE TABLE ds_0.t_order INTO sharding_db.t_order;" />
-    <distsql-case id="stop-scaling-source-writing" value="STOP SCALING SOURCE WRITING 123;" />
-    <distsql-case id="restore-scaling-source-writing" value="RESTORE SCALING SOURCE WRITING 123;" />
-    <distsql-case id="apply-scaling" value="APPLY SCALING 123;" />
-    <distsql-case id="clean-scaling" value="CLEAN SCALING 123;" />
-    <distsql-case id="reset-scaling" value="RESET SCALING 123;" />
-    <distsql-case id="stop-scaling" value="STOP SCALING 123;" />
-    <distsql-case id="start-scaling" value="START SCALING 123;" />
+    <distsql-case id="migrate-table-with-schema-target-db" value="MIGRATE TABLE ds_0.public.t_order INTO sharding_db.t_order;" />
+    <distsql-case id="stop-migration-source-writing" value="STOP MIGRATION SOURCE WRITING 123;" />
+    <distsql-case id="restore-migration-source-writing" value="RESTORE MIGRATION SOURCE WRITING 123;" />
+    <distsql-case id="apply-migration" value="APPLY MIGRATION 123;" />
+    <distsql-case id="clean-migration" value="CLEAN MIGRATION 123;" />
+    <distsql-case id="reset-migration" value="RESET MIGRATION 123;" />
+    <distsql-case id="stop-migration" value="STOP MIGRATION 123;" />
+    <distsql-case id="start-migration" value="START MIGRATION 123;" />
+    <distsql-case id="drop-migration-source-resource" value="DROP MIGRATION SOURCE RESOURCE ds_0,ds_1" />
 </sql-cases>

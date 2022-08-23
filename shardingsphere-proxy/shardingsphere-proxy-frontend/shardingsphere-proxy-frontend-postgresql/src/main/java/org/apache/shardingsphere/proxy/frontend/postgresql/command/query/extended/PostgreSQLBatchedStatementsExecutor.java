@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended;
 
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLTypeUnspecifiedSQLParameter;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -93,7 +93,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
         if (parameterSetsIterator.hasNext()) {
             List<Object> firstGroupOfParameter = parameterSetsIterator.next();
             sqlStatementContext = createSQLStatementContext(firstGroupOfParameter);
-            executionContext = createExecutionContext(createLogicSQL(sqlStatementContext, firstGroupOfParameter));
+            executionContext = createExecutionContext(createQueryContext(sqlStatementContext, firstGroupOfParameter));
             for (ExecutionUnit each : executionContext.getExecutionUnits()) {
                 executionUnitParameters.computeIfAbsent(each, unused -> new LinkedList<>()).add(each.getSqlUnit().getParameters());
             }
@@ -112,22 +112,22 @@ public final class PostgreSQLBatchedStatementsExecutor {
             if (sqlStatementContext instanceof ParameterAware) {
                 ((ParameterAware) sqlStatementContext).setUpParameters(eachGroupOfParameter);
             }
-            ExecutionContext eachExecutionContext = createExecutionContext(createLogicSQL(sqlStatementContext, eachGroupOfParameter));
+            ExecutionContext eachExecutionContext = createExecutionContext(createQueryContext(sqlStatementContext, eachGroupOfParameter));
             for (ExecutionUnit each : eachExecutionContext.getExecutionUnits()) {
                 executionUnitParameters.computeIfAbsent(each, unused -> new LinkedList<>()).add(each.getSqlUnit().getParameters());
             }
         }
     }
     
-    private LogicSQL createLogicSQL(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters) {
-        return new LogicSQL(sqlStatementContext, preparedStatement.getSql(), parameters);
+    private QueryContext createQueryContext(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters) {
+        return new QueryContext(sqlStatementContext, preparedStatement.getSql(), parameters);
     }
     
-    private ExecutionContext createExecutionContext(final LogicSQL logicSQL) {
-        SQLCheckEngine.check(logicSQL.getSqlStatementContext(), logicSQL.getParameters(),
+    private ExecutionContext createExecutionContext(final QueryContext queryContext) {
+        SQLCheckEngine.check(queryContext.getSqlStatementContext(), queryContext.getParameters(),
                 metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getRuleMetaData().getRules(),
                 connectionSession.getDatabaseName(), metaDataContexts.getMetaData().getDatabases(), null);
-        return kernelProcessor.generateExecutionContext(logicSQL, metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()),
+        return kernelProcessor.generateExecutionContext(queryContext, metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()),
                 metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps(), connectionSession.getConnectionContext());
     }
     
@@ -145,9 +145,10 @@ public final class PostgreSQLBatchedStatementsExecutor {
     
     private void addBatchedParametersToPreparedStatements() throws SQLException {
         Collection<ShardingSphereRule> rules = metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getRuleMetaData().getRules();
-        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(
-                JDBCDriverType.PREPARED_STATEMENT, metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY),
-                (JDBCBackendConnection) connectionSession.getBackendConnection(), (JDBCBackendStatement) connectionSession.getStatementManager(), new StatementOption(false), rules);
+        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(JDBCDriverType.PREPARED_STATEMENT,
+                metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY),
+                (JDBCBackendConnection) connectionSession.getBackendConnection(), (JDBCBackendStatement) connectionSession.getStatementManager(),
+                new StatementOption(false), rules, connectionSession.getDatabaseType());
         executionGroupContext = prepareEngine.prepare(anyExecutionContext.getRouteContext(), executionUnitParameters.keySet());
         for (ExecutionGroup<JDBCExecutionUnit> eachGroup : executionGroupContext.getInputGroups()) {
             for (JDBCExecutionUnit each : eachGroup.getInputs()) {

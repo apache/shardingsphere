@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.config.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
@@ -37,12 +38,16 @@ import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarr
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 
+import java.sql.SQLException;
+
 /**
  * Migration job.
  */
 @Slf4j
 @RequiredArgsConstructor
 public final class MigrationJob extends AbstractPipelineJob implements SimpleJob, PipelineJob {
+    
+    private final MigrationJobAPI jobAPI = MigrationJobAPIFactory.getInstance();
     
     private final PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
     
@@ -53,16 +58,18 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
     
     @Override
     public void execute(final ShardingContext shardingContext) {
-        log.info("Execute job {}-{}", shardingContext.getJobName(), shardingContext.getShardingItem());
+        int shardingItem = shardingContext.getShardingItem();
+        log.info("Execute job {}-{}", shardingContext.getJobName(), shardingItem);
         if (isStopping()) {
             log.info("stopping true, ignore");
             return;
         }
         setJobId(shardingContext.getJobName());
         MigrationJobConfiguration jobConfig = YamlMigrationJobConfigurationSwapper.swapToObject(shardingContext.getJobParameter());
-        InventoryIncrementalJobItemProgress initProgress = MigrationJobAPIFactory.getInstance().getJobItemProgress(shardingContext.getJobName(), shardingContext.getShardingItem());
-        MigrationJobItemContext jobItemContext = new MigrationJobItemContext(jobConfig, shardingContext.getShardingItem(), initProgress, dataSourceManager);
-        int shardingItem = jobItemContext.getShardingItem();
+        InventoryIncrementalJobItemProgress initProgress = jobAPI.getJobItemProgress(shardingContext.getJobName(), shardingItem);
+        MigrationProcessContext jobProcessContext = jobAPI.buildPipelineProcessContext(jobConfig);
+        TaskConfiguration taskConfig = jobAPI.buildTaskConfiguration(jobConfig, shardingItem, jobProcessContext.getPipelineProcessConfig());
+        MigrationJobItemContext jobItemContext = new MigrationJobItemContext(jobConfig, shardingItem, initProgress, jobProcessContext, taskConfig, dataSourceManager);
         if (getTasksRunnerMap().containsKey(shardingItem)) {
             log.warn("tasksRunnerMap contains shardingItem {}, ignore", shardingItem);
             return;
@@ -86,13 +93,16 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
             log.info("pipeline ignore exception: {}", ex.getMessage());
             PipelineJobCenter.stop(getJobId());
             // CHECKSTYLE:OFF
-        } catch (final RuntimeException ex) {
+        } catch (final SQLException | RuntimeException ex) {
             // CHECKSTYLE:ON
             log.error("job prepare failed, {}-{}", getJobId(), jobItemContext.getShardingItem(), ex);
             PipelineJobCenter.stop(getJobId());
             jobItemContext.setStatus(JobStatus.PREPARING_FAILURE);
-            MigrationJobAPIFactory.getInstance().persistJobItemProgress(jobItemContext);
-            throw ex;
+            jobAPI.persistJobItemProgress(jobItemContext);
+            if (ex instanceof RuntimeException) {
+                throw (RuntimeException) ex;
+            }
+            throw new RuntimeException(ex);
         }
     }
     

@@ -45,9 +45,9 @@ public final class OpenGaussPositionInitializer implements PositionInitializer {
     private static final String DUPLICATE_OBJECT_ERROR_CODE = "42710";
     
     @Override
-    public WalPosition init(final DataSource dataSource) throws SQLException {
+    public WalPosition init(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            createSlotIfNotExist(connection);
+            createSlotIfNotExist(connection, slotNameSuffix);
             return getWalPosition(connection);
         }
     }
@@ -63,10 +63,10 @@ public final class OpenGaussPositionInitializer implements PositionInitializer {
      * @param connection connection
      * @throws SQLException SQL exception
      */
-    private void createSlotIfNotExist(final Connection connection) throws SQLException {
-        String slotName = getUniqueSlotName(connection);
+    private void createSlotIfNotExist(final Connection connection, final String slotNameSuffix) throws SQLException {
+        String slotName = getUniqueSlotName(connection, slotNameSuffix);
         if (!isSlotExist(connection, slotName)) {
-            createSlotBySQL(connection);
+            createSlotBySQL(connection, slotName);
         }
     }
     
@@ -81,8 +81,8 @@ public final class OpenGaussPositionInitializer implements PositionInitializer {
         }
     }
     
-    private void createSlotBySQL(final Connection connection) throws SQLException {
-        String sql = String.format("SELECT * FROM pg_create_logical_replication_slot('%s', '%s')", getUniqueSlotName(connection), DECODE_PLUGIN);
+    private void createSlotBySQL(final Connection connection, final String slotName) throws SQLException {
+        String sql = String.format("SELECT * FROM pg_create_logical_replication_slot('%s', '%s')", slotName, DECODE_PLUGIN);
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.execute();
         } catch (final SQLException ex) {
@@ -102,14 +102,14 @@ public final class OpenGaussPositionInitializer implements PositionInitializer {
     }
     
     @Override
-    public void destroy(final DataSource dataSource) throws SQLException {
+    public void destroy(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            dropSlotIfExist(connection);
+            dropSlotIfExist(connection, slotNameSuffix);
         }
     }
     
-    private void dropSlotIfExist(final Connection connection) throws SQLException {
-        String slotName = getUniqueSlotName(connection);
+    private void dropSlotIfExist(final Connection connection, final String slotNameSuffix) throws SQLException {
+        String slotName = getUniqueSlotName(connection, slotNameSuffix);
         if (!isSlotExist(connection, slotName)) {
             log.info("dropSlotIfExist, slot not exist, ignore, slotName={}", slotName);
             return;
@@ -124,12 +124,13 @@ public final class OpenGaussPositionInitializer implements PositionInitializer {
      * Get the unique slot name by connection.
      *
      * @param connection connection
+     * @param slotNameSuffix slot name suffix
      * @return the unique name by connection
      * @throws SQLException failed when getCatalog
      */
-    public static String getUniqueSlotName(final Connection connection) throws SQLException {
+    public static String getUniqueSlotName(final Connection connection, final String slotNameSuffix) throws SQLException {
         // same as PostgreSQL, but length over 64 will throw an exception directly
-        String slotName = DigestUtils.md5Hex(connection.getCatalog());
+        String slotName = DigestUtils.md5Hex(String.join("_", connection.getCatalog(), slotNameSuffix).getBytes());
         return String.format("%s_%s", SLOT_NAME_PREFIX, slotName);
     }
     

@@ -17,64 +17,85 @@
   -->
 
 <sql-parser-test-cases>
-    <show-scaling-list sql-case-id="show-scaling-list" />
-    <show-scaling-check-algorithms sql-case-id="show-scaling-check-algorithms" />
+    <show-migration-source-resources sql-case-id="show-migration-source-resources" />
+    <show-migration-list sql-case-id="show-migration-list" />
+    <show-migration-check-algorithms sql-case-id="show-migration-check-algorithms" />
     
-    <check-scaling sql-case-id="check-scaling">
+    <check-migration sql-case-id="check-migration">
         <job-id>123</job-id>
-    </check-scaling>
+    </check-migration>
     
-    <check-scaling sql-case-id="check-scaling-with-type">
+    <check-migration sql-case-id="check-migration-with-type">
         <job-id>123</job-id>
         <type-strategy algorithm-name="DEFAULT">
             <properties>
                 <property key="test-property" value="4"/>
             </properties>
         </type-strategy>
-    </check-scaling>
+    </check-migration>
     
-    <show-scaling-status sql-case-id="show-scaling-status">
+    <show-migration-status sql-case-id="show-migration-status">
         <job-id>123</job-id>
-    </show-scaling-status>
+    </show-migration-status>
     
-    <migrate-table sql-case-id="migrate-table-without-target-db">
-        <source-database-name>ds_0</source-database-name>
+    <migrate-table sql-case-id="migrate-table-without-schema-target-db">
+        <source-resource-name>ds_0</source-resource-name>
+        <source-table-name>t_order</source-table-name>
+        <target-table-name>t_order</target-table-name>
+    </migrate-table>
+    
+    <migrate-table sql-case-id="migrate-table-with-schema">
+        <source-resource-name>ds_0</source-resource-name>
+        <source-schema-name>public</source-schema-name>
         <source-table-name>t_order</source-table-name>
         <target-table-name>t_order</target-table-name>
     </migrate-table>
     
     <migrate-table sql-case-id="migrate-table-with-target-db">
-        <source-database-name>ds_0</source-database-name>
+        <source-resource-name>ds_0</source-resource-name>
         <source-table-name>t_order</source-table-name>
         <target-database-name>sharding_db</target-database-name>
         <target-table-name>t_order</target-table-name>
     </migrate-table>
     
-    <stop-scaling-source-writing sql-case-id="stop-scaling-source-writing">
-        <job-id>123</job-id>
-    </stop-scaling-source-writing>
+    <migrate-table sql-case-id="migrate-table-with-schema-target-db">
+        <source-resource-name>ds_0</source-resource-name>
+        <source-schema-name>public</source-schema-name>
+        <source-table-name>t_order</source-table-name>
+        <target-database-name>sharding_db</target-database-name>
+        <target-table-name>t_order</target-table-name>
+    </migrate-table>
     
-    <restore-scaling-source-writing sql-case-id="restore-scaling-source-writing">
+    <stop-migration-source-writing sql-case-id="stop-migration-source-writing">
         <job-id>123</job-id>
-    </restore-scaling-source-writing>
+    </stop-migration-source-writing>
     
-    <apply-scaling sql-case-id="apply-scaling">
+    <restore-migration-source-writing sql-case-id="restore-migration-source-writing">
         <job-id>123</job-id>
-    </apply-scaling>
+    </restore-migration-source-writing>
     
-    <clean-scaling sql-case-id="clean-scaling">
+    <apply-migration sql-case-id="apply-migration">
         <job-id>123</job-id>
-    </clean-scaling>
+    </apply-migration>
     
-    <reset-scaling sql-case-id="reset-scaling">
+    <clean-migration sql-case-id="clean-migration">
         <job-id>123</job-id>
-    </reset-scaling>
+    </clean-migration>
     
-    <stop-scaling sql-case-id="stop-scaling">
+    <reset-migration sql-case-id="reset-migration">
         <job-id>123</job-id>
-    </stop-scaling>
+    </reset-migration>
     
-    <start-scaling sql-case-id="start-scaling">
+    <stop-migration sql-case-id="stop-migration">
         <job-id>123</job-id>
-    </start-scaling>
+    </stop-migration>
+    
+    <start-migration sql-case-id="start-migration">
+        <job-id>123</job-id>
+    </start-migration>
+    
+    <drop-migration-source-resource sql-case-id="drop-migration-source-resource">
+        <data-source>ds_0</data-source>
+        <data-source>ds_1</data-source>
+    </drop-migration-source-resource>
 </sql-parser-test-cases>

@@ -40,7 +40,7 @@ import org.apache.shardingsphere.integration.transaction.framework.container.com
 import org.apache.shardingsphere.integration.transaction.framework.container.compose.DockerComposedContainer;
 import org.apache.shardingsphere.integration.transaction.framework.container.compose.NativeComposedContainer;
 import org.apache.shardingsphere.integration.transaction.framework.param.TransactionParameterized;
-import org.apache.shardingsphere.integration.transaction.util.TransactionTestCaseClassScanner;
+import org.apache.shardingsphere.integration.transaction.util.TestCaseClassScanner;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
@@ -108,7 +108,7 @@ public abstract class BaseITCase {
     
     static {
         long startTime = System.currentTimeMillis();
-        TEST_CASES = TransactionTestCaseClassScanner.scan();
+        TEST_CASES = TestCaseClassScanner.scan();
         log.info("Load transaction test case classes time consume: {}.", System.currentTimeMillis() - startTime);
     }
     
@@ -132,7 +132,7 @@ public abstract class BaseITCase {
             Map<String, DataSource> actualDataSourceMap = databaseContainer.getActualDataSourceMap();
             actualDataSourceMap.put("ds_0", createDataSource(databaseContainer, DS_0));
             actualDataSourceMap.put("ds_1", createDataSource(databaseContainer, DS_1));
-            dataSource = new JDBCDataSource(dockerComposedContainer);
+            dataSource = new JdbcDataSource(dockerComposedContainer);
         }
     }
     
@@ -186,28 +186,28 @@ public abstract class BaseITCase {
     
     private static Collection<TransactionParameterized> addParametersByTestCaseClasses(final String version, final TransactionTestCaseRegistry currentTestCaseInfo) {
         Map<String, TransactionParameterized> parameterizedMap = new LinkedHashMap<>();
-        for (Class<? extends BaseTransactionTestCase> caseClass : TEST_CASES) {
-            if (!ENV.getNeedToRunTestCases().isEmpty() && !ENV.getNeedToRunTestCases().contains(caseClass.getSimpleName())) {
-                log.info("Collect transaction test case, need to run cases don't contain this, skip: {}.", caseClass.getName());
+        for (Class<? extends BaseTransactionTestCase> each : TEST_CASES) {
+            if (!ENV.getNeedToRunTestCases().isEmpty() && !ENV.getNeedToRunTestCases().contains(each.getSimpleName())) {
+                log.info("Collect transaction test case, need to run cases don't contain this, skip: {}.", each.getName());
                 continue;
             }
-            TransactionTestCase annotation = caseClass.getAnnotation(TransactionTestCase.class);
+            TransactionTestCase annotation = each.getAnnotation(TransactionTestCase.class);
             if (null == annotation) {
-                log.info("Collect transaction test case, annotation is null, skip: {}.", caseClass.getName());
+                log.info("Collect transaction test case, annotation is null, skip: {}.", each.getName());
                 continue;
             }
-            Optional<String> dbType = Arrays.stream(annotation.dbTypes()).filter(each -> currentTestCaseInfo.getDbType().equalsIgnoreCase(each)).findAny();
+            Optional<String> dbType = Arrays.stream(annotation.dbTypes()).filter(currentTestCaseInfo.getDbType()::equalsIgnoreCase).findAny();
             if (!dbType.isPresent()) {
-                log.info("Collect transaction test case, dbType is not matched, skip: {}.", caseClass.getName());
+                log.info("Collect transaction test case, dbType is not matched, skip: {}.", each.getName());
                 continue;
             }
-            Optional<String> runAdapters = Arrays.stream(annotation.adapters()).filter(each -> currentTestCaseInfo.getRunningAdaptor().equalsIgnoreCase(each)).findAny();
+            Optional<String> runAdapters = Arrays.stream(annotation.adapters()).filter(currentTestCaseInfo.getRunningAdaptor()::equalsIgnoreCase).findAny();
             if (!runAdapters.isPresent()) {
-                log.info("Collect transaction test case, runAdapter is not matched, skip: {}.", caseClass.getName());
+                log.info("Collect transaction test case, runAdapter is not matched, skip: {}.", each.getName());
                 continue;
             }
             String group = annotation.group();
-            addParametersByTransactionTypes(version, currentTestCaseInfo, caseClass, annotation, parameterizedMap, group);
+            addParametersByTransactionTypes(version, currentTestCaseInfo, each, annotation, parameterizedMap, group);
         }
         
         return parameterizedMap.values();
@@ -226,18 +226,18 @@ public abstract class BaseITCase {
     }
     
     private static void addParametersByTransactionProviders(final String version, final TransactionTestCaseRegistry currentTestCaseInfo,
-                                                            final Class<? extends BaseTransactionTestCase> caseClass, final TransactionType each,
+                                                            final Class<? extends BaseTransactionTestCase> caseClass, final TransactionType transactionType,
                                                             final Map<String, TransactionParameterized> parameterizedMap, final String group) {
-        if (TransactionType.LOCAL.equals(each)) {
-            addTestParameters(version, currentTestCaseInfo, caseClass, each, "", parameterizedMap, group);
-        } else if (TransactionType.XA.equals(each)) {
+        if (TransactionType.LOCAL.equals(transactionType)) {
+            addTestParameters(version, currentTestCaseInfo, caseClass, transactionType, "", parameterizedMap, group);
+        } else if (TransactionType.XA.equals(transactionType)) {
             if (ENV.getAllowXAProviders().isEmpty()) {
                 for (String provider : ALL_XA_PROVIDERS) {
-                    addTestParameters(version, currentTestCaseInfo, caseClass, each, provider, parameterizedMap, group);
+                    addTestParameters(version, currentTestCaseInfo, caseClass, transactionType, provider, parameterizedMap, group);
                 }
             } else {
                 for (String provider : ENV.getAllowXAProviders()) {
-                    addTestParameters(version, currentTestCaseInfo, caseClass, each, provider, parameterizedMap, group);
+                    addTestParameters(version, currentTestCaseInfo, caseClass, transactionType, provider, parameterizedMap, group);
                 }
             }
         }

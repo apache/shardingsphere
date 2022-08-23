@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.process;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
@@ -46,7 +46,7 @@ public final class ExecuteProcessEngineTest {
     @Before
     public void setUp() {
         executionGroupContext = createMockedExecutionGroups();
-        ExecuteProcessEngine.initialize(createLogicSQL(), executionGroupContext, eventBusContext);
+        ExecuteProcessEngine.initialize(createQueryContext(), executionGroupContext, eventBusContext);
         assertThat(ExecutorDataMap.getValue().get("EXECUTE_ID"), is(executionGroupContext.getExecutionID()));
         assertThat(ExecuteProcessReporterFixture.ACTIONS.get(0), is("Report the summary of this task."));
     }
@@ -65,10 +65,10 @@ public final class ExecuteProcessEngineTest {
         assertTrue(ExecutorDataMap.getValue().isEmpty());
     }
     
-    private LogicSQL createLogicSQL() {
+    private QueryContext createQueryContext() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DDLStatement.class));
-        LogicSQL result = mock(LogicSQL.class);
+        QueryContext result = mock(QueryContext.class);
         when(result.getSqlStatementContext()).thenReturn(sqlStatementContext);
         return result;
     }

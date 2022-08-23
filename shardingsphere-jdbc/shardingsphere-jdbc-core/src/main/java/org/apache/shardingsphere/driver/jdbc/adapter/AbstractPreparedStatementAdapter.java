@@ -20,7 +20,7 @@ package org.apache.shardingsphere.driver.jdbc.adapter;
 import com.google.common.io.CharStreams;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.util.exception.sql.UnknownSQLException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -216,7 +216,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
         try {
             setParameter(parameterIndex, CharStreams.toString(x));
         } catch (final IOException ex) {
-            throw new ShardingSphereException(ex);
+            throw new UnknownSQLException(ex);
         }
     }
     
@@ -225,7 +225,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
         try {
             setParameter(parameterIndex, CharStreams.toString(x));
         } catch (final IOException ex) {
-            throw new ShardingSphereException(ex);
+            throw new UnknownSQLException(ex);
         }
     }
     
@@ -234,7 +234,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
         try {
             setParameter(parameterIndex, CharStreams.toString(x));
         } catch (final IOException ex) {
-            throw new ShardingSphereException(ex);
+            throw new UnknownSQLException(ex);
         }
     }
     

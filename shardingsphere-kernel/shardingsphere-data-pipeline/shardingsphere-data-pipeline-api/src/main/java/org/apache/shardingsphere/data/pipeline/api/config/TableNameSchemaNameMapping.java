@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,21 @@ public final class TableNameSchemaNameMapping {
                 result.put(new LogicTableName(each), schemaName);
             }
         });
+        return result;
+    }
+    
+    /**
+     * Convert table name and schema name mapping.
+     *
+     * @param schemaName schema name
+     * @param tables tables
+     * @return logic table name and schema name map
+     */
+    public static Map<LogicTableName, String> convert(final String schemaName, final Collection<String> tables) {
+        Map<LogicTableName, String> result = new LinkedHashMap<>();
+        for (String each : tables) {
+            result.put(new LogicTableName(each), schemaName);
+        }
         return result;
     }
     

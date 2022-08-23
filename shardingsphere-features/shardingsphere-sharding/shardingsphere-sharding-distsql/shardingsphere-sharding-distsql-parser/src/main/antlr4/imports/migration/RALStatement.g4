@@ -23,48 +23,48 @@ migrateTable
     : MIGRATE TABLE sourceTableName INTO targetTableName
     ;
 
-showScalingList
-    : SHOW SCALING LIST
+showMigrationList
+    : SHOW MIGRATION LIST
     ;
 
-showScalingStatus
-    : SHOW SCALING STATUS jobId
+showMigrationStatus
+    : SHOW MIGRATION STATUS jobId
     ;
 
-startScaling
-    : START SCALING jobId
+startMigration
+    : START MIGRATION jobId
     ;
 
-stopScaling
-    : STOP SCALING jobId
+stopMigration
+    : STOP MIGRATION jobId
     ;
 
-cleanScaling
-    : CLEAN SCALING jobId
+cleanMigration
+    : CLEAN MIGRATION jobId
     ;
 
-resetScaling
-    : RESET SCALING jobId
+resetMigration
+    : RESET MIGRATION jobId
     ;
 
-checkScaling
-    : CHECK SCALING jobId (BY algorithmDefinition)?
+checkMigration
+    : CHECK MIGRATION jobId (BY algorithmDefinition)?
     ;
 
-showScalingCheckAlgorithms
-    : SHOW SCALING CHECK ALGORITHMS
+showMigrationCheckAlgorithms
+    : SHOW MIGRATION CHECK ALGORITHMS
     ;
 
-stopScalingSourceWriting
-    : STOP SCALING SOURCE WRITING jobId
+stopMigrationSourceWriting
+    : STOP MIGRATION SOURCE WRITING jobId
     ;
 
-restoreScalingSourceWriting
-    : RESTORE SCALING SOURCE WRITING jobId
+restoreMigrationSourceWriting
+    : RESTORE MIGRATION SOURCE WRITING jobId
     ;
 
-applyScaling
-    : APPLY SCALING jobId
+applyMigration
+    : APPLY MIGRATION jobId
     ;
 
 jobId
@@ -72,7 +72,7 @@ jobId
     ;
 
 sourceTableName
-    : (owner DOT)? name
+    : owner DOT (schema DOT)? name
     ;
 
 targetTableName
@@ -80,6 +80,10 @@ targetTableName
     ;
 
 owner
+    : identifier
+    ;
+
+schema
     : identifier
     ;
 
@@ -133,4 +137,8 @@ password
 
 addMigrationSourceResource
     : ADD MIGRATION SOURCE RESOURCE resourceDefinition (COMMA resourceDefinition)*
+    ;
+    
+dropMigrationSourceResource
+    : DROP MIGRATION SOURCE RESOURCE resourceName (COMMA resourceName)*
     ;

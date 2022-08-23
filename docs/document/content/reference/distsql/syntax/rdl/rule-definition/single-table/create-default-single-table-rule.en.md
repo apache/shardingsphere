@@ -11,7 +11,7 @@ The `CREATE DEFAULT SINGLE TABLE RULE` syntax is used to create a default single
 
 ```sql
 CreateDefaultSingleTableRule ::=
-  'CREATE' 'DEFAULT' 'SINGLE` `TABLE` `RULE' singleTableDefinition
+  'CREATE' 'DEFAULT' 'SINGLE' 'TABLE' 'RULE' singleTableDefinition
 
 singleTableDefinition ::=
   'RESOURCE' '=' resourceName
