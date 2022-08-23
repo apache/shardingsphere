@@ -17,6 +17,9 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 42000     | 11001       | configuration error |
 | 42000     | 11002       | Resource does not exist |
 | 42000     | 11003       | Rule does not exist |
+| HY000     | 11004       | File access failed, reason is: %s |
+| 42000     | 11200       | Can not support database \`%s\` in SQL translation |
+| 42000     | 11201       | Translation error, SQL is: %s |
 | 42000     | 12000       | Unsupported command: %s |
 | 44000     | 13000       | SQL check failed, error message: %s |
 | HY000     | 14000       | The table \`%s\` of schema \`%s\` is locked |

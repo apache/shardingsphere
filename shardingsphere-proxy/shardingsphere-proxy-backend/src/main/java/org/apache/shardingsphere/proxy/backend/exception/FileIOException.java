@@ -15,18 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqltranslator.exception;
+package org.apache.shardingsphere.proxy.backend.exception;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
+
+import java.io.IOException;
 
 /**
- * Unsupported translated database exception.
+ * File IO exception.
  */
-public final class UnsupportedTranslatedDatabaseException extends SQLTranslationException {
+public final class FileIOException extends ShardingSphereSQLException {
     
-    private static final long serialVersionUID = -8311552562051028033L;
+    private static final long serialVersionUID = 1104839422339487793L;
     
-    public UnsupportedTranslatedDatabaseException(final DatabaseType databaseType) {
-        super(11200, "Can not support database `%s` in SQL translation", databaseType.getType());
+    public FileIOException(final IOException cause) {
+        super(XOpenSQLState.GENERAL_ERROR, 11004, "File access failed, reason is: %s", cause.getMessage());
     }
 }

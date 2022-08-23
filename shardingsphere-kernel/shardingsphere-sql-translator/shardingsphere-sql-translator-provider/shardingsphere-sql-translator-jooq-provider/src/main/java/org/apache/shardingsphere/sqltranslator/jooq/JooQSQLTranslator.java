@@ -38,7 +38,7 @@ public final class JooQSQLTranslator implements SQLTranslator {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            throw new UnsupportedTranslatedSQLException(sql, ex);
+            throw new UnsupportedTranslatedSQLException(sql);
         }
     }
     
