@@ -45,6 +45,10 @@ public final class StatementOption implements StorageResourceOption {
         this(resultSetType, resultSetConcurrency, resultSetHoldability, false, null);
     }
     
+    public StatementOption(final boolean returnGeneratedKeys) {
+        this(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT, returnGeneratedKeys, null);
+    }
+    
     public StatementOption(final boolean returnGeneratedKeys, final String[] columns) {
         this(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT, returnGeneratedKeys, columns);
     }
