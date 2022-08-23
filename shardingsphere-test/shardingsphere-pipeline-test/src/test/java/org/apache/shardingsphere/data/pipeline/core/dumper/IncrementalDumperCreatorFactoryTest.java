@@ -42,7 +42,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
-public class IncrementalDumperCreatorFactoryTest {
+public final class IncrementalDumperCreatorFactoryTest {
     
     private PipelineDataSourceWrapper dataSource;
     

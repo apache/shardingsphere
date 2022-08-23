@@ -29,7 +29,7 @@ import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDump
 /**
  * PostgreSQL incremental dumper creator.
  */
-public class PostgreSQLIncrementalDumperCreator implements IncrementalDumperCreator<WalPosition> {
+public final class PostgreSQLIncrementalDumperCreator implements IncrementalDumperCreator<WalPosition> {
     
     @Override
     public IncrementalDumper createIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<WalPosition> position,

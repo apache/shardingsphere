@@ -15,30 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql;
+package org.apache.shardingsphere.data.pipeline.opengauss;
 
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.IncrementalDumperCreator;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.MySQLIncrementalDumper;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.BinlogPosition;
+import org.apache.shardingsphere.data.pipeline.opengauss.ingest.OpenGaussWalDumper;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WalPosition;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumper;
 
 /**
- * MySql incremental dumper creator.
+ * OpenGauss incremental dumper creator.
  */
-public class MySqlIncrementalDumperCreator implements IncrementalDumperCreator<BinlogPosition> {
+public final class OpenGaussIncrementalDumperCreator implements IncrementalDumperCreator<WalPosition> {
     
     @Override
-    public IncrementalDumper createIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<BinlogPosition> position,
+    public IncrementalDumper createIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<WalPosition> position,
                                                      final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
-        return new MySQLIncrementalDumper(dumperConfig, position, channel, metaDataLoader);
+        return new OpenGaussWalDumper(dumperConfig, position, channel, metaDataLoader);
     }
     
     @Override
     public String getType() {
-        return "MySQL";
+        return "openGauss";
     }
 }

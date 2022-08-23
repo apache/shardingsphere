@@ -31,7 +31,7 @@ import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDump
 /**
  * Fixture incremental dumper creator.
  */
-public class FixtureIncrementalDumperCreator implements IncrementalDumperCreator<FinishedPosition> {
+public final class FixtureIncrementalDumperCreator implements IncrementalDumperCreator<FinishedPosition> {
     
     private static final Collection<String> TYPE_ALIASES = Collections.unmodifiableList(Arrays.asList("Fixture", "H2"));
     

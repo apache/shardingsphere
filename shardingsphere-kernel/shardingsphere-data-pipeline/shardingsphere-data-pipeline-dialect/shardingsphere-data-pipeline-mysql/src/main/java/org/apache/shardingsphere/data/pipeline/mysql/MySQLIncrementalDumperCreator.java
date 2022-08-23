@@ -15,30 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.opengauss;
+package org.apache.shardingsphere.data.pipeline.mysql;
 
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.IncrementalDumperCreator;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.opengauss.ingest.OpenGaussWalDumper;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WalPosition;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.MySQLIncrementalDumper;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.BinlogPosition;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumper;
 
 /**
- * Opengauss incremental dumper creator.
+ * MySql incremental dumper creator.
  */
-public class OpengaussIncrementalDumperCreator implements IncrementalDumperCreator<WalPosition> {
+public final class MySQLIncrementalDumperCreator implements IncrementalDumperCreator<BinlogPosition> {
     
     @Override
-    public IncrementalDumper createIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<WalPosition> position,
+    public IncrementalDumper createIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<BinlogPosition> position,
                                                      final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
-        return new OpenGaussWalDumper(dumperConfig, position, channel, metaDataLoader);
+        return new MySQLIncrementalDumper(dumperConfig, position, channel, metaDataLoader);
     }
     
     @Override
     public String getType() {
-        return "openGauss";
+        return "MySQL";
     }
 }
