@@ -30,7 +30,7 @@ public final class StopMigrationSourceWritingUpdater implements RALUpdater<StopM
     private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
     
     @Override
-    public void executeUpdate(final StopMigrationSourceWritingStatement sqlStatement) {
+    public void executeUpdate(final String databaseName, final StopMigrationSourceWritingStatement sqlStatement) {
         JOB_API.stopClusterWriteDB(sqlStatement.getJobId());
     }
     

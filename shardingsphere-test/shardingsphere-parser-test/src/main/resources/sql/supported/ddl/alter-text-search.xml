@@ -17,6 +17,9 @@
   -->
 
 <sql-cases>
+    <sql-case id="alter_text_search_configuration_rename" value="ALTER TEXT SEARCH CONFIGURATION my_config ALTER MAPPING REPLACE english WITH swedish;" db-types="PostgreSQL" />
+    <sql-case id="alter_text_search_configuration_owner" value="ALTER TEXT SEARCH CONFIGURATION my_config OWNER TO CURRENT_ROLE;" db-types="PostgreSQL" />
+    <sql-case id="alter_text_search_configuration_set_schema" value="ALTER TEXT SEARCH CONFIGURATION config.tmp set schema config" db-types="PostgreSQL" />
     <sql-case id="alter_text_search_dictionary" value="ALTER TEXT SEARCH DICTIONARY alt_ts_dict1 RENAME TO alt_ts_dict2" db-types="PostgreSQL,openGauss" />
     <sql-case id="alter_text_search_template" value="ALTER TEXT SEARCH TEMPLATE alt_ts_temp1 RENAME TO alt_ts_temp2" db-types="PostgreSQL,openGauss" />
     <sql-case id="alter_text_search_parser" value="ALTER TEXT SEARCH PARSER alt_ts_prs1 RENAME TO alt_ts_prs2" db-types="PostgreSQL,openGauss" />

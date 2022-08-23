@@ -25,7 +25,7 @@ import javax.sql.DataSource;
 public final class FixturePositionInitializer implements PositionInitializer {
     
     @Override
-    public PlaceholderPosition init(final DataSource dataSource) {
+    public PlaceholderPosition init(final DataSource dataSource, final String slotNameSuffix) {
         return new PlaceholderPosition();
     }
     

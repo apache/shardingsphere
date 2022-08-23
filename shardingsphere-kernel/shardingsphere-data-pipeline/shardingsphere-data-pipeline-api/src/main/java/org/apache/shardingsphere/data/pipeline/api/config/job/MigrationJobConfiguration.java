@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.api.config.job;
 
-import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 
@@ -32,15 +32,14 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Getter
 @Slf4j
+@ToString(exclude = {"source", "target", "schemaTablesMap"})
 public final class MigrationJobConfiguration implements PipelineJobConfiguration {
     
     private final String jobId;
     
-    private final String databaseName;
+    private final String targetDatabaseName;
     
-    private final Integer activeVersion;
-    
-    private final Integer newVersion;
+    private final String sourceDataSourceName;
     
     private final String sourceDatabaseType;
     
@@ -51,16 +50,13 @@ public final class MigrationJobConfiguration implements PipelineJobConfiguration
     private final PipelineDataSourceConfiguration target;
     
     /**
-     * Map{altered rule yaml class name, re-shard needed table names}.
-     */
-    private final Map<String, List<String>> alteredRuleYamlClassNameTablesMap;
-    
-    /**
      * Map{schema name, logic table names}.
      */
     private final Map<String, List<String>> schemaTablesMap;
     
-    private final String logicTables;
+    private final String sourceTableName;
+    
+    private final String targetTableName;
     
     /**
      * Collection of each logic table's first data node.
@@ -83,24 +79,6 @@ public final class MigrationJobConfiguration implements PipelineJobConfiguration
      * @return job sharding count
      */
     public int getJobShardingCount() {
-        return null == jobShardingDataNodes ? 0 : jobShardingDataNodes.size();
-    }
-    
-    /**
-     * Split {@linkplain #logicTables} to logic table names.
-     *
-     * @return logic table names
-     */
-    public List<String> splitLogicTableNames() {
-        return Splitter.on(',').splitToList(logicTables);
-    }
-    
-    @Override
-    public String toString() {
-        return "MigrationJobConfiguration{"
-                + "jobId='" + jobId + '\'' + ", databaseName='" + databaseName + '\''
-                + ", activeVersion=" + activeVersion + ", newVersion=" + newVersion
-                + ", sourceDatabaseType='" + sourceDatabaseType + '\'' + ", targetDatabaseType='" + targetDatabaseType + '\''
-                + '}';
+        return 1;
     }
 }

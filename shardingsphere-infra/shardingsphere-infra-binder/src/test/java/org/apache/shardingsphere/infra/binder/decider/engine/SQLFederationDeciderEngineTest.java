@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.decider.engine;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDeciderContext;
 import org.apache.shardingsphere.infra.binder.decider.fixture.rule.SQLFederationDeciderRuleMatchFixture;
 import org.apache.shardingsphere.infra.binder.decider.fixture.rule.SQLFederationDeciderRuleNotMatchFixture;
@@ -53,10 +53,10 @@ public final class SQLFederationDeciderEngineTest {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.singletonList("information_schema"));
-        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, "", Collections.emptyList());
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList());
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
                 mock(DatabaseType.class), mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
-        SQLFederationDeciderContext actual = deciderEngine.decide(logicSQL, database);
+        SQLFederationDeciderContext actual = deciderEngine.decide(queryContext, database);
         assertTrue(actual.isUseSQLFederation());
     }
     
@@ -64,10 +64,10 @@ public final class SQLFederationDeciderEngineTest {
     public void assertDecideWhenNotConfigSqlFederationEnabled() {
         Collection<ShardingSphereRule> rules = Collections.singletonList(new SQLFederationDeciderRuleMatchFixture());
         SQLFederationDeciderEngine deciderEngine = new SQLFederationDeciderEngine(rules, new ConfigurationProperties(new Properties()));
-        LogicSQL logicSQL = new LogicSQL(mock(CommonSQLStatementContext.class), "", Collections.emptyList());
+        QueryContext queryContext = new QueryContext(mock(CommonSQLStatementContext.class), "", Collections.emptyList());
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
                 mock(DatabaseType.class), mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), new ShardingSphereRuleMetaData(rules), Collections.emptyMap());
-        SQLFederationDeciderContext actual = deciderEngine.decide(logicSQL, database);
+        SQLFederationDeciderContext actual = deciderEngine.decide(queryContext, database);
         assertFalse(actual.isUseSQLFederation());
     }
     
@@ -77,10 +77,10 @@ public final class SQLFederationDeciderEngineTest {
         Properties props = new Properties();
         props.put(ConfigurationPropertyKey.SQL_FEDERATION_ENABLED.getKey(), true);
         SQLFederationDeciderEngine deciderEngine = new SQLFederationDeciderEngine(rules, new ConfigurationProperties(props));
-        LogicSQL logicSQL = new LogicSQL(mock(CommonSQLStatementContext.class), "", Collections.emptyList());
+        QueryContext queryContext = new QueryContext(mock(CommonSQLStatementContext.class), "", Collections.emptyList());
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
                 mock(DatabaseType.class), mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), new ShardingSphereRuleMetaData(rules), Collections.emptyMap());
-        SQLFederationDeciderContext actual = deciderEngine.decide(logicSQL, database);
+        SQLFederationDeciderContext actual = deciderEngine.decide(queryContext, database);
         assertFalse(actual.isUseSQLFederation());
     }
     
@@ -90,10 +90,10 @@ public final class SQLFederationDeciderEngineTest {
         Properties props = new Properties();
         props.put(ConfigurationPropertyKey.SQL_FEDERATION_ENABLED.getKey(), true);
         SQLFederationDeciderEngine deciderEngine = new SQLFederationDeciderEngine(rules, new ConfigurationProperties(props));
-        LogicSQL logicSQL = new LogicSQL(mock(SelectStatementContext.class, RETURNS_DEEP_STUBS), "", Collections.emptyList());
+        QueryContext queryContext = new QueryContext(mock(SelectStatementContext.class, RETURNS_DEEP_STUBS), "", Collections.emptyList());
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
                 mock(DatabaseType.class), mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), new ShardingSphereRuleMetaData(rules), Collections.emptyMap());
-        SQLFederationDeciderContext actual = deciderEngine.decide(logicSQL, database);
+        SQLFederationDeciderContext actual = deciderEngine.decide(queryContext, database);
         assertTrue(actual.isUseSQLFederation());
     }
     
@@ -103,10 +103,10 @@ public final class SQLFederationDeciderEngineTest {
         Properties props = new Properties();
         props.put(ConfigurationPropertyKey.SQL_FEDERATION_ENABLED.getKey(), true);
         SQLFederationDeciderEngine deciderEngine = new SQLFederationDeciderEngine(rules, new ConfigurationProperties(props));
-        LogicSQL logicSQL = new LogicSQL(mock(SelectStatementContext.class, RETURNS_DEEP_STUBS), "", Collections.emptyList());
+        QueryContext queryContext = new QueryContext(mock(SelectStatementContext.class, RETURNS_DEEP_STUBS), "", Collections.emptyList());
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
                 mock(DatabaseType.class), mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), new ShardingSphereRuleMetaData(rules), Collections.emptyMap());
-        SQLFederationDeciderContext actual = deciderEngine.decide(logicSQL, database);
+        SQLFederationDeciderContext actual = deciderEngine.decide(queryContext, database);
         assertFalse(actual.isUseSQLFederation());
     }
     
@@ -116,10 +116,10 @@ public final class SQLFederationDeciderEngineTest {
         Properties props = new Properties();
         props.put(ConfigurationPropertyKey.SQL_FEDERATION_ENABLED.getKey(), true);
         SQLFederationDeciderEngine deciderEngine = new SQLFederationDeciderEngine(rules, new ConfigurationProperties(props));
-        LogicSQL logicSQL = new LogicSQL(mock(SelectStatementContext.class, RETURNS_DEEP_STUBS), "", Collections.emptyList());
+        QueryContext queryContext = new QueryContext(mock(SelectStatementContext.class, RETURNS_DEEP_STUBS), "", Collections.emptyList());
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
                 mock(DatabaseType.class), mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), new ShardingSphereRuleMetaData(rules), Collections.emptyMap());
-        SQLFederationDeciderContext actual = deciderEngine.decide(logicSQL, database);
+        SQLFederationDeciderContext actual = deciderEngine.decide(queryContext, database);
         assertTrue(actual.isUseSQLFederation());
     }
 }

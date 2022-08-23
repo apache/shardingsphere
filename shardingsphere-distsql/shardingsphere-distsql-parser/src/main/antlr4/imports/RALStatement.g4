@@ -83,52 +83,12 @@ showModeInfo
     : SHOW MODE INFO
     ;
 
-createTrafficRule
-    : CREATE TRAFFIC RULE trafficRuleDefinition (COMMA trafficRuleDefinition)* 
-    ;
-
-alterTrafficRule
-    : ALTER TRAFFIC RULE trafficRuleDefinition (COMMA trafficRuleDefinition)* 
-    ;
-
-showTrafficRules
-    : SHOW TRAFFIC (RULES | RULE ruleName)
-    ;
-
-dropTrafficRule
-    : DROP TRAFFIC RULE ifExists? ruleName (COMMA ruleName)*
-    ;
-
 labelInstance
     : (LABEL | RELABEL) INSTANCE instanceId WITH label (COMMA label)*
     ;
 
 unlabelInstance
     : UNLABEL INSTANCE instanceId (WITH label (COMMA label)*)?
-    ;
-
-trafficRuleDefinition
-    : ruleName LP (labelDefinition COMMA)? trafficAlgorithmDefinition (COMMA loadBalancerDefinition)? RP
-    ;
-
-labelDefinition
-    : LABELS LP label (COMMA label)* RP
-    ;
-
-trafficAlgorithmDefinition
-    : TRAFFIC_ALGORITHM LP algorithmDefinition RP 
-    ;
-
-loadBalancerDefinition
-    : LOAD_BALANCER LP algorithmDefinition RP
-    ;
-
-algorithmDefinition
-    : TYPE LP NAME EQ typeName (COMMA propertiesDefinition)? RP
-    ;
-
-typeName
-    : IDENTIFIER
     ;
 
 exportDatabaseConfiguration
@@ -147,6 +107,50 @@ showSQLTranslatorRule
     : SHOW SQL_TRANSLATOR RULE
     ;
 
+showMigrationProcessConfiguration
+    : SHOW MIGRATION PROCESS CONFIGURATION
+    ;
+
+createMigrationProcessConfiguration
+    : CREATE MIGRATION PROCESS CONFIGURATION migrationProcessConfiguration?
+    ;
+
+alterMigrationProcessConfiguration
+    : ALTER MIGRATION PROCESS CONFIGURATION migrationProcessConfiguration?
+    ;
+
+migrationProcessConfiguration
+    : LP readDefinition? (COMMA? writeDefinition)? (COMMA? streamChannel)? RP
+    ;
+
+readDefinition
+    : READ LP workerThread? (COMMA? batchSize)? (COMMA? shardingSize)? (COMMA? rateLimiter)? RP
+    ;
+
+writeDefinition
+    : WRITE LP workerThread? (COMMA? batchSize)? (COMMA? rateLimiter)? RP
+    ;
+
+workerThread
+    : WORKER_THREAD EQ intValue
+    ;
+
+batchSize
+    : BATCH_SIZE EQ intValue
+    ;
+
+shardingSize
+    : SHARDING_SIZE EQ intValue
+    ;
+
+rateLimiter
+    : RATE_LIMITER LP algorithmDefinition RP
+    ;
+
+streamChannel
+    : STREAM_CHANNEL LP algorithmDefinition RP
+    ;
+
 filePath
     : STRING
     ;
@@ -160,11 +164,11 @@ providerDefinition
     ;
 
 defaultType
-    : IDENTIFIER
+    : STRING
     ;
 
 providerName
-    : IDENTIFIER
+    : STRING
     ;
 
 sqlParserRuleDefinition
@@ -223,16 +227,12 @@ concurrencyLevel
     : INT
     ;
 
-ruleName
-    : IDENTIFIER
-    ;
-
 label
     : IDENTIFIER
     ;
 
-ifExists
-    : IF EXISTS
+intValue
+    : INT
     ;
 
 prepareDistSQL

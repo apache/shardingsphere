@@ -45,7 +45,7 @@ public final class UtilityDistSQLStatementParserEngine {
         try {
             return SQLParserFactory.newInstance(sql, UtilityDistSQLLexer.class, UtilityDistSQLParser.class).parse();
         } catch (final ParseCancellationException | SQLParsingException ignored) {
-            throw new SQLParsingException();
+            throw new SQLParsingException(sql);
         }
     }
     

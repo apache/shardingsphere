@@ -170,3 +170,55 @@ IF
 EXISTS
     : E X I S T S
     ;
+
+MIGRATE
+    : M I G R A T E
+    ;
+
+TABLE
+    : T A B L E
+    ;
+
+INTO
+    : I N T O
+    ;
+
+DB
+    : D B
+    ;
+
+USER
+    : U S E R
+    ;
+
+MIGRATION 
+    : M I G R A T I O N
+    ;
+
+PASSWORD
+    : P A S S W O R D
+    ;
+
+URL
+    : U R L
+    ;
+
+HOST
+    : H O S T
+    ;
+
+PORT
+    : P O R T
+    ;
+
+ADD
+    : A D D
+    ;
+
+RESOURCE
+    : R E S O U R C E
+    ;
+
+CLEAN
+    : C L E A N
+    ;

@@ -1164,8 +1164,6 @@
     <sql-case id="select_by_mysql_source_test_case665" value="SELECT attrs.* FROM t_json, JSON_TABLE(json_col, &apos;$[*]&apos; COLUMNS (nickname JSON PATH &apos;$.nickname&apos;)) as attrs" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case666" value="SELECT b, b IN (&apos;20161213&apos;), b in (&apos;20161213&apos;, 0) FROM t2" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case667" value="SELECT b, b in (&apos;121314&apos;), b in (&apos;121314&apos;, 0) FROM t3" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case669" value="SELECT bin_to_uuid(x&apos;&apos;)" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case670" value="SELECT bin_to_uuid(x&apos;&apos;, true)" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case671" value="SELECT bug18589_f1(REPEAT(&quot;a&quot;, 767))" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case672" value="SELECT c1 &lt;=  REPEAT( SUBSTR( UPPER(&apos;Rdlpikti&apos;) , 1 , 2 ), 8 ) FROM t1" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case676" value="SELECT cast( &apos;2019-10-10 10:11&apos; AT TIME ZONE &apos;UTC&apos; AS DATETIME )" db-types="MySQL" />
@@ -3286,27 +3284,6 @@
     <sql-case id="alter_by_postgresql_source_test_case387" value="ALTER TABLE reloptions_test RESET (toast.autovacuum_vacuum_cost_delay);" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case388" value="ALTER TABLE reloptions_test SET (autovacuum_enabled, fillfactor=32);" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case389" value="ALTER TABLE reloptions_test SET (toast.autovacuum_vacuum_cost_delay = 24);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case390" value="ALTER TEXT SEARCH CONFIGURATION alt_ts_conf1 RENAME TO alt_ts_conf2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case391" value="ALTER TEXT SEARCH CONFIGURATION alt_ts_conf1 RENAME TO alt_ts_conf3;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case392" value="ALTER TEXT SEARCH CONFIGURATION alt_ts_conf1 RENAME TO alt_ts_conf4;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case393" value="ALTER TEXT SEARCH CONFIGURATION alt_ts_conf2 OWNER TO regress_alter_generic_user2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case394" value="ALTER TEXT SEARCH CONFIGURATION alt_ts_conf2 OWNER TO regress_alter_generic_user3;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case395" value="ALTER TEXT SEARCH CONFIGURATION alt_ts_conf2 OWNER TO regress_alter_generic_user3;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case396" value="ALTER TEXT SEARCH CONFIGURATION alt_ts_conf2 SET SCHEMA alt_nsp2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case397" value="ALTER TEXT SEARCH CONFIGURATION alt_ts_conf2 SET SCHEMA alt_nsp2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case398" value="ALTER TEXT SEARCH CONFIGURATION alt_ts_conf3 OWNER TO regress_alter_generic_user2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case399" value="ALTER TEXT SEARCH CONFIGURATION alt_ts_conf3 RENAME TO alt_ts_conf4;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case400" value="ALTER TEXT SEARCH CONFIGURATION alt_ts_conf3 SET SCHEMA alt_nsp2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case401" value="ALTER TEXT SEARCH CONFIGURATION hunspell_tst ALTER MAPPING 	REPLACE hunspell WITH hunspell_long;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case402" value="ALTER TEXT SEARCH CONFIGURATION hunspell_tst ALTER MAPPING 	REPLACE hunspell_long WITH hunspell_num;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case403" value="ALTER TEXT SEARCH CONFIGURATION hunspell_tst ALTER MAPPING 	REPLACE ispell WITH hunspell;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case404" value="ALTER TEXT SEARCH CONFIGURATION ispell_tst ALTER MAPPING FOR 	word, numword, asciiword, hword, numhword, asciihword, hword_part, hword_numpart, hword_asciipart 	WITH ispell, english_stem;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case405" value="ALTER TEXT SEARCH CONFIGURATION synonym_tst ALTER MAPPING FOR 	asciiword, hword_asciipart, asciihword 	WITH synonym, english_stem;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case406" value="ALTER TEXT SEARCH CONFIGURATION thesaurus_tst ALTER MAPPING FOR 	asciiword, hword_asciipart, asciihword 	WITH synonym, thesaurus, english_stem;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case407" value="ALTER TEXT SEARCH PARSER alt_ts_prs2 SET SCHEMA alt_nsp2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case408" value="ALTER TEXT SEARCH PARSER alt_ts_prs2 SET SCHEMA alt_nsp2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case409" value="ALTER TEXT SEARCH TEMPLATE alt_ts_temp2 SET SCHEMA alt_nsp2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case410" value="ALTER TEXT SEARCH TEMPLATE alt_ts_temp2 SET SCHEMA alt_nsp2;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case411" value="ALTER TRIGGER modified_a ON main_table RENAME TO modified_modified_a;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case412" value="ALTER TYPE bogon ADD VALUE &apos;bad&apos;;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case413" value="ALTER TYPE bogon ADD VALUE &apos;bad&apos;;" db-types="PostgreSQL" />
@@ -5320,9 +5297,6 @@
     <sql-case id="low_alter_by_postgresql_source_test_case61" value="alter table anothertab alter column atcol1 type boolean         using case when atcol1 % 2 = 0 then true else fa alter table anothertab drop constraint anothertab_chk;" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case62" value="alter table check_con_tbl add check (check_con_function(check_con_tbl.*));" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case63" value="alter table rename;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case64" value="alter text search configuration alter1.cfg set schema alter2;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case65" value="alter text search parser alter1.prs set schema alter2;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case66" value="alter text search template alter1.tmpl set schema alter2;" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case67" value="alter trigger a on grandparent rename to b;" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case68" value="alter type alter1.ctype set schema alter1;" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case69" value="alter type alter1.ctype set schema alter2;" db-types="PostgreSQL" />

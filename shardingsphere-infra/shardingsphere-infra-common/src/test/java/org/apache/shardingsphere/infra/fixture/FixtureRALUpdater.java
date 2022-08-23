@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
 public final class FixtureRALUpdater implements RALUpdater<FixtureRALStatement> {
     
     @Override
-    public void executeUpdate(final FixtureRALStatement sqlStatement) {
+    public void executeUpdate(final String databaseName, final FixtureRALStatement sqlStatement) {
     }
     
     @Override

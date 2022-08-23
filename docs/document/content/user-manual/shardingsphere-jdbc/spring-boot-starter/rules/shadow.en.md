@@ -13,32 +13,32 @@ spring.shardingsphere.rules.shadow
 ```
 
 ###  Configurable attributes
-| *Name*  | *Description*  | *Default Value*  |
-| ------- | ------ | ----- |
-| data-sources | Shadow DB logical data source mapping configuration list | none |
-| tables | Shadow table configuration list | none |
-| shadowAlgorithms | Shadow algorithm configuration list | none |
-| default-shadow-algorithm-name | Default shadow algorithm name | none, options |
+| *Name*                        | *Description*                                            | *Default Value*  |
+| ----------------------------- | -------------------------------------------------------- | ---------------- |
+| data-sources                  | Shadow DB logical data source mapping configuration list | none             |
+| tables                        | Shadow table configuration list                          | none             |
+| shadowAlgorithms              | Shadow algorithm configuration list                      | none             |
+| default-shadow-algorithm-name | Default shadow algorithm name                            | none, options    |
 
 ### Shadow Data Source Configuration
-| *Name*  | *Description*  | *Default Value*  |
-| ------- | ------ | ----- |
-| source-data-source-name | Production data source name | none |
-| shadow-data-source-name | Shadow data source name | none |
+| *Name*                  | *Description*               | *Default Value*  |
+| ----------------------- | --------------------------- | ---------------- |
+| source-data-source-name | Production data source name | none             |
+| shadow-data-source-name | Shadow data source name     | none             |
 
 ### Shadow Table Configuration
-| *Name*  | *Description*  | *Default Value*  |
-| ------- | ------ | ----- |
-| data-source-names | 影子表关联影子库逻辑数据源名称列表 | 无 |
-| shadow-algorithm-names | 影子表关联影子算法名称列表 | 无 |
+| *Name*                 | *Description*                                                         | *Default Value*  |
+| ---------------------- | --------------------------------------------------------------------- | ---------------- |
+| data-source-names      | Shadow table associated shadow database logical data source name list | none             |
+| shadow-algorithm-names | Shadow table associated shadow algorithm name list                    | none             |
 
 ### Shadow Algorithm Configuration
-| *Name*  | *Description*  | *Default Value*  |
-| ------- | ------ | ----- |
-| type | Shadow algorithm type | none|
-| props | Shadow algorithm configuration | none |
+| *Name*  | *Description*                  | *Default Value*  |
+| ------- | ------------------------------ | ---------------- |
+| type    | Shadow algorithm type          | none             |
+| props   | Shadow algorithm configuration | none             |
 
-For details, see [list of built-in shadow algorithms](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/shadow/)
+For details, see [list of built-in shadow algorithms](/en/user-manual/common-config/builtin-algorithm/shadow/)
 
 ## Procedure
 1. Create production and shadow data sources.

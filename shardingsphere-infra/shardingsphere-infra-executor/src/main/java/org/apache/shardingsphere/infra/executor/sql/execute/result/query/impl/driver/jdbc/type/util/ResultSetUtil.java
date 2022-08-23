@@ -22,7 +22,6 @@ import com.google.common.primitives.Longs;
 import com.google.common.primitives.Shorts;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -90,11 +89,10 @@ public final class ResultSetUtil {
     }
     
     private static Object convertURL(final Object value) {
-        String val = value.toString();
         try {
-            return new URL(val);
+            return new URL(value.toString());
         } catch (final MalformedURLException ex) {
-            throw new ShardingSphereException("Unsupported data type: URL for value %s", val);
+            throw new UnsupportedDataTypeConversionException(URL.class, value);
         }
     }
     
@@ -117,7 +115,7 @@ public final class ResultSetUtil {
             BigDecimal bigDecimal = new BigDecimal(value.toString());
             return adjustBigDecimalResult(bigDecimal, needScale, scale);
         }
-        throw new ShardingSphereException("Unsupported data type: BigDecimal for value %s", value);
+        throw new UnsupportedDataTypeConversionException(BigDecimal.class, value);
     }
     
     private static BigDecimal adjustBigDecimalResult(final BigDecimal value, final boolean needScale, final int scale) {
@@ -210,7 +208,7 @@ public final class ResultSetUtil {
             case "java.lang.String":
                 return value.toString();
             default:
-                throw new ShardingSphereException("Unsupported data type: %s for value %s", convertType, value);
+                throw new UnsupportedDataTypeConversionException(convertType, value);
         }
     }
     
@@ -226,7 +224,7 @@ public final class ResultSetUtil {
             case "java.lang.String":
                 return date.toString();
             default:
-                throw new ShardingSphereException("Unsupported date type: %s for value %s", convertType, value);
+                throw new UnsupportedDataTypeConversionException(convertType, value);
         }
     }
     

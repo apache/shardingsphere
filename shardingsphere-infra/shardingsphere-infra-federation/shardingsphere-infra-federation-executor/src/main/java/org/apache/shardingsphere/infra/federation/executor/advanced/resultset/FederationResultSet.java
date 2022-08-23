@@ -19,11 +19,11 @@ package org.apache.shardingsphere.infra.federation.executor.advanced.resultset;
 
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.linq4j.Enumerator;
+import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtil;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.filter.FilterableSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 
 import java.io.InputStream;
@@ -71,7 +71,7 @@ public final class FederationResultSet extends AbstractUnsupportedOperationResul
     
     private boolean closed;
     
-    public FederationResultSet(final Enumerator<Object[]> enumerator, final ShardingSphereSchema schema, final FilterableSchema filterableSchema, final SQLStatementContext<?> sqlStatementContext) {
+    public FederationResultSet(final Enumerator<Object[]> enumerator, final ShardingSphereSchema schema, final AbstractSchema filterableSchema, final SQLStatementContext<?> sqlStatementContext) {
         this.enumerator = enumerator;
         columnLabelAndIndexMap = createColumnLabelAndIndexMap(sqlStatementContext);
         resultSetMetaData = new FederationResultSetMetaData(schema, filterableSchema, new JavaTypeFactoryImpl(), (SelectStatementContext) sqlStatementContext);

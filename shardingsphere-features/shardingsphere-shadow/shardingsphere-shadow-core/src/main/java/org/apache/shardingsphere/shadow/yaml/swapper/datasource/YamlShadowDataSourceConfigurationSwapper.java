@@ -29,13 +29,13 @@ public final class YamlShadowDataSourceConfigurationSwapper implements YamlConfi
     @Override
     public YamlShadowDataSourceConfiguration swapToYamlConfiguration(final ShadowDataSourceConfiguration data) {
         YamlShadowDataSourceConfiguration result = new YamlShadowDataSourceConfiguration();
-        result.setSourceDataSourceName(data.getSourceDataSourceName());
+        result.setProductionDataSourceName(data.getProductionDataSourceName());
         result.setShadowDataSourceName(data.getShadowDataSourceName());
         return result;
     }
     
     @Override
     public ShadowDataSourceConfiguration swapToObject(final YamlShadowDataSourceConfiguration yamlConfig) {
-        return new ShadowDataSourceConfiguration(yamlConfig.getSourceDataSourceName(), yamlConfig.getShadowDataSourceName());
+        return new ShadowDataSourceConfiguration(yamlConfig.getProductionDataSourceName(), yamlConfig.getShadowDataSourceName());
     }
 }

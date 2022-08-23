@@ -21,10 +21,10 @@ spring:
       shadow:
         data-sources:
           shadow-data-source-0:
-            source-data-source-name: ds
+            production-data-source-name: ds
             shadow-data-source-name: ds-shadow
           shadow-data-source-1:
-            source-data-source-name: ds1
+            production-data-source-name: ds1
             shadow-data-source-name: ds1-shadow
         tables:
           t_order:

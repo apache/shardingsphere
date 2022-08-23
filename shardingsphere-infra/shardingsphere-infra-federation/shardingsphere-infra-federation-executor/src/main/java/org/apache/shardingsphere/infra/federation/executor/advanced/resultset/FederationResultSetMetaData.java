@@ -21,11 +21,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.schema.Table;
+import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.filter.FilterableSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 
 import java.sql.ResultSetMetaData;
@@ -42,7 +42,7 @@ public final class FederationResultSetMetaData extends WrapperAdapter implements
     
     private final ShardingSphereSchema schema;
     
-    private final FilterableSchema filterableSchema;
+    private final AbstractSchema filterableSchema;
     
     private final RelDataTypeFactory relDataTypeFactory;
     

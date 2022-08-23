@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.route.engine.impl;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -33,7 +33,7 @@ import java.util.Collections;
 public final class AllSQLRouteExecutor implements SQLRouteExecutor {
     
     @Override
-    public RouteContext route(final LogicSQL logicSQL, final ShardingSphereDatabase database, final ConnectionContext connectionContext) {
+    public RouteContext route(final ConnectionContext connectionContext, final QueryContext queryContext, final ShardingSphereDatabase database) {
         RouteContext result = new RouteContext();
         for (String each : database.getResource().getDataSources().keySet()) {
             result.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));

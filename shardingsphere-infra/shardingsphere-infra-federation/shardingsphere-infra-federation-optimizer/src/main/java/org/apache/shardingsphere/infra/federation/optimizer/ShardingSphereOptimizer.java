@@ -23,7 +23,6 @@ import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.SQLNodeConverterEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -44,14 +43,10 @@ public final class ShardingSphereOptimizer {
      * @return optimized relational node
      */
     public RelNode optimize(final SQLStatement sqlStatement) {
-        try {
-            SqlNode sqlNode = SQLNodeConverterEngine.convert(sqlStatement);
-            RelNode logicPlan = converter.convertQuery(sqlNode, true, true).rel;
-            RelNode bestPlan = optimizeWithRBO(logicPlan, hepPlanner);
-            return optimizeWithCBO(bestPlan, converter);
-        } catch (final UnsupportedOperationException ex) {
-            throw new ShardingSphereException(ex);
-        }
+        SqlNode sqlNode = SQLNodeConverterEngine.convert(sqlStatement);
+        RelNode logicPlan = converter.convertQuery(sqlNode, true, true).rel;
+        RelNode bestPlan = optimizeWithRBO(logicPlan, hepPlanner);
+        return optimizeWithCBO(bestPlan, converter);
     }
     
     private static RelNode optimizeWithRBO(final RelNode logicPlan, final RelOptPlanner hepPlanner) {

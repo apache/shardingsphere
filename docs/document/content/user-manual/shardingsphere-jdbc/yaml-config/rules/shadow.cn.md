@@ -44,7 +44,7 @@ rules:
 | type | 影子算法类型 | 无 |
 | props | 影子算法配置 | 无 |
 
-详情请参见[内置影子算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/shadow)
+详情请参见[内置影子算法列表](/cn/user-manual/common-config/builtin-algorithm/shadow)
 
 ## 操作步骤
 

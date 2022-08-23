@@ -26,7 +26,7 @@ import java.sql.SQLException;
 public final class FixturePositionInitializer implements PositionInitializer {
     
     @Override
-    public IngestPosition<?> init(final DataSource dataSource) throws SQLException {
+    public IngestPosition<?> init(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
         return null;
     }
     

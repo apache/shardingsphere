@@ -19,7 +19,7 @@ package org.apache.shardingsphere.traffic.rule;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.hint.SQLHintProperties;
@@ -119,13 +119,13 @@ public final class TrafficRule implements GlobalRule {
     /**
      * Find matched strategy rule.
      * 
-     * @param logicSQL logic SQL
+     * @param queryContext query context
      * @param inTransaction is in transaction
      * @return matched strategy rule
      */
-    public Optional<TrafficStrategyRule> findMatchedStrategyRule(final LogicSQL logicSQL, final boolean inTransaction) {
+    public Optional<TrafficStrategyRule> findMatchedStrategyRule(final QueryContext queryContext, final boolean inTransaction) {
         for (TrafficStrategyRule each : strategyRules) {
-            if (match(each.getTrafficAlgorithm(), logicSQL, inTransaction)) {
+            if (match(each.getTrafficAlgorithm(), queryContext, inTransaction)) {
                 return Optional.of(each);
             }
         }
@@ -139,19 +139,19 @@ public final class TrafficRule implements GlobalRule {
     }
     
     @SuppressWarnings("rawtypes")
-    private boolean match(final TrafficAlgorithm trafficAlgorithm, final LogicSQL logicSQL, final boolean inTransaction) {
+    private boolean match(final TrafficAlgorithm trafficAlgorithm, final QueryContext queryContext, final boolean inTransaction) {
         if (trafficAlgorithm instanceof TransactionTrafficAlgorithm) {
             return matchTransactionTraffic((TransactionTrafficAlgorithm) trafficAlgorithm, inTransaction);
         }
         if (trafficAlgorithm instanceof HintTrafficAlgorithm) {
-            SQLHintProperties sqlHintProps = logicSQL.getSqlStatementContext() instanceof CommonSQLStatementContext
-                    ? ((CommonSQLStatementContext) logicSQL.getSqlStatementContext()).getSqlHintExtractor().getSqlHintProperties()
+            SQLHintProperties sqlHintProps = queryContext.getSqlStatementContext() instanceof CommonSQLStatementContext
+                    ? ((CommonSQLStatementContext) queryContext.getSqlStatementContext()).getSqlHintExtractor().getSqlHintProperties()
                     : new SQLHintProperties(new Properties());
             return matchHintTraffic((HintTrafficAlgorithm) trafficAlgorithm, sqlHintProps);
         }
         if (trafficAlgorithm instanceof SegmentTrafficAlgorithm) {
-            SQLStatement sqlStatement = logicSQL.getSqlStatementContext().getSqlStatement();
-            return matchSegmentTraffic((SegmentTrafficAlgorithm) trafficAlgorithm, logicSQL.getSql(), sqlStatement);
+            SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
+            return matchSegmentTraffic((SegmentTrafficAlgorithm) trafficAlgorithm, queryContext.getSql(), sqlStatement);
         }
         return false;
     }

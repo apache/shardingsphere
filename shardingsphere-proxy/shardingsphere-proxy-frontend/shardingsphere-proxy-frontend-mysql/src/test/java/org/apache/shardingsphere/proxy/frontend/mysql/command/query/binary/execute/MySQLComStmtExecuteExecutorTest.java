@@ -28,7 +28,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.e
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
@@ -166,7 +166,7 @@ public final class MySQLComStmtExecuteExecutorTest extends ProxyContextRestorer 
         when(proxyBackendHandler.getRowData()).thenReturn(new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 1))));
         Iterator<DatabasePacket<?>> actual;
         try (MockedStatic<ProxyBackendHandlerFactory> mockedStatic = mockStatic(ProxyBackendHandlerFactory.class)) {
-            mockedStatic.when(() -> ProxyBackendHandlerFactory.newInstance(any(MySQLDatabaseType.class), any(LogicSQL.class), eq(connectionSession), anyBoolean()))
+            mockedStatic.when(() -> ProxyBackendHandlerFactory.newInstance(any(MySQLDatabaseType.class), any(QueryContext.class), eq(connectionSession), anyBoolean()))
                     .thenReturn(proxyBackendHandler);
             actual = mysqlComStmtExecuteExecutor.execute().iterator();
         }
@@ -192,7 +192,7 @@ public final class MySQLComStmtExecuteExecutorTest extends ProxyContextRestorer 
         when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(new MySQLUpdateStatement()));
         Iterator<DatabasePacket<?>> actual;
         try (MockedStatic<ProxyBackendHandlerFactory> mockedStatic = mockStatic(ProxyBackendHandlerFactory.class)) {
-            mockedStatic.when(() -> ProxyBackendHandlerFactory.newInstance(any(MySQLDatabaseType.class), any(LogicSQL.class), eq(connectionSession), anyBoolean()))
+            mockedStatic.when(() -> ProxyBackendHandlerFactory.newInstance(any(MySQLDatabaseType.class), any(QueryContext.class), eq(connectionSession), anyBoolean()))
                     .thenReturn(proxyBackendHandler);
             actual = mysqlComStmtExecuteExecutor.execute().iterator();
         }
@@ -210,7 +210,7 @@ public final class MySQLComStmtExecuteExecutorTest extends ProxyContextRestorer 
         when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(new MySQLCommitStatement()));
         Iterator<DatabasePacket<?>> actual;
         try (MockedStatic<ProxyBackendHandlerFactory> mockedStatic = mockStatic(ProxyBackendHandlerFactory.class)) {
-            mockedStatic.when(() -> ProxyBackendHandlerFactory.newInstance(any(MySQLDatabaseType.class), any(LogicSQL.class), eq(connectionSession), eq(true)))
+            mockedStatic.when(() -> ProxyBackendHandlerFactory.newInstance(any(MySQLDatabaseType.class), any(QueryContext.class), eq(connectionSession), eq(true)))
                     .thenReturn(proxyBackendHandler);
             actual = mysqlComStmtExecuteExecutor.execute().iterator();
         }

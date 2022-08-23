@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.communication.vertx.executor;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.vertx.VertxExecutionUnit;
@@ -45,14 +45,14 @@ public final class ProxyReactiveExecutor {
     /**
      * Execute.
      *
-     * @param logicSQL logic SQL
+     * @param queryContext query context
      * @param executionGroupContext execution group context
      * @return execute results
      * @throws SQLException SQL exception
      */
-    public Future<List<ExecuteResult>> execute(final LogicSQL logicSQL, final ExecutionGroupContext<VertxExecutionUnit> executionGroupContext) throws SQLException {
+    public Future<List<ExecuteResult>> execute(final QueryContext queryContext, final ExecutionGroupContext<VertxExecutionUnit> executionGroupContext) throws SQLException {
         EventBusContext eventBusContext = ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext();
-        ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, eventBusContext);
+        ExecuteProcessEngine.initialize(queryContext, executionGroupContext, eventBusContext);
         List<Future<ExecuteResult>> futures = vertxExecutor.execute(executionGroupContext, new VertxExecutorCallback());
         return CompositeFuture.all(new ArrayList<>(futures)).compose(compositeFuture -> {
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID(), eventBusContext);

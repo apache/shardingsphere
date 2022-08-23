@@ -105,8 +105,8 @@
     </shadow:shadow-algorithm>
 
     <shadow:rule id="shadowRule">
-        <shadow:data-source id="shadow-data-source-write" source-data-source-name="write-ds" shadow-data-source-name="write-ds-shadow"/>
-        <shadow:data-source id="shadow-data-source-read" source-data-source-name="read-ds" shadow-data-source-name="read-ds-shadow"/>
+        <shadow:data-source id="shadow-data-source-write" production-data-source-name="write-ds" shadow-data-source-name="write-ds-shadow"/>
+        <shadow:data-source id="shadow-data-source-read" production-data-source-name="read-ds" shadow-data-source-name="read-ds-shadow"/>
         <shadow:shadow-table name="t_user" data-sources="shadow-data-source-write,shadow-data-source-read">
             <shadow:algorithm shadow-algorithm-ref="user-id-insert-match-algorithm" />
             <shadow:algorithm shadow-algorithm-ref="user-id-delete-match-algorithm" />

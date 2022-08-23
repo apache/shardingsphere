@@ -120,7 +120,8 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         String logicTableName = parameter.getLogicTableName();
         String schemaName = parameter.getTableNameSchemaNameMapping().getSchemaName(logicTableName);
         String uniqueKey = parameter.getUniqueKey();
-        String cacheKey = schemaName.toLowerCase() + "." + logicTableName.toLowerCase();
+        String cacheKey = DatabaseTypeFactory.getInstance(parameter.getDatabaseType()).isSchemaAvailable() ? schemaName.toLowerCase() + "." + logicTableName.toLowerCase()
+                : logicTableName.toLowerCase();
         if (null == parameter.getPreviousCalculatedResult()) {
             return firstSQLCache.computeIfAbsent(cacheKey, s -> sqlBuilder.buildChunkedQuerySQL(schemaName, logicTableName, uniqueKey, true));
         } else {
@@ -187,6 +188,10 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                     Object thatResult = thatNextIterator.next();
                     if (thisResult instanceof SQLXML && thatResult instanceof SQLXML) {
                         return ((SQLXML) thisResult).getString().equals(((SQLXML) thatResult).getString());
+                    }
+                    // TODO The standard MySQL JDBC will convert unsigned mediumint to Integer, but proxy convert it to Long
+                    if (thisResult instanceof Integer && thatResult instanceof Long) {
+                        return ((Integer) thisResult).longValue() == (Long) thatResult;
                     }
                     if (!new EqualsBuilder().append(thisResult, thatResult).isEquals()) {
                         log.warn("record column value not match, value1={}, value2={}, record1={}, record2={}", thisResult, thatResult, thisNext, thatNext);

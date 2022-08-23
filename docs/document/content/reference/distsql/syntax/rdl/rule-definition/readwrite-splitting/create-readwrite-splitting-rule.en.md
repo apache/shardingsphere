@@ -37,10 +37,10 @@ resourceName ::=
 
 ### Supplement
 
-- Support the creation of static readwrite-splitting rules and dynamic readwrite-splitting rules
-- Dynamic readwrite-splitting rules rely on database discovery rules
-- `loadBanlancerType` specifies the load balancing algorithm type, please refer to Load Balance Algorithm
-- Duplicate `ruleName` will not be created
+- Support the creation of static readwrite-splitting rules and dynamic readwrite-splitting rules;
+- Dynamic readwrite-splitting rules rely on database discovery rules;
+- `loadBanlancerType` specifies the load balancing algorithm type, please refer to Load Balance Algorithm;
+- Duplicate `ruleName` will not be created.
 
 ### Example
 
@@ -66,7 +66,7 @@ CREATE READWRITE_SPLITTING RULE ms_group_1 (
 
 ### Reserved word
 
-`CREATE`, `READWRITE_SPLITTING`, `WRITE_RESOURCE`, `READ_RESOURCES`, `AUTO_AWARE_RESOURCE`
+`CREATE`, `READWRITE_SPLITTING`, `RULE`, `WRITE_RESOURCE`, `READ_RESOURCES`, `AUTO_AWARE_RESOURCE`
 , `WRITE_DATA_SOURCE_QUERY_ENABLED`, `TYPE`, `NAME`, `PROPERTIES`, `TRUE`, `FALSE`
 
 ### Related links

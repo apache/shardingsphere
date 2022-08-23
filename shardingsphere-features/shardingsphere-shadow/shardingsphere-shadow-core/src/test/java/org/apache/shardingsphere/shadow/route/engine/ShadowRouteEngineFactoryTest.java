@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.route.engine;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
@@ -37,6 +37,7 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -44,36 +45,36 @@ public final class ShadowRouteEngineFactoryTest {
     
     @Test
     public void assertNewInstance() {
-        ShadowRouteEngine shadowInsertRouteEngine = ShadowRouteEngineFactory.newInstance(new LogicSQL(createInsertSqlStatementContext(), "", Collections.emptyList()));
+        ShadowRouteEngine shadowInsertRouteEngine = ShadowRouteEngineFactory.newInstance(new QueryContext(createInsertSqlStatementContext(), "", Collections.emptyList()));
         assertThat(shadowInsertRouteEngine, instanceOf(ShadowInsertStatementRoutingEngine.class));
-        ShadowRouteEngine shadowUpdateRouteEngine = ShadowRouteEngineFactory.newInstance(new LogicSQL(createUpdateSqlStatementContext(), "", Collections.emptyList()));
+        ShadowRouteEngine shadowUpdateRouteEngine = ShadowRouteEngineFactory.newInstance(new QueryContext(createUpdateSqlStatementContext(), "", Collections.emptyList()));
         assertThat(shadowUpdateRouteEngine, instanceOf(ShadowUpdateStatementRoutingEngine.class));
-        ShadowRouteEngine shadowDeleteRouteEngine = ShadowRouteEngineFactory.newInstance(new LogicSQL(createDeleteSqlStatementContext(), "", Collections.emptyList()));
+        ShadowRouteEngine shadowDeleteRouteEngine = ShadowRouteEngineFactory.newInstance(new QueryContext(createDeleteSqlStatementContext(), "", Collections.emptyList()));
         assertThat(shadowDeleteRouteEngine, instanceOf(ShadowDeleteStatementRoutingEngine.class));
-        ShadowRouteEngine shadowSelectRouteEngine = ShadowRouteEngineFactory.newInstance(new LogicSQL(createSelectSqlStatementContext(), "", Collections.emptyList()));
+        ShadowRouteEngine shadowSelectRouteEngine = ShadowRouteEngineFactory.newInstance(new QueryContext(createSelectSqlStatementContext(), "", Collections.emptyList()));
         assertThat(shadowSelectRouteEngine, instanceOf(ShadowSelectStatementRoutingEngine.class));
     }
     
     private SQLStatementContext<InsertStatement> createInsertSqlStatementContext() {
-        InsertStatementContext result = mock(InsertStatementContext.class);
+        InsertStatementContext result = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement()).thenReturn(mock(InsertStatement.class));
         return result;
     }
     
     private SQLStatementContext<UpdateStatement> createUpdateSqlStatementContext() {
-        UpdateStatementContext result = mock(UpdateStatementContext.class);
+        UpdateStatementContext result = mock(UpdateStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement()).thenReturn(mock(UpdateStatement.class));
         return result;
     }
     
     private SQLStatementContext<DeleteStatement> createDeleteSqlStatementContext() {
-        DeleteStatementContext result = mock(DeleteStatementContext.class);
+        DeleteStatementContext result = mock(DeleteStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement()).thenReturn(mock(DeleteStatement.class));
         return result;
     }
     
     private SQLStatementContext<SelectStatement> createSelectSqlStatementContext() {
-        SelectStatementContext result = mock(SelectStatementContext.class);
+        SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement()).thenReturn(mock(SelectStatement.class));
         return result;
     }

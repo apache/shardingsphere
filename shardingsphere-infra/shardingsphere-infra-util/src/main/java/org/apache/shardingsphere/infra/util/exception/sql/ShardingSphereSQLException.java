@@ -29,17 +29,21 @@ public abstract class ShardingSphereSQLException extends ShardingSphereInsideExc
     
     private static final long serialVersionUID = -8238061892944243621L;
     
-    private final SQLState sqlState;
+    private final String sqlState;
     
     private final int vendorCode;
     
     private final String reason;
     
-    @SuppressWarnings("ConfusingArgumentToVarargsMethod")
     public ShardingSphereSQLException(final SQLState sqlState, final int vendorCode, final String reason, final String... messageArguments) {
+        this(sqlState.getValue(), vendorCode, reason, messageArguments);
+    }
+    
+    @SuppressWarnings("ConfusingArgumentToVarargsMethod")
+    public ShardingSphereSQLException(final String sqlState, final int vendorCode, final String reason, final String... messageArguments) {
         this.sqlState = sqlState;
         this.vendorCode = vendorCode;
-        this.reason = String.format(reason, messageArguments);
+        this.reason = null == reason ? null : String.format(reason, messageArguments);
     }
     
     /**
@@ -48,6 +52,6 @@ public abstract class ShardingSphereSQLException extends ShardingSphereInsideExc
      * @return SQL exception
      */
     public final SQLException toSQLException() {
-        return new SQLException(reason, sqlState.getValue(), vendorCode);
+        return new SQLException(reason, sqlState, vendorCode);
     }
 }

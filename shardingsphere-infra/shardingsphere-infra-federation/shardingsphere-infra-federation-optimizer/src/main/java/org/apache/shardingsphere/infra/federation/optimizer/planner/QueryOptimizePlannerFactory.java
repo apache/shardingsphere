@@ -92,6 +92,7 @@ public final class QueryOptimizePlannerFactory {
     private static Collection<RelOptRule> getProjectRules() {
         Collection<RelOptRule> result = new LinkedList<>();
         result.add(AggregateExpandDistinctAggregatesRule.Config.DEFAULT.toRule());
+        // TODO PROJECT_TO_CALC and FILTER_TO_CALC better be removed when using TranslatableTableScan.
         result.add(CoreRules.PROJECT_TO_CALC);
         result.add(CoreRules.FILTER_TO_CALC);
         result.add(CoreRules.PROJECT_CALC_MERGE);

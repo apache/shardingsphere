@@ -16,36 +16,36 @@ rules:
 
 ###  Configurable attributes
 
-| *Name*  | *Description*  | *Default*  |
-| ------- | ------ | ----- |
-| dataSources | shadow DB logical data source mapping the configuration list | none |
-| tables | shadow table configuration list | none |
-| defaultShadowAlgorithmName | name of default shadow algorithm | none, option |
-| shadowAlgorithms | shadow algorithm configuration list | none |
+| *Name*                     | *Description*                                                    | *Default*    |
+| -------------------------- | ---------------------------------------------------------------- | ------------ |
+| dataSources                | shadow DB logical data source mapping the configuration list     | none         |
+| tables                     | shadow table configuration list                                  | none         |
+| defaultShadowAlgorithmName | name of default shadow algorithm                                 | none, option |
+| shadowAlgorithms           | shadow algorithm configuration list                              | none         |
 
 ### Shadow data source configuration
 
-| *Name*  | *Description*  | *Default*  |
-| ------- | ------ | ----- |
-| dataSourceName | shadow DB logical data source name | 无 |
-| sourceDataSourceName | production data source name | 无 |
-| shadowDataSourceName | shadow data source name | 无 |
+| *Name*               | *Description*                      | *Default*  |
+| -------------------- | ---------------------------------- | ---------- |
+| dataSourceName       | shadow DB logical data source name | none       |
+| sourceDataSourceName | production data source name        | none       |
+| shadowDataSourceName | shadow data source name            | none       |
 
 ### Shadow table configuration
 
-| *Name*  | *Description*  | *Default*  |
-| ------- | ------ | ----- |
-| dataSourceNames | shadow table associates shadow DB logical data source name list | 无 |
-| shadowAlgorithmNames | shadow table associates shadow algorithm name list | 无 |
+| *Name*               | *Description*                                                   | *Default*  |
+| -------------------- | --------------------------------------------------------------- | ---------- |
+| dataSourceNames      | shadow table associates shadow DB logical data source name list | none       |
+| shadowAlgorithmNames | shadow table associates shadow algorithm name list              | none       |
 
 ### Shadow algorithm configuration
 
-| *Name*  | *Description*  | *Default*  |
-| ------- | ------ | ----- |
-| type | shadow algorithm type | none |
-| props | shadow algorithm configuration | none |
+| *Name*  | *Description*                  | *Default*  |
+| ------- | ------------------------------ | ---------- |
+| type    | shadow algorithm type          | none       |
+| props   | shadow algorithm configuration | none       |
 
-Please refer to [Built-in shadow algorithm list](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/shadow) for more details.
+Please refer to [Built-in shadow algorithm list](/en/user-manual/common-config/builtin-algorithm/shadow) for more details.
 
 ## Procedure
 1. Create production and shadow data sources.

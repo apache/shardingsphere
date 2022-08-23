@@ -45,7 +45,7 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encry
 | type      | Attribute  | Encrypt algorithm type       |
 | props (?) | Tag        | Encrypt algorithm properties |
 
-Please refer to [Built-in Encrypt Algorithm List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/encrypt) for more details about type of algorithm.
+Please refer to [Built-in Encrypt Algorithm List](/en/user-manual/common-config/builtin-algorithm/encrypt) for more details about type of algorithm.
 
 ## Procedure 
 

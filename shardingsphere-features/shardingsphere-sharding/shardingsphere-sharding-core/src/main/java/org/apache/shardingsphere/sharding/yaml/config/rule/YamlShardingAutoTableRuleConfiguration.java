@@ -34,11 +34,7 @@ public final class YamlShardingAutoTableRuleConfiguration implements YamlConfigu
     
     private String actualDataSources;
     
-    private String actualTablePrefix;
-    
     private YamlShardingStrategyConfiguration shardingStrategy;
     
     private YamlKeyGenerateStrategyConfiguration keyGenerateStrategy;
-    
-    private String actualDataNodes;
 }

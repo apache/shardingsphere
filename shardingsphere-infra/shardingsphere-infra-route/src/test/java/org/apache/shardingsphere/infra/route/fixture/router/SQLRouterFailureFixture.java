@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.route.fixture.router;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.SQLRouter;
@@ -28,13 +28,13 @@ import org.apache.shardingsphere.infra.session.ConnectionContext;
 public final class SQLRouterFailureFixture implements SQLRouter<RouteFailureRuleFixture> {
     
     @Override
-    public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereDatabase database, final RouteFailureRuleFixture rule,
+    public RouteContext createRouteContext(final QueryContext queryContext, final ShardingSphereDatabase database, final RouteFailureRuleFixture rule,
                                            final ConfigurationProperties props, final ConnectionContext connectionContext) {
         throw new UnsupportedOperationException("Route failure.");
     }
     
     @Override
-    public void decorateRouteContext(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereDatabase database,
+    public void decorateRouteContext(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database,
                                      final RouteFailureRuleFixture rule, final ConfigurationProperties props, final ConnectionContext connectionContext) {
         throw new UnsupportedOperationException("Route failure.");
     }

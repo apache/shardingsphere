@@ -48,7 +48,7 @@ import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
-import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineInputConfiguration;
+import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineReadConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -120,9 +120,9 @@ public final class InventoryTaskSplitter {
                                                                        final InventoryDumperConfiguration dumperConfig) {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
         PipelineProcessContext ruleAlteredContext = jobItemContext.getJobProcessContext();
-        PipelineInputConfiguration inputConfig = ruleAlteredContext.getPipelineProcessConfig().getInput();
-        int batchSize = inputConfig.getBatchSize();
-        JobRateLimitAlgorithm rateLimitAlgorithm = ruleAlteredContext.getInputRateLimitAlgorithm();
+        PipelineReadConfiguration readConfig = ruleAlteredContext.getPipelineProcessConfig().getRead();
+        int batchSize = readConfig.getBatchSize();
+        JobRateLimitAlgorithm rateLimitAlgorithm = ruleAlteredContext.getReadRateLimitAlgorithm();
         Collection<IngestPosition<?>> inventoryPositions = getInventoryPositions(jobItemContext, dumperConfig, dataSource, metaDataLoader);
         int i = 0;
         for (IngestPosition<?> inventoryPosition : inventoryPositions) {
@@ -201,7 +201,7 @@ public final class InventoryTaskSplitter {
         PipelineJobConfiguration jobConfig = jobItemContext.getJobConfig();
         String sql = PipelineSQLBuilderFactory.getInstance(jobConfig.getSourceDatabaseType())
                 .buildSplitByPrimaryKeyRangeSQL(dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName())), dumperConfig.getActualTableName(), dumperConfig.getUniqueKey());
-        int shardingSize = jobItemContext.getJobProcessContext().getPipelineProcessConfig().getInput().getShardingSize();
+        int shardingSize = jobItemContext.getJobProcessContext().getPipelineProcessConfig().getRead().getShardingSize();
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement ps = connection.prepareStatement(sql)) {

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.singletable.decider;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDeciderContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -50,9 +50,9 @@ public final class SingleTableSQLFederationDeciderTest {
     public void assertDecideWhenNotContainsSingleTable() {
         SingleTableSQLFederationDecider federationDecider = new SingleTableSQLFederationDecider();
         SelectStatementContext select = createStatementContext();
-        LogicSQL logicSQL = new LogicSQL(select, "", Collections.emptyList());
+        QueryContext queryContext = new QueryContext(select, "", Collections.emptyList());
         SQLFederationDeciderContext actual = new SQLFederationDeciderContext();
-        federationDecider.decide(actual, logicSQL, createDatabase(), mock(SingleTableRule.class), new ConfigurationProperties(new Properties()));
+        federationDecider.decide(actual, queryContext, createDatabase(), mock(SingleTableRule.class), new ConfigurationProperties(new Properties()));
         assertTrue(actual.getDataNodes().isEmpty());
         assertFalse(actual.isUseSQLFederation());
     }
@@ -63,10 +63,10 @@ public final class SingleTableSQLFederationDeciderTest {
         SingleTableRule rule = createSingleTableRule(qualifiedTables);
         when(rule.isSingleTablesInSameDataSource(qualifiedTables)).thenReturn(true);
         SelectStatementContext select = createStatementContext();
-        LogicSQL logicSQL = new LogicSQL(select, "", Collections.emptyList());
+        QueryContext queryContext = new QueryContext(select, "", Collections.emptyList());
         SQLFederationDeciderContext actual = new SQLFederationDeciderContext();
         SingleTableSQLFederationDecider federationDecider = new SingleTableSQLFederationDecider();
-        federationDecider.decide(actual, logicSQL, createDatabase(), rule, new ConfigurationProperties(new Properties()));
+        federationDecider.decide(actual, queryContext, createDatabase(), rule, new ConfigurationProperties(new Properties()));
         assertThat(actual.getDataNodes().size(), is(2));
         assertFalse(actual.isUseSQLFederation());
     }
@@ -77,10 +77,10 @@ public final class SingleTableSQLFederationDeciderTest {
         SingleTableRule rule = createSingleTableRule(qualifiedTables);
         when(rule.isSingleTablesInSameDataSource(qualifiedTables)).thenReturn(false);
         SelectStatementContext select = createStatementContext();
-        LogicSQL logicSQL = new LogicSQL(select, "", Collections.emptyList());
+        QueryContext queryContext = new QueryContext(select, "", Collections.emptyList());
         SQLFederationDeciderContext actual = new SQLFederationDeciderContext();
         SingleTableSQLFederationDecider federationDecider = new SingleTableSQLFederationDecider();
-        federationDecider.decide(actual, logicSQL, createDatabase(), rule, new ConfigurationProperties(new Properties()));
+        federationDecider.decide(actual, queryContext, createDatabase(), rule, new ConfigurationProperties(new Properties()));
         assertThat(actual.getDataNodes().size(), is(2));
         assertTrue(actual.isUseSQLFederation());
     }
@@ -91,11 +91,11 @@ public final class SingleTableSQLFederationDeciderTest {
         SingleTableRule rule = createSingleTableRule(qualifiedTables);
         when(rule.isSingleTablesInSameDataSource(qualifiedTables)).thenReturn(true);
         SelectStatementContext select = createStatementContext();
-        LogicSQL logicSQL = new LogicSQL(select, "", Collections.emptyList());
+        QueryContext queryContext = new QueryContext(select, "", Collections.emptyList());
         SQLFederationDeciderContext actual = new SQLFederationDeciderContext();
         actual.getDataNodes().add(new DataNode("ds_0", "t_user"));
         SingleTableSQLFederationDecider federationDecider = new SingleTableSQLFederationDecider();
-        federationDecider.decide(actual, logicSQL, createDatabase(), rule, new ConfigurationProperties(new Properties()));
+        federationDecider.decide(actual, queryContext, createDatabase(), rule, new ConfigurationProperties(new Properties()));
         assertThat(actual.getDataNodes().size(), is(3));
         assertFalse(actual.isUseSQLFederation());
     }
@@ -106,11 +106,11 @@ public final class SingleTableSQLFederationDeciderTest {
         SingleTableRule rule = createSingleTableRule(qualifiedTables);
         when(rule.isSingleTablesInSameDataSource(qualifiedTables)).thenReturn(true);
         SelectStatementContext select = createStatementContext();
-        LogicSQL logicSQL = new LogicSQL(select, "", Collections.emptyList());
+        QueryContext queryContext = new QueryContext(select, "", Collections.emptyList());
         SQLFederationDeciderContext actual = new SQLFederationDeciderContext();
         actual.getDataNodes().add(new DataNode("ds_1", "t_user"));
         SingleTableSQLFederationDecider federationDecider = new SingleTableSQLFederationDecider();
-        federationDecider.decide(actual, logicSQL, createDatabase(), rule, new ConfigurationProperties(new Properties()));
+        federationDecider.decide(actual, queryContext, createDatabase(), rule, new ConfigurationProperties(new Properties()));
         assertThat(actual.getDataNodes().size(), is(3));
         assertTrue(actual.isUseSQLFederation());
     }

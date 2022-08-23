@@ -26,10 +26,13 @@ import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContex
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.api.pojo.CreateMigrationJobParameter;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
-import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
+import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPI;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationProcessContext;
 import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 
 import java.util.Collection;
 import java.util.List;
@@ -49,6 +52,19 @@ public final class MigrationJobAPIFixture implements MigrationJobAPI {
     }
     
     @Override
+    public void createProcessConfiguration(final PipelineProcessConfiguration processConfig) {
+    }
+    
+    @Override
+    public void alterProcessConfiguration(final PipelineProcessConfiguration processConfig) {
+    }
+    
+    @Override
+    public PipelineProcessConfiguration showProcessConfiguration() {
+        return null;
+    }
+    
+    @Override
     public void startDisabledJob(final String jobId) {
     }
     
@@ -61,7 +77,7 @@ public final class MigrationJobAPIFixture implements MigrationJobAPI {
     }
     
     @Override
-    public List<JobInfo> list() {
+    public List<PipelineJobInfo> list() {
         return null;
     }
     
@@ -144,12 +160,29 @@ public final class MigrationJobAPIFixture implements MigrationJobAPI {
     }
     
     @Override
+    public void addMigrationSourceResources(final Map<String, DataSourceProperties> dataSourcePropsMap) {
+    }
+    
+    @Override
+    public void dropMigrationSourceResources(final Collection<String> resourceNames) {
+    }
+    
+    @Override
+    public void createJobAndStart(final CreateMigrationJobParameter parameter) {
+    }
+    
+    @Override
     public MigrationJobConfiguration getJobConfiguration(final String jobId) {
         return null;
     }
     
     @Override
     public TaskConfiguration buildTaskConfiguration(final MigrationJobConfiguration jobConfig, final int jobShardingItem, final PipelineProcessConfiguration pipelineProcessConfig) {
+        return null;
+    }
+    
+    @Override
+    public MigrationProcessContext buildPipelineProcessContext(final PipelineJobConfiguration pipelineJobConfig) {
         return null;
     }
     

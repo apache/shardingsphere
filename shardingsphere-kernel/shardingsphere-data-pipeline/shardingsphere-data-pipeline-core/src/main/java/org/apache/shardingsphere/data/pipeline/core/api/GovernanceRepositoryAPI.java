@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.api;
 
+import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
 import java.util.List;
@@ -107,4 +108,36 @@ public interface GovernanceRepositoryAPI {
      * @return sharding items
      */
     List<Integer> getShardingItems(String jobId);
+    
+    /**
+     * Get meta data data sources.
+     *
+     * @param jobType job type
+     * @return data source properties
+     */
+    String getMetaDataDataSources(JobType jobType);
+    
+    /**
+     * Persist meta data data sources.
+     *
+     * @param jobType job type
+     * @param metaDataDataSources data source properties
+     */
+    void persistMetaDataDataSources(JobType jobType, String metaDataDataSources);
+    
+    /**
+     * Get meta data process configuration.
+     *
+     * @param jobType job type, nullable
+     * @return process configuration YAML text
+     */
+    String getMetaDataProcessConfiguration(JobType jobType);
+    
+    /**
+     * Persist meta data process configuration.
+     *
+     * @param jobType job type, nullable
+     * @param processConfigYamlText process configuration YAML text
+     */
+    void persistMetaDataProcessConfiguration(JobType jobType, String processConfigYamlText);
 }

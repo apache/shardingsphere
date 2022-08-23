@@ -33,7 +33,6 @@ import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncremental
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -84,16 +83,15 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
         }
     };
     
-    public MigrationJobItemContext(final MigrationJobConfiguration jobConfig, final int jobShardingItem, final InventoryIncrementalJobItemProgress initProgress,
-                                   final PipelineDataSourceManager dataSourceManager) {
-        // TODO refactor RuleAlteredJobWorker
-        jobProcessContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
+    public MigrationJobItemContext(final MigrationJobConfiguration jobConfig, final int shardingItem, final InventoryIncrementalJobItemProgress initProgress,
+                                   final MigrationProcessContext jobProcessContext, final TaskConfiguration taskConfig, final PipelineDataSourceManager dataSourceManager) {
         this.jobConfig = jobConfig;
         jobId = jobConfig.getJobId();
-        this.shardingItem = jobShardingItem;
+        this.shardingItem = shardingItem;
         this.initProgress = initProgress;
+        this.jobProcessContext = jobProcessContext;
+        this.taskConfig = taskConfig;
         this.dataSourceManager = dataSourceManager;
-        taskConfig = MigrationJobAPIFactory.getInstance().buildTaskConfiguration(jobConfig, jobShardingItem, jobProcessContext.getPipelineProcessConfig());
     }
     
     /**
@@ -114,5 +112,14 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
     @SneakyThrows(ConcurrentException.class)
     public PipelineTableMetaDataLoader getSourceMetaDataLoader() {
         return sourceMetaDataLoaderLazyInitializer.get();
+    }
+    
+    /**
+     * Is source and target database the same or not.
+     *
+     * @return true if source and target database the same, otherwise false
+     */
+    public boolean isSourceTargetDatabaseTheSame() {
+        return jobConfig.getSourceDatabaseType().equalsIgnoreCase(jobConfig.getTargetDatabaseType());
     }
 }

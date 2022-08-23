@@ -83,7 +83,7 @@ rules:
           chunk-size: # 一次查询操作返回的最大记录数
 ```
 
-`dataConsistencyChecker` 的 `type` 可以通过执行 DistSQL `SHOW SCALING CHECK ALGORITHMS` 查询到。简单对比：
+`dataConsistencyChecker` 的 `type` 可以通过执行 DistSQL `SHOW MIGRATION CHECK ALGORITHMS` 查询到。简单对比：
 - `DATA_MATCH`：支持所有数据库，但是性能不是最好的。
 - `CRC32_MATCH`：只支持 `MySQL`，但是性能更好。
 
