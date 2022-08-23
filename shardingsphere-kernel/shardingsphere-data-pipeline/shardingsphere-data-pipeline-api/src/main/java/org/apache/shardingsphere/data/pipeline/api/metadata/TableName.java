@@ -30,15 +30,18 @@ import java.util.Objects;
 @Getter
 public class TableName {
     
-    // TODO original
+    @NonNull
+    private final String original;
     
     @NonNull
     private final String lowercase;
     
     public TableName(final String tableName) {
+        this.original = tableName;
         this.lowercase = tableName.toLowerCase();
     }
     
+    // TODO table name case-sensitive for some database
     @Override
     public boolean equals(final Object o) {
         if (this == o) {
@@ -58,6 +61,6 @@ public class TableName {
     
     @Override
     public String toString() {
-        return lowercase;
+        return original;
     }
 }

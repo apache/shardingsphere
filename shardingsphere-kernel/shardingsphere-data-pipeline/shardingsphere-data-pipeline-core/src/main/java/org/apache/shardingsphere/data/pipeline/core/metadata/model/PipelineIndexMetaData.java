@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.metadata.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
+@ToString
 public final class PipelineIndexMetaData {
     
     private final String name;

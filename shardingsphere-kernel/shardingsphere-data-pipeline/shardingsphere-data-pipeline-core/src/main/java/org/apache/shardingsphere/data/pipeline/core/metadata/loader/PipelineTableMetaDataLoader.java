@@ -133,6 +133,9 @@ public final class PipelineTableMetaDataLoader {
         try (ResultSet resultSet = connection.getMetaData().getIndexInfo(connection.getCatalog(), schemaName, tableName, true, false)) {
             while (resultSet.next()) {
                 String indexName = resultSet.getString("INDEX_NAME");
+                if (null == indexName) {
+                    continue;
+                }
                 result.computeIfAbsent(indexName, unused -> new PipelineIndexMetaData(indexName, new LinkedList<>()));
                 orderedColumnsOfIndexes.computeIfAbsent(indexName, unused -> new TreeMap<>()).put(resultSet.getShort("ORDINAL_POSITION"), resultSet.getString("COLUMN_NAME"));
             }
