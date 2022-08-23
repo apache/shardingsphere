@@ -17,6 +17,7 @@
   -->
 
 <sql-parser-test-cases>
+    <show-migration-source-resources sql-case-id="show-migration-source-resources" />
     <show-migration-list sql-case-id="show-migration-list" />
     <show-migration-check-algorithms sql-case-id="show-migration-check-algorithms" />
     

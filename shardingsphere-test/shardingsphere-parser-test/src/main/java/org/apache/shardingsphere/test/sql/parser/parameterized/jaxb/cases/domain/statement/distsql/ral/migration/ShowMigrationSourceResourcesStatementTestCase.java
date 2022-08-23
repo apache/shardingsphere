@@ -15,10 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.session.cursor;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Cursor definition.
+ * Show migration source resources statement test case.
  */
-public interface CursorDefinition {
+@Getter
+@Setter
+public final class ShowMigrationSourceResourcesStatementTestCase extends SQLParserTestCase {
+    
 }

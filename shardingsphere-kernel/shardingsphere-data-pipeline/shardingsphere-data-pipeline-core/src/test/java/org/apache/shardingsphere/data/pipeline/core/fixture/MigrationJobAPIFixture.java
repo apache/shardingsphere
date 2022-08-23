@@ -168,6 +168,11 @@ public final class MigrationJobAPIFixture implements MigrationJobAPI {
     }
     
     @Override
+    public Collection<Collection<Object>> listMigrationSourceResources() {
+        return null;
+    }
+    
+    @Override
     public void createJobAndStart(final CreateMigrationJobParameter parameter) {
     }
     

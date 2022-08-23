@@ -26,3 +26,7 @@ showShardingScalingRules
 schemaName
     : IDENTIFIER
     ;
+
+showMigrationSourceResources
+    : SHOW MIGRATION SOURCE RESOURCES
+    ;

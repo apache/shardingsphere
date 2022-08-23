@@ -28,6 +28,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDat
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.api.pojo.CreateMigrationJobParameter;
 import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
@@ -40,13 +41,17 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAP
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobItemContext;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -63,6 +68,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @Slf4j
+@RunWith(MockitoJUnitRunner.class)
 public final class MigrationJobAPIImplTest {
     
     private static MigrationJobAPI jobAPI;
@@ -71,6 +77,18 @@ public final class MigrationJobAPIImplTest {
     public static void beforeClass() {
         PipelineContextUtil.mockModeConfigAndContextManager();
         jobAPI = MigrationJobAPIFactory.getInstance();
+        Map<String, Object> props = new HashMap<>();
+        props.put("jdbcUrl", "jdbc:mysql://localhost:3306/test");
+        props.put("username", "root");
+        props.put("password", "root");
+        Map<String, DataSourceProperties> expect = new LinkedHashMap<>(1, 1);
+        expect.put("ds_0", new DataSourceProperties("com.zaxxer.hikari.HikariDataSource", props));
+        jobAPI.addMigrationSourceResources(expect);
+    }
+    
+    @AfterClass
+    public static void afterClass() {
+        jobAPI.dropMigrationSourceResources(Collections.singletonList("ds_0"));
     }
     
     @Test
@@ -268,13 +286,6 @@ public final class MigrationJobAPIImplTest {
     
     @Test
     public void assertAddMigrationSourceResources() {
-        Map<String, Object> props = new HashMap<>();
-        props.put("jdbcUrl", "jdbc:mysql://localhost:3306/test");
-        props.put("username", "root");
-        props.put("password", "root");
-        Map<String, DataSourceProperties> expect = new LinkedHashMap<>(1, 1);
-        expect.put("ds_0", new DataSourceProperties("com.zaxxer.hikari.HikariDataSource", props));
-        jobAPI.addMigrationSourceResources(expect);
         PipelineDataSourcePersistService persistService = new PipelineDataSourcePersistService();
         Map<String, DataSourceProperties> actual = persistService.load(JobType.MIGRATION);
         assertTrue(actual.containsKey("ds_0"));
@@ -282,7 +293,15 @@ public final class MigrationJobAPIImplTest {
     
     @Test
     public void assertCreateJobConfig() {
-        // CreateMigrationJobParameter parameter = new CreateMigrationJobParameter();
-        // jobAPI.createJobConfig(parameter);
+        CreateMigrationJobParameter parameter = new CreateMigrationJobParameter("ds_0", null, "t_order", "logic_db", "t_order");
+        jobAPI.createJobAndStart(parameter);
+    }
+    
+    @Test
+    public void assertShowMigrationSourceResources() {
+        Collection<Collection<Object>> actual = jobAPI.listMigrationSourceResources();
+        assertThat(actual.size(), is(1));
+        Collection<Object> objects = actual.iterator().next();
+        assertThat(objects.toArray()[0], is("ds_0"));
     }
 }

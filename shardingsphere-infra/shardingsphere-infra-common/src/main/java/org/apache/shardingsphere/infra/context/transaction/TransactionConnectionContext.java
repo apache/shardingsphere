@@ -15,41 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.session.cursor;
+package org.apache.shardingsphere.infra.context.transaction;
 
 import lombok.Getter;
-
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import lombok.Setter;
 
 /**
- * Cursor connection context.
+ * Transaction connection context.
  */
 @Getter
-public final class CursorConnectionContext implements AutoCloseable {
+@Setter
+public final class TransactionConnectionContext implements AutoCloseable {
     
-    private final Map<String, List<FetchGroup>> orderByValueGroups = new ConcurrentHashMap<>();
+    private volatile boolean inTransaction;
     
-    private final Map<String, Long> minGroupRowCounts = new ConcurrentHashMap<>();
-    
-    private final Map<String, CursorDefinition> cursorDefinitions = new ConcurrentHashMap<>();
+    private volatile String readWriteSplitReplicaRoute;
     
     @Override
     public void close() {
-        orderByValueGroups.clear();
-        minGroupRowCounts.clear();
-        cursorDefinitions.clear();
-    }
-    
-    /**
-     * Remove cursor name.
-     * 
-     * @param name cursor name
-     */
-    public void removeCursorName(final String name) {
-        orderByValueGroups.remove(name);
-        minGroupRowCounts.remove(name);
-        cursorDefinitions.remove(name);
+        inTransaction = false;
+        readWriteSplitReplicaRoute = null;
     }
 }

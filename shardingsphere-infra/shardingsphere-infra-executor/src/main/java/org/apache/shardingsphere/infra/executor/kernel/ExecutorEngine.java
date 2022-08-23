@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.infra.executor.kernel;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
+import org.apache.shardingsphere.infra.util.exception.sql.UnknownSQLException;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -164,7 +164,7 @@ public final class ExecutorEngine implements AutoCloseable {
         if (exception.getCause() instanceof SQLException) {
             throw (SQLException) exception.getCause();
         }
-        throw new ShardingSphereException(exception);
+        throw new UnknownSQLException(exception);
     }
     
     @Override

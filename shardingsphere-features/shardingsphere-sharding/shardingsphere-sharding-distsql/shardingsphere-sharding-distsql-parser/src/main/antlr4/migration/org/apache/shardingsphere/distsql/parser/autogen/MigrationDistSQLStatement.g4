@@ -39,5 +39,6 @@ execute
     | disableShardingScalingRule
     | addMigrationSourceResource
     | dropMigrationSourceResource
+    | showMigrationSourceResources
     ) SEMI?
     ;

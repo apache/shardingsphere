@@ -15,25 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.session.transaction;
+package org.apache.shardingsphere.migration.distsql.statement;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
 
 /**
- * Transaction connection context.
+ * Show migration source resources statement.
  */
-@Getter
-@Setter
-public final class TransactionConnectionContext implements AutoCloseable {
-    
-    private volatile boolean inTransaction;
-    
-    private volatile String readWriteSplitReplicaRoute;
-    
-    @Override
-    public void close() {
-        inTransaction = false;
-        readWriteSplitReplicaRoute = null;
-    }
+public class ShowMigrationSourceResourcesStatement extends QueryableScalingRALStatement {
 }
