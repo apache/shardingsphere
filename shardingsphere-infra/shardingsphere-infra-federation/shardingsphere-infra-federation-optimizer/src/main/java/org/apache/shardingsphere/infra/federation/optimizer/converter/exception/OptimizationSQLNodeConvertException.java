@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.exception;
+package org.apache.shardingsphere.infra.federation.optimizer.converter.exception;
 
-import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
-
-import java.util.Collection;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Unsupported actual data node structure exception.
+ * Optimization SQL node convert exception.
  */
-public final class UnsupportedActualDataNodeStructureException extends ShardingSphereSQLException {
+public final class OptimizationSQLNodeConvertException extends ShardingSphereSQLException {
     
-    private static final long serialVersionUID = -8921823916974492519L;
+    private static final long serialVersionUID = -5486229929620713984L;
     
-    public UnsupportedActualDataNodeStructureException(final DataNode dataNode, final Collection<String> jdbcUrlPrefixes) {
-        super(XOpenSQLState.SYNTAX_ERROR, 10002, "Can not support 3-tier structure for actual data node `%s` with JDBC `%s`", dataNode.format(), jdbcUrlPrefixes.toString());
+    public OptimizationSQLNodeConvertException(final SQLStatement statement) {
+        super(XOpenSQLState.SYNTAX_ERROR, 10003, "Unsupported SQL node conversion for SQL statement `%s`", statement.toString());
     }
 }
