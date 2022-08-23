@@ -22,6 +22,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 42000     | 11200       | Can not support database \`%s\` in SQL translation |
 | 42000     | 11201       | Translation error, SQL is: %s |
 | 25000     | 11320       | Switch transaction type failed, please terminate the current transaction |
+| 42S02     | 11400       | Can not get traffic execution unit |
 | 42000     | 12000       | Unsupported command: %s |
 | 44000     | 13000       | SQL check failed, error message: %s |
 | HY000     | 14000       | The table \`%s\` of schema \`%s\` is locked |
