@@ -176,20 +176,43 @@ public final class ShadowRule implements DatabaseRule, DataSourceContainedRule {
     /**
      * Get related column shadow algorithms by table name.
      *
-     * @param tableName table name
      * @param shadowOperationType shadow operation type
+     * @param tableName table name
+     * @param shadowColumn shadow column
      * @return column shadow algorithms
      */
     @SuppressWarnings("unchecked")
-    public Collection<ColumnShadowAlgorithm<Comparable<?>>> getRelatedColumnShadowAlgorithms(final String tableName, final ShadowOperationType shadowOperationType) {
+    public Collection<ColumnShadowAlgorithm<Comparable<?>>> getRelatedColumnShadowAlgorithms(final ShadowOperationType shadowOperationType, final String tableName, final String shadowColumn) {
         Collection<ColumnShadowAlgorithm<Comparable<?>>> result = new LinkedList<>();
-        Map<ShadowOperationType, Collection<String>> columnShadowAlgorithmNames = shadowTableRules.get(tableName).getColumnShadowAlgorithmNames();
-        Collection<String> names = columnShadowAlgorithmNames.get(shadowOperationType);
+        Map<ShadowOperationType, Collection<ShadowAlgorithmNameRule>> columnShadowAlgorithmNames = shadowTableRules.get(tableName).getColumnShadowAlgorithmNames();
+        Collection<ShadowAlgorithmNameRule> names = columnShadowAlgorithmNames.get(shadowOperationType);
         if (Objects.isNull(names)) {
             return result;
         }
-        for (String each : names) {
-            result.add((ColumnShadowAlgorithm<Comparable<?>>) shadowAlgorithms.get(each));
+        for (ShadowAlgorithmNameRule each : names) {
+            if (shadowColumn.equals(each.getShadowColumnName())) {
+                result.add((ColumnShadowAlgorithm<Comparable<?>>) shadowAlgorithms.get(each.getShadowAlgorithmName()));
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Get related shadow column names.
+     *
+     * @param shadowOperationType shadow operation type
+     * @param tableName table name
+     * @return related shadow column names
+     */
+    public Collection<String> getRelatedShadowColumnNames(final ShadowOperationType shadowOperationType, final String tableName) {
+        Collection<String> result = new LinkedList<>();
+        Map<ShadowOperationType, Collection<ShadowAlgorithmNameRule>> columnShadowAlgorithmNames = shadowTableRules.get(tableName).getColumnShadowAlgorithmNames();
+        Collection<ShadowAlgorithmNameRule> names = columnShadowAlgorithmNames.get(shadowOperationType);
+        if (Objects.isNull(names)) {
+            return result;
+        }
+        for (ShadowAlgorithmNameRule each : names) {
+            result.add(each.getShadowColumnName());
         }
         return result;
     }
