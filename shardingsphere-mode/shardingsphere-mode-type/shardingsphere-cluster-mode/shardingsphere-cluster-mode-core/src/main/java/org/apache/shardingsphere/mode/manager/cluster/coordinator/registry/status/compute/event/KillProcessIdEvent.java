@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * Kill processID event.
+ * Kill process id event.
  */
 @RequiredArgsConstructor
 @Getter

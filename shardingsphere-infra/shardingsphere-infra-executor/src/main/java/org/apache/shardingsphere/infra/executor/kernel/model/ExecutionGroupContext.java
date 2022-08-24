@@ -38,7 +38,7 @@ public final class ExecutionGroupContext<T> {
     
     private final Collection<ExecutionGroup<T>> inputGroups;
     
-    private final String executionID = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replaceAll("-", "");
+    private final String executionID = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", "");
     
     private volatile String databaseName;
     

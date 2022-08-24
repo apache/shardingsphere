@@ -49,7 +49,7 @@ public final class ProcessStandaloneSubscriber {
     @Subscribe
     public void loadShowProcessListData(final ShowProcessListRequestEvent event) {
         BatchYamlExecuteProcessContext batchYamlExecuteProcessContext = new BatchYamlExecuteProcessContext(new ArrayList<>(
-                ShowProcessListManager.getInstance().getProcessContextMap().values()));
+                ShowProcessListManager.getInstance().getProcessContexts().values()));
         eventBusContext.post(new ShowProcessListResponseEvent(batchYamlExecuteProcessContext.getContexts().isEmpty()
                 ? Collections.emptyList()
                 : Collections.singletonList(YamlEngine.marshal(batchYamlExecuteProcessContext))));

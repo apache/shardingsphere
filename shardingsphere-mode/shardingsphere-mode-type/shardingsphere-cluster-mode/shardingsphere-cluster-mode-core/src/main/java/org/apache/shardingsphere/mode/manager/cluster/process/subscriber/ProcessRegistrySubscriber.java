@@ -83,7 +83,6 @@ public final class ProcessRegistrySubscriber {
     @Subscribe
     public void killProcessId(final KillProcessIdRequestEvent event) {
         String processId = event.getProcessId();
-        // current saturn processId not exist, maybe in other saturn process.
         boolean killProcessIdIsComplete = false;
         Collection<String> processKillPaths = getProcessKillPaths(processId);
         try {

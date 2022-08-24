@@ -31,8 +31,8 @@ import org.apache.shardingsphere.infra.executor.sql.process.spi.ExecuteProcessRe
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Governance execute process reporter.
@@ -44,7 +44,7 @@ public final class GovernanceExecuteProcessReporter implements ExecuteProcessRep
                        final ExecuteProcessConstants constants, final EventBusContext eventBusContext) {
         ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(queryContext.getSql(), executionGroupContext, constants);
         ShowProcessListManager.getInstance().putProcessContext(executeProcessContext.getExecutionID(), new YamlExecuteProcessContext(executeProcessContext));
-        ShowProcessListManager.getInstance().putProcessStatement(executeProcessContext.getExecutionID(), collectProcessStatement(executionGroupContext));
+        ShowProcessListManager.getInstance().putProcessStatement(executeProcessContext.getExecutionID(), getProcessStatement(executionGroupContext));
     }
     
     @Override
@@ -74,20 +74,13 @@ public final class GovernanceExecuteProcessReporter implements ExecuteProcessRep
     public void reportClean(final String executionID) {
         ShowProcessListManager.getInstance().removeProcessContext(executionID);
     }
-
-    private List<Statement> collectProcessStatement(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
-        List<Statement> result = new ArrayList<>();
-        if (null == executionGroupContext.getInputGroups()) {
-            return result;
-        }
-        for (ExecutionGroup<? extends SQLExecutionUnit> inputGroup : executionGroupContext.getInputGroups()) {
-            if (null == inputGroup.getInputs()) {
-                continue;
-            }
-            for (SQLExecutionUnit executionUnit : inputGroup.getInputs()) {
+    
+    private Collection<Statement> getProcessStatement(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
+        Collection<Statement> result = new LinkedList<>();
+        for (ExecutionGroup<? extends SQLExecutionUnit> each : executionGroupContext.getInputGroups()) {
+            for (SQLExecutionUnit executionUnit : each.getInputs()) {
                 if (executionUnit instanceof JDBCExecutionUnit) {
-                    JDBCExecutionUnit jdbcExecutionUnit = (JDBCExecutionUnit) executionUnit;
-                    result.add(jdbcExecutionUnit.getStorageResource());
+                    result.add(((JDBCExecutionUnit) executionUnit).getStorageResource());
                 }
             }
         }

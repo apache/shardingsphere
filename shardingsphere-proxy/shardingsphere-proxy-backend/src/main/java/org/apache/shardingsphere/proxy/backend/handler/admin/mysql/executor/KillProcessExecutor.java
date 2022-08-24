@@ -30,10 +30,10 @@ import java.sql.SQLException;
  */
 public final class KillProcessExecutor implements DatabaseAdminExecutor {
     
-    private final MySQLKillStatement mySQLKillStatement;
+    private final MySQLKillStatement killStatement;
     
     public KillProcessExecutor(final MySQLKillStatement sqlStatement) {
-        this.mySQLKillStatement = sqlStatement;
+        this.killStatement = sqlStatement;
     }
     
     /**
@@ -44,7 +44,7 @@ public final class KillProcessExecutor implements DatabaseAdminExecutor {
      */
     @Override
     public void execute(final ConnectionSession connectionSession) throws SQLException {
-        String processlistId = mySQLKillStatement.getProcesslistId();
+        String processlistId = killStatement.getProcesslistId();
         ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext().post(new KillProcessIdRequestEvent(processlistId));
     }
 }
