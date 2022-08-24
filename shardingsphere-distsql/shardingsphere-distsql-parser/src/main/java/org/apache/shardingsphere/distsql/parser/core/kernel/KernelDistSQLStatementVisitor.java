@@ -20,6 +20,7 @@ package org.apache.shardingsphere.distsql.parser.core.kernel;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AddResourceContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterDefaultSingleTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterInstanceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterMigrationProcessConfigurationContext;
@@ -464,6 +465,22 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
             return null;
         }
         return (AlgorithmSegment) visit(ctx);
+    }
+    
+    @Override
+    public ASTNode visitAlgorithmDefinition(final AlgorithmDefinitionContext ctx) {
+        return new AlgorithmSegment(getIdentifierValue(ctx.algorithmTypeName()), buildProperties(ctx.propertiesDefinition()));
+    }
+    
+    private Properties buildProperties(final PropertiesDefinitionContext ctx) {
+        Properties result = new Properties();
+        if (null == ctx) {
+            return result;
+        }
+        for (PropertyContext each : ctx.properties().property()) {
+            result.setProperty(IdentifierValue.getQuotedContent(each.key.getText()), IdentifierValue.getQuotedContent(each.value.getText()));
+        }
+        return result;
     }
     
     private Integer getWorkerThread(final WorkerThreadContext ctx) {

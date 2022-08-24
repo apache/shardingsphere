@@ -29,6 +29,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class MigrationDistSQLCommand {
     
+    @XmlElement(name = "add-migration-process-config")
+    private String addMigrationProcessConfig;
+    
     @XmlElement(name = "create-target-order-table-rule")
     private String createTargetOrderTableRule;
     

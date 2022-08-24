@@ -294,7 +294,12 @@ public final class MigrationJobAPIImplTest {
     @Test
     public void assertCreateJobConfig() {
         CreateMigrationJobParameter parameter = new CreateMigrationJobParameter("ds_0", null, "t_order", "logic_db", "t_order");
-        jobAPI.createJobAndStart(parameter);
+        String jobId = jobAPI.createJobAndStart(parameter);
+        MigrationJobConfiguration jobConfig = jobAPI.getJobConfiguration(jobId);
+        assertThat(jobConfig.getSourceResourceName(), is("ds_0"));
+        assertThat(jobConfig.getSourceTableName(), is("t_order"));
+        assertThat(jobConfig.getTargetDatabaseName(), is("logic_db"));
+        assertThat(jobConfig.getTargetTableName(), is("t_order"));
     }
     
     @Test

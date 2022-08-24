@@ -39,7 +39,7 @@ public final class YamlMigrationJobConfiguration implements YamlPipelineJobConfi
     
     private String targetDatabaseName;
     
-    private String sourceDataSourceName;
+    private String sourceResourceName;
     
     private String sourceSchemaName;
     

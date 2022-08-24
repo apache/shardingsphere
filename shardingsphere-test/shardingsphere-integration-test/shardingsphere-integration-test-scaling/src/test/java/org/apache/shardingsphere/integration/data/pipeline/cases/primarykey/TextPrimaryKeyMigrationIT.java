@@ -72,7 +72,7 @@ public class TextPrimaryKeyMigrationIT extends BaseExtraSQLITCase {
     public void assertTextPrimaryMigrationSuccess() throws SQLException {
         createSourceOrderTable();
         batchInsertOrder();
-        createScalingRule();
+        addMigrationProcessConfig();
         addSourceResource();
         addTargetResource();
         createTargetOrderTableRule();
@@ -80,7 +80,7 @@ public class TextPrimaryKeyMigrationIT extends BaseExtraSQLITCase {
         String jobId = listJobId().get(0);
         waitMigrationFinished(jobId);
         stopMigrationByJobId(jobId);
-        assertCheckScalingSuccess(jobId);
+        assertCheckMigrationSuccess(jobId);
         cleanMigrationByJobId(jobId);
         List<String> lastJobIds = listJobId();
         assertThat(lastJobIds.size(), is(0));
