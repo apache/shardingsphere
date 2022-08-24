@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.metadata.persist.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang.StringUtils;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -167,8 +168,10 @@ public final class DatabaseMetaDataPersistService {
         ShardingSphereSchema schema = new ShardingSphereSchema();
         tables.forEach(each -> {
             String content = repository.get(DatabaseMetaDataNode.getTableMetaDataPath(databaseName, schemaName, each));
-            ShardingSphereTable table = new YamlTableSwapper().swapToObject(YamlEngine.unmarshal(content, YamlShardingSphereTable.class));
-            schema.put(each, table);
+            if (!StringUtils.isEmpty(content)) {
+                ShardingSphereTable table = new YamlTableSwapper().swapToObject(YamlEngine.unmarshal(content, YamlShardingSphereTable.class));
+                schema.put(each, table);
+            }
         });
         return Optional.of(schema);
     }
