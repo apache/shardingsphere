@@ -15,15 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.dumper;
+package org.apache.shardingsphere.data.pipeline.core.ingest.dumper;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 /**
- * Dumper factory.
+ * Incremental dumper creator factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DumperFactory {
+public class IncrementalDumperCreatorFactory {
     
+    static {
+        ShardingSphereServiceLoader.register(IncrementalDumperCreator.class);
+    }
+    
+    /**
+     * Incremental dumper creator.
+     *
+     * @param databaseType database type
+     * @return Incremental dumper creator
+     */
+    public static IncrementalDumperCreator getInstance(final String databaseType) {
+        return TypedSPIRegistry.getRegisteredService(IncrementalDumperCreator.class, databaseType);
+    }
 }
