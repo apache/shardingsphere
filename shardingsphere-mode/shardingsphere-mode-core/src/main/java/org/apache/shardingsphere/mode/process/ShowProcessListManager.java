@@ -23,7 +23,9 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
 import org.apache.shardingsphere.mode.process.lock.ShowProcessListSimpleLock;
 
+import java.sql.Statement;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -37,6 +39,9 @@ public final class ShowProcessListManager {
     
     @Getter
     private final Map<String, YamlExecuteProcessContext> processContextMap = new ConcurrentHashMap<>();
+    
+    @Getter
+    private final Map<String, List<Statement>> processStatementMap = new ConcurrentHashMap<>();
     
     @Getter
     private final Map<String, ShowProcessListSimpleLock> locks = new ConcurrentHashMap<>();
@@ -61,6 +66,19 @@ public final class ShowProcessListManager {
     }
     
     /**
+     * Put process statements.
+     *
+     * @param executionId execution id
+     * @param statements statements
+     */
+    public void putProcessStatement(final String executionId, final List<Statement> statements) {
+        if (statements.isEmpty()) {
+            return;
+        }
+        processStatementMap.put(executionId, statements);
+    }
+    
+    /**
      * Get execute process context.
      * 
      * @param executionId execution id
@@ -71,12 +89,31 @@ public final class ShowProcessListManager {
     }
     
     /**
+     * Get execute process statement.
+     *
+     * @param executionId execution id
+     * @return execute statements
+     */
+    public List<Statement> getProcessStatement(final String executionId) {
+        return processStatementMap.get(executionId);
+    }
+    
+    /**
      * Remove execute process context.
      * 
      * @param executionId execution id
      */
     public void removeProcessContext(final String executionId) {
         processContextMap.remove(executionId);
+    }
+    
+    /**
+     * Remove execute process statement.
+     *
+     * @param executionId execution id
+     */
+    public void removeProcessStatement(final String executionId) {
+        processStatementMap.remove(executionId);
     }
     
     /**

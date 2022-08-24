@@ -377,7 +377,7 @@ tablesOption
     ;
 
 kill
-    : KILL (CONNECTION | QUERY)? NUMBER_
+    : KILL (CONNECTION | QUERY)? IDENTIFIER_
     ;
 
 loadIndexInfo

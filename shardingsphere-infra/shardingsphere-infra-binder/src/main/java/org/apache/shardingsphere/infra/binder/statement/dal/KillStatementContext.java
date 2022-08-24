@@ -15,32 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.kernel.model;
+package org.apache.shardingsphere.infra.binder.statement.dal;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
-
-import java.util.Collection;
-import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
+import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLKillStatement;
 
 /**
- * Execution group context.
- *
- * @param <T> type of execution input value
+ * Kill process statement.
  */
-@RequiredArgsConstructor
-@Getter
-@Setter
-public final class ExecutionGroupContext<T> {
+public final class KillStatementContext extends CommonSQLStatementContext<MySQLKillStatement> {
     
-    private final Collection<ExecutionGroup<T>> inputGroups;
-    
-    private final String executionID = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replaceAll("-", "");
-    
-    private volatile String databaseName;
-    
-    private volatile Grantee grantee;
+    public KillStatementContext(final MySQLKillStatement sqlStatement) {
+        super(sqlStatement);
+    }
 }
