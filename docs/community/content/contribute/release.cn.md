@@ -200,11 +200,6 @@ grep -l -r "${PREVIOUS.RELEASE.VERSION}" . | xargs sed -i -e "s/${PREVIOUS.RELEA
 
 将 `README.md` 和 `README_ZH.md` 里的 `${PREVIOUS.RELEASE.VERSION}` 修改为 `${RELEASE.VERSION}`。
 
-### 6. 更新 Helm Chart 版本
-
-Helm Chart 可以部署不同版本的 ShardingSphere-Proxy，版本号独立于 ShardingSphere 版本。
-修改文件 `shardingsphere-charts/apache-shardingsphere-proxy/Chart.yaml` 中的 `version`。
-
 ## 发布 Apache Maven 中央仓库
 
 ### 1. 设置 settings.xml 文件
@@ -275,20 +270,6 @@ mvn release:perform -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=tru
 点击 `Close` 来告诉 Nexus 这个构建已经完成，只有这样该版本才是可用的。
 如果电子签名等出现问题，`Close` 会失败，可以通过 `Activity` 查看失败信息。
 
-## 构建 Helm Chart
-
-```shell
-cd shardingsphere-charts/apache-shardingsphere-proxy/charts/governance
-helm dep build
-cd ../..
-helm dep build
-cd ..
-helm package apache-shardingsphere-proxy
-mv apache-shardingsphere-proxy-${CHART.RELEASE.VERSION}.tgz apache-shardingsphere-proxy-chart-${CHART.RELEASE.VERSION}.tgz
-gpg --armor --detach-sign apache-shardingsphere-proxy-chart-${CHART.RELEASE.VERSION}.tgz
-shasum -b -a 512 apache-shardingsphere-proxy-chart-${CHART.RELEASE.VERSION}.tgz > apache-shardingsphere-proxy-chart-${CHART.RELEASE.VERSION}.tgz.sha512
-```
-
 ## 发布 Apache SVN 仓库
 
 ### 1. 检出 ShardingSphere 发布目录
@@ -331,7 +312,6 @@ cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-src-distributi
 cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-jdbc-distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 cp -f ~/shardingsphere/shardingsphere-agent/shardingsphere-agent-distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere-charts/*.tgz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 ```
 
 ### 4. 提交 Apache SVN
@@ -387,7 +367,6 @@ gpg --verify apache-shardingsphere-${RELEASE.VERSION}-src.zip.asc apache-shardin
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-agent-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-agent-bin.tar.gz
-gpg --verify apache-shardingsphere-proxy-chart-${CHART.RELEASE.VERSION}.tgz.asc apache-shardingsphere-proxy-chart-${CHART.RELEASE.VERSION}.tgz
 ```
 
 ### 3. 检查发布文件内容
@@ -428,19 +407,6 @@ diff -r apache-shardingsphere-${RELEASE.VERSION}-src-release shardingsphere-${RE
   - 所有第三方依赖的许可证都在 `LICENSE` 文件中声明；
   - 依赖许可证的完整版全部在 `license` 目录；
   - 如果依赖的是 Apache 许可证并且存在 `NOTICE` 文件，那么这些 `NOTICE` 文件也需要加入到版本的 `NOTICE` 文件中。
-
-**3.4 检查 Helm Chart 制品包内容**
-
-解压缩 `apache-shardingsphere-proxy-chart-${CHART.RELEASE.VERSION}.tgz`
-
-进行如下检查：
-- 存在 `LICENSE` 和 `NOTICE` 文件；
-- `NOTICE` 文件中的年份正确；
-- 文本文件开头都有 ASF 许可证，以下文件或目录除外：
-  - 所有 Chart.yaml
-  - 所有 Chart.lock
-  - charts/governance/charts 目录
-  - charts/common 目录
 
 ## 发起投票
 
@@ -639,19 +605,7 @@ svn del -m "Archiving release ${PREVIOUS.RELEASE.VERSION}" https://dist.apache.o
 确认下载页面中的新发布版本的链接可用后，在 GitHub 页面创建 Pull Request 将分支 `${RELEASE.VERSION}-release` 合并到 `master`。
 如果代码存在冲突，可以先把 master 分支合并到 `${RELEASE.VERSION}-release`。
 
-### 9. 生成 Helm Chart 索引文件并上传
-
-```shell
-mkdir -p /tmp/charts
-cd /tmp/charts
-wget https://archive.apache.org/dist/shardingsphere/${RELEASE.VERSION}/apache-shardingsphere-proxy-chart-${CHART.RELEASE.VERSION}.tgz
-curl https://shardingsphere.apache.org/charts/index.yaml > previous_index.yaml
-helm repo index --url https://archive.apache.org/dist/shardingsphere/${RELEASE.VERSION} --merge previous_index.yaml .
-```
-
-检查生成的 `index.yaml` 文件，确认无误后更新 <https://github.com/apache/shardingsphere-doc/blob/asf-site/charts/index.yaml>。
-
-### 10. 邮件通知版本发布完成
+### 9. 邮件通知版本发布完成
 
 发送邮件到 `dev@shardingsphere.apache.org` 和 `announce@apache.org` 通知完成版本发布。
 
