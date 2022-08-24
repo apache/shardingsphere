@@ -41,13 +41,13 @@ public final class TransactionTypeHolderTest {
         TransactionTypeHolder.set(TransactionType.XA);
         assertThat(TransactionTypeHolder.get(), is(TransactionType.XA));
     }
-
+    
     @Test
     public void assertGetWithSetLocalValue() {
         TransactionTypeHolder.set(TransactionType.LOCAL);
         assertThat(TransactionTypeHolder.get(), is(TransactionType.LOCAL));
     }
-
+    
     @Test
     public void assertGetWithSetBaseValue() {
         TransactionTypeHolder.set(TransactionType.BASE);
