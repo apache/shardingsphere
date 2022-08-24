@@ -22,10 +22,10 @@ spring.shardingsphere.rules.shadow
 | default-shadow-algorithm-name | 默认影子算法名称 | 无，选配项 |
 
 ### 影子数据源配置
-| *名称*  | *说明*  | *默认值*  |
-| ------- | ------ | ----- |
-| source-data-source-name | 生产数据源名称 | 无 |
-| shadow-data-source-name | 影子数据源名称 | 无 |
+| *名称*                       | *说明*      | *默认值*  |
+| --------------------------- | ----------- | ------- |
+| production-data-source-name | 生产数据源名称 | 无      |
+| shadow-data-source-name     | 影子数据源名称 | 无      |
 
 ### 影子表配置
 | *名称*  | *说明*  | *默认值*  |
@@ -50,7 +50,7 @@ spring.shardingsphere.rules.shadow
 
 ## 配置示例
 ```properties
-spring.shardingsphere.rules.shadow.data-sources.shadow-data-source.source-data-source-name= # 生产数据源名称
+spring.shardingsphere.rules.shadow.data-sources.shadow-data-source.production-data-source-name= # 生产数据源名称
 spring.shardingsphere.rules.shadow.data-sources.shadow-data-source.shadow-data-source-name= # 影子数据源名称
 
 spring.shardingsphere.rules.shadow.tables.<table-name>.data-source-names= # 影子表关联影子数据源名称列表（多个值用","隔开）
