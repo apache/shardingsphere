@@ -22,7 +22,6 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.BasicColumnVal
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Types;
 
 /**
  * Column value reader for MySQL.
@@ -36,15 +35,9 @@ public final class MySQLColumnValueReader extends BasicColumnValueReader {
         if (isYearDataType(resultSetMetaData.getColumnTypeName(columnIndex))) {
             Object result = resultSet.getObject(columnIndex);
             return resultSet.wasNull() ? null : result;
-        } else if (isDateTimeValue(resultSetMetaData.getColumnType(columnIndex))) {
-            return resultSet.getString(columnIndex);
         } else {
             return super.readValue(resultSet, resultSetMetaData, columnIndex);
         }
-    }
-    
-    private boolean isDateTimeValue(final int columnType) {
-        return Types.TIME == columnType || Types.DATE == columnType || Types.TIMESTAMP == columnType;
     }
     
     private boolean isYearDataType(final String columnDataTypeName) {
