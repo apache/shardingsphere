@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.cases.general;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -68,6 +69,7 @@ public final class MySQLMigrationGeneralIT extends BaseExtraSQLITCase {
     }
     
     @Test
+    @SneakyThrows
     public void assertMigrationSuccess() {
         addMigrationProcessConfig();
         createSourceOrderTable();

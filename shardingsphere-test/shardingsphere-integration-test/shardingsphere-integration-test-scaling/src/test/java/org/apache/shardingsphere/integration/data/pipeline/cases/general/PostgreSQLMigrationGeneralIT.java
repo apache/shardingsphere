@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.cases.general;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
@@ -33,6 +34,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -73,6 +75,7 @@ public final class PostgreSQLMigrationGeneralIT extends BaseExtraSQLITCase {
     }
     
     @Test
+    @SneakyThrows
     public void assertMigrationSuccess() {
         addMigrationProcessConfig();
         createSourceSchema(SCHEMA_NAME);
@@ -98,7 +101,7 @@ public final class PostgreSQLMigrationGeneralIT extends BaseExtraSQLITCase {
         assertGreaterThanOrderTableInitRows(TABLE_INIT_ROW_COUNT, SCHEMA_NAME);
     }
     
-    private void checkOrderMigration(final JdbcTemplate jdbcTemplate) {
+    private void checkOrderMigration(final JdbcTemplate jdbcTemplate) throws SQLException {
         startMigrationOrder(true);
         startIncrementTask(new PostgreSQLIncrementTask(jdbcTemplate, SCHEMA_NAME, false, 20));
         String jobId = getJobIdByTableName("t_order");

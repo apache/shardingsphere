@@ -100,15 +100,18 @@ public final class MigrationJobPreparer {
         String lockName = "prepare-" + jobConfig.getJobId();
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
         LockDefinition lockDefinition = new ExclusiveLockDefinition(lockName);
-        JOB_API.persistJobItemProgress(jobItemContext);
         if (lockContext.tryLock(lockDefinition, 180000)) {
             log.info("try lock success, jobId={}, shardingItem={}", jobConfig.getJobId(), jobItemContext.getShardingItem());
+            if (null == JOB_API.getJobProgress(jobItemContext.getJobId())) {
+                JOB_API.persistJobItemProgress(jobItemContext);
+            }
             try {
                 InventoryIncrementalJobItemProgress jobItemProgress = JOB_API.getJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem());
                 boolean prepareFlag = null == jobItemProgress || JobStatus.PREPARING.equals(jobItemProgress.getStatus()) || JobStatus.RUNNING.equals(jobItemProgress.getStatus())
                         || JobStatus.PREPARING_FAILURE.equals(jobItemProgress.getStatus());
                 if (prepareFlag) {
-                    log.info("execute prepare, jobId={}, shardingItem={}", jobConfig.getJobId(), jobItemContext.getShardingItem());
+                    log.info("execute prepare, jobId={}, shardingItem={}, jobStatus={}", jobConfig.getJobId(), jobItemContext.getShardingItem(), 
+                            null == jobItemProgress ? null : jobItemProgress.getStatus());
                     jobItemContext.setStatus(JobStatus.PREPARING);
                     JOB_API.updateJobItemStatus(jobConfig.getJobId(), jobItemContext.getShardingItem(), JobStatus.PREPARING);
                     prepareAndCheckTarget(jobItemContext);

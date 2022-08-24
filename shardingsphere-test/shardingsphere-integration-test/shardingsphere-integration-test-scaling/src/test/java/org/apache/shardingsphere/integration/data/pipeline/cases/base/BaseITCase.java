@@ -42,7 +42,6 @@ import org.apache.shardingsphere.test.integration.env.container.atomic.util.Data
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.junit.Rule;
 import org.opengauss.util.PSQLException;
-import org.springframework.jdbc.BadSqlGrammarException;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXB;
@@ -243,12 +242,12 @@ public abstract class BaseITCase {
         }
     }
     
-    // TODO use new DistSQL
+    // TODO ignore error when sue native mode
     protected void addMigrationProcessConfig() {
         proxyExecuteWithLog(migrationDistSQLCommand.getAddMigrationProcessConfig(), 0);
     }
     
-    protected void createSourceSchema(final String schemaName) {
+    protected void createSourceSchema(final String schemaName) throws SQLException {
         if (DatabaseTypeUtil.isPostgreSQL(databaseType)) {
             sourceExecuteWithLog(String.format("CREATE SCHEMA IF NOT EXISTS %s", schemaName));
             return;
@@ -256,19 +255,16 @@ public abstract class BaseITCase {
         if (DatabaseTypeUtil.isOpenGauss(databaseType)) {
             try {
                 sourceExecuteWithLog(String.format("CREATE SCHEMA %s", schemaName));
-            } catch (final BadSqlGrammarException ex) {
+            } catch (final SQLException ex) {
                 // only used for native mode.
-                if (ex.getCause() instanceof PSQLException && "42P06".equals(((PSQLException) ex.getCause()).getSQLState())) {
+                if (ex instanceof PSQLException && "42P06".equals(ex.getSQLState())) {
                     log.info("Schema {} already exists.", schemaName);
-                } else {
-                    throw ex;
                 }
             }
         }
     }
     
-    @SneakyThrows(SQLException.class)
-    protected void sourceExecuteWithLog(final String sql) {
+    protected void sourceExecuteWithLog(final String sql) throws SQLException {
         log.info("source execute :{}", sql);
         try (Connection connection = sourceDataSource.getConnection()) {
             connection.createStatement().execute(sql);
