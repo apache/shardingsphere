@@ -15,30 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.check.datasource;
+package org.apache.shardingsphere.data.pipeline.spi.ingest.dumper;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 
 /**
- * Data source checker.
+ * Column value reader.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataSourceCheckerFactory {
-    
-    static {
-        ShardingSphereServiceLoader.register(DataSourceChecker.class);
-    }
+@SingletonSPI
+public interface ColumnValueReader extends TypedSPI {
     
     /**
-     * Get instance of data source checker.
+     * Read column value.
      *
-     * @param databaseType database type
-     * @return got instance
+     * @param resultSet result set
+     * @param resultSetMetaData result set meta data
+     * @param columnIndex column index
+     * @return column value
+     * @throws SQLException from database
      */
-    public static DataSourceChecker getInstance(final String databaseType) {
-        return TypedSPIRegistry.getRegisteredService(DataSourceChecker.class, databaseType);
-    }
+    Object readValue(ResultSet resultSet, ResultSetMetaData resultSetMetaData, int columnIndex) throws SQLException;
 }

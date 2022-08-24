@@ -15,33 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest;
+package org.apache.shardingsphere.data.pipeline.core.ingest.dumper;
 
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.AbstractInventoryDumper;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.InventoryDumper;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 /**
- * MySQL JDBC Dumper.
+ * Default inventory dumper creator.
  */
-public final class MySQLInventoryDumper extends AbstractInventoryDumper {
-    
-    public MySQLInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final PipelineChannel channel,
-                                final DataSource dataSource, final PipelineTableMetaDataLoader metaDataLoader) {
-        super(inventoryDumperConfig, channel, dataSource, metaDataLoader);
-    }
+public final class DefaultInventoryDumperCreator implements InventoryDumperCreator {
     
     @Override
-    protected PreparedStatement createPreparedStatement(final Connection connection, final String sql) throws SQLException {
-        PreparedStatement result = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-        result.setFetchSize(Integer.MIN_VALUE);
-        return result;
+    public InventoryDumper createInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final PipelineChannel channel,
+                                                 final DataSource sourceDataSource, final PipelineTableMetaDataLoader sourceMetaDataLoader) {
+        return new DefaultInventoryDumper(inventoryDumperConfig, channel, sourceDataSource, sourceMetaDataLoader);
     }
 }

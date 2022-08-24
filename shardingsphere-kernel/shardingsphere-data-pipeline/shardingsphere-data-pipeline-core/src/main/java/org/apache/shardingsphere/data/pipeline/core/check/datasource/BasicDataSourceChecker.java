@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.fixture;
+package org.apache.shardingsphere.data.pipeline.core.check.datasource;
 
-import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
-import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
+import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
 import java.util.Collection;
 
-public final class FixtureDataSourceChecker implements DataSourceChecker {
+/**
+ * Basic data source checker.
+ */
+@RequiredArgsConstructor
+public final class BasicDataSourceChecker extends AbstractDataSourceChecker {
     
-    @Override
-    public void checkConnection(final Collection<? extends DataSource> dataSources) {
-    }
+    private final String databaseType;
     
     @Override
     public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
@@ -38,11 +39,7 @@ public final class FixtureDataSourceChecker implements DataSourceChecker {
     }
     
     @Override
-    public void checkTargetTable(final Collection<? extends DataSource> dataSources, final TableNameSchemaNameMapping tableNameSchemaNameMapping, final Collection<String> logicTableNames) {
-    }
-    
-    @Override
-    public String getType() {
-        return "FIXTURE";
+    protected String getDatabaseType() {
+        return databaseType;
     }
 }

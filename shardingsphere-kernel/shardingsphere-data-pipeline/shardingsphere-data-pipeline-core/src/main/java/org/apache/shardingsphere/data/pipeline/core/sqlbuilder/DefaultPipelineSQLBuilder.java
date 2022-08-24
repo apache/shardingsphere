@@ -15,18 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.check.datasource;
+package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
 
-import org.apache.shardingsphere.data.pipeline.spi.fixture.FixtureDataSourceChecker;
-import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-
-public final class DataSourceCheckerFactoryTest {
+/**
+ * Default pipeline SQL builder.
+ */
+public final class DefaultPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     
-    @Test
-    public void assertGetInstance() {
-        assertThat(DataSourceCheckerFactory.getInstance("FIXTURE"), instanceOf(FixtureDataSourceChecker.class));
+    @Override
+    public String getLeftIdentifierQuoteString() {
+        return "";
+    }
+    
+    @Override
+    public String getRightIdentifierQuoteString() {
+        return "";
     }
 }

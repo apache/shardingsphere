@@ -70,6 +70,7 @@ public final class ScalingCaseHelper {
             if (databaseType instanceof MySQLDatabaseType) {
                 Object[] addObjs = {keyGenerateAlgorithm.generateKey(), orderId, userId, generateString(6), randomInt, randomInt, randomInt,
                         randomUnsignedInt, randomUnsignedInt, randomUnsignedInt, randomUnsignedInt, generateFloat(), generateDouble(-1000, 100000),
+                        // TODO year should not be always null
                         BigDecimal.valueOf(generateDouble(1, 100)), now, now, now.toLocalDate(), now.toLocalTime(), null, "1", "t", "e", "s", "t", generateString(2), generateString(1),
                         generateString(1), "1", "2", generateJsonString(1024)};
                 orderData.add(addObjs);

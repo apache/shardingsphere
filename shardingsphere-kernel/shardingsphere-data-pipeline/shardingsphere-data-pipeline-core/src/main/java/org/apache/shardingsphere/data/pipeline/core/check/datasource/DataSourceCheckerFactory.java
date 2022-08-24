@@ -15,33 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.dumper;
+package org.apache.shardingsphere.data.pipeline.core.check.datasource;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import java.util.Optional;
 
 /**
- * Inventory dumper creator factory.
+ * Data source checker.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class InventoryDumperCreatorFactory {
+public final class DataSourceCheckerFactory {
     
     static {
-        ShardingSphereServiceLoader.register(InventoryDumperCreator.class);
+        ShardingSphereServiceLoader.register(DataSourceChecker.class);
     }
     
     /**
-     * Get inventoryDumper creator instance.
+     * Get instance of data source checker.
      *
-     * @param databaseType databaseType
-     * @return InventoryDumperCreator
+     * @param databaseType database type
+     * @return got instance
      */
-    public static InventoryDumperCreator getInstance(final String databaseType) {
-        Optional<InventoryDumperCreator> result = TypedSPIRegistry.findRegisteredService(InventoryDumperCreator.class, databaseType);
-        return result.orElseGet(DefaultInventoryDumperCreator::new);
+    public static DataSourceChecker getInstance(final String databaseType) {
+        Optional<DataSourceChecker> checker = TypedSPIRegistry.findRegisteredService(DataSourceChecker.class, databaseType);
+        return checker.orElseGet(() -> new BasicDataSourceChecker(databaseType));
     }
 }

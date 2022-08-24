@@ -19,29 +19,30 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.dumper;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueReader;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import java.util.Optional;
 
 /**
- * Inventory dumper creator factory.
+ * Column value reader factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class InventoryDumperCreatorFactory {
+public final class ColumnValueReaderFactory {
     
     static {
-        ShardingSphereServiceLoader.register(InventoryDumperCreator.class);
+        ShardingSphereServiceLoader.register(ColumnValueReader.class);
     }
     
     /**
-     * Get inventoryDumper creator instance.
+     * Get column value reader instance.
      *
-     * @param databaseType databaseType
-     * @return InventoryDumperCreator
+     * @param databaseType database type
+     * @return column value reader
      */
-    public static InventoryDumperCreator getInstance(final String databaseType) {
-        Optional<InventoryDumperCreator> result = TypedSPIRegistry.findRegisteredService(InventoryDumperCreator.class, databaseType);
-        return result.orElseGet(DefaultInventoryDumperCreator::new);
+    public static ColumnValueReader getInstance(final String databaseType) {
+        Optional<ColumnValueReader> result = TypedSPIRegistry.findRegisteredService(ColumnValueReader.class, databaseType);
+        return result.orElseGet(BasicColumnValueReader::new);
     }
 }

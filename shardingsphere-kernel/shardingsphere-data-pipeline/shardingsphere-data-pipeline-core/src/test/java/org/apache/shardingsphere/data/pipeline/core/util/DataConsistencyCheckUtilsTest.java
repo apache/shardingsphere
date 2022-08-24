@@ -15,24 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.metadata.model;
+package org.apache.shardingsphere.data.pipeline.core.util;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.metadata.PipelineColumnMetaData;
+import org.junit.Test;
 
-import java.util.List;
+import java.math.BigDecimal;
 
-/**
- * Pipeline meta data of index.
- */
-@RequiredArgsConstructor
-@Getter
-@ToString
-public final class PipelineIndexMetaData {
+import static org.junit.Assert.assertTrue;
+
+public final class DataConsistencyCheckUtilsTest {
     
-    private final String name;
-    
-    private final List<PipelineColumnMetaData> columns;
+    @Test
+    public void assertIsBigDecimalEquals() {
+        BigDecimal one = BigDecimal.valueOf(3322, 1);
+        BigDecimal another = BigDecimal.valueOf(33220, 2);
+        assertTrue(DataConsistencyCheckUtils.isBigDecimalEquals(one, another));
+    }
 }

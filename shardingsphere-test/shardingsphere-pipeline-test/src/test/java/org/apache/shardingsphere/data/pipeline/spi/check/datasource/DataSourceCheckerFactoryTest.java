@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.metadata.model;
+package org.apache.shardingsphere.data.pipeline.spi.check.datasource;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.metadata.PipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.core.check.datasource.DataSourceCheckerFactory;
+import org.apache.shardingsphere.data.pipeline.core.fixture.FixtureDataSourceChecker;
+import org.junit.Test;
 
-import java.util.List;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 
-/**
- * Pipeline meta data of index.
- */
-@RequiredArgsConstructor
-@Getter
-@ToString
-public final class PipelineIndexMetaData {
+public final class DataSourceCheckerFactoryTest {
     
-    private final String name;
-    
-    private final List<PipelineColumnMetaData> columns;
+    @Test
+    public void assertGetInstance() {
+        assertThat(DataSourceCheckerFactory.getInstance("H2"), instanceOf(FixtureDataSourceChecker.class));
+    }
 }
