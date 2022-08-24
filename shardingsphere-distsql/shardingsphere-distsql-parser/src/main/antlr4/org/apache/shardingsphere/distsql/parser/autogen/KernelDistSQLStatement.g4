@@ -61,5 +61,6 @@ execute
     | showMigrationProcessConfiguration
     | createMigrationProcessConfiguration
     | alterMigrationProcessConfiguration
+    | dropMigrationProcessConfiguration
     ) SEMI?
     ;

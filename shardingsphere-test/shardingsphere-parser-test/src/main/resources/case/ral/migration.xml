@@ -38,6 +38,14 @@
         <job-id>123</job-id>
     </show-migration-status>
     
+    <drop-migration-process-configuration sql-case-id="drop-migration-process-configuration-read">
+        <conf-path>/READ</conf-path>
+    </drop-migration-process-configuration>
+    
+    <drop-migration-process-configuration sql-case-id="drop-migration-process-configuration-read-rate-limiter">
+        <conf-path>/READ/RATE_LIMITER</conf-path>
+    </drop-migration-process-configuration>
+    
     <migrate-table sql-case-id="migrate-table-without-schema-target-db">
         <source-resource-name>ds_0</source-resource-name>
         <source-table-name>t_order</source-table-name>
