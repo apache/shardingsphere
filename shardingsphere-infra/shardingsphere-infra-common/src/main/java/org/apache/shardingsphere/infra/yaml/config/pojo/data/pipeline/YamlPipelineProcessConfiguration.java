@@ -47,9 +47,6 @@ public final class YamlPipelineProcessConfiguration implements YamlConfiguration
         if (null == another) {
             return;
         }
-        if (isAllFieldsNull(another)) {
-            setAllFieldsNull(this);
-        }
         if (null == read) {
             read = another.read;
         } else {
@@ -65,13 +62,33 @@ public final class YamlPipelineProcessConfiguration implements YamlConfiguration
         }
     }
     
-    private boolean isAllFieldsNull(final YamlPipelineProcessConfiguration config) {
-        return null == config.read && null == config.write && null == config.streamChannel;
+    /**
+     * Set all fields null.
+     */
+    public void setAllFieldsNull() {
+        read = null;
+        write = null;
+        streamChannel = null;
     }
     
-    private void setAllFieldsNull(final YamlPipelineProcessConfiguration config) {
-        config.read = null;
-        config.write = null;
-        config.streamChannel = null;
+    /**
+     * Set field to null.
+     *
+     * @param nodeName node name
+     */
+    public void setFieldNull(final String nodeName) {
+        switch (nodeName.toUpperCase()) {
+            case "READ":
+                read = null;
+                break;
+            case "WRITE":
+                write = null;
+                break;
+            case "STREAM_CHANNEL":
+                streamChannel = null;
+                break;
+            default:
+                break;
+        }
     }
 }
