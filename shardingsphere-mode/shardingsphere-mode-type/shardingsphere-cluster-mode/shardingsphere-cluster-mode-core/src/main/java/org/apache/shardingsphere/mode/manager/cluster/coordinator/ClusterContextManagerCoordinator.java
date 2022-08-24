@@ -41,8 +41,8 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metad
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOfflineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOnlineEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessIdEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessIdUnitCompleteEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessListIdEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessListIdUnitCompleteEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListTriggerEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListUnitCompleteEvent;
@@ -293,10 +293,10 @@ public final class ClusterContextManagerCoordinator {
         }
         Collection<YamlExecuteProcessContext> processContexts = ShowProcessListManager.getInstance().getAllProcessContext();
         if (!processContexts.isEmpty()) {
-            registryCenter.getRepository().persist(ProcessNode.getShowProcessListInstancePath(event.getShowProcessListId(), event.getInstanceId()),
+            registryCenter.getRepository().persist(ProcessNode.getProcessListInstancePath(event.getProcessListId(), event.getInstanceId()),
                     YamlEngine.marshal(new BatchYamlExecuteProcessContext(new LinkedList<>(processContexts))));
         }
-        registryCenter.getRepository().delete(ComputeNode.getProcessTriggerInstanceIdNodePath(event.getInstanceId(), event.getShowProcessListId()));
+        registryCenter.getRepository().delete(ComputeNode.getProcessTriggerInstanceIdNodePath(event.getInstanceId(), event.getProcessListId()));
     }
     
     /**
@@ -306,15 +306,15 @@ public final class ClusterContextManagerCoordinator {
      * @throws SQLException SQL exception
      */
     @Subscribe
-    public synchronized void killProcessId(final KillProcessIdEvent event) throws SQLException {
+    public synchronized void killProcessListId(final KillProcessListIdEvent event) throws SQLException {
         if (!event.getInstanceId().equals(contextManager.getInstanceContext().getInstance().getMetaData().getId())) {
             return;
         }
-        Collection<Statement> statements = ShowProcessListManager.getInstance().getProcessStatement(event.getProcessId());
+        Collection<Statement> statements = ShowProcessListManager.getInstance().getProcessStatement(event.getProcessListId());
         for (Statement statement : statements) {
             statement.cancel();
         }
-        registryCenter.getRepository().delete(ComputeNode.getProcessKillInstanceIdNodePath(event.getInstanceId(), event.getProcessId()));
+        registryCenter.getRepository().delete(ComputeNode.getProcessKillInstanceIdNodePath(event.getInstanceId(), event.getProcessListId()));
     }
     
     /**
@@ -324,20 +324,20 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void completeUnitShowProcessList(final ShowProcessListUnitCompleteEvent event) {
-        ShowProcessListSimpleLock simpleLock = ShowProcessListManager.getInstance().getLocks().get(event.getShowProcessListId());
+        ShowProcessListSimpleLock simpleLock = ShowProcessListManager.getInstance().getLocks().get(event.getProcessListId());
         if (null != simpleLock) {
             simpleLock.doNotify();
         }
     }
     
     /**
-     * Complete unit kill process id.
+     * Complete unit kill process list id.
      *
-     * @param event kill process id unit complete event
+     * @param event kill process list id unit complete event
      */
     @Subscribe
-    public synchronized void completeUnitKillProcessId(final KillProcessIdUnitCompleteEvent event) {
-        ShowProcessListSimpleLock simpleLock = ShowProcessListManager.getInstance().getLocks().get(event.getShowProcessListId());
+    public synchronized void completeUnitKillProcessListId(final KillProcessListIdUnitCompleteEvent event) {
+        ShowProcessListSimpleLock simpleLock = ShowProcessListManager.getInstance().getLocks().get(event.getProcessListId());
         if (null != simpleLock) {
             simpleLock.doNotify();
         }

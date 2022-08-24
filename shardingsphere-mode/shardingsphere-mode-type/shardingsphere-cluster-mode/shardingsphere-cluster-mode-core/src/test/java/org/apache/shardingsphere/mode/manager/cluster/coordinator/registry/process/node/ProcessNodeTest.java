@@ -26,13 +26,13 @@ import static org.junit.Assert.assertThat;
 public final class ProcessNodeTest {
     
     @Test
-    public void assertGetShowProcessListIdPath() {
-        assertThat(ProcessNode.getShowProcessListIdPath("ae7d352a-ee1f-3cd6-8631-cd9e93b70a30"), is("/execution_nodes/ae7d352a-ee1f-3cd6-8631-cd9e93b70a30"));
+    public void assertGetProcessListIdPath() {
+        assertThat(ProcessNode.getProcessListIdPath("ae7d352a-ee1f-3cd6-8631-cd9e93b70a30"), is("/execution_nodes/ae7d352a-ee1f-3cd6-8631-cd9e93b70a30"));
     }
     
     @Test
-    public void assertGetShowProcessListInstancePath() {
-        assertThat(ProcessNode.getShowProcessListInstancePath("ae7d352a-ee1f-3cd6-8631-cd9e93b70a30", "proxy_127.0.0.1@983481"),
+    public void assertGetProcessListInstancePath() {
+        assertThat(ProcessNode.getProcessListInstancePath("ae7d352a-ee1f-3cd6-8631-cd9e93b70a30", "proxy_127.0.0.1@983481"),
                 is("/execution_nodes/ae7d352a-ee1f-3cd6-8631-cd9e93b70a30/proxy_127.0.0.1@983481"));
     }
 }

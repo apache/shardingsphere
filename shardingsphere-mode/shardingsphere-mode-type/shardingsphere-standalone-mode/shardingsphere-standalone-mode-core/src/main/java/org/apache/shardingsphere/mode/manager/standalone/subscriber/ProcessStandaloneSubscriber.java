@@ -18,14 +18,19 @@
 package org.apache.shardingsphere.mode.manager.standalone.subscriber;
 
 import com.google.common.eventbus.Subscribe;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.BatchYamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.process.ShowProcessListManager;
+import org.apache.shardingsphere.mode.process.event.KillProcessListIdRequestEvent;
 import org.apache.shardingsphere.mode.process.event.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.mode.process.event.ShowProcessListResponseEvent;
 
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 
 /**
@@ -53,5 +58,19 @@ public final class ProcessStandaloneSubscriber {
         eventBusContext.post(new ShowProcessListResponseEvent(batchYamlExecuteProcessContext.getContexts().isEmpty()
                 ? Collections.emptyList()
                 : Collections.singletonList(YamlEngine.marshal(batchYamlExecuteProcessContext))));
+    }
+    
+    /**
+     * Kill process list id.
+     *
+     * @param event kill process list id request event.
+     */
+    @Subscribe
+    @SneakyThrows(SQLException.class)
+    public void killProcessListId(final KillProcessListIdRequestEvent event) {
+        Collection<Statement> statements = ShowProcessListManager.getInstance().getProcessStatement(event.getProcessListId());
+        for (Statement statement : statements) {
+            statement.cancel();
+        }
     }
 }
