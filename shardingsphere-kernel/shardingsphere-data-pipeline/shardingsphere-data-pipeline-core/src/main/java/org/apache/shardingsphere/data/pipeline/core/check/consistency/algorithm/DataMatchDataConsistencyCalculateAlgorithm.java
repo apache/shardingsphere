@@ -28,11 +28,13 @@ import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsist
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.ColumnValueReaderFactory;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
+import org.apache.shardingsphere.data.pipeline.core.util.DataConsistencyCheckUtils;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueReader;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -196,7 +198,13 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                     if (thisResult instanceof Integer && thatResult instanceof Long) {
                         return ((Integer) thisResult).longValue() == (Long) thatResult;
                     }
-                    if (!new EqualsBuilder().append(thisResult, thatResult).isEquals()) {
+                    boolean matched;
+                    if (thisResult instanceof BigDecimal && thatResult instanceof BigDecimal) {
+                        matched = DataConsistencyCheckUtils.isBigDecimalEquals((BigDecimal) thisResult, (BigDecimal) thatResult);
+                    } else {
+                        matched = new EqualsBuilder().append(thisResult, thatResult).isEquals();
+                    }
+                    if (!matched) {
                         log.warn("record column value not match, value1={}, value2={}, value1.class={}, value2.class={}, record1={}, record2={}", thisResult, thatResult,
                                 null != thisResult ? thisResult.getClass().getName() : "", null != thatResult ? thatResult.getClass().getName() : "",
                                 thisNext, thatNext);
