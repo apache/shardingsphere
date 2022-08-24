@@ -993,7 +993,7 @@ public final class SQLParserTestCases {
     private final List<ShowShardingTableRulesStatementTestCase> showShardingTableRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-migration-source-resources")
-    private final List<ShowMigrationSourceResourcesStatementTestCase> showScalingCheckAlgorithmsTestCases = new LinkedList<>();
+    private final List<ShowMigrationSourceResourcesStatementTestCase> showMigrationResourcesStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-migration-list")
     private final List<ShowMigrationListStatementTestCase> showMigrationListTestCases = new LinkedList<>();
