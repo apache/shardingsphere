@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mode.process.lock.ShowProcessListSimpleLock;
 
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -94,7 +95,7 @@ public final class ShowProcessListManager {
      * @return execute statements
      */
     public Collection<Statement> getProcessStatement(final String executionId) {
-        return processStatements.get(executionId);
+        return processStatements.getOrDefault(executionId, Collections.emptyList());
     }
     
     /**
