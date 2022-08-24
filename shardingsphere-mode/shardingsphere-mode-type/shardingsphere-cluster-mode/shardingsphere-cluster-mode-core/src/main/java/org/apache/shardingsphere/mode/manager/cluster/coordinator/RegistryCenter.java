@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaDa
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.lock.LockPersistService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcherFactory;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.subscriber.ScalingRegistrySubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.subscriber.SchemaMetaDataRegistrySubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service.ComputeNodeStatusService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.subscriber.ComputeNodeStatusSubscriber;
@@ -83,7 +82,6 @@ public final class RegistryCenter {
         new SchemaMetaDataRegistrySubscriber(repository, eventBusContext);
         new ComputeNodeStatusSubscriber(this, repository);
         new StorageNodeStatusSubscriber(repository, eventBusContext);
-        new ScalingRegistrySubscriber(repository, eventBusContext);
         new ProcessRegistrySubscriber(repository, eventBusContext);
     }
     
