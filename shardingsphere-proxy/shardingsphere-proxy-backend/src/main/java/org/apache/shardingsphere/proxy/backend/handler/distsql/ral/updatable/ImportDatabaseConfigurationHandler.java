@@ -134,7 +134,7 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
         }
         validator.validate(dataSourcePropsMap, getConnectionSession().getDatabaseType());
         try {
-            ProxyContext.getInstance().getContextManager().updateResources(databaseName, dataSourcePropsMap);
+            ProxyContext.getInstance().getContextManager().addResources(databaseName, dataSourcePropsMap);
         } catch (final SQLException ex) {
             throw new InvalidResourcesException(Collections.singleton(ex.getMessage()));
         }

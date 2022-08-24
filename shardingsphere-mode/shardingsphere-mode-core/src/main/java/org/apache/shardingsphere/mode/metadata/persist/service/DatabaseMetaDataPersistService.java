@@ -29,6 +29,7 @@ import org.apache.shardingsphere.mode.persist.PersistRepository;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Optional;
 
@@ -41,13 +42,13 @@ public final class DatabaseMetaDataPersistService {
     private final PersistRepository repository;
     
     /**
-     * Persist meta data.
+     * Compare and persist meta data.
      *
      * @param databaseName database name to be persisted
      * @param schemaName schema name to be persisted
      * @param schema schema to be persisted
      */
-    public void persistMetaData(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
+    public void compareAndPersistMetaData(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
         Optional<ShardingSphereSchema> originalSchema = load(databaseName, schemaName);
         if (originalSchema.isPresent()) {
             compareAndPersist(databaseName, schemaName, schema, originalSchema.get());
@@ -56,7 +57,14 @@ public final class DatabaseMetaDataPersistService {
         persistMetaData(databaseName, schemaName, schema.getTables());
     }
     
-    private void persistMetaData(final String databaseName, final String schemaName, final Map<String, ShardingSphereTable> tables) {
+    /**
+     * Persist meta data.
+     *
+     * @param databaseName database name to be persisted
+     * @param schemaName schema name to be persisted
+     * @param tables tables to be persisted
+     */
+    public void persistMetaData(final String databaseName, final String schemaName, final Map<String, ShardingSphereTable> tables) {
         if (tables.isEmpty()) {
             persistSchema(databaseName, schemaName);
             return;
@@ -163,6 +171,19 @@ public final class DatabaseMetaDataPersistService {
             schema.put(each, table);
         });
         return Optional.of(schema);
+    }
+    
+    /**
+     * Load schemas.
+     *
+     * @param databaseName database name to be loaded
+     * @return Loaded schemas
+     */
+    public Map<String, ShardingSphereSchema> load(final String databaseName) {
+        Collection<String> schemas = repository.getChildrenKeys(DatabaseMetaDataNode.getDatabaseNamePath(databaseName));
+        Map<String, ShardingSphereSchema> result = new HashMap<>(schemas.size(), 1);
+        schemas.forEach(each -> result.put(each.toLowerCase(), load(databaseName, each).orElse(new ShardingSphereSchema())));
+        return result;
     }
     
     /**
