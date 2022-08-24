@@ -93,6 +93,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         try (
                 Connection connection = parameter.getDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setFetchSize(chunkSize);
             if (null == previousCalculatedResult) {
                 preparedStatement.setInt(1, chunkSize);
             } else {
