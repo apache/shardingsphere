@@ -139,50 +139,6 @@ DROP SHARDING BROADCAST TABLE RULES
 ```
 - `ALTER` will overwrite the broadcast table configuration in the database with the new configuration
 
-### Sharding Scaling Rule
-
-```sql
-CREATE SHARDING SCALING RULE scalingName [scalingRuleDefinition]
-
-DROP SHARDING SCALING RULE scalingName
-
-ENABLE SHARDING SCALING RULE scalingName
-
-DISABLE SHARDING SCALING RULE scalingName
-
-scalingRuleDefinition:
-    [inputDefinition] [, outputDefinition] [, streamChannel] [, completionDetector] [, dataConsistencyChecker]
-
-inputDefinition:
-    INPUT ([workerThread] [, batchSize] [, rateLimiter])
-
-outputDefinition:
-    OUTPUT ([workerThread] [, batchSize] [, rateLimiter])
-
-completionDetector:
-    COMPLETION_DETECTOR (algorithmDefinition)
-
-dataConsistencyChecker:
-    DATA_CONSISTENCY_CHECKER (algorithmDefinition)
-
-rateLimiter:
-    RATE_LIMITER (algorithmDefinition)
-
-streamChannel:
-    STREAM_CHANNEL (algorithmDefinition)
-
-workerThread:
-    WORKER_THREAD=intValue
-
-batchSize:
-    BATCH_SIZE=intValue
-
-intValue:
-    INT
-```
-- `ENABLE` is used to set which sharding scaling rule is enabled;
-- `DISABLE` will disable the sharding scaling rule currently in use;
-- Enabled by default when creating the first sharding scaling rule in a logical database.
 
 ## Example
 
@@ -283,30 +239,4 @@ CREATE SHARDING BROADCAST TABLE RULES (t_b,t_a);
 ALTER SHARDING BROADCAST TABLE RULES (t_b,t_a,t_3);
 
 DROP SHARDING BROADCAST TABLE RULES;
-```
-
-### Sharding Scaling Rule
-
-```sql
-CREATE SHARDING SCALING RULE sharding_scaling(
-INPUT(
-  WORKER_THREAD=40,
-  BATCH_SIZE=1000,
-  RATE_LIMITER(TYPE(NAME=QPS, PROPERTIES("qps"=50)))
-),
-OUTPUT(
-  WORKER_THREAD=40,
-  BATCH_SIZE=1000,
-  RATE_LIMITER(TYPE(NAME=TPS, PROPERTIES("tps"=2000)))
-),
-STREAM_CHANNEL(TYPE(NAME="MEMORY", PROPERTIES("block-queue-size"="10000"))),
-COMPLETION_DETECTOR(TYPE(NAME="IDLE", PROPERTIES("incremental-task-idle-seconds-threshold"="1800"))),
-DATA_CONSISTENCY_CHECKER(TYPE(NAME="DATA_MATCH", PROPERTIES("chunk-size"="1000")))
-);
-
-ENABLE SHARDING SCALING RULE sharding_scaling;
-
-DISABLE SHARDING SCALING RULE sharding_scaling;
-
-DROP SHARDING SCALING RULE sharding_scaling;
 ```

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.yaml.swapper;
 
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
@@ -30,10 +29,6 @@ import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGen
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStandardShardingStrategyConfiguration;
 import org.junit.Test;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -107,15 +102,5 @@ public final class YamlShardingRuleConfigurationSwapperTest {
         result.setDefaultAuditStrategy(mock(YamlShardingAuditStrategyConfiguration.class));
         result.setDefaultShardingColumn("user_id");
         return result;
-    }
-    
-    @Test
-    public void assertScalingSwap() throws IOException {
-        URL url = getClass().getClassLoader().getResource("yaml/sharding-scaling.yaml");
-        assertNotNull(url);
-        YamlShardingRuleConfiguration yamlConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlShardingRuleConfiguration.class);
-        ShardingRuleConfiguration actualConfig = swapper.swapToObject(yamlConfig);
-        YamlShardingRuleConfiguration actualYamlConfig = swapper.swapToYamlConfiguration(actualConfig);
-        assertThat(YamlEngine.marshal(actualYamlConfig), is(YamlEngine.marshal(yamlConfig)));
     }
 }

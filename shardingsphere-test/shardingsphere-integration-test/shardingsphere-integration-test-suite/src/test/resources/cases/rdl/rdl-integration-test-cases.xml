@@ -94,7 +94,6 @@
 <!--            <initial-sql sql="CREATE SHARDING TABLE RULE t_user (-->
 <!--                RESOURCES(&quot;encrypt_write_ds_${0..9}&quot;),-->
 <!--                SHARDING_COLUMN=user_id, TYPE(NAME=MOD, PROPERTIES(&quot;sharding-count&quot;=40)))));-->
-<!--                CREATE SHARDING SCALING RULE default_scaling;-->
 <!--                ALTER SHARDING BINDING TABLE RULES (t_user,t_user_item);"/>-->
 <!--            <destroy-sql sql="DROP SHARDING BINDING TABLE RULES;DROP SHARDING TABLE RULE t_user;DROP SHARDING SCALING RULE default_scaling" />-->
 <!--        </assertion>-->
@@ -137,10 +136,9 @@
 <!--        <assertion expected-data-file="alter_encrypt_rule.xml">-->
 <!--            <initial-sql sql="CREATE ENCRYPT RULE t_user (COLUMNS ((-->
 <!--                NAME=pwd, PLAIN=pwd_plain, CIPHER=pwd_cipher, TYPE(NAME="AES", PROPERTIES(&quot;aes-key-value&quot;='123456abc')))));-->
-<!--                CREATE SHARDING SCALING RULE default_scaling;-->
 <!--                ALTER ENCRYPT RULE t_user (COLUMNS ((NAME=pwd, PLAIN=pwd_plain, CIPHER=pwd_cipher, TYPE(NAME="AES",-->
 <!--                PROPERTIES(&quot;aes-key-value&quot;='123abc')))))"/>-->
-<!--            <destroy-sql sql="DROP ENCRYPT RULE t_user;DROP SHARDING SCALING RULE default_scaling" />-->
+<!--            <destroy-sql sql="DROP ENCRYPT RULE t_user" />-->
 <!--        </assertion>-->
 <!--    </test-case>-->
 <!--    -->
@@ -165,10 +163,9 @@
 <!--        <assertion expected-data-file="alter_readwrite_splitting_rules.xml">-->
 <!--            <initial-sql sql="CREATE READWRITE_SPLITTING RULE readwrite_ds_1 (WRITE_RESOURCE=encrypt_write_ds_1,-->
 <!--            READ_RESOURCES(encrypt_read_ds_1), TYPE(NAME=ROUND_ROBIN));-->
-<!--            CREATE SHARDING SCALING RULE default_scaling;-->
 <!--            ALTER READWRITE_SPLITTING RULE readwrite_ds_1 (WRITE_RESOURCE=encrypt_write_ds_1,-->
 <!--            READ_RESOURCES(encrypt_read_ds_1, encrypt_read_ds_2), TYPE(NAME=RANDOM,PROPERTIES(read_weight='2:1')))"/>-->
-<!--            <destroy-sql sql="DROP READWRITE_SPLITTING RULE readwrite_ds_1;DROP SHARDING SCALING RULE default_scaling" />-->
+<!--            <destroy-sql sql="DROP READWRITE_SPLITTING RULE readwrite_ds_1;" />-->
 <!--        </assertion>-->
 <!--    </test-case>-->
 <!--    -->

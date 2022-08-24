@@ -152,10 +152,6 @@
     <drop-default-sharding-strategy sql-case-id="drop-default-sharding-strategy" type="table"/>
     
     <drop-default-sharding-strategy sql-case-id="drop-default-sharding-strategy-if-exists" type="table" if-exists="true"/>
-
-    <drop-sharding-scaling-rule sql-case-id="drop-sharding-scaling-rule" scaling-name="default_scaling"/>
-    
-    <drop-sharding-scaling-rule sql-case-id="drop-sharding-scaling-rule-if-exists" scaling-name="default_scaling" if-exists="true"/>
     
     <drop-sharding-algorithm sql-case-id="drop-sharding-algorithm" if-exists="true">
         <algorithm>t_order_hash_mod</algorithm>

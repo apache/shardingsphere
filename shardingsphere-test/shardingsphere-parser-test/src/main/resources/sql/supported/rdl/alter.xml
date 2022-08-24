@@ -48,6 +48,4 @@
     <distsql-case id="alter-sharding-auditor" value="ALTER SHARDING AUDITOR sharding_key_required_auditor(TYPE(NAME='DML_SHARDING_CONDITIONS'))" />
     <distsql-case id="alter-default-sharding-strategy" value="ALTER DEFAULT SHARDING TABLE STRATEGY(TYPE='standard', SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=algorithms_name)" />
     <distsql-case id="alter-default-sharding-strategy-complex" value="ALTER DEFAULT SHARDING TABLE STRATEGY(TYPE='complex', SHARDING_COLUMNS=order_id,user_id, SHARDING_ALGORITHM=algorithms_name)" />
-    <distsql-case id="enable-sharding-scaling-rule" value="ENABLE SHARDING SCALING RULE scalingName" />
-    <distsql-case id="disable-sharding-scaling-rule" value="DISABLE SHARDING SCALING RULE scalingName" />
 </sql-cases>

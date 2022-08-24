@@ -63,12 +63,6 @@ public final class CountShardingRuleQueryResultSetTest {
         assertThat(actual.get(0), is("sharding_broadcast_table"));
         assertThat(actual.get(1), is("db_1"));
         assertThat(actual.get(2), is(2));
-        assertTrue(resultSet.next());
-        actual = new ArrayList<>(resultSet.getRowData());
-        assertThat(actual.size(), is(3));
-        assertThat(actual.get(0), is("sharding_scaling"));
-        assertThat(actual.get(1), is("db_1"));
-        assertThat(actual.get(2), is(0));
         assertFalse(resultSet.next());
     }
     
