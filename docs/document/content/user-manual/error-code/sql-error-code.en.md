@@ -38,4 +38,5 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 42000     | 24003       | Insert value of index \`%s\` can not support for encrypt |
 | 44000     | 24004       | Can not find logic encrypt column by \`%s\` |
 | HY004     | 25000       | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type |
+| 42000     | 25003       | Insert value of index `%s` can not support for shadow |
 | 42000     | 30000       | Unknown exception: %s |
