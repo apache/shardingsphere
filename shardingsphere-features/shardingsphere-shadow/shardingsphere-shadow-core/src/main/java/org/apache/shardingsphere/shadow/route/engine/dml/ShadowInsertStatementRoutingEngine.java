@@ -91,6 +91,7 @@ public final class ShadowInsertStatementRoutingEngine extends AbstractShadowDMLS
         public Optional<ShadowColumnCondition> next() {
             String columnName = iterator.next();
             if (!shadowColumn.equals(columnName)) {
+                index++;
                 return Optional.empty();
             }
             Optional<Collection<Comparable<?>>> columnValues = getColumnValues(insertValueContexts, index);
