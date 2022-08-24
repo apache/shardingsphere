@@ -60,7 +60,6 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.AddMigrationSourceResourceException;
 import org.apache.shardingsphere.data.pipeline.core.exception.DropMigrationSourceResourceException;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineVerifyFailedException;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineSchemaTableUtil;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
@@ -73,15 +72,12 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
-import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.infra.lock.LockDefinition;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.mode.lock.ExclusiveLockDefinition;
 
 import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
@@ -273,63 +269,6 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         }
     }
     
-    private void verifyJobNotCompleted(final MigrationJobConfiguration jobConfig) {
-        if (PipelineJobProgressDetector.isJobCompleted(jobConfig.getJobShardingCount(), getJobProgress(jobConfig).values())) {
-            throw new PipelineVerifyFailedException("Job is completed, it's not necessary to do it.");
-        }
-    }
-    
-    @Override
-    public void stopClusterWriteDB(final String jobId) {
-        checkModeConfig();
-        log.info("stopClusterWriteDB for job {}", jobId);
-        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
-        MigrationJobConfiguration jobConfig = getJobConfiguration(jobConfigPOJO);
-        verifyManualMode(jobConfig);
-        verifyJobNotStopped(jobConfigPOJO);
-        verifyJobNotCompleted(jobConfig);
-        stopClusterWriteDB(jobConfig);
-    }
-    
-    @Override
-    public void stopClusterWriteDB(final MigrationJobConfiguration jobConfig) {
-        String databaseName = jobConfig.getTargetDatabaseName();
-        LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        LockDefinition lockDefinition = new ExclusiveLockDefinition(databaseName);
-        if (lockContext.isLocked(lockDefinition)) {
-            log.info("stopClusterWriteDB, already stopped");
-            return;
-        }
-        if (lockContext.tryLock(lockDefinition)) {
-            log.info("stopClusterWriteDB, tryLockSuccess=true");
-            return;
-        }
-        throw new RuntimeException("Stop source writing failed");
-    }
-    
-    @Override
-    public void restoreClusterWriteDB(final String jobId) {
-        checkModeConfig();
-        log.info("restoreClusterWriteDB for job {}", jobId);
-        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
-        MigrationJobConfiguration jobConfig = getJobConfiguration(jobConfigPOJO);
-        verifyManualMode(jobConfig);
-        restoreClusterWriteDB(jobConfig);
-    }
-    
-    @Override
-    public void restoreClusterWriteDB(final MigrationJobConfiguration jobConfig) {
-        String databaseName = jobConfig.getTargetDatabaseName();
-        LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        LockDefinition lockDefinition = new ExclusiveLockDefinition(databaseName);
-        if (lockContext.isLocked(lockDefinition)) {
-            log.info("restoreClusterWriteDB, before unlock, databaseName={}, jobId={}", databaseName, jobConfig.getJobId());
-            lockContext.unlock(lockDefinition);
-            return;
-        }
-        log.info("restoreClusterWriteDB, isLocked false, databaseName={}", databaseName);
-    }
-    
     @Override
     public Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms() {
         checkModeConfig();
@@ -415,22 +354,6 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
             }
         }
         return true;
-    }
-    
-    @Override
-    public void switchClusterConfiguration(final String jobId) {
-        checkModeConfig();
-        log.info("Switch cluster configuration for job {}", jobId);
-        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
-        MigrationJobConfiguration jobConfig = getJobConfiguration(jobConfigPOJO);
-        verifyManualMode(jobConfig);
-        verifyJobNotStopped(jobConfigPOJO);
-        verifyJobNotCompleted(jobConfig);
-        switchClusterConfiguration(jobConfig);
-    }
-    
-    @Override
-    public void switchClusterConfiguration(final MigrationJobConfiguration jobConfig) {
     }
     
     @Override

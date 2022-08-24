@@ -29,9 +29,6 @@ execute
     | resetMigration
     | checkMigration
     | showMigrationCheckAlgorithms
-    | stopMigrationSourceWriting
-    | restoreMigrationSourceWriting
-    | applyMigration
     | addMigrationSourceResource
     | dropMigrationSourceResource
     | showMigrationSourceResources

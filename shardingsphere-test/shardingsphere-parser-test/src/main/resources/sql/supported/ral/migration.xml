@@ -28,9 +28,6 @@
     <distsql-case id="migrate-table-with-schema" value="MIGRATE TABLE ds_0.public.t_order INTO t_order;" />
     <distsql-case id="migrate-table-with-target-db" value="MIGRATE TABLE ds_0.t_order INTO sharding_db.t_order;" />
     <distsql-case id="migrate-table-with-schema-target-db" value="MIGRATE TABLE ds_0.public.t_order INTO sharding_db.t_order;" />
-    <distsql-case id="stop-migration-source-writing" value="STOP MIGRATION SOURCE WRITING 123;" />
-    <distsql-case id="restore-migration-source-writing" value="RESTORE MIGRATION SOURCE WRITING 123;" />
-    <distsql-case id="apply-migration" value="APPLY MIGRATION 123;" />
     <distsql-case id="clean-migration" value="CLEAN MIGRATION 123;" />
     <distsql-case id="reset-migration" value="RESET MIGRATION 123;" />
     <distsql-case id="stop-migration" value="STOP MIGRATION 123;" />

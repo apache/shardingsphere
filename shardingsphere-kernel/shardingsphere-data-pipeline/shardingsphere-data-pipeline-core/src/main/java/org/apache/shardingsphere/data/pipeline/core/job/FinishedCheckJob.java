@@ -73,20 +73,13 @@ public final class FinishedCheckJob implements SimpleJob {
                     continue;
                 }
                 log.info("scaling job {} almost finished.", jobId);
-                try {
-                    jobAPI.stopClusterWriteDB(jobConfig);
-                    if (!jobAPI.isDataConsistencyCheckNeeded(jobConfig)) {
-                        log.info("DataConsistencyCalculatorAlgorithm is not configured, data consistency check is ignored.");
-                        jobAPI.switchClusterConfiguration(jobConfig);
-                        continue;
-                    }
-                    if (!dataConsistencyCheck(jobConfig)) {
-                        log.error("data consistency check failed, job {}", jobId);
-                        continue;
-                    }
-                    switchClusterConfiguration(jobConfig);
-                } finally {
-                    jobAPI.restoreClusterWriteDB(jobConfig);
+                if (!jobAPI.isDataConsistencyCheckNeeded(jobConfig)) {
+                    log.info("DataConsistencyCalculatorAlgorithm is not configured, data consistency check is ignored.");
+                    continue;
+                }
+                if (!dataConsistencyCheck(jobConfig)) {
+                    log.error("data consistency check failed, job {}", jobId);
+                    continue;
                 }
                 log.info("job {} finished", jobId);
                 // CHECKSTYLE:OFF
@@ -113,9 +106,5 @@ public final class FinishedCheckJob implements SimpleJob {
         String jobId = jobConfig.getJobId();
         log.info("dataConsistencyCheck for job {}", jobId);
         return jobAPI.aggregateDataConsistencyCheckResults(jobId, jobAPI.dataConsistencyCheck(jobConfig));
-    }
-    
-    private void switchClusterConfiguration(final MigrationJobConfiguration jobConfig) {
-        jobAPI.switchClusterConfiguration(jobConfig);
     }
 }

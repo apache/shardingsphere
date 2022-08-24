@@ -97,22 +97,6 @@ public final class MigrationJobAPIFixture implements MigrationJobAPI {
     }
     
     @Override
-    public void stopClusterWriteDB(final String jobId) {
-    }
-    
-    @Override
-    public void stopClusterWriteDB(final MigrationJobConfiguration jobConfig) {
-    }
-    
-    @Override
-    public void restoreClusterWriteDB(final String jobId) {
-    }
-    
-    @Override
-    public void restoreClusterWriteDB(final MigrationJobConfiguration jobConfig) {
-    }
-    
-    @Override
     public Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms() {
         return null;
     }
@@ -145,14 +129,6 @@ public final class MigrationJobAPIFixture implements MigrationJobAPI {
     @Override
     public boolean aggregateDataConsistencyCheckResults(final String jobId, final Map<String, DataConsistencyCheckResult> checkResults) {
         return false;
-    }
-    
-    @Override
-    public void switchClusterConfiguration(final String jobId) {
-    }
-    
-    @Override
-    public void switchClusterConfiguration(final MigrationJobConfiguration jobConfig) {
     }
     
     @Override

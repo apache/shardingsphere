@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationCheckAlgorithmsStatement;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -46,9 +47,6 @@ import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.AlterReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.DropReadwriteSplittingRuleStatement;
-import org.apache.shardingsphere.migration.distsql.statement.ApplyMigrationStatement;
-import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationCheckAlgorithmsStatement;
-import org.apache.shardingsphere.migration.distsql.statement.StopMigrationSourceWritingStatement;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.AlterShadowAlgorithmStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.AlterShadowRuleStatement;
@@ -61,7 +59,6 @@ import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowTable
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -245,23 +242,6 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
         mockScalingContext();
         ResponseHeader response = RALBackendHandlerFactory.newInstance(mock(ShowMigrationCheckAlgorithmsStatement.class), connectionSession).execute();
         assertThat(response, instanceOf(QueryResponseHeader.class));
-    }
-    
-    // TODO assertExecuteStopScalingSourceWritingContext, assertExecuteCheckoutScalingContext throw exception
-    @Ignore
-    @Test
-    public void assertExecuteStopScalingSourceWritingContext() throws SQLException {
-        mockScalingContext();
-        ResponseHeader response = RALBackendHandlerFactory.newInstance(mock(StopMigrationSourceWritingStatement.class), connectionSession).execute();
-        assertThat(response, instanceOf(UpdateResponseHeader.class));
-    }
-    
-    @Ignore
-    @Test
-    public void assertExecuteCheckoutScalingContext() throws SQLException {
-        mockScalingContext();
-        ResponseHeader response = RALBackendHandlerFactory.newInstance(mock(ApplyMigrationStatement.class), connectionSession).execute();
-        assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     
     private void setContextManager(final boolean isGovernance) {
