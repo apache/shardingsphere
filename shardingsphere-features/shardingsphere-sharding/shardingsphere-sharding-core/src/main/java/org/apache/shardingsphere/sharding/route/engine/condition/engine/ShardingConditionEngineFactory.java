@@ -44,7 +44,7 @@ public final class ShardingConditionEngineFactory {
     public static ShardingConditionEngine<?> createShardingConditionEngine(final QueryContext queryContext, final ShardingSphereDatabase database, final ShardingRule rule) {
         return createShardingConditionEngine(queryContext.getSqlStatementContext(), database, rule);
     }
-
+    
     /**
      * Create new instance of sharding condition engine.
      *

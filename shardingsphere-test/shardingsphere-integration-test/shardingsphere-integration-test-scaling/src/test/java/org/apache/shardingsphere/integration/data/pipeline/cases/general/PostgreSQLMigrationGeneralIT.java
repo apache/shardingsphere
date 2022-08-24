@@ -104,7 +104,7 @@ public final class PostgreSQLMigrationGeneralIT extends BaseExtraSQLITCase {
         String jobId = getJobIdByTableName("t_order");
         waitMigrationFinished(jobId);
         stopMigrationByJobId(jobId);
-        sourceExecuteWithLog(String.format("INSERT INTO %s.t_order (id,order_id,user_id,status) VALUES (%s, %s, %s, '%s')", SCHEMA_NAME, KEY_GENERATE_ALGORITHM.generateKey(), 
+        sourceExecuteWithLog(String.format("INSERT INTO %s.t_order (id,order_id,user_id,status) VALUES (%s, %s, %s, '%s')", SCHEMA_NAME, KEY_GENERATE_ALGORITHM.generateKey(),
                 System.currentTimeMillis(), 1, "afterStop"));
         startMigrationByJobId(jobId);
         assertCheckMigrationSuccess(jobId);

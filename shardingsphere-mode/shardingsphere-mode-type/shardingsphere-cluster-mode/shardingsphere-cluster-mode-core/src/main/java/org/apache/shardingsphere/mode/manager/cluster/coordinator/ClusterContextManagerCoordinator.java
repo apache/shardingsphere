@@ -63,7 +63,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -311,11 +310,9 @@ public final class ClusterContextManagerCoordinator {
         if (!event.getInstanceId().equals(contextManager.getInstanceContext().getInstance().getMetaData().getId())) {
             return;
         }
-        List<Statement> statements = ShowProcessListManager.getInstance().getProcessStatement(event.getProcessId());
-        if (!statements.isEmpty()) {
-            for (Statement statement : statements) {
-                statement.cancel();
-            }
+        Collection<Statement> statements = ShowProcessListManager.getInstance().getProcessStatement(event.getProcessId());
+        for (Statement statement : statements) {
+            statement.cancel();
         }
         registryCenter.getRepository().delete(ComputeNode.getProcessKillInstanceIdNodePath(event.getInstanceId(), event.getProcessId()));
     }

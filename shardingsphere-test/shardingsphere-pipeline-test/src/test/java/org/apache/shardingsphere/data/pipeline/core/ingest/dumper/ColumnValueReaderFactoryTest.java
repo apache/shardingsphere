@@ -35,8 +35,7 @@ public final class ColumnValueReaderFactoryTest {
     public void assertGetInstance() {
         Collection<Pair<String, Class<? extends ColumnValueReader>>> paramResult = Arrays.asList(
                 Pair.of("MySQL", MySQLColumnValueReader.class),
-                Pair.of("PostgreSQL", PostgreSQLColumnValueReader.class), Pair.of("openGauss", PostgreSQLColumnValueReader.class)
-        );
+                Pair.of("PostgreSQL", PostgreSQLColumnValueReader.class), Pair.of("openGauss", PostgreSQLColumnValueReader.class));
         for (Pair<String, Class<? extends ColumnValueReader>> each : paramResult) {
             ColumnValueReader actual = ColumnValueReaderFactory.getInstance(each.getKey());
             assertThat(actual, instanceOf(each.getValue()));
