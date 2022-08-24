@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Proxy container util.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ProxyContainerUtil {
+public final class ProxyContainerUtil {
     
     private static final AtomicInteger ATOMIC_PROXY_CONTAINER_ID = new AtomicInteger(1);
     
