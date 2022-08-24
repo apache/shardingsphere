@@ -49,7 +49,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         persistConfigurations(persistService, parameter);
         InstanceContext instanceContext = buildInstanceContext(parameter, repository);
         new ProcessStandaloneSubscriber(instanceContext.getEventBusContext());
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, parameter.getDatabaseConfigs(), instanceContext);
+        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, parameter, instanceContext);
         return new ContextManager(metaDataContexts, instanceContext);
     }
     
