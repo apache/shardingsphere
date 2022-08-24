@@ -51,8 +51,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         RegistryCenter registryCenter = new RegistryCenter(repository, new EventBusContext(), parameter.getInstanceMetaData(), parameter.getDatabaseConfigs());
         InstanceContext instanceContext = buildInstanceContext(registryCenter, parameter);
         registryCenter.getRepository().watchSessionConnection(instanceContext);
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, parameter.getDatabaseConfigs(), instanceContext);
-        persistMetaData(metaDataContexts);
+        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, parameter, instanceContext);
+        compareAndPersistMetaData(parameter, metaDataContexts);
         ContextManager result = new ContextManager(metaDataContexts, instanceContext);
         registerOnline(persistService, registryCenter, parameter, result);
         return result;
@@ -69,10 +69,12 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                 parameter.getModeConfiguration(), new ShardingSphereLockContext(registryCenter.getLockPersistService()), registryCenter.getEventBusContext());
     }
     
-    private void persistMetaData(final MetaDataContexts metaDataContexts) {
-        metaDataContexts.getMetaData().getDatabases().values().forEach(
-                each -> each.getSchemas()
-                        .forEach((schemaName, tables) -> metaDataContexts.getPersistService().getDatabaseMetaDataService().compareAndPersistMetaData(each.getName(), schemaName, tables)));
+    private void compareAndPersistMetaData(final ContextManagerBuilderParameter parameter, final MetaDataContexts metaDataContexts) {
+        if (parameter.getModeConfiguration().isOverwrite()) {
+            metaDataContexts.getMetaData().getDatabases().values().forEach(
+                    each -> each.getSchemas()
+                            .forEach((schemaName, tables) -> metaDataContexts.getPersistService().getDatabaseMetaDataService().compareAndPersistMetaData(each.getName(), schemaName, tables)));
+        }
     }
     
     private void registerOnline(final MetaDataPersistService persistService, final RegistryCenter registryCenter,

@@ -29,9 +29,9 @@ import org.apache.shardingsphere.mode.persist.PersistRepository;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Database meta data registry service.
@@ -181,7 +181,7 @@ public final class DatabaseMetaDataPersistService {
      */
     public Map<String, ShardingSphereSchema> load(final String databaseName) {
         Collection<String> schemas = repository.getChildrenKeys(DatabaseMetaDataNode.getDatabaseNamePath(databaseName));
-        Map<String, ShardingSphereSchema> result = new HashMap<>(schemas.size(), 1);
+        Map<String, ShardingSphereSchema> result = new ConcurrentHashMap<>(schemas.size(), 1);
         schemas.forEach(each -> result.put(each.toLowerCase(), load(databaseName, each).orElse(new ShardingSphereSchema())));
         return result;
     }
