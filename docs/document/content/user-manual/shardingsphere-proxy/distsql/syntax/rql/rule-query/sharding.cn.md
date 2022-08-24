@@ -136,19 +136,6 @@ SHOW SHARDING BROADCAST TABLE RULES [FROM databaseName]
 | ------------------------- | -------- |
 | sharding_broadcast_tables | 广播表名称 |
 
-### Sharding Scaling Rule
-
-| 列                        | 说明              |
-|--------------------------|-------------------|
-| name                     | 弹性伸缩配置名称     |
-| input                    | 数据读取配置        |
-| output                   | 数据写入配置        |
-| stream_channel           | 数据通道配置        |
-| completion_detector      | 作业完成检测算法配置  |
-| data_consistency_checker | 数据一致性校验算法配置 |
-
-## 示例
-
 ### Sharding Table Rule
 
 *SHOW SHARDING TABLE RULES*

@@ -33,7 +33,6 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreatorFactory;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineVerifyFailedException;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPI;
@@ -156,9 +155,7 @@ public final class MigrationJobAPIImplTest {
             log.error("source is null, jobConfig={}", YamlEngine.marshal(jobConfig));
         }
         initTableData(jobConfig);
-        jobAPI.stopClusterWriteDB(jobConfig);
         Map<String, DataConsistencyCheckResult> checkResultMap = jobAPI.dataConsistencyCheck(jobId.get());
-        jobAPI.restoreClusterWriteDB(jobConfig);
         assertThat(checkResultMap.size(), is(1));
     }
     
@@ -168,9 +165,7 @@ public final class MigrationJobAPIImplTest {
         assertTrue(jobId.isPresent());
         MigrationJobConfiguration jobConfig = jobAPI.getJobConfiguration(jobId.get());
         initTableData(jobConfig);
-        jobAPI.stopClusterWriteDB(jobConfig);
         Map<String, DataConsistencyCheckResult> checkResultMap = jobAPI.dataConsistencyCheck(jobId.get(), "FIXTURE", null);
-        jobAPI.restoreClusterWriteDB(jobConfig);
         assertThat(checkResultMap.size(), is(1));
         assertTrue(checkResultMap.get("t_order").getCountCheckResult().isMatched());
         assertThat(checkResultMap.get("t_order").getCountCheckResult().getTargetRecordsCount(), is(2L));
@@ -212,19 +207,6 @@ public final class MigrationJobAPIImplTest {
         checkResults.put("foo_tbl", new DataConsistencyCheckResult(equalCountCheckResult, equalContentCheckResult));
         checkResults.put("bar_tbl", new DataConsistencyCheckResult(equalCountCheckResult, equalContentCheckResult));
         assertTrue(jobAPI.aggregateDataConsistencyCheckResults("foo_job", checkResults));
-    }
-    
-    @Test(expected = PipelineVerifyFailedException.class)
-    public void assertSwitchClusterConfigurationAlreadyFinished() {
-        final MigrationJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
-        Optional<String> jobId = jobAPI.start(jobConfig);
-        assertTrue(jobId.isPresent());
-        final GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
-        MigrationJobItemContext jobItemContext = PipelineContextUtil.mockMigrationJobItemContext(jobConfig);
-        jobAPI.persistJobItemProgress(jobItemContext);
-        repositoryAPI.persistJobCheckResult(jobId.get(), true);
-        jobAPI.updateJobItemStatus(jobId.get(), 0, JobStatus.FINISHED);
-        jobAPI.switchClusterConfiguration(jobId.get());
     }
     
     @Test

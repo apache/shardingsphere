@@ -66,18 +66,6 @@
         <target-table-name>t_order</target-table-name>
     </migrate-table>
     
-    <stop-migration-source-writing sql-case-id="stop-migration-source-writing">
-        <job-id>123</job-id>
-    </stop-migration-source-writing>
-    
-    <restore-migration-source-writing sql-case-id="restore-migration-source-writing">
-        <job-id>123</job-id>
-    </restore-migration-source-writing>
-    
-    <apply-migration sql-case-id="apply-migration">
-        <job-id>123</job-id>
-    </apply-migration>
-    
     <clean-migration sql-case-id="clean-migration">
         <job-id>123</job-id>
     </clean-migration>

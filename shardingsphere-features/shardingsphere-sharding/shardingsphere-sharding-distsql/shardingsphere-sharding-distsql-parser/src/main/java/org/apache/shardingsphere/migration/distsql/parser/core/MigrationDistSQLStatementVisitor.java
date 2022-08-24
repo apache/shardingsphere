@@ -23,7 +23,6 @@ import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatemen
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.AddMigrationSourceResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.AlgorithmDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.ApplyMigrationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.CheckMigrationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.CleanMigrationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.DropMigrationSourceResourceContext;
@@ -33,32 +32,27 @@ import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatemen
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.PropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.ResetMigrationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.ResourceDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.RestoreMigrationSourceWritingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.ShowMigrationCheckAlgorithmsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.ShowMigrationListContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.ShowMigrationSourceResourcesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.ShowMigrationStatusContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.StartMigrationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.StopMigrationContext;
-import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.StopMigrationSourceWritingContext;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.migration.distsql.statement.AddMigrationSourceResourceStatement;
-import org.apache.shardingsphere.migration.distsql.statement.ApplyMigrationStatement;
 import org.apache.shardingsphere.migration.distsql.statement.CheckMigrationStatement;
 import org.apache.shardingsphere.migration.distsql.statement.CleanMigrationStatement;
 import org.apache.shardingsphere.migration.distsql.statement.DropMigrationSourceResourceStatement;
 import org.apache.shardingsphere.migration.distsql.statement.MigrateTableStatement;
 import org.apache.shardingsphere.migration.distsql.statement.ResetMigrationStatement;
-import org.apache.shardingsphere.migration.distsql.statement.RestoreMigrationSourceWritingStatement;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationCheckAlgorithmsStatement;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationListStatement;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationSourceResourcesStatement;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationStatusStatement;
 import org.apache.shardingsphere.migration.distsql.statement.StartMigrationStatement;
-import org.apache.shardingsphere.migration.distsql.statement.StopMigrationSourceWritingStatement;
 import org.apache.shardingsphere.migration.distsql.statement.StopMigrationStatement;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
@@ -125,21 +119,6 @@ public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStat
     @Override
     public ASTNode visitShowMigrationCheckAlgorithms(final ShowMigrationCheckAlgorithmsContext ctx) {
         return new ShowMigrationCheckAlgorithmsStatement();
-    }
-    
-    @Override
-    public ASTNode visitStopMigrationSourceWriting(final StopMigrationSourceWritingContext ctx) {
-        return new StopMigrationSourceWritingStatement(getIdentifierValue(ctx.jobId()));
-    }
-    
-    @Override
-    public ASTNode visitRestoreMigrationSourceWriting(final RestoreMigrationSourceWritingContext ctx) {
-        return new RestoreMigrationSourceWritingStatement(getIdentifierValue(ctx.jobId()));
-    }
-    
-    @Override
-    public ASTNode visitApplyMigration(final ApplyMigrationContext ctx) {
-        return new ApplyMigrationStatement(getIdentifierValue(ctx.jobId()));
     }
     
     @Override
