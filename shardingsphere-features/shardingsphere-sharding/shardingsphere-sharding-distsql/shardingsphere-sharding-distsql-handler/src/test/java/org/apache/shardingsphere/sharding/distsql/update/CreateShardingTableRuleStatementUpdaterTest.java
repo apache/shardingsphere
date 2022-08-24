@@ -129,7 +129,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
         assertThat(autoTableRule.getKeyGenerateStrategy().getColumn(), is("product_id"));
         assertThat(autoTableRule.getKeyGenerateStrategy().getKeyGeneratorName(), is("t_order_item_input_distsql.fixture"));
     }
-
+    
     @Test
     public void assertCheckCreateShardingStatement() throws DistSQLException {
         String sql = "CREATE SHARDING TABLE RULE t_order("
@@ -140,7 +140,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
         CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
         updater.checkSQLStatement(database, distSQLStatement, null);
     }
-
+    
     @Test(expected = DistSQLException.class)
     public void assertCheckCreateShardingStatementThrows() throws DistSQLException {
         String sql = "CREATE SHARDING TABLE RULE t_order("
@@ -151,7 +151,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
         CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
         updater.checkSQLStatement(database, distSQLStatement, null);
     }
-
+    
     private AutoTableRuleSegment createCompleteAutoTableRule() {
         AutoTableRuleSegment result = new AutoTableRuleSegment("t_order_item_input", Collections.singletonList("logic_ds"));
         result.setKeyGenerateStrategySegment(new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())));
@@ -212,7 +212,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
         SQLVisitor visitor = FeaturedDistSQLStatementParserFacadeFactory.getInstance(facade.getType()).getVisitorClass().getDeclaredConstructor().newInstance();
         return (DistSQLStatement) ((ParseTreeVisitor) visitor).visit(parseASTNode.getRootNode());
     }
-
+    
     private static class MockDataSourceContainedRule implements DataSourceContainedRule {
         
         @Override
