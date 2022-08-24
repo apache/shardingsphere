@@ -15,7 +15,7 @@
   ~ limitations under the License.
   -->
 
-<#import "../../macro/db_catalogs.ftl" as CATALOG>
+<#import "../../../macro/db_catalogs.ftl" as CATALOG>
 SELECT c.oid, c.relname , nspname,
 CASE WHEN nspname NOT LIKE 'pg\_%' THEN
 pg_catalog.quote_ident(nspname)||'.'||pg_catalog.quote_ident(c.relname)

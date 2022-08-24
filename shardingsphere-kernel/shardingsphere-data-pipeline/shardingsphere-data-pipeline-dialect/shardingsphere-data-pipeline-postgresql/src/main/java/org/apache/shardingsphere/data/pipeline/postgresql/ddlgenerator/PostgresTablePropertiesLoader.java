@@ -57,24 +57,24 @@ public final class PostgresTablePropertiesLoader extends AbstractPostgresDDLAdap
     private void fetchDataBaseId(final Map<String, Object> context) throws SQLException {
         Map<String, Object> parameters = new LinkedHashMap<>();
         parameters.put("databaseName", getConnection().getCatalog());
-        appendFirstRow(executeByTemplate(parameters, "table/%s/get_database_id.ftl"), context);
+        appendFirstRow(executeByTemplate(parameters, "component/table/%s/get_database_id.ftl"), context);
     }
     
     private void fetchTableId(final Map<String, Object> context) {
         Map<String, Object> parameters = new LinkedHashMap<>();
         parameters.put("schemaName", schemaName);
         parameters.put("tableName", tableName);
-        appendFirstRow(executeByTemplate(parameters, "table/%s/get_table_id.ftl"), context);
+        appendFirstRow(executeByTemplate(parameters, "component/table/%s/get_table_id.ftl"), context);
     }
     
     private void fetchSchemaId(final Map<String, Object> context) {
         Map<String, Object> parameters = new LinkedHashMap<>();
         parameters.put("schemaName", schemaName);
-        appendFirstRow(executeByTemplate(parameters, "table/%s/get_schema_id.ftl"), context);
+        appendFirstRow(executeByTemplate(parameters, "component/table/%s/get_schema_id.ftl"), context);
     }
     
     private void fetchTableProperties(final Map<String, Object> context) throws SQLException {
-        appendFirstRow(executeByTemplate(context, "table/%s/properties.ftl"), context);
+        appendFirstRow(executeByTemplate(context, "component/table/%s/properties.ftl"), context);
         updateAutovacuumProperties(context);
         checkRlspolicySupport(context);
         formatSecurityLabels(context);

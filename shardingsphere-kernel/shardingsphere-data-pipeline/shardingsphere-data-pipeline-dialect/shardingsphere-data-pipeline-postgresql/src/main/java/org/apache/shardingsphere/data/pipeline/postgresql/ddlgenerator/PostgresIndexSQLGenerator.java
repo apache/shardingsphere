@@ -61,7 +61,7 @@ public final class PostgresIndexSQLGenerator extends AbstractPostgresDDLAdapter 
     private Collection<Map<String, Object>> getIndexNodes(final Map<String, Object> context) {
         Map<String, Object> param = new LinkedHashMap<>();
         param.put("tid", context.get("tid"));
-        return executeByTemplate(param, "indexes/%s/nodes.ftl");
+        return executeByTemplate(param, "component/indexes/%s/nodes.ftl");
     }
     
     private String getIndexSql(final Map<String, Object> context, final Map<String, Object> indexNode) throws SQLException {
@@ -74,9 +74,9 @@ public final class PostgresIndexSQLGenerator extends AbstractPostgresDDLAdapter 
     }
     
     private String doGenerateIndexSql(final Map<String, Object> indexData) {
-        String result = PostgreSQLPipelineFreemarkerManager.getSQLByVersion(indexData, "indexes/%s/create.ftl", getMajorVersion(), getMinorVersion());
+        String result = PostgreSQLPipelineFreemarkerManager.getSQLByVersion(indexData, "component/indexes/%s/create.ftl", getMajorVersion(), getMinorVersion());
         result += System.lineSeparator();
-        result += PostgreSQLPipelineFreemarkerManager.getSQLByVersion(indexData, "indexes/%s/alter.ftl", getMajorVersion(), getMinorVersion());
+        result += PostgreSQLPipelineFreemarkerManager.getSQLByVersion(indexData, "component/indexes/%s/alter.ftl", getMajorVersion(), getMinorVersion());
         return result;
     }
     
@@ -94,7 +94,7 @@ public final class PostgresIndexSQLGenerator extends AbstractPostgresDDLAdapter 
         param.put("tid", context.get("tid"));
         param.put("idx", indexNode.get("oid"));
         param.put("datlastsysoid", context.get("datlastsysoid"));
-        return executeByTemplate(param, "indexes/%s/properties.ftl");
+        return executeByTemplate(param, "component/indexes/%s/properties.ftl");
     }
     
     private void appendColumnDetails(final Map<String, Object> indexData, final Long indexId) throws SQLException {
@@ -140,7 +140,7 @@ public final class PostgresIndexSQLGenerator extends AbstractPostgresDDLAdapter 
     private Collection<Map<String, Object>> fetchColumnDetails(final Long indexId) {
         Map<String, Object> param = new LinkedHashMap<>();
         param.put("idx", indexId);
-        return executeByTemplate(param, "indexes/%s/column_details.ftl");
+        return executeByTemplate(param, "component/indexes/%s/column_details.ftl");
     }
     
     private String getColumnPropertyDisplayData(final Map<String, Object> each, final Map<String, Object> indexData) throws SQLException {
@@ -167,7 +167,7 @@ public final class PostgresIndexSQLGenerator extends AbstractPostgresDDLAdapter 
         Map<String, Object> param = new LinkedHashMap<>();
         param.put("idx", oid);
         Collection<Object> includes = new LinkedList<>();
-        for (Map<String, Object> each : executeByTemplate(param, "indexes/%s/include_details.ftl")) {
+        for (Map<String, Object> each : executeByTemplate(param, "component/indexes/%s/include_details.ftl")) {
             includes.add(each.get("colname"));
         }
         indexData.put("include", includes);
