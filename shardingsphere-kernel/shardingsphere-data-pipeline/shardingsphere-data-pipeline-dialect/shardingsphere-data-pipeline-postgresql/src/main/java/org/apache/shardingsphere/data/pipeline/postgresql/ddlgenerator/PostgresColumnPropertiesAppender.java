@@ -57,7 +57,7 @@ public final class PostgresColumnPropertiesAppender extends AbstractPostgresDDLA
     @SneakyThrows
     public void append(final Map<String, Object> context) {
         Collection<Map<String, Object>> typeAndInheritedColumns = getTypeAndInheritedColumns(context);
-        Collection<Map<String, Object>> allColumns = executeByTemplate(context, "columns/%s/properties.ftl");
+        Collection<Map<String, Object>> allColumns = executeByTemplate(context, "component/columns/%s/properties.ftl");
         for (Map<String, Object> each : allColumns) {
             for (Map<String, Object> column : typeAndInheritedColumns) {
                 if (each.get("name").equals(column.get("name"))) {
@@ -90,7 +90,7 @@ public final class PostgresColumnPropertiesAppender extends AbstractPostgresDDLA
     
     private Collection<Map<String, Object>> getColumnFromInherits(final Collection<String> collInherits) {
         Collection<Map<String, Object>> result = new LinkedList<>();
-        for (Map<String, Object> each : executeByTemplate(new LinkedHashMap<>(), "table/%s/get_inherits.ftl")) {
+        for (Map<String, Object> each : executeByTemplate(new LinkedHashMap<>(), "component/table/%s/get_inherits.ftl")) {
             if (collInherits.contains((String) each.get("inherits"))) {
                 Map<String, Object> parameters = new LinkedHashMap<>();
                 parameters.put("tid", each.get("oid"));
@@ -103,7 +103,7 @@ public final class PostgresColumnPropertiesAppender extends AbstractPostgresDDLA
     private Collection<Map<String, Object>> getColumnFromType(final Map<String, Object> context) {
         Map<String, Object> parameters = new LinkedHashMap<>();
         parameters.put("tid", context.get("typoid"));
-        return executeByTemplate(parameters, "table/%s/get_columns_for_table.ftl");
+        return executeByTemplate(parameters, "component/table/%s/get_columns_for_table.ftl");
     }
     
     @SuppressWarnings("unchecked")
@@ -126,7 +126,7 @@ public final class PostgresColumnPropertiesAppender extends AbstractPostgresDDLA
         Map<String, Collection<String>> result = new LinkedHashMap<>();
         Map<String, Object> parameters = new LinkedHashMap<>();
         parameters.put("type_ids", allColumns.stream().map(each -> each.get("atttypid").toString()).collect(Collectors.joining(",")));
-        for (Map<String, Object> each : executeByTemplate(parameters, "columns/%s/edit_mode_types_multi.ftl")) {
+        for (Map<String, Object> each : executeByTemplate(parameters, "component/columns/%s/edit_mode_types_multi.ftl")) {
             result.put(each.get("main_oid").toString(), covertPgArrayAndSort(each.get("edit_types")));
         }
         return result;

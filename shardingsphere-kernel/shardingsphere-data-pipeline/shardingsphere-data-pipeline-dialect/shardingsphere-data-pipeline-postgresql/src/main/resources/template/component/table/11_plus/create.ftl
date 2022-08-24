@@ -15,11 +15,7 @@
   ~ limitations under the License.
   -->
 
-<#import "../../macro/constraints.ftl" as CONSTRAINTS>
-<#assign with_clause = false>
-<#if fillfactor!false || parallel_workers!false || toast_tuple_target!false || (autovacuum_custom!false && add_vacuum_settings_in_sql!false) || autovacuum_enabled == 't' || autovacuum_enabled == 'f' || (toast_autovacuum!false && add_vacuum_settings_in_sql!false) || toast_autovacuum_enabled == 't' || toast_autovacuum_enabled == 'f' >
-    <#assign with_clause = true>
-</#if>
+<#import "../../../macro/constraints.ftl" as CONSTRAINTS>
 CREATE <#if relpersistence!false >UNLOGGED </#if>TABLE IF NOT EXISTS ${schema}.${name}
 <#if typname?? >
 OF ${typname }
@@ -29,11 +25,11 @@ OF ${typname }
 </#if>
 <#if like_relation?? >
 LIKE ${like_relation }<#if like_default_value!false >
-        INCLUDING DEFAULTS</#if><#if like_constraints!false >
-        INCLUDING CONSTRAINTS</#if><#if like_indexes!false >
-        INCLUDING INDEXES</#if><#if like_storage!false >
-        INCLUDING STORAGE</#if><#if  like_comments!false >
-        INCLUDING COMMENTS</#if><#if  columns?size gt 0 >,
+INCLUDING DEFAULTS</#if><#if like_constraints!false >
+INCLUDING CONSTRAINTS</#if><#if like_indexes!false >
+INCLUDING INDEXES</#if><#if like_storage!false >
+INCLUDING STORAGE</#if><#if  like_comments!false >
+INCLUDING COMMENTS</#if><#if  columns?size gt 0 >,
 </#if>
 </#if>
 <#if columns?? && columns?size gt 0 >
@@ -52,7 +48,6 @@ MAXVALUE ${c.seqmax} </#if><#if c.seqcache?? && c.seqcache?number gt -1>
 CACHE ${c.seqcache} </#if>
 <#if c.seqincrement?? || c.seqcycle!false || c.seqincrement?? || c.seqstart?? || c.seqmin?? || c.seqmax?? || c.seqcache?? >)</#if>
 </#if>
-<#if c.colconstype?? && c.colconstype == 'g' && c.genexpr?? && c.genexpr != '' > GENERATED ALWAYS AS (${c.genexpr}) STORED</#if>
 <#if c?counter lt columns?size>,
 </#if>
 </#if>
@@ -66,41 +61,30 @@ CACHE ${c.seqcache} </#if>
 <@CONSTRAINTS.EXCLUDE exclude_data=exclude_constraint/></#if>
 <#if like_relation?? || coll_inherits?size gt 0 || columns?size gt 0 || primary_key?size gt 0 || unique_constraint?size gt 0 || foreign_key?size gt 0 || check_constraint?size gt 0 || exclude_constraint?size gt 0 >
 )</#if><#if relkind?? && relkind == 'p' > PARTITION BY ${ partition_scheme }</#if>
-<#if !(coll_inherits??) && !(spcname??) && !with_clause >;</#if>
 <#if coll_inherits?? && coll_inherits?size gt 0>
-INHERITS (<#list coll_inherits as val ><#if val?counter != 1 >, </#if>${val}</#list>)<#if !(spcname??) && !with_clause >;</#if>
+INHERITS (<#list coll_inherits as val ><#if val?counter != 1 >, </#if>${val}</#list>)
 </#if>
-<#if with_clause >
-<#assign add_comma=false>
 WITH (
-<#if fillfactor?? ><#assign add_comma=true>
-FILLFACTOR = ${ fillfactor }</#if><#if parallel_workers?? >
-<#if add_comma >,
-</#if>
-parallel_workers = ${ parallel_workers }<#assign add_comma=true></#if><#if toast_tuple_target?? >
-<#if add_comma >,
-</#if>
-toast_tuple_target = ${ toast_tuple_target }<#assign add_comma=true></#if><#if autovacuum_enabled?? && (autovacuum_enabled == 't' || autovacuum_enabled == 'f') >
-<#if add_comma >,
-</#if>
-autovacuum_enabled = <#if autovacuum_enabled == 't' >TRUE<#else >FALSE</#if><#assign add_comma=true></#if><#if toast_autovacuum_enabled?? && (toast_autovacuum_enabled == 't' || toast_autovacuum_enabled == 'f')  >
-<#if add_comma >,
-</#if>
-toast.autovacuum_enabled = <#if toast_autovacuum_enabled == 't' >TRUE<#else >FALSE</#if><#assign add_comma=true></#if><#if autovacuum_custom!false >
+OIDS = <#if relhasoids!false >TRUE<#else>FALSE</#if><#if fillfactor?? >,
+FILLFACTOR = ${ fillfactor }</#if><#if parallel_workers?? && parallel_workers != '' >,
+parallel_workers = ${ parallel_workers }</#if><#if toast_tuple_target?? && toast_tuple_target != ''>,
+toast_tuple_target = ${ data.toast_tuple_target }</#if><#if autovacuum_enabled?? && (autovacuum_enabled == 't' || autovacuum_enabled == 'f') >,
+autovacuum_enabled = <#if autovacuum_enabled == 't' >TRUE<#else >FALSE</#if></#if><#if toast_autovacuum_enabled?? && (toast_autovacuum_enabled == 't' || toast_autovacuum_enabled == 'f')  >,
+toast.autovacuum_enabled = <#if toast_autovacuum_enabled == 't' >TRUE<#else >FALSE</#if>
+</#if><#if autovacuum_custom!false && vacuum_table?size gt 0 >
 <#list vacuum_table as opt ><#if opt.name?? && opt.value?? >
-<#if add_comma >,
-</#if>
-${opt.name} = ${opt.value}<#assign add_comma=true></#if>
-</#list></#if><#if toast_autovacuum!false >
+,
+${opt.name} = ${opt.value}</#if>
+</#list></#if><#if toast_autovacuum!false && vacuum_toast?size gt 0 >
 <#list vacuum_toast as opt ><#if opt.name?? && opt.value?? >
-<#if add_comma >,
-</#if>
-toast.${opt.name} = ${opt.value}<#assign add_comma=true></#if>
+,
+toast.${opt.name} = ${opt.value}</#if>
 </#list></#if>
-<#if spcname?? >)<#else>);</#if>
-</#if>
 <#if spcname?? >
+)
 TABLESPACE ${spcname };
+<#else>
+);
 </#if>
 <#if description?? >
 COMMENT ON TABLE ${schema}.${name}
