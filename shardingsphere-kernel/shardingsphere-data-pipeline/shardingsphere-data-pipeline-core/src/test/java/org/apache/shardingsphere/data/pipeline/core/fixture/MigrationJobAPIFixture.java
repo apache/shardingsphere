@@ -60,6 +60,10 @@ public final class MigrationJobAPIFixture implements MigrationJobAPI {
     }
     
     @Override
+    public void dropProcessConfiguration(final String confPath) {
+    }
+    
+    @Override
     public PipelineProcessConfiguration showProcessConfiguration() {
         return null;
     }

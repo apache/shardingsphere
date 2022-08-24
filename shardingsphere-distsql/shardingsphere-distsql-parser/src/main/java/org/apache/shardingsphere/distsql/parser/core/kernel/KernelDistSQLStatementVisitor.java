@@ -19,6 +19,7 @@ package org.apache.shardingsphere.distsql.parser.core.kernel;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementBaseVisitor;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AddResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterDefaultSingleTableRuleContext;
@@ -108,6 +109,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterTra
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ApplyDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.CreateMigrationProcessConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.DiscardDistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.DropMigrationProcessConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.LabelInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.PrepareDistSQLStatement;
@@ -433,6 +435,11 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     public ASTNode visitAlterMigrationProcessConfiguration(final AlterMigrationProcessConfigurationContext ctx) {
         MigrationProcessConfigurationSegment segment = null == ctx.migrationProcessConfiguration() ? null : (MigrationProcessConfigurationSegment) visit(ctx.migrationProcessConfiguration());
         return new AlterMigrationProcessConfigurationStatement(segment);
+    }
+    
+    @Override
+    public ASTNode visitDropMigrationProcessConfiguration(final KernelDistSQLStatementParser.DropMigrationProcessConfigurationContext ctx) {
+        return new DropMigrationProcessConfigurationStatement(getIdentifierValue(ctx.confPath()));
     }
     
     @Override

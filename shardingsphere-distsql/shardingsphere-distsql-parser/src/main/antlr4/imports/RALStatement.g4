@@ -119,6 +119,10 @@ alterMigrationProcessConfiguration
     : ALTER MIGRATION PROCESS CONFIGURATION migrationProcessConfiguration?
     ;
 
+dropMigrationProcessConfiguration
+    : DROP MIGRATION PROCESS CONFIGURATION confPath
+    ;
+
 migrationProcessConfiguration
     : LP readDefinition? (COMMA? writeDefinition)? (COMMA? streamChannel)? RP
     ;
@@ -149,6 +153,10 @@ rateLimiter
 
 streamChannel
     : STREAM_CHANNEL LP algorithmDefinition RP
+    ;
+
+confPath
+    : STRING
     ;
 
 filePath
