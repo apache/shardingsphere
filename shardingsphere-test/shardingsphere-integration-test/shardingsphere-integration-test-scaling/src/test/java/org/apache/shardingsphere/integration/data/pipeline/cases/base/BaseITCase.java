@@ -27,7 +27,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
-import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.command.MigrationDistSQLCommand;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
@@ -76,7 +75,7 @@ public abstract class BaseITCase {
     
     protected static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
     
-    protected static final JdbcUrlAppender JDBC_URL_APPENDER = new JdbcUrlAppender();
+    protected static final String SCHEMA_NAME = "test";
     
     protected static final String DS_0 = "scaling_it_0";
     
@@ -245,7 +244,8 @@ public abstract class BaseITCase {
     }
     
     // TODO use new DistSQL
-    protected void createScalingRule() {
+    protected void addMigrationProcessConfig() {
+        proxyExecuteWithLog(migrationDistSQLCommand.getAddMigrationProcessConfig(), 0);
     }
     
     protected void createSourceSchema(final String schemaName) {
@@ -381,7 +381,7 @@ public abstract class BaseITCase {
         return queryForListWithLog(String.format("SHOW MIGRATION STATUS '%s'", jobId));
     }
     
-    protected void assertCheckScalingSuccess(final String jobId) {
+    protected void assertCheckMigrationSuccess(final String jobId) {
         for (int i = 0; i < 10; i++) {
             if (checkJobIncrementTaskFinished(jobId)) {
                 break;

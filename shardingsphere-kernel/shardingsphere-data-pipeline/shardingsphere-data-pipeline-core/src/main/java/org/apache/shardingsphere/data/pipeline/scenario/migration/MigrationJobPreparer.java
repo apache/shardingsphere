@@ -156,7 +156,7 @@ public final class MigrationJobPreparer {
         tableNameMap.put(jobConfig.getTargetTableName(), jobConfig.getSourceTableName());
         PipelineDataSourceWrapper dataSource = jobItemContext.getDataSourceManager().getDataSource(jobItemContext.getTaskConfig().getDumperConfig().getDataSourceConfig());
         Map<String, DataSource> sourceDataSourceMap = new HashMap<>(1, 1.0F);
-        sourceDataSourceMap.put(jobConfig.getSourceDataSourceName(), dataSource);
+        sourceDataSourceMap.put(jobConfig.getSourceResourceName(), dataSource);
         PrepareTargetTablesParameter prepareTargetTablesParameter = new PrepareTargetTablesParameter(jobConfig.getTargetDatabaseName(),
                 jobItemContext.getTaskConfig().getImporterConfig().getDataSourceConfig(), sourceDataSourceMap, jobItemContext.getDataSourceManager(),
                 jobDataNodeLine, tableNameMap, tableNameSchemaNameMapping, sqlParserEngine);

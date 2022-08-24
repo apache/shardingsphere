@@ -39,7 +39,7 @@ public final class YamlMigrationJobConfigurationSwapper implements YamlConfigura
         result.setTargetDatabaseName(data.getTargetDatabaseName());
         result.setSourceDatabaseType(data.getSourceDatabaseType());
         result.setSourceTableName(data.getSourceTableName());
-        result.setSourceDataSourceName(data.getSourceDataSourceName());
+        result.setSourceResourceName(data.getSourceResourceName());
         result.setSourceSchemaName(data.getSourceSchemaName());
         result.setTargetDatabaseType(data.getTargetDatabaseType());
         result.setSource(dataSourceConfigSwapper.swapToYamlConfiguration(data.getSource()));
@@ -54,7 +54,7 @@ public final class YamlMigrationJobConfigurationSwapper implements YamlConfigura
     
     @Override
     public MigrationJobConfiguration swapToObject(final YamlMigrationJobConfiguration yamlConfig) {
-        return new MigrationJobConfiguration(yamlConfig.getJobId(), yamlConfig.getTargetDatabaseName(), yamlConfig.getSourceDataSourceName(), yamlConfig.getSourceSchemaName(),
+        return new MigrationJobConfiguration(yamlConfig.getJobId(), yamlConfig.getTargetDatabaseName(), yamlConfig.getSourceResourceName(), yamlConfig.getSourceSchemaName(),
                 yamlConfig.getSourceDatabaseType(), yamlConfig.getTargetDatabaseType(),
                 dataSourceConfigSwapper.swapToObject(yamlConfig.getSource()), dataSourceConfigSwapper.swapToObject(yamlConfig.getTarget()),
                 yamlConfig.getSourceTableName(), yamlConfig.getTargetTableName(),

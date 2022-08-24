@@ -139,6 +139,7 @@ public interface MigrationJobPublicAPI extends PipelineJobPublicAPI, RequiredSPI
      * Create job migration config and start.
      *
      * @param parameter create migration job parameter
+     * @return job id
      */
-    void createJobAndStart(CreateMigrationJobParameter parameter);
+    String createJobAndStart(CreateMigrationJobParameter parameter);
 }

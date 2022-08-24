@@ -141,7 +141,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
             config.setTargetDatabaseType(targetDataSourceConfig.getDatabaseType().getType());
         }
         JobDataNodeEntry nodeEntry = new JobDataNodeEntry(config.getSourceTableName(),
-                Collections.singletonList(new DataNode(config.getSourceDataSourceName(), config.getSourceTableName())));
+                Collections.singletonList(new DataNode(config.getSourceResourceName(), config.getSourceTableName())));
         String dataNodeLine = new JobDataNodeLine(Collections.singletonList(nodeEntry)).marshal();
         config.setTablesFirstDataNodes(dataNodeLine);
         config.setJobShardingDataNodes(Collections.singletonList(dataNodeLine));
@@ -150,7 +150,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     private String generateJobId(final YamlMigrationJobConfiguration config) {
         MigrationJobId jobId = new MigrationJobId();
         jobId.setTypeCode(getJobType().getTypeCode());
-        jobId.setSourceDataSourceName(config.getSourceDataSourceName());
+        jobId.setSourceDataSourceName(config.getSourceResourceName());
         jobId.setTableName(config.getSourceTableName());
         jobId.setDatabaseName(config.getTargetDatabaseName());
         return marshalJobId(jobId);
@@ -176,11 +176,11 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         tableNameMap.put(new ActualTableName(jobConfig.getSourceTableName()), new LogicTableName(jobConfig.getSourceTableName()));
         Map<LogicTableName, String> tableNameSchemaMap = TableNameSchemaNameMapping.convert(jobConfig.getSourceSchemaName(), Collections.singletonList(jobConfig.getTargetTableName()));
         TableNameSchemaNameMapping tableNameSchemaNameMapping = new TableNameSchemaNameMapping(tableNameSchemaMap);
-        DumperConfiguration dumperConfig = createDumperConfiguration(jobConfig.getJobId(), jobConfig.getSourceDataSourceName(), jobConfig.getSource(), tableNameMap, tableNameSchemaNameMapping);
+        DumperConfiguration dumperConfig = createDumperConfiguration(jobConfig.getJobId(), jobConfig.getSourceResourceName(), jobConfig.getSource(), tableNameMap, tableNameSchemaNameMapping);
         // TODO now shardingColumnsMap always empty,
         ImporterConfiguration importerConfig = createImporterConfiguration(jobConfig, pipelineProcessConfig, Collections.emptyMap(), tableNameSchemaNameMapping);
         TaskConfiguration result = new TaskConfiguration(dumperConfig, importerConfig);
-        log.info("createTaskConfiguration, dataSourceName={}, result={}", jobConfig.getSourceDataSourceName(), result);
+        log.info("createTaskConfiguration, sourceResourceName={}, result={}", jobConfig.getSourceResourceName(), result);
         return result;
     }
     
@@ -510,14 +510,14 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     }
     
     @Override
-    public void createJobAndStart(final CreateMigrationJobParameter parameter) {
+    public String createJobAndStart(final CreateMigrationJobParameter parameter) {
         YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
         Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(JobType.MIGRATION);
         Map<String, Object> sourceDataSourceProps = DATA_SOURCE_CONFIG_SWAPPER.swapToMap(metaDataDataSource.get(parameter.getSourceResourceName()));
         YamlPipelineDataSourceConfiguration sourcePipelineDataSourceConfiguration = createYamlPipelineDataSourceConfiguration(StandardPipelineDataSourceConfiguration.TYPE,
                 YamlEngine.marshal(sourceDataSourceProps));
         result.setSource(sourcePipelineDataSourceConfiguration);
-        result.setSourceDataSourceName(parameter.getSourceResourceName());
+        result.setSourceResourceName(parameter.getSourceResourceName());
         StandardPipelineDataSourceConfiguration sourceDataSourceConfig = new StandardPipelineDataSourceConfiguration(sourceDataSourceProps);
         DatabaseType sourceDatabaseType = sourceDataSourceConfig.getDatabaseType();
         result.setSourceDatabaseType(sourceDatabaseType.getType());
@@ -543,6 +543,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         extendYamlJobConfiguration(result);
         MigrationJobConfiguration jobConfiguration = new YamlMigrationJobConfigurationSwapper().swapToObject(result);
         start(jobConfiguration);
+        return jobConfiguration.getJobId();
     }
     
     private YamlRootConfiguration getYamlRootConfiguration(final String databaseName, final Map<String, Map<String, Object>> yamlDataSources, final Collection<RuleConfiguration> rules) {
