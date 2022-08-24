@@ -151,14 +151,12 @@ public final class MigrationJobPreparer {
         ShardingSphereDatabase sphereDatabase = metaData.getDatabases().get(jobConfig.getTargetDatabaseName());
         ShardingSphereSQLParserEngine sqlParserEngine = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getSQLParserEngine(sphereDatabase.getProtocolType().getType());
         JobDataNodeLine jobDataNodeLine = JobDataNodeLine.unmarshal(jobConfig.getTablesFirstDataNodes());
-        Map<String, String> tableNameMap = new HashMap<>();
-        tableNameMap.put(jobConfig.getTargetTableName(), jobConfig.getSourceTableName());
         PipelineDataSourceWrapper dataSource = jobItemContext.getDataSourceManager().getDataSource(jobItemContext.getTaskConfig().getDumperConfig().getDataSourceConfig());
         Map<String, DataSource> sourceDataSourceMap = new HashMap<>(1, 1.0F);
         sourceDataSourceMap.put(jobConfig.getSourceResourceName(), dataSource);
         PrepareTargetTablesParameter prepareTargetTablesParameter = new PrepareTargetTablesParameter(jobConfig.getTargetDatabaseName(),
                 jobItemContext.getTaskConfig().getImporterConfig().getDataSourceConfig(), sourceDataSourceMap, jobItemContext.getDataSourceManager(),
-                jobDataNodeLine, tableNameMap, tableNameSchemaNameMapping, sqlParserEngine);
+                jobDataNodeLine, tableNameSchemaNameMapping, sqlParserEngine);
         PipelineJobPreparerUtils.prepareTargetTables(targetDatabaseType, prepareTargetTablesParameter);
     }
     
