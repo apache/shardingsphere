@@ -21,10 +21,10 @@ spring.shardingsphere.rules.shadow
 | default-shadow-algorithm-name | Default shadow algorithm name                            | none, options    |
 
 ### Shadow Data Source Configuration
-| *Name*                  | *Description*               | *Default Value*  |
-| ----------------------- | --------------------------- | ---------------- |
-| source-data-source-name | Production data source name | none             |
-| shadow-data-source-name | Shadow data source name     | none             |
+| *Name*                      | *Description*               | *Default Value*  |
+| --------------------------- | --------------------------- | ---------------- |
+| production-data-source-name | Production data source name | none             |
+| shadow-data-source-name     | Shadow data source name     | none             |
 
 ### Shadow Table Configuration
 | *Name*                 | *Description*                                                         | *Default Value*  |
@@ -51,7 +51,7 @@ For details, see [list of built-in shadow algorithms](/en/user-manual/common-con
 ```properties
 spring.shardingsphere.datasource.names= # Omit the data source configuration, please refer to the usage
 
-spring.shardingsphere.rules.shadow.data-sources.shadow-data-source.source-data-source-name= # Production data source name
+spring.shardingsphere.rules.shadow.data-sources.shadow-data-source.production-data-source-name= # Production data source name
 spring.shardingsphere.rules.shadow.data-sources.shadow-data-source.shadow-data-source-name= # Shadow data source name
 
 spring.shardingsphere.rules.shadow.tables.<table-name>.data-source-names= # Shadow table location shadow data source names (multiple values are separated by ",")
