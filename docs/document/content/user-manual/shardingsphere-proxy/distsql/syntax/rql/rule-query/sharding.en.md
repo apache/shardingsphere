@@ -136,19 +136,6 @@ SHOW SHARDING BROADCAST TABLE RULES [FROM databaseName]
 | ------------------------- | ----------------------------- |
 | sharding_broadcast_tables | sharding Broadcast Table list |
 
-### Sharding Scaling Rule
-
-| Column                   | Description                            |
-|--------------------------|----------------------------------------|
-| name                     | name of sharding scaling rule          |
-| input                    | data read configuration                |
-| output                   | data write configuration               |
-| stream_channel           | algorithm of stream channel            |
-| completion_detector      | algorithm of completion detecting      |
-| data_consistency_checker | algorithm of data consistency checking |
-
-## Example
-
 ### Sharding Table Rule
 
 *SHOW SHARDING TABLE RULES*

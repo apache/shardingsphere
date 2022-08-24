@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql;
 
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowUnusedResourcesStatement;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
@@ -31,12 +29,10 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationCheckAlgorithmsStatement;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.RALBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.RDLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.RQLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -237,13 +233,6 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
         assertThat(response, instanceOf(QueryResponseHeader.class));
     }
     
-    @Test
-    public void assertExecuteShowScalingCheckAlgorithmsContext() throws SQLException {
-        mockScalingContext();
-        ResponseHeader response = RALBackendHandlerFactory.newInstance(mock(ShowMigrationCheckAlgorithmsStatement.class), connectionSession).execute();
-        assertThat(response, instanceOf(QueryResponseHeader.class));
-    }
-    
     private void setContextManager(final boolean isGovernance) {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = isGovernance
@@ -274,12 +263,6 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(mock(ShadowRuleConfiguration.class)));
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);
         when(metaDataContexts.getMetaData().getDatabase("db")).thenReturn(database);
-    }
-    
-    private void mockScalingContext() {
-        ModeConfiguration modeConfig = mock(ModeConfiguration.class);
-        when(modeConfig.getType()).thenReturn("Cluster");
-        PipelineContext.initModeConfig(modeConfig);
     }
     
     @After
