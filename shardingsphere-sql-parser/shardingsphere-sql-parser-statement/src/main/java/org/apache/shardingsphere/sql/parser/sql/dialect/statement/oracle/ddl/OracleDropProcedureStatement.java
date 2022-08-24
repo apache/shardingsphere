@@ -17,15 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateProcedureStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropProcedureStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Oracle create procedure statement.
+ * Oracle drop procedure statement.
  */
-@Setter
 @ToString(callSuper = true)
-public final class OracleCreateProcedureStatement extends CreateProcedureStatement implements OracleStatement {
+public final class OracleDropProcedureStatement extends DropProcedureStatement implements OracleStatement {
 }
