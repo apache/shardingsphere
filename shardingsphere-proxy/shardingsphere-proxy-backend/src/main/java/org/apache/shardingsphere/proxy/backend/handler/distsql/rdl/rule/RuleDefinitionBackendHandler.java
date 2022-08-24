@@ -55,7 +55,7 @@ import java.util.Set;
 @Slf4j
 public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatement> extends DatabaseRequiredBackendHandler<T> {
     
-    private static final Set<String> RULE_ALTERED_ACTIONS = new HashSet<>(Arrays.asList(AlterShardingTableRuleStatement.class.getName(), AlterShardingAlgorithmStatement.class.getName(),
+    private static final Set<String> NOT_SUPPORT_ALTERED_ACTIONS = new HashSet<>(Arrays.asList(AlterShardingTableRuleStatement.class.getName(), AlterShardingAlgorithmStatement.class.getName(),
             AlterDefaultShardingStrategyStatement.class.getName(), AlterShardingBindingTableRulesStatement.class.getName(), AlterShardingBroadcastTableRulesStatement.class.getName()));
     
     public RuleDefinitionBackendHandler(final T sqlStatement, final ConnectionSession connectionSession) {
@@ -70,6 +70,9 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(database, ruleConfigClass).orElse(null);
         ruleDefinitionUpdater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
+        if (NOT_SUPPORT_ALTERED_ACTIONS.contains(sqlStatement.getClass().getCanonicalName())) {
+            throw new UnsupportedOperationException("not support altered sharding config, it's may cause data incorrectly");
+        }
         if (getRefreshStatus(sqlStatement, currentRuleConfig, ruleDefinitionUpdater)) {
             Collection<RuleConfiguration> alteredConfigs = processSQLStatement(database, sqlStatement, ruleDefinitionUpdater, currentRuleConfig);
             persistRuleConfigurationChange(databaseName, alteredConfigs);
