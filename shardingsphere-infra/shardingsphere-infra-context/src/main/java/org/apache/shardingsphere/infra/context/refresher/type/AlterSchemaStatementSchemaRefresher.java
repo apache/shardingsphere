@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRe
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterSchemaStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.AlterSchemaStatementHandler;
 
 import java.sql.SQLException;
@@ -41,15 +40,14 @@ public final class AlterSchemaStatementSchemaRefresher implements MetaDataRefres
     @Override
     public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                                                     final String schemaName, final AlterSchemaStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
-        Optional<IdentifierValue> renameSchemaName = AlterSchemaStatementHandler.getRenameSchema(sqlStatement);
+        Optional<String> renameSchemaName = AlterSchemaStatementHandler.getRenameSchema(sqlStatement).map(optional -> optional.getValue().toLowerCase());
         if (!renameSchemaName.isPresent()) {
             return Optional.empty();
         }
-        String actualSchemaName = sqlStatement.getSchemaName().getValue();
-        putSchemaMetaData(database, actualSchemaName, renameSchemaName.get().getValue(), logicDataSourceNames);
+        String actualSchemaName = sqlStatement.getSchemaName().getValue().toLowerCase();
+        putSchemaMetaData(database, actualSchemaName, renameSchemaName.get(), logicDataSourceNames);
         removeSchemaMetaData(database, actualSchemaName);
-        AlterSchemaEvent event = new AlterSchemaEvent(
-                database.getName(), actualSchemaName, renameSchemaName.get().getValue(), database.getSchema(renameSchemaName.get().getValue()));
+        AlterSchemaEvent event = new AlterSchemaEvent(database.getName(), actualSchemaName, renameSchemaName.get(), database.getSchema(renameSchemaName.get()));
         return Optional.of(event);
     }
     
