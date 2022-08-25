@@ -21,17 +21,15 @@ import lombok.Getter;
 import org.apache.shardingsphere.test.integration.env.container.atomic.ITContainers;
 import org.testcontainers.lifecycle.Startable;
 
-import javax.sql.DataSource;
 import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
  * Abstract composed container.
  */
-public class AbstractComposedContainer implements Startable {
+public abstract class AbstractComposedContainer implements Startable {
     
     @Getter
     private final ITContainers containers;
