@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.classbased;
 
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
+import org.apache.shardingsphere.sharding.exception.ShardingAlgorithmClassImplementationException;
 import org.apache.shardingsphere.sharding.fixture.ClassBasedHintShardingAlgorithmFixture;
 import org.apache.shardingsphere.sharding.fixture.ClassBasedStandardShardingAlgorithmFixture;
 import org.junit.Test;
@@ -30,7 +30,7 @@ import static org.junit.Assert.assertThat;
 
 public final class ClassBasedShardingAlgorithmFactoryTest {
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = ShardingAlgorithmClassImplementationException.class)
     public void assertNewInstanceWithUnAssignableFrom() {
         ClassBasedShardingAlgorithmFactory.newInstance(ClassBasedHintShardingAlgorithmFixture.class.getName(), StandardShardingAlgorithm.class, new Properties());
     }
