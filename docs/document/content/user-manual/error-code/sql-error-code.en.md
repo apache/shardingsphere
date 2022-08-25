@@ -32,6 +32,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | HY000     | 15000       | Work ID assigned failed, which can not exceed 1024 |
 | HY000     | 16000       | Can not find pipeline job \`%s\` |
 | HY000     | 16001       | Failed to get DDL for table \`%s\` |
+| HY000     | 20000       | Sharding algorithm class \`%s\` should be implement \`%s\` |
 | HY004     | 24000       | Encrypt algorithm \`%s\` initialize failed, reason is: %s |
 | HY004     | 24001       | The SQL clause \`%s\` is unsupported in encrypt rule |
 | 44000     | 24002       | Altered column \`%s\` must use same encrypt algorithm with previous column \`%s\` in table \`%s\` |
