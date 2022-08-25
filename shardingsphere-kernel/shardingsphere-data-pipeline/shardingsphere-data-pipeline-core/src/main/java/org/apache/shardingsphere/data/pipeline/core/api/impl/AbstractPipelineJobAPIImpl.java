@@ -224,4 +224,9 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
             throw new PipelineVerifyFailedException("Job is not stopped. You could run `STOP MIGRATION {jobId}` to stop it.");
         }
     }
+    
+    @Override
+    public String getType() {
+        return getJobType().getTypeName();
+    }
 }

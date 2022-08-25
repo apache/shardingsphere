@@ -452,9 +452,4 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         result.setParameter(parameter);
         return result;
     }
-    
-    @Override
-    public String getType() {
-        return getJobType().getTypeName();
-    }
 }
