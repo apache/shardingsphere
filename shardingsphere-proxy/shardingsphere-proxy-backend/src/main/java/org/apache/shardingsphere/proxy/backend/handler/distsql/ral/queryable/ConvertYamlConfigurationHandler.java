@@ -263,11 +263,11 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
     }
     
     private void appendShardingBindingTableRules(final ShardingRuleConfiguration shardingRuleConfig, final StringBuilder stringBuilder) {
-        String bindings = getBinding(shardingRuleConfig.getBindingTableGroups().iterator());
+        String bindings = getBindings(shardingRuleConfig.getBindingTableGroups().iterator());
         stringBuilder.append(String.format(DistSQLScriptConstants.SHARDING_BINDING_TABLE_RULES, bindings));
     }
     
-    private String getBinding(final Iterator<String> iterator) {
+    private String getBindings(final Iterator<String> iterator) {
         StringBuilder result = new StringBuilder();
         while (iterator.hasNext()) {
             String binding = iterator.next();

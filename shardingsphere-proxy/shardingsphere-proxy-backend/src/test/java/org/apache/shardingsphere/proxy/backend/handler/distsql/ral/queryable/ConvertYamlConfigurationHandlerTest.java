@@ -44,7 +44,7 @@ import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
-public class ConvertYamlConfigurationHandlerTest extends ProxyContextRestorer {
+public final class ConvertYamlConfigurationHandlerTest extends ProxyContextRestorer {
     
     private final String resourceFilePath = "/conf/convert/config-resource.yaml";
     
@@ -82,9 +82,9 @@ public class ConvertYamlConfigurationHandlerTest extends ProxyContextRestorer {
         assertExecute(sharding, shardingExpectedFilePath);
     }
     
-    public void assertExecute(final String feature, final String expectedFilePath) throws SQLException {
+    public void assertExecute(final String type, final String expectedFilePath) throws SQLException {
         ConvertYamlConfigurationHandler handler = new ConvertYamlConfigurationHandler();
-        handler.init(new ConvertYamlConfigurationStatement(Objects.requireNonNull(ConvertYamlConfigurationHandlerTest.class.getResource(featureMap.get(feature))).getPath()),
+        handler.init(new ConvertYamlConfigurationStatement(Objects.requireNonNull(ConvertYamlConfigurationHandlerTest.class.getResource(featureMap.get(type))).getPath()),
                 mock(ConnectionSession.class));
         assertQueryResponseHeader((QueryResponseHeader) handler.execute());
         assertTrue(handler.next());
@@ -126,7 +126,7 @@ public class ConvertYamlConfigurationHandlerTest extends ProxyContextRestorer {
                 BufferedReader reader = new BufferedReader(fileReader)) {
             String line;
             while (null != (line = reader.readLine())) {
-                if (!line.startsWith("#") && !"".equals(line.trim())) {
+                if (!line.startsWith("#") && !line.trim().isEmpty()) {
                     result.append(line).append(System.lineSeparator());
                 }
             }

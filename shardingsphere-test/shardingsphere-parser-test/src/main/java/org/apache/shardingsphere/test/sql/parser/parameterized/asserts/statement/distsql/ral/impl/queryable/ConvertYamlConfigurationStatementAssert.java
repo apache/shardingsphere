@@ -21,13 +21,14 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertY
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ConvertYamlConfigurationStatementTestCase;
 
-import static org.junit.Assert.assertNotNull;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * Convert yaml configuration statement assert.
  */
-public class ConvertYamlConfigurationStatementAssert {
+public final class ConvertYamlConfigurationStatementAssert {
     
     /**
      * Assert convert yaml configuration statement is correct with expected parser result.
@@ -41,7 +42,7 @@ public class ConvertYamlConfigurationStatementAssert {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should no exist."), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
+            assertThat(actual.getFilePath(), is(expected.getFilePath()));
         }
     }
 }
