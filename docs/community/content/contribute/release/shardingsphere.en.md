@@ -4,47 +4,46 @@ weight = 8
 chapter = true
 +++
 
-## Prepare before release procedure
+## Prepare before release
 
 ### 1. Confirm release notes
 
-The release note should be provided in Chinese / English, confirm whether the Chinese description is clear and whether the English translation is accurate, 
+The release note should be provided in English / Chinese, confirm whether English and Chinese description are clear, 
 and shall be classified according to the following labels:
 
 1. New Feature
-2. API Change
-3. Enhancement
-4. Refactor
-5. Bug Fix
+1. API Change
+1. Enhancement
+1. Bug Fix
 
 ### 2. Confirm issue list
 
 Open [GitHub issues](https://github.com/apache/shardingsphere/issues), filter the issue whose milestone is `${RELEASE.VERSION}` and status is open:
 
-1. Close the completed issue
-2. For outstanding issues, communicate with the developer in charge. If this release is not affected, modify milestone to the next version
-3. Confirm that there is no issue in open status under milestone of release version
+1. Close the completed issue;
+1. For outstanding issues, communicate with the developer in charge. If this release is not affected, modify milestone to the next version;
+1. Confirm that there is no issue in open status under milestone of release version.
 
 ### 3. Confirm pull request list
 
 Open [GitHub pull requests](https://github.com/apache/shardingsphere/pulls), filter pull requests whose milestone is `${RELEASE.VERSION}` and status is open:
 
-1. Review the open pull request and merge 
-2. For pull requests that cannot merge and do not affect this release, modify milestone to the next version
-3. Confirm that there is no open pull request under milestone of release version
+1. Review the open pull request and merge; 
+1. For pull requests that cannot merge and do not affect this release, modify milestone to the next version;
+1. Confirm that there is no open pull request under milestone of release version.
 
-### 4. Close milestone
+### 4. Call for a discussion
+
+1. Create a [GitHub Discussion](https://github.com/apache/shardingsphere/discussions) contains all the release notes;
+1. Send email to [dev@shardingsphere.apache.org](mailto:dev@shardingsphere.apache.org) with the GitHub Discussion in the message body;
+1. Follow the mailing list and confirm that the community developers have no questions about the release note.
+
+### 5. Close milestone
 
 Open [GitHub milestone](https://github.com/apache/shardingsphere/milestones)
 
-1. Confirm that the milestone completion status of `${RELEASE.VERSION}` is 100%
-2. Click `close` to close milestone
-
-### 5. Call for a discussion
-
-1. Create a [GitHub Discussion](https://github.com/apache/shardingsphere/discussions) contains all the release notes
-2. Send email to [dev@shardingsphere.apache.org](mailto:dev@shardingsphere.apache.org) with the GitHub Discussion in the message body
-3. Follow the mailing list and confirm that the community developers have no questions about the release note
+1. Confirm that the milestone completion status of `${RELEASE.VERSION}` is 100%;
+1. Click `close` to close milestone.
 
 ## GPG Settings
 
@@ -459,7 +458,7 @@ Keys to verify the Release Candidate:
 https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS
 
 Look at here for how to verify this release candidate:
-https://shardingsphere.apache.org/community/en/contribute/release/
+https://shardingsphere.apache.org/community/en/contribute/release/shardingsphere/
 
 GPG user ID:
 ${YOUR.GPG.USER.ID}
@@ -634,10 +633,14 @@ Hi all,
 
 Apache ShardingSphere Team is glad to announce the new release of Apache ShardingSphere ${RELEASE.VERSION}.
 
-Apache ShardingSphere is an open-source ecosystem consisted of a set of distributed database solutions, including 3 independent products, JDBC, Proxy & Sidecar (Planning). 
-They all provide functions of data scale out, distributed transaction and distributed governance, applicable in a variety of situations such as Java isomorphism, heterogeneous language and cloud native.
-Apache ShardingSphere aiming at reasonably making full use of the computation and storage capacity of existed database in distributed system, rather than a totally new database. 
-As the cornerstone of enterprises, relational database still takes a huge market share. Therefore, we prefer to focus on its increment instead of a total overturn.
+Apache ShardingSphere is an open source ecosystem that allows you to transform any database into a distributed database system.
+The project includes a JDBC and a Proxy, and its core adopts a micro-kernel and pluggable architecture.
+Thanks to its plugin-oriented architecture, features can be flexibly expanded at will.
+
+The project is committed to providing a multi-source heterogeneous, enhanced database platform and further building an ecosystem around the upper layer of the platform.
+Database Plus, the design philosophy of Apache ShardingSphere, aims at building the standard and ecosystem on the upper layer of the heterogeneous database.
+It focuses on how to make full and reasonable use of the computing and storage capabilities of existing databases rather than creating a brand new database.
+It attaches greater importance to the collaboration between multiple databases instead of the database itself.
 
 Download Links: https://shardingsphere.apache.org/document/current/en/downloads/
 
