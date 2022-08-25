@@ -1,12 +1,12 @@
 +++
 title = "ElasticJob-UI Release Guide"
-weight = 10
+weight = 3
 chapter = true
 +++
 
 ## GPG Settings
 
-Please refer to [Release Guide](/en/contribute/release/).
+Please refer to [Release Guide](/en/contribute/release/shardingsphere/).
 
 ## Apache Maven Central Repository Release
 
@@ -285,7 +285,7 @@ Keys to verify the Release Candidate:
 https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS
 
 Look at here for how to verify this release candidate:
-https://shardingsphere.apache.org/community/en/contribute/release-elasticjob-ui/
+https://shardingsphere.apache.org/community/en/contribute/release/elasticjob-ui/
 
 GPG user ID:
 ${YOUR.GPG.USER.ID}

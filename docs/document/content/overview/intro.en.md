@@ -9,11 +9,12 @@ chapter = true
 
 Apache ShardingSphere is an open source ecosystem that allows you to transform any database into a distributed database system. 
 The project includes a JDBC and a Proxy, and its core adopts a micro-kernel and pluggable architecture.
-Thanks to its plugin-oriented architecture, features can be flexibly expanded at will. 
+Thanks to its plugin-oriented architecture, features can be flexibly expanded at will.
 
 The project is committed to providing a multi-source heterogeneous, enhanced database platform and further building an ecosystem around the upper layer of the platform.
 Database Plus, the design philosophy of Apache ShardingSphere, aims at building the standard and ecosystem on the upper layer of the heterogeneous database.
-It focuses on how to make full and reasonable use of the computing and storage capabilities of existing databases rather than creating a brand new database. It attaches greater importance to the collaboration between multiple databases instead of the database itself.
+It focuses on how to make full and reasonable use of the computing and storage capabilities of existing databases rather than creating a brand new database.
+It attaches greater importance to the collaboration between multiple databases instead of the database itself.
 
 ### ShardingSphere-JDBC
 

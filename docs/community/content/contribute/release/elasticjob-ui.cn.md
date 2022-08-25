@@ -1,12 +1,12 @@
 +++
 title = "ElasticJob-UI 发布指南"
-weight = 10
+weight = 3
 chapter = true
 +++
 
 ## GPG 设置
 
-详情请参见[发布指南](/cn/contribute/release/)。
+详情请参见[发布指南](/cn/contribute/release/shardingsphere/)。
 
 ## 发布 Apache Maven 中央仓库
 
@@ -279,7 +279,7 @@ Keys to verify the Release Candidate:
 https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS
 
 Look at here for how to verify this release candidate:
-https://shardingsphere.apache.org/community/en/contribute/release-elasticjob-ui/
+https://shardingsphere.apache.org/community/en/contribute/release/elasticjob-ui/
 
 GPG user ID:
 ${YOUR.GPG.USER.ID}

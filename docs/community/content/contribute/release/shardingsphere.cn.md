@@ -1,49 +1,48 @@
 +++
 title = "ShardingSphere 发布指南"
-weight = 8
+weight = 1
 chapter = true
 +++
 
-## 发布前准备工作
+## 准备工作
 
 ### 1. 确认 Release Note
 
-Release Note 需提供中文/英文两种版本，确认中文描述是否明确，英文翻译是否准确，并按以下标签进行分类：
+Release Note 需提供中文/英文两种版本，确认中英文描述是否明确，并按以下标签进行分类：
 
-1. 新功能。
-2. API 变更。
-3. 功能增强。
-4. 重构。
-5. 漏洞修复。
+1. 新功能
+1. API 变更
+1. 功能增强
+1. 漏洞修复
 
 ### 2. 确认 Issue 列表
 
-打开 [Github Issues](https://github.com/apache/shardingsphere/issues) ，过滤 Milestone 为 `${RELEASE.VERSION}` 且状态为打开的 Issue:
+打开 [Github Issues](https://github.com/apache/shardingsphere/issues)，过滤 Milestone 为 `${RELEASE.VERSION}` 且状态为打开的 Issue:
 
 1. 关闭已完成的 Issue；
-2. 未完成的 Issue 与负责人进行沟通，如果不影响本次发版，修改 Milestone 为下一个版本；
-3. 确认发布版本的 Milestone 下没有打开状态的 Issue。
+1. 未完成的 Issue 与负责人进行沟通，如果不影响本次发版，修改 Milestone 为下一个版本；
+1. 确认发布版本的 Milestone 下没有打开状态的 Issue。
 
-### 3. 确认 Pull request 列表
+### 3. 确认 Pull Request 列表
 
-打开 [Github Pull requests](https://github.com/apache/shardingsphere/pulls) ，过滤 Milestone 为 `${RELEASE.VERSION}` 且状态为打开的 Pull request:
+打开 [Github Pull requests](https://github.com/apache/shardingsphere/pulls)，过滤 Milestone 为 `${RELEASE.VERSION}` 且状态为打开的 Pull Request:
 
-1. 对打开的 Pull request 进行 Review 并且 Merge；
-2. 无法 Merge 且不影响本次发版的 Pull request，修改 Milestone 为下一个版本；
-3. 确认发布版本的 Milestone 下没有打开状态的 Pull request。
+1. 对打开的 Pull Request 进行 Review 并且 Merge；
+1. 无法 Merge 且不影响本次发版的 Pull Request，修改 Milestone 为下一个版本；
+1. 确认发布版本的 Milestone 下没有打开状态的 Pull Request。
 
-### 4. 关闭 Milestone
+### 4. 发送讨论邮件
+
+1. 创建 [GitHub Discussion](https://github.com/apache/shardingsphere/discussions) 并在讨论内容中列出 Release Note；
+1. 发送邮件至 [dev@shardingsphere.apache.org](mailto:dev@shardingsphere.apache.org)，在邮件正文中链接 GitHub Discussion；
+1. 关注邮件列表，确认社区开发者对 Release Note 没有任何疑问。
+
+### 5. 关闭 Milestone
 
 打开 [Github Milestone](https://github.com/apache/shardingsphere/milestones) 
 
 1. 确认 `${RELEASE.VERSION}` 的 Milestone 完成状态为 100%；
-2. 点击 `Close` 关闭 Milestone。
-
-### 5. 发送讨论邮件
-
-1. 创建 [GitHub Discussion](https://github.com/apache/shardingsphere/discussions) 并在讨论内容中列出 Release Note；
-2. 发送邮件至 [dev@shardingsphere.apache.org](mailto:dev@shardingsphere.apache.org)，在邮件正文中链接 GitHub Discussion；
-3. 关注邮件列表，确认社区开发者对 Release Note 没有任何疑问。
+1. 点击 `Close` 关闭 Milestone。
 
 ## GPG 设置
 
@@ -453,7 +452,7 @@ Keys to verify the Release Candidate:
 https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS
 
 Look at here for how to verify this release candidate:
-https://shardingsphere.apache.org/community/en/contribute/release/
+https://shardingsphere.apache.org/community/en/contribute/release/shardingsphere/
 
 GPG user ID:
 ${YOUR.GPG.USER.ID}
@@ -624,10 +623,14 @@ Hi all,
 
 Apache ShardingSphere Team is glad to announce the new release of Apache ShardingSphere ${RELEASE.VERSION}.
 
-Apache ShardingSphere is an open-source ecosystem consisted of a set of distributed database solutions, including 3 independent products, JDBC, Proxy & Sidecar (Planning). 
-They all provide functions of data scale out, distributed transaction and distributed governance, applicable in a variety of situations such as Java isomorphism, heterogeneous language and cloud native.
-Apache ShardingSphere aiming at reasonably making full use of the computation and storage capacity of existed database in distributed system, rather than a totally new database. 
-As the cornerstone of enterprises, relational database still takes a huge market share. Therefore, we prefer to focus on its increment instead of a total overturn.
+Apache ShardingSphere is an open source ecosystem that allows you to transform any database into a distributed database system.
+The project includes a JDBC and a Proxy, and its core adopts a micro-kernel and pluggable architecture.
+Thanks to its plugin-oriented architecture, features can be flexibly expanded at will.
+
+The project is committed to providing a multi-source heterogeneous, enhanced database platform and further building an ecosystem around the upper layer of the platform.
+Database Plus, the design philosophy of Apache ShardingSphere, aims at building the standard and ecosystem on the upper layer of the heterogeneous database.
+It focuses on how to make full and reasonable use of the computing and storage capabilities of existing databases rather than creating a brand new database.
+It attaches greater importance to the collaboration between multiple databases instead of the database itself.
 
 Download Links: https://shardingsphere.apache.org/document/current/en/downloads/
 
