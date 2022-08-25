@@ -15,15 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.dumper;
+package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.junit.Test;
 
-/**
- * Dumper factory.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DumperFactory {
+import java.math.BigDecimal;
+
+import static org.junit.Assert.assertTrue;
+
+public final class DataConsistencyCheckUtilsTest {
     
+    @Test
+    public void assertIsBigDecimalEquals() {
+        BigDecimal one = BigDecimal.valueOf(3322, 1);
+        BigDecimal another = BigDecimal.valueOf(33220, 2);
+        assertTrue(DataConsistencyCheckUtils.isBigDecimalEquals(one, another));
+    }
 }
