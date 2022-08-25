@@ -22,6 +22,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 42000     | 11200       | Can not support database \`%s\` in SQL translation |
 | 42000     | 11201       | Translation error, SQL is: %s |
 | 25000     | 11320       | Switch transaction type failed, please terminate the current transaction |
+| 25000     | 11321       | JDBC does not support operations across multiple logical databases in transaction |
 | 42S02     | 11400       | Can not get traffic execution unit |
 | 42000     | 12000       | Unsupported command: %s |
 | 44000     | 13000       | SQL check failed, error message: %s |
@@ -32,10 +33,13 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | HY000     | 15000       | Work ID assigned failed, which can not exceed 1024 |
 | HY000     | 16000       | Can not find pipeline job \`%s\` |
 | HY000     | 16001       | Failed to get DDL for table \`%s\` |
+| HY000     | 20000       | Sharding algorithm class \`%s\` should be implement \`%s\` |
+| 44000     | 20012       | Inline sharding algorithms expression \`%s\` and sharding column \`%s\` are not match |
 | HY004     | 24000       | Encrypt algorithm \`%s\` initialize failed, reason is: %s |
 | HY004     | 24001       | The SQL clause \`%s\` is unsupported in encrypt rule |
 | 44000     | 24002       | Altered column \`%s\` must use same encrypt algorithm with previous column \`%s\` in table \`%s\` |
 | 42000     | 24003       | Insert value of index \`%s\` can not support for encrypt |
 | 44000     | 24004       | Can not find logic encrypt column by \`%s\` |
 | HY004     | 25000       | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type |
+| 42000     | 25003       | Insert value of index `%s` can not support for shadow |
 | 42000     | 30000       | Unknown exception: %s |

@@ -24,6 +24,8 @@
     <distsql-case id="show-migration-status" value="SHOW MIGRATION STATUS 123;" />
     <distsql-case id="check-migration-with-type" value="CHECK MIGRATION 123 by TYPE(name='DEFAULT', PROPERTIES('test-property'='4'));" />
     
+    <distsql-case id="drop-migration-process-configuration-read" value="DROP MIGRATION PROCESS CONFIGURATION '/READ';" />
+    <distsql-case id="drop-migration-process-configuration-read-rate-limiter" value="DROP MIGRATION PROCESS CONFIGURATION '/READ/RATE_LIMITER';" />
     <distsql-case id="migrate-table-without-schema-target-db" value="MIGRATE TABLE ds_0.t_order INTO t_order;" />
     <distsql-case id="migrate-table-with-schema" value="MIGRATE TABLE ds_0.public.t_order INTO t_order;" />
     <distsql-case id="migrate-table-with-target-db" value="MIGRATE TABLE ds_0.t_order INTO sharding_db.t_order;" />

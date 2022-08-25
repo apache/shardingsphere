@@ -33,11 +33,11 @@ public final class YamlPipelineReadConfiguration implements YamlConfiguration {
     
     private static final Integer DEFAULT_SHARDING_SIZE = 1000_0000;
     
-    private Integer workerThread = DEFAULT_WORKER_THREAD;
+    private Integer workerThread;
     
-    private Integer batchSize = DEFAULT_BATCH_SIZE;
+    private Integer batchSize;
     
-    private Integer shardingSize = DEFAULT_SHARDING_SIZE;
+    private Integer shardingSize;
     
     private YamlAlgorithmConfiguration rateLimiter;
     
@@ -47,7 +47,11 @@ public final class YamlPipelineReadConfiguration implements YamlConfiguration {
      * @return read configuration
      */
     public static YamlPipelineReadConfiguration buildWithDefaultValue() {
-        return new YamlPipelineReadConfiguration();
+        YamlPipelineReadConfiguration result = new YamlPipelineReadConfiguration();
+        result.workerThread = DEFAULT_WORKER_THREAD;
+        result.batchSize = DEFAULT_BATCH_SIZE;
+        result.shardingSize = DEFAULT_SHARDING_SIZE;
+        return result;
     }
     
     /**
@@ -74,9 +78,6 @@ public final class YamlPipelineReadConfiguration implements YamlConfiguration {
         if (null == another) {
             return;
         }
-        if (isAllFieldsNull(another)) {
-            setAllFieldsNull(this);
-        }
         if (null != another.workerThread) {
             workerThread = another.workerThread;
         }
@@ -91,14 +92,27 @@ public final class YamlPipelineReadConfiguration implements YamlConfiguration {
         }
     }
     
-    private boolean isAllFieldsNull(final YamlPipelineReadConfiguration config) {
-        return null == config.workerThread && null == config.batchSize && null == config.shardingSize && null == config.rateLimiter;
-    }
-    
-    private void setAllFieldsNull(final YamlPipelineReadConfiguration config) {
-        config.workerThread = null;
-        config.batchSize = null;
-        config.shardingSize = null;
-        config.rateLimiter = null;
+    /**
+     * Set field to null.
+     *
+     * @param nodeName node name
+     */
+    public void setFieldNull(final String nodeName) {
+        switch (nodeName.toUpperCase()) {
+            case "WORKER_THREAD":
+                workerThread = null;
+                break;
+            case "BATCH_SIZE":
+                batchSize = null;
+                break;
+            case "SHARDING_SIZE":
+                shardingSize = null;
+                break;
+            case "RATE_LIMITER":
+                rateLimiter = null;
+                break;
+            default:
+                break;
+        }
     }
 }

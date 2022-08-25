@@ -80,13 +80,26 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     
     @Override
     public void alterProcessConfiguration(final PipelineProcessConfiguration processConfig) {
+        // TODO check rateLimiter type match or not
+        YamlPipelineProcessConfiguration targetYamlProcessConfig = getTargetYamlProcessConfiguration();
+        targetYamlProcessConfig.copyNonNullFields(PROCESS_CONFIG_SWAPPER.swapToYamlConfiguration(processConfig));
+        processConfigPersistService.persist(getJobType(), PROCESS_CONFIG_SWAPPER.swapToObject(targetYamlProcessConfig));
+    }
+    
+    private YamlPipelineProcessConfiguration getTargetYamlProcessConfiguration() {
         PipelineProcessConfiguration existingProcessConfig = processConfigPersistService.load(getJobType());
         if (null == existingProcessConfig) {
-            throw new PipelineMetaDataException("Process configuration does not exists");
+            throw new PipelineMetaDataException("Process configuration does not exist");
         }
-        // TODO check rateLimiter type match or not
-        YamlPipelineProcessConfiguration targetYamlProcessConfig = PROCESS_CONFIG_SWAPPER.swapToYamlConfiguration(existingProcessConfig);
-        targetYamlProcessConfig.copyNonNullFields(PROCESS_CONFIG_SWAPPER.swapToYamlConfiguration(processConfig));
+        return PROCESS_CONFIG_SWAPPER.swapToYamlConfiguration(existingProcessConfig);
+    }
+    
+    @Override
+    public void dropProcessConfiguration(final String confPath) {
+        String finalConfPath = confPath.trim();
+        PipelineProcessConfigurationUtils.verifyConfPath(confPath);
+        YamlPipelineProcessConfiguration targetYamlProcessConfig = getTargetYamlProcessConfiguration();
+        PipelineProcessConfigurationUtils.setFieldsNullByConfPath(targetYamlProcessConfig, finalConfPath);
         processConfigPersistService.persist(getJobType(), PROCESS_CONFIG_SWAPPER.swapToObject(targetYamlProcessConfig));
     }
     

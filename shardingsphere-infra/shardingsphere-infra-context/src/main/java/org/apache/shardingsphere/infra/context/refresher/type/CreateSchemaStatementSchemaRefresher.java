@@ -43,7 +43,7 @@ public final class CreateSchemaStatementSchemaRefresher implements MetaDataRefre
         if (!schema.isPresent()) {
             return Optional.empty();
         }
-        String actualSchemaName = schema.get().getValue();
+        String actualSchemaName = schema.get().getValue().toLowerCase();
         database.putSchema(actualSchemaName, new ShardingSphereSchema());
         AddSchemaEvent event = new AddSchemaEvent(database.getName(), actualSchemaName);
         return Optional.of(event);

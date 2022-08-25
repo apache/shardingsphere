@@ -57,7 +57,7 @@ public final class CreateTableSQLGeneratorIT {
     
     private static final String MYSQL_CASE_FILE_PATH = "mysql/create-table-sql-generator.xml";
     
-    private static final String OPEN_GAUSS_CASE_FILE_PATH = "openGauss/create-table-sql-generator.xml";
+    private static final String OPEN_GAUSS_CASE_FILE_PATH = "opengauss/create-table-sql-generator.xml";
     
     private static final String PARENT_PATH = "env/scenario/createtablegenerator";
     
@@ -119,7 +119,9 @@ public final class CreateTableSQLGeneratorIT {
     }
     
     private void initData() throws SQLException {
-        storageContainer.createAccessDataSource("").getConnection().createStatement().execute("CREATE DATABASE " + DEFAULT_DATABASE);
+        try (Statement statement = storageContainer.createAccessDataSource("").getConnection().createStatement()) {
+            statement.execute("CREATE DATABASE " + DEFAULT_DATABASE);
+        }
     }
     
     private void assertIsCorrect(final Collection<String> actualSQL, final Collection<String> expectedSQL) {

@@ -44,22 +44,19 @@ public final class PrepareTargetTablesParameter {
     
     private final PipelineDataSourceManager dataSourceManager;
     
-    private final Map<String, String> tableNameMap;
-    
     private final TableNameSchemaNameMapping tableNameSchemaNameMapping;
     
     private final ShardingSphereSQLParserEngine sqlParserEngine;
     
     public PrepareTargetTablesParameter(@NonNull final String databaseName, @NonNull final PipelineDataSourceConfiguration targetDataSourceConfig,
                                         @NonNull final Map<String, DataSource> sourceDataSourceMap, @NonNull final PipelineDataSourceManager dataSourceManager,
-                                        @NonNull final JobDataNodeLine tablesFirstDataNodes, final Map<String, String> tableNameMap, final TableNameSchemaNameMapping tableNameSchemaNameMapping,
+                                        @NonNull final JobDataNodeLine tablesFirstDataNodes, final TableNameSchemaNameMapping tableNameSchemaNameMapping,
                                         @NonNull final ShardingSphereSQLParserEngine sqlParserEngine) {
         this.databaseName = databaseName;
         this.targetDataSourceConfig = targetDataSourceConfig;
         this.sourceDataSourceMap = sourceDataSourceMap;
         this.tablesFirstDataNodes = tablesFirstDataNodes;
         this.dataSourceManager = dataSourceManager;
-        this.tableNameMap = tableNameMap;
         this.tableNameSchemaNameMapping = tableNameSchemaNameMapping;
         this.sqlParserEngine = sqlParserEngine;
     }
