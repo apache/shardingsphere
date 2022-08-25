@@ -24,6 +24,7 @@ import org.apache.shardingsphere.integration.data.pipeline.framework.param.Scali
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 
 import javax.xml.bind.JAXB;
+import java.sql.SQLException;
 import java.util.Objects;
 
 @Slf4j
@@ -37,11 +38,11 @@ public abstract class BaseExtraSQLITCase extends BaseITCase {
         extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BaseExtraSQLITCase.class.getClassLoader().getResource(parameterized.getScenario())), ExtraSQLCommand.class);
     }
     
-    protected void createSourceOrderTable() {
+    protected void createSourceOrderTable() throws SQLException {
         sourceExecuteWithLog(extraSQLCommand.getCreateTableOrder());
     }
     
-    protected void createSourceTableIndexList(final String schema) {
+    protected void createSourceTableIndexList(final String schema) throws SQLException {
         if (DatabaseTypeUtil.isPostgreSQL(getDatabaseType())) {
             sourceExecuteWithLog(String.format("CREATE INDEX IF NOT EXISTS idx_user_id ON %s.t_order ( user_id )", schema));
         } else if (DatabaseTypeUtil.isOpenGauss(getDatabaseType())) {
@@ -49,11 +50,11 @@ public abstract class BaseExtraSQLITCase extends BaseITCase {
         }
     }
     
-    protected void createSourceCommentOnList(final String schema) {
+    protected void createSourceCommentOnList(final String schema) throws SQLException {
         sourceExecuteWithLog(String.format("COMMENT ON COLUMN %s.t_order.user_id IS 'user id'", schema));
     }
     
-    protected void createSourceOrderItemTable() {
+    protected void createSourceOrderItemTable() throws SQLException {
         sourceExecuteWithLog(extraSQLCommand.getCreateTableOrderItem());
     }
 }
