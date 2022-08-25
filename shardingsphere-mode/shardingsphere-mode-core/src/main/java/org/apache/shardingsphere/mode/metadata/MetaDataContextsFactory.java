@@ -85,7 +85,7 @@ public final class MetaDataContextsFactory {
     
     private static Map<String, ShardingSphereDatabase> getDatabases(final Collection<String> databaseNames, final boolean isOverwrite,
                                                                     final Map<String, ShardingSphereDatabase> databases, final MetaDataPersistService persistService) {
-        if (databaseNames.isEmpty() || isOverwrite) {
+        if (databaseNames.isEmpty()) {
             compareAndPersistMetaData(databases, persistService);
             return databases;
         }
@@ -93,11 +93,12 @@ public final class MetaDataContextsFactory {
     }
     
     private static void compareAndPersistMetaData(final Map<String, ShardingSphereDatabase> databases, final MetaDataPersistService persistService) {
-        databases.values().forEach(each -> each.getSchemas().forEach((schemaName, tables) -> persistService.getDatabaseMetaDataService().compareAndPersistMetaData(each.getName(), schemaName, tables)));
+        databases.values().forEach(each -> each.getSchemas().forEach((schemaName, tables)
+                -> persistService.getDatabaseMetaDataService().compareAndPersistMetaData(each.getName(), schemaName, tables)));
     }
     
-    
-    private static Map<String, ShardingSphereDatabase> reloadDatabases(final Map<String, ShardingSphereDatabase> databases, final MetaDataPersistService persistService) {
+    private static Map<String, ShardingSphereDatabase> reloadDatabases(final Map<String, ShardingSphereDatabase> databases,
+                                                                       final MetaDataPersistService persistService) {
         Map<String, ShardingSphereDatabase> result = new ConcurrentHashMap<>(databases.size(), 1);
         databases.forEach((key, value) -> result.put(key.toLowerCase(), new ShardingSphereDatabase(value.getName(),
                 value.getProtocolType(), value.getResource(), value.getRuleMetaData(), persistService.getDatabaseMetaDataService().load(key))));
