@@ -66,7 +66,7 @@ git checkout -b issueNo
 
 **4. 编码**
 
- - 请您在开发过程中遵循 ShardingSphere 的[开发规范](/cn/contribute/code-conduct/)。并在准备提交 pull request 之前完成相应的检查。
+ - 请您在开发过程中遵循 ShardingSphere 的[开发规范](/cn/contribute/conduct/code/)。并在准备提交 pull request 之前完成相应的检查。
  - 将修改的代码 push 到 fork 库的分支上。
 
 ```shell

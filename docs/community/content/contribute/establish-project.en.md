@@ -75,7 +75,7 @@ You could use any of them:
 
 These plugins might be useful for you:
 - Lombok : Required. It's already preinstalled in the latest IntelliJ IDEA.
-- CheckStyle : Optional. It provides both real-time and on-demand scanning of Java files. **Notice**: Not all [Code of Conduct](/en/contribute/code-conduct/) could be checked.
+- CheckStyle : Optional. It provides both real-time and on-demand scanning of Java files. **Notice**: Not all [Code of Conduct](/en/contribute/conduct/code/) could be checked.
 - ANTLR v4 : Optional. It's recommended if you contribute to SQL extension.
 
 ### CheckStyle Settings

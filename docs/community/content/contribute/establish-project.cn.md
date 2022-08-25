@@ -75,7 +75,7 @@ git config --global core.longpaths true
 
 以下是一些常用插件：
 - Lombok：必须。最新版 IntelliJ IDEA 已自带。
-- CheckStyle：可选。可以实时或根据需要扫描 Java 文件，找出不符合代码规范的地方并提示。**注意**：不是所有不符合 [代码规范](/cn/contribute/code-conduct/) 的地方都可以被检查出来。
+- CheckStyle：可选。可以实时或根据需要扫描 Java 文件，找出不符合代码规范的地方并提示。**注意**：不是所有不符合 [代码规范](/cn/contribute/conduct/code/) 的地方都可以被检查出来。
 - ANTLR v4：可选。做 SQL 语法扩展任务的时候可能有用。
 
 ### CheckStyle 插件配置

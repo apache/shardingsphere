@@ -1,15 +1,15 @@
 +++
-title = "Issue Conduct"
-weight = 6
+title = "Issue of Conduct"
+weight = 1
 chapter = true
 +++
 
 ## Issue Submit Conduct
 
- - Issue lists should be readable and retrievable. The author is obligated to summarize the title that is meaningful and convenient for retrieval, and to ensure the correctness and completeness of the content;
+ - Issue lists should be readable and retrievable, the author is obligated to summarize the title that is meaningful and convenient for retrieval, and to ensure the correctness and completeness of the content;
  - Please confirm that there is no relevant existing Issue after sufficient search, and then submit a new Issue;
  - The type of issue is divided into bug, new feature and problem. When you edit an issue, please select the correct template and fill in content according to the template;
- - For problems caused by uncertain configuration, please submit the relevant reproducible code to Github, so that community contributors can locate and identify the problem more efficiently;
+ - For problems caused by uncertain configuration, please submit the relevant reproducible code to GitHub, so that community contributors can locate and identify the problem more efficiently;
  - Please reply to the Issue after it has been resolved to form a closed loop that will provide effective information for others who browse the Issue;
  - Please pay attention to the submitted issues in time. Issues with no feedback for a long time will be closed regularly.
  - Please use English for community diversity.

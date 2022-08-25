@@ -1,6 +1,6 @@
 +++
 title = "Code of Conduct" 
-weight = 5
+weight = 2
 chapter = true
 +++
 
@@ -81,6 +81,7 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - Mockito mockStatic and mockConstruction methods must be used with try-with-resource or closed in the teardown method to avoid leaks.
 
 ## Contributor Covenant G4 Code of Conduct
+
  - Common Conduct
    - Every line cannot over `200` chars, guarantee every line have complete semantics.
  - Lexer Conduct
