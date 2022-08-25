@@ -185,7 +185,7 @@ public final class DatabaseMetaDataPersistService {
     public Map<String, ShardingSphereSchema> load(final String databaseName) {
         Collection<String> schemas = repository.getChildrenKeys(DatabaseMetaDataNode.getMetaDataSchemasPath(databaseName));
         Map<String, ShardingSphereSchema> result = new ConcurrentHashMap<>(schemas.size(), 1);
-        schemas.forEach(each -> load(databaseName, each).ifPresent(optional -> result.put(each.toLowerCase(), optional)));
+        schemas.forEach(each -> result.put(each.toLowerCase(), load(databaseName, each).orElse(new ShardingSphereSchema())));
         return result;
     }
     
