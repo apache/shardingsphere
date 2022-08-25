@@ -1,10 +1,10 @@
 +++
 title = "开发规范"
-weight = 5
+weight = 2
 chapter = true
 +++
 
-以下行为准则以完全遵循 [Apache软件基金会行为准则](https://www.apache.org/foundation/policies/conduct.html)为前提。
+以下行为准则以完全遵循 [Apache 软件基金会行为准则](https://www.apache.org/foundation/policies/conduct.html)为前提。
 
 ## 开发理念
 
@@ -83,6 +83,7 @@ chapter = true
  - 使用 Mockito mockStatic 和 mockConstruction 方法必须搭配 try-with-resource 或在清理方法中关闭，避免泄漏。
 
 ## G4 编码规范
+
  - 公共规范
    - 每行长度不超过 `200` 个字符，保证每一行语义完整以便于理解。
  - 词法解析规范
