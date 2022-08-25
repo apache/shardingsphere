@@ -221,10 +221,9 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         MigrationJobConfiguration jobConfig = getJobConfiguration(jobConfigPOJO);
         result.setActive(!jobConfigPOJO.isDisabled());
         result.setShardingTotalCount(jobConfig.getJobShardingCount());
-        result.setTables(jobConfig.getSourceTableName());
+        result.setTable(jobConfig.getSourceTableName());
         result.setCreateTime(jobConfigPOJO.getProps().getProperty("create_time"));
         result.setStopTime(jobConfigPOJO.getProps().getProperty("stop_time"));
-        result.setJobParameter(jobConfigPOJO.getJobParameter());
         return result;
     }
     

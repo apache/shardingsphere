@@ -29,6 +29,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.CreateMigrationJobParameter;
+import org.apache.shardingsphere.data.pipeline.api.pojo.MigrationJobInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
@@ -95,8 +96,10 @@ public final class MigrationJobAPIImplTest {
         Optional<String> jobId = jobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
         PipelineJobInfo jobInfo = getNonNullJobInfo(jobId.get());
+        assertTrue(jobInfo instanceof MigrationJobInfo);
         assertTrue(jobInfo.isActive());
-        assertThat(jobInfo.getTables(), is("t_order"));
+        MigrationJobInfo migrationJobInfo = (MigrationJobInfo) jobInfo;
+        assertThat(migrationJobInfo.getTable(), is("t_order"));
         assertThat(jobInfo.getShardingTotalCount(), is(1));
     }
     
