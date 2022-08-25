@@ -106,16 +106,6 @@ public final class MigrationJobAPIFixture implements MigrationJobAPI {
     }
     
     @Override
-    public boolean isDataConsistencyCheckNeeded(final String jobId) {
-        return false;
-    }
-    
-    @Override
-    public boolean isDataConsistencyCheckNeeded(final MigrationJobConfiguration jobConfig) {
-        return false;
-    }
-    
-    @Override
     public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final String jobId) {
         return null;
     }

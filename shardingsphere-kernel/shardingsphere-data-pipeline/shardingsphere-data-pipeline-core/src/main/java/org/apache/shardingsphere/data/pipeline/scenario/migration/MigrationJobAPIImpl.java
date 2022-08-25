@@ -276,18 +276,6 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     }
     
     @Override
-    public boolean isDataConsistencyCheckNeeded(final String jobId) {
-        log.info("isDataConsistencyCheckNeeded for job {}", jobId);
-        MigrationJobConfiguration jobConfig = getJobConfiguration(jobId);
-        return isDataConsistencyCheckNeeded(jobConfig);
-    }
-    
-    @Override
-    public boolean isDataConsistencyCheckNeeded(final MigrationJobConfiguration jobConfig) {
-        return false;
-    }
-    
-    @Override
     public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final String jobId) {
         checkModeConfig();
         log.info("Data consistency check for job {}", jobId);

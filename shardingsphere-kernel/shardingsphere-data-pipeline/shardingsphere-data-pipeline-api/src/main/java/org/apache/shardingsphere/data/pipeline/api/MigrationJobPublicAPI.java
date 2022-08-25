@@ -61,14 +61,6 @@ public interface MigrationJobPublicAPI extends PipelineJobPublicAPI, RequiredSPI
     Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms();
     
     /**
-     * Is data consistency check needed.
-     *
-     * @param jobId job id
-     * @return data consistency check needed or not
-     */
-    boolean isDataConsistencyCheckNeeded(String jobId);
-    
-    /**
      * Do data consistency check.
      *
      * @param jobId job id
