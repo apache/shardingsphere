@@ -136,9 +136,10 @@ Just as before you became a committer, participation in any ASF community requir
 https://www.apache.org/foundation/policies/conduct.html
 
 Here is the guideline for all of the ShardingSphere committers:
-https://shardingsphere.apache.org/community/en/contribute/committer/
+https://shardingsphere.apache.org/community/en/involved/committer/
 ```
-**8. 准 Committer 签署 iCLA 具体步骤参考[签署 iCLA 指南](https://shardingsphere.apache.org/community/cn/contribute/icla/)。**
+
+**8. 准 Committer 签署 iCLA 具体步骤参考[签署 iCLA 指南](https://shardingsphere.apache.org/community/cn/involved/icla/)。**
 
 **9. 等待 Secretary 通知创建账户。**
 

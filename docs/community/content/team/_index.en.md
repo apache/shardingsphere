@@ -445,7 +445,7 @@ You can find all of the ShardingSphere contributors directly in GitHub's contrib
 The ShardingSphere community follows the [Apache Community’s process](http://community.apache.org/newcommitter.html) on accepting a new committer.
 Contributors that actively participate in ShardingSphere's community will be invited by the project's (P)PMC and Committers to join them by becoming a committer.
 
-You can read the [Contributor Guide](/en/contribute/contributor/) for more information on how you can contribute to the community, as well as the [Committer Guide](/en/contribute/committer/) for more details on how to become a committer.
+You can read the [Contributor Guide](/en/involved/contributor/) for more information on how you can contribute to the community, as well as the [Committer Guide](/en/involved/committer/) for more details on how to become a committer.
 
 ### How Can I Become a Contributor
 

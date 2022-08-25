@@ -88,11 +88,13 @@ try (
     }
 }
 ```
+
 **Reference**
 
 - [JDBC driver](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-jdbc/jdbc-driver/)
 
 ## Conclusion
+
 ShardingSphere-JDBC Driver officially makes ShardingSphere easier to use than ever before.
 
 In the coming future, the JDBC driver can be further simplified by providing the governance center address directly in the `URL`. Apache ShardingSphere has made great strides towards diversified distributed clusters.
@@ -100,7 +102,7 @@ In the coming future, the JDBC driver can be further simplified by providing the
 **Relevant Links:**
 [GitHub issue](https://github.com/apache/shardingsphere/issues)
 
-[Contributor Guide](https://shardingsphere.apache.org/community/en/contribute/)
+[Contributor Guide](https://shardingsphere.apache.org/community/en/involved/)
 
 [ShardingSphere Twitter](https://twitter.com/ShardingSphere)
 

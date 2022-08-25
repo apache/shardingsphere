@@ -82,7 +82,7 @@ shardingsphere
 ShardingSphere 文档使用 Markdown 编写，并使用 Hugo 进行处理生成 html，部署于 [asf-site](https://github.com/apache/shardingsphere-doc/tree/asf-site) 分支，源代码位于 [Github](https://github.com/apache/shardingsphere/tree/master)。
 
 - [官方教程最新版本](https://shardingsphere.apache.org/document/current/cn/overview/) 源存储在 `/document/`
-- [社区介绍及贡献](https://shardingsphere.apache.org/community/cn/contribute/) 相关文档源都储存在 `/community/content/`
+- [社区介绍及贡献](https://shardingsphere.apache.org/community/cn/involved/) 相关文档源都储存在 `/community/content/`
 
 您可以从 [Github](https://github.com/apache/shardingsphere/issues) 网站上提交问题，编辑内容和查看其他人的更改。
 

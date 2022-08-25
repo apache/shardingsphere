@@ -136,9 +136,9 @@ Just as before you became a committer, participation in any ASF community requir
 https://www.apache.org/foundation/policies/conduct.html
 
 Here is the guideline for all of the ShardingSphere committers:
-https://shardingsphere.apache.org/community/en/contribute/committer/
+https://shardingsphere.apache.org/community/en/involved/committer/
 ```
-**8. New committer signs iCLA, this step refers to [Sign ICLA Guide](https://shardingsphere.apache.org/community/en/contribute/icla/).**
+**8. New committer signs iCLA, this step refers to [Sign ICLA Guide](https://shardingsphere.apache.org/community/en/involved/icla/).**
 
 **9. New committer waits for secretary to create a new account.**
 

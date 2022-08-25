@@ -38,8 +38,6 @@ Apache软件基金会如今已成为现代开源软件生态系统的基石。
 
 活跃地参与到Apache项目中，比如Apache ShardingSphere（Incubating）即可。
 
-
-
 不如从领个任务练练手开始？目前公布出的任务如下，欢迎领取：
 
 - 实现使用Inline表达式对Sharding-SpringBoot进行规则配置
@@ -53,9 +51,7 @@ Apache软件基金会如今已成为现代开源软件生态系统的基石。
 
 我们以后也会定期在GitHub上以issue的方式发布一些开发功能任务， 欢迎通过订阅我们的邮件列表关注，具体方式可参照官网：
 
-http://shardingsphere.io/community/cn/contribute/subscribe/
-
-
+http://shardingsphere.io/community/cn/involved/subscribe/
 
 通过订阅Apache ShardingSphere的邮件列表，还可以了解到Apache ShardingSphere的最新项目进展，功能开发计划，Bug列表等；还能与ShardingSphere开发人员直接对话，讨论您遇到的问题，您的想法和建议等，我们一定会积极回复。
 

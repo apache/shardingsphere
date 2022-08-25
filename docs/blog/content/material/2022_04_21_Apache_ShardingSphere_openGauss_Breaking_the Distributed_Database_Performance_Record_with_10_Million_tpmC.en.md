@@ -91,4 +91,4 @@ Apache ShardingSphere Project Links:
 
 [ShardingSphere Slack](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg)
 
-[Contributor Guide](https://shardingsphere.apache.org/community/cn/contribute/)
+[Contributor Guide](https://shardingsphere.apache.org/community/cn/involved/)

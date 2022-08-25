@@ -445,4 +445,4 @@ chapter = true
 ShardingSphere 社区遵循 [Apache 社区流程](http://community.apache.org/newcommitter.html)来接收新的提交者。
 当您积极参地与 ShardingSphere 社区之后，项目管理委员会和项目官方提交者会根据您的表现发起吸纳您成为官方提交者和项目管理委员会成员的流程。
 
-您可以阅读[贡献者指南](/cn/contribute/contributor/)来参与社区，并通过[提交者指南](/cn/contribute/committer/)获取更多信息。
+您可以阅读[贡献者指南](/cn/involved/contributor/)来参与社区，并通过[提交者指南](/cn/involved/committer/)获取更多信息。
