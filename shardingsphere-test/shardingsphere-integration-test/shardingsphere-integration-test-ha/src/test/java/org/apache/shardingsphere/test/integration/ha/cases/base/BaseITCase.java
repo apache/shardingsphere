@@ -22,8 +22,13 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.ProxyContainerConstants;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.ha.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.ha.framework.container.compose.AbstractComposedContainer;
@@ -34,11 +39,18 @@ import javax.sql.DataSource;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Base integration test.
+ */
 @Slf4j
 @Getter(AccessLevel.PROTECTED)
 public abstract class BaseITCase {
     
     protected static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
+    
+    protected static final JdbcUrlAppender JDBC_URL_APPENDER = new JdbcUrlAppender();
+    
+    private final String DEFAULT_SCHEMA = "ha_test";
     
     private final AbstractComposedContainer composedContainer;
     
@@ -55,6 +67,23 @@ public abstract class BaseITCase {
         databaseType = parameterized.getDatabaseType();
         composedContainer = new DockerComposedContainer(parameterized.getDatabaseType(), parameterized.getDockerImageName());
         composedContainer.start();
+        initStorageDataSources();
+        initProxyDataSource();
+    }
+    
+    private void initProxyDataSource() {
+        String databaseName = (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) ? "postgres" : "";
+        ShardingSphereProxyClusterContainer proxyContainer = ((DockerComposedContainer) composedContainer).getProxyContainer();
+        this.proxyDataSource = getDataSource(DataSourceEnvironment.getURL(databaseType, proxyContainer.getHost(), proxyContainer.getFirstMappedPort(), 
+                composedContainer.getProxyJdbcUrl(databaseName)), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD);
+    }
+    
+    private void initStorageDataSources() {
+        List<DockerStorageContainer> storageContainers = ((DockerComposedContainer) composedContainer).getStorageContainers();
+        this.storageDataSources = storageContainers.stream()
+                .map(storageContainer -> DataSourceEnvironment.getURL(getDatabaseType(), getDatabaseType().getType().toLowerCase() + ".host", storageContainer.getPort(), DEFAULT_SCHEMA))
+                .map(each -> getDataSource(each, StorageContainerConstants.USERNAME, StorageContainerConstants.PASSWORD))
+                .collect(Collectors.toList());
     }
     
     private DataSource getDataSource(final String jdbcUrl, final String username, final String password) {
@@ -66,11 +95,5 @@ public abstract class BaseITCase {
         result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return result;
-    }
-    
-    private List<String> getStorageDataSources(final String databaseName) {
-        List<DockerStorageContainer> storageContainers = ((DockerComposedContainer) composedContainer).getStorageContainers();
-        return storageContainers.stream().map(storageContainer -> 
-                DataSourceEnvironment.getURL(getDatabaseType(), getDatabaseType().getType().toLowerCase() + ".host", storageContainer.getPort(), databaseName)).collect(Collectors.toList());
     }
 }

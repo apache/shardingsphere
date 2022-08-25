@@ -36,7 +36,7 @@ public abstract class AbstractComposedContainer implements Startable {
     
     private final String scenario;
     
-    public AbstractComposedContainer(String scenario) {
+    public AbstractComposedContainer(final String scenario) {
         this.scenario = scenario;
         this.containers = new ITContainers(scenario);
     }
@@ -47,7 +47,7 @@ public abstract class AbstractComposedContainer implements Startable {
      * @param databaseName database name
      * @return proxy jdbc url
      */
-    public abstract String getProxyJdbcUrl(String databaseName);
+    public abstract String getProxyJdbcUrl(final String databaseName);
     
     @Override
     public void start() {
@@ -72,7 +72,7 @@ public abstract class AbstractComposedContainer implements Startable {
         return result;
     }
     
-    private Map<String, Integer> extractContainerNamesWithQuantity(String[] rawContainerNames) {
+    private Map<String, Integer> extractContainerNamesWithQuantity(final String[] rawContainerNames) {
         Map<String, Integer> result = new HashMap<>(3, 1);
         for (String each : rawContainerNames) {
             String databaseTypeName = each.contains("_") ? each.substring(0, each.indexOf("_")) : each;

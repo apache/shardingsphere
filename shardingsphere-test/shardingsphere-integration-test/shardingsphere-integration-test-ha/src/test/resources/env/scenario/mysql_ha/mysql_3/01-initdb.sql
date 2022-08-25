@@ -15,4 +15,4 @@
 -- limitations under the License.
 --
 
-
+CREATE DATABASE ha_test;

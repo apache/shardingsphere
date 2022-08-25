@@ -17,12 +17,27 @@
 
 package org.apache.shardingsphere.test.integration.ha.cases.mysql;
 
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.test.integration.ha.cases.base.BaseITCase;
 import org.apache.shardingsphere.test.integration.ha.framework.parameter.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 public final class MySQLHAGeneralIT extends BaseITCase {
     
     public MySQLHAGeneralIT(final Parameterized parameterized) {
         super(parameterized);
+    }
+    
+    @Parameters(name = "{0}")
+    public static Collection<Parameterized> getParameters() {
+        Collection<Parameterized> result = new LinkedList<>();
+        MySQLDatabaseType databaseType = new MySQLDatabaseType();
+        for (String version : ENV.listDatabaseDockerImageNames(databaseType)) {
+            result.add(new Parameterized(databaseType, version, "mysql_ha"));
+        }
+        return result;
     }
 }
