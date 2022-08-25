@@ -27,8 +27,8 @@ import lombok.ToString;
 
 @Setter
 @Getter
-@ToString
-public class MigrationJobInfo extends PipelineJobInfo {
+@ToString(callSuper = true)
+public final class MigrationJobInfo extends PipelineJobInfo {
     
     private String table;
     

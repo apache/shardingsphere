@@ -30,7 +30,6 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.CreateMigrationJobParameter;
 import org.apache.shardingsphere.data.pipeline.api.pojo.MigrationJobInfo;
-import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreatorFactory;
@@ -95,20 +94,18 @@ public final class MigrationJobAPIImplTest {
     public void assertStartAndList() {
         Optional<String> jobId = jobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
-        PipelineJobInfo jobInfo = getNonNullJobInfo(jobId.get());
-        assertTrue(jobInfo instanceof MigrationJobInfo);
+        MigrationJobInfo jobInfo = getNonNullJobInfo(jobId.get());
         assertTrue(jobInfo.isActive());
-        MigrationJobInfo migrationJobInfo = (MigrationJobInfo) jobInfo;
-        assertThat(migrationJobInfo.getTable(), is("t_order"));
+        assertThat(jobInfo.getTable(), is("t_order"));
         assertThat(jobInfo.getShardingTotalCount(), is(1));
     }
     
-    private Optional<PipelineJobInfo> getJobInfo(final String jobId) {
+    private Optional<MigrationJobInfo> getJobInfo(final String jobId) {
         return jobAPI.list().stream().filter(each -> Objects.equals(each.getJobId(), jobId)).reduce((a, b) -> a);
     }
     
-    private PipelineJobInfo getNonNullJobInfo(final String jobId) {
-        Optional<PipelineJobInfo> result = getJobInfo(jobId);
+    private MigrationJobInfo getNonNullJobInfo(final String jobId) {
+        Optional<MigrationJobInfo> result = getJobInfo(jobId);
         assertTrue(result.isPresent());
         return result.get();
     }
