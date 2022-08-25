@@ -57,7 +57,6 @@ public final class OpenGaussDataSourceChecker extends AbstractDataSourceChecker 
                 String isSuperRole = resultSet.getString("rolsuper");
                 String isReplicationRole = resultSet.getString("rolreplication");
                 String isSystemAdminRole = resultSet.getString("rolsystemadmin");
-                // opradmin has replication permission, but schema creation permissions follow the user's own
                 log.info("checkPrivilege: isSuperRole: {}, isReplicationRole: {}, isSystemAdminRole: {}", isSuperRole, isReplicationRole, isSystemAdminRole);
                 if (!StringUtils.equalsAnyIgnoreCase("t", isSuperRole, isReplicationRole, isSystemAdminRole)) {
                     throw new PipelineJobPrepareFailedException(String.format("Source data source is lack of REPLICATION privileges, you could try `ALTER ROLE \"%s\" REPLICATION;`.",
