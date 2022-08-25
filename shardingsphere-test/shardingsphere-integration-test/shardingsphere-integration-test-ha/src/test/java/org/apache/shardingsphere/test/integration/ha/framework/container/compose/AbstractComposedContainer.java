@@ -21,9 +21,11 @@ import lombok.Getter;
 import org.apache.shardingsphere.test.integration.env.container.atomic.ITContainers;
 import org.testcontainers.lifecycle.Startable;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -40,6 +42,14 @@ public class AbstractComposedContainer implements Startable {
         this.scenario = scenario;
         this.containers = new ITContainers(scenario);
     }
+    
+    /**
+     * Get proxy jdbc url.
+     *
+     * @param databaseName database name
+     * @return proxy jdbc url
+     */
+    public abstract String getProxyJdbcUrl(String databaseName);
     
     @Override
     public void start() {
