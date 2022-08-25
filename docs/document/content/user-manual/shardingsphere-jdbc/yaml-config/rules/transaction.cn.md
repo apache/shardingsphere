@@ -12,7 +12,7 @@ ShardingSphere 提供了三种模式的分布式事务 `LOCAL`, `XA`, `BASE`。
 ```yaml
 rules:
   - !TRANSACTION
-    defaultType: # 事务模式，可选值 `LOCAL`/`XA`/`BASE`
+    defaultType: # 事务模式，可选值 LOCAL/XA/BASE
     providerType: # 指定模式下的具体实现
 ```
 
