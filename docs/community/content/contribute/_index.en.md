@@ -9,7 +9,7 @@ First off, thank you for your interest in ShardingSphere. We are a very open and
 
 You may participate in the community through the [Mailing-list Subscription](/en/contribute/subscribe/), or simply by interacting with other members in the [ShardingSphere Slack channel](https://app.slack.com/client/T026JKU2DPF/C026MLH7F34)
 
-If you are just getting started, please read the [Environment Set Up Guide](/en/contribute/establish-project/) to set up the development environment for ShardingSphere.
+If you are just getting started, please read the [Environment Set Up Guide](/en/contribute/dev-env/) to set up the development environment for ShardingSphere.
 
 Please read the [Contributor Conduct](/en/contribute/conduct/) before becoming a contributor.
 
