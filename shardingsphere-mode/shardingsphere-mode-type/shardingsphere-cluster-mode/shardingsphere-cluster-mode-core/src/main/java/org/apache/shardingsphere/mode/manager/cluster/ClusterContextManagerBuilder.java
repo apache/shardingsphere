@@ -52,6 +52,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         InstanceContext instanceContext = buildInstanceContext(registryCenter, parameter);
         registryCenter.getRepository().watchSessionConnection(instanceContext);
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, parameter, instanceContext);
+        persistMetaData(metaDataContexts);
         ContextManager result = new ContextManager(metaDataContexts, instanceContext);
         registerOnline(persistService, registryCenter, parameter, result);
         return result;
@@ -66,6 +67,11 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     private InstanceContext buildInstanceContext(final RegistryCenter registryCenter, final ContextManagerBuilderParameter parameter) {
         return new InstanceContext(new ComputeNodeInstance(parameter.getInstanceMetaData()), new ClusterWorkerIdGenerator(registryCenter, parameter.getInstanceMetaData()),
                 parameter.getModeConfiguration(), new ShardingSphereLockContext(registryCenter.getLockPersistService()), registryCenter.getEventBusContext());
+    }
+    
+    private void persistMetaData(final MetaDataContexts metaDataContexts) {
+        metaDataContexts.getMetaData().getDatabases().values().forEach(each -> each.getSchemas().forEach((schemaName, schema)
+                -> metaDataContexts.getPersistService().getDatabaseMetaDataService().persistMetaData(each.getName(), schemaName, schema.getTables())));
     }
     
     private void registerOnline(final MetaDataPersistService persistService, final RegistryCenter registryCenter,

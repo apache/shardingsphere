@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -65,7 +66,7 @@ public final class MetaDataContextsFactory {
         Collection<RuleConfiguration> globalRuleConfigs = persistService.getGlobalRuleService().load();
         ConfigurationProperties props = new ConfigurationProperties(persistService.getPropsService().load());
         Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(effectiveDatabaseConfigs, props, instanceContext);
-        databases = getDatabases(databaseNames, databases, persistService, instanceContext);
+        databases = reloadDatabases(databases, persistService);
         ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases, instanceContext));
         return new MetaDataContexts(persistService, new ShardingSphereMetaData(databases, globalMetaData, props));
     }
@@ -83,25 +84,13 @@ public final class MetaDataContextsFactory {
         return new DataSourceProvidedDatabaseConfiguration(effectiveDataSources, databaseRuleConfigs);
     }
     
-    private static Map<String, ShardingSphereDatabase> getDatabases(final Collection<String> databaseNames, final Map<String, ShardingSphereDatabase> databases,
-                                                                    final MetaDataPersistService persistService, final InstanceContext instanceContext) {
-        if (databaseNames.isEmpty() || instanceContext.getInstance().getMetaData() instanceof JDBCInstanceMetaData) {
-            persistMetaData(databases, persistService);
-            return databases;
-        }
-        return reloadDatabases(databases, persistService);
-    }
-    
-    private static void persistMetaData(final Map<String, ShardingSphereDatabase> databases, final MetaDataPersistService persistService) {
-        databases.values().forEach(each -> each.getSchemas().forEach((schemaName, schema)
-                -> persistService.getDatabaseMetaDataService().persistMetaData(each.getName(), schemaName, schema.getTables())));
-    }
-    
-    private static Map<String, ShardingSphereDatabase> reloadDatabases(final Map<String, ShardingSphereDatabase> databases,
-                                                                       final MetaDataPersistService persistService) {
+    private static Map<String, ShardingSphereDatabase> reloadDatabases(final Map<String, ShardingSphereDatabase> databases, final MetaDataPersistService persistService) {
         Map<String, ShardingSphereDatabase> result = new ConcurrentHashMap<>(databases.size(), 1);
-        databases.forEach((key, value) -> result.put(key.toLowerCase(), new ShardingSphereDatabase(value.getName(),
-                value.getProtocolType(), value.getResource(), value.getRuleMetaData(), persistService.getDatabaseMetaDataService().load(key))));
+        databases.forEach((key, value) -> {
+            Map<String, ShardingSphereSchema> schemas = persistService.getDatabaseMetaDataService().load(key);
+            result.put(key.toLowerCase(), new ShardingSphereDatabase(value.getName(),
+                    value.getProtocolType(), value.getResource(), value.getRuleMetaData(), schemas.isEmpty() ? value.getSchemas() : schemas));
+        });
         return result;
     }
 }
