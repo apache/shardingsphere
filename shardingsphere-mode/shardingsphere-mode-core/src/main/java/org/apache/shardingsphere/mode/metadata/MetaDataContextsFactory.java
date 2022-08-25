@@ -85,7 +85,7 @@ public final class MetaDataContextsFactory {
     
     private static Map<String, ShardingSphereDatabase> reloadDatabases(final Map<String, ShardingSphereDatabase> databases, final MetaDataPersistService persistService) {
         Map<String, ShardingSphereDatabase> result = new ConcurrentHashMap<>(databases.size(), 1);
-        databases.forEach((key, value) -> result.put(key, new ShardingSphereDatabase(value.getName(),
+        databases.forEach((key, value) -> result.put(key.toLowerCase(), new ShardingSphereDatabase(value.getName(),
                 value.getProtocolType(), value.getResource(), value.getRuleMetaData(), persistService.getDatabaseMetaDataService().load(key))));
         return result;
     }
