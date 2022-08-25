@@ -34,6 +34,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | HY000     | 16000       | Can not find pipeline job \`%s\` |
 | HY000     | 16001       | Failed to get DDL for table \`%s\` |
 | HY000     | 20000       | Sharding algorithm class \`%s\` should be implement \`%s\` |
+| 44000     | 20012       | Inline sharding algorithms expression \`%s\` and sharding column \`%s\` are not match |
 | HY004     | 24000       | Encrypt algorithm \`%s\` initialize failed, reason is: %s |
 | HY004     | 24001       | The SQL clause \`%s\` is unsupported in encrypt rule |
 | 44000     | 24002       | Altered column \`%s\` must use same encrypt algorithm with previous column \`%s\` in table \`%s\` |

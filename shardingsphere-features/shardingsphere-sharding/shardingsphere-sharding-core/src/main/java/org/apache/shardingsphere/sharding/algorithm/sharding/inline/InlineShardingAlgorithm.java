@@ -22,11 +22,11 @@ import groovy.lang.Closure;
 import groovy.lang.MissingMethodException;
 import groovy.util.Expando;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
+import org.apache.shardingsphere.sharding.exception.MismatchedInlineShardingAlgorithmExpressionAndColumnException;
 
 import java.util.Collection;
 import java.util.Properties;
@@ -93,7 +93,7 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
         try {
             return closure.call().toString();
         } catch (final MissingMethodException | NullPointerException ex) {
-            throw new ShardingSphereException("Inline sharding algorithms expression `%s` and sharding column `%s` not match.", algorithmExpression, columnName);
+            throw new MismatchedInlineShardingAlgorithmExpressionAndColumnException(algorithmExpression, columnName);
         }
     }
     
