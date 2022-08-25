@@ -24,9 +24,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Standalone mutex lock.
+ * Standalone exclusive lock.
  */
-public final class StandaloneMutexLock extends ReentrantLock {
+public final class StandaloneExclusiveLock extends ReentrantLock {
     
     private final AtomicReference<LockState> lockState = new AtomicReference<>(LockState.UNLOCKED);
     
