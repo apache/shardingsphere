@@ -17,14 +17,21 @@
 
 package org.apache.shardingsphere.test.integration.ha.cases.mysql;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.test.integration.ha.cases.base.BaseITCase;
 import org.apache.shardingsphere.test.integration.ha.framework.parameter.Parameterized;
+import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
+/**
+ * MySQL High Availability Integration Test.
+ */
+@Slf4j
+@RunWith(org.junit.runners.Parameterized.class)
 public final class MySQLHAGeneralIT extends BaseITCase {
     
     public MySQLHAGeneralIT(final Parameterized parameterized) {
