@@ -372,9 +372,10 @@ Since you now have a better understanding of ShardingSphere-Proxy, we believe, i
 
 [ShardingSphere Slack](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg)
 
-[Contributor Guide](https://shardingsphere.apache.org/community/cn/contribute/)
+[Contributor Guide](https://shardingsphere.apache.org/community/cn/involved/)
 
 ## References
+
 [1]Apache ShardingSphere Download Page:
 https://shardingsphere.apache.org/document/current/en/downloads/
 

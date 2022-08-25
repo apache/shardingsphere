@@ -458,7 +458,7 @@ Keys to verify the Release Candidate:
 https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS
 
 Look at here for how to verify this release candidate:
-https://shardingsphere.apache.org/community/en/contribute/release/shardingsphere/
+https://shardingsphere.apache.org/community/en/involved/release/shardingsphere/
 
 GPG user ID:
 ${YOUR.GPG.USER.ID}

@@ -190,7 +190,7 @@ ShardingSphere Twitter: [https://twitter.com/ShardingSphere]()
 
 ShardingSphere Slack Channel: [apacheshardingsphere.slack.com]()
 
-Contributor Guide：[https://shardingsphere.apache.org/community/en/contribute/]()
+Contributor Guide：[https://shardingsphere.apache.org/community/en/involved/]()
 
 ## Author
 

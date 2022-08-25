@@ -77,6 +77,7 @@ The ShardingSphere-on-Cloud repository will continue to take in various cloud pr
 If you have anything to share with us, please feel free to contact us through GitHub Issue or Apache ShardingSphere Slack.
 
 ## Project Links:
+
 [ShardingSphere Operator GitHub](https://github.com/SphereEx/shardingsphere-on-cloud)
 
 [ShardingSphere Github](https://github.com/apache/shardingsphere/issues?page=1&q=is%3Aopen+is%3Aissue+label%3A%22project%3A+OpenForce+2022%22)
@@ -85,14 +86,15 @@ If you have anything to share with us, please feel free to contact us through Gi
 ](https://twitter.com/ShardingSphere)
 [ShardingSphere Slack](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg)
 
-[Contributor Guide](https://shardingsphere.apache.org/community/cn/contribute/)
+[Contributor Guide](https://shardingsphere.apache.org/community/cn/involved/)
 
 [GitHub Issues](https://github.com/apache/shardingsphere/issues)
 
-[Contributor Guide](https://shardingsphere.apache.org/community/en/contribute/)
+[Contributor Guide](https://shardingsphere.apache.org/community/en/involved/)
 
 [SphereEx Official Website
 ](https://sphere-ex.com/)
 
 ## Author
+
 SphereEx Cloud & ShardingSphere contributor team. Focus on the R&D of Cloud solutions of ShardingSphere, the Database Mesh open source community, and the SphereEx Cloud business.

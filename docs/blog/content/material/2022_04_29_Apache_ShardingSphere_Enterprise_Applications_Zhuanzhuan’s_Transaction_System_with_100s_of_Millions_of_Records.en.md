@@ -99,9 +99,9 @@ The following is a comparison of the number of interface calls of the order plac
 
 **Promotion after adopting ShardingSphere**
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/3s9mtqhr0kpkecyz94kl.png)
- 
 
 ## Summary
+
 ShardingSphere simplifies the development of data sharding with its well-designed architecture, highly flexible, pluggable and scalable capabilities, allowing R&D teams to focus only on the business itself, thus enabling flexible scaling of the data architecture.
 
 **Apache ShardingSphere Project Links:**
@@ -112,4 +112,4 @@ ShardingSphere simplifies the development of data sharding with its well-designe
 
 [ShardingSphere Slack](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg)
 
-[Contributor Guide](https://shardingsphere.apache.org/community/cn/contribute/)
+[Contributor Guide](https://shardingsphere.apache.org/community/cn/involved/)

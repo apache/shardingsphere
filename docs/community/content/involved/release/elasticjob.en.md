@@ -8,7 +8,7 @@ chapter = true
 
 ### GPG Setup
 
-Please refer to [Release Guide](/en/contribute/release/shardingsphere/).
+Please refer to [Release Guide](/en/involved/release/shardingsphere/).
 
 ### Setting settings.xml
 
@@ -304,7 +304,7 @@ Keys to verify the Release Candidate:
 https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS
 
 Look at here for how to verify this release candidate:
-https://shardingsphere.apache.org/community/en/contribute/release/elasticjob/
+https://shardingsphere.apache.org/community/en/involved/release/elasticjob/
 
 GPG user ID:
 ${YOUR.GPG.USER.ID}

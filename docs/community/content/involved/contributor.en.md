@@ -66,7 +66,7 @@ git checkout -b issueNo
 
 **4. Coding**
 
-  - Please obey the [Code of Conduct](/en/contribute/conduct/code/) during the process of development and finish the check before submitting the pull request.
+  - Please obey the [Code of Conduct](/en/involved/conduct/code/) during the process of development and finish the check before submitting the pull request.
   - push code to your fork repo.
 
 ```shell
