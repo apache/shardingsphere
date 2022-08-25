@@ -17,63 +17,42 @@
 
 package org.apache.shardingsphere.infra.federation.optimizer.converter.segment.expression.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
-import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.expression.ExpressionConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
 
 /**
  * In expression converter.
  */
-@RequiredArgsConstructor
 public final class InExpressionConverter implements SQLSegmentConverter<InExpression, SqlBasicCall> {
     
-    private final boolean not;
-    
-    public InExpressionConverter() {
-        not = false;
-    }
-    
     @Override
-    public Optional<SqlBasicCall> convertToSQLNode(final InExpression expression) {
+    public Optional<SqlBasicCall> convert(final InExpression expression) {
         if (null == expression) {
             return Optional.empty();
         }
         Collection<SqlNode> sqlNodes = new LinkedList<>();
         ExpressionConverter expressionConverter = new ExpressionConverter();
-        expressionConverter.convertToSQLNode(expression.getLeft()).ifPresent(sqlNodes::add);
-        expressionConverter.convertToSQLNode(expression.getRight()).ifPresent(optional -> {
+        expressionConverter.convert(expression.getLeft()).ifPresent(sqlNodes::add);
+        expressionConverter.convert(expression.getRight()).ifPresent(optional -> {
             if (optional instanceof SqlBasicCall) {
-                sqlNodes.add(new SqlNodeList(Arrays.asList(((SqlBasicCall) optional).getOperands().clone()), SqlParserPos.ZERO));
+                sqlNodes.add(new SqlNodeList(((SqlBasicCall) optional).getOperandList(), SqlParserPos.ZERO));
             } else {
                 sqlNodes.add(optional);
             }
         });
-        SqlBasicCall sqlNode = new SqlBasicCall(SqlStdOperatorTable.IN, sqlNodes.toArray(new SqlNode[]{}), SqlParserPos.ZERO);
-        return expression.isNot() ? Optional.of(new SqlBasicCall(SqlStdOperatorTable.NOT, new SqlNode[]{sqlNode}, SqlParserPos.ZERO)) : Optional.of(sqlNode);
-    }
-    
-    @Override
-    public Optional<InExpression> convertToSQLSegment(final SqlBasicCall sqlBasicCall) {
-        if (null == sqlBasicCall) {
-            return Optional.empty();
-        }
-        ExpressionConverter expressionConverter = new ExpressionConverter();
-        ExpressionSegment left = expressionConverter.convertToSQLSegment(sqlBasicCall.getOperandList().get(0)).orElseThrow(IllegalStateException::new);
-        ExpressionSegment right = expressionConverter.convertToSQLSegment(sqlBasicCall.getOperandList().get(1)).orElseThrow(IllegalStateException::new);
-        return Optional.of(new InExpression(getStartIndex(sqlBasicCall),
-                sqlBasicCall.getOperandList().get(1) instanceof SqlSelect ? getStopIndex(sqlBasicCall) + 1 : getStopIndex(sqlBasicCall), left, right, not));
+        SqlBasicCall sqlNode = new SqlBasicCall(SqlStdOperatorTable.IN, new ArrayList<>(sqlNodes), SqlParserPos.ZERO);
+        return expression.isNot() ? Optional.of(new SqlBasicCall(SqlStdOperatorTable.NOT, Collections.singletonList(sqlNode), SqlParserPos.ZERO)) : Optional.of(sqlNode);
     }
 }

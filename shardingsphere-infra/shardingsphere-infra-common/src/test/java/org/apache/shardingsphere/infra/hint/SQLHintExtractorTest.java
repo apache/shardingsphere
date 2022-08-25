@@ -21,26 +21,17 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSe
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.hamcrest.CoreMatchers.is;
 
 public final class SQLHintExtractorTest {
-    
-    @Test
-    public void assertFindHintDataSourceNameExist() {
-        AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
-        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* ShardingSphere hint: dataSourceName=ds_1 */", 0, 0)));
-        Optional<String> dataSourceName = new SQLHintExtractor(statement).findHintDataSourceName();
-        assertTrue(dataSourceName.isPresent());
-        assertThat(dataSourceName.get(), is("ds_1"));
-    }
     
     @Test
     public void assertSQLHintWriteRouteOnly() {
@@ -50,17 +41,18 @@ public final class SQLHintExtractorTest {
     }
     
     @Test
-    public void assertFindHintDataSourceNameNotExist() {
+    public void assertSQLHintSkipEncryptRewrite() {
         AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
-        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* no hint */", 0, 0)));
-        Optional<String> dataSourceName = new SQLHintExtractor(statement).findHintDataSourceName();
-        assertFalse(dataSourceName.isPresent());
+        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* ShardingSphere hint: skipEncryptRewrite=true */", 0, 0)));
+        assertTrue(new SQLHintExtractor(statement).isHintSkipEncryptRewrite());
     }
     
     @Test
-    public void assertFindHintDataSourceNameNotExistWithoutComment() {
+    public void assertSQLHintDisableAuditNames() {
         AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
-        Optional<String> dataSourceName = new SQLHintExtractor(statement).findHintDataSourceName();
-        assertFalse(dataSourceName.isPresent());
+        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* ShardingSphere hint: disableAuditNames=sharding_audit1 sharding_audit2 */", 0, 0)));
+        Collection<String> actual = new SQLHintExtractor(statement).findDisableAuditNames();
+        assertThat(actual.size(), is(2));
+        assertTrue(actual.containsAll(Arrays.asList("sharding_audit1", "sharding_audit2")));
     }
 }

@@ -27,9 +27,9 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL install plugin statement.
  */
-@ToString
 @Getter
 @Setter
+@ToString(callSuper = true)
 public final class MySQLInstallPluginStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
     private String pluginName;

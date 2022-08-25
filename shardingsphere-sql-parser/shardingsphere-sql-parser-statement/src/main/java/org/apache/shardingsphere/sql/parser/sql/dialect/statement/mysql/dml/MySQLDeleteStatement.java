@@ -30,7 +30,7 @@ import java.util.Optional;
  * MySQL delete statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class MySQLDeleteStatement extends DeleteStatement implements MySQLStatement {
     
     private OrderBySegment orderBy;

@@ -52,15 +52,13 @@ public final class DropShadowAlgorithmStatementUpdaterTest {
     
     @Test
     public void assertExecuteWithIfExists() throws DistSQLException {
-        DropShadowAlgorithmStatement sqlStatement = createSQLStatement("ruleSegment");
-        sqlStatement.setContainsExistClause(true);
+        DropShadowAlgorithmStatement sqlStatement = createSQLStatement(true, "ruleSegment");
         updater.checkSQLStatement(database, sqlStatement, mock(ShadowRuleConfiguration.class));
     }
     
     @Test
     public void assertUpdate() throws DistSQLException {
-        DropShadowAlgorithmStatement sqlStatement = createSQLStatement("ds_0");
-        sqlStatement.setContainsExistClause(true);
+        DropShadowAlgorithmStatement sqlStatement = createSQLStatement(true, "ds_0");
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
         ruleConfig.getTables().put("t_order", new ShadowTableConfiguration(new ArrayList<>(Collections.singleton("ds_0")), Collections.emptyList()));
         updater.checkSQLStatement(database, sqlStatement, ruleConfig);
@@ -69,6 +67,10 @@ public final class DropShadowAlgorithmStatementUpdaterTest {
     }
     
     private DropShadowAlgorithmStatement createSQLStatement(final String... ruleName) {
-        return new DropShadowAlgorithmStatement(Arrays.asList(ruleName));
+        return new DropShadowAlgorithmStatement(false, Arrays.asList(ruleName));
+    }
+    
+    private DropShadowAlgorithmStatement createSQLStatement(final boolean ifExists, final String... ruleName) {
+        return new DropShadowAlgorithmStatement(ifExists, Arrays.asList(ruleName));
     }
 }

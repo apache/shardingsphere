@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL drop procedure statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class MySQLDropProcedureStatement extends DropProcedureStatement implements MySQLStatement {
 }

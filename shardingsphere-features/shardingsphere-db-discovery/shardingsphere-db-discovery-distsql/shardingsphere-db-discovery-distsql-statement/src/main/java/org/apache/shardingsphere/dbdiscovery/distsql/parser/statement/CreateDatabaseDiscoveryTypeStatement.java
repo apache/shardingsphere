@@ -19,7 +19,6 @@ package org.apache.shardingsphere.dbdiscovery.distsql.parser.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.subject.impl.DatabaseDiscoverySubjectSupplier;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryProviderAlgorithmSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
 
@@ -30,7 +29,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class CreateDatabaseDiscoveryTypeStatement extends CreateRuleStatement implements DatabaseDiscoverySubjectSupplier {
+public final class CreateDatabaseDiscoveryTypeStatement extends CreateRuleStatement {
     
     private final Collection<DatabaseDiscoveryProviderAlgorithmSegment> providers;
 }

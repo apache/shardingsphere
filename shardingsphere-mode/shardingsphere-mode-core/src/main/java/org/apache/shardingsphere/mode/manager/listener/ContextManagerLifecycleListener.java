@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.listener;
 
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 
 /**
  * Context manager lifecycle listener.

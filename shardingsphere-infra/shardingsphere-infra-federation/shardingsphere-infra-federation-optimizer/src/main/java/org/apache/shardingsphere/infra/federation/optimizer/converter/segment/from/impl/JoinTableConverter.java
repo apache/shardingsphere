@@ -22,13 +22,17 @@ import org.apache.calcite.sql.JoinType;
 import org.apache.calcite.sql.SqlJoin;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.expression.ExpressionConverter;
+import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.expression.impl.ColumnConverter;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.from.TableConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -36,53 +40,35 @@ import java.util.Optional;
  */
 public final class JoinTableConverter implements SQLSegmentConverter<JoinTableSegment, SqlJoin> {
     
-    private static final String JOIN_TYPE_INNER = "INNER";
-    
-    private static final String JOIN_TYPE_LEFT = "LEFT";
-    
-    private static final String JOIN_TYPE_RIGHT = "RIGHT";
-    
-    private static final String JOIN_TYPE_FULL = "FULL";
-    
     @Override
-    public Optional<SqlJoin> convertToSQLNode(final JoinTableSegment segment) {
-        SqlNode left = new TableConverter().convertToSQLNode(segment.getLeft()).orElseThrow(IllegalStateException::new);
-        SqlNode right = new TableConverter().convertToSQLNode(segment.getRight()).orElseThrow(IllegalStateException::new);
-        Optional<SqlNode> condition = new ExpressionConverter().convertToSQLNode(segment.getCondition());
-        SqlLiteral conditionType = condition.isPresent() ? JoinConditionType.ON.symbol(SqlParserPos.ZERO) : JoinConditionType.NONE.symbol(SqlParserPos.ZERO);
-        return Optional.of(
-                new SqlJoin(SqlParserPos.ZERO, left, SqlLiteral.createBoolean(false, SqlParserPos.ZERO), convertJoinType(segment.getJoinType()), right, conditionType, condition.orElse(null)));
+    public Optional<SqlJoin> convert(final JoinTableSegment segment) {
+        SqlNode left = new TableConverter().convert(segment.getLeft()).orElseThrow(IllegalStateException::new);
+        SqlNode right = new TableConverter().convert(segment.getRight()).orElseThrow(IllegalStateException::new);
+        Optional<SqlNode> condition = convertJoinCondition(segment);
+        SqlLiteral conditionType = convertConditionType(segment);
+        SqlLiteral joinType = JoinType.valueOf(segment.getJoinType()).symbol(SqlParserPos.ZERO);
+        return Optional.of(new SqlJoin(SqlParserPos.ZERO, left, SqlLiteral.createBoolean(false, SqlParserPos.ZERO), joinType, right, conditionType, condition.orElse(null)));
     }
     
-    @Override
-    public Optional<JoinTableSegment> convertToSQLSegment(final SqlJoin sqlJoin) {
-        TableSegment left = new TableConverter().convertToSQLSegment(sqlJoin.getLeft()).orElseThrow(IllegalStateException::new);
-        TableSegment right = new TableConverter().convertToSQLSegment(sqlJoin.getRight()).orElseThrow(IllegalStateException::new);
-        JoinTableSegment result = new JoinTableSegment();
-        result.setStartIndex(getStartIndex(sqlJoin));
-        result.setStartIndex(getStopIndex(sqlJoin));
-        result.setLeft(left);
-        result.setRight(right);
-        new ExpressionConverter().convertToSQLSegment(sqlJoin.getCondition()).ifPresent(result::setCondition);
-        return Optional.of(result);
+    private static SqlLiteral convertConditionType(final JoinTableSegment segment) {
+        if (!segment.getUsing().isEmpty()) {
+            return JoinConditionType.USING.symbol(SqlParserPos.ZERO);
+        }
+        return null != segment.getCondition() ? JoinConditionType.ON.symbol(SqlParserPos.ZERO) : JoinConditionType.NONE.symbol(SqlParserPos.ZERO);
     }
     
-    private SqlLiteral convertJoinType(final String joinType) {
-        if (null == joinType) {
-            return JoinType.COMMA.symbol(SqlParserPos.ZERO);
+    private static Optional<SqlNode> convertJoinCondition(final JoinTableSegment segment) {
+        if (null != segment.getCondition()) {
+            return new ExpressionConverter().convert(segment.getCondition());
         }
-        if (JOIN_TYPE_INNER.equals(joinType)) {
-            return JoinType.INNER.symbol(SqlParserPos.ZERO);
+        if (!segment.getUsing().isEmpty()) {
+            Collection<SqlNode> sqlNodes = new LinkedList<>();
+            ColumnConverter columnConverter = new ColumnConverter();
+            for (ColumnSegment each : segment.getUsing()) {
+                columnConverter.convert(each).ifPresent(sqlNodes::add);
+            }
+            return Optional.of(new SqlNodeList(sqlNodes, SqlParserPos.ZERO));
         }
-        if (JOIN_TYPE_LEFT.equals(joinType)) {
-            return JoinType.LEFT.symbol(SqlParserPos.ZERO);
-        }
-        if (JOIN_TYPE_RIGHT.equals(joinType)) {
-            return JoinType.RIGHT.symbol(SqlParserPos.ZERO);
-        }
-        if (JOIN_TYPE_FULL.equals(joinType)) {
-            return JoinType.FULL.symbol(SqlParserPos.ZERO);
-        }
-        throw new UnsupportedOperationException("unsupported join type " + joinType);
+        return Optional.empty();
     }
 }

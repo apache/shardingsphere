@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment;
 
 import lombok.Getter;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
@@ -28,6 +29,7 @@ import java.util.LinkedList;
  * Load table index segment.
  */
 @Getter
+@ToString(callSuper = true)
 public final class LoadTableIndexSegment extends TableIndexSegment {
     
     private final Collection<IndexSegment> indexes = new LinkedList<>();

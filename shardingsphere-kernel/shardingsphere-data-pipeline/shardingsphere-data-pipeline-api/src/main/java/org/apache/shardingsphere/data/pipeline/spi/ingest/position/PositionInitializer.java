@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.spi.ingest.position;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -34,10 +34,11 @@ public interface PositionInitializer extends TypedSPI {
      * Init position by data source.
      *
      * @param dataSource data source
+     * @param slotNameSuffix slot name suffix
      * @return position
      * @throws SQLException SQL exception
      */
-    IngestPosition<?> init(DataSource dataSource) throws SQLException;
+    IngestPosition<?> init(DataSource dataSource, String slotNameSuffix) throws SQLException;
     
     /**
      * Init position by string data.
@@ -51,8 +52,9 @@ public interface PositionInitializer extends TypedSPI {
      * Clean up by data source if necessary.
      *
      * @param dataSource data source
+     * @param slotNameSuffix slot name suffix
      * @throws SQLException SQL exception
      */
-    default void destroy(DataSource dataSource) throws SQLException {
+    default void destroy(DataSource dataSource, final String slotNameSuffix) throws SQLException {
     }
 }

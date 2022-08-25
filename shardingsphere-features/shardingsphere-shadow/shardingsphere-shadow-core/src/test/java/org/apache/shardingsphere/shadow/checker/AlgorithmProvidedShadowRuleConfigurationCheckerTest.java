@@ -17,28 +17,40 @@
 
 package org.apache.shardingsphere.shadow.checker;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
 import org.junit.Test;
 
-import java.util.Collections;
+import javax.sql.DataSource;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Collections;
+
+import static org.mockito.Mockito.mock;
 
 public final class AlgorithmProvidedShadowRuleConfigurationCheckerTest {
     
     @Test
     public void assertCheck() {
-        new AlgorithmProvidedShadowRuleConfigurationChecker().check("", createAlgorithmProvidedShadowRuleConfiguration());
+        new AlgorithmProvidedShadowRuleConfigurationChecker().check("", createAlgorithmProvidedShadowRuleConfiguration(), createDataSourceMap(), Collections.emptyList());
+    }
+    
+    private Map<String, DataSource> createDataSourceMap() {
+        Map<String, DataSource> result = new LinkedHashMap<>(2, 1);
+        result.put("ds", mock(DataSource.class));
+        result.put("ds_shadow", mock(DataSource.class));
+        return result;
     }
     
     private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
         AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration();
         result.setShadowAlgorithms(Collections.singletonMap(
-                "user-id-insert-match-algorithm", ShadowAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("REGEX_MATCH", createProperties()))));
+                "user-id-insert-match-algorithm", ShadowAlgorithmFactory.newInstance(new AlgorithmConfiguration("REGEX_MATCH", createProperties()))));
         result.setDataSources(Collections.singletonMap("shadow-data-source", new ShadowDataSourceConfiguration("ds", "ds_shadow")));
         result.setTables(Collections.singletonMap("t_order", new ShadowTableConfiguration(new LinkedList<>(), new LinkedList<>(Collections.singleton("user-id-insert-match-algorithm")))));
         return result;

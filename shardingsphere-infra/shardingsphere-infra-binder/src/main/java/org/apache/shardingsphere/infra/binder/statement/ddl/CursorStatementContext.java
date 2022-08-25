@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
+import org.apache.shardingsphere.infra.context.cursor.CursorDefinition;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
@@ -39,12 +40,13 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Cursor statement context.
  */
 @Getter
-public final class CursorStatementContext extends CommonSQLStatementContext<OpenGaussCursorStatement> implements CursorAvailable, TableAvailable, WhereAvailable {
+public final class CursorStatementContext extends CommonSQLStatementContext<OpenGaussCursorStatement> implements CursorAvailable, TableAvailable, WhereAvailable, CursorDefinition {
     
     private final Collection<WhereSegment> whereSegments = new LinkedList<>();
     
@@ -81,8 +83,8 @@ public final class CursorStatementContext extends CommonSQLStatementContext<Open
     }
     
     @Override
-    public CursorNameSegment getCursorName() {
-        return getSqlStatement().getCursorName();
+    public Optional<CursorNameSegment> getCursorName() {
+        return Optional.of(getSqlStatement().getCursorName());
     }
     
     @Override

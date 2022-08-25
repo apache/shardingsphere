@@ -30,7 +30,7 @@ import java.util.Optional;
  * MySQL update statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class MySQLUpdateStatement extends UpdateStatement implements MySQLStatement {
     
     private OrderBySegment orderBy;

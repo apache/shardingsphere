@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Alter group statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class AlterGroupStatement extends AbstractSQLStatement implements DDLStatement {
 }

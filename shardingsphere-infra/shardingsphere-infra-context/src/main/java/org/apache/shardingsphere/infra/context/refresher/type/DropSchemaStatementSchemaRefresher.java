@@ -19,10 +19,8 @@ package org.apache.shardingsphere.infra.context.refresher.type;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
-import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
-import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.DropSchemaEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
@@ -33,7 +31,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -41,21 +38,17 @@ import java.util.Optional;
  */
 public final class DropSchemaStatementSchemaRefresher implements MetaDataRefresher<DropSchemaStatement> {
     
-    private static final String TYPE = DropSchemaStatement.class.getName();
-    
     @Override
-    public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final FederationDatabaseMetaData federationDatabaseMetaData,
-                                                    final Map<String, OptimizerPlannerContext> optimizerPlanners,
-                                                    final Collection<String> logicDataSourceNames, final String schemaName, final DropSchemaStatement sqlStatement,
-                                                    final ConfigurationProperties props) throws SQLException {
+    public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
+                                                    final String schemaName, final DropSchemaStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         Collection<String> tobeRemovedTables = new LinkedHashSet<>();
         Collection<String> tobeRemovedSchemas = new LinkedHashSet<>();
         Collection<String> schemaNames = getSchemaNames(sqlStatement);
         for (String each : schemaNames) {
-            Optional.ofNullable(database.getSchemas().remove(each)).ifPresent(optional -> tobeRemovedTables.addAll(optional.getAllTableNames()));
+            ShardingSphereSchema schema = new ShardingSphereSchema(database.getSchema(schemaName).getTables());
+            database.removeSchema(schemaName);
+            Optional.of(schema).ifPresent(optional -> tobeRemovedTables.addAll(optional.getAllTableNames()));
             tobeRemovedSchemas.add(each.toLowerCase());
-            federationDatabaseMetaData.removeSchemaMetadata(each);
-            optimizerPlanners.put(federationDatabaseMetaData.getName(), OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
         }
         Collection<MutableDataNodeRule> rules = database.getRuleMetaData().findRules(MutableDataNodeRule.class);
         for (String each : tobeRemovedTables) {
@@ -67,7 +60,7 @@ public final class DropSchemaStatementSchemaRefresher implements MetaDataRefresh
     private Collection<String> getSchemaNames(final DropSchemaStatement sqlStatement) {
         Collection<String> result = new LinkedList<>();
         for (IdentifierValue each : sqlStatement.getSchemaNames()) {
-            result.add(each.getValue());
+            result.add(each.getValue().toLowerCase());
         }
         return result;
     }
@@ -80,6 +73,6 @@ public final class DropSchemaStatementSchemaRefresher implements MetaDataRefresh
     
     @Override
     public String getType() {
-        return TYPE;
+        return DropSchemaStatement.class.getName();
     }
 }

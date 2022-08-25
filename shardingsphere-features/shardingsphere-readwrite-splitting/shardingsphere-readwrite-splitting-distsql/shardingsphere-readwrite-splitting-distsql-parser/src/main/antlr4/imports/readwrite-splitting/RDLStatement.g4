@@ -28,7 +28,7 @@ alterReadwriteSplittingRule
     ;
 
 dropReadwriteSplittingRule
-    : DROP READWRITE_SPLITTING RULE existClause? ruleName (COMMA ruleName)*
+    : DROP READWRITE_SPLITTING RULE ifExists? ruleName (COMMA ruleName)*
     ;
 
 readwriteSplittingRuleDefinition
@@ -40,7 +40,7 @@ staticReadwriteSplittingRuleDefinition
     ;
 
 dynamicReadwriteSplittingRuleDefinition
-    : AUTO_AWARE_RESOURCE EQ resourceName
+    : AUTO_AWARE_RESOURCE EQ resourceName (COMMA WRITE_DATA_SOURCE_QUERY_ENABLED EQ writeDataSourceQueryEnabled)?
     ;
 
 ruleName
@@ -60,7 +60,7 @@ algorithmDefinition
     ;
 
 algorithmName
-    : IDENTIFIER
+    : STRING
     ;
 
 algorithmProperties
@@ -68,9 +68,13 @@ algorithmProperties
     ;
 
 algorithmProperty
-    : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | STRING)
+    : key=STRING EQ value=(NUMBER | INT | STRING)
     ;
 
-existClause
+ifExists
     : IF EXISTS
+    ;
+
+writeDataSourceQueryEnabled
+    : TRUE | FALSE
     ;

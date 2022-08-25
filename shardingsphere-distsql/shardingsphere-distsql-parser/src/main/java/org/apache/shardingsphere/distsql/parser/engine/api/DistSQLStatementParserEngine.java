@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.distsql.parser.engine.api;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.apache.shardingsphere.distsql.parser.core.advanced.AdvancedDistSQLStatementParserEngine;
-import org.apache.shardingsphere.distsql.parser.core.common.CommonDistSQLStatementParserEngine;
+import org.apache.shardingsphere.distsql.parser.core.utility.UtilityDistSQLStatementParserEngine;
+import org.apache.shardingsphere.distsql.parser.core.kernel.KernelDistSQLStatementParserEngine;
 import org.apache.shardingsphere.distsql.parser.core.featured.FeaturedDistSQLStatementParserEngine;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -37,12 +37,12 @@ public final class DistSQLStatementParserEngine {
      */
     public SQLStatement parse(final String sql) {
         try {
-            return new CommonDistSQLStatementParserEngine().parse(sql);
+            return new KernelDistSQLStatementParserEngine().parse(sql);
         } catch (final ParseCancellationException | SQLParsingException ignored) {
             try {
                 return new FeaturedDistSQLStatementParserEngine().parse(sql);
             } catch (SQLParsingException ignoredToo) {
-                return new AdvancedDistSQLStatementParserEngine().parse(sql);
+                return new UtilityDistSQLStatementParserEngine().parse(sql);
             }
         }
     }

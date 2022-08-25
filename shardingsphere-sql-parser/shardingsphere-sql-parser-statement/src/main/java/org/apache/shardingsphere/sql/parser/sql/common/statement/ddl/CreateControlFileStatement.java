@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Create control file statement.
  */
-@ToString
-public class CreateControlFileStatement extends AbstractSQLStatement implements DDLStatement {
+@ToString(callSuper = true)
+public abstract class CreateControlFileStatement extends AbstractSQLStatement implements DDLStatement {
 }

@@ -37,13 +37,14 @@ public final class StandardJdbcUrlParserTest {
     
     @Test
     public void assertParseMySQLJdbcUrl() {
-        JdbcUrl actual = new StandardJdbcUrlParser().parse("jdbc:mysql://127.0.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false");
+        JdbcUrl actual = new StandardJdbcUrlParser().parse("jdbc:mysql://127.0.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false&sessionVariables=group_concat_max_len=204800,SQL_SAFE_UPDATES=0");
         assertThat(actual.getHostname(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(3306));
         assertThat(actual.getDatabase(), is("demo_ds"));
-        assertThat(actual.getQueryProperties().size(), is(2));
+        assertThat(actual.getQueryProperties().size(), is(3));
         assertThat(actual.getQueryProperties().get("serverTimezone"), is("UTC"));
         assertThat(actual.getQueryProperties().get("useSSL"), is(Boolean.FALSE.toString()));
+        assertThat(actual.getQueryProperties().get("sessionVariables"), is("group_concat_max_len=204800,SQL_SAFE_UPDATES=0"));
     }
     
     @Test

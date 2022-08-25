@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Oracle merge statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OracleMergeStatement extends MergeStatement implements OracleStatement {
 }

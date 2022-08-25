@@ -1157,4 +1157,47 @@
         </convert-table>
     </alter-table>
     
+    <alter-table sql-case-id="alter_table_add_column_with_visible">
+        <table name="t_order" start-index="12" stop-index="18"/>
+        <add-column>
+            <column-definition type="VARCHAR" start-index="31" stop-index="56">
+                <column name="status" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_column_with_invisible">
+        <table name="t_order" start-index="12" stop-index="18"/>
+        <add-column>
+            <column-definition type="VARCHAR" start-index="31" stop-index="58">
+                <column name="status" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_column_with_visible">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <modify-column>
+            <column-definition type="VARCHAR" start-index="34" stop-index="59">
+                <column name="status" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_modify_column_with_invisible">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <modify-column>
+            <column-definition type="VARCHAR" start-index="34" stop-index="61">
+                <column name="status" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_alter_column_set_visible">
+        <table name="t_order" start-index="12" stop-index="18" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_alter_column_set_invisible">
+        <table name="t_order" start-index="12" stop-index="18" />
+    </alter-table>
 </sql-parser-test-cases>

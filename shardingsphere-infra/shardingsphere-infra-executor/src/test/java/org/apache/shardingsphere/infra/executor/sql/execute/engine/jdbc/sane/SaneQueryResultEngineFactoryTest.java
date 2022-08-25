@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.executor.sql.execute.engine.jdbc.sane;
 
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane.SaneQueryResultEngineFactory;
-import org.apache.shardingsphere.infra.executor.sql.fixture.FixtureDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.fixture.FixtureSaneQueryResultEngine;
+import org.apache.shardingsphere.test.fixture.database.type.MockedDatabaseType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -29,6 +29,6 @@ public final class SaneQueryResultEngineFactoryTest {
     
     @Test
     public void assertGetInstance() {
-        assertThat(SaneQueryResultEngineFactory.getInstance(new FixtureDatabaseType()), instanceOf(FixtureSaneQueryResultEngine.class));
+        assertThat(SaneQueryResultEngineFactory.getInstance(new MockedDatabaseType()), instanceOf(FixtureSaneQueryResultEngine.class));
     }
 }

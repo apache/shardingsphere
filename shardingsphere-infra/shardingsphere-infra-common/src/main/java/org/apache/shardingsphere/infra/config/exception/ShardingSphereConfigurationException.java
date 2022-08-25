@@ -17,39 +17,17 @@
 
 package org.apache.shardingsphere.infra.config.exception;
 
+import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
+
 /**
  * Configuration exception.
  */
-public final class ShardingSphereConfigurationException extends RuntimeException {
+public final class ShardingSphereConfigurationException extends ShardingSphereSQLException {
     
     private static final long serialVersionUID = -1360264079938958332L;
     
-    /**
-     * Constructs an exception with formatted error message and arguments. 
-     *
-     * @param errorMessage formatted error message
-     * @param args arguments of error message
-     */
-    public ShardingSphereConfigurationException(final String errorMessage, final Object... args) {
-        super(String.format(errorMessage, args));
-    }
-    
-    /**
-     * Constructs an exception with error message and cause.
-     *
-     * @param errorMessage formatted error message
-     * @param cause the cause of this exception
-     */
-    public ShardingSphereConfigurationException(final String errorMessage, final Throwable cause) {
-        super(errorMessage, cause);
-    }
-    
-    /**
-     * Constructs an exception with cause exception. 
-     *
-     * @param cause cause exception
-     */
-    public ShardingSphereConfigurationException(final Exception cause) {
-        super(cause);
+    public ShardingSphereConfigurationException(final String reason, final String... messageArguments) {
+        super(XOpenSQLState.SYNTAX_ERROR, 11001, reason, messageArguments);
     }
 }

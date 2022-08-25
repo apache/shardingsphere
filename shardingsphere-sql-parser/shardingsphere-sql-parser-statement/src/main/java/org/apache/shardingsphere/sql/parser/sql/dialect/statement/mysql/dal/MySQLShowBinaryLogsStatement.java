@@ -25,6 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL show binary logs statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class MySQLShowBinaryLogsStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
 }

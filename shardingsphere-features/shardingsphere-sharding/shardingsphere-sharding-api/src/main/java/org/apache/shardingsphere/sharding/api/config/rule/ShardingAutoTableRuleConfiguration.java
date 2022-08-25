@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 
@@ -35,15 +36,11 @@ public final class ShardingAutoTableRuleConfiguration {
     
     private final String actualDataSources;
     
-    private String actualTablePrefix;
-    
     private ShardingStrategyConfiguration shardingStrategy;
     
     private KeyGenerateStrategyConfiguration keyGenerateStrategy;
     
-    public ShardingAutoTableRuleConfiguration(final String logicTable) {
-        this(logicTable, null);
-    }
+    private ShardingAuditStrategyConfiguration auditStrategy;
     
     public ShardingAutoTableRuleConfiguration(final String logicTable, final String actualDataSources) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(logicTable), "LogicTable is required.");

@@ -29,6 +29,10 @@
         <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456" />
         <data-source name="ds_1" hostname="127.0.0.1" port="3306" db="test1" user="ROOT" password="123456" />
     </add-resource>
+    
+    <add-migration-source-resource sql-case-id="single-add-migration-source-resource">
+        <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456" url="jdbc:mysql://127.0.0.1:3306/test0"/>
+    </add-migration-source-resource>
 
     <add-resource sql-case-id="add-resource-with-quota">
         <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="" />
@@ -199,7 +203,7 @@
     <create-readwrite-splitting-rule sql-case-id="create-dynamic-readwrite-splitting-rule">
         <rule name="ms_group_1" auto-aware-resource="group_0" load-balancer="random">
             <properties>
-                <property key="read_weight" value="'2:1'" />
+                <property key="read_weight" value="2:1" />
             </properties>
         </rule>
     </create-readwrite-splitting-rule>
@@ -439,78 +443,9 @@
         </shardingKeyGenerator>
     </create-sharding-key-generator>
 
-    <create-sharding-scaling-rule sql-case-id="create-sharding-scaling-rule-without-configuration" scaling-name="default_scaling"/>
-
-    <create-sharding-scaling-rule sql-case-id="create-sharding-scaling-rule-with-minimal-auto-configuration" scaling-name="default_scaling">
-        <configuration>
-            <completion-detector algorithm-name="IDLE">
-                <properties>
-                    <property key="incremental-task-idle-seconds-threshold" value="1800" />
-                </properties>
-            </completion-detector>
-            <data-consistency-checker algorithm-name="DATA_MATCH">
-                <properties>
-                    <property key="chunk-size" value="1000" />
-                </properties>
-            </data-consistency-checker>
-        </configuration>
-    </create-sharding-scaling-rule>
-
-    <create-sharding-scaling-rule sql-case-id="create-sharding-scaling-rule-with-complete-auto-configuration" scaling-name="default_scaling">
-        <configuration>
-            <input-segment worker-thread="40" batch-size="1000">
-                <rate-limiter algorithm-name="QPS">
-                    <properties>
-                        <property key="qps" value="50"/>
-                    </properties>
-                </rate-limiter>
-            </input-segment>
-            <output-segment worker-thread="40" batch-size="1000">
-                <rate-limiter algorithm-name="TPS">
-                    <properties>
-                        <property key="tps" value="2000"/>
-                    </properties>
-                </rate-limiter>
-            </output-segment>
-            <stream-channel algorithm-name="MEMORY">
-                <properties>
-                    <property key="block-queue-size" value="10000"/>
-                </properties>
-            </stream-channel>
-            <completion-detector algorithm-name="IDLE">
-                <properties>
-                    <property key="incremental-task-idle-seconds-threshold" value="1800" />
-                </properties>
-            </completion-detector>
-            <data-consistency-checker algorithm-name="DATA_MATCH">
-                <properties>
-                    <property key="chunk-size" value="1000"/>
-                </properties>
-            </data-consistency-checker>
-        </configuration>
-    </create-sharding-scaling-rule>
-
-    <create-sharding-scaling-rule sql-case-id="create-sharding-scaling-rule-with-manual-configuration" scaling-name="default_scaling">
-        <configuration>
-            <input-segment worker-thread="40" batch-size="1000">
-                <rate-limiter algorithm-name="QPS">
-                    <properties>
-                        <property key="qps" value="50"/>
-                    </properties>
-                </rate-limiter>
-            </input-segment>
-            <output-segment worker-thread="40" batch-size="1000">
-                <rate-limiter algorithm-name="TPS">
-                    <properties>
-                        <property key="tps" value="2000"/>
-                    </properties>
-                </rate-limiter>
-            </output-segment>
-            <stream-channel algorithm-name="MEMORY">
-                <properties>
-                    <property key="block-queue-size" value="10000"/>
-                </properties>
-            </stream-channel>
-        </configuration>
-    </create-sharding-scaling-rule>
+    <create-sharding-auditor sql-case-id="create-sharding-auditor">
+        <shardingAuditor auditor-name="sharding_key_required_auditor">
+            <algorithm algorithm-name="DML_SHARDING_CONDITIONS" />
+        </shardingAuditor>
+    </create-sharding-auditor>
 </sql-parser-test-cases>

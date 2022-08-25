@@ -28,5 +28,5 @@ import java.util.List;
 @Getter
 public final class DropIndexEvent implements MetaDataRefreshedEvent {
     
-    private List<SchemaAlteredEvent> schemaAlteredEvents = new LinkedList<>();
+    private final List<SchemaAlteredEvent> schemaAlteredEvents = new LinkedList<>();
 }

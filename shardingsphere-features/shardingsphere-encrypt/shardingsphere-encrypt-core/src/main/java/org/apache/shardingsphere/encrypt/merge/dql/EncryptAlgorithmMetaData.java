@@ -80,9 +80,9 @@ public final class EncryptAlgorithmMetaData {
             return Optional.empty();
         }
         TablesContext tablesContext = selectStatementContext.getTablesContext();
-        String schemaName = tablesContext.getSchemaName().orElse(DatabaseTypeEngine.getDefaultSchemaName(selectStatementContext.getDatabaseType(), database.getName()));
+        String schemaName = tablesContext.getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(selectStatementContext.getDatabaseType(), database.getName()));
         Map<String, String> expressionTableNames = tablesContext.findTableNamesByColumnProjection(
-                Collections.singletonList(columnProjection.get()), database.getSchemas().get(schemaName));
+                Collections.singletonList(columnProjection.get()), database.getSchema(schemaName));
         Optional<String> tableName = findTableName(columnProjection.get(), expressionTableNames);
         return tableName.map(optional -> EncryptContextBuilder.build(database.getName(), schemaName, optional, columnProjection.get().getName()));
     }

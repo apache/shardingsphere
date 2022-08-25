@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.yaml.swapper;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 
@@ -38,7 +38,7 @@ public final class ShardingRuleConfigurationConverter {
      * @throws IllegalStateException if there is no available sharding rule
      */
     public static ShardingRuleConfiguration findAndConvertShardingRuleConfiguration(final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
-        return new ShardingRuleConfigurationYamlSwapper().swapToObject(findYamlShardingRuleConfiguration(yamlRuleConfigs));
+        return new YamlShardingRuleConfigurationSwapper().swapToObject(findYamlShardingRuleConfiguration(yamlRuleConfigs));
     }
     
     /**

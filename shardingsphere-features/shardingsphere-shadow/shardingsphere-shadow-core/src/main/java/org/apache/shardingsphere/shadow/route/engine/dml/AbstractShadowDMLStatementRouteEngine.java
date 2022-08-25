@@ -41,14 +41,14 @@ import java.util.Optional;
 /**
  * Abstract shadow DML statement route engine.
  */
+@Getter
 public abstract class AbstractShadowDMLStatementRouteEngine implements ShadowRouteEngine {
     
-    @Getter
     private final Map<String, String> tableAliasNameMappings = new LinkedHashMap<>();
     
     @Override
     public void route(final RouteContext routeContext, final ShadowRule shadowRule) {
-        shadowRouteDecorate(routeContext, shadowRule, findShadowDataSourceMappings(shadowRule));
+        decorateRouteContext(routeContext, shadowRule, findShadowDataSourceMappings(shadowRule));
     }
     
     private Map<String, String> findShadowDataSourceMappings(final ShadowRule shadowRule) {
@@ -119,17 +119,29 @@ public abstract class AbstractShadowDMLStatementRouteEngine implements ShadowRou
     private Map<String, String> findByShadowColumn(final Collection<String> relatedShadowTables, final ShadowRule shadowRule, final ShadowOperationType shadowOperationType) {
         Map<String, String> result = new LinkedHashMap<>();
         for (String each : relatedShadowTables) {
-            Collection<ColumnShadowAlgorithm<Comparable<?>>> columnShadowAlgorithms = shadowRule.getRelatedColumnShadowAlgorithms(each, shadowOperationType);
-            if (!columnShadowAlgorithms.isEmpty() && isMatchAnyColumnShadowAlgorithms(each, columnShadowAlgorithms, shadowRule, shadowOperationType)) {
+            Collection<String> relatedShadowColumnNames = shadowRule.getRelatedShadowColumnNames(shadowOperationType, each);
+            if (!relatedShadowColumnNames.isEmpty() && isMatchAnyColumnShadowAlgorithms(each, relatedShadowColumnNames, shadowRule, shadowOperationType)) {
                 return shadowRule.getRelatedShadowDataSourceMappings(each);
             }
         }
         return result;
     }
     
-    private boolean isMatchAnyColumnShadowAlgorithms(final String shadowTable, final Collection<ColumnShadowAlgorithm<Comparable<?>>> columnShadowAlgorithms, final ShadowRule shadowRule,
-                                                     final ShadowOperationType shadowOperationType) {
-        Iterator<Optional<ShadowColumnCondition>> iterator = getShadowColumnConditionIterator();
+    private boolean isMatchAnyColumnShadowAlgorithms(final String shadowTable, final Collection<String> shadowColumnNames, final ShadowRule shadowRule, final ShadowOperationType shadowOperation) {
+        for (String each : shadowColumnNames) {
+            if (isMatchAnyColumnShadowAlgorithms(shadowTable, each, shadowOperation, shadowRule)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean isMatchAnyColumnShadowAlgorithms(final String shadowTable, final String shadowColumn, final ShadowOperationType shadowOperationType, final ShadowRule shadowRule) {
+        Collection<ColumnShadowAlgorithm<Comparable<?>>> columnShadowAlgorithms = shadowRule.getRelatedColumnShadowAlgorithms(shadowOperationType, shadowTable, shadowColumn);
+        if (columnShadowAlgorithms.isEmpty()) {
+            return false;
+        }
+        Iterator<Optional<ShadowColumnCondition>> iterator = getShadowColumnConditionIterator(shadowColumn);
         ShadowDetermineCondition shadowDetermineCondition;
         while (iterator.hasNext()) {
             Optional<ShadowColumnCondition> next = iterator.next();
@@ -169,9 +181,10 @@ public abstract class AbstractShadowDMLStatementRouteEngine implements ShadowRou
     /**
      * Get shadow column condition iterator.
      *
+     * @param shadowColumn shadow column
      * @return shadow column condition iterator
      */
-    protected abstract Iterator<Optional<ShadowColumnCondition>> getShadowColumnConditionIterator();
+    protected abstract Iterator<Optional<ShadowColumnCondition>> getShadowColumnConditionIterator(String shadowColumn);
     
     /**
      * Get single table tame.

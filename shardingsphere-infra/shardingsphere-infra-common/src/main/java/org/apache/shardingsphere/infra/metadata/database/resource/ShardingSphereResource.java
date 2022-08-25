@@ -66,15 +66,6 @@ public final class ShardingSphereResource {
     }
     
     /**
-     * Get all instance data sources.
-     *
-     * @return all instance data sources
-     */
-    public Collection<DataSource> getAllInstanceDataSources() {
-        return dataSources.entrySet().stream().filter(entry -> getAllInstanceDataSourceNames().contains(entry.getKey())).map(Entry::getValue).collect(Collectors.toSet());
-    }
-    
-    /**
      * Get all instance data source names.
      *
      * @return instance data source names

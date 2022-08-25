@@ -30,9 +30,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Setter
 public final class ResetPersistStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute(name = "exist-clause")
-    private boolean containsExistClause;
+    @XmlAttribute(name = "if-exists")
+    private boolean ifExists;
     
-    @XmlAttribute(name = "exist-clause")
+    @XmlAttribute
     private String identifier;
 }

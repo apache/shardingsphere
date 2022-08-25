@@ -32,7 +32,7 @@ showSingleTableRules
     ;
 
 showSingleTable
-    : SHOW SINGLE (table | TABLES) (FROM databaseName)?
+    : SHOW SINGLE (TABLES | TABLE tableName) (FROM databaseName)?
     ;
 
 countDatabaseRules
@@ -43,6 +43,6 @@ showRulesUsedResource
     : SHOW RULES USED RESOURCE resourceName (FROM databaseName)?
     ;
 
-table
-    : TABLE tableName
+countSingleTableRule
+    : COUNT SINGLE_TABLE RULE (FROM databaseName)?
     ;

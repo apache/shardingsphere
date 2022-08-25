@@ -22,11 +22,14 @@ import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
@@ -40,6 +43,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.Or
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -134,10 +138,12 @@ public final class SelectStatementContextTest {
     }
     
     private void assertSetIndexForItemsByColumnOrderByWithOwner(final SelectStatement selectStatement) {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(createOrderByItemSegment(COLUMN_ORDER_BY_WITH_OWNER))));
         selectStatement.setProjections(createProjectionsSegment());
-        selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("table"))));
+        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("table")));
+        tableSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue(DefaultDatabase.LOGIC_NAME.toUpperCase())));
+        selectStatement.setFrom(tableSegment);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         SelectStatementContext selectStatementContext = new SelectStatementContext(
                 Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         selectStatementContext.setIndexes(Collections.emptyMap());
@@ -483,6 +489,82 @@ public final class SelectStatementContextTest {
         selectStatement.setProjections(projectionsSegment);
         assertTrue(new SelectStatementContext(
                 Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabase.class)), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME).isContainsSubquery());
+    }
+    
+    @Test
+    public void assertContainsDollarParameterMarkerForMySQL() {
+        assertContainsDollarParameterMarker(new MySQLSelectStatement());
+    }
+    
+    @Test
+    public void assertContainsDollarParameterMarkerForOracle() {
+        assertContainsDollarParameterMarker(new OracleSelectStatement());
+    }
+    
+    @Test
+    public void assertContainsDollarParameterMarkerForPostgreSQL() {
+        assertContainsDollarParameterMarker(new PostgreSQLSelectStatement());
+    }
+    
+    @Test
+    public void assertContainsDollarParameterMarkerForSQL92() {
+        assertContainsDollarParameterMarker(new SQL92SelectStatement());
+    }
+    
+    @Test
+    public void assertContainsDollarParameterMarkerForSQLServer() {
+        assertContainsDollarParameterMarker(new SQLServerSelectStatement());
+    }
+    
+    private void assertContainsDollarParameterMarker(final SelectStatement selectStatement) {
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        projectionsSegment.getProjections().add(new ParameterMarkerExpressionSegment(0, 0, 0, ParameterMarkerType.DOLLAR));
+        selectStatement.setProjections(projectionsSegment);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabase.class)), Collections.emptyList(),
+                selectStatement, DefaultDatabase.LOGIC_NAME);
+        assertTrue(selectStatementContext.isContainsDollarParameterMarker());
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        JoinTableSegment joinTableSegment = new JoinTableSegment();
+        joinTableSegment.setCondition(new ParameterMarkerExpressionSegment(0, 0, 0, ParameterMarkerType.DOLLAR));
+        selectStatement.setFrom(joinTableSegment);
+        selectStatementContext = new SelectStatementContext(
+                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabase.class)), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
+        assertTrue(selectStatementContext.isContainsDollarParameterMarker());
+    }
+    
+    @Test
+    public void assertContainsPartialDistinctAggregationForMySQL() {
+        assertContainsPartialDistinctAggregation(new MySQLSelectStatement());
+    }
+    
+    @Test
+    public void assertContainsPartialDistinctAggregationForOracle() {
+        assertContainsPartialDistinctAggregation(new OracleSelectStatement());
+    }
+    
+    @Test
+    public void assertContainsPartialDistinctAggregationForPostgreSQL() {
+        assertContainsPartialDistinctAggregation(new PostgreSQLSelectStatement());
+    }
+    
+    @Test
+    public void assertContainsPartialDistinctAggregationForSQL92() {
+        assertContainsPartialDistinctAggregation(new SQL92SelectStatement());
+    }
+    
+    @Test
+    public void assertContainsPartialDistinctAggregationForSQLServer() {
+        assertContainsPartialDistinctAggregation(new SQLServerSelectStatement());
+    }
+    
+    private void assertContainsPartialDistinctAggregation(final SelectStatement selectStatement) {
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "(*)"));
+        projectionsSegment.getProjections().add(new AggregationDistinctProjectionSegment(0, 10, AggregationType.COUNT, "(1)", "distinctExpression"));
+        selectStatement.setProjections(projectionsSegment);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(
+                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabase.class)), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
+        assertTrue(selectStatementContext.isContainsPartialDistinctAggregation());
     }
     
     private OrderByItemSegment createOrderByItemSegment(final String type) {

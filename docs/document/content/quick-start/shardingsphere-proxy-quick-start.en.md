@@ -40,11 +40,9 @@ Please refer to [Configuration Manual](/en/user-manual/shardingsphere-proxy/yaml
 
 3. Import dependencies.
 
-If the backend database is PostgreSQL, no additional dependencies are required.
+If the backend database is PostgreSQL or openGauss, no additional dependencies are required.
 
 If the backend database is MySQL, please download [mysql-connector-java-5.1.47.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar) or [mysql-connector-java-8.0.11.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.11/mysql-connector-java-8.0.11.jar) and put it into the `%SHARDINGSPHERE_PROXY_HOME%/ext-lib` directory.
-
-If the backend database is openGauss, please download [opengauss-jdbc-3.0.0.jar](https://repo1.maven.org/maven2/org/opengauss/opengauss-jdbc/3.0.0/opengauss-jdbc-3.0.0.jar) and put it into the `%SHARDINGSPHERE_PROXY_HOME%/ext-lib` directory.
 
 4. Start server.
 

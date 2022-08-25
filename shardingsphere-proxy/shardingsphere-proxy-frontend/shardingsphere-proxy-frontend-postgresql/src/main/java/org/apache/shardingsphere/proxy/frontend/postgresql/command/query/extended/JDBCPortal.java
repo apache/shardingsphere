@@ -20,8 +20,6 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
@@ -30,45 +28,38 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.Pos
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatement;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLPortalSuspendedPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLParameterStatusPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
-import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
-import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
+import org.apache.shardingsphere.infra.binder.QueryContext;
+import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilderRule;
-import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
-import org.apache.shardingsphere.proxy.backend.response.data.impl.BinaryQueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.ClientEncodingResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLCommand;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * PostgreSQL portal using JDBC backend.
@@ -83,9 +74,7 @@ public final class JDBCPortal implements Portal<Void> {
     
     private final List<PostgreSQLValueFormat> resultFormats;
     
-    private final JDBCDatabaseCommunicationEngine databaseCommunicationEngine;
-    
-    private final TextProtocolBackendHandler textProtocolBackendHandler;
+    private final ProxyBackendHandler proxyBackendHandler;
     
     private final JDBCBackendConnection backendConnection;
     
@@ -97,39 +86,31 @@ public final class JDBCPortal implements Portal<Void> {
         this.sqlStatement = preparedStatement.getSqlStatement();
         this.resultFormats = resultFormats;
         this.backendConnection = backendConnection;
-        if (sqlStatement instanceof TCLStatement || sqlStatement instanceof EmptyStatement || sqlStatement instanceof DistSQLStatement || sqlStatement instanceof SetStatement) {
-            databaseCommunicationEngine = null;
-            textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeFactory.getInstance("PostgreSQL"),
-                    preparedStatement.getSql(), () -> Optional.of(sqlStatement), backendConnection.getConnectionSession());
+        if (!preparedStatement.getSqlStatementContext().isPresent()) {
+            proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(DatabaseTypeFactory.getInstance("PostgreSQL"),
+                    preparedStatement.getSql(), sqlStatement, backendConnection.getConnectionSession());
             return;
         }
         String databaseName = backendConnection.getConnectionSession().getDefaultDatabaseName();
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases(), parameters, sqlStatement, databaseName);
-        if (containsSystemTable(sqlStatementContext.getTablesContext().getTableNames()) || sqlStatementContext instanceof CursorAvailable) {
-            databaseCommunicationEngine = null;
-            DatabaseType databaseType = ProxyContext.getInstance().getDatabase(databaseName).getResource().getDatabaseType();
-            textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(databaseType,
-                    preparedStatement.getSql(), () -> Optional.of(sqlStatement), backendConnection.getConnectionSession());
-            return;
+        SQLStatementContext<?> sqlStatementContext = preparedStatement.getSqlStatementContext().get();
+        if (sqlStatementContext instanceof ParameterAware) {
+            ((ParameterAware) sqlStatementContext).setUpParameters(parameters);
         }
-        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatementContext, preparedStatement.getSql(), parameters, backendConnection);
-        textProtocolBackendHandler = null;
+        DatabaseType databaseType = getDatabaseType(databaseName);
+        QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), parameters);
+        backendConnection.getConnectionSession().setQueryContext(queryContext);
+        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(databaseType, queryContext, backendConnection.getConnectionSession(), true);
     }
     
-    private boolean containsSystemTable(final Collection<String> tableNames) {
-        for (String each : tableNames) {
-            if (SystemSchemaBuilderRule.POSTGRESQL_PG_CATALOG.getTables().contains(each)) {
-                return true;
-            }
-        }
-        return false;
+    private static DatabaseType getDatabaseType(final String databaseName) {
+        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
+        return null != database.getResource().getDatabaseType() ? database.getResource().getDatabaseType() : database.getProtocolType();
     }
     
     @SneakyThrows(SQLException.class)
     @Override
     public Void bind() {
-        responseHeader = null != databaseCommunicationEngine ? databaseCommunicationEngine.execute() : textProtocolBackendHandler.execute();
+        responseHeader = proxyBackendHandler.execute();
         return null;
     }
     
@@ -139,9 +120,6 @@ public final class JDBCPortal implements Portal<Void> {
             return createRowDescriptionPacket((QueryResponseHeader) responseHeader);
         }
         if (responseHeader instanceof UpdateResponseHeader) {
-            return PostgreSQLNoDataPacket.getInstance();
-        }
-        if (responseHeader instanceof ClientEncodingResponseHeader) {
             return PostgreSQLNoDataPacket.getInstance();
         }
         throw new IllegalStateException("Cannot describe portal [" + name + "] before bind");
@@ -169,34 +147,29 @@ public final class JDBCPortal implements Portal<Void> {
         for (int i = 0; i < fetchSize && hasNext(); i++) {
             result.add(nextPacket());
         }
-        if (responseHeader instanceof ClientEncodingResponseHeader) {
-            result.addAll(handleSetClientEncoding((ClientEncodingResponseHeader) responseHeader));
+        if (responseHeader instanceof UpdateResponseHeader && sqlStatement instanceof SetStatement) {
+            result.addAll(createParameterStatusResponse((SetStatement) sqlStatement));
             return result;
         }
         result.add(createExecutionCompletedPacket(maxRows > 0 && maxRows == result.size(), result.size()));
         return result;
     }
     
-    private Collection<PostgreSQLPacket> handleSetClientEncoding(final ClientEncodingResponseHeader clientEncodingResponseHeader) {
-        Collection<PostgreSQLPacket> result = new LinkedList<>();
-        Optional<String> currentCharsetValue = clientEncodingResponseHeader.getCurrentCharsetValue();
-        if (currentCharsetValue.isPresent()) {
-            result.add(new PostgreSQLCommandCompletePacket("SET", 0));
-            result.add(new PostgreSQLParameterStatusPacket("client_encoding", currentCharsetValue.get()));
-            return result;
+    private List<PostgreSQLPacket> createParameterStatusResponse(final SetStatement sqlStatement) {
+        List<PostgreSQLPacket> result = new ArrayList<>(2);
+        result.add(new PostgreSQLCommandCompletePacket("SET", 0));
+        for (VariableAssignSegment each : sqlStatement.getVariableAssigns()) {
+            result.add(new PostgreSQLParameterStatusPacket(each.getVariable().getVariable(), IdentifierValue.getQuotedContent(each.getAssignValue())));
         }
-        result.add(PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLErrorCode.INVALID_PARAMETER_VALUE,
-                String.format("invalid value for parameter \"clientEncoding\": \"%s\"", clientEncodingResponseHeader.getInputValue())).build());
         return result;
     }
     
     private boolean hasNext() throws SQLException {
-        return null != databaseCommunicationEngine && databaseCommunicationEngine.next() || null != textProtocolBackendHandler && textProtocolBackendHandler.next();
+        return proxyBackendHandler.next();
     }
     
     private PostgreSQLPacket nextPacket() throws SQLException {
-        return null != databaseCommunicationEngine ? new PostgreSQLDataRowPacket(getData(databaseCommunicationEngine.getQueryResponseRow()))
-                : new PostgreSQLDataRowPacket(textProtocolBackendHandler.getRowData());
+        return new PostgreSQLDataRowPacket(getData(proxyBackendHandler.getRowData()));
     }
     
     private List<Object> getData(final QueryResponseRow queryResponseRow) {
@@ -215,7 +188,7 @@ public final class JDBCPortal implements Portal<Void> {
     }
     
     private BinaryCell createBinaryCell(final QueryResponseCell cell) {
-        return new BinaryCell(PostgreSQLColumnType.valueOfJDBCType(((BinaryQueryResponseCell) cell).getJdbcType()), cell.getData());
+        return new BinaryCell(PostgreSQLColumnType.valueOfJDBCType(cell.getJdbcType()), cell.getData());
     }
     
     private PostgreSQLIdentifierPacket createExecutionCompletedPacket(final boolean isSuspended, final int fetchedRows) {
@@ -231,7 +204,7 @@ public final class JDBCPortal implements Portal<Void> {
     }
     
     private void suspendPortal() {
-        backendConnection.markResourceInUse(databaseCommunicationEngine);
+        backendConnection.markResourceInUse(proxyBackendHandler);
     }
     
     private long getUpdateCount() {
@@ -241,11 +214,7 @@ public final class JDBCPortal implements Portal<Void> {
     @SneakyThrows(SQLException.class)
     @Override
     public void close() {
-        if (null != databaseCommunicationEngine) {
-            backendConnection.unmarkResourceInUse(databaseCommunicationEngine);
-        }
-        if (null != textProtocolBackendHandler) {
-            textProtocolBackendHandler.close();
-        }
+        backendConnection.unmarkResourceInUse(proxyBackendHandler);
+        proxyBackendHandler.close();
     }
 }

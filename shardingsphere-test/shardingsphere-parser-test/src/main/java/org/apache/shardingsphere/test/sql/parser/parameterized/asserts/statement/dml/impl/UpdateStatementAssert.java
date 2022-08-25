@@ -61,9 +61,9 @@ public final class UpdateStatementAssert {
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
         if (null != expected.getTable()) {
-            TableAssert.assertIs(assertContext, actual.getTableSegment(), expected.getTable());
+            TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
         } else {
-            assertNull(assertContext.getText("Actual from should not exist."), actual.getTableSegment());
+            assertNull(assertContext.getText("Actual from should not exist."), actual.getTable());
         }
     }
     

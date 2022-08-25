@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.authority.provider.simple.model.privilege;
 
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.provider.natived.model.subject.DatabaseAccessSubject;
+import org.apache.shardingsphere.authority.provider.database.model.subject.DatabaseAccessSubject;
 import org.junit.Test;
 
 import java.util.Collections;

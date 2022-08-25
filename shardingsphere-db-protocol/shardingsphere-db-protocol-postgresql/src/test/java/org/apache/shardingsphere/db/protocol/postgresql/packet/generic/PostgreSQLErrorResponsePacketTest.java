@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
 
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
+import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
@@ -87,7 +87,7 @@ public final class PostgreSQLErrorResponsePacketTest {
     }
     
     private PostgreSQLErrorResponsePacket createErrorResponsePacket() {
-        return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLErrorCode.INVALID_CATALOG_NAME, "database \"test\" does not exist").detail("detail")
+        return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLVendorError.INVALID_CATALOG_NAME, "database \"test\" does not exist").detail("detail")
                 .hint("hint").position(1).internalQueryAndInternalPosition("internal query", 2).where("where").schemaName("test").tableName("table").columnName("column").dataTypeName("data type")
                 .constraintName("constraint").file("file").line(3).routine("routine").build();
     }

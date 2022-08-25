@@ -18,7 +18,7 @@ SHOW DB_DISCOVERY HEARTBEATS [FROM databaseName]
 ### DB Discovery Rule
 
 | 列                       | 说明            |
-| ------------------------ | --------------- |
+| ------------------------ | -------------- |
 | group_name               | 规则名称         |
 | data_source_names        | 数据源名称列表    |
 | primary_data_source_name | 主数据源名称      |
@@ -28,15 +28,15 @@ SHOW DB_DISCOVERY HEARTBEATS [FROM databaseName]
 ### DB Discovery Type
 
 | 列                       | 说明            |
-| ------------------------ | ---------------|
+| ------------------------ | -------------- |
 | name                     | 类型名称        |
-| type                     | 类型种类         |
-| props                    | 类型参数         |
+| type                     | 类型种类        |
+| props                    | 类型参数        |
 
 ### DB Discovery Heartbeat
 
 | 列                       | 说明            |
-| ------------------------ | ---------------|
+| ------------------------ | -------------- |
 | name                     | 心跳名称        |
 | props                    | 心跳参数        |
 
@@ -45,7 +45,7 @@ SHOW DB_DISCOVERY HEARTBEATS [FROM databaseName]
 *DB Discovery Rule*
 
 ```sql
-mysql> show db_discovery rules;
+mysql> SHOW DB_DISCOVERY RULES;
 +----------------------+-------------------+--------------------------+-----------------------------------------------------------------------------------+------------------------------------------------------------------------------+
 | group_name           | data_source_names | primary_data_source_name | discovery_type                                                                    | discovery_heartbeat                                                          |
 +----------------------+-------------------+--------------------------+-----------------------------------------------------------------------------------+------------------------------------------------------------------------------+
@@ -57,7 +57,7 @@ mysql> show db_discovery rules;
 *DB Discovery Type*
 
 ```sql
-mysql> show db_discovery types;
+mysql> SHOW DB_DISCOVERY TYPES;
 +--------------------------+------------+----------------------------+
 | name                     | type       | props                      |
 +--------------------------+------------+----------------------------+
@@ -69,7 +69,7 @@ mysql> show db_discovery types;
 *DB Discovery Heartbeat*
 
 ```sql
-mysql> show db_discovery heartbeats;
+mysql> SHOW DB_DISCOVERY HEARTBEATS;
 +--------------------------------+---------------------------------+
 | name                           | props                           |
 +--------------------------------+---------------------------------+

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shadow.spring.boot;
 
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchShadowAlgorithm;
-import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnValueMatchShadowAlgorithm;
+import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchedShadowAlgorithm;
+import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnValueMatchedShadowAlgorithm;
 import org.apache.shardingsphere.shadow.algorithm.shadow.hint.SimpleHintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -58,13 +58,13 @@ public class YmlShadowSpringBootStarterTest {
     
     private void assertShadowAlgorithms(final Map<String, ShadowAlgorithm> shadowAlgorithms) {
         ShadowAlgorithm userIdRegexMatchAlgorithm = shadowAlgorithms.get("user-id-regex-match-algorithm");
-        assertThat(userIdRegexMatchAlgorithm, instanceOf(ColumnRegexMatchShadowAlgorithm.class));
+        assertThat(userIdRegexMatchAlgorithm, instanceOf(ColumnRegexMatchedShadowAlgorithm.class));
         assertThat(userIdRegexMatchAlgorithm.getType(), is("REGEX_MATCH"));
         assertThat(userIdRegexMatchAlgorithm.getProps().getProperty("operation"), is("insert"));
         assertThat(userIdRegexMatchAlgorithm.getProps().getProperty("column"), is("user_id"));
         assertThat(userIdRegexMatchAlgorithm.getProps().getProperty("regex"), is("[1]"));
         ShadowAlgorithm userIdValueMatchAlgorithm = shadowAlgorithms.get("user-id-value-match-algorithm");
-        assertThat(userIdValueMatchAlgorithm, instanceOf(ColumnValueMatchShadowAlgorithm.class));
+        assertThat(userIdValueMatchAlgorithm, instanceOf(ColumnValueMatchedShadowAlgorithm.class));
         assertThat(userIdValueMatchAlgorithm.getType(), is("VALUE_MATCH"));
         assertThat(userIdValueMatchAlgorithm.getProps().getProperty("operation"), is("insert"));
         assertThat(userIdValueMatchAlgorithm.getProps().getProperty("column"), is("user_id"));
@@ -86,9 +86,9 @@ public class YmlShadowSpringBootStarterTest {
     
     private void assertShadowDataSources(final Map<String, ShadowDataSourceConfiguration> dataSources) {
         assertThat(dataSources.size(), is(2));
-        assertThat(dataSources.get("shadow-data-source-0").getSourceDataSourceName(), is("ds"));
+        assertThat(dataSources.get("shadow-data-source-0").getProductionDataSourceName(), is("ds"));
         assertThat(dataSources.get("shadow-data-source-0").getShadowDataSourceName(), is("ds-shadow"));
-        assertThat(dataSources.get("shadow-data-source-1").getSourceDataSourceName(), is("ds1"));
+        assertThat(dataSources.get("shadow-data-source-1").getProductionDataSourceName(), is("ds1"));
         assertThat(dataSources.get("shadow-data-source-1").getShadowDataSourceName(), is("ds1-shadow"));
     }
 }

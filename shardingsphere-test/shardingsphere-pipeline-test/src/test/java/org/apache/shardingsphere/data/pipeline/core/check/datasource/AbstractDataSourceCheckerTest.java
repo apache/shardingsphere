@@ -95,7 +95,7 @@ public final class AbstractDataSourceCheckerTest {
     @Test
     public void assertCheckTargetTable() throws SQLException {
         when(dataSource.getConnection()).thenReturn(connection);
-        when(connection.prepareStatement("SELECT * FROM `t_order` LIMIT 1")).thenReturn(preparedStatement);
+        when(connection.prepareStatement("SELECT * FROM t_order LIMIT 1")).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         dataSourceChecker.checkTargetTable(dataSources, new TableNameSchemaNameMapping(Collections.emptyMap()), Collections.singletonList("t_order"));
     }
@@ -103,7 +103,7 @@ public final class AbstractDataSourceCheckerTest {
     @Test(expected = PipelineJobPrepareFailedException.class)
     public void assertCheckTargetTableFailed() throws SQLException {
         when(dataSource.getConnection()).thenReturn(connection);
-        when(connection.prepareStatement("SELECT * FROM `t_order` LIMIT 1")).thenReturn(preparedStatement);
+        when(connection.prepareStatement("SELECT * FROM t_order LIMIT 1")).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         dataSourceChecker.checkTargetTable(dataSources, new TableNameSchemaNameMapping(Collections.emptyMap()), Collections.singletonList("t_order"));

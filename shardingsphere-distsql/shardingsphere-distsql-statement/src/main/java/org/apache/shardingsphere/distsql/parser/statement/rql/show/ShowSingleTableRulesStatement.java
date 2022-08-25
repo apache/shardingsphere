@@ -18,14 +18,13 @@
 package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.parser.subject.impl.ResourceSubjectSupplier;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
  * Show single table rules statement.
  */
 @Getter
-public final class ShowSingleTableRulesStatement extends ShowRulesStatement implements ResourceSubjectSupplier {
+public final class ShowSingleTableRulesStatement extends ShowRulesStatement {
     
     public ShowSingleTableRulesStatement(final DatabaseSegment database) {
         super(database);

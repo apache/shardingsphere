@@ -41,7 +41,7 @@ public final class PasswordEncryption {
      *
      * <p>
      * MySQL Internals Manual  /  MySQL Client/Server Protocol  /  Authentication Method  /  Secure Password Authentication
-     * https://dev.mysql.com/doc/internals/en/secure-password-authentication.html
+     * <a href="https://dev.mysql.com/doc/internals/en/secure-password-authentication.html">secure-password-authentication</a>
      * </p>
      *
      * @param password password

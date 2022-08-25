@@ -61,9 +61,7 @@ rules:
   defaultDatabaseStrategy:
     none:
   defaultTableStrategy:
-    complex:
-      shardingColumns: id, order_id
-      shardingAlgorithmName: complex_sharding_fixture
+    none:
   
   shardingAlgorithms:
     standard_sharding_fixture:

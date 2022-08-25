@@ -20,10 +20,13 @@ package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
 import lombok.Getter;
 import lombok.NonNull;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+
+import javax.sql.DataSource;
+import java.util.Map;
 
 /**
  * Prepare target tables parameter.
@@ -31,28 +34,30 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourc
 @Getter
 public final class PrepareTargetTablesParameter {
     
-    private final TaskConfiguration taskConfig;
+    private final String databaseName;
     
     private final JobDataNodeLine tablesFirstDataNodes;
+    
+    private final PipelineDataSourceConfiguration targetDataSourceConfig;
+    
+    private final Map<String, DataSource> sourceDataSourceMap;
     
     private final PipelineDataSourceManager dataSourceManager;
     
     private final TableNameSchemaNameMapping tableNameSchemaNameMapping;
     
-    public PrepareTargetTablesParameter(@NonNull final TaskConfiguration taskConfig, @NonNull final PipelineDataSourceManager dataSourceManager,
-                                        final TableNameSchemaNameMapping tableNameSchemaNameMapping) {
-        this.taskConfig = taskConfig;
-        tablesFirstDataNodes = JobDataNodeLine.unmarshal(taskConfig.getJobConfig().getTablesFirstDataNodes());
+    private final ShardingSphereSQLParserEngine sqlParserEngine;
+    
+    public PrepareTargetTablesParameter(@NonNull final String databaseName, @NonNull final PipelineDataSourceConfiguration targetDataSourceConfig,
+                                        @NonNull final Map<String, DataSource> sourceDataSourceMap, @NonNull final PipelineDataSourceManager dataSourceManager,
+                                        @NonNull final JobDataNodeLine tablesFirstDataNodes, final TableNameSchemaNameMapping tableNameSchemaNameMapping,
+                                        @NonNull final ShardingSphereSQLParserEngine sqlParserEngine) {
+        this.databaseName = databaseName;
+        this.targetDataSourceConfig = targetDataSourceConfig;
+        this.sourceDataSourceMap = sourceDataSourceMap;
+        this.tablesFirstDataNodes = tablesFirstDataNodes;
         this.dataSourceManager = dataSourceManager;
         this.tableNameSchemaNameMapping = tableNameSchemaNameMapping;
-    }
-    
-    /**
-     * Get job configuration.
-     *
-     * @return job configuration
-     */
-    public RuleAlteredJobConfiguration getJobConfig() {
-        return taskConfig.getJobConfig();
+        this.sqlParserEngine = sqlParserEngine;
     }
 }

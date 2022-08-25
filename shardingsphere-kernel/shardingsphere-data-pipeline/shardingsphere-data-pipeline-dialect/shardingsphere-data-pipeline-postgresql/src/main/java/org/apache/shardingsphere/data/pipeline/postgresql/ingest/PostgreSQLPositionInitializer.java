@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WalPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLLogSequenceNumber;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
@@ -42,9 +43,9 @@ public final class PostgreSQLPositionInitializer implements PositionInitializer 
     private static final String DUPLICATE_OBJECT_ERROR_CODE = "42710";
     
     @Override
-    public WalPosition init(final DataSource dataSource) throws SQLException {
+    public WalPosition init(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            createSlotIfNotExist(connection, getUniqueSlotName(connection));
+            createSlotIfNotExist(connection, getUniqueSlotName(connection, slotNameSuffix));
             return getWalPosition(connection);
         }
     }
@@ -100,14 +101,14 @@ public final class PostgreSQLPositionInitializer implements PositionInitializer 
     }
     
     @Override
-    public void destroy(final DataSource dataSource) throws SQLException {
+    public void destroy(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            dropSlotIfExist(connection);
+            dropSlotIfExist(connection, slotNameSuffix);
         }
     }
     
-    private void dropSlotIfExist(final Connection connection) throws SQLException {
-        String slotName = getUniqueSlotName(connection);
+    private void dropSlotIfExist(final Connection connection, final String slotNameSuffix) throws SQLException {
+        String slotName = getUniqueSlotName(connection, slotNameSuffix);
         if (!isSlotExisting(connection, slotName)) {
             log.info("dropSlotIfExist, slot not exist, slotName={}", slotName);
             return;
@@ -124,11 +125,14 @@ public final class PostgreSQLPositionInitializer implements PositionInitializer 
      * Get the unique slot name by connection.
      *
      * @param connection the connection
+     * @param slotNameSuffix slot name suffix
      * @return the unique name by connection
      * @throws SQLException failed when getCatalog
      */
-    public static String getUniqueSlotName(final Connection connection) throws SQLException {
-        return String.format("%s_%s", SLOT_NAME_PREFIX, connection.getCatalog());
+    public static String getUniqueSlotName(final Connection connection, final String slotNameSuffix) throws SQLException {
+        // PostgreSQL slot name maximum length can't exceed 64,automatic truncation when the length exceeds the limit
+        String slotName = DigestUtils.md5Hex(String.join("_", connection.getCatalog(), slotNameSuffix).getBytes());
+        return String.format("%s_%s", SLOT_NAME_PREFIX, slotName);
     }
     
     @Override

@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Drop subscription statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class DropSubscriptionStatement extends AbstractSQLStatement implements DDLStatement {
 }

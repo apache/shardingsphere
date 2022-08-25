@@ -33,13 +33,13 @@ import static org.junit.Assert.assertTrue;
 public final class SQLParserSpringNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @Resource
-    private SQLParserRuleConfiguration sqlParserRuleConfiguration;
+    private SQLParserRuleConfiguration sqlParserRuleConfig;
     
     @Test
     public void assertSQLParserRule() {
-        assertTrue(sqlParserRuleConfiguration.isSqlCommentParseEnabled());
-        assertCacheOption(sqlParserRuleConfiguration.getSqlStatementCache());
-        assertCacheOption(sqlParserRuleConfiguration.getParseTreeCache());
+        assertTrue(sqlParserRuleConfig.isSqlCommentParseEnabled());
+        assertCacheOption(sqlParserRuleConfig.getSqlStatementCache());
+        assertCacheOption(sqlParserRuleConfig.getParseTreeCache());
     }
     
     private void assertCacheOption(final CacheOption cacheOption) {

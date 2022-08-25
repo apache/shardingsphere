@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.rownum;
 
 import lombok.Getter;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.ParameterMarkerPaginationValueSegment;
 
 /**
  * Row number value segment for parameter marker.
  */
 @Getter
+@ToString(callSuper = true)
 public final class ParameterMarkerRowNumberValueSegment extends RowNumberValueSegment implements ParameterMarkerPaginationValueSegment {
     
     private final int parameterIndex;

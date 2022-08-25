@@ -26,6 +26,8 @@
     <sql-case id="select_extract" value="SELECT EXTRACT(YEAR FROM '2019-07-02')" db-types="MySQL" />
     <sql-case id="select_char" value="SELECT CHAR(77,121,83,81,'76')" db-types="MySQL" />
     <sql-case id="select_trim" value="SELECT TRIM('  bar   ')" db-types="MySQL" />
+    <sql-case id="select_with_trim_expr" value="select trim('#' from `name`) from t_order" db-types="MySQL"/>
+    <sql-case id="select_with_trim_expr_from_expr" value="select trim(remove_name from name) from t_order" db-types="MySQL"/>
     <sql-case id="select_weight_string" value="SELECT WEIGHT_STRING('bar')" db-types="MySQL" />
     <sql-case id="select_values" value="SELECT VALUES(order_id) FROM t_order" db-types="MySQL" />
     <sql-case id="select_current_user_brackets" value="SELECT CURRENT_USER()" db-types="MySQL" />

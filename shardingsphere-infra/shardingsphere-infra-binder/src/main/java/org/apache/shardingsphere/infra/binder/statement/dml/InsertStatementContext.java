@@ -28,7 +28,8 @@ import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
+import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
+import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
@@ -91,20 +92,21 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null);
         tablesContext = new TablesContext(getAllSimpleTableSegments(), getDatabaseType());
         ShardingSphereSchema schema = getSchema(databases, defaultDatabaseName);
-        columnNames = useDefaultColumns() ? schema.getAllColumnNames(sqlStatement.getTable().getTableName().getIdentifier().getValue()) : insertColumnNames;
-        generatedKeyContext = new GeneratedKeyContextEngine(sqlStatement, schema)
-                .createGenerateKeyContext(insertColumnNames, getAllValueExpressions(sqlStatement), parameters).orElse(null);
+        columnNames = containsInsertColumns() ? insertColumnNames : schema.getVisibleColumnNames(sqlStatement.getTable().getTableName().getIdentifier().getValue());
+        generatedKeyContext = new GeneratedKeyContextEngine(sqlStatement, schema).createGenerateKeyContext(insertColumnNames, getAllValueExpressions(sqlStatement), parameters).orElse(null);
     }
     
     private ShardingSphereSchema getSchema(final Map<String, ShardingSphereDatabase> databases, final String defaultDatabaseName) {
         String databaseName = tablesContext.getDatabaseName().orElse(defaultDatabaseName);
-        ShardingSphereDatabase database = databases.get(databaseName);
+        if (null == databaseName) {
+            throw new NoDatabaseSelectedException();
+        }
+        ShardingSphereDatabase database = databases.get(databaseName.toLowerCase());
         if (null == database) {
-            throw new DatabaseNotExistedException(databaseName);
+            throw new UnknownDatabaseException(databaseName);
         }
         String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(getDatabaseType(), databaseName);
-        return tablesContext.getSchemaName()
-                .map(optional -> database.getSchemas().get(optional)).orElseGet(() -> database.getSchemas().get(defaultSchema));
+        return tablesContext.getSchemaName().map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchema));
     }
     
     private Collection<SimpleTableSegment> getAllSimpleTableSegments() {
@@ -177,10 +179,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
      * @return on duplicate key update parameters
      */
     public List<Object> getOnDuplicateKeyUpdateParameters() {
-        if (null == onDuplicateKeyUpdateValueContext) {
-            return new ArrayList<>(0);
-        }
-        return onDuplicateKeyUpdateValueContext.getParameters();
+        return null == onDuplicateKeyUpdateValueContext ? new ArrayList<>() : onDuplicateKeyUpdateValueContext.getParameters();
     }
     
     /**
@@ -198,14 +197,13 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     }
     
     /**
-     * Judge whether use default columns or not.
+     * Judge whether contains insert columns.
      *
-     * @return whether use default columns or not
+     * @return contains insert columns or not
      */
-    public boolean useDefaultColumns() {
+    public boolean containsInsertColumns() {
         InsertStatement insertStatement = getSqlStatement();
-        Optional<SetAssignmentSegment> setAssignment = InsertStatementHandler.getSetAssignmentSegment(insertStatement);
-        return insertStatement.getColumns().isEmpty() && !setAssignment.isPresent();
+        return !insertStatement.getColumns().isEmpty() || InsertStatementHandler.getSetAssignmentSegment(insertStatement).isPresent();
     }
     
     /**
@@ -215,8 +213,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
      */
     public int getValueListCount() {
         InsertStatement insertStatement = getSqlStatement();
-        Optional<SetAssignmentSegment> setAssignment = InsertStatementHandler.getSetAssignmentSegment(insertStatement);
-        return setAssignment.isPresent() ? 1 : insertStatement.getValues().size();
+        return InsertStatementHandler.getSetAssignmentSegment(insertStatement).isPresent() ? 1 : insertStatement.getValues().size();
     }
     
     /**
@@ -226,8 +223,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
      */
     public List<String> getInsertColumnNames() {
         InsertStatement insertStatement = getSqlStatement();
-        Optional<SetAssignmentSegment> setAssignment = InsertStatementHandler.getSetAssignmentSegment(insertStatement);
-        return setAssignment.map(this::getColumnNamesForSetAssignment).orElseGet(() -> getColumnNamesForInsertColumns(insertStatement.getColumns()));
+        return InsertStatementHandler.getSetAssignmentSegment(insertStatement).map(this::getColumnNamesForSetAssignment).orElseGet(() -> getColumnNamesForInsertColumns(insertStatement.getColumns()));
     }
     
     private List<String> getColumnNamesForSetAssignment(final SetAssignmentSegment setAssignment) {

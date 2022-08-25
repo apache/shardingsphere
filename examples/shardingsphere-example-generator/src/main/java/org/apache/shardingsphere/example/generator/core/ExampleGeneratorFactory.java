@@ -22,9 +22,9 @@ import freemarker.template.TemplateException;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.example.generator.core.yaml.config.YamlExampleConfiguration;
 import org.apache.shardingsphere.example.generator.core.yaml.config.YamlExampleConfigurationValidator;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import java.io.File;
 import java.io.IOException;
@@ -73,7 +73,7 @@ public final class ExampleGeneratorFactory {
     @SneakyThrows({URISyntaxException.class, IOException.class})
     private YamlExampleConfiguration swapConfigToObject() {
         URL url = ExampleGeneratorFactory.class.getResource(CONFIG_FILE);
-        File file =  null == url ? new File(CONFIG_FILE) : new File(url.toURI().getPath());
+        File file = null == url ? new File(CONFIG_FILE) : new File(url.toURI().getPath());
         return YamlEngine.unmarshal(file, YamlExampleConfiguration.class);
     }
 }

@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.ral.scaling;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.ScalingRALStatement;
 
 /**
  * Queryable RAL statement.
  */
-public abstract class QueryableScalingRALStatement extends RALStatement {
+public abstract class QueryableScalingRALStatement extends ScalingRALStatement {
 }

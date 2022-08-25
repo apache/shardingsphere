@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit;
 
 import lombok.Getter;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.ParameterMarkerPaginationValueSegment;
 
 /**
  * Limit value segment for parameter marker.
  */
 @Getter
+@ToString(callSuper = true)
 public final class ParameterMarkerLimitValueSegment extends LimitValueSegment implements ParameterMarkerPaginationValueSegment {
     
     private final int parameterIndex;

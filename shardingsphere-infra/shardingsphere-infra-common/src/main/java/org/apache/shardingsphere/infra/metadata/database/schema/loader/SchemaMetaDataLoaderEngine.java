@@ -22,12 +22,12 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.TableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoaderFactory;
+import org.apache.shardingsphere.infra.util.exception.sql.UnknownSQLException;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -63,7 +63,7 @@ public final class SchemaMetaDataLoaderEngine {
         if (dialectTableMetaDataLoader.isPresent()) {
             try {
                 return loadByDialect(dialectTableMetaDataLoader.get(), materials);
-            } catch (final SQLException | ShardingSphereException ex) {
+            } catch (final SQLException ex) {
                 log.error("Dialect load table meta data error.", ex);
                 return loadByDefault(materials, databaseType);
             }
@@ -97,7 +97,7 @@ public final class SchemaMetaDataLoaderEngine {
             if (ex.getCause() instanceof SQLException) {
                 throw (SQLException) ex.getCause();
             }
-            throw new ShardingSphereException(ex);
+            throw new UnknownSQLException(ex).toSQLException();
         }
         return result;
     }

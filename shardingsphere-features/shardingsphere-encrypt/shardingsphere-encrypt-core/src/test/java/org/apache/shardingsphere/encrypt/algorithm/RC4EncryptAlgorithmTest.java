@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.encrypt.algorithm;
 
+import org.apache.shardingsphere.encrypt.exception.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.factory.EncryptAlgorithmFactory;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,7 +38,7 @@ public final class RC4EncryptAlgorithmTest {
     
     @Before
     public void setUp() {
-        encryptAlgorithm = EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("Rc4", createProperties()));
+        encryptAlgorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("Rc4", createProperties()));
     }
     
     private Properties createProperties() {
@@ -57,7 +57,7 @@ public final class RC4EncryptAlgorithmTest {
         assertNull(encryptAlgorithm.encrypt(null, mock(EncryptContext.class)));
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = EncryptAlgorithmInitializationException.class)
     public void assertKeyIsToLong() {
         encryptAlgorithm.init(createInvalidProperties());
     }

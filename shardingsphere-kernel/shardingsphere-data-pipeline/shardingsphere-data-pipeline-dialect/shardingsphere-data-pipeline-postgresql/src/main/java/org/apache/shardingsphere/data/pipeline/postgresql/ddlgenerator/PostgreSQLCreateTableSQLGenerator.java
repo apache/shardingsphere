@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator;
 
+import org.apache.shardingsphere.data.pipeline.postgresql.util.PostgreSQLPipelineFreemarkerManager;
 import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGenerator;
-import org.apache.shardingsphere.data.pipeline.postgresql.util.FreemarkerManager;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 
@@ -31,16 +32,19 @@ import java.util.Map;
  */
 public final class PostgreSQLCreateTableSQLGenerator implements CreateTableSQLGenerator {
     
+    private static final String DELIMITER = ";";
+    
     // TODO support partitions etc.
     @Override
-    public String generate(final String tableName, final String schemaName, final DataSource dataSource) throws SQLException {
+    public Collection<String> generate(final DataSource dataSource, final String schemaName, final String tableName) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             int majorVersion = connection.getMetaData().getDatabaseMajorVersion();
             int minorVersion = connection.getMetaData().getDatabaseMinorVersion();
             Map<String, Object> materials = loadMaterials(tableName, schemaName, connection, majorVersion, minorVersion);
             String tableSQL = generateCreateTableSQL(majorVersion, minorVersion, materials);
             String indexSQL = generateCreateIndexSQL(connection, majorVersion, minorVersion, materials);
-            return tableSQL + System.lineSeparator() + indexSQL;
+            // TODO use ";" to split is not always correct
+            return Arrays.asList((tableSQL + System.lineSeparator() + indexSQL).trim().split(DELIMITER));
         }
     }
     
@@ -53,7 +57,7 @@ public final class PostgreSQLCreateTableSQLGenerator implements CreateTableSQLGe
     }
     
     private String generateCreateTableSQL(final int majorVersion, final int minorVersion, final Map<String, Object> materials) {
-        return FreemarkerManager.getSQLByPgVersion(materials, "table/%s/create.ftl", majorVersion, minorVersion).trim();
+        return PostgreSQLPipelineFreemarkerManager.getSQLByVersion(materials, "component/table/%s/create.ftl", majorVersion, minorVersion).trim();
     }
     
     private String generateCreateIndexSQL(final Connection connection, final int majorVersion, final int minorVersion, final Map<String, Object> materials) {

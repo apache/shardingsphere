@@ -115,6 +115,17 @@ public final class ShardingSphereSchema {
     }
     
     /**
+     * Judge whether contains index name.
+     *
+     * @param tableName table name
+     * @param indexName index name
+     * @return whether contains index name or not
+     */
+    public boolean containsIndex(final String tableName, final String indexName) {
+        return containsTable(tableName) && get(tableName).getIndexes().containsKey(indexName.toLowerCase());
+    }
+    
+    /**
      * Get all column names via table.
      *
      * @param tableName table name
@@ -122,5 +133,15 @@ public final class ShardingSphereSchema {
      */
     public List<String> getAllColumnNames(final String tableName) {
         return containsTable(tableName) ? get(tableName).getColumnNames() : Collections.emptyList();
+    }
+    
+    /**
+     * Get visible column names via table.
+     *
+     * @param tableName table name
+     * @return visible column names
+     */
+    public List<String> getVisibleColumnNames(final String tableName) {
+        return containsTable(tableName) ? get(tableName).getVisibleColumns() : Collections.emptyList();
     }
 }

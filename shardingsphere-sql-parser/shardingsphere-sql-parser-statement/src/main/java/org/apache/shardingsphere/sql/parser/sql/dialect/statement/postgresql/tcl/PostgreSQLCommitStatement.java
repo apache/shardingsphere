@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL commit statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLCommitStatement extends CommitStatement implements PostgreSQLStatement {
 }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.common.statement.dcl;
 
 import lombok.Getter;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
@@ -28,6 +29,7 @@ import java.util.LinkedList;
  * Grant statement.
  */
 @Getter
+@ToString(callSuper = true)
 public abstract class GrantStatement extends AbstractSQLStatement implements DCLStatement {
     
     private final Collection<SimpleTableSegment> tables = new LinkedList<>();

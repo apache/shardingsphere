@@ -21,20 +21,17 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Meta data refresh engine.
@@ -42,38 +39,34 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor
 public final class MetaDataRefreshEngine {
     
-    private static final Set<Class<? extends SQLStatement>> IGNORABLE_SQL_STATEMENT_CLASSES = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    private static final Collection<Class<? extends SQLStatement>> IGNORED_SQL_STATEMENT_CLASSES = Collections.newSetFromMap(new ConcurrentHashMap<>());
     
     private final ShardingSphereDatabase database;
-    
-    private final FederationDatabaseMetaData federationMetaData;
-    
-    private final Map<String, OptimizerPlannerContext> optimizerPlanners;
     
     private final ConfigurationProperties props;
     
     /**
-     * Refresh.
+     * Refresh meta data.
      *
      * @param sqlStatementContext SQL statement context
-     * @param logicDataSourceNamesSupplier logic data source names supplier
+     * @param routeUnits route units
      * @throws SQLException SQL exception
      * @return meta data refreshed event
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public Optional<MetaDataRefreshedEvent> refresh(final SQLStatementContext<?> sqlStatementContext, final Supplier<Collection<String>> logicDataSourceNamesSupplier) throws SQLException {
+    public Optional<MetaDataRefreshedEvent> refresh(final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits) throws SQLException {
         Class<? extends SQLStatement> sqlStatementClass = sqlStatementContext.getSqlStatement().getClass();
-        if (IGNORABLE_SQL_STATEMENT_CLASSES.contains(sqlStatementClass)) {
+        if (IGNORED_SQL_STATEMENT_CLASSES.contains(sqlStatementClass)) {
             return Optional.empty();
         }
         Optional<MetaDataRefresher> schemaRefresher = MetaDataRefresherFactory.findInstance(sqlStatementClass);
         if (schemaRefresher.isPresent()) {
             String schemaName = sqlStatementContext.getTablesContext().getSchemaName()
-                    .orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName()));
-            return schemaRefresher.get().refresh(database, federationMetaData, optimizerPlanners, logicDataSourceNamesSupplier.get(), schemaName, sqlStatementContext.getSqlStatement(), props);
-        } else {
-            IGNORABLE_SQL_STATEMENT_CLASSES.add(sqlStatementClass);
+                    .orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName())).toLowerCase();
+            Collection<String> logicDataSourceNames = routeUnits.stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList());
+            return schemaRefresher.get().refresh(database, logicDataSourceNames, schemaName, sqlStatementContext.getSqlStatement(), props);
         }
+        IGNORED_SQL_STATEMENT_CLASSES.add(sqlStatementClass);
         return Optional.empty();
     }
 }

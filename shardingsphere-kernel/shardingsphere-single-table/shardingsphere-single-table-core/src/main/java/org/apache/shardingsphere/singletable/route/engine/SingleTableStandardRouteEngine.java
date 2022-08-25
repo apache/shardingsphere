@@ -31,13 +31,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTable
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -80,46 +78,13 @@ public final class SingleTableStandardRouteEngine implements SingleTableRouteEng
     }
     
     private void route0(final RouteContext routeContext, final SingleTableRule rule) {
-        if (isTableDDLStatement() || rule.isAllTablesInSameDataSource(routeContext, singleTableNames)) {
-            Collection<QualifiedTable> existSingleTables = rule.getSingleTableNames(singleTableNames);
-            if (!existSingleTables.isEmpty()) {
-                fillRouteContext(rule, routeContext, existSingleTables);
-            } else {
-                RouteUnit routeUnit = rule.getDefaultDataSource().isPresent() ? getDefaultRouteUnit(rule.getDefaultDataSource().get()) : getRandomRouteUnit(rule);
-                routeContext.getRouteUnits().add(routeUnit);
-            }
-        } else {
-            decorateFederationRouteContext(routeContext);
-            fillRouteContext(rule, routeContext, singleTableNames);
+        if (sqlStatement instanceof CreateTableStatement) {
+            String dataSourceName = rule.assignNewDataSourceName();
+            String tableName = singleTableNames.iterator().next().getTableName();
+            routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.singleton(new RouteMapper(tableName, tableName))));
+        } else if (sqlStatement instanceof AlterTableStatement || sqlStatement instanceof DropTableStatement || rule.isAllTablesInSameDataSource(routeContext, singleTableNames)) {
+            fillRouteContext(rule, routeContext, rule.getSingleTableNames(singleTableNames));
         }
-    }
-    
-    private void decorateFederationRouteContext(final RouteContext routeContext) {
-        RouteContext newRouteContext = new RouteContext();
-        for (RouteUnit each : routeContext.getRouteUnits()) {
-            newRouteContext.putRouteUnit(each.getDataSourceMapper(), each.getTableMappers());
-        }
-        routeContext.setFederated(true);
-        routeContext.getRouteUnits().clear();
-        routeContext.getOriginalDataNodes().clear();
-        routeContext.getRouteUnits().addAll(newRouteContext.getRouteUnits());
-        routeContext.getOriginalDataNodes().addAll(newRouteContext.getOriginalDataNodes());
-    }
-    
-    private boolean isTableDDLStatement() {
-        return sqlStatement instanceof CreateTableStatement || sqlStatement instanceof AlterTableStatement || sqlStatement instanceof DropTableStatement;
-    }
-    
-    private RouteUnit getRandomRouteUnit(final SingleTableRule singleTableRule) {
-        Collection<String> dataSourceNames = singleTableRule.getDataSourceNames();
-        String dataSource = new ArrayList<>(dataSourceNames).get(ThreadLocalRandom.current().nextInt(dataSourceNames.size()));
-        String table = singleTableNames.iterator().next().getTableName();
-        return new RouteUnit(new RouteMapper(dataSource, dataSource), Collections.singleton(new RouteMapper(table, table)));
-    }
-    
-    private RouteUnit getDefaultRouteUnit(final String dataSource) {
-        String table = singleTableNames.iterator().next().getTableName();
-        return new RouteUnit(new RouteMapper(dataSource, dataSource), Collections.singleton(new RouteMapper(table, table)));
     }
     
     private void fillRouteContext(final SingleTableRule singleTableRule, final RouteContext routeContext, final Collection<QualifiedTable> logicTables) {

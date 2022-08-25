@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingS
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableNodesStatement;
 import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -41,12 +42,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Result set for show sharding table nodes.
+ * Query result set for show sharding table nodes.
  */
-public final class ShardingTableNodesQueryResultSet implements DistSQLResultSet {
+public final class ShardingTableNodesQueryResultSet implements DatabaseDistSQLResultSet {
     
     private static final String NAME = "name";
     
@@ -56,10 +58,8 @@ public final class ShardingTableNodesQueryResultSet implements DistSQLResultSet 
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        database.getRuleMetaData().getConfigurations().stream()
-                .filter(each -> each instanceof ShardingRuleConfiguration)
-                .map(each -> (ShardingRuleConfiguration) each)
-                .forEach(each -> data = getData(each, (ShowShardingTableNodesStatement) sqlStatement).entrySet().iterator());
+        Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
+        rule.ifPresent(optional -> data = getData((ShardingRuleConfiguration) optional.getConfiguration(), (ShowShardingTableNodesStatement) sqlStatement).entrySet().iterator());
     }
     
     private Map<String, String> getData(final ShardingRuleConfiguration config, final ShowShardingTableNodesStatement sqlStatement) {
@@ -75,7 +75,7 @@ public final class ShardingTableNodesQueryResultSet implements DistSQLResultSet 
     }
     
     private int getTotalShardingCount(final ShardingRuleConfiguration ruleConfig, final ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig) {
-        Map<String, ShardingSphereAlgorithmConfiguration> shardingAlgorithms = ruleConfig.getShardingAlgorithms();
+        Map<String, AlgorithmConfiguration> shardingAlgorithms = ruleConfig.getShardingAlgorithms();
         ShardingStrategyConfiguration shardingStrategy = shardingAutoTableRuleConfig.getShardingStrategy();
         if (useDefaultStrategy(shardingStrategy, ruleConfig)) {
             int tableCount = getShardingCount(shardingAlgorithms.get(ruleConfig.getDefaultTableShardingStrategy().getShardingAlgorithmName()));
@@ -90,7 +90,7 @@ public final class ShardingTableNodesQueryResultSet implements DistSQLResultSet 
                 && null != ruleConfig.getDefaultDatabaseShardingStrategy() && null != ruleConfig.getDefaultTableShardingStrategy();
     }
     
-    private int getShardingCount(final ShardingSphereAlgorithmConfiguration algorithmConfig) {
+    private int getShardingCount(final AlgorithmConfiguration algorithmConfig) {
         if (null == algorithmConfig) {
             return 0;
         }

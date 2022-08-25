@@ -17,8 +17,14 @@
 
 package org.apache.shardingsphere.infra.federation.executor.advanced.resultset;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
+import org.apache.calcite.linq4j.Enumerator;
+import org.apache.calcite.schema.impl.AbstractSchema;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtil;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -31,234 +37,273 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLWarning;
 import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Federation result set.
  */
-@RequiredArgsConstructor
 public final class FederationResultSet extends AbstractUnsupportedOperationResultSet {
     
-    private final MergedResult mergedResult;
+    private static final String ASCII = "Ascii";
+    
+    private static final String UNICODE = "Unicode";
+    
+    private static final String BINARY = "Binary";
+    
+    private final Enumerator<Object[]> enumerator;
+    
+    private final Map<String, Integer> columnLabelAndIndexMap;
+    
+    private final FederationResultSetMetaData resultSetMetaData;
+    
+    private Object[] currentRows;
+    
+    private boolean wasNull;
+    
+    private boolean closed;
+    
+    public FederationResultSet(final Enumerator<Object[]> enumerator, final ShardingSphereSchema schema, final AbstractSchema filterableSchema, final SQLStatementContext<?> sqlStatementContext) {
+        this.enumerator = enumerator;
+        columnLabelAndIndexMap = createColumnLabelAndIndexMap(sqlStatementContext);
+        resultSetMetaData = new FederationResultSetMetaData(schema, filterableSchema, new JavaTypeFactoryImpl(), (SelectStatementContext) sqlStatementContext);
+    }
+    
+    private Map<String, Integer> createColumnLabelAndIndexMap(final SQLStatementContext<?> sqlStatementContext) {
+        SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
+        List<Projection> projections = selectStatementContext.getProjectionsContext().getExpandProjections();
+        Map<String, Integer> result = new HashMap<>(projections.size(), 1);
+        for (int columnIndex = 1; columnIndex <= projections.size(); columnIndex++) {
+            result.put(projections.get(columnIndex - 1).getColumnLabel().toLowerCase(), columnIndex);
+        }
+        return result;
+    }
     
     @Override
     public boolean next() throws SQLException {
-        return mergedResult.next();
+        boolean result = enumerator.moveNext();
+        currentRows = result ? enumerator.current() : new Object[]{};
+        return result;
     }
     
     @Override
     public void close() throws SQLException {
-        
+        closed = true;
+        enumerator.close();
+        currentRows = null;
     }
     
     @Override
     public boolean wasNull() {
-        return false;
+        return wasNull;
     }
     
     @Override
     public String getString(final int columnIndex) throws SQLException {
-        return null;
+        return (String) ResultSetUtil.convertValue(getValue(columnIndex, String.class), String.class);
     }
     
     @Override
     public String getString(final String columnLabel) throws SQLException {
-        return null;
+        return getString(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
     
     @Override
     public boolean getBoolean(final int columnIndex) throws SQLException {
-        return false;
+        return (boolean) ResultSetUtil.convertValue(getValue(columnIndex, boolean.class), boolean.class);
     }
     
     @Override
     public boolean getBoolean(final String columnLabel) throws SQLException {
-        return false;
+        return getBoolean(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
     
     @Override
     public byte getByte(final int columnIndex) throws SQLException {
-        return 0;
+        return (byte) ResultSetUtil.convertValue(getValue(columnIndex, byte.class), byte.class);
     }
     
     @Override
     public byte getByte(final String columnLabel) throws SQLException {
-        return 0;
+        return getByte(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
     
     @Override
     public short getShort(final int columnIndex) throws SQLException {
-        return 0;
+        return (short) ResultSetUtil.convertValue(getValue(columnIndex, short.class), short.class);
     }
     
     @Override
     public short getShort(final String columnLabel) throws SQLException {
-        return 0;
+        return getShort(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
     
     @Override
     public int getInt(final int columnIndex) throws SQLException {
-        return 0;
+        return (int) ResultSetUtil.convertValue(getValue(columnIndex, int.class), int.class);
     }
     
     @Override
     public int getInt(final String columnLabel) throws SQLException {
-        return 0;
+        return getInt(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
     
     @Override
     public long getLong(final int columnIndex) throws SQLException {
-        return 0;
+        return (long) ResultSetUtil.convertValue(getValue(columnIndex, long.class), long.class);
     }
     
     @Override
     public long getLong(final String columnLabel) throws SQLException {
-        return 0;
+        return getLong(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
     
     @Override
-    public float getFloat(final int columnIndex) {
-        return 0;
+    public float getFloat(final int columnIndex) throws SQLException {
+        return (float) ResultSetUtil.convertValue(getValue(columnIndex, float.class), float.class);
     }
     
     @Override
-    public float getFloat(final String columnLabel) {
-        return 0;
+    public float getFloat(final String columnLabel) throws SQLException {
+        return getFloat(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
     
     @Override
-    public double getDouble(final int columnIndex) {
-        return 0;
+    public double getDouble(final int columnIndex) throws SQLException {
+        return (double) ResultSetUtil.convertValue(getValue(columnIndex, double.class), double.class);
     }
     
     @Override
-    public double getDouble(final String columnLabel) {
-        return 0;
+    public double getDouble(final String columnLabel) throws SQLException {
+        return getDouble(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
     
     @Override
-    public BigDecimal getBigDecimal(final int columnIndex, final int scale) {
-        return null;
+    public BigDecimal getBigDecimal(final int columnIndex, final int scale) throws SQLException {
+        return (BigDecimal) ResultSetUtil.convertValue(getValue(columnIndex, BigDecimal.class), BigDecimal.class);
     }
     
     @Override
-    public BigDecimal getBigDecimal(final String columnLabel, final int scale) {
-        return null;
+    public BigDecimal getBigDecimal(final String columnLabel, final int scale) throws SQLException {
+        return getBigDecimal(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
     
     @Override
-    public BigDecimal getBigDecimal(final int columnIndex) {
-        return null;
+    public BigDecimal getBigDecimal(final int columnIndex) throws SQLException {
+        return (BigDecimal) ResultSetUtil.convertValue(getValue(columnIndex, BigDecimal.class), BigDecimal.class);
     }
     
     @Override
-    public BigDecimal getBigDecimal(final String columnLabel) {
-        return null;
+    public BigDecimal getBigDecimal(final String columnLabel) throws SQLException {
+        return getBigDecimal(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
     
     @Override
     public byte[] getBytes(final int columnIndex) throws SQLException {
-        return new byte[0];
+        return (byte[]) ResultSetUtil.convertValue(getValue(columnIndex, byte[].class), byte[].class);
     }
     
     @Override
     public byte[] getBytes(final String columnLabel) throws SQLException {
-        return new byte[0];
+        return getBytes(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
     
     @Override
     public Date getDate(final int columnIndex) throws SQLException {
-        return null;
+        return (Date) ResultSetUtil.convertValue(getValue(columnIndex, Date.class), Date.class);
     }
     
     @Override
     public Date getDate(final String columnLabel) throws SQLException {
-        return null;
+        return getDate(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
     
     @Override
     public Date getDate(final int columnIndex, final Calendar cal) throws SQLException {
-        return null;
+        return (Date) ResultSetUtil.convertValue(getCalendarValue(columnIndex, Date.class, cal), Date.class);
     }
     
     @Override
     public Date getDate(final String columnLabel, final Calendar cal) throws SQLException {
-        return null;
+        return getDate(getIndexFromColumnLabelAndIndexMap(columnLabel), cal);
     }
     
     @Override
     public Time getTime(final int columnIndex) throws SQLException {
-        return null;
+        return (Time) ResultSetUtil.convertValue(getValue(columnIndex, Time.class), Time.class);
     }
     
     @Override
     public Time getTime(final String columnLabel) throws SQLException {
-        return null;
+        return getTime(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
     
     @Override
     public Time getTime(final int columnIndex, final Calendar cal) throws SQLException {
-        return null;
+        return (Time) ResultSetUtil.convertValue(getCalendarValue(columnIndex, Time.class, cal), Time.class);
     }
     
     @Override
     public Time getTime(final String columnLabel, final Calendar cal) throws SQLException {
-        return null;
+        return getTime(getIndexFromColumnLabelAndIndexMap(columnLabel), cal);
     }
     
     @Override
     public Timestamp getTimestamp(final int columnIndex) throws SQLException {
-        return null;
+        return (Timestamp) ResultSetUtil.convertValue(getValue(columnIndex, Timestamp.class), Timestamp.class);
     }
     
     @Override
     public Timestamp getTimestamp(final String columnLabel) throws SQLException {
-        return null;
+        return getTimestamp(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
     
     @Override
     public Timestamp getTimestamp(final int columnIndex, final Calendar cal) throws SQLException {
-        return null;
+        return (Timestamp) ResultSetUtil.convertValue(getCalendarValue(columnIndex, Timestamp.class, cal), Timestamp.class);
     }
     
     @Override
     public Timestamp getTimestamp(final String columnLabel, final Calendar cal) throws SQLException {
-        return null;
+        return getTimestamp(getIndexFromColumnLabelAndIndexMap(columnLabel), cal);
     }
     
     @Override
-    public InputStream getAsciiStream(final int columnIndex) {
-        return null;
+    public InputStream getAsciiStream(final int columnIndex) throws SQLException {
+        return getInputStream(ASCII);
     }
     
     @Override
-    public InputStream getAsciiStream(final String columnLabel) {
-        return null;
+    public InputStream getAsciiStream(final String columnLabel) throws SQLException {
+        return getAsciiStream(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
     
     @Override
-    public InputStream getUnicodeStream(final int columnIndex) {
-        return null;
+    public InputStream getUnicodeStream(final int columnIndex) throws SQLException {
+        return getInputStream(UNICODE);
     }
     
     @Override
-    public InputStream getUnicodeStream(final String columnLabel) {
-        return null;
+    public InputStream getUnicodeStream(final String columnLabel) throws SQLException {
+        return getUnicodeStream(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
     
     @Override
-    public InputStream getBinaryStream(final int columnIndex) {
-        return null;
+    public InputStream getBinaryStream(final int columnIndex) throws SQLException {
+        return getInputStream(BINARY);
     }
     
     @Override
-    public InputStream getBinaryStream(final String columnLabel) {
-        return null;
+    public InputStream getBinaryStream(final String columnLabel) throws SQLException {
+        return getBinaryStream(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
     
     @Override
@@ -268,42 +313,40 @@ public final class FederationResultSet extends AbstractUnsupportedOperationResul
     
     @Override
     public void clearWarnings() throws SQLException {
-        
     }
     
     @Override
     public ResultSetMetaData getMetaData() throws SQLException {
-        return null;
+        return resultSetMetaData;
     }
     
     @Override
     public Object getObject(final int columnIndex) throws SQLException {
-        return null;
+        return getValue(columnIndex, Object.class);
     }
     
     @Override
     public Object getObject(final String columnLabel) throws SQLException {
-        return null;
+        return getObject(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
     
     @Override
     public int findColumn(final String columnLabel) throws SQLException {
-        return 0;
+        return getIndexFromColumnLabelAndIndexMap(columnLabel);
     }
     
     @Override
-    public Reader getCharacterStream(final int columnIndex) {
-        return null;
+    public Reader getCharacterStream(final int columnIndex) throws SQLException {
+        return (Reader) getValue(columnIndex, Reader.class);
     }
     
     @Override
-    public Reader getCharacterStream(final String columnLabel) {
-        return null;
+    public Reader getCharacterStream(final String columnLabel) throws SQLException {
+        return getCharacterStream(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
     
     @Override
     public void setFetchDirection(final int direction) throws SQLException {
-        
     }
     
     @Override
@@ -336,67 +379,95 @@ public final class FederationResultSet extends AbstractUnsupportedOperationResul
     }
     
     @Override
-    public Blob getBlob(final int columnIndex) {
-        return null;
+    public Blob getBlob(final int columnIndex) throws SQLException {
+        return (Blob) getValue(columnIndex, Blob.class);
     }
     
     @Override
-    public Blob getBlob(final String columnLabel) {
-        return null;
+    public Blob getBlob(final String columnLabel) throws SQLException {
+        return getBlob(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
     
     @Override
-    public Clob getClob(final int columnIndex) {
-        return null;
+    public Clob getClob(final int columnIndex) throws SQLException {
+        return (Clob) getValue(columnIndex, Clob.class);
     }
     
     @Override
-    public Clob getClob(final String columnLabel) {
-        return null;
+    public Clob getClob(final String columnLabel) throws SQLException {
+        return getClob(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
     
     @Override
-    public Array getArray(final int columnIndex) {
-        return null;
+    public Array getArray(final int columnIndex) throws SQLException {
+        return (Array) getValue(columnIndex, Array.class);
     }
     
     @Override
-    public Array getArray(final String columnLabel) {
-        return null;
+    public Array getArray(final String columnLabel) throws SQLException {
+        return getArray(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
     
     @Override
     public URL getURL(final int columnIndex) throws SQLException {
-        return null;
+        return (URL) getValue(columnIndex, URL.class);
     }
     
     @Override
     public URL getURL(final String columnLabel) throws SQLException {
-        return null;
+        return getURL(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
     
     @Override
     public boolean isClosed() throws SQLException {
-        return false;
+        return closed;
     }
     
     @Override
-    public SQLXML getSQLXML(final int columnIndex) {
-        return null;
+    public SQLXML getSQLXML(final int columnIndex) throws SQLException {
+        return (SQLXML) getValue(columnIndex, SQLXML.class);
     }
     
     @Override
-    public SQLXML getSQLXML(final String columnLabel) {
-        return null;
+    public SQLXML getSQLXML(final String columnLabel) throws SQLException {
+        return getSQLXML(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
     
     @Override
-    public String getNString(final int columnIndex) {
-        return null;
+    public String getNString(final int columnIndex) throws SQLException {
+        return getString(columnIndex);
     }
     
     @Override
-    public String getNString(final String columnLabel) {
-        return null;
+    public String getNString(final String columnLabel) throws SQLException {
+        return getString(columnLabel);
+    }
+    
+    private Integer getIndexFromColumnLabelAndIndexMap(final String columnLabel) throws SQLFeatureNotSupportedException {
+        Integer result = columnLabelAndIndexMap.get(columnLabel.toLowerCase());
+        if (null == result) {
+            throw new SQLFeatureNotSupportedException(String.format("can't get index from columnLabel[%s].", columnLabel));
+        }
+        return result;
+    }
+    
+    private Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
+        if (Blob.class == type || Clob.class == type || Reader.class == type || InputStream.class == type || SQLXML.class == type) {
+            throw new SQLFeatureNotSupportedException(String.format("Get value from `%s`", type.getName()));
+        }
+        Object result = currentRows[columnIndex - 1];
+        wasNull = null == result;
+        return result;
+    }
+    
+    private Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
+        // TODO implement with calendar
+        Object result = currentRows[columnIndex - 1];
+        wasNull = null == result;
+        return result;
+    }
+    
+    private InputStream getInputStream(final String type) throws SQLException {
+        throw new SQLFeatureNotSupportedException(String.format("Get input stream from `%s`", type));
     }
 }

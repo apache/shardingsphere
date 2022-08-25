@@ -17,10 +17,17 @@
 
 package org.apache.shardingsphere.proxy.backend.exception;
 
+import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
+
 /**
  * Resource does not exist exception.
  */
-public final class ResourceNotExistedException extends BackendException {
+public final class ResourceNotExistedException extends ShardingSphereSQLException {
     
     private static final long serialVersionUID = 4146100333670404924L;
+    
+    public ResourceNotExistedException() {
+        super(XOpenSQLState.SYNTAX_ERROR, 11002, "Resource does not exist");
+    }
 }

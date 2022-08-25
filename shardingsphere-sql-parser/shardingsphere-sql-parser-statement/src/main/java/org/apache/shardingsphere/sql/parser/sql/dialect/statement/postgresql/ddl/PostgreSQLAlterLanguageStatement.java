@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateLanguageStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterLanguageStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL alter language statement.
  */
-@ToString
-public final class PostgreSQLAlterLanguageStatement extends CreateLanguageStatement implements PostgreSQLStatement {
+@ToString(callSuper = true)
+public final class PostgreSQLAlterLanguageStatement extends AlterLanguageStatement implements PostgreSQLStatement {
 }

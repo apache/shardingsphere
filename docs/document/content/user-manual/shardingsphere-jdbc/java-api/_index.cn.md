@@ -1,6 +1,6 @@
 +++
 title = "Java API"
-weight = 1
+weight = 2
 chapter = true
 +++
 
@@ -24,17 +24,17 @@ Java API 是最繁琐也是最灵活的配置方式，适合需要通过编程�
 
 ### 构建数据源
 
-ShardingSphere-JDBC 的 Java API 通过 Schema 名称、运行模式、数据源集合、规则集合以及属性配置组成。
+ShardingSphere-JDBC 的 Java API 由 Database 名称、运行模式、数据源集合、规则集合以及属性配置组成。
 
 通过 ShardingSphereDataSourceFactory 工厂创建的 ShardingSphereDataSource 实现自 JDBC 的标准接口 DataSource。
 
 ```java
-String schemaName = "foo_schema"; // 指定逻辑 Schema 名称
+String databaseName = "foo_schema"; // 指定逻辑 Database 名称
 ModeConfiguration modeConfig = ... // 构建运行模式
 Map<String, DataSource> dataSourceMap = ... // 构建真实数据源
 Collection<RuleConfiguration> ruleConfigs = ... // 构建具体规则
 Properties props = ... // 构建属性配置
-DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(schemaName, modeConfig, dataSourceMap, ruleConfigs, props);
+DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(databaseName, modeConfig, dataSourceMap, ruleConfigs, props);
 ```
 
 模式详情请参见[模式配置](/cn/user-manual/shardingsphere-jdbc/java-api/mode)。
@@ -51,7 +51,7 @@ DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(schemaN
 
 ```java
 // 创建 ShardingSphereDataSource
-DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(schemaName, modeConfig, dataSourceMap, ruleConfigs, props);
+DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(databaseName, modeConfig, dataSourceMap, ruleConfigs, props);
 
 String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
 try (

@@ -62,7 +62,7 @@ public final class MySQLPositionInitializerTest {
     @Test
     public void assertGetCurrentPosition() throws SQLException {
         MySQLPositionInitializer mySQLPositionInitializer = new MySQLPositionInitializer();
-        BinlogPosition actual = mySQLPositionInitializer.init(dataSource);
+        BinlogPosition actual = mySQLPositionInitializer.init(dataSource, "");
         assertThat(actual.getServerId(), is(SERVER_ID));
         assertThat(actual.getFilename(), is(LOG_FILE_NAME));
         assertThat(actual.getPosition(), is(LOG_POSITION));

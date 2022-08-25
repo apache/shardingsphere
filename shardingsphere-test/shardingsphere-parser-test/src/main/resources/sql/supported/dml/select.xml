@@ -38,6 +38,7 @@
     <sql-case id="select_in_with_same_sharding_column" value="SELECT * FROM t_order WHERE order_id IN (?, ?) AND order_id IN (?, ?) ORDER BY order_id" />
     <sql-case id="select_with_N_string_in_expression" value="SELECT * FROM t_order WHERE is_deleted = 'N'" />
     <sql-case id="select_count_like" value="SELECT COUNT(*) FROM t_order WHERE (user_id = ? AND status LIKE ?)" />
+    <sql-case id="select_count_like_escape" value="SELECT COUNT(*) FROM t_order WHERE status LIKE ? escape '!' limit ? offset ?" db-types="PostgreSQL,openGauss"/>
     <sql-case id="select_count_like_concat" value="SELECT count(0) AS orders_count FROM t_order o WHERE o.status LIKE CONCAT('%%', ?, '%%') AND o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ?" db-types="MySQL,SQLServer,Oracle,SQL92" />
     <!--TODO combine into select_count_like_concat-->
     <sql-case id="select_count_like_concat_postgres" value="SELECT count(0) AS orders_count FROM t_order o WHERE o.status LIKE CONCAT('%%', ?, '%%') AND o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ?" db-types="PostgreSQL,openGauss" />
@@ -126,6 +127,9 @@
     <sql-case id="select_with_for_xml_clause_with_directive" value="SELECT user_id, status FROM t_order WHERE order_id = 1 FOR XML RAW, ELEMENTS XSINIL" db-types="SQLServer" />
     <sql-case id="select_with_for_json_clause" value="SELECT order_id, status FROM t_order FOR JSON AUTO, INCLUDE_NULL_VALUES" db-types="SQLServer" />
     <sql-case id="select_with_keyword_target" value="SELECT m.target FROM sys_menu m" />
+    <sql-case id="select_with_keyword_maxvalue" value="SELECT m.maxvalue FROM sys_menu m" />
+    <sql-case id="select_with_keyword_priority" value="SELECT m.priority FROM sys_menu m" db-types="Oracle" />
     <sql-case id="select_with_xml_namespaces_clause" value="WITH XMLNAMESPACES ('uri' AS ns1) SELECT order_id AS 'ns1:order_id', status AS 'ns1:status' FROM t_order FOR XML RAW ('ns1:order'), ELEMENTS" db-types="SQLServer" />
     <sql-case id="select_with_xml_default_namespaces_clause" value="WITH XMLNAMESPACES ('uri1' AS ns1, 'uri2' AS ns2, DEFAULT 'uri2') SELECT order_id AS 'ns1:order_id', status AS 'ns1:status' FROM t_order FOR XML RAW ('ns1:order'), ELEMENTS XSINIL" db-types="SQLServer" />
+    <sql-case id="select_with_mysql_main_and_utc_data_and_so_on" value="SELECT MYSQL_MAIN,UTC_DATE,UTC_TIME,UTC_TIMESTAMP FROM test" db-types="MySQL" />
 </sql-cases>

@@ -17,6 +17,10 @@
   -->
 
 <sql-parser-test-cases>
+    <alter-text-search sql-case-id="alter_text_search_configuration_rename" />
+    <alter-text-search sql-case-id="alter_text_search_configuration_owner" />
+    <alter-text-search sql-case-id="alter_text_search_configuration_set_schema" />
+    <alter-text-search sql-case-id="alter_text_search_configuration_alter_mapping" />
     <alter-text-search sql-case-id="alter_text_search_dictionary" />
     <alter-text-search sql-case-id="alter_text_search_template" />
     <alter-text-search sql-case-id="alter_text_search_parser" />

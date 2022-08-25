@@ -68,11 +68,8 @@
     <readwrite-splitting:load-balance-algorithm id="randomStrategy" type="RANDOM" />
 
     <readwrite-splitting:rule id="readWriteSplittingRule">
-        <readwrite-splitting:data-source-rule id="demo_ds" type="Static" load-balance-algorithm-ref="randomStrategy">
-            <props>
-                <prop key="write-data-source-name">write_ds</prop>
-                <prop key="read-data-source-names">read_ds</prop>
-            </props>
+        <readwrite-splitting:data-source-rule id="demo_ds" load-balance-algorithm-ref="randomStrategy">
+            <readwrite-splitting:static-strategy id="staticStrategy" write-data-source-name="write-ds" read-data-source-names="read-ds"/>
         </readwrite-splitting:data-source-rule>
     </readwrite-splitting:rule>
 
@@ -108,8 +105,8 @@
     </shadow:shadow-algorithm>
 
     <shadow:rule id="shadowRule">
-        <shadow:data-source id="shadow-data-source-write" source-data-source-name="write-ds" shadow-data-source-name="write-ds-shadow"/>
-        <shadow:data-source id="shadow-data-source-read" source-data-source-name="read-ds" shadow-data-source-name="read-ds-shadow"/>
+        <shadow:data-source id="shadow-data-source-write" production-data-source-name="write-ds" shadow-data-source-name="write-ds-shadow"/>
+        <shadow:data-source id="shadow-data-source-read" production-data-source-name="read-ds" shadow-data-source-name="read-ds-shadow"/>
         <shadow:shadow-table name="t_user" data-sources="shadow-data-source-write,shadow-data-source-read">
             <shadow:algorithm shadow-algorithm-ref="user-id-insert-match-algorithm" />
             <shadow:algorithm shadow-algorithm-ref="user-id-delete-match-algorithm" />

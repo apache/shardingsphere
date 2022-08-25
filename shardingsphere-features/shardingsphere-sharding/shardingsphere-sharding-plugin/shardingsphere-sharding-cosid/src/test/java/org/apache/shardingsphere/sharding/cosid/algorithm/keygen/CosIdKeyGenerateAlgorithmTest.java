@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.cosid.algorithm.keygen;
 
-import java.util.Properties;
 import me.ahoo.cosid.IdGenerator;
 import me.ahoo.cosid.StringIdGenerator;
 import me.ahoo.cosid.converter.PrefixIdConverter;
@@ -27,11 +26,13 @@ import me.ahoo.cosid.provider.NotFoundIdGeneratorException;
 import me.ahoo.cosid.segment.DefaultSegmentId;
 import me.ahoo.cosid.segment.IdSegmentDistributor;
 import me.ahoo.cosid.snowflake.MillisecondSnowflakeId;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstants;
 import org.apache.shardingsphere.sharding.factory.KeyGenerateAlgorithmFactory;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.junit.Test;
+
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -46,7 +47,7 @@ public final class CosIdKeyGenerateAlgorithmTest {
         String idName = "test-cosid";
         DefaultSegmentId defaultSegmentId = new DefaultSegmentId(new IdSegmentDistributor.Mock());
         DefaultIdGeneratorProvider.INSTANCE.set(idName, defaultSegmentId);
-        KeyGenerateAlgorithm algorithm = KeyGenerateAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("COSID", createAsLongProperties(idName)));
+        KeyGenerateAlgorithm algorithm = KeyGenerateAlgorithmFactory.newInstance(new AlgorithmConfiguration("COSID", createAsLongProperties(idName)));
         assertThat(algorithm.generateKey(), is(1L));
         assertThat(algorithm.generateKey(), is(2L));
     }
@@ -61,7 +62,7 @@ public final class CosIdKeyGenerateAlgorithmTest {
     public void assertGenerateKeyWhenNotSetIdName() {
         DefaultSegmentId defaultSegmentId = new DefaultSegmentId(new IdSegmentDistributor.Mock());
         DefaultIdGeneratorProvider.INSTANCE.setShare(defaultSegmentId);
-        KeyGenerateAlgorithm algorithm = KeyGenerateAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("COSID", new Properties()));
+        KeyGenerateAlgorithm algorithm = KeyGenerateAlgorithmFactory.newInstance(new AlgorithmConfiguration("COSID", new Properties()));
         assertThat(algorithm.generateKey(), is(1L));
         assertThat(algorithm.generateKey(), is(2L));
     }
@@ -69,7 +70,7 @@ public final class CosIdKeyGenerateAlgorithmTest {
     @Test(expected = NotFoundIdGeneratorException.class)
     public void assertGenerateKeyWhenIdProviderIsEmpty() {
         DefaultIdGeneratorProvider.INSTANCE.clear();
-        KeyGenerateAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("COSID", new Properties())).generateKey();
+        KeyGenerateAlgorithmFactory.newInstance(new AlgorithmConfiguration("COSID", new Properties())).generateKey();
     }
     
     @Test
@@ -78,7 +79,7 @@ public final class CosIdKeyGenerateAlgorithmTest {
         String prefix = "test_";
         IdGenerator stringIdGen = new StringIdGenerator(new MillisecondSnowflakeId(1, 0), new PrefixIdConverter(prefix, Radix62IdConverter.INSTANCE));
         DefaultIdGeneratorProvider.INSTANCE.set(idName, stringIdGen);
-        KeyGenerateAlgorithm algorithm = KeyGenerateAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("COSID", createAsStringProperties(idName)));
+        KeyGenerateAlgorithm algorithm = KeyGenerateAlgorithmFactory.newInstance(new AlgorithmConfiguration("COSID", createAsStringProperties(idName)));
         Comparable<?> actual = algorithm.generateKey();
         assertThat(actual, instanceOf(String.class));
         assertThat(actual.toString(), startsWith(prefix));
@@ -88,7 +89,7 @@ public final class CosIdKeyGenerateAlgorithmTest {
     private Properties createAsStringProperties(final String idName) {
         Properties result = new Properties();
         result.setProperty(CosIdAlgorithmConstants.ID_NAME_KEY, idName);
-        result.setProperty(CosIdKeyGenerateAlgorithm.AS_STRING_KEY, Boolean.TRUE.toString());
+        result.setProperty("as-string", Boolean.TRUE.toString());
         return result;
     }
 }

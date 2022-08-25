@@ -20,6 +20,9 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasAvailable;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 
@@ -31,7 +34,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class ShorthandProjectionSegment implements ProjectionSegment, OwnerAvailable {
+@ToString
+public final class ShorthandProjectionSegment implements ProjectionSegment, OwnerAvailable, AliasAvailable {
     
     private final int startIndex;
     
@@ -39,8 +43,15 @@ public final class ShorthandProjectionSegment implements ProjectionSegment, Owne
     
     private OwnerSegment owner;
     
+    private AliasSegment alias;
+    
     @Override
     public Optional<OwnerSegment> getOwner() {
         return Optional.ofNullable(owner);
+    }
+    
+    @Override
+    public Optional<String> getAlias() {
+        return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());
     }
 }

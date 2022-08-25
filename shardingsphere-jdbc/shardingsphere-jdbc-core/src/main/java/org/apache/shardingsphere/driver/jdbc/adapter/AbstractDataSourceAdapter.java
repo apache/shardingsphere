@@ -25,7 +25,7 @@ import java.io.PrintWriter;
 import java.util.logging.Logger;
 
 /**
- * Adapter for {@code Datasource}.
+ * Adapter for {@code DataSource}.
  */
 @Getter
 @Setter

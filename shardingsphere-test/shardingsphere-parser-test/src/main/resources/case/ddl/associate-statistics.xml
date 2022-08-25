@@ -45,7 +45,7 @@
         <type name="Example_typ" start-index="32" stop-index="42" />
     </associate-statistics>
     
-    <associate-statistics sql-case-id="associate_statistics_with_indextype">
-        <indextype name="indtype" start-index="37" stop-index="43" />
+    <associate-statistics sql-case-id="associate_statistics_with_index_type">
+        <index-type name="indtype" start-index="37" stop-index="43" />
     </associate-statistics>
 </sql-parser-test-cases>

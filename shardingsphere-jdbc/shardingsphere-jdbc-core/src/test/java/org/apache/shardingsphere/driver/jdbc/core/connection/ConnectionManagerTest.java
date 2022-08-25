@@ -22,16 +22,14 @@ import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.infra.instance.definition.InstanceType;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
+import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
-import org.apache.shardingsphere.traffic.rule.TrafficStrategyRule;
-import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
-import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -49,7 +47,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -86,24 +83,29 @@ public final class ConnectionManagerTest {
     private ContextManager mockContextManager() throws SQLException {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         Map<String, DataSource> dataSourceMap = mockDataSourceMap();
-        TrafficRule trafficRule = mockTrafficRule();
-        MetaDataPersistService metaDataPersistService = mockMetaDataPersistService();
+        MetaDataPersistService persistService = mockMetaDataPersistService();
         when(result.getDataSourceMap(DefaultDatabase.LOGIC_NAME)).thenReturn(dataSourceMap);
-        when(result.getMetaDataContexts().getPersistService()).thenReturn(Optional.of(metaDataPersistService));
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.of(mock(TransactionRule.class, RETURNS_DEEP_STUBS)));
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TrafficRule.class)).thenReturn(Optional.of(trafficRule));
-        when(result.getInstanceContext().getComputeNodeInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(Collections.singletonList(new InstanceDefinition(InstanceType.PROXY,
-                "127.0.0.1@3307", "127.0.0.1@3307")));
+        when(result.getMetaDataContexts().getPersistService()).thenReturn(persistService);
+        ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        when(globalRuleMetaData.getSingleRule(TransactionRule.class)).thenReturn(mock(TransactionRule.class, RETURNS_DEEP_STUBS));
+        when(globalRuleMetaData.getSingleRule(TrafficRule.class)).thenReturn(mock(TrafficRule.class, RETURNS_DEEP_STUBS));
+        when(result.getInstanceContext().getAllClusterInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(
+                Collections.singletonList(new ProxyInstanceMetaData("foo_id", "127.0.0.1@3307")));
         dataSourcePoolCreator = mockStatic(DataSourcePoolCreator.class);
         Map<String, DataSource> trafficDataSourceMap = mockTrafficDataSourceMap();
         when(DataSourcePoolCreator.create((Map) any())).thenReturn(trafficDataSourceMap);
         return result;
     }
     
-    private Map<String, DataSource> mockTrafficDataSourceMap() {
-        Map<String, DataSource> result = new LinkedHashMap<>();
-        result.put("127.0.0.1@3307", new MockedDataSource("jdbc:mysql://127.0.0.1:3307/logic_db?serverTimezone=UTC&useSSL=false", "root", "123456"));
-        return result;
+    private Map<String, DataSource> mockTrafficDataSourceMap() throws SQLException {
+        MockedDataSource result = new MockedDataSource(mock(Connection.class, RETURNS_DEEP_STUBS));
+        result.setUrl("jdbc:mysql://127.0.0.1:3307/logic_db?serverTimezone=UTC&useSSL=false");
+        result.setUsername("root");
+        result.setPassword("123456");
+        when(result.getConnection().getMetaData().getURL()).thenReturn(result.getUrl());
+        when(result.getConnection().getMetaData().getUserName()).thenReturn(result.getUsername());
+        return Collections.singletonMap("127.0.0.1@3307", result);
     }
     
     private MetaDataPersistService mockMetaDataPersistService() {
@@ -124,14 +126,6 @@ public final class ConnectionManagerTest {
         result.put("jdbcUrl", "jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false");
         result.put("username", "root");
         result.put("password", "123456");
-        return result;
-    }
-    
-    private TrafficRule mockTrafficRule() {
-        TrafficRule result = mock(TrafficRule.class);
-        when(result.getLabels()).thenReturn(Arrays.asList("OLTP", "OLAP"));
-        when(result.getStrategyRules()).thenReturn(Collections.singletonList(
-                new TrafficStrategyRule("sql_match", Arrays.asList("OLTP", "OLAP"), mock(TrafficAlgorithm.class), mock(TrafficLoadBalanceAlgorithm.class))));
         return result;
     }
     

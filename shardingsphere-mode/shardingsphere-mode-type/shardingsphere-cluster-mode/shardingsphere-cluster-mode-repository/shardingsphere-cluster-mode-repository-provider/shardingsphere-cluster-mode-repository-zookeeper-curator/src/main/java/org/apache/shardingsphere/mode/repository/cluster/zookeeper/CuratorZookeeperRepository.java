@@ -30,6 +30,7 @@ import org.apache.curator.utils.CloseableUtils;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryException;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
@@ -39,6 +40,7 @@ import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.Zookeepe
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperProperties;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperPropertyKey;
 import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.KeeperException.NodeExistsException;
 import org.apache.zookeeper.KeeperException.OperationTimeoutException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
@@ -50,7 +52,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
 
 /**
  * Registry repository of ZooKeeper.
@@ -201,16 +202,17 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     }
     
     @Override
-    public String getSequentialId(final String key, final String value) {
+    public void persistExclusiveEphemeral(final String key, final String value) {
         try {
-            String path = client.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL_SEQUENTIAL).forPath(key, value.getBytes(StandardCharsets.UTF_8));
-            return path.substring(key.length());
+            client.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(key, value.getBytes(StandardCharsets.UTF_8));
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
+            if (ex instanceof NodeExistsException) {
+                throw new ClusterPersistRepositoryException(ex);
+            }
             CuratorZookeeperExceptionHandler.handleException(ex);
         }
-        return null;
     }
     
     @Override
@@ -228,10 +230,10 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     
     @Override
     public void watch(final String key, final DataChangedEventListener listener) {
-        if (!caches.containsKey(key)) {
-            CuratorCache curatorCache = CuratorCache.build(client, key);
-            start(curatorCache);
-            caches.put(key, curatorCache);
+        CuratorCache cache = caches.get(key);
+        if (null == cache) {
+            cache = CuratorCache.build(client, key);
+            caches.put(key, cache);
         }
         CuratorCacheListener curatorCacheListener = CuratorCacheListener.builder()
                 .forTreeCache(client, (framework, treeCacheListener) -> {
@@ -241,7 +243,8 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
                                 new String(treeCacheListener.getData().getData(), StandardCharsets.UTF_8), changedType));
                     }
                 }).build();
-        caches.get(key).listenable().addListener(curatorCacheListener);
+        cache.listenable().addListener(curatorCacheListener);
+        start(cache);
     }
     
     private void start(final CuratorCache cache) {
@@ -268,13 +271,8 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     }
     
     @Override
-    public Lock getInternalMutexLock(final String lockName) {
-        return internalLockHolder.getInternalMutexLock(lockName);
-    }
-    
-    @Override
-    public Lock getInternalReentrantMutexLock(final String lockName) {
-        return internalLockHolder.getInternalReentrantMutexLock(lockName);
+    public boolean persistLock(final String lockKey, final long timeoutMillis) {
+        return internalLockHolder.getInternalLock(lockKey).tryLock(timeoutMillis);
     }
     
     @Override

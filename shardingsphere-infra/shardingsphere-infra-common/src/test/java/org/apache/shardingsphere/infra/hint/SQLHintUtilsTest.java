@@ -19,6 +19,8 @@ package org.apache.shardingsphere.infra.hint;
 
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -53,5 +55,12 @@ public final class SQLHintUtilsTest {
         assertThat(actual.size(), is(2));
         assertThat(actual.get("tableName"), is("t_order"));
         assertThat(actual.get("columnName"), is("order_id"));
+    }
+    
+    @Test
+    public void assertGetSplitterSQLHintValue() {
+        Collection<String> actual = SQLHintUtils.getSplitterSQLHintValue("  sharding_audit1    sharding_audit2 ");
+        assertThat(actual.size(), is(2));
+        assertTrue(actual.containsAll(Arrays.asList("sharding_audit1", "sharding_audit2")));
     }
 }

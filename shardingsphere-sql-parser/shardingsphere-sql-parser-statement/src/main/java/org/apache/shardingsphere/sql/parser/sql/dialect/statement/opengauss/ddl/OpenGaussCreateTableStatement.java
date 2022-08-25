@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
@@ -26,10 +26,10 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.Open
 /**
  * OpenGauss create table statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-@ToString
+@ToString(callSuper = true)
 public final class OpenGaussCreateTableStatement extends CreateTableStatement implements OpenGaussStatement {
     
-    private boolean containsNotExistClause;
+    private final boolean ifNotExists;
 }

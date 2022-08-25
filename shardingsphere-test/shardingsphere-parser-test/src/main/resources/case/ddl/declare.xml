@@ -17,5 +17,15 @@
   -->
 
 <sql-parser-test-cases>
-    <declare sql-case-id="declare" />
+    <declare sql-case-id="declare_cursor">
+        <cursor-name name="t_order_cursor" start-index="8" stop-index="21" />
+        <select>
+            <from>
+                <simple-table name="t_order" start-index="55" stop-index="61" />
+            </from>
+            <projections start-index="48" stop-index="48">
+                <shorthand-projection start-index="48" stop-index="48" />
+            </projections>
+        </select>
+    </declare>
 </sql-parser-test-cases>

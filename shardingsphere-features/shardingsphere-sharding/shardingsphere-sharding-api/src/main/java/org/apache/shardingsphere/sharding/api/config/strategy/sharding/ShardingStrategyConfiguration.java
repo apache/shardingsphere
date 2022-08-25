@@ -28,4 +28,11 @@ public interface ShardingStrategyConfiguration {
      * @return sharding algorithm name
      */
     String getShardingAlgorithmName();
+    
+    /**
+     * Get type.
+     * 
+     * @return type
+     */
+    String getType();
 }

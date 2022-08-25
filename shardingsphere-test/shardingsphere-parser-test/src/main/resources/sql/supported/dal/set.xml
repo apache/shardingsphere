@@ -20,6 +20,9 @@
     <sql-case id="set_parameter_equal" value="SET configuration_parameter = 'value'" db-types="PostgreSQL,openGauss, MySQL" />
     <sql-case id="set_parameter_equal_number" value="SET extra_float_digits = 3" db-types="PostgreSQL,openGauss, MySQL" />
     <sql-case id="set_parameter_equal_session_mysql" value="SET SESSION configuration_parameter = 'value'" db-types="MySQL" />
+    <sql-case id="set_parameter_equal_at_at_session_mysql" value="SET @@SESSION.configuration_parameter = 'value'" db-types="MySQL" />
+    <sql-case id="set_parameter_equal_at_at_without_scope_mysql" value="SET @@configuration_parameter = 'value'" db-types="MySQL" />
+    <sql-case id="set_parameter_equal_at_at_global_mysql" value="SET @@GLOBAL.configuration_parameter = 'value'" db-types="MySQL" />
     <sql-case id="set_parameter_to" value="SET configuration_parameter TO 'value'" db-types="PostgreSQL,openGauss" />
     <sql-case id="set_parameter_for_session_scope" value="SET SESSION configuration_parameter TO 'value'" db-types="PostgreSQL,openGauss" />
     <sql-case id="set_parameter_for_local_scope" value="SET LOCAL configuration_parameter TO 'value'" db-types="PostgreSQL,openGauss" />

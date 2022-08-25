@@ -39,6 +39,8 @@
     <sql-case id="show_all" value="SHOW ALL" db-types="PostgreSQL,openGauss" />
     <sql-case id="show_server_version" value="SHOW SERVER_VERSION" db-types="PostgreSQL,openGauss" />
     <sql-case id="show_transaction_isolation_level" value="SHOW TRANSACTION ISOLATION LEVEL" db-types="PostgreSQL,openGauss" />
+    <sql-case id="show_time_zone" value="SHOW TIME ZONE" db-types="PostgreSQL,openGauss" />
+    <sql-case id="show_session_authorization" value="SHOW SESSION AUTHORIZATION" db-types="PostgreSQL,openGauss" />
     <sql-case id="show_databases" value="SHOW DATABASES" db-types="MySQL" />
     <sql-case id="show_schemas" value="SHOW SCHEMAS" db-types="MySQL" />
     <sql-case id="show_databases_with_like" value="SHOW DATABASES LIKE 'sharding_db'" db-types="MySQL" />

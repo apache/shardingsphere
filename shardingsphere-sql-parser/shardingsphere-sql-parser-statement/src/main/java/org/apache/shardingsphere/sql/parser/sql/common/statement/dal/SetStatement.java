@@ -29,7 +29,7 @@ import java.util.List;
  * Set statement.
  */
 @Getter
-@ToString
+@ToString(callSuper = true)
 public abstract class SetStatement extends AbstractSQLStatement implements DALStatement {
     
     private final List<VariableAssignSegment> variableAssigns = new LinkedList<>();

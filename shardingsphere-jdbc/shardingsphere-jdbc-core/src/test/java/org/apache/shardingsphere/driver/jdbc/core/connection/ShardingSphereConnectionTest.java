@@ -21,10 +21,11 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.jdbc.context.JDBCContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.transaction.ConnectionTransaction;
 import org.apache.shardingsphere.transaction.ConnectionTransaction.DistributedTransactionOperationType;
-import org.apache.shardingsphere.transaction.TransactionHolder;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -37,7 +38,6 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -62,8 +62,10 @@ public final class ShardingSphereConnectionTest {
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getDataSourceMap(DefaultDatabase.LOGIC_NAME)).thenReturn(Collections.singletonMap("ds", mock(DataSource.class, RETURNS_DEEP_STUBS)));
-        TransactionRule transactionRule = mock(TransactionRule.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.of(transactionRule));
+        ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        when(globalRuleMetaData.getSingleRule(TransactionRule.class)).thenReturn(mock(TransactionRule.class, RETURNS_DEEP_STUBS));
+        when(globalRuleMetaData.getSingleRule(TrafficRule.class)).thenReturn(mock(TrafficRule.class));
         return result;
     }
     
@@ -115,10 +117,10 @@ public final class ShardingSphereConnectionTest {
         connection.getConnectionManager().getConnections("ds", 1, ConnectionMode.MEMORY_STRICTLY);
         connection.setAutoCommit(false);
         assertFalse(connection.getAutoCommit());
-        assertTrue(TransactionHolder.isTransaction());
+        assertTrue(connection.getConnectionContext().getTransactionConnectionContext().isInTransaction());
         verify(physicalConnection).setAutoCommit(false);
         connection.commit();
-        assertFalse(TransactionHolder.isTransaction());
+        assertFalse(connection.getConnectionContext().getTransactionConnectionContext().isInTransaction());
         verify(physicalConnection).commit();
     }
     
@@ -129,10 +131,10 @@ public final class ShardingSphereConnectionTest {
         final ConnectionManager connectionManager = mockConnectionManager(connectionTransaction);
         connection.setAutoCommit(false);
         assertFalse(connection.getAutoCommit());
-        assertTrue(TransactionHolder.isTransaction());
+        assertTrue(connection.getConnectionContext().getTransactionConnectionContext().isInTransaction());
         verify(connectionTransaction).begin();
         connection.commit();
-        assertFalse(TransactionHolder.isTransaction());
+        assertFalse(connection.getConnectionContext().getTransactionConnectionContext().isInTransaction());
         verify(connectionManager).commit();
     }
     
@@ -154,10 +156,10 @@ public final class ShardingSphereConnectionTest {
         final ConnectionManager connectionManager = mockConnectionManager(connectionTransaction);
         connection.setAutoCommit(false);
         assertFalse(connection.getAutoCommit());
-        assertTrue(TransactionHolder.isTransaction());
+        assertTrue(connection.getConnectionContext().getTransactionConnectionContext().isInTransaction());
         verify(connectionTransaction).begin();
         connection.rollback();
-        assertFalse(TransactionHolder.isTransaction());
+        assertFalse(connection.getConnectionContext().getTransactionConnectionContext().isInTransaction());
         verify(connectionManager).rollback();
     }
     

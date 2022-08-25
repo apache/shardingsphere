@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.ddlgenerator;
 
-import org.apache.shardingsphere.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collection;
 
 /**
  * Create table SQL generator.
@@ -30,13 +31,13 @@ import java.sql.SQLException;
 public interface CreateTableSQLGenerator extends TypedSPI {
     
     /**
-    * Generate create table SQL.
+    * Generate create table SQLs.
     * 
-    * @param tableName table name
-    * @param schemaName schema name
     * @param dataSource dataSource
-    * @return generated SQL
+    * @param schemaName schema name
+    * @param tableName table name
+    * @return generated SQLs
     * @throws SQLException SQL exception
     */
-    String generate(String tableName, String schemaName, DataSource dataSource) throws SQLException;
+    Collection<String> generate(DataSource dataSource, String schemaName, String tableName) throws SQLException;
 }

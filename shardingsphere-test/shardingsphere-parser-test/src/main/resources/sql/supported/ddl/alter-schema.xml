@@ -18,4 +18,6 @@
 
 <sql-cases>
     <sql-case id="alter_schema_transfer_ownership" value="ALTER SCHEMA HumanResources TRANSFER Person.Address" db-types="SQLServer" />
+    <sql-case id="alter_schema_rename_to" value="ALTER SCHEMA accounts RENAME TO accounting;" db-types="PostgreSQL" />
+    <sql-case id="alter_schema_owner_to" value="ALTER SCHEMA accounting OWNER TO CURRENT_USER;" db-types="PostgreSQL" />
 </sql-cases>

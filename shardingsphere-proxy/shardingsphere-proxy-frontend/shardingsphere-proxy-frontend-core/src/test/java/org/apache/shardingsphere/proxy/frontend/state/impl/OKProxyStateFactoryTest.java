@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.frontend.state.impl;
 
-import org.apache.shardingsphere.proxy.frontend.fixture.FixtureDatabaseType;
 import org.apache.shardingsphere.proxy.frontend.fixture.FixtureOKProxyState;
+import org.apache.shardingsphere.test.fixture.database.type.MockedDatabaseType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -28,6 +28,6 @@ public final class OKProxyStateFactoryTest {
     
     @Test
     public void assertGetInstance() {
-        assertThat(OKProxyStateFactory.getInstance(new FixtureDatabaseType().getType()), instanceOf(FixtureOKProxyState.class));
+        assertThat(OKProxyStateFactory.getInstance(new MockedDatabaseType().getType()), instanceOf(FixtureOKProxyState.class));
     }
 }

@@ -61,7 +61,7 @@ public final class CommandExecutorTaskAdviceTest extends MetricsAdviceBaseTest {
     }
     
     @Test
-    public void assertExecutorErrorTotal() {
+    public void assertExecuteErrorTotal() {
         when(processException.getName()).thenReturn(CommandExecutorTaskAdvice.COMMAND_EXECUTOR_EXCEPTION);
         MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
         commandExecutorTaskAdvice.afterMethod(targetObject, processException, new Object[]{}, new MethodInvocationResult());

@@ -106,7 +106,7 @@ public final class EncryptAlterTableTokenGeneratorTest {
     private AlterTableStatementContext buildAddColumnStatementContext() {
         AlterTableStatementContext result = mock(AlterTableStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement().getTable().getTableName().getIdentifier().getValue()).thenReturn("t_encrypt");
-        ColumnDefinitionSegment segment = new ColumnDefinitionSegment(33, 67, new ColumnSegment(33, 50, new IdentifierValue("certificate_number")), new DataTypeSegment(), false);
+        ColumnDefinitionSegment segment = new ColumnDefinitionSegment(33, 67, new ColumnSegment(33, 50, new IdentifierValue("certificate_number")), new DataTypeSegment(), false, false);
         AddColumnDefinitionSegment addColumnDefinitionSegment = new AddColumnDefinitionSegment(22, 67, Collections.singletonList(segment));
         when(result.getSqlStatement().getAddColumnDefinitions()).thenReturn(Collections.singletonList(addColumnDefinitionSegment));
         return result;
@@ -135,7 +135,7 @@ public final class EncryptAlterTableTokenGeneratorTest {
     private AlterTableStatementContext buildModifyColumnStatementContext() {
         AlterTableStatementContext result = mock(AlterTableStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement().getTable().getTableName().getIdentifier().getValue()).thenReturn("t_encrypt");
-        ColumnDefinitionSegment segment = new ColumnDefinitionSegment(36, 70, new ColumnSegment(36, 53, new IdentifierValue("certificate_number")), new DataTypeSegment(), false);
+        ColumnDefinitionSegment segment = new ColumnDefinitionSegment(36, 70, new ColumnSegment(36, 53, new IdentifierValue("certificate_number")), new DataTypeSegment(), false, false);
         ModifyColumnDefinitionSegment modifyColumnDefinitionSegment = new ModifyColumnDefinitionSegment(22, 70, segment);
         when(result.getSqlStatement().getModifyColumnDefinitions()).thenReturn(Collections.singletonList(modifyColumnDefinitionSegment));
         return result;
@@ -167,8 +167,7 @@ public final class EncryptAlterTableTokenGeneratorTest {
     private AlterTableStatementContext buildChangeColumnStatementContext() {
         AlterTableStatementContext result = mock(AlterTableStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement().getTable().getTableName().getIdentifier().getValue()).thenReturn("t_encrypt");
-        ColumnDefinitionSegment segment = new ColumnDefinitionSegment(55, 93,
-                new ColumnSegment(55, 76, new IdentifierValue("certificate_number_new")), new DataTypeSegment(), false);
+        ColumnDefinitionSegment segment = new ColumnDefinitionSegment(55, 93, new ColumnSegment(55, 76, new IdentifierValue("certificate_number_new")), new DataTypeSegment(), false, false);
         ChangeColumnDefinitionSegment changeColumnDefinitionSegment = new ChangeColumnDefinitionSegment(22, 93, segment);
         changeColumnDefinitionSegment.setPreviousColumn(new ColumnSegment(36, 53, new IdentifierValue("certificate_number")));
         when(result.getSqlStatement().getChangeColumnDefinitions()).thenReturn(Collections.singletonList(changeColumnDefinitionSegment));

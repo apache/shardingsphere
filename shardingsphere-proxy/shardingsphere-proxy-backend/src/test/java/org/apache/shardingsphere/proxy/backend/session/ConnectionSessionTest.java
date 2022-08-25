@@ -17,14 +17,16 @@
 
 package org.apache.shardingsphere.proxy.backend.session;
 
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JDBCBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.exception.SwitchTypeInTransactionException;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,10 +36,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -56,7 +59,9 @@ public final class ConnectionSessionTest extends ProxyContextRestorer {
     
     @Before
     public void setup() {
-        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class)).thenReturn(Optional.of(mock(TransactionRule.class)));
+        ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        when(globalRuleMetaData.getSingleRule(TransactionRule.class)).thenReturn(mock(TransactionRule.class));
         ProxyContext.init(contextManager);
         connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, null);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
@@ -68,7 +73,7 @@ public final class ConnectionSessionTest extends ProxyContextRestorer {
         assertThat(connectionSession.getDatabaseName(), is("currentDatabase"));
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = SwitchTypeInTransactionException.class)
     public void assertFailedSwitchTransactionTypeWhileBegin() throws SQLException {
         connectionSession.setCurrentDatabase("db");
         JDBCBackendTransactionManager transactionManager = new JDBCBackendTransactionManager(backendConnection);
@@ -76,12 +81,13 @@ public final class ConnectionSessionTest extends ProxyContextRestorer {
         connectionSession.getTransactionStatus().setTransactionType(TransactionType.XA);
     }
     
-    @Test(expected = ShardingSphereException.class)
-    public void assertFailedSwitchSchemaWhileBegin() throws SQLException {
+    @Test
+    public void assertSwitchSchemaWhileBegin() throws SQLException {
         connectionSession.setCurrentDatabase("db");
         JDBCBackendTransactionManager transactionManager = new JDBCBackendTransactionManager(backendConnection);
         transactionManager.begin();
         connectionSession.setCurrentDatabase("newDB");
+        assertThat(connectionSession.getDefaultDatabaseName(), is("newDB"));
     }
     
     @Test
@@ -93,5 +99,13 @@ public final class ConnectionSessionTest extends ProxyContextRestorer {
     public void assertSetAutocommit() {
         connectionSession.setAutoCommit(false);
         assertFalse(connectionSession.isAutoCommit());
+    }
+    
+    @Test
+    public void assertClearQueryContext() {
+        connectionSession.setQueryContext(mock(QueryContext.class));
+        assertNotNull(connectionSession.getQueryContext());
+        connectionSession.clearQueryContext();
+        assertNull(connectionSession.getQueryContext());
     }
 }

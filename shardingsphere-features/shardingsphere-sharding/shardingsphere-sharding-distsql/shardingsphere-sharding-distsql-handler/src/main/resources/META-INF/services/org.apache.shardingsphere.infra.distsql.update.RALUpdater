@@ -15,10 +15,10 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.scaling.distsql.handler.update.StartScalingUpdater
-org.apache.shardingsphere.scaling.distsql.handler.update.StopScalingUpdater
-org.apache.shardingsphere.scaling.distsql.handler.update.ResetScalingUpdater
-org.apache.shardingsphere.scaling.distsql.handler.update.DropScalingUpdater
-org.apache.shardingsphere.scaling.distsql.handler.update.StopScalingSourceWritingUpdater
-org.apache.shardingsphere.scaling.distsql.handler.update.RestoreScalingSourceWritingUpdater
-org.apache.shardingsphere.scaling.distsql.handler.update.ApplyScalingUpdater
+org.apache.shardingsphere.migration.distsql.handler.update.MigrateTableUpdater
+org.apache.shardingsphere.migration.distsql.handler.update.StartMigrationUpdater
+org.apache.shardingsphere.migration.distsql.handler.update.StopMigrationUpdater
+org.apache.shardingsphere.migration.distsql.handler.update.ResetMigrationUpdater
+org.apache.shardingsphere.migration.distsql.handler.update.CleanMigrationUpdater
+org.apache.shardingsphere.migration.distsql.handler.update.AddMigrationSourceResourceUpdater
+org.apache.shardingsphere.migration.distsql.handler.update.DropMigrationSourceResourceUpdater

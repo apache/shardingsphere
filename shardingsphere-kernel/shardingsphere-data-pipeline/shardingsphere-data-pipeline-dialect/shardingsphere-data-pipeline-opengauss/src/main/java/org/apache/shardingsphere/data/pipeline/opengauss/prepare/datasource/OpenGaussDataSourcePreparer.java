@@ -20,17 +20,12 @@ package org.apache.shardingsphere.data.pipeline.opengauss.prepare.datasource;
 import com.google.common.base.Splitter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeEntry;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
-import org.apache.shardingsphere.data.pipeline.core.metadata.generator.PipelineDDLGenerator;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.AbstractDataSourcePreparer;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,12 +36,12 @@ import java.util.stream.Collectors;
 public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePreparer {
     
     @Override
-    public void prepareTargetTables(final PrepareTargetTablesParameter parameter) {
+    public void prepareTargetTables(final PrepareTargetTablesParameter parameter) throws SQLException {
         List<String> createLogicalTableSQLs = listCreateLogicalTableSQL(parameter);
-        try (Connection targetConnection = getTargetCachedDataSource(parameter.getTaskConfig(), parameter.getDataSourceManager()).getConnection()) {
+        try (Connection targetConnection = getCachedDataSource(parameter.getTargetDataSourceConfig(), parameter.getDataSourceManager()).getConnection()) {
             for (String createLogicalTableSQL : createLogicalTableSQLs) {
                 for (String each : Splitter.on(";").splitToList(createLogicalTableSQL).stream().filter(StringUtils::isNotBlank).collect(Collectors.toList())) {
-                    executeTargetTableSQL(targetConnection, each);
+                    executeTargetTableSQL(targetConnection, addIfNotExistsForCreateTableSQL(each));
                 }
             }
         } catch (final SQLException ex) {
@@ -54,13 +49,8 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
         }
     }
     
-    private List<String> listCreateLogicalTableSQL(final PrepareTargetTablesParameter parameter) {
-        PipelineDDLGenerator generator = new PipelineDDLGenerator(PipelineContext.getContextManager());
-        List<String> result = new LinkedList<>();
-        for (JobDataNodeEntry each : parameter.getTablesFirstDataNodes().getEntries()) {
-            String schemaName = parameter.getTableNameSchemaNameMapping().getSchemaName(each.getLogicTableName());
-            result.add(generator.generateLogicDDLSQL(new OpenGaussDatabaseType(), parameter.getJobConfig().getDatabaseName(), schemaName, each.getLogicTableName()));
-        }
-        return result;
+    @Override
+    public String getType() {
+        return "openGauss";
     }
 }

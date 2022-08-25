@@ -15,5 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.context.refresher.type.DummyDropDatabaseMetaDataRefresher
 org.apache.shardingsphere.infra.context.refresher.fixture.MetaDataRefresherFixture

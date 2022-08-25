@@ -30,5 +30,6 @@ execute
     | enableReadDataSource
     | disableReadDataSource
     | showReadwriteSplittingReadResources
+    | countReadwriteSplittingRule
     ) SEMI?
     ;

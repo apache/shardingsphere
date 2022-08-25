@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
@@ -69,7 +69,7 @@ public final class AlterShardingAlgorithmStatementUpdaterTest {
         props.put("input_key", "input_value");
         ShardingAlgorithmSegment algorithmSegment = new ShardingAlgorithmSegment("not_exist_algorithm_name", new AlgorithmSegment("input_algorithm_name", props));
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getShardingAlgorithms().put("exist_algorithm_name", new ShardingSphereAlgorithmConfiguration("hash_mod", props));
+        shardingRuleConfig.getShardingAlgorithms().put("exist_algorithm_name", new AlgorithmConfiguration("hash_mod", props));
         updater.checkSQLStatement(database, createSQLStatement(algorithmSegment), shardingRuleConfig);
     }
     
@@ -79,7 +79,7 @@ public final class AlterShardingAlgorithmStatementUpdaterTest {
         props.put("input_key", "input_value");
         ShardingAlgorithmSegment algorithmSegment = new ShardingAlgorithmSegment("exist_algorithm_name", new AlgorithmSegment("input_algorithm_name", props));
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
-        ruleConfig.getShardingAlgorithms().put("exist_algorithm_name", new ShardingSphereAlgorithmConfiguration("invalid_algorithm", props));
+        ruleConfig.getShardingAlgorithms().put("exist_algorithm_name", new AlgorithmConfiguration("invalid_algorithm", props));
         updater.checkSQLStatement(database, createSQLStatement(algorithmSegment), ruleConfig);
     }
     
@@ -88,7 +88,7 @@ public final class AlterShardingAlgorithmStatementUpdaterTest {
         Properties props = new Properties();
         ShardingAlgorithmSegment algorithmSegment = new ShardingAlgorithmSegment("exist_algorithm_name", new AlgorithmSegment("mod", props));
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
-        currentRuleConfig.getShardingAlgorithms().put("exist_algorithm_name", new ShardingSphereAlgorithmConfiguration("hash_mod", props));
+        currentRuleConfig.getShardingAlgorithms().put("exist_algorithm_name", new AlgorithmConfiguration("hash_mod", props));
         ShardingRuleConfiguration toBeAlteredRuleConfiguration = updater.buildToBeAlteredRuleConfiguration(createSQLStatement(algorithmSegment));
         updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfiguration);
         assertThat(currentRuleConfig.getShardingAlgorithms().get("exist_algorithm_name").getType(), is("mod"));

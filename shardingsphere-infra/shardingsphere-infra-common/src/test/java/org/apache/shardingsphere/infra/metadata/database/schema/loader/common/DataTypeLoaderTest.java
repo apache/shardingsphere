@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.loader.common;
 
+import org.apache.shardingsphere.infra.fixture.InfraDatabaseTypeFixture;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DataTypeLoaderFactory;
 import org.junit.Test;
 
 import java.sql.DatabaseMetaData;
@@ -39,7 +41,7 @@ public final class DataTypeLoaderTest {
         when(resultSet.getInt("DATA_TYPE")).thenReturn(4, 12);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         when(databaseMetaData.getTypeInfo()).thenReturn(resultSet);
-        Map<String, Integer> actual = DataTypeLoader.load(databaseMetaData);
+        Map<String, Integer> actual = DataTypeLoaderFactory.getInstance(new InfraDatabaseTypeFixture()).load(databaseMetaData);
         assertThat(actual.size(), is(2));
         assertThat(actual.get("INT"), is(4));
         assertThat(actual.get("VARCHAR"), is(12));

@@ -54,6 +54,13 @@ public interface ParameterizedArray {
     DatabaseType getDatabaseType();
     
     /**
+     * Get mode.
+     *
+     * @return mode
+     */
+    String getMode();
+    
+    /**
      * Get key.
      * 
      * @return key of parameterized array

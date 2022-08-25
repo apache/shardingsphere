@@ -69,7 +69,9 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
      * @return add quote string
      */
     public String quote(final String item) {
-        return getLeftIdentifierQuoteString() + item + getRightIdentifierQuoteString();
+        // TODO quote by database type and keyword. need to compatible with case-sensitive table and column name
+        // return getLeftIdentifierQuoteString() + item + getRightIdentifierQuoteString();
+        return item;
     }
     
     @Override
@@ -183,7 +185,7 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildChunkedQuerySQL(final @NonNull String schemaName, final @NonNull String tableName, final @NonNull String uniqueKey, final boolean firstQuery) {
+    public String buildChunkedQuerySQL(final String schemaName, final @NonNull String tableName, final @NonNull String uniqueKey, final boolean firstQuery) {
         if (firstQuery) {
             return "SELECT * FROM " + decorate(schemaName, tableName) + " ORDER BY " + quote(uniqueKey) + " ASC LIMIT ?";
         } else {

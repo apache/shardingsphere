@@ -20,8 +20,8 @@ databaseName: readwrite_splitting
 dataSources:
   write_ds:
     url: jdbc:mysql://mysql.readwrite_splitting.host:3306/write_ds?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
-    username: root
-    password: root
+    username: test_user
+    password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -29,8 +29,8 @@ dataSources:
     minPoolSize: 2
   read_0:
     url: jdbc:mysql://mysql.readwrite_splitting.host:3306/read_0?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
-    username: root
-    password: root
+    username: test_user
+    password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -38,8 +38,8 @@ dataSources:
     minPoolSize: 2
   read_1:
     url: jdbc:mysql://mysql.readwrite_splitting.host:3306/read_1?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
-    username: root
-    password: root
+    username: test_user
+    password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -76,7 +76,8 @@ rules:
 - !READWRITE_SPLITTING
   dataSources:
     write-read-ds:
-      type: Static
-      props:
-        write-data-source-name: write_ds
-        read-data-source-names: read_0,read_1
+      staticStrategy:
+        writeDataSourceName: write_ds
+        readDataSourceNames:
+          - read_0
+          - read_1

@@ -25,13 +25,13 @@ import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.AuthorityRuleBuilder;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLAuthenticationMethod;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
+import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
@@ -89,28 +89,28 @@ public final class PostgreSQLAuthenticationHandlerTest extends ProxyContextResto
     public void assertLoginWithPassword() {
         initProxyContext(new ShardingSphereUser(username, password, "%"));
         PostgreSQLLoginResult postgreSQLLoginResult = new PostgreSQLAuthenticationHandler().login(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
-        assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.SUCCESSFUL_COMPLETION));
+        assertThat(postgreSQLLoginResult.getVendorError(), is(PostgreSQLVendorError.SUCCESSFUL_COMPLETION));
     }
     
     @Test
     public void assertLoginWithAbsentUser() {
         initProxyContext(new ShardingSphereUser("username", password, "%"));
         PostgreSQLLoginResult postgreSQLLoginResult = new PostgreSQLAuthenticationHandler().login(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
-        assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION));
+        assertThat(postgreSQLLoginResult.getVendorError(), is(PostgreSQLVendorError.INVALID_AUTHORIZATION_SPECIFICATION));
     }
     
     @Test
     public void assertLoginWithIncorrectPassword() {
         initProxyContext(new ShardingSphereUser(username, "password", "%"));
         PostgreSQLLoginResult postgreSQLLoginResult = new PostgreSQLAuthenticationHandler().login(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
-        assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_PASSWORD));
+        assertThat(postgreSQLLoginResult.getVendorError(), is(PostgreSQLVendorError.INVALID_PASSWORD));
     }
     
     @Test
     public void assertLoginWithoutPassword() {
         initProxyContext(new ShardingSphereUser(username, null, "%"));
         PostgreSQLLoginResult postgreSQLLoginResult = new PostgreSQLAuthenticationHandler().login(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
-        assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_PASSWORD));
+        assertThat(postgreSQLLoginResult.getVendorError(), is(PostgreSQLVendorError.INVALID_PASSWORD));
     }
     
     @Test
@@ -118,7 +118,7 @@ public final class PostgreSQLAuthenticationHandlerTest extends ProxyContextResto
         initProxyContext(new ShardingSphereUser(username, password, "%"));
         String database = "non_exist_database";
         PostgreSQLLoginResult postgreSQLLoginResult = new PostgreSQLAuthenticationHandler().login(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
-        assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_CATALOG_NAME));
+        assertThat(postgreSQLLoginResult.getVendorError(), is(PostgreSQLVendorError.INVALID_CATALOG_NAME));
     }
     
     @Test
@@ -137,7 +137,7 @@ public final class PostgreSQLAuthenticationHandlerTest extends ProxyContextResto
     
     private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user) {
         return new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(getDatabases(), buildGlobalRuleMetaData(user), new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
+                new ShardingSphereMetaData(getDatabases(), buildGlobalRuleMetaData(user), new ConfigurationProperties(new Properties())));
     }
     
     private ByteBuf createByteBuf(final int initialCapacity, final int maxCapacity) {
@@ -150,8 +150,8 @@ public final class PostgreSQLAuthenticationHandlerTest extends ProxyContextResto
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
             ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
             when(database.getResource()).thenReturn(new ShardingSphereResource(Collections.emptyMap()));
-            when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()));
-            when(database.getSchemas().get(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
+            when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
+            when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
             when(schema.getTables()).thenReturn(Collections.emptyMap());
             result.put(String.format(SCHEMA_PATTERN, i), database);
         }
@@ -159,9 +159,9 @@ public final class PostgreSQLAuthenticationHandlerTest extends ProxyContextResto
     }
     
     private ShardingSphereRuleMetaData buildGlobalRuleMetaData(final ShardingSphereUser user) {
-        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.singletonList(user), new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
-        AuthorityRule rule = new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap());
-        return new ShardingSphereRuleMetaData(Collections.singletonList(ruleConfig), Collections.singleton(rule));
+        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.singletonList(user), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()));
+        AuthorityRule rule = new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap(), mock(InstanceContext.class));
+        return new ShardingSphereRuleMetaData(Collections.singleton(rule));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

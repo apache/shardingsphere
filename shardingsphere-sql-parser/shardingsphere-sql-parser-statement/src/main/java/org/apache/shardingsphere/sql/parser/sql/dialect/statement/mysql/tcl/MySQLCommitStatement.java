@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL commit statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class MySQLCommitStatement extends CommitStatement implements MySQLStatement {
 }

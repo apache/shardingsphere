@@ -24,6 +24,10 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL reset parameter statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLResetParameterStatement extends ResetParameterStatement implements PostgreSQLStatement {
+    
+    public PostgreSQLResetParameterStatement(final String configurationParameter) {
+        super(configurationParameter);
+    }
 }

@@ -29,6 +29,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
  */
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class OracleAuditStatement extends AbstractSQLStatement implements DDLStatement, OracleStatement {
 }

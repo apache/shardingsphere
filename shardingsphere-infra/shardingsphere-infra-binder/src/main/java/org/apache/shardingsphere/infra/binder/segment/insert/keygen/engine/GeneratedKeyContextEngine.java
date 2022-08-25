@@ -72,7 +72,7 @@ public final class GeneratedKeyContextEngine {
     }
     
     private boolean containsGenerateKey(final List<String> insertColumnNames, final String generateKeyColumnName) {
-        return insertColumnNames.isEmpty() ? schema.getAllColumnNames(insertStatement.getTable().getTableName().getIdentifier().getValue()).size() == getValueCountForPerGroup()
+        return insertColumnNames.isEmpty() ? schema.getVisibleColumnNames(insertStatement.getTable().getTableName().getIdentifier().getValue()).size() == getValueCountForPerGroup()
                 : insertColumnNames.contains(generateKeyColumnName);
     }
     
@@ -117,7 +117,7 @@ public final class GeneratedKeyContextEngine {
     }
     
     private int findGenerateKeyIndex(final List<String> insertColumnNames, final String generateKeyColumnName) {
-        return insertColumnNames.isEmpty() ? schema.getAllColumnNames(insertStatement.getTable().getTableName().getIdentifier().getValue()).indexOf(generateKeyColumnName)
+        return insertColumnNames.isEmpty() ? schema.getVisibleColumnNames(insertStatement.getTable().getTableName().getIdentifier().getValue()).indexOf(generateKeyColumnName)
                 : insertColumnNames.indexOf(generateKeyColumnName);
     }
 }

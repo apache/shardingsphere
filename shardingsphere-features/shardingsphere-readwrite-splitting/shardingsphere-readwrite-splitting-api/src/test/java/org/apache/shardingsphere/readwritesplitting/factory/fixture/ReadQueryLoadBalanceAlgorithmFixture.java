@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.factory.fixture;
 
+import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 
 import java.util.List;
@@ -24,10 +25,8 @@ import java.util.Properties;
 
 public final class ReadQueryLoadBalanceAlgorithmFixture implements ReadQueryLoadBalanceAlgorithm {
     
-    public static final String TYPE = "FIXTURE";
-    
     @Override
-    public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
+    public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames, final TransactionConnectionContext context) {
         return null;
     }
     
@@ -42,6 +41,6 @@ public final class ReadQueryLoadBalanceAlgorithmFixture implements ReadQueryLoad
     
     @Override
     public String getType() {
-        return TYPE;
+        return "FIXTURE";
     }
 }

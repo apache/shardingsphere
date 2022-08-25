@@ -19,9 +19,9 @@ package org.apache.shardingsphere.readwritesplitting.yaml.config.rule;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
-
-import java.util.Properties;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+import org.apache.shardingsphere.readwritesplitting.yaml.config.strategy.YamlDynamicReadwriteSplittingStrategyConfiguration;
+import org.apache.shardingsphere.readwritesplitting.yaml.config.strategy.YamlStaticReadwriteSplittingStrategyConfiguration;
 
 /**
  * Readwrite-splitting data source rule configuration for YAML.
@@ -30,9 +30,9 @@ import java.util.Properties;
 @Setter
 public final class YamlReadwriteSplittingDataSourceRuleConfiguration implements YamlConfiguration {
     
-    private String type;
+    private YamlStaticReadwriteSplittingStrategyConfiguration staticStrategy;
     
-    private Properties props;
+    private YamlDynamicReadwriteSplittingStrategyConfiguration dynamicStrategy;
     
     private String loadBalancerName;
 }

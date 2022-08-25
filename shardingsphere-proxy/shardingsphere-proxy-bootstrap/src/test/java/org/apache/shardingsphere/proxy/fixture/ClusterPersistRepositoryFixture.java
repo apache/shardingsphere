@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.Lock;
 
 public final class ClusterPersistRepositoryFixture implements ClusterPersistRepository {
     
@@ -57,8 +56,7 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     }
     
     @Override
-    public String getSequentialId(final String key, final String value) {
-        return null;
+    public void persistExclusiveEphemeral(final String key, final String value) {
     }
     
     @Override
@@ -74,13 +72,8 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     }
     
     @Override
-    public Lock getInternalMutexLock(final String lockName) {
-        return null;
-    }
-    
-    @Override
-    public Lock getInternalReentrantMutexLock(final String lockName) {
-        return null;
+    public boolean persistLock(final String lockKey, final long timeoutMillis) {
+        return false;
     }
     
     @Override

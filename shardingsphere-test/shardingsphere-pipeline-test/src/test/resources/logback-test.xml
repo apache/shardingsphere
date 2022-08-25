@@ -23,10 +23,12 @@
         </encoder>
     </appender>
     <logger name="org.apache.zookeeper" level="off" />
-    <logger name="org.apache.shardingsphere.data.pipeline.scenario.rulealtered.prepare.InventoryTaskSplitter" level="off" />
+    <logger name="org.apache.shardingsphere.data.pipeline.core.prepare.InventoryTaskSplitter" level="off" />
+    <logger name="org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPIImpl" level="off" />
+    <logger name="org.apache.shardingsphere.data.pipeline.core.ingest.dumper.AbstractInventoryDumper" level="off" />
     
     <root>
-        <level value="warn" />
+        <level value="error" />
         <appender-ref ref="console" />
     </root>
 </configuration> 

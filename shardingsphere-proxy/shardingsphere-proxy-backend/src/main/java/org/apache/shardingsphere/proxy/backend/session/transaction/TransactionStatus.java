@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.backend.session.transaction;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.exception.SwitchTypeInTransactionException;
 
 /**
  * Transaction status.
@@ -28,17 +28,10 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 @Getter
 public final class TransactionStatus {
     
-    private static final long DEFAULT_TIMEOUT_MILLISECONDS = 200L;
-    
-    private static final int MAXIMUM_RETRY_COUNT = 5;
-    
     @Setter
     private volatile boolean inTransaction;
     
     private volatile TransactionType transactionType;
-    
-    @Setter
-    private volatile boolean manualXA;
     
     @Setter
     private volatile boolean rollbackOnly;
@@ -48,31 +41,13 @@ public final class TransactionStatus {
     }
     
     /**
-     * Get current transaction type of this session.
-     *
-     * @return MANUALXA when in manual xa transaction or predefined transaction type if not
-     */
-    public TransactionType getTransactionType() {
-        return manualXA ? TransactionType.MANUALXA : transactionType;
-    }
-    
-    /**
-     * Check there's any transaction on this session.
-     *
-     * @return is in transaction or in manual xa transaction
-     */
-    public boolean isInTransaction() {
-        return inTransaction || manualXA;
-    }
-    
-    /**
      * Change transaction type of current channel.
      *
      * @param transactionType transaction type
      */
     public void setTransactionType(final TransactionType transactionType) {
         if (inTransaction) {
-            throw new ShardingSphereException("Failed to switch transaction type, please terminate current transaction.");
+            throw new SwitchTypeInTransactionException();
         }
         this.transactionType = transactionType;
     }
@@ -83,6 +58,6 @@ public final class TransactionStatus {
      * @return is in connection held transaction or not
      */
     public boolean isInConnectionHeldTransaction() {
-        return isInTransaction() && TransactionType.BASE != getTransactionType();
+        return inTransaction && TransactionType.BASE != transactionType;
     }
 }

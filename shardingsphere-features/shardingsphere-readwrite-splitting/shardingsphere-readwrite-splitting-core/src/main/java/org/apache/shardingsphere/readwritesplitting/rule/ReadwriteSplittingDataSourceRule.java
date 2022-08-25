@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.readwritesplitting.rule;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.strategy.ReadwriteSplittingStrategy;
@@ -47,11 +46,11 @@ public final class ReadwriteSplittingDataSourceRule {
     @Getter(AccessLevel.NONE)
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
-    public ReadwriteSplittingDataSourceRule(final ReadwriteSplittingDataSourceRuleConfiguration config, final ReadQueryLoadBalanceAlgorithm loadBalancer) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getName()), "Name is required.");
+    public ReadwriteSplittingDataSourceRule(final ReadwriteSplittingDataSourceRuleConfiguration config, final ReadQueryLoadBalanceAlgorithm loadBalancer,
+                                            final Collection<ShardingSphereRule> builtRules) {
         name = config.getName();
         this.loadBalancer = loadBalancer;
-        readwriteSplittingStrategy = ReadwriteSplittingStrategyFactory.newInstance(config.getType(), config.getProps());
+        readwriteSplittingStrategy = ReadwriteSplittingStrategyFactory.newInstance(config, builtRules);
     }
     
     /**

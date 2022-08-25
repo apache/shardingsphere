@@ -19,6 +19,7 @@ package org.apache.shardingsphere.driver.executor.callback.impl;
 
 import org.apache.shardingsphere.driver.executor.callback.ExecuteQueryCallback;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.ResultSet;
@@ -30,8 +31,8 @@ import java.sql.Statement;
  */
 public final class StatementExecuteQueryCallback extends ExecuteQueryCallback {
     
-    public StatementExecuteQueryCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
-        super(databaseType, sqlStatement, isExceptionThrown);
+    public StatementExecuteQueryCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final boolean isExceptionThrown, final EventBusContext eventBusContext) {
+        super(databaseType, sqlStatement, isExceptionThrown, eventBusContext);
     }
     
     @Override

@@ -17,107 +17,40 @@
 
 package org.apache.shardingsphere.infra.lock;
 
-import org.apache.shardingsphere.infra.instance.InstanceContext;
-
-import java.util.Set;
-
 /**
  * Lock context.
  */
 public interface LockContext {
     
     /**
-     * Init lock state.
+     * Try lock.
      *
-     * @param instanceContext instance context
-     */
-    default void initLockState(InstanceContext instanceContext) {
-    }
-    
-    /**
-     * Get lock.
-     *
-     * @return lock
-     */
-    ShardingSphereLock getLock();
-    
-    /**
-     * Try lock for database.
-     *
-     * @param databaseName database name
-     * @param lockMode lock mode
+     * @param lockDefinition lock definition
      * @return is locked or not
      */
-    boolean tryLock(String databaseName, LockMode lockMode);
+    boolean tryLock(LockDefinition lockDefinition);
     
     /**
-     * Try Lock write for database.
+     * Try Lock.
      *
-     * @param databaseName database name
-     * @param lockMode lock mode
-     * @param timeoutMilliseconds timeout milliseconds
+     * @param lockDefinition lock definition
+     * @param timeoutMillis timeout milliseconds
      * @return is locked or not
      */
-    boolean tryLock(String databaseName, LockMode lockMode, long timeoutMilliseconds);
+    boolean tryLock(LockDefinition lockDefinition, long timeoutMillis);
     
     /**
-     * Try lock for schemas.
+     * Unlock.
      *
-     * @param databaseName database name
-     * @param schemaNames schema names
-     * @param lockMode lock mode
+     * @param lockDefinition lock definition
+     */
+    void unlock(LockDefinition lockDefinition);
+    
+    /**
+     *  Is locked.
+     *
+     * @param lockDefinition lock definition
      * @return is locked or not
      */
-    default boolean tryLock(String databaseName, Set<String> schemaNames, LockMode lockMode) {
-        throw new UnsupportedOperationException();
-    }
-    
-    /**
-     * Try lock for schemas.
-     *
-     * @param databaseName database name
-     * @param schemaNames schema names
-     * @param lockMode lock mode
-     * @param timeoutMilliseconds timeout milliseconds
-     * @return is locked or not
-     */
-    default boolean tryLock(String databaseName, Set<String> schemaNames, LockMode lockMode, long timeoutMilliseconds) {
-        throw new UnsupportedOperationException();
-    }
-    
-    /**
-     * Release lock for database.
-     *
-     * @param databaseName database name
-     */
-    void releaseLock(String databaseName);
-    
-    /**
-     * Release lock write for schemas.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     */
-    default void releaseLock(String databaseName, String schemaName) {
-        throw new UnsupportedOperationException();
-    }
-    
-    /**
-     *  Is locked database.
-     *
-     * @param databaseName database name
-     * @return is locked database or not
-     */
-    boolean isLocked(String databaseName);
-    
-    /**
-     * Is locked schema.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @return is locked or not
-     */
-    default boolean isLocked(String databaseName, String schemaName) {
-        throw new UnsupportedOperationException();
-    }
+    boolean isLocked(LockDefinition lockDefinition);
 }

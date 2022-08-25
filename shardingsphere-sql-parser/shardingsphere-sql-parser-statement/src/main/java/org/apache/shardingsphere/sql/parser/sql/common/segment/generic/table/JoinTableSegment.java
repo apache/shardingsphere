@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
@@ -29,6 +30,7 @@ import java.util.Optional;
 
 @Getter
 @Setter
+@ToString
 public final class JoinTableSegment implements TableSegment {
     
     private int startIndex;

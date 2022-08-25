@@ -44,7 +44,7 @@ public final class DropShardingTableRuleStatementUpdater implements RuleDefiniti
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database,
                                   final DropShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
-        if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isContainsExistClause()) {
+        if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isIfExists()) {
             return;
         }
         String databaseName = database.getName();
@@ -65,7 +65,7 @@ public final class DropShardingTableRuleStatementUpdater implements RuleDefiniti
     
     private void checkToBeDroppedShardingTableNames(final String databaseName, final DropShardingTableRuleStatement sqlStatement,
                                                     final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
-        if (sqlStatement.isContainsExistClause()) {
+        if (sqlStatement.isIfExists()) {
             return;
         }
         Collection<String> currentShardingTableNames = getCurrentShardingTableNames(currentRuleConfig);

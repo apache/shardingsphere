@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended;
 
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatement;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLTypeUnspecifiedSQLParameter;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -39,6 +38,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
@@ -93,7 +93,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
         if (parameterSetsIterator.hasNext()) {
             List<Object> firstGroupOfParameter = parameterSetsIterator.next();
             sqlStatementContext = createSQLStatementContext(firstGroupOfParameter);
-            executionContext = createExecutionContext(createLogicSQL(sqlStatementContext, firstGroupOfParameter));
+            executionContext = createExecutionContext(createQueryContext(sqlStatementContext, firstGroupOfParameter));
             for (ExecutionUnit each : executionContext.getExecutionUnits()) {
                 executionUnitParameters.computeIfAbsent(each, unused -> new LinkedList<>()).add(each.getSqlUnit().getParameters());
             }
@@ -112,22 +112,23 @@ public final class PostgreSQLBatchedStatementsExecutor {
             if (sqlStatementContext instanceof ParameterAware) {
                 ((ParameterAware) sqlStatementContext).setUpParameters(eachGroupOfParameter);
             }
-            ExecutionContext eachExecutionContext = createExecutionContext(createLogicSQL(sqlStatementContext, eachGroupOfParameter));
+            ExecutionContext eachExecutionContext = createExecutionContext(createQueryContext(sqlStatementContext, eachGroupOfParameter));
             for (ExecutionUnit each : eachExecutionContext.getExecutionUnits()) {
                 executionUnitParameters.computeIfAbsent(each, unused -> new LinkedList<>()).add(each.getSqlUnit().getParameters());
             }
         }
     }
     
-    private LogicSQL createLogicSQL(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters) {
-        return new LogicSQL(sqlStatementContext, preparedStatement.getSql(), parameters);
+    private QueryContext createQueryContext(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters) {
+        return new QueryContext(sqlStatementContext, preparedStatement.getSql(), parameters);
     }
     
-    private ExecutionContext createExecutionContext(final LogicSQL logicSQL) {
-        SQLCheckEngine.check(logicSQL.getSqlStatementContext().getSqlStatement(), logicSQL.getParameters(),
-                metaDataContexts.getMetaData().getDatabases().get(connectionSession.getDatabaseName()).getRuleMetaData().getRules(),
+    private ExecutionContext createExecutionContext(final QueryContext queryContext) {
+        SQLCheckEngine.check(queryContext.getSqlStatementContext(), queryContext.getParameters(),
+                metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getRuleMetaData().getRules(),
                 connectionSession.getDatabaseName(), metaDataContexts.getMetaData().getDatabases(), null);
-        return kernelProcessor.generateExecutionContext(logicSQL, metaDataContexts.getMetaData().getDatabases().get(connectionSession.getDatabaseName()), metaDataContexts.getMetaData().getProps());
+        return kernelProcessor.generateExecutionContext(queryContext, metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()),
+                metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps(), connectionSession.getConnectionContext());
     }
     
     /**
@@ -143,10 +144,11 @@ public final class PostgreSQLBatchedStatementsExecutor {
     }
     
     private void addBatchedParametersToPreparedStatements() throws SQLException {
-        Collection<ShardingSphereRule> rules = metaDataContexts.getMetaData().getDatabases().get(connectionSession.getDatabaseName()).getRuleMetaData().getRules();
-        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(
-                JDBCDriverType.PREPARED_STATEMENT, metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY),
-                (JDBCBackendConnection) connectionSession.getBackendConnection(), (JDBCBackendStatement) connectionSession.getStatementManager(), new StatementOption(false), rules);
+        Collection<ShardingSphereRule> rules = metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getRuleMetaData().getRules();
+        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(JDBCDriverType.PREPARED_STATEMENT,
+                metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY),
+                (JDBCBackendConnection) connectionSession.getBackendConnection(), (JDBCBackendStatement) connectionSession.getStatementManager(),
+                new StatementOption(false), rules, connectionSession.getDatabaseType());
         executionGroupContext = prepareEngine.prepare(anyExecutionContext.getRouteContext(), executionUnitParameters.keySet());
         for (ExecutionGroup<JDBCExecutionUnit> eachGroup : executionGroupContext.getInputGroups()) {
             for (JDBCExecutionUnit each : eachGroup.getInputs()) {
@@ -173,8 +175,10 @@ public final class PostgreSQLBatchedStatementsExecutor {
     
     private int executeBatchedPreparedStatements() throws SQLException {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
-        DatabaseType databaseType = metaDataContexts.getMetaData().getDatabases().get(connectionSession.getDatabaseName()).getResource().getDatabaseType();
-        JDBCExecutorCallback<int[]> callback = new BatchedStatementsJDBCExecutorCallback(databaseType, preparedStatement.getSqlStatement(), isExceptionThrown);
+        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName());
+        DatabaseType databaseType = database.getResource().getDatabaseType();
+        DatabaseType protocolType = database.getProtocolType();
+        JDBCExecutorCallback<int[]> callback = new BatchedStatementsJDBCExecutorCallback(protocolType, databaseType, preparedStatement.getSqlStatement(), isExceptionThrown);
         List<int[]> executeResults = jdbcExecutor.execute(executionGroupContext, callback);
         int result = 0;
         for (int[] eachResult : executeResults) {
@@ -187,8 +191,8 @@ public final class PostgreSQLBatchedStatementsExecutor {
     
     private static class BatchedStatementsJDBCExecutorCallback extends JDBCExecutorCallback<int[]> {
         
-        BatchedStatementsJDBCExecutorCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
-            super(databaseType, sqlStatement, isExceptionThrown);
+        BatchedStatementsJDBCExecutorCallback(final DatabaseType protocolType, final DatabaseType databaseType, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
+            super(protocolType, databaseType, sqlStatement, isExceptionThrown, ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext());
         }
         
         @Override
@@ -202,7 +206,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
         
         @SuppressWarnings("OptionalContainsCollection")
         @Override
-        protected Optional<int[]> getSaneResult(final SQLStatement sqlStatement) {
+        protected Optional<int[]> getSaneResult(final SQLStatement sqlStatement, final SQLException ex) {
             return Optional.empty();
         }
     }

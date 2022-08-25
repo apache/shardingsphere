@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.traffic.algorithm.traffic.segment;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficValue;
@@ -37,7 +37,7 @@ public final class SQLMatchTrafficAlgorithmTest {
     
     @Before
     public void setUp() {
-        sqlMatchAlgorithm = (SQLMatchTrafficAlgorithm) TrafficAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SQL_MATCH", createProperties()));
+        sqlMatchAlgorithm = (SQLMatchTrafficAlgorithm) TrafficAlgorithmFactory.newInstance(new AlgorithmConfiguration("SQL_MATCH", createProperties()));
     }
     
     private Properties createProperties() {

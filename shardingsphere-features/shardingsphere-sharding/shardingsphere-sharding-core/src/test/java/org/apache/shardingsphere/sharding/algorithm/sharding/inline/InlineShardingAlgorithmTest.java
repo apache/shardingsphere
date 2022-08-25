@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.inline;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
+import org.apache.shardingsphere.sharding.exception.MismatchedInlineShardingAlgorithmExpressionAndColumnException;
 import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,9 +48,9 @@ public final class InlineShardingAlgorithmTest {
     
     @Before
     public void setUp() {
-        inlineShardingAlgorithm = (InlineShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("INLINE", createAllowRangeQueryProperties()));
+        inlineShardingAlgorithm = (InlineShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("INLINE", createAllowRangeQueryProperties()));
         inlineShardingAlgorithmWithSimplified = (InlineShardingAlgorithm) ShardingAlgorithmFactory.newInstance(
-                new ShardingSphereAlgorithmConfiguration("INLINE", createDisallowRangeQueryProperties()));
+                new AlgorithmConfiguration("INLINE", createDisallowRangeQueryProperties()));
     }
     
     private Properties createAllowRangeQueryProperties() {
@@ -65,7 +66,7 @@ public final class InlineShardingAlgorithmTest {
         return result;
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = MismatchedInlineShardingAlgorithmExpressionAndColumnException.class)
     public void assertDoSharding() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
         assertThat(inlineShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 0)), is("t_order_0"));
@@ -85,5 +86,14 @@ public final class InlineShardingAlgorithmTest {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1");
         assertThat(inlineShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 0)), is("t_order_0"));
         assertThat(inlineShardingAlgorithmWithSimplified.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 0)), is("t_order_0"));
+    }
+    
+    @Test
+    public void assertDoShardingWithNegative() {
+        List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
+        assertThat(inlineShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, -1)), is("t_order_1"));
+        assertThat(inlineShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, -4)), is("t_order_0"));
+        assertThat(inlineShardingAlgorithmWithSimplified.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, -1)), is("t_order_1"));
+        assertThat(inlineShardingAlgorithmWithSimplified.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, -4)), is("t_order_0"));
     }
 }

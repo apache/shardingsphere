@@ -29,8 +29,6 @@ import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionData
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.transaction.Transaction;
 import java.lang.reflect.Field;
@@ -47,7 +45,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class XAShardingSphereTransactionManagerTest {
     
     private final XAShardingSphereTransactionManager xaTransactionManager = new XAShardingSphereTransactionManager();
@@ -70,8 +67,8 @@ public final class XAShardingSphereTransactionManagerTest {
     
     @Test
     public void assertRegisterXADataSource() {
-        Map<String, XATransactionDataSource> cachedXADatasourceMap = getCachedDataSources();
-        assertThat(cachedXADatasourceMap.size(), is(3));
+        Map<String, XATransactionDataSource> cachedXADataSourceMap = getCachedDataSources();
+        assertThat(cachedXADataSourceMap.size(), is(3));
     }
     
     @Test
@@ -85,9 +82,9 @@ public final class XAShardingSphereTransactionManagerTest {
     @Test
     public void assertGetConnection() throws SQLException {
         xaTransactionManager.begin();
-        Connection actual1 = xaTransactionManager.getConnection("ds1");
-        Connection actual2 = xaTransactionManager.getConnection("ds2");
-        Connection actual3 = xaTransactionManager.getConnection("ds3");
+        Connection actual1 = xaTransactionManager.getConnection("demo_ds_1", "ds1");
+        Connection actual2 = xaTransactionManager.getConnection("demo_ds_2", "ds2");
+        Connection actual3 = xaTransactionManager.getConnection("demo_ds_3", "ds3");
         assertThat(actual1, instanceOf(Connection.class));
         assertThat(actual2, instanceOf(Connection.class));
         assertThat(actual3, instanceOf(Connection.class));
@@ -96,10 +93,10 @@ public final class XAShardingSphereTransactionManagerTest {
     
     @Test
     public void assertGetConnectionOfNestedTransaction() throws SQLException {
-        ThreadLocal<Map<Transaction, Connection>> transactions = getEnlistedTransactions(getCachedDataSources().get("ds1"));
+        ThreadLocal<Map<Transaction, Connection>> transactions = getEnlistedTransactions(getCachedDataSources().get("demo_ds_1.ds1"));
         xaTransactionManager.begin();
         assertTrue(transactions.get().isEmpty());
-        xaTransactionManager.getConnection("ds1");
+        xaTransactionManager.getConnection("demo_ds_1", "ds1");
         assertThat(transactions.get().size(), is(1));
         executeNestedTransaction(transactions);
         assertThat(transactions.get().size(), is(1));
@@ -109,7 +106,7 @@ public final class XAShardingSphereTransactionManagerTest {
     
     private void executeNestedTransaction(final ThreadLocal<Map<Transaction, Connection>> transactions) throws SQLException {
         xaTransactionManager.begin();
-        xaTransactionManager.getConnection("ds1");
+        xaTransactionManager.getConnection("demo_ds_1", "ds1");
         assertThat(transactions.get().size(), is(2));
         xaTransactionManager.commit(false);
         assertThat(transactions.get().size(), is(1));
@@ -156,9 +153,9 @@ public final class XAShardingSphereTransactionManagerTest {
     
     private Collection<ResourceDataSource> createResourceDataSources(final DatabaseType databaseType) {
         List<ResourceDataSource> result = new LinkedList<>();
-        result.add(new ResourceDataSource("ds1", DataSourceUtils.build(HikariDataSource.class, databaseType, "demo_ds_1")));
-        result.add(new ResourceDataSource("ds2", DataSourceUtils.build(HikariDataSource.class, databaseType, "demo_ds_2")));
-        result.add(new ResourceDataSource("ds3", DataSourceUtils.build(AtomikosDataSourceBean.class, databaseType, "demo_ds_3")));
+        result.add(new ResourceDataSource("demo_ds_1.ds1", DataSourceUtils.build(HikariDataSource.class, databaseType, "demo_ds_1")));
+        result.add(new ResourceDataSource("demo_ds_2.ds2", DataSourceUtils.build(HikariDataSource.class, databaseType, "demo_ds_2")));
+        result.add(new ResourceDataSource("demo_ds_3.ds3", DataSourceUtils.build(AtomikosDataSourceBean.class, databaseType, "demo_ds_3")));
         return result;
     }
 }

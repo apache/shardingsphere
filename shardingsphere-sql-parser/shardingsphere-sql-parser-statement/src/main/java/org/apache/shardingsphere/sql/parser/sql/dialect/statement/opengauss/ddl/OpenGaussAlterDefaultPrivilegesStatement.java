@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.Open
 /**
  * OpenGauss alter default privileges statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OpenGaussAlterDefaultPrivilegesStatement extends AlterDefaultPrivilegesStatement implements OpenGaussStatement {
 }

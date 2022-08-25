@@ -18,25 +18,26 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.AddSchemaEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.AlterSchemaEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.DropIndexEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.DropSchemaEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.SchemaAlteredEvent;
-import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseMetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 /**
  * Schema meta data registry subscriber.
  */
+@SuppressWarnings("UnstableApiUsage")
 public final class SchemaMetaDataRegistrySubscriber {
     
-    private final SchemaMetaDataPersistService persistService;
+    private final DatabaseMetaDataPersistService persistService;
     
-    public SchemaMetaDataRegistrySubscriber(final ClusterPersistRepository repository) {
-        persistService = new SchemaMetaDataPersistService(repository);
-        ShardingSphereEventBus.getInstance().register(this);
+    public SchemaMetaDataRegistrySubscriber(final ClusterPersistRepository repository, final EventBusContext eventBusContext) {
+        persistService = new DatabaseMetaDataPersistService(repository);
+        eventBusContext.register(this);
     }
     
     /**

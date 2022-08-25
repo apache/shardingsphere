@@ -15,9 +15,11 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.proxy.backend.text.distsql.rql.resource.DataSourceQueryResultSet
-org.apache.shardingsphere.proxy.backend.text.distsql.rql.resource.UnusedDataSourceQueryResultSet
-org.apache.shardingsphere.proxy.backend.text.distsql.rql.rule.SingleTableQueryResultSet
-org.apache.shardingsphere.proxy.backend.text.distsql.rql.rule.SingleTableRulesQueryResultSet
-org.apache.shardingsphere.proxy.backend.text.distsql.rql.rule.SchemaRulesCountResultSet
-org.apache.shardingsphere.proxy.backend.text.distsql.rql.rule.RulesUsedResourceQueryResultSet
+org.apache.shardingsphere.proxy.backend.handler.distsql.rql.resource.DataSourceQueryResultSet
+org.apache.shardingsphere.proxy.backend.handler.distsql.rql.resource.UnusedDataSourceQueryResultSet
+org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.SingleTableQueryResultSet
+org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.SingleTableRulesQueryResultSet
+org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.DatabaseRulesCountResultSet
+org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.RulesUsedResourceQueryResultSet
+org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.CountSingleTableRuleQueryResultSet
+org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowMigrationProcessConfigurationQueryResultSet

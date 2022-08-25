@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Drop lockdown profile statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OracleDropLockdownProfileStatement extends AbstractSQLStatement implements OracleStatement {
 }

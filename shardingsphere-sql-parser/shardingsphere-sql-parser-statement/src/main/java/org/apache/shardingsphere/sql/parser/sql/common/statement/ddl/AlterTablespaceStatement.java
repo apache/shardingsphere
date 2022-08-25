@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Alter tablespace statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class AlterTablespaceStatement extends AbstractSQLStatement implements DDLStatement {
 }

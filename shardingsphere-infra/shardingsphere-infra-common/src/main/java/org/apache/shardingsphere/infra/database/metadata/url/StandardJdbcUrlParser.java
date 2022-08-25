@@ -21,7 +21,6 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.database.metadata.UnrecognizedDatabaseURLException;
 
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,7 +30,7 @@ import java.util.regex.Pattern;
  */
 public final class StandardJdbcUrlParser {
     
-    private static final String SCHEMA_PATTERN = "(?<schema>[\\w\\+:%]+)\\s*";
+    private static final String SCHEMA_PATTERN = "(?<schema>[\\w+:%]+)\\s*";
     
     private static final String AUTHORITY_PATTERN = "(?://(?<authority>[^/?#]*))?\\s*";
     
@@ -88,8 +87,9 @@ public final class StandardJdbcUrlParser {
             return new Properties();
         }
         Properties result = new Properties();
-        for (Entry<String, String> entry : Splitter.on("&").withKeyValueSeparator("=").split(query).entrySet()) {
-            result.setProperty(entry.getKey(), entry.getValue());
+        for (String each : Splitter.on("&").split(query)) {
+            String[] property = each.split("=", 2);
+            result.setProperty(property[0], property[1]);
         }
         return result;
     }

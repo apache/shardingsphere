@@ -23,21 +23,21 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdProperties;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdPropertyKey;
+import org.apache.shardingsphere.mode.repository.cluster.lock.InternalLock;
+import org.apache.shardingsphere.mode.repository.cluster.lock.InternalLockHolder;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
 
 /**
  * Etcd internal lock holder.
  */
 @RequiredArgsConstructor
 @Slf4j
-public class EtcdInternalLockHolder {
+public final class EtcdInternalLockHolder implements InternalLockHolder {
     
     private final Map<String, EtcdInternalLock> locks = new ConcurrentHashMap<>();
     
@@ -45,39 +45,24 @@ public class EtcdInternalLockHolder {
     
     private final EtcdProperties etcdProps;
     
-    /**
-     * Get internal mutex lock.
-     *
-     * @param lockName lock name
-     * @return internal mutex lock
-     */
-    public Lock getInternalMutexLock(final String lockName) {
-        return getInternalReentrantMutexLock(lockName);
-    }
-    
-    /**
-     * Get internal reentrant mutex lock.
-     *
-     * @param lockName lock name
-     * @return internal reentrant mutex lock
-     */
-    public Lock getInternalReentrantMutexLock(final String lockName) {
-        EtcdInternalLock result = locks.get(lockName);
+    @Override
+    public synchronized InternalLock getInternalLock(final String lockKey) {
+        EtcdInternalLock result = locks.get(lockKey);
         if (Objects.isNull(result)) {
-            result = createLock(lockName);
-            locks.put(lockName, result);
+            result = createLock(lockKey);
+            locks.put(lockKey, result);
         }
         return result;
     }
     
-    private EtcdInternalLock createLock(final String lockName) {
+    private EtcdInternalLock createLock(final String lockKey) {
         try {
             long leaseId = client.getLeaseClient().grant(etcdProps.getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS)).get().getID();
-            return new EtcdInternalLock(client.getLockClient(), lockName, leaseId);
+            return new EtcdInternalLock(client.getLockClient(), lockKey, leaseId);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            log.error("EtcdRepository tryLock error, lockName:{}", lockName, ex);
+            log.error("Create etcd internal lock failed, lockName:{}", lockKey, ex);
         }
         return null;
     }
@@ -86,39 +71,23 @@ public class EtcdInternalLockHolder {
      * Etcd internal lock.
      */
     @RequiredArgsConstructor
-    private static class EtcdInternalLock implements Lock {
+    private static class EtcdInternalLock implements InternalLock {
         
         private final io.etcd.jetcd.Lock lock;
         
-        private final String lockName;
+        private final String lockKey;
         
         private final long leaseId;
         
         @Override
-        public void lock() {
+        public boolean tryLock(final long timeout) {
             try {
-                this.lock.lock(ByteSequence.from(lockName, StandardCharsets.UTF_8), leaseId).get();
-                // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
-                // CHECKSTYLE:ON
-                log.error("EtcdRepository tryLock error, lockName:{}", lockName, ex);
-            }
-        }
-        
-        @Override
-        public boolean tryLock() {
-            throw new UnsupportedOperationException();
-        }
-        
-        @Override
-        public boolean tryLock(final long time, final TimeUnit timeUnit) {
-            try {
-                this.lock.lock(ByteSequence.from(lockName, StandardCharsets.UTF_8), leaseId).get(time, timeUnit);
+                this.lock.lock(ByteSequence.from(lockKey, StandardCharsets.UTF_8), leaseId).get(timeout, TimeUnit.MILLISECONDS);
                 return true;
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
-                log.error("EtcdRepository tryLock error, lockName:{}", lockName, ex);
+                log.error("Etcd internal lock try lock failed", ex);
                 return false;
             }
         }
@@ -126,22 +95,12 @@ public class EtcdInternalLockHolder {
         @Override
         public void unlock() {
             try {
-                lock.unlock(ByteSequence.from(lockName, StandardCharsets.UTF_8)).get();
+                lock.unlock(ByteSequence.from(lockKey, StandardCharsets.UTF_8)).get();
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
-                log.error("EtcdRepository unlock error, lockName:{}", lockName, ex);
+                log.error("Etcd internal lock unlock failed", ex);
             }
-        }
-        
-        @Override
-        public void lockInterruptibly() {
-            throw new UnsupportedOperationException();
-        }
-        
-        @Override
-        public Condition newCondition() {
-            throw new UnsupportedOperationException();
         }
     }
 }

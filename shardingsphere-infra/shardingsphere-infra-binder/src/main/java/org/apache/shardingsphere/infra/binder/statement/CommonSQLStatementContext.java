@@ -31,7 +31,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.SQL92Sta
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 import java.util.Collections;
-import java.util.Optional;
 
 /**
  * Common SQL statement context.
@@ -76,15 +75,6 @@ public class CommonSQLStatementContext<T extends SQLStatement> implements SQLSta
             return DatabaseTypeFactory.getInstance("openGauss");
         }
         throw new UnsupportedOperationException(sqlStatement.getClass().getName());
-    }
-    
-    /**
-     * Find hint data source name.
-     *
-     * @return dataSource name
-     */
-    public Optional<String> findHintDataSourceName() {
-        return sqlHintExtractor.findHintDataSourceName();
     }
     
     /**

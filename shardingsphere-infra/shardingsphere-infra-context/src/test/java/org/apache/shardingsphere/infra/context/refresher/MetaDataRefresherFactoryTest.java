@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.context.refresher;
 
-import org.apache.shardingsphere.infra.context.refresher.fixture.FixtureSQLStatement;
+import org.apache.shardingsphere.infra.context.refresher.fixture.MetaDataRefresherSQLStatementFixture;
 import org.apache.shardingsphere.infra.context.refresher.fixture.MetaDataRefresherFixture;
 import org.junit.Test;
 
@@ -32,7 +32,7 @@ public final class MetaDataRefresherFactoryTest {
     @SuppressWarnings("rawtypes")
     @Test
     public void assertFindInstance() {
-        Optional<MetaDataRefresher> actual = MetaDataRefresherFactory.findInstance(FixtureSQLStatement.class);
+        Optional<MetaDataRefresher> actual = MetaDataRefresherFactory.findInstance(MetaDataRefresherSQLStatementFixture.class);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(MetaDataRefresherFixture.class));
     }

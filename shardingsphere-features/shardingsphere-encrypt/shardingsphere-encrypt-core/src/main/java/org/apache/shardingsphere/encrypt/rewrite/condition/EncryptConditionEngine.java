@@ -18,19 +18,20 @@
 package org.apache.shardingsphere.encrypt.rewrite.condition;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.encrypt.exception.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptEqualCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInCondition;
 import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
@@ -89,7 +90,7 @@ public final class EncryptConditionEngine {
                                                                 final SQLStatementContext<?> sqlStatementContext, final String databaseName) {
         Collection<EncryptCondition> result = new LinkedList<>();
         String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), databaseName);
-        ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(schemas::get).orElse(schemas.get(defaultSchema));
+        ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(schemas::get).orElseGet(() -> schemas.get(defaultSchema));
         Map<String, String> expressionTableNames = sqlStatementContext.getTablesContext().findTableNamesByColumnSegment(columnSegments, schema);
         for (WhereSegment each : whereSegments) {
             Collection<AndPredicate> andPredicates = ExpressionExtractUtil.getAndPredicates(each.getExpr());
@@ -110,7 +111,7 @@ public final class EncryptConditionEngine {
     }
     
     private void addEncryptConditions(final Collection<EncryptCondition> encryptConditions, final ExpressionSegment expression, final Map<String, String> expressionTableNames) {
-        if (!ExpressionExtractUtil.findNotContainsNullLiteralsExpression(expression).isPresent()) {
+        if (!findNotContainsNullLiteralsExpression(expression).isPresent()) {
             return;
         }
         for (ColumnSegment each : ColumnExtractor.extract(expression)) {
@@ -121,6 +122,24 @@ public final class EncryptConditionEngine {
         }
     }
     
+    private Optional<ExpressionSegment> findNotContainsNullLiteralsExpression(final ExpressionSegment expression) {
+        if (isContainsNullLiterals(expression)) {
+            return Optional.empty();
+        }
+        if (expression instanceof BinaryOperationExpression && isContainsNullLiterals(((BinaryOperationExpression) expression).getRight())) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(expression);
+    }
+    
+    private boolean isContainsNullLiterals(final ExpressionSegment expression) {
+        if (!(expression instanceof LiteralExpressionSegment)) {
+            return false;
+        }
+        String literals = String.valueOf(((LiteralExpressionSegment) expression).getLiterals());
+        return "NULL".equalsIgnoreCase(literals) || "NOT NULL".equalsIgnoreCase(literals);
+    }
+    
     private Optional<EncryptCondition> createEncryptCondition(final ExpressionSegment expression, final String tableName) {
         if (expression instanceof BinaryOperationExpression) {
             return createBinaryEncryptCondition((BinaryOperationExpression) expression, tableName);
@@ -129,7 +148,7 @@ public final class EncryptConditionEngine {
             return createInEncryptCondition(tableName, (InExpression) expression, ((InExpression) expression).getRight());
         }
         if (expression instanceof BetweenExpression) {
-            throw new ShardingSphereException("The SQL clause 'BETWEEN...AND...' is unsupported in encrypt rule.");
+            throw new UnsupportedEncryptSQLException("BETWEEN...AND...");
         }
         return Optional.empty();
     }
@@ -140,7 +159,7 @@ public final class EncryptConditionEngine {
             if (SUPPORTED_COMPARE_OPERATOR.contains(operator)) {
                 return createCompareEncryptCondition(tableName, expression, expression.getRight());
             }
-            throw new ShardingSphereException("The SQL clause '%s' is unsupported in encrypt rule.", operator);
+            throw new UnsupportedEncryptSQLException(operator);
         }
         return Optional.empty();
     }

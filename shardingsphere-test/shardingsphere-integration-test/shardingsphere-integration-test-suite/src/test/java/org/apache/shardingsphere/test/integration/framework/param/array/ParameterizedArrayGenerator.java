@@ -52,6 +52,8 @@ public final class ParameterizedArrayGenerator {
     
     private final Collection<String> envScenarios;
     
+    private final String envMode;
+    
     private final Collection<DatabaseType> envDatabaseTypes;
     
     /**
@@ -115,7 +117,7 @@ public final class ParameterizedArrayGenerator {
                                                                                    final SQLExecuteType sqlExecuteType, final SQLCommandType sqlCommandType) {
         Collection<String> scenarios = null == testCaseContext.getTestCase().getScenarioTypes() ? Collections.emptyList() : Arrays.asList(testCaseContext.getTestCase().getScenarioTypes().split(","));
         return envScenarios.stream().filter(each -> filterScenarios(each, scenarios, sqlCommandType.getSqlStatementClass()))
-                .map(each -> new AssertionParameterizedArray(testCaseContext, assertion, adapter, each, databaseType, sqlExecuteType)).collect(Collectors.toList());
+                .map(each -> new AssertionParameterizedArray(testCaseContext, assertion, adapter, each, envMode, databaseType, sqlExecuteType)).collect(Collectors.toList());
     }
     
     private boolean filterScenarios(final String scenario, final Collection<String> scenarios, final Class<? extends SQLStatement> sqlStatementClass) {
@@ -163,7 +165,7 @@ public final class ParameterizedArrayGenerator {
     private Collection<ParameterizedArray> getCaseParameterizedArray(final IntegrationTestCaseContext testCaseContext, final String adapter, final DatabaseType databaseType) {
         Collection<String> scenarios = null == testCaseContext.getTestCase().getScenarioTypes() ? Collections.emptyList() : Arrays.asList(testCaseContext.getTestCase().getScenarioTypes().split(","));
         return envScenarios.stream().filter(each -> scenarios.isEmpty() || scenarios.contains(each))
-                .map(each -> new CaseParameterizedArray(testCaseContext, adapter, each, databaseType)).collect(Collectors.toList());
+                .map(each -> new CaseParameterizedArray(testCaseContext, adapter, each, envMode, databaseType)).collect(Collectors.toList());
     }
     
     private static Collection<DatabaseType> getDatabaseTypes(final String databaseTypes) {

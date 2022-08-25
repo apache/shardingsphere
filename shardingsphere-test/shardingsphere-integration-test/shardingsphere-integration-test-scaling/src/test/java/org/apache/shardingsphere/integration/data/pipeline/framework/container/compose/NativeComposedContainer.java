@@ -17,24 +17,94 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.framework.container.compose;
 
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * Native composed container, you need start ShardingSphere-Proxy at firstly.
  */
 public final class NativeComposedContainer extends BaseComposedContainer {
     
-    public NativeComposedContainer(final DatabaseType databaseType, final String dockerImageName) {
-        super(databaseType, dockerImageName);
+    private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
+    
+    private final JdbcUrlAppender jdbcUrlAppender = new JdbcUrlAppender();
+    
+    private final DatabaseType databaseType;
+    
+    public NativeComposedContainer(final DatabaseType databaseType) {
+        this.databaseType = databaseType;
     }
     
     @Override
     public void start() {
-        super.start();
+        // do nothing
+    }
+    
+    @SneakyThrows
+    @Override
+    public void cleanUpDatabase(final String databaseName) {
+        int actualDatabasePort = ENV.getActualDatabasePort(databaseType);
+        String username = ENV.getActualDataSourceUsername(databaseType);
+        String password = ENV.getActualDataSourcePassword(databaseType);
+        String jdbcUrl;
+        switch (databaseType.getType()) {
+            case "MySQL":
+                String queryAllTables = String.format("select table_name from information_schema.tables where table_schema='%s' and table_type='BASE TABLE'", databaseName);
+                jdbcUrl = DataSourceEnvironment.getURL(databaseType, "localhost", actualDatabasePort, databaseName);
+                Properties properties = new Properties();
+                properties.setProperty("allowPublicKeyRetrieval", "true");
+                try (Connection connection = DriverManager.getConnection(jdbcUrlAppender.appendQueryProperties(jdbcUrl, properties), username, password)) {
+                    try (ResultSet resultSet = connection.createStatement().executeQuery(queryAllTables)) {
+                        List<String> actualTableNames = getFirstColumnValueFromResult(resultSet);
+                        for (String each : actualTableNames) {
+                            connection.createStatement().executeUpdate(String.format("drop table %s", each));
+                        }
+                    }
+                }
+                break;
+            case "openGauss":
+            case "PostgreSQL":
+                jdbcUrl = DataSourceEnvironment.getURL(databaseType, "localhost", actualDatabasePort, databaseName);
+                try (Connection connection = DriverManager.getConnection(jdbcUrl, username, password)) {
+                    dropTableWithSchema(connection, "public");
+                    dropTableWithSchema(connection, "test");
+                }
+                break;
+            default:
+        }
+    }
+    
+    private static List<String> getFirstColumnValueFromResult(final ResultSet resultSet) throws SQLException {
+        List<String> result = new LinkedList<>();
+        while (resultSet.next()) {
+            result.add(resultSet.getString(1));
+        }
+        return result;
+    }
+    
+    private void dropTableWithSchema(final Connection connection, final String schema) throws SQLException {
+        String queryAllTables = "select tablename from pg_tables where schemaname='%s'";
+        try (ResultSet resultSet = connection.createStatement().executeQuery(String.format(queryAllTables, schema))) {
+            List<String> actualTableNames = getFirstColumnValueFromResult(resultSet);
+            for (String each : actualTableNames) {
+                connection.createStatement().executeUpdate(String.format("drop table %s.%s", schema, each));
+            }
+        }
     }
     
     @Override
     public String getProxyJdbcUrl(final String databaseName) {
-        return getDatabaseContainer().getJdbcUrl("localhost", 3307, databaseName);
+        return DataSourceEnvironment.getURL(databaseType, "localhost", 3307, databaseName);
     }
 }

@@ -17,10 +17,26 @@
 
 package org.apache.shardingsphere.shadow.algorithm.shadow.validator;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.shadow.algorithm.shadow.UnsupportedShadowColumnTypeException;
+
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Shadow value validator.
  */
-public interface ShadowValueValidator {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShadowValueValidator {
+    
+    private static final Set<Class<?>> UNSUPPORTED_TYPES = new HashSet<>();
+    
+    static {
+        UNSUPPORTED_TYPES.add(Date.class);
+        UNSUPPORTED_TYPES.add(Enum.class);
+    }
     
     /**
      * Validate shadow value.
@@ -29,5 +45,11 @@ public interface ShadowValueValidator {
      * @param column column name
      * @param shadowValue shadow value
      */
-    void preValidate(String table, String column, Comparable<?> shadowValue);
+    public static void validate(final String table, final String column, final Comparable<?> shadowValue) {
+        for (Class<?> each : UNSUPPORTED_TYPES) {
+            if (each.isAssignableFrom(shadowValue.getClass())) {
+                throw new UnsupportedShadowColumnTypeException(table, column, each);
+            }
+        }
+    }
 }

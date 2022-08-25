@@ -17,19 +17,15 @@
 
 package org.apache.shardingsphere.proxy.backend.response.data;
 
-import org.apache.shardingsphere.proxy.backend.response.data.impl.BinaryQueryResponseCell;
-import org.apache.shardingsphere.proxy.backend.response.data.impl.TextQueryResponseCell;
 import org.junit.Test;
 
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class QueryResponseRowTest {
     
@@ -40,36 +36,12 @@ public final class QueryResponseRowTest {
     }
     
     @Test
-    public void assertGetDataWhenQueryResponseCellsInstanceOfBinaryQueryResponseCell() {
-        BinaryQueryResponseCell binaryQueryResponseCell1 = mock(BinaryQueryResponseCell.class);
-        when(binaryQueryResponseCell1.getData()).thenReturn(1);
-        BinaryQueryResponseCell binaryQueryResponseCell2 = mock(BinaryQueryResponseCell.class);
-        when(binaryQueryResponseCell2.getData()).thenReturn("2");
-        QueryResponseRow queryResponseRow = new QueryResponseRow(Arrays.asList(binaryQueryResponseCell1, binaryQueryResponseCell2));
-        assertThat(queryResponseRow.getData().size(), is(2));
-        assertTrue(queryResponseRow.getData().containsAll(Arrays.asList(1, "2")));
-    }
-    
-    @Test
-    public void assertGetDataWhenQueryResponseCellsInstanceOfTextQueryResponseCell() {
-        TextQueryResponseCell textQueryResponseCell1 = mock(TextQueryResponseCell.class);
-        when(textQueryResponseCell1.getData()).thenReturn("column_1");
-        TextQueryResponseCell textQueryResponseCell2 = mock(TextQueryResponseCell.class);
-        when(textQueryResponseCell2.getData()).thenReturn("column_2");
-        QueryResponseRow queryResponseRow = new QueryResponseRow(Arrays.asList(textQueryResponseCell1, textQueryResponseCell2));
-        assertThat(queryResponseRow.getData().size(), is(2));
-        assertThat(queryResponseRow.getData().iterator().next(), instanceOf(String.class));
-        assertTrue(queryResponseRow.getData().containsAll(Arrays.asList("column_1", "column_2")));
-    }
-    
-    @Test
-    public void assertGetDataWhenQueryResponseCellsInstanceOfAllTypeQueryResponseCell() {
-        BinaryQueryResponseCell binaryQueryResponseCell = mock(BinaryQueryResponseCell.class);
-        when(binaryQueryResponseCell.getData()).thenReturn(1);
-        TextQueryResponseCell textQueryResponseCell = mock(TextQueryResponseCell.class);
-        when(textQueryResponseCell.getData()).thenReturn("column");
-        QueryResponseRow queryResponseRow = new QueryResponseRow(Arrays.asList(binaryQueryResponseCell, textQueryResponseCell));
-        assertThat(queryResponseRow.getData().size(), is(2));
-        assertTrue(queryResponseRow.getData().containsAll(Arrays.asList(1, "column")));
+    public void assertGetDataWhenQueryResponseCellsPresent() {
+        QueryResponseCell queryResponseCell1 = new QueryResponseCell(Types.INTEGER, 1);
+        QueryResponseCell queryResponseCell2 = new QueryResponseCell(Types.VARCHAR, "column");
+        QueryResponseRow queryResponseRow = new QueryResponseRow(Arrays.asList(queryResponseCell1, queryResponseCell2));
+        List<Object> actualData = queryResponseRow.getData();
+        assertThat(actualData.size(), is(2));
+        assertThat(actualData, is(Arrays.asList(1, "column")));
     }
 }

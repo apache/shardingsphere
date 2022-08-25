@@ -27,7 +27,7 @@ import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.proxy.backend.communication.SQLStatementDatabaseHolder;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -79,9 +79,12 @@ public final class CommandExecutorTask implements Runnable {
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             processException(ex);
+            // CHECKSTYLE:OFF
+        } catch (final Error error) {
+            // CHECKSTYLE:ON
+            processException(new RuntimeException(error));
         } finally {
-            // TODO optimize SQLStatementDatabaseHolder
-            SQLStatementDatabaseHolder.remove();
+            connectionSession.clearQueryContext();
             Collection<SQLException> exceptions = Collections.emptyList();
             try {
                 connectionSession.getBackendConnection().closeExecutionResources();
@@ -113,8 +116,8 @@ public final class CommandExecutorTask implements Runnable {
                 commandExecuteEngine.writeQueryData(context, connectionSession.getBackendConnection(), (QueryCommandExecutor) commandExecutor, responsePackets.size());
             }
             return true;
-        } catch (final SQLException ex) {
-            databaseProtocolFrontendEngine.handleException(connectionSession);
+        } catch (final SQLException | ShardingSphereInsideException ex) {
+            databaseProtocolFrontendEngine.handleException(connectionSession, ex);
             throw ex;
         } finally {
             commandExecutor.close();

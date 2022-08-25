@@ -19,15 +19,15 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.meta
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilderRule;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlTableMetaData;
-import org.apache.shardingsphere.infra.yaml.schema.swapper.TableMetaDataYamlSwapper;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
+import org.apache.shardingsphere.infra.yaml.schema.swapper.YamlTableSwapper;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceChangedEvent;
@@ -59,8 +59,9 @@ import java.util.stream.Collectors;
 public final class MetaDataChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
     
     @Override
-    public Collection<String> getWatchingKeys() {
-        return Collections.singleton(DatabaseMetaDataNode.getMetaDataNodePath());
+    public Collection<String> getWatchingKeys(final String databaseName) {
+        return null == databaseName ? Collections.singleton(DatabaseMetaDataNode.getMetaDataNodePath())
+                : Collections.singleton(DatabaseMetaDataNode.getDatabaseNamePath(databaseName));
     }
     
     @Override
@@ -80,10 +81,7 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
         if (isTableMetaDataChanged(event)) {
             return createSchemaChangedEvent(event);
         }
-        if (Type.UPDATED == event.getType()) {
-            return createUpdateGovernanceEvent(event);
-        }
-        return Optional.empty();
+        return createRuleAndDataSourceChangedEvent(event);
     }
     
     private boolean isLogicDatabaseChanged(final DataChangedEvent event) {
@@ -128,19 +126,23 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> createUpdateGovernanceEvent(final DataChangedEvent event) {
+    private Optional<GovernanceEvent> createRuleAndDataSourceChangedEvent(final DataChangedEvent event) {
         Optional<String> databaseName = DatabaseMetaDataNode.getDatabaseNameByDatabasePath(event.getKey());
         if (!databaseName.isPresent() || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        if (event.getKey().equals(DatabaseMetaDataNode.getActiveVersionPath(databaseName.get()))) {
+        if (event.getType() == Type.UPDATED && event.getKey().equals(DatabaseMetaDataNode.getActiveVersionPath(databaseName.get()))) {
             return Optional.of(new DatabaseVersionChangedEvent(databaseName.get(), event.getValue()));
         }
         Optional<String> databaseVersion = DatabaseMetaDataNode.getVersionByDataSourcesPath(event.getKey());
-        if (databaseVersion.isPresent()) {
+        if (databaseVersion.isPresent() && event.getType() != Type.DELETED) {
             return Optional.of(createDataSourceChangedEvent(databaseName.get(), databaseVersion.get(), event));
         }
-        return DatabaseMetaDataNode.getVersionByRulesPath(event.getKey()).map(optional -> new RuleConfigurationsChangedEvent(databaseName.get(), optional, getRuleConfigurations(event.getValue())));
+        databaseVersion = DatabaseMetaDataNode.getVersionByRulesPath(event.getKey());
+        if (databaseVersion.isPresent() && event.getType() != Type.DELETED) {
+            return Optional.of(new RuleConfigurationsChangedEvent(databaseName.get(), databaseVersion.get(), getRuleConfigurations(event.getValue())));
+        }
+        return Optional.empty();
     }
     
     @SuppressWarnings("unchecked")
@@ -172,6 +174,6 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     private SchemaChangedEvent createSchemaChangedEvent(final DataChangedEvent event, final String databaseName, final String schemaName, final String tableName) {
         return Type.DELETED == event.getType()
                 ? new SchemaChangedEvent(databaseName, schemaName, null, tableName)
-                : new SchemaChangedEvent(databaseName, schemaName, new TableMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlTableMetaData.class)), null);
+                : new SchemaChangedEvent(databaseName, schemaName, new YamlTableSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlShardingSphereTable.class)), null);
     }
 }

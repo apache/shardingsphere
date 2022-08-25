@@ -23,8 +23,6 @@ import java.util.Properties;
 
 public final class ShardingAlgorithmFixture implements ShardingAlgorithm {
     
-    public static final String TYPE = "FIXTURE";
-    
     @Override
     public Properties getProps() {
         return new Properties();
@@ -36,6 +34,6 @@ public final class ShardingAlgorithmFixture implements ShardingAlgorithm {
     
     @Override
     public String getType() {
-        return TYPE;
+        return "FIXTURE";
     }
 }

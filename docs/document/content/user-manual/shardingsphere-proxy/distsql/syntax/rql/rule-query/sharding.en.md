@@ -13,8 +13,10 @@ SHOW SHARDING TABLE tableRule | RULES [FROM databaseName]
 SHOW SHARDING ALGORITHMS [FROM databaseName]
 
 SHOW UNUSED SHARDING ALGORITHMS [FROM databaseName]
+    
+SHOW SHARDING AUDITORS [FROM databaseName]
 
-SHOW SHARDING TABLE RULES USED ALGORITHM algorithmName [FROM databaseName]
+SHOW SHARDING TABLE RULES USED ALGORITHM shardingAlgorithmName [FROM databaseName]
 
 SHOW SHARDING KEY GENERATORS [FROM databaseName]
 
@@ -24,13 +26,14 @@ SHOW SHARDING TABLE RULES USED KEY GENERATOR keyGeneratorName [FROM databaseName
 
 SHOW DEFAULT SHARDING STRATEGY 
 
-SHOW SHARDING TABLE NODES;
+SHOW SHARDING TABLE NODES
 
 tableRule:
     RULE tableName
 ```
 -  Support query all data fragmentation rules and specified table query
 -  Support query all sharding algorithms
+-  Support query all sharding audit algorithms
 
 ### Sharding Binding Table Rule
 
@@ -43,13 +46,6 @@ SHOW SHARDING BINDING TABLE RULES [FROM databaseName]
 ```sql
 SHOW SHARDING BROADCAST TABLE RULES [FROM databaseName]
 ```
-
-### Sharding Scaling Rule
-```sql
-SHOW SHARDING SCALING RULES [FROM databaseName]
-```
-
-## Return Value Description
 
 ### Sharding Table Rule
 
@@ -85,6 +81,14 @@ SHOW SHARDING SCALING RULES [FROM databaseName]
 | name   | Sharding algorithm name       |
 | type   | Sharding algorithm type       |
 | props  | Sharding algorithm properties |
+
+### Sharding auditors
+
+| Column | Description                         |
+| ------ |-------------------------------------|
+| name   | Sharding audit algorithm name       |
+| type   | Sharding audit algorithm type       |
+| props  | Sharding audit algorithm properties |
 
 ### Sharding key generators
 
@@ -131,19 +135,6 @@ SHOW SHARDING SCALING RULES [FROM databaseName]
 | Column                    | Description                   |
 | ------------------------- | ----------------------------- |
 | sharding_broadcast_tables | sharding Broadcast Table list |
-
-### Sharding Scaling Rule
-
-| Column                   | Description                            |
-|--------------------------|----------------------------------------|
-| name                     | name of sharding scaling rule          |
-| input                    | data read configuration                |
-| output                   | data write configuration               |
-| stream_channel           | algorithm of stream channel            |
-| completion_detector      | algorithm of completion detecting      |
-| data_consistency_checker | algorithm of data consistency checking |
-
-## Example
 
 ### Sharding Table Rule
 
@@ -194,7 +185,18 @@ mysql> SHOW UNUSED SHARDING ALGORITHMS;
 1 row in set (0.01 sec)
 ```
 
-*SHOW SHARDING TABLE RULES USED ALGORITHM algorithmName*
+*SHOW SHARDING AUDITORS*
+```sql
+mysql> SHOW SHARDING AUDITORS;
++------------+-------------------------+-------+
+| name       | type                    | props |
++------------+-------------------------+-------+
+| dml_audit  | DML_SHARDING_CONDITIONS |       |
++------------+-------------------------+-------+
+2 row in set (0.01 sec)
+```
+
+*SHOW SHARDING TABLE RULES USED ALGORITHM shardingAlgorithmName*
 ```sql
 mysql> SHOW SHARDING TABLE RULES USED ALGORITHM t_order_inline;
 +-------+---------+
@@ -289,16 +291,4 @@ mysql> SHOW SHARDING BROADCAST TABLE RULES;
 | t_2                    |
 +------------------------+
 2 rows in set (0.00 sec)
-```
-
-### Sharding Scaling Rule
-
-```sql
-mysql> SHOW SHARDING SCALING RULES;
-+------------------+----------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------+--------------------------------------------------------+-------------------------------------------------------------------------+-----------------------------------------------------+
-| name             | input                                                                                  | output                                                                                   | stream_channel                                         | completion_detector                                                     | data_consistency_checker                            |
-+------------------+----------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------+--------------------------------------------------------+-------------------------------------------------------------------------+-----------------------------------------------------+
-| sharding_scaling | {"workerThread":40,"batchSize":1000} | {"workerThread":40,"batchSize":1000} | {"type":"MEMORY","props":{"block-queue-size":"10000"}} | {"type":"IDLE","props":{"incremental-task-idle-seconds-threshold":"1800"}} | {"type":"DATA_MATCH","props":{"chunk-size":"1000"}} |
-+------------------+----------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------+--------------------------------------------------------+-------------------------------------------------------------------------+-----------------------------------------------------+
-1 row in set (0.00 sec)
 ```

@@ -61,15 +61,15 @@ public final class ShardingInsertValuesTokenGeneratorTest {
         ShardingInsertValuesTokenGenerator generator = new ShardingInsertValuesTokenGenerator();
         InsertValuesToken insertValuesToken = generator.generateSQLToken(insertStatementContext);
         assertThat(insertValuesToken.getInsertValues().size(), is(1));
-        String testDatasource = "testDatasource";
+        String testDataSource = "testDataSource";
         String testTable = "testTable";
         RouteContext routeContext = new RouteContext();
-        routeContext.getOriginalDataNodes().add(Collections.singleton(new DataNode(testDatasource, testTable)));
+        routeContext.getOriginalDataNodes().add(Collections.singleton(new DataNode(testDataSource, testTable)));
         generator.setRouteContext(routeContext);
         insertValuesToken = generator.generateSQLToken(insertStatementContext);
         assertThat(insertValuesToken.getInsertValues().get(0), instanceOf(ShardingInsertValue.class));
         ShardingInsertValue generatedShardingInsertValue = (ShardingInsertValue) insertValuesToken.getInsertValues().get(0);
-        assertThat((new LinkedList<>(generatedShardingInsertValue.getDataNodes())).get(0).getDataSourceName(), is(testDatasource));
+        assertThat((new LinkedList<>(generatedShardingInsertValue.getDataNodes())).get(0).getDataSourceName(), is(testDataSource));
         assertThat((new LinkedList<>(generatedShardingInsertValue.getDataNodes())).get(0).getTableName(), is(testTable));
     }
 }

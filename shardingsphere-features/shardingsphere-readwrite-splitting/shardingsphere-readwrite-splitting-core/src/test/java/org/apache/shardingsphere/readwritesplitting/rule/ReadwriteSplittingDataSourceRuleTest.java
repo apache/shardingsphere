@@ -17,15 +17,14 @@
 
 package org.apache.shardingsphere.readwritesplitting.rule;
 
-import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReplicaLoadBalanceAlgorithm;
-import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RoundRobinReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -37,23 +36,9 @@ public final class ReadwriteSplittingDataSourceRuleTest {
     @Before
     public void setUp() {
         readwriteSplittingDataSourceRule = new ReadwriteSplittingDataSourceRule(
-                new ReadwriteSplittingDataSourceRuleConfiguration("test_pr", "Static", getProperties("write_ds", "read_ds_0,read_ds_1"), ""), new RandomReplicaLoadBalanceAlgorithm());
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void assertNewReadwriteSplittingDataSourceRuleWithoutName() {
-        new ReadwriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("", "Static", getProperties("write_ds", "read_ds"), null), new RoundRobinReplicaLoadBalanceAlgorithm());
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void assertNewReadwriteSplittingDataSourceRuleWithoutWriteDataSourceName() {
-        new ReadwriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("ds", "Static", getProperties("", "read_ds"), null),
-                new RoundRobinReplicaLoadBalanceAlgorithm());
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void assertNewReadwriteSplittingDataSourceRuleWithEmptyReadDataSourceName() {
-        new ReadwriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("ds", "Static", getProperties("write_ds", ""), ""), new RoundRobinReplicaLoadBalanceAlgorithm());
+                new ReadwriteSplittingDataSourceRuleConfiguration("test_pr",
+                        new StaticReadwriteSplittingStrategyConfiguration("write_ds", Arrays.asList("read_ds_0", "read_ds_1")), null, null),
+                new RandomReadQueryLoadBalanceAlgorithm(), Collections.emptyList());
     }
     
     @Test
@@ -90,12 +75,5 @@ public final class ReadwriteSplittingDataSourceRuleTest {
     public void assertGetEnabledReplicaDataSources() {
         readwriteSplittingDataSourceRule.updateDisabledDataSourceNames("read_ds_0", true);
         assertThat(readwriteSplittingDataSourceRule.getEnabledReplicaDataSources(), is(Collections.singletonList("read_ds_1")));
-    }
-    
-    private Properties getProperties(final String writeDataSource, final String readDataSources) {
-        Properties result = new Properties();
-        result.setProperty("write-data-source-name", writeDataSource);
-        result.setProperty("read-data-source-names", readDataSources);
-        return result;
     }
 }

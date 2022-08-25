@@ -29,7 +29,7 @@ import java.util.LinkedList;
  * Drop schema statement.
  */
 @Getter
-@ToString
+@ToString(callSuper = true)
 public abstract class DropSchemaStatement extends AbstractSQLStatement implements DDLStatement {
     
     private final Collection<IdentifierValue> schemaNames = new LinkedList<>();

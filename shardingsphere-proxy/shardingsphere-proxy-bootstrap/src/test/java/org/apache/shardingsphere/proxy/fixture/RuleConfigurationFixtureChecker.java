@@ -17,12 +17,18 @@
 
 package org.apache.shardingsphere.proxy.fixture;
 
-import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.test.fixture.rule.MockedRuleConfiguration;
 
-public final class RuleConfigurationFixtureChecker implements RuleConfigurationChecker<RuleConfigurationFixture> {
+import javax.sql.DataSource;
+import java.util.Collection;
+import java.util.Map;
+
+public final class RuleConfigurationFixtureChecker implements RuleConfigurationChecker<MockedRuleConfiguration> {
     
     @Override
-    public void check(final String databaseName, final RuleConfigurationFixture config) {
+    public void check(final String databaseName, final MockedRuleConfiguration config, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) {
     }
     
     @Override
@@ -31,7 +37,7 @@ public final class RuleConfigurationFixtureChecker implements RuleConfigurationC
     }
     
     @Override
-    public Class<RuleConfigurationFixture> getTypeClass() {
-        return RuleConfigurationFixture.class;
+    public Class<MockedRuleConfiguration> getTypeClass() {
+        return MockedRuleConfiguration.class;
     }
 }

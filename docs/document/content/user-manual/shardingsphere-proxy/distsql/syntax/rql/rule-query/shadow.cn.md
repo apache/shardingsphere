@@ -32,32 +32,32 @@ shadowRule:
 
 ### Shadow Table Rule
 
-| 列                     | 说明           |
-| ----------------------| ---------------|
-| shadow_table          | 影子表          |
-| shadow_algorithm_name | 影子算法名称     |
+| 列                     | 说明       |
+| --------------------- | ---------- |
+| shadow_table          | 影子表      |
+| shadow_algorithm_name | 影子算法名称 |
 
 ### Shadow Algorithms
 
-| 列                    | 说明          |
-| -------------------   | ------------ |
-| shadow_algorithm_name | 影子算法名称   |
-| type                  | 算法类型      |
-| props                 | 算法参数      |
-| is_default            | 是否默认      |
+| 列                    | 说明        |
+| -------------------   | ---------- |
+| shadow_algorithm_name | 影子算法名称 |
+| type                  | 算法类型    |
+| props                 | 算法参数    |
+| is_default            | 是否默认    |
 
 ### Shadow Rule status
 
-| 列                    | 说明          |
-| -------------------   | ------------ |
-| status                | 是否启用      |
+| 列                    | 说明     |
+| -------------------   | ------- |
+| status                | 是否启用 |
 
 ## 示例
 
 *SHOW SHADOW RULES*
 
 ```sql
-mysql> show shadow rules;
+mysql> SHOW SHADOW RULES;
 +--------------------+-------------+-------------+--------------+
 | rule_name          | source_name | shadow_name | shadow_table |
 +--------------------+-------------+-------------+--------------+
@@ -69,7 +69,7 @@ mysql> show shadow rules;
 *SHOW SHADOW RULE ruleName*
 
 ```sql
-mysql> show shadow rule shadow_rule_1;
+mysql> SHOW SHADOW RULE shadow_rule_1;
 +------------------+-------------+-------------+--------------+
 | rule_name        | source_name | shadow_name | shadow_table |
 +------------------+-------------+-------------+--------------+
@@ -81,7 +81,7 @@ mysql> show shadow rule shadow_rule_1;
 *SHOW SHADOW TABLE RULES*
 
 ```sql
-mysql> show shadow table rules;
+mysql> SHOW SHADOW TABLE RULES;
 +--------------+--------------------------------------------------------------------------------+
 | shadow_table | shadow_algorithm_name                                                          |
 +--------------+--------------------------------------------------------------------------------+
@@ -93,7 +93,7 @@ mysql> show shadow table rules;
 *SHOW SHADOW ALGORITHMS*
 
 ```sql
-mysql> show shadow algorithms;
+mysql> SHOW SHADOW ALGORITHMS;
 +-------------------------+--------------------+-------------------------------------------+----------------+
 | shadow_algorithm_name   | type               | props                                     | is_default     |
 +-------------------------+--------------------+-------------------------------------------+----------------+

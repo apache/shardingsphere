@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.dcl;
 
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
  * Alter user statement.
  */
+@ToString(callSuper = true)
 public abstract class AlterUserStatement extends AbstractSQLStatement implements DCLStatement {
 }

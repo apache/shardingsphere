@@ -30,7 +30,7 @@ import java.util.Optional;
  * MySQL insert statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class MySQLInsertStatement extends InsertStatement implements MySQLStatement {
     
     private SetAssignmentSegment setAssignment;

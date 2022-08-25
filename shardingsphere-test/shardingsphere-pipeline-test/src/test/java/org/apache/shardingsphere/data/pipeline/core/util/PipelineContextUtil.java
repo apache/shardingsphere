@@ -20,18 +20,28 @@ package org.apache.shardingsphere.data.pipeline.core.util;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
+import org.apache.shardingsphere.data.pipeline.api.config.TaskConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
+import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.fixture.EmbedTestingServer;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.MemoryPipelineChannelCreator;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPIImpl;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobItemContext;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationProcessContext;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineProcessConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineReadConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.data.pipeline.YamlPipelineProcessConfigurationSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -96,8 +106,8 @@ public final class PipelineContextUtil {
                 ConfigurationFileUtil.readFile("config_sharding_sphere_jdbc_source.yaml"));
         ShardingSphereDataSource dataSource = (ShardingSphereDataSource) PipelineDataSourceFactory.newInstance(pipelineDataSourceConfig).getDataSource();
         ContextManager contextManager = getContextManager(dataSource);
-        MetaDataPersistService metaDataPersistService = new MetaDataPersistService(getClusterPersistRepository());
-        MetaDataContexts metaDataContexts = renewMetaDataContexts(contextManager.getMetaDataContexts(), metaDataPersistService);
+        MetaDataPersistService persistService = new MetaDataPersistService(getClusterPersistRepository());
+        MetaDataContexts metaDataContexts = renewMetaDataContexts(contextManager.getMetaDataContexts(), persistService);
         PipelineContext.initContextManager(new ContextManager(metaDataContexts, contextManager.getInstanceContext()));
     }
     
@@ -113,12 +123,12 @@ public final class PipelineContextUtil {
         return PERSIST_REPOSITORY_LAZY_INITIALIZER.get();
     }
     
-    private static MetaDataContexts renewMetaDataContexts(final MetaDataContexts old, final MetaDataPersistService metaDataPersistService) {
+    private static MetaDataContexts renewMetaDataContexts(final MetaDataContexts old, final MetaDataPersistService persistService) {
         Map<String, ShardingSphereTable> tables = new HashMap<>(3, 1);
-        tables.put("t_order", new ShardingSphereTable("t_order", Arrays.asList(new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false),
-                new ShardingSphereColumn("user_id", Types.VARCHAR, false, false, false)), Collections.emptyList(), Collections.emptyList()));
-        old.getMetaData().getDatabases().get(DefaultDatabase.LOGIC_NAME).getSchemas().get(DefaultDatabase.LOGIC_NAME).putAll(tables);
-        return new MetaDataContexts(metaDataPersistService, old.getMetaData(), old.getOptimizerContext());
+        tables.put("t_order", new ShardingSphereTable("t_order", Arrays.asList(new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true),
+                new ShardingSphereColumn("user_id", Types.VARCHAR, false, false, false, true)), Collections.emptyList(), Collections.emptyList()));
+        old.getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME).getSchema(DefaultDatabase.LOGIC_NAME).putAll(tables);
+        return new MetaDataContexts(persistService, old.getMetaData());
     }
     
     /**
@@ -137,5 +147,29 @@ public final class PipelineContextUtil {
      */
     public static PipelineChannelCreator getPipelineChannelCreator() {
         return PIPELINE_CHANNEL_CREATOR;
+    }
+    
+    /**
+     * Mock migration job item context.
+     *
+     * @param jobConfig job configuration
+     * @return job item context
+     */
+    public static MigrationJobItemContext mockMigrationJobItemContext(final MigrationJobConfiguration jobConfig) {
+        PipelineProcessConfiguration processConfig = mockPipelineProcessConfiguration();
+        MigrationProcessContext processContext = new MigrationProcessContext(jobConfig.getJobId(), processConfig);
+        int jobShardingItem = 0;
+        TaskConfiguration taskConfig = new MigrationJobAPIImpl().buildTaskConfiguration(jobConfig, jobShardingItem, processConfig);
+        return new MigrationJobItemContext(jobConfig, jobShardingItem, null,
+                processContext, taskConfig, new DefaultPipelineDataSourceManager());
+    }
+    
+    private static PipelineProcessConfiguration mockPipelineProcessConfiguration() {
+        YamlPipelineReadConfiguration yamlReadConfig = YamlPipelineReadConfiguration.buildWithDefaultValue();
+        yamlReadConfig.setShardingSize(10);
+        YamlPipelineProcessConfiguration yamlProcessConfig = new YamlPipelineProcessConfiguration();
+        yamlProcessConfig.setRead(yamlReadConfig);
+        PipelineProcessConfigurationUtils.fillInDefaultValue(yamlProcessConfig);
+        return new YamlPipelineProcessConfigurationSwapper().swapToObject(yamlProcessConfig);
     }
 }

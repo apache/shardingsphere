@@ -37,4 +37,9 @@ public final class ComplexShardingStrategyConfiguration implements ShardingStrat
         this.shardingColumns = shardingColumns;
         this.shardingAlgorithmName = shardingAlgorithmName;
     }
+    
+    @Override
+    public String getType() {
+        return "COMPLEX";
+    }
 }

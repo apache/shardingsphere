@@ -26,6 +26,9 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawExecutor;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutorFactory;
+import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
+import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.traffic.executor.TrafficExecutor;
 
@@ -48,13 +51,15 @@ public final class DriverExecutor implements AutoCloseable {
     public DriverExecutor(final ShardingSphereConnection connection) {
         MetaDataContexts metaDataContexts = connection.getContextManager().getMetaDataContexts();
         ExecutorEngine executorEngine = connection.getContextManager().getExecutorEngine();
+        EventBusContext eventBusContext = connection.getContextManager().getInstanceContext().getEventBusContext();
         JDBCExecutor jdbcExecutor = new JDBCExecutor(executorEngine, connection.isHoldTransaction());
         regularExecutor = new DriverJDBCExecutor(connection.getDatabaseName(), connection.getContextManager(), jdbcExecutor);
-        rawExecutor = new RawExecutor(executorEngine, connection.isHoldTransaction(), metaDataContexts.getMetaData().getProps());
-        DatabaseType databaseType = metaDataContexts.getMetaData().getDatabases().get(connection.getDatabaseName()).getResource().getDatabaseType();
+        rawExecutor = new RawExecutor(executorEngine, connection.isHoldTransaction(), metaDataContexts.getMetaData().getProps(), eventBusContext);
+        DatabaseType databaseType = metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getResource().getDatabaseType();
         String schemaName = DatabaseTypeEngine.getDefaultSchemaName(databaseType, connection.getDatabaseName());
-        federationExecutor = FederationExecutorFactory.newInstance(
-                connection.getDatabaseName(), schemaName, metaDataContexts.getOptimizerContext(), metaDataContexts.getMetaData().getProps(), jdbcExecutor);
+        OptimizerContext optimizerContext = OptimizerContextFactory.create(metaDataContexts.getMetaData().getDatabases(), metaDataContexts.getMetaData().getGlobalRuleMetaData());
+        federationExecutor = FederationExecutorFactory.newInstance(connection.getDatabaseName(), schemaName,
+                optimizerContext, metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps(), jdbcExecutor, eventBusContext);
         trafficExecutor = new TrafficExecutor();
     }
     

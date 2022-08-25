@@ -32,4 +32,15 @@
             FROM HumanResources.vEmployeeDepartment
             WHERE FirstName = @FirstName AND LastName = @LastName;" db-types="SQLServer" />
     <sql-case id="create_procedure_declare_without_at" value="CREATE PROCEDURE proc (ofs INT, count INT) BEGIN DECLARE i INT DEFAULT ofs; WHILE i &lt; count DO SELECT i AS i; IF LOWER(CHAR(i USING utf8) COLLATE utf8_tolower_ci) != LOWER(CHAR(i USING utf8mb4) COLLATE utf8mb4_0900_as_ci) THEN SELECT i AS &apos;found funny character&apos;; END IF; SET i = i + 1; END WHILE; END" db-types="MySQL" />
+    <sql-case id="create_procedure_with_declare_and_view" value="CREATE PROCEDURE bug20953() BEGIN DECLARE i INT; CREATE VIEW v AS SELECT i; END" db-types="MySQL" />
+    <sql-case id="create_procedure_with_create_view_as_select" value="CREATE PROCEDURE p1() CREATE VIEW v1 AS SELECT * FROM t1" db-types="MySQL" />
+    <sql-case id="create_procedure_with_create_view_as_double_select" value="CREATE PROCEDURE bug20953() CREATE VIEW v AS SELECT 1 FROM (SELECT 1) AS d1" db-types="MySQL" />
+    <sql-case id="create_procedure_with_create_view_as_select_lowercase" value="create procedure p1() create view v1 as select * from t1" db-types="MySQL" />
+    <sql-case id="create_procedure_with_create_view_as_select_i" value="CREATE PROCEDURE bug20953(i INT) CREATE VIEW v AS SELECT i" db-types="MySQL" />
+    <sql-case id="create_procedure_with_create_view_as_select_into" value="CREATE PROCEDURE bug20953() CREATE VIEW v AS SELECT 1 INTO @a" db-types="MySQL" />
+    <sql-case id="create_procedure_with_create_view_as_select_into_dumpfile" value="CREATE PROCEDURE bug20953() CREATE VIEW v AS SELECT 1 INTO DUMPFILE &quot;file&quot;" db-types="MySQL" />
+    <sql-case id="create_procedure_with_create_view_as_select_into_outfile" value="CREATE PROCEDURE bug20953() CREATE VIEW v AS SELECT 1 INTO OUTFILE &quot;file&quot;" db-types="MySQL" />
+    <sql-case id="create_procedure_with_sqlexception_and_create_view" value="create procedure p() begin declare continue handler for sqlexception begin end; create view a as select 1; end" db-types="MySQL" />
+    <sql-case id="create_procedure_with_deterministic_create_view" value="create procedure p1 () deterministic begin create view v1 as select 1; end;" db-types="MySQL" />
+    <sql-case id="create_procedure_with_update_statement_oracle" value="CREATE PROCEDURE update_order (order_id NUMBER,status NUMBER) AS BEGIN  UPDATE t_order SET status = status WHERE order_id = order_id;END;" db-types="Oracle" />
 </sql-cases>

@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Create diskgroup statement.
  */
-@ToString
-public class CreateDiskgroupStatement extends AbstractSQLStatement implements DDLStatement {
+@ToString(callSuper = true)
+public abstract class CreateDiskgroupStatement extends AbstractSQLStatement implements DDLStatement {
 }

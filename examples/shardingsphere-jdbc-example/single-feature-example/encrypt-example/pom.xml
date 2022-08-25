@@ -33,6 +33,7 @@
     <modules>
         <module>encrypt-raw-jdbc-example</module>
         <module>encrypt-spring-boot-mybatis-example</module>
+        <module>encrypt-spring-boot-jpa-example</module>
         <module>encrypt-spring-namespace-mybatis-example</module>
         <module>encrypt-spring-namespace-jpa-example</module>
     </modules>

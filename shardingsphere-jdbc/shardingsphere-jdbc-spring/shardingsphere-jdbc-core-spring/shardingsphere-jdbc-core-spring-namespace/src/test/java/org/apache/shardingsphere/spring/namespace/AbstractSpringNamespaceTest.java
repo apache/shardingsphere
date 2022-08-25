@@ -52,8 +52,8 @@ public abstract class AbstractSpringNamespaceTest extends AbstractJUnit4SpringCo
     
     @Test
     public void assertShardingSphereDataSource() {
-        assertDataSources(getContextManager(dataSource).getMetaDataContexts().getMetaData().getDatabases().get(DefaultDatabase.LOGIC_NAME).getResource().getDataSources());
-        assertSchemaRules(getContextManager(dataSource).getMetaDataContexts().getMetaData().getDatabases().get(DefaultDatabase.LOGIC_NAME).getRuleMetaData().getRules());
+        assertDataSources(getContextManager(dataSource).getMetaDataContexts().getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME).getResource().getDataSources());
+        assertDatabaseRules(getContextManager(dataSource).getMetaDataContexts().getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME).getRuleMetaData().getRules());
         assertGlobalRules(getContextManager(dataSource).getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
     }
     
@@ -74,7 +74,7 @@ public abstract class AbstractSpringNamespaceTest extends AbstractJUnit4SpringCo
         assertTrue(actual.containsKey("ds_1_read_1"));
     }
     
-    private void assertSchemaRules(final Collection<ShardingSphereRule> actual) {
+    private void assertDatabaseRules(final Collection<ShardingSphereRule> actual) {
         assertThat(actual.size(), is(4));
         for (ShardingSphereRule each : actual) {
             if (each instanceof ShardingRule) {

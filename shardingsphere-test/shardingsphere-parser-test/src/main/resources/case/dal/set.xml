@@ -32,6 +32,21 @@
             <parameter name="configuration_parameter" scope="SESSION" />
         </parameter-assign>
     </set-parameter>
+    <set-parameter sql-case-id="set_parameter_equal_at_at_session_mysql">
+        <parameter-assign value="'value'">
+            <parameter name="configuration_parameter" scope="SESSION" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_parameter_equal_at_at_without_scope_mysql">
+        <parameter-assign value="'value'">
+            <parameter name="configuration_parameter" scope="SESSION" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_parameter_equal_at_at_global_mysql">
+        <parameter-assign value="'value'">
+            <parameter name="configuration_parameter" scope="GLOBAL" />
+        </parameter-assign>
+    </set-parameter>
     <set-parameter sql-case-id="set_parameter_to">
         <parameter-assign value="'value'">
             <parameter name="configuration_parameter" />

@@ -21,15 +21,14 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -37,25 +36,15 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public final class ScalingCaseHelper {
     
+    private static final SnowflakeKeyGenerateAlgorithm SNOWFLAKE_KEY_GENERATE_ALGORITHM = new SnowflakeKeyGenerateAlgorithm();
+    
     /**
-     * Get query properties by database type.
+     * Generate snowflake key.
      *
-     * @param databaseType database type
-     * @return query properties
+     * @return snowflake key
      */
-    public static Properties getQueryPropertiesByDatabaseType(final DatabaseType databaseType) {
-        Properties result = new Properties();
-        if (databaseType instanceof MySQLDatabaseType) {
-            result.put("useSSL", Boolean.FALSE.toString());
-            result.put("rewriteBatchedStatements", Boolean.TRUE.toString());
-            result.put("serverTimezone", "UTC");
-            return result;
-        }
-        if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
-            result.put("preferQueryMode", "extendedForPrepared");
-            return result;
-        }
-        return result;
+    public static long generateSnowflakeKey() {
+        return SNOWFLAKE_KEY_GENERATE_ALGORITHM.generateKey();
     }
     
     /**
@@ -73,7 +62,7 @@ public final class ScalingCaseHelper {
         List<Object[]> orderData = new ArrayList<>(insertRows);
         List<Object[]> orderItemData = new ArrayList<>(insertRows);
         for (int i = 0; i < insertRows; i++) {
-            int orderId = generateInt(0, 6);
+            long orderId = generateSnowflakeKey();
             int userId = generateInt(0, 6);
             LocalDateTime now = LocalDateTime.now();
             int randomInt = generateInt(-100, 100);
@@ -81,13 +70,14 @@ public final class ScalingCaseHelper {
             if (databaseType instanceof MySQLDatabaseType) {
                 Object[] addObjs = {keyGenerateAlgorithm.generateKey(), orderId, userId, generateString(6), randomInt, randomInt, randomInt,
                         randomUnsignedInt, randomUnsignedInt, randomUnsignedInt, randomUnsignedInt, generateFloat(), generateDouble(-1000, 100000),
+                        // TODO year should not be always null
                         BigDecimal.valueOf(generateDouble(1, 100)), now, now, now.toLocalDate(), now.toLocalTime(), null, "1", "t", "e", "s", "t", generateString(2), generateString(1),
-                        generateString(1), "1", "2", "{}"};
+                        generateString(1), "1", "2", generateJsonString(1024)};
                 orderData.add(addObjs);
             } else {
                 orderData.add(new Object[]{keyGenerateAlgorithm.generateKey(), orderId, userId, generateString(6), randomInt,
                         BigDecimal.valueOf(generateDouble(1, 100)), true, generateString(2), generateString(2), generateFloat(),
-                        generateDouble(0, 1000)});
+                        generateDouble(0, 1000), LocalDateTime.now(), OffsetDateTime.now()});
             }
             orderItemData.add(new Object[]{keyGenerateAlgorithm.generateKey(), orderId, userId, "SUCCESS"});
         }
@@ -102,37 +92,15 @@ public final class ScalingCaseHelper {
         return RandomStringUtils.randomAlphabetic(strLength);
     }
     
+    private static String generateJsonString(final int strLength) {
+        return String.format("{\"test\":\"%s\"}", generateString(strLength));
+    }
+    
     private static float generateFloat() {
         return ThreadLocalRandom.current().nextFloat();
     }
     
     private static double generateDouble(final double min, final double max) {
         return ThreadLocalRandom.current().nextDouble(min, max);
-    }
-    
-    /**
-     * Get username by database type.
-     *
-     * @param databaseType database type
-     * @return username
-     */
-    public static String getUsername(final DatabaseType databaseType) {
-        if (databaseType instanceof OpenGaussDatabaseType) {
-            return "gaussdb";
-        }
-        return "root";
-    }
-    
-    /**
-     * Get password by database type.
-     *
-     * @param databaseType database type
-     * @return username
-     */
-    public static String getPassword(final DatabaseType databaseType) {
-        if (databaseType instanceof OpenGaussDatabaseType) {
-            return "Root@123";
-        }
-        return "root";
     }
 }

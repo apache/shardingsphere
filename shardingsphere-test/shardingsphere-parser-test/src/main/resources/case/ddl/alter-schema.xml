@@ -18,4 +18,6 @@
 
 <sql-parser-test-cases>
     <alter-schema sql-case-id="alter_schema_transfer_ownership" />
+    <alter-schema sql-case-id="alter_schema_rename_to" />
+    <alter-schema sql-case-id="alter_schema_owner_to" />
 </sql-parser-test-cases>

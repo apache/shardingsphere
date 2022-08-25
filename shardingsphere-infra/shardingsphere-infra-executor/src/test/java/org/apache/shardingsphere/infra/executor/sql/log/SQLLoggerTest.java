@@ -17,113 +17,92 @@
 
 package org.apache.shardingsphere.infra.executor.sql.log;
 
-import lombok.SneakyThrows;
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InOrder;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.mockito.Mockito.inOrder;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class SQLLoggerTest {
     
     private static final String SQL = "SELECT * FROM t_user";
     
-    private final LogicSQL logicSQL = new LogicSQL(mock(SQLStatementContext.class), SQL, Collections.emptyList());
+    private static List<LoggingEvent> appenderList;
+    
+    private final QueryContext queryContext = new QueryContext(mock(SQLStatementContext.class), SQL, Collections.emptyList());
     
     private Collection<ExecutionUnit> executionUnits;
     
-    @Mock
-    private Logger logger;
-    
-    @Before
-    public void setUp() throws NoSuchFieldException {
-        executionUnits = mockExecutionUnits(Arrays.asList("db1", "db2", "db3"), SQL);
-        setFinalStatic(SQLLogger.class.getDeclaredField("log"), logger);
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @BeforeClass
+    public static void setupLogger() {
+        ch.qos.logback.classic.Logger log = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("ShardingSphere-SQL");
+        ListAppender<LoggingEvent> appender = (ListAppender) log.getAppender("SQLLoggerTestAppender");
+        appenderList = appender.list;
     }
     
-    private Collection<ExecutionUnit> mockExecutionUnits(final Collection<String> dataSourceNames, final String sql) {
-        return dataSourceNames.stream().map(each -> new ExecutionUnit(each, new SQLUnit(sql, new ArrayList<>()))).collect(Collectors.toList());
+    @Before
+    public void setUp() {
+        executionUnits = prepareExecutionUnits(Arrays.asList("db1", "db2", "db3"));
+        appenderList.clear();
+    }
+    
+    private Collection<ExecutionUnit> prepareExecutionUnits(final Collection<String> dataSourceNames) {
+        return dataSourceNames.stream().map(each -> new ExecutionUnit(each, new SQLUnit(SQL, new ArrayList<>()))).collect(Collectors.toList());
     }
     
     @Test
     public void assertLogNormalSQLWithoutParameter() {
-        SQLLogger.logSQL(logicSQL, false, new ExecutionContext(logicSQL, executionUnits, mock(RouteContext.class)));
-        InOrder inOrder = inOrder(logger);
-        inOrder.verify(logger).info("Logic SQL: {}", new Object[]{SQL});
-        inOrder.verify(logger).info("SQLStatement: {}", new Object[]{null});
-        inOrder.verify(logger).info("Actual SQL: {} ::: {}", new Object[]{"db1", SQL});
-        inOrder.verify(logger).info("Actual SQL: {} ::: {}", new Object[]{"db2", SQL});
-        inOrder.verify(logger).info("Actual SQL: {} ::: {}", new Object[]{"db3", SQL});
+        SQLLogger.logSQL(queryContext, false, new ExecutionContext(queryContext, executionUnits, mock(RouteContext.class)));
+        assertThat(appenderList.size(), is(5));
+        assertTrue(appenderList.stream().allMatch(loggingEvent -> Level.INFO == loggingEvent.getLevel()));
+        assertThat(appenderList.get(0).getFormattedMessage(), is("Logic SQL: SELECT * FROM t_user"));
+        assertThat(appenderList.get(1).getFormattedMessage(), is("SQLStatement: null"));
+        assertThat(appenderList.get(2).getFormattedMessage(), is("Actual SQL: db1 ::: SELECT * FROM t_user"));
+        assertThat(appenderList.get(3).getFormattedMessage(), is("Actual SQL: db2 ::: SELECT * FROM t_user"));
+        assertThat(appenderList.get(4).getFormattedMessage(), is("Actual SQL: db3 ::: SELECT * FROM t_user"));
     }
     
     @Test
     public void assertLogNormalSQLWithParameters() {
-        List<Object> parameters = executionUnits.iterator().next().getSqlUnit().getParameters();
-        parameters.add("parameter");
-        SQLLogger.logSQL(logicSQL, false, new ExecutionContext(logicSQL, executionUnits, mock(RouteContext.class)));
-        InOrder inOrder = inOrder(logger);
-        inOrder.verify(logger).info("Logic SQL: {}", new Object[]{SQL});
-        inOrder.verify(logger).info("SQLStatement: {}", new Object[]{null});
-        inOrder.verify(logger).info("Actual SQL: {} ::: {} ::: {}", new Object[]{"db1", SQL, parameters});
-        inOrder.verify(logger).info("Actual SQL: {} ::: {}", new Object[]{"db2", SQL});
-        inOrder.verify(logger).info("Actual SQL: {} ::: {}", new Object[]{"db3", SQL});
+        executionUnits.forEach(each -> each.getSqlUnit().getParameters().add("parameter"));
+        SQLLogger.logSQL(queryContext, false, new ExecutionContext(queryContext, executionUnits, mock(RouteContext.class)));
+        assertThat(appenderList.size(), is(5));
+        assertTrue(appenderList.stream().allMatch(loggingEvent -> Level.INFO == loggingEvent.getLevel()));
+        assertThat(appenderList.get(0).getFormattedMessage(), is("Logic SQL: SELECT * FROM t_user"));
+        assertThat(appenderList.get(1).getFormattedMessage(), is("SQLStatement: null"));
+        assertThat(appenderList.get(2).getFormattedMessage(), is("Actual SQL: db1 ::: SELECT * FROM t_user ::: [parameter]"));
+        assertThat(appenderList.get(3).getFormattedMessage(), is("Actual SQL: db2 ::: SELECT * FROM t_user ::: [parameter]"));
+        assertThat(appenderList.get(4).getFormattedMessage(), is("Actual SQL: db3 ::: SELECT * FROM t_user ::: [parameter]"));
     }
     
     @Test
     public void assertLogSimpleSQL() {
-        SQLLogger.logSQL(logicSQL, true, new ExecutionContext(logicSQL, executionUnits, mock(RouteContext.class)));
-        InOrder inOrder = inOrder(logger);
-        inOrder.verify(logger).info("Logic SQL: {}", new Object[]{SQL});
-        inOrder.verify(logger).info("SQLStatement: {}", new Object[]{null});
-        inOrder.verify(logger).info("Actual SQL(simple): {} ::: {}", new Object[]{buildDataSourceNames(), executionUnits.size()});
-    }
-    
-    private Collection<String> buildDataSourceNames() {
-        return executionUnits.stream().map(ExecutionUnit::getDataSourceName).collect(Collectors.toCollection(() -> new HashSet<>(executionUnits.size())));
-    }
-    
-    @SneakyThrows
-    private static void setFinalStatic(final Field field, final Object newValue) {
-        field.setAccessible(true);
-        Field modifiersField = getModifiersField();
-        modifiersField.setAccessible(true);
-        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-        field.set(null, newValue);
-    }
-    
-    @SneakyThrows
-    private static Field getModifiersField() {
-        Method getDeclaredFields0 = Class.class.getDeclaredMethod("getDeclaredFields0", boolean.class);
-        getDeclaredFields0.setAccessible(true);
-        Field[] fields = (Field[]) getDeclaredFields0.invoke(Field.class, false);
-        for (Field each : fields) {
-            if ("modifiers".equals(each.getName())) {
-                return each;
-            }
-        }
-        throw new UnsupportedOperationException();
+        SQLLogger.logSQL(queryContext, true, new ExecutionContext(queryContext, executionUnits, mock(RouteContext.class)));
+        assertThat(appenderList.size(), is(3));
+        assertTrue(appenderList.stream().allMatch(loggingEvent -> Level.INFO == loggingEvent.getLevel()));
+        assertThat(appenderList.get(0).getFormattedMessage(), is("Logic SQL: SELECT * FROM t_user"));
+        assertThat(appenderList.get(1).getFormattedMessage(), is("SQLStatement: null"));
+        assertThat(appenderList.get(2).getFormattedMessage(), is("Actual SQL(simple): [db3, db2, db1] ::: 3"));
     }
 }

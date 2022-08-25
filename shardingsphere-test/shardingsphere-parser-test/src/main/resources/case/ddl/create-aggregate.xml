@@ -18,4 +18,16 @@
 
 <sql-parser-test-cases>
     <create-aggregate sql-case-id="create_aggregate" />
+    <create-aggregate sql-case-id="create_aggregate_with_stype" />
+    <create-aggregate sql-case-id="create_aggregate_with_sfunc" />
+    <create-aggregate sql-case-id="create_aggregate_with_basetype" />
+    <create-aggregate sql-case-id="create_aggregate_with_init_cond" />
+    <create-aggregate sql-case-id="create_aggregate_with_parallel" />
+    <create-aggregate sql-case-id="create_aggregate_with_combinefunc" />
+    <create-aggregate sql-case-id="create_aggregate_with_mstype" />
+    <create-aggregate sql-case-id="create_aggregate_with_finalfunc" />
+    <create-aggregate sql-case-id="create_aggregate_with_basetype_finalfunc" />
+    <create-aggregate sql-case-id="create_or_replace_aggregate" />
+    <create-aggregate sql-case-id="create_or_replace_aggregate_sfunc" />
+    <create-aggregate sql-case-id="create_or_replace_aggregate_stype_sfunc" />
 </sql-parser-test-cases>

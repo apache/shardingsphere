@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
 /**
  * SQLServer begin distributed transaction statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class SQLServerBeginDistributedTransactionStatement extends BeginDistributedTransactionStatement implements SQLServerStatement {
 }

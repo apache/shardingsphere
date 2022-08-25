@@ -33,4 +33,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Check License Header
-        uses: apache/skywalking-eyes@main
+        uses: apache/skywalking-eyes@v0.3.0

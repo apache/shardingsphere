@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.mode.manager;
 
-import lombok.Builder;
+import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 
 import java.util.Collection;
 import java.util.Map;
@@ -31,10 +32,11 @@ import java.util.Properties;
 /**
  * Context manager builder parameter.
  */
-@Builder
+@RequiredArgsConstructor
 @Getter
 public final class ContextManagerBuilderParameter {
     
+    @Getter(AccessLevel.NONE)
     private final ModeConfiguration modeConfig;
     
     private final Map<String, DatabaseConfiguration> databaseConfigs;
@@ -45,15 +47,24 @@ public final class ContextManagerBuilderParameter {
     
     private final Collection<String> labels;
     
-    private final InstanceDefinition instanceDefinition;
+    private final InstanceMetaData instanceMetaData;
     
     /**
-     * Whether is empty or not.
+     * Whether parameter is empty.
      * 
-     * @return is empty or not
+     * @return parameter is empty or not
      */
     public boolean isEmpty() {
-        return props.isEmpty() && globalRuleConfigs.isEmpty()
+        return globalRuleConfigs.isEmpty() && props.isEmpty()
                 && databaseConfigs.entrySet().stream().allMatch(entry -> entry.getValue().getDataSources().isEmpty() && entry.getValue().getRuleConfigurations().isEmpty());
+    }
+    
+    /**
+     * Get mode configuration.
+     * 
+     * @return mode configuration
+     */
+    public ModeConfiguration getModeConfiguration() {
+        return null == modeConfig ? new ModeConfiguration("Standalone", null, true) : modeConfig;
     }
 }

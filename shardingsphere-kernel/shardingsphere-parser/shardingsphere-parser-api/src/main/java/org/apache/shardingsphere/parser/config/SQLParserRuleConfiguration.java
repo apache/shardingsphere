@@ -17,25 +17,21 @@
 
 package org.apache.shardingsphere.parser.config;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 
 /**
  * SQL parser rule configuration.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class SQLParserRuleConfiguration implements GlobalRuleConfiguration {
+public final class SQLParserRuleConfiguration implements GlobalRuleConfiguration {
     
-    private boolean sqlCommentParseEnabled;
+    private final boolean sqlCommentParseEnabled;
     
-    private CacheOption parseTreeCache;
+    private final CacheOption parseTreeCache;
     
-    private CacheOption sqlStatementCache;
+    private final CacheOption sqlStatementCache;
 }

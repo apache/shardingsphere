@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Alter outline statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class AlterOutlineStatement extends AbstractSQLStatement implements DDLStatement {
 }

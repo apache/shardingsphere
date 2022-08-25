@@ -219,10 +219,11 @@ The text of each license is the standard Apache 2.0 license.
     aggdesigner-algorithm 6.0: Apache 2.0
     apiguardian-api 1.1.0: https://github.com/apiguardian-team/apiguardian, Apache 2.0
     audience-annotations 0.5.0: https://github.com/apache/yetus, Apache 2.0
-    avatica-core 1.18.0: https://calcite.apache.org/avatica, Apache 2.0 
-    avatica-metrics 1.18.0: https://calcite.apache.org/avatica, Apache 2.0
-    calcite-core 1.27.0: https://calcite.apache.org, Apache 2.0
-    calcite-linq4j 1.27.0: https://calcite.apache.org, Apache 2.0
+    avatica-core 1.22.0: https://calcite.apache.org/avatica, Apache 2.0
+    avatica-metrics 1.22.0: https://calcite.apache.org/avatica, Apache 2.0
+    caffeine 2.9.2: https://github.com/ben-manes/caffeine, Apache 2.0
+    calcite-core 1.31.0: https://calcite.apache.org, Apache 2.0
+    calcite-linq4j 1.31.0: https://calcite.apache.org, Apache 2.0
     commons-codec 1.15: https://github.com/apache/commons-codec, Apache 2.0
     commons-collections4 4.4: https://github.com/apache/commons-collections, Apache 2.0
     commons-exec 1.3: https://github.com/apache/commons-exec, Apache 2.0
@@ -248,7 +249,7 @@ The text of each license is the standard Apache 2.0 license.
     grpc-protobuf 1.27.1: https://github.com/grpc/grpc-java, Apache 2.0
     grpc-protobuf-lite 1.27.1: https://github.com/grpc/grpc-java, Apache 2.0
     grpc-stub 1.27.1: https://github.com/grpc/grpc-java, Apache 2.0
-    gson 2.8.6: https://github.com/google/gson, Apache 2.0
+    gson 2.9.1: https://github.com/google/gson, Apache 2.0
     guava 30.0-jre: https://github.com/google/guava, Apache 2.0
     HikariCP 3.4.2: https://github.com/brettwooldridge/HikariCP, Apache 2.0
     httpclient 4.5.9: http://hc.apache.org/httpcomponents-client, Apache 2.0
@@ -264,7 +265,6 @@ The text of each license is the standard Apache 2.0 license.
     json-path 2.4.0: https://github.com/jayway/JsonPath, Apache 2.0
     json-smart 2.3: https://www.minidev.net/, Apache 2.0
     jsr305 3.0.2: http://findbugs.sourceforge.net/, Apache 2.0
-    listenablefuture 9999.0-empty-to-avoid-conflict-with-guava:https://github.com/google/guava, Apache 2.0
     log4j 1.2.17: http://logging.apache.org/log4j/1.2/, Apache 2.0
     memory 0.9.0, Apache 2.0
     netty-buffer 4.1.73.Final: https://github.com/netty, Apache 2.0
@@ -294,7 +294,6 @@ The text of each license is the standard Apache 2.0 license.
     vertx-sql-client 4.2.3: https://github.com/eclipse-vertx/vertx-sql-client, Apache 2.0
     zookeeper 3.6.0: https://github.com/apache/zookeeper, Apache 2.0
     zookeeper-jute 3.6.0: https://github.com/apache/zookeeper, Apache 2.0
-    caffeine 2.9.2: https://github.com/ben-manes/caffeine, Apache 2.0
 
 ========================================================================
 Apache 2.0 licenses
@@ -322,7 +321,8 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
     asm 5.0.4: https://github.com/llbit/ow2-asm, BSD-3-Clause
     commons-compiler 3.0.11: https://github.com/janino-compiler/janino, New BSD License
     janino 3.0.11: https://github.com/janino-compiler/janino, New BSD License
-    postgresql 42.3.3: https://github.com/pgjdbc/pgjdbc, BSD 2-Clause
+    opengauss-jdbc 3.0.0: https://gitee.com/opengauss/openGauss-connector-jdbc, BSD-2-Clause
+    postgresql 42.4.1: https://github.com/pgjdbc/pgjdbc, BSD-2-Clause
     protobuf-java 3.11.0: https://github.com/protocolbuffers/protobuf/blob/master/java, BSD-3-Clause
     protobuf-java-util 3.11.0: https://github.com/protocolbuffers/protobuf/blob/master/java, BSD-3-Clause 
 
@@ -334,6 +334,7 @@ The following components are provided under the CDDL License. See project link f
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
     jta 1.1: http://jta-spec.java.net, CDDL
+    jaxb-api 2.3.0: https://github.com/javaee/jaxb-spec, CDDL
 
 ========================================================================
 EPL licenses
@@ -345,6 +346,7 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
     logback-classic 1.2.10: https://github.com/qos-ch/logback, EPL 1.0
     logback-core 1.2.10: https://github.com/qos-ch/logback, EPL 1.0
     mchange-commons-java 0.2.15: https://github.com/swaldman/mchange-commons-java, EPL 1.0
+    h2 2.1.214: https://github.com/h2database/h2database, EPL 1.0
 
 ========================================================================
 MIT licenses

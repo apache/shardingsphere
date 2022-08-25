@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Drop trigger statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class DropTriggerStatement extends AbstractSQLStatement implements DDLStatement {
 }

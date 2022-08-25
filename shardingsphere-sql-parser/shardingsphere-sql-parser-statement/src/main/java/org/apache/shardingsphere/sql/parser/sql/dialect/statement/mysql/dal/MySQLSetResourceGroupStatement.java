@@ -27,9 +27,9 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL set resource group statement.
  */
-@ToString
 @Getter
 @Setter
+@ToString(callSuper = true)
 public final class MySQLSetResourceGroupStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
     private String groupName;

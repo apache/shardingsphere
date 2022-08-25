@@ -19,24 +19,17 @@ package org.apache.shardingsphere.encrypt.distsql.parser.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.subject.impl.EncryptSubjectSupplier;
-import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
+import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 /**
  * Alter encrypt rule statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterEncryptRuleStatement extends AlterRuleStatement implements EncryptSubjectSupplier {
+public final class AlterEncryptRuleStatement extends AlterRuleStatement {
     
     private final Collection<EncryptRuleSegment> rules;
-    
-    @Override
-    public Collection<String> getSubjectNames() {
-        return rules.stream().map(EncryptRuleSegment::getTableName).collect(Collectors.toSet());
-    }
 }

@@ -34,7 +34,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 
 @RunWith(Parameterized.class)
@@ -68,9 +67,7 @@ public final class YamlShardingWithReadwriteSplittingIntegrateTest extends Abstr
             dataSourceMap.put("write_ds_1", createDataSource("write_ds_1"));
             dataSourceMap.put("read_ds_1", createDataSource("read_ds_1"));
             Map<String, DataSource> result = new HashMap<>(dataSourceMap.size(), 1);
-            for (Entry<String, DataSource> each : dataSourceMap.entrySet()) {
-                result.put(each.getKey(), each.getValue());
-            }
+            result.putAll(dataSourceMap);
             dataSource = YamlShardingSphereDataSourceFactory.createDataSource(result, yamlFile);
         }
         try (

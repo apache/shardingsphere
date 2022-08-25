@@ -28,6 +28,6 @@ public final class MySQLXADataSourceDefinitionTest {
     
     @Test
     public void assertGetXADriverClassName() {
-        assertThat(new MySQLXADataSourceDefinition().getXADriverClassName(), is(Arrays.asList("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource", "com.mysql.cj.jdbc.MysqlXADataSource")));
+        assertThat(new MySQLXADataSourceDefinition().getXADriverClassNames(), is(Arrays.asList("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource", "com.mysql.cj.jdbc.MysqlXADataSource")));
     }
 }

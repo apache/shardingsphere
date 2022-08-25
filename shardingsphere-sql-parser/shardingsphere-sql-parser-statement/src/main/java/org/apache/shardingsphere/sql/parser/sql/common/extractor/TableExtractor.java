@@ -203,7 +203,7 @@ public final class TableExtractor {
      * @param deleteStatement delete statement
      */
     public void extractTablesFromDelete(final DeleteStatement deleteStatement) {
-        extractTablesFromTableSegment(deleteStatement.getTableSegment());
+        extractTablesFromTableSegment(deleteStatement.getTable());
         if (deleteStatement.getWhere().isPresent()) {
             extractTablesFromExpression(deleteStatement.getWhere().get().getExpr());
         }
@@ -248,7 +248,7 @@ public final class TableExtractor {
      * @param updateStatement update statement.
      */
     public void extractTablesFromUpdate(final UpdateStatement updateStatement) {
-        extractTablesFromTableSegment(updateStatement.getTableSegment());
+        extractTablesFromTableSegment(updateStatement.getTable());
         updateStatement.getSetAssignment().getAssignments().forEach(each -> extractTablesFromExpression(each.getColumns().get(0)));
         if (updateStatement.getWhere().isPresent()) {
             extractTablesFromExpression(updateStatement.getWhere().get().getExpr());
@@ -263,7 +263,7 @@ public final class TableExtractor {
      */
     public boolean needRewrite(final OwnerSegment owner) {
         for (TableSegment each : tableContext) {
-            if (owner.getIdentifier().getValue().equals(each.getAlias().orElse(null))) {
+            if (owner.getIdentifier().getValue().equalsIgnoreCase(each.getAlias().orElse(null))) {
                 return false;
             }
         }
@@ -318,7 +318,7 @@ public final class TableExtractor {
         Collection<SimpleTableSegment> result = new LinkedList<>();
         for (ValidStatementSegment each : routineBody.getValidStatements()) {
             Optional<CreateTableStatement> createTable = each.getCreateTable();
-            if (createTable.isPresent() && !CreateTableStatementHandler.containsNotExistClause(createTable.get())) {
+            if (createTable.isPresent() && !CreateTableStatementHandler.ifNotExists(createTable.get())) {
                 result.add(createTable.get().getTable());
             }
         }

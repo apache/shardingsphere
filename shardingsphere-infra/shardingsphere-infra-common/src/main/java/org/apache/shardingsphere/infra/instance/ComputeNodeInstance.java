@@ -18,33 +18,33 @@
 package org.apache.shardingsphere.infra.instance;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.infra.state.StateType;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Instance of compute node.
  */
-@RequiredArgsConstructor
 @Getter
 @Setter
 public final class ComputeNodeInstance {
     
-    private final InstanceDefinition instanceDefinition;
-    
-    private Collection<String> labels;
+    private final InstanceMetaData metaData;
     
     private final StateContext state = new StateContext();
     
-    private Long workerId;
+    private Collection<String> labels = new ArrayList<>();
     
-    private List<String> xaRecoveryIds = new LinkedList<>();
+    private volatile long workerId;
+    
+    public ComputeNodeInstance(final InstanceMetaData metaData) {
+        this.metaData = metaData;
+        workerId = -1L;
+    }
     
     /**
      * Set labels.
@@ -73,6 +73,6 @@ public final class ComputeNodeInstance {
      * @return current instance id
      */
     public String getCurrentInstanceId() {
-        return instanceDefinition.getInstanceId();
+        return metaData.getId();
     }
 }

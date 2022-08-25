@@ -54,6 +54,7 @@ public final class EncryptOrderByItemTokenGeneratorTest {
     public void setup() {
         generator = new EncryptOrderByItemTokenGenerator();
         generator.setEncryptRule(buildEncryptRule());
+        generator.setDatabaseName("db_schema");
         generator.setSchemas(Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
     }
     

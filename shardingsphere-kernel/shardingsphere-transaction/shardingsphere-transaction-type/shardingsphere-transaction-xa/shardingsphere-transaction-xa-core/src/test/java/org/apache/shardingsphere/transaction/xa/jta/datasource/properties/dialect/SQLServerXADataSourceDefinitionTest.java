@@ -28,6 +28,6 @@ public final class SQLServerXADataSourceDefinitionTest {
     
     @Test
     public void assertGetXADriverClassName() {
-        assertThat(new SQLServerXADataSourceDefinition().getXADriverClassName(), is(Collections.singletonList("com.microsoft.sqlserver.jdbc.SQLServerXADataSource")));
+        assertThat(new SQLServerXADataSourceDefinition().getXADriverClassNames(), is(Collections.singletonList("com.microsoft.sqlserver.jdbc.SQLServerXADataSource")));
     }
 }

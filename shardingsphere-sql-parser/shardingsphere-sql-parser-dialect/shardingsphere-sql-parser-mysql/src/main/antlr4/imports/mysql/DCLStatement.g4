@@ -91,7 +91,7 @@ grantIdentifier
     ;
 
 createUser
-    : CREATE USER (IF NOT EXISTS)? createUserList defaultRoleClause? requireClause? connectOptions? accountLockPasswordExpireOptions?
+    : CREATE USER ifNotExists? createUserList defaultRoleClause? requireClause? connectOptions? accountLockPasswordExpireOptions?
     ;
 
 createUserEntry
@@ -135,9 +135,9 @@ accountLockPasswordExpireOption
     ;
 
 alterUser
-    : ALTER USER existClause? alterUserList requireClause? connectOptions? accountLockPasswordExpireOptions?
-    | ALTER USER existClause? USER LP_ RP_ userFuncAuthOption
-    | ALTER USER existClause? username DEFAULT ROLE (NONE | ALL | roleName (COMMA_ roleName)*)
+    : ALTER USER ifExists? alterUserList requireClause? connectOptions? accountLockPasswordExpireOptions?
+    | ALTER USER ifExists? USER LP_ RP_ userFuncAuthOption
+    | ALTER USER ifExists? username DEFAULT ROLE (NONE | ALL | roleName (COMMA_ roleName)*)
     ;
 
 alterUserEntry
@@ -149,15 +149,15 @@ alterUserList
     ;
 
 dropUser
-    : DROP USER existClause? username (COMMA_ username)*
+    : DROP USER ifExists? username (COMMA_ username)*
     ;
 
 createRole
-    : CREATE ROLE notExistClause? roleName (COMMA_ roleName)*
+    : CREATE ROLE ifNotExists? roleName (COMMA_ roleName)*
     ;
 
 dropRole
-    : DROP ROLE existClause? roleName (COMMA_ roleName)*
+    : DROP ROLE ifExists? roleName (COMMA_ roleName)*
     ;
 
 renameUser

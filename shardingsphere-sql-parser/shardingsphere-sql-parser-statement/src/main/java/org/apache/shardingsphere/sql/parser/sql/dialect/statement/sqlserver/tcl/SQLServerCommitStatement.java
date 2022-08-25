@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
 /**
  * SQLServer commit statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class SQLServerCommitStatement extends CommitStatement implements SQLServerStatement {
 }

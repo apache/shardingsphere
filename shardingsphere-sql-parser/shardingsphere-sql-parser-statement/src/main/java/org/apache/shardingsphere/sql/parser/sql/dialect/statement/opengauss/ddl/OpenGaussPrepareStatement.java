@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.Open
 /**
  * OpenGauss prepare statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OpenGaussPrepareStatement extends PrepareStatement implements OpenGaussStatement {
 }

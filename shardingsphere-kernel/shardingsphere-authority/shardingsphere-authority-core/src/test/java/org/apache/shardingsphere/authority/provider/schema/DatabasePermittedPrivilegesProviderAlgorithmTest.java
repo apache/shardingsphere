@@ -21,7 +21,7 @@ import org.apache.shardingsphere.authority.factory.AuthorityProviderAlgorithmFac
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.provider.database.DatabasePermittedPrivilegesProviderAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.junit.Test;
@@ -41,16 +41,17 @@ public final class DatabasePermittedPrivilegesProviderAlgorithmTest {
         Optional<ShardingSpherePrivileges> privileges = actual.findPrivileges(new Grantee("user1", "127.0.0.2"));
         assertTrue(privileges.isPresent());
         assertTrue(privileges.get().hasPrivileges("test"));
+        assertTrue(privileges.get().hasPrivileges("db_dal_admin"));
     }
     
     private DatabasePermittedPrivilegesProviderAlgorithm createAuthorityProviderAlgorithm() {
         return (DatabasePermittedPrivilegesProviderAlgorithm) AuthorityProviderAlgorithmFactory.newInstance(
-                new ShardingSphereAlgorithmConfiguration("DATABASE_PERMITTED", createProperties()));
+                new AlgorithmConfiguration("DATABASE_PERMITTED", createProperties()));
     }
     
     private Properties createProperties() {
         Properties result = new Properties();
-        result.setProperty(DatabasePermittedPrivilegesProviderAlgorithm.PROP_USER_DATABASE_MAPPINGS, "root@localhost=test, user1@127.0.0.1=db_dal_admin, user1@=test, user1@=test1");
+        result.setProperty(DatabasePermittedPrivilegesProviderAlgorithm.PROP_USER_DATABASE_MAPPINGS, "root@localhost=test, user1@127.0.0.1=db_dal_admin, user1@=test, user1@=test1, user1@=*");
         return result;
     }
 }

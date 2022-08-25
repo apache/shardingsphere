@@ -26,11 +26,15 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.ColumnValueReaderFactory;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
+import org.apache.shardingsphere.data.pipeline.core.util.DataConsistencyCheckUtils;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueReader;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -89,6 +93,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         try (
                 Connection connection = parameter.getDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setFetchSize(chunkSize);
             if (null == previousCalculatedResult) {
                 preparedStatement.setInt(1, chunkSize);
             } else {
@@ -98,15 +103,16 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
             Collection<Collection<Object>> records = new LinkedList<>();
             Object maxUniqueKeyValue = null;
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                ColumnValueReader columnValueReader = ColumnValueReaderFactory.getInstance(parameter.getDatabaseType());
                 while (resultSet.next()) {
                     ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
                     int columnCount = resultSetMetaData.getColumnCount();
                     Collection<Object> record = new LinkedList<>();
                     for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-                        record.add(resultSet.getObject(columnIndex));
+                        record.add(columnValueReader.readValue(resultSet, resultSetMetaData, columnIndex));
                     }
                     records.add(record);
-                    maxUniqueKeyValue = resultSet.getObject(parameter.getUniqueKey());
+                    maxUniqueKeyValue = columnValueReader.readValue(resultSet, resultSetMetaData, parameter.getUniqueKey().getOrdinalPosition());
                 }
             }
             return records.isEmpty() ? Optional.empty() : Optional.of(new CalculatedResult(maxUniqueKeyValue, records.size(), records));
@@ -119,8 +125,10 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.getInstance(parameter.getDatabaseType());
         String logicTableName = parameter.getLogicTableName();
         String schemaName = parameter.getTableNameSchemaNameMapping().getSchemaName(logicTableName);
-        String uniqueKey = parameter.getUniqueKey();
-        String cacheKey = schemaName.toLowerCase() + "." + logicTableName.toLowerCase();
+        String uniqueKey = parameter.getUniqueKey().getName();
+        String cacheKey = parameter.getDatabaseType() + "-" + (DatabaseTypeFactory.getInstance(parameter.getDatabaseType()).isSchemaAvailable()
+                ? schemaName.toLowerCase() + "." + logicTableName.toLowerCase()
+                : logicTableName.toLowerCase());
         if (null == parameter.getPreviousCalculatedResult()) {
             return firstSQLCache.computeIfAbsent(cacheKey, s -> sqlBuilder.buildChunkedQuerySQL(schemaName, logicTableName, uniqueKey, true));
         } else {
@@ -188,8 +196,20 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                     if (thisResult instanceof SQLXML && thatResult instanceof SQLXML) {
                         return ((SQLXML) thisResult).getString().equals(((SQLXML) thatResult).getString());
                     }
-                    if (!new EqualsBuilder().append(thisResult, thatResult).isEquals()) {
-                        log.warn("record column value not match, value1={}, value2={}, record1={}, record2={}", thisResult, thatResult, thisNext, thatNext);
+                    // TODO The standard MySQL JDBC will convert unsigned mediumint to Integer, but proxy convert it to Long
+                    if (thisResult instanceof Integer && thatResult instanceof Long) {
+                        return ((Integer) thisResult).longValue() == (Long) thatResult;
+                    }
+                    boolean matched;
+                    if (thisResult instanceof BigDecimal && thatResult instanceof BigDecimal) {
+                        matched = DataConsistencyCheckUtils.isBigDecimalEquals((BigDecimal) thisResult, (BigDecimal) thatResult);
+                    } else {
+                        matched = new EqualsBuilder().append(thisResult, thatResult).isEquals();
+                    }
+                    if (!matched) {
+                        log.warn("record column value not match, value1={}, value2={}, value1.class={}, value2.class={}, record1={}, record2={}", thisResult, thatResult,
+                                null != thisResult ? thisResult.getClass().getName() : "", null != thatResult ? thatResult.getClass().getName() : "",
+                                thisNext, thatNext);
                         return false;
                     }
                 }

@@ -19,6 +19,8 @@ package org.apache.shardingsphere.infra.binder.type;
 
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
 
+import java.util.Optional;
+
 /**
  * Cursor available.
  */
@@ -29,5 +31,5 @@ public interface CursorAvailable {
      *
      * @return cursor name segment
      */
-    CursorNameSegment getCursorName();
+    Optional<CursorNameSegment> getCursorName();
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.factory;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.readwritesplitting.factory.fixture.ReadQueryLoadBalanceAlgorithmFixture;
 import org.junit.Test;
 
@@ -31,17 +31,17 @@ public final class ReplicaLoadBalanceAlgorithmFactoryTest {
     
     @Test
     public void assertNewInstance() {
-        assertThat(ReplicaLoadBalanceAlgorithmFactory.newInstance(), instanceOf(ReadQueryLoadBalanceAlgorithmFixture.class));
+        assertThat(ReadQueryLoadBalanceAlgorithmFactory.newInstance(), instanceOf(ReadQueryLoadBalanceAlgorithmFixture.class));
     }
     
     @Test
-    public void assertNewInstanceWithShardingSphereAlgorithmConfiguration() {
-        ShardingSphereAlgorithmConfiguration configuration = new ShardingSphereAlgorithmConfiguration("FIXTURE", new Properties());
-        assertThat(ReplicaLoadBalanceAlgorithmFactory.newInstance(configuration), instanceOf(ReadQueryLoadBalanceAlgorithmFixture.class));
+    public void assertNewInstanceWithAlgorithmConfiguration() {
+        AlgorithmConfiguration configuration = new AlgorithmConfiguration("FIXTURE", new Properties());
+        assertThat(ReadQueryLoadBalanceAlgorithmFactory.newInstance(configuration), instanceOf(ReadQueryLoadBalanceAlgorithmFixture.class));
     }
     
     @Test
     public void assertContains() {
-        assertTrue(ReplicaLoadBalanceAlgorithmFactory.contains("FIXTURE"));
+        assertTrue(ReadQueryLoadBalanceAlgorithmFactory.contains("FIXTURE"));
     }
 }

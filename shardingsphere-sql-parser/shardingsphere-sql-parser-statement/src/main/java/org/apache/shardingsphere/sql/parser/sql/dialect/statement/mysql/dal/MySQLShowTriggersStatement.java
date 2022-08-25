@@ -31,7 +31,7 @@ import java.util.Optional;
  * MySQL show triggers status statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class MySQLShowTriggersStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
     private FromSchemaSegment fromSchema;

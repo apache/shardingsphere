@@ -91,7 +91,7 @@
     <describe sql-case-id="explain_select_with_binding_tables">
         <select>
             <from>
-                <join-table>
+                <join-table join-type="INNER">
                     <left>
                         <simple-table name="t_order" alias="o" start-index="24" stop-index="32" />
                     </left>
@@ -160,7 +160,7 @@
             <table name="t_order_new" start-index="28" stop-index="38" />
             <select>
                 <from>
-                    <join-table>
+                    <join-table join-type="INNER">
                         <left>
                             <simple-table name="t_order_item" alias="i" start-index="127" stop-index="140" />
                         </left>
@@ -281,4 +281,7 @@
             </limit>
         </select>
     </describe>
+    
+    <describe sql-case-id="explain_create_materialized_view_with_data"/>
+    <describe sql-case-id="explain_create_materialized_view_with_no_data"/>
 </sql-parser-test-cases>

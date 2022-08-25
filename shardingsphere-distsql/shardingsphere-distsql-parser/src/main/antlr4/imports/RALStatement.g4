@@ -43,7 +43,7 @@ disableInstance
     : DISABLE INSTANCE instanceId
     ;
 
-showInstance
+showInstanceList
     : SHOW INSTANCE LIST
     ;
 
@@ -57,10 +57,6 @@ refreshTableMetadata
 
 showTableMetadata
     : SHOW TABLE METADATA tableName (COMMA tableName*)? (FROM databaseName)?
-    ;
-
-showAuthorityRule
-    : SHOW AUTHORITY RULE
     ;
 
 showTransactionRule
@@ -79,24 +75,12 @@ alterSQLParserRule
     : ALTER SQL_PARSER RULE sqlParserRuleDefinition
     ;
 
-showInstanceMode
-    : SHOW INSTANCE MODE
+showInstanceInfo
+    : SHOW INSTANCE INFO
     ;
 
-createTrafficRule
-    : CREATE TRAFFIC RULE trafficRuleDefinition (COMMA trafficRuleDefinition)* 
-    ;
-
-alterTrafficRule
-    : ALTER TRAFFIC RULE trafficRuleDefinition (COMMA trafficRuleDefinition)* 
-    ;
-
-showTrafficRules
-    : SHOW TRAFFIC (RULES | RULE ruleName)
-    ;
-
-dropTrafficRule
-    : DROP TRAFFIC RULE ifExists? ruleName (COMMA ruleName)*
+showModeInfo
+    : SHOW MODE INFO
     ;
 
 labelInstance
@@ -107,34 +91,6 @@ unlabelInstance
     : UNLABEL INSTANCE instanceId (WITH label (COMMA label)*)?
     ;
 
-countInstanceRules
-    : COUNT INSTANCE RULES (FROM databaseName)?
-    ;
-
-trafficRuleDefinition
-    : ruleName LP (labelDefinition COMMA)? trafficAlgorithmDefinition (COMMA loadBalancerDefinition)? RP
-    ;
-
-labelDefinition
-    : LABELS LP label (COMMA label)* RP
-    ;
-
-trafficAlgorithmDefinition
-    : TRAFFIC_ALGORITHM LP algorithmDefinition RP 
-    ;
-
-loadBalancerDefinition
-    : LOAD_BALANCER LP algorithmDefinition RP
-    ;
-
-algorithmDefinition
-    : TYPE LP NAME EQ typeName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
-    ;
-
-typeName
-    : IDENTIFIER
-    ;
-
 exportDatabaseConfiguration
     : EXPORT DATABASE (CONFIGURATION | CONFIG) (FROM databaseName)? (COMMA? FILE EQ filePath)?
     ;
@@ -143,24 +99,84 @@ importDatabaseConfiguration
     : IMPORT DATABASE (CONFIGURATION | CONFIG) FILE EQ filePath
     ;
 
+convertYamlConfiguration
+    : CONVERT YAML (CONFIGURATION | CONFIG) FILE EQ filePath
+    ;
+
+showSQLTranslatorRule
+    : SHOW SQL_TRANSLATOR RULE
+    ;
+
+showMigrationProcessConfiguration
+    : SHOW MIGRATION PROCESS CONFIGURATION
+    ;
+
+createMigrationProcessConfiguration
+    : CREATE MIGRATION PROCESS CONFIGURATION migrationProcessConfiguration?
+    ;
+
+alterMigrationProcessConfiguration
+    : ALTER MIGRATION PROCESS CONFIGURATION migrationProcessConfiguration?
+    ;
+
+dropMigrationProcessConfiguration
+    : DROP MIGRATION PROCESS CONFIGURATION confPath
+    ;
+
+migrationProcessConfiguration
+    : LP readDefinition? (COMMA? writeDefinition)? (COMMA? streamChannel)? RP
+    ;
+
+readDefinition
+    : READ LP workerThread? (COMMA? batchSize)? (COMMA? shardingSize)? (COMMA? rateLimiter)? RP
+    ;
+
+writeDefinition
+    : WRITE LP workerThread? (COMMA? batchSize)? (COMMA? rateLimiter)? RP
+    ;
+
+workerThread
+    : WORKER_THREAD EQ intValue
+    ;
+
+batchSize
+    : BATCH_SIZE EQ intValue
+    ;
+
+shardingSize
+    : SHARDING_SIZE EQ intValue
+    ;
+
+rateLimiter
+    : RATE_LIMITER LP algorithmDefinition RP
+    ;
+
+streamChannel
+    : STREAM_CHANNEL LP algorithmDefinition RP
+    ;
+
+confPath
+    : STRING
+    ;
+
 filePath
     : STRING
     ;
 
 transactionRuleDefinition
-    : LP DEFAULT EQ defaultType COMMA providerDefinition
+    : LP DEFAULT EQ defaultType (COMMA providerDefinition)?
     ;
 
 providerDefinition
-    : TYPE LP NAME EQ providerName propertiesDefinition? RP
+    : TYPE LP NAME EQ providerName (COMMA propertiesDefinition)? RP
     ;
 
 defaultType
-    : IDENTIFIER
+    : STRING
     ;
 
 providerName
-    : IDENTIFIER
+    : STRING
     ;
 
 sqlParserRuleDefinition
@@ -176,7 +192,7 @@ variableValues
     ;
 
 variableValue
-    : IDENTIFIER | STRING | (MINUS)? INT | TRUE | FALSE
+    : STRING | (MINUS)? INT | TRUE | FALSE
     ;
 
 instanceId
@@ -219,24 +235,12 @@ concurrencyLevel
     : INT
     ;
 
-ruleName
-    : IDENTIFIER
-    ;
-
 label
     : IDENTIFIER
     ;
 
-algorithmProperties
-    : algorithmProperty (COMMA algorithmProperty)*
-    ;
-
-algorithmProperty
-    : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | IDENTIFIER | STRING)
-    ;
-
-ifExists
-    : IF EXISTS
+intValue
+    : INT
     ;
 
 prepareDistSQL

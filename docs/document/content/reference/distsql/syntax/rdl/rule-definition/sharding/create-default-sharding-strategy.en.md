@@ -1,6 +1,6 @@
 +++
 title = "CREATE DEFAULT SHARDING STRATEGY"
-weight = 3
+weight = 5
 +++
 
 ## Description
@@ -9,7 +9,7 @@ The `CREATE DEFAULT SHARDING STRATEGY` syntax is used to create a default shardi
 
 ### Syntax
 
-```SQL
+```sql
 CreateDefaultShardingStrategy ::=
   'CREATE' 'DEFAULT' 'SHARDING' ('DATABASE' | 'TABLE') 'STRATEGY' '(' shardingStrategy ')'
 
@@ -34,9 +34,9 @@ algorithmType ::=
 
 ### Supplement
 
-- When using the complex sharding algorithm, multiple sharding columns need to be specified using `SHARDING_COLUMNS`
-- `algorithmType` is the sharding algorithm type. For detailed sharding algorithm type information, please refer to [Sharding Algorithm](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/)
-
+- When using the complex sharding algorithm, multiple sharding columns need to be specified using `SHARDING_COLUMNS`;
+- `algorithmType` is the sharding algorithm type. For detailed sharding algorithm type information, please refer
+  to [Sharding Algorithm](/en/user-manual/common-config/builtin-algorithm/sharding/).
 
 ### Example
 
@@ -45,12 +45,12 @@ algorithmType ::=
 ```sql
 -- create a sharding algorithm
 CREATE SHARDING ALGORITHM database_inline (
-    TYPE(NAME=inline, PROPERTIES("algorithm-expression"="t_order_${order_id % 2}"))
+    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${order_id % 2}"))
 );
 
 -- create a default sharding database strategy
 CREATE DEFAULT SHARDING DATABASE STRATEGY (
-    TYPE=standard, SHARDING_COLUMN=user_id, SHARDING_ALGORITHM=database_inline
+    TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM=database_inline
 );
 ```
 
@@ -59,10 +59,15 @@ CREATE DEFAULT SHARDING DATABASE STRATEGY (
 ```sql
 -- create a default sharding table strategy
 CREATE DEFAULT SHARDING TABLE STRATEGY (
-    TYPE=standard, SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME=inline, PROPERTIES("algorithm-expression"="t_order_${user_id % 2}")))
+    TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${user_id % 2}")))
 );
 ```
 
-### Related links
-- [CREATE SHARDING ALGORITHM](/en/reference/distsql/syntax/rdl/rule-definition/create-sharding-algorithm/)
+### Reserved word
 
+`CREATE`, `DEFAULT`, `SHARDING`, `DATABASE`, `TABLE`, `STRATEGY`, `TYPE`, `SHARDING_COLUMN`, `SHARDING_COLUMNS`, `SHARDING_ALGORITHM`, `NAME`, `PROPERTIES`
+
+### Related links
+
+- [Reserved word](/en/reference/distsql/syntax/reserved-word/)
+- [CREATE SHARDING ALGORITHM](/en/reference/distsql/syntax/rdl/rule-definition/create-sharding-algorithm/)

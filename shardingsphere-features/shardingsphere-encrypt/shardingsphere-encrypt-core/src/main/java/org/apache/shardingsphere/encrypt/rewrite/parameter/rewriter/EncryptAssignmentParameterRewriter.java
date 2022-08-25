@@ -105,7 +105,7 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
             addedParameters.add(originalValue);
         }
         if (!addedParameters.isEmpty()) {
-            parameterBuilder.addAddedParameters(parameterMarkerIndex + 1, addedParameters);
+            parameterBuilder.addAddedParameters(parameterMarkerIndex, addedParameters);
         }
     }
 }

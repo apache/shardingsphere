@@ -25,6 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Oracle drop dimension statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OracleDropDimensionStatement extends AbstractSQLStatement implements DDLStatement, OracleStatement {
 }

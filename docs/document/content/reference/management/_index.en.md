@@ -1,7 +1,7 @@
 +++
-pre = "<b>7.1. </b>"
+pre = "<b>7.3. </b>"
 title = "Management"
-weight = 1
+weight = 3
 +++
 
 ## Data Structure in Registry Center
@@ -13,16 +13,20 @@ namespace
    ├──rules                                   # Global rule configuration
    ├──props                                   # Properties configuration
    ├──metadata                                # Metadata configuration
-   ├     ├──${schema_1}                       # Schema name 1
-   ├     ├     ├──dataSources                 # Datasource configuration
-   ├     ├     ├──rules                       # Rule configuration
-   ├     ├     ├──tables                      # Table configuration
-   ├     ├     ├     ├──t_1 
-   ├     ├     ├     ├──t_2      
-   ├     ├──${schema_2}                       # Schema name 2
-   ├     ├     ├──dataSources                 # Datasource configuration
-   ├     ├     ├──rules                       # Rule configuration
-   ├     ├     ├──tables                      # Table configuration
+   ├     ├──${databaseName}                   # Logic database name
+   ├     ├     ├──schemas                     # Schema list   
+   ├     ├     ├     ├──${schemaName}         # Logic schema name
+   ├     ├     ├     ├     ├──tables          # Table configuration
+   ├     ├     ├     ├     ├     ├──${tableName} 
+   ├     ├     ├     ├     ├     ├──...  
+   ├     ├     ├     ├──...    
+   ├     ├     ├──versions                    # Metadata version list      
+   ├     ├     ├     ├──${versionNumber}      # Metadata version
+   ├     ├     ├     ├     ├──dataSources     # Data source configuration
+   ├     ├     ├     ├     ├──rules           # Rule configuration  
+   ├     ├     ├     ├──...
+   ├     ├     ├──active_version              # Active metadata version
+   ├     ├──...      
    ├──nodes
    ├    ├──compute_nodes
    ├    ├     ├──online
@@ -33,27 +37,20 @@ namespace
    ├    ├     ├     ├     ├──UUID             # JDBC instance identifier
    ├    ├     ├     ├     ├──....   
    ├    ├     ├──status
-   ├    ├     ├     ├──UUID
-   ├    ├     ├     ├──....
-   ├    ├     ├──xa_recovery_id
-   ├    ├     ├     ├──recovery_id
-   ├    ├     ├     ├     ├──UUID     
+   ├    ├     ├     ├──UUID                   
    ├    ├     ├     ├──....
    ├    ├     ├──worker_id
    ├    ├     ├     ├──UUID
    ├    ├     ├     ├──....
    ├    ├     ├──process_trigger
    ├    ├     ├     ├──process_list_id:UUID
-   ├    ├     ├     ├──....   
-   ├    ├──storage_nodes
-   ├    ├     ├──disable
-   ├    ├     ├      ├──${schema_1.ds_0}
-   ├    ├     ├      ├──${schema_1.ds_1}
-   ├    ├     ├      ├──....
-   ├    ├     ├──primary
-   ├    ├     ├      ├──${schema_2.ds_0}
-   ├    ├     ├      ├──${schema_2.ds_1}
-   ├    ├     ├      ├──....
+   ├    ├     ├     ├──....
+   ├    ├     ├──labels                      
+   ├    ├     ├     ├──UUID
+   ├    ├     ├     ├──....               
+   ├    ├──storage_nodes                       
+   ├    ├     ├──${databaseName.groupName.ds} 
+   ├    ├     ├──${databaseName.groupName.ds}
 ```
 
 ### /rules
@@ -78,7 +75,7 @@ kernel-executor-size: 20
 sql-show: true
 ```
 
-### /metadata/${schemaName}/dataSources
+### /metadata/${databaseName}/versions/${versionNumber}/dataSources
 
 A collection of multiple database connection pools, whose properties (e.g. DBCP, C3P0, Druid and HikariCP) are configured by users themselves.
 
@@ -113,7 +110,7 @@ ds_1:
   poolName: HikariPool-2
 ```
 
-### /metadata/${schemaName}/rules
+### /metadata/${databaseName}/versions/${versionNumber}/rules
 
 Rule configurations, including sharding, readwrite-splitting, data encryption, shadow DB configurations.
 
@@ -128,7 +125,7 @@ Rule configurations, including sharding, readwrite-splitting, data encryption, s
   xxx
 ```
 
-### /metadata/${schemaName}/tables
+### /metadata/${databaseName}/schemas/${schemaName}/tables
 
 Use separate node storage for each table, dynamic modification of metadata content is not supported currently.
 

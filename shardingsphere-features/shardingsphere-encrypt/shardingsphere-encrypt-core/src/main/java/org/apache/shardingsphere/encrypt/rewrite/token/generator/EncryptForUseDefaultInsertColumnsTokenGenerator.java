@@ -46,8 +46,8 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator implements Op
     private EncryptRule encryptRule;
     
     @Override
-    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof InsertStatementContext && ((InsertStatementContext) sqlStatementContext).useDefaultColumns();
+    public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
+        return sqlStatementContext instanceof InsertStatementContext && !((InsertStatementContext) sqlStatementContext).containsInsertColumns();
     }
     
     @Override

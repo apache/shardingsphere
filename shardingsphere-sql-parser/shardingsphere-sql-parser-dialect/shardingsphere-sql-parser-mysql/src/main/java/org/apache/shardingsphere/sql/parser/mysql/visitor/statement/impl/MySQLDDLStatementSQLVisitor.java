@@ -45,7 +45,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BeginSt
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CaseStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChangeColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CharsetNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnAttributeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CompoundStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateDatabaseContext;
@@ -215,7 +214,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
         MySQLCreateDatabaseStatement result = new MySQLCreateDatabaseStatement();
         result.setDatabaseName(new IdentifierValue(ctx.schemaName().getText()).getValue());
-        result.setContainsNotExistClause(null != ctx.notExistClause());
+        result.setIfNotExists(null != ctx.ifNotExists());
         return result;
     }
     
@@ -228,16 +227,15 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
         MySQLDropDatabaseStatement result = new MySQLDropDatabaseStatement();
         result.setDatabaseName(new IdentifierValue(ctx.schemaName().getText()).getValue());
-        result.setContainsExistClause(null != ctx.existClause());
+        result.setIfExists(null != ctx.ifExists());
         return result;
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        MySQLCreateTableStatement result = new MySQLCreateTableStatement();
+        MySQLCreateTableStatement result = new MySQLCreateTableStatement(null != ctx.ifNotExists());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.setContainsNotExistClause(null != ctx.notExistClause());
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
             for (CreateDefinitionSegment each : createDefinitions.getValue()) {
@@ -303,8 +301,9 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     private ColumnDefinitionSegment generateColumnDefinitionSegment(final ColumnSegment column, final FieldDefinitionContext ctx) {
         DataTypeSegment dataTypeSegment = (DataTypeSegment) visit(ctx.dataType());
-        boolean isPrimaryKey = isPrimaryKey(ctx);
-        return new ColumnDefinitionSegment(column.getStartIndex(), ctx.getStop().getStopIndex(), column, dataTypeSegment, isPrimaryKey);
+        boolean isPrimaryKey = ctx.columnAttribute().stream().anyMatch(each -> null != each.KEY() && null == each.UNIQUE());
+        // TODO parse not null
+        return new ColumnDefinitionSegment(column.getStartIndex(), ctx.getStop().getStopIndex(), column, dataTypeSegment, isPrimaryKey, false);
     }
     
     @Override
@@ -457,9 +456,9 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
         ColumnSegment column = new ColumnSegment(ctx.column_name.start.getStartIndex(), ctx.column_name.stop.getStopIndex(), (IdentifierValue) visit(ctx.column_name));
         DataTypeSegment dataTypeSegment = (DataTypeSegment) visit(ctx.fieldDefinition().dataType());
-        boolean isPrimaryKey = isPrimaryKey(ctx.fieldDefinition());
-        ColumnDefinitionSegment result = new ColumnDefinitionSegment(
-                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataTypeSegment, isPrimaryKey);
+        boolean isPrimaryKey = ctx.fieldDefinition().columnAttribute().stream().anyMatch(each -> null != each.KEY() && null == each.UNIQUE());
+        // TODO parse not null
+        ColumnDefinitionSegment result = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataTypeSegment, isPrimaryKey, false);
         result.getReferencedTables().addAll(getReferencedTables(ctx));
         return result;
     }
@@ -472,15 +471,6 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         return result;
     }
     
-    private boolean isPrimaryKey(final FieldDefinitionContext ctx) {
-        for (ColumnAttributeContext each : ctx.columnAttribute()) {
-            if (null != each.KEY() && null == each.UNIQUE()) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
     @Override
     public ASTNode visitTableConstraintDef(final TableConstraintDefContext ctx) {
         ConstraintDefinitionSegment result = new ConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
@@ -488,7 +478,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
             result.setConstraintName((ConstraintSegment) visit(ctx.constraintClause().constraintName()));
         }
         if (null != ctx.KEY() && null != ctx.PRIMARY()) {
-            result.getPrimaryKeyColumns().addAll(getKeyColumnsFromKeyListWithExpression(ctx.keyListWithExpression()));
+            result.getPrimaryKeyColumns().addAll(((CollectionValue) visit(ctx.keyListWithExpression())).getValue());
             return result;
         }
         if (null != ctx.FOREIGN()) {
@@ -496,7 +486,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
             return result;
         }
         if (null != ctx.UNIQUE()) {
-            result.getIndexColumns().addAll(getKeyColumnsFromKeyListWithExpression(ctx.keyListWithExpression()));
+            result.getIndexColumns().addAll(((CollectionValue) visit(ctx.keyListWithExpression())).getValue());
             if (null != ctx.indexName()) {
                 result.setIndexName((IndexSegment) visit(ctx.indexName()));
             }
@@ -505,18 +495,19 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         if (null != ctx.checkConstraint()) {
             return result;
         }
-        result.getIndexColumns().addAll(getKeyColumnsFromKeyListWithExpression(ctx.keyListWithExpression()));
+        result.getIndexColumns().addAll(((CollectionValue) visit(ctx.keyListWithExpression())).getValue());
         if (null != ctx.indexName()) {
             result.setIndexName((IndexSegment) visit(ctx.indexName()));
         }
         return result;
     }
     
-    private Collection<ColumnSegment> getKeyColumnsFromKeyListWithExpression(final KeyListWithExpressionContext ctx) {
-        Collection<ColumnSegment> result = new LinkedList<>();
+    @Override
+    public ASTNode visitKeyListWithExpression(final KeyListWithExpressionContext ctx) {
+        CollectionValue<ColumnSegment> result = new CollectionValue<>();
         for (KeyPartWithExpressionContext each : ctx.keyPartWithExpression()) {
             if (null != each.keyPart()) {
-                result.add((ColumnSegment) visit(each.keyPart().columnName()));
+                result.getValue().add((ColumnSegment) visit(each.keyPart().columnName()));
             }
         }
         return result;
@@ -540,9 +531,8 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        MySQLDropTableStatement result = new MySQLDropTableStatement();
+        MySQLDropTableStatement result = new MySQLDropTableStatement(null != ctx.ifExists());
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
-        result.setContainsExistClause(null != ctx.existClause());
         return result;
     }
     
@@ -559,6 +549,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText()));
         result.setIndex(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName));
+        result.getColumns().addAll(((CollectionValue) visit(ctx.keyListWithExpression())).getValue());
         return result;
     }
     

@@ -22,7 +22,7 @@ package org.apache.shardingsphere.transaction.core;
  */
 public enum TransactionType {
     
-    LOCAL, XA, BASE, MANUALXA;
+    LOCAL, XA, BASE;
     
     /**
      * Judge whether distributed transaction.
@@ -31,6 +31,6 @@ public enum TransactionType {
      * @return is distributed transaction or not
      */
     public static boolean isDistributedTransaction(final TransactionType transactionType) {
-        return XA == transactionType || BASE == transactionType || MANUALXA == transactionType;
+        return XA == transactionType || BASE == transactionType;
     }
 }

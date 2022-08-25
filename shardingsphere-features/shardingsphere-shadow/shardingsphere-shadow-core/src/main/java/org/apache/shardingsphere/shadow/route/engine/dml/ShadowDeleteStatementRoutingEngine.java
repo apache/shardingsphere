@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementConte
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.route.engine.util.ShadowExtractor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
@@ -62,8 +63,8 @@ public final class ShadowDeleteStatementRoutingEngine extends AbstractShadowDMLS
     }
     
     @Override
-    protected Iterator<Optional<ShadowColumnCondition>> getShadowColumnConditionIterator() {
-        return new ShadowColumnConditionIterator(parseWhereSegment(), parameters);
+    protected Iterator<Optional<ShadowColumnCondition>> getShadowColumnConditionIterator(final String shadowColumn) {
+        return new ShadowColumnConditionIterator(shadowColumn, parseWhereSegment());
     }
     
     private Collection<ExpressionSegment> parseWhereSegment() {
@@ -76,27 +77,15 @@ public final class ShadowDeleteStatementRoutingEngine extends AbstractShadowDMLS
         return result;
     }
     
-    private class ShadowColumnConditionIterator implements Iterator<Optional<ShadowColumnCondition>> {
+    private final class ShadowColumnConditionIterator extends AbstractWhereSegmentShadowColumnConditionIterator {
         
-        private final Iterator<ExpressionSegment> iterator;
-        
-        private final List<Object> parameters;
-        
-        ShadowColumnConditionIterator(final Collection<ExpressionSegment> predicates, final List<Object> parameters) {
-            this.iterator = predicates.iterator();
-            this.parameters = parameters;
+        ShadowColumnConditionIterator(final String shadowColumn, final Collection<ExpressionSegment> predicates) {
+            super(shadowColumn, predicates.iterator());
         }
         
         @Override
-        public boolean hasNext() {
-            return iterator.hasNext();
-        }
-        
-        @Override
-        public Optional<ShadowColumnCondition> next() {
-            ExpressionSegment expressionSegment = iterator.next();
-            return ShadowExtractor.extractColumn(expressionSegment).flatMap(optional -> ShadowExtractor.extractValues(expressionSegment, parameters)
-                    .map(values -> new ShadowColumnCondition(getSingleTableName(), optional.getIdentifier().getValue(), values)));
+        protected Optional<ShadowColumnCondition> nextShadowColumnCondition(final ExpressionSegment expressionSegment, final ColumnSegment columnSegment) {
+            return ShadowExtractor.extractValues(expressionSegment, parameters).map(values -> new ShadowColumnCondition(getSingleTableName(), getShadowColumn(), values));
         }
     }
 }

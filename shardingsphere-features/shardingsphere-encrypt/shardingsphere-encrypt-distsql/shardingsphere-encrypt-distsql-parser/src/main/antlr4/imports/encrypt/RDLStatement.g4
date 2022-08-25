@@ -28,7 +28,7 @@ alterEncryptRule
     ;
 
 dropEncryptRule
-    : DROP ENCRYPT RULE existClause? tableName (COMMA tableName)*
+    : DROP ENCRYPT RULE ifExists? tableName (COMMA tableName)*
     ;
 
 encryptRuleDefinition
@@ -88,7 +88,7 @@ algorithmDefinition
     ;
 
 algorithmName
-    : IDENTIFIER
+    : STRING
     ;
 
 algorithmProperties
@@ -103,6 +103,6 @@ queryWithCipherColumn
     : TRUE | FALSE
     ;
 
-existClause
+ifExists
     : IF EXISTS
     ;

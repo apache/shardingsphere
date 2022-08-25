@@ -30,7 +30,7 @@ import java.util.Optional;
  * MySQL show collation statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class MySQLShowCollationStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
     private ShowFilterSegment filter;

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.rule;
 
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.encrypt.exception.EncryptLogicColumnNotFoundException;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -77,18 +77,33 @@ public final class EncryptTable {
     }
     
     /**
-     * Get logic column.
+     * Get logic column by cipher column.
      * 
      * @param cipherColumn cipher column
      * @return logic column
      */
-    public String getLogicColumn(final String cipherColumn) {
+    public String getLogicColumnByCipherColumn(final String cipherColumn) {
         for (Entry<String, EncryptColumn> entry : columns.entrySet()) {
             if (entry.getValue().getCipherColumn().equals(cipherColumn)) {
                 return entry.getKey();
             }
         }
-        throw new ShardingSphereException("Can not find logic column by %s.", cipherColumn);
+        throw new EncryptLogicColumnNotFoundException(cipherColumn);
+    }
+    
+    /**
+     * Get logic column by plain column.
+     *
+     * @param plainColumn plain column
+     * @return logic column
+     */
+    public String getLogicColumnByPlainColumn(final String plainColumn) {
+        for (Entry<String, EncryptColumn> entry : columns.entrySet()) {
+            if (entry.getValue().getPlainColumn().isPresent() && entry.getValue().getPlainColumn().get().equals(plainColumn)) {
+                return entry.getKey();
+            }
+        }
+        throw new EncryptLogicColumnNotFoundException(plainColumn);
     }
     
     /**

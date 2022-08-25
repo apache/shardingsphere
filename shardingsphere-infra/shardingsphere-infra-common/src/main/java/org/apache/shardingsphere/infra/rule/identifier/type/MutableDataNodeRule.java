@@ -17,10 +17,13 @@
 
 package org.apache.shardingsphere.infra.rule.identifier.type;
 
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
+import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -61,4 +64,15 @@ public interface MutableDataNodeRule extends ShardingSphereRule {
      * @return single table data node
      */
     Optional<DataNode> findSingleTableDataNode(String schemaName, String tableName);
+    
+    /**
+     * Reload single table rule.
+     *
+     * @param config rule configuration
+     * @param databaseName database name
+     * @param dataSourceMap data source map
+     * @param builtRules built rules
+     * @return single table rule
+     */
+    ShardingSphereRule reloadRule(RuleConfiguration config, String databaseName, Map<String, DataSource> dataSourceMap, Collection<ShardingSphereRule> builtRules);
 }

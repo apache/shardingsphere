@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.Open
 /**
  * OpenGauss commit prepared statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OpenGaussCommitPreparedStatement extends CommitPreparedStatement implements OpenGaussStatement {
 }

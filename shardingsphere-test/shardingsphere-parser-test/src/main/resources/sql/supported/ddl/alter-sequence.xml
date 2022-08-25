@@ -18,4 +18,7 @@
 
 <sql-cases>
     <sql-case id="alter_sequence" value="ALTER SEQUENCE seq_id MINVALUE 10" db-types="PostgreSQL,openGauss,SQLServer,Oracle" />
+    <sql-case id="alter_sequence_rename_to" value="ALTER SEQUENCE seq1 RENAME TO seq2;" db-types="PostgreSQL" />
+    <sql-case id="alter_sequence_owner_to" value="ALTER SEQUENCE seq1 OWNER TO CURRENT_USER;" db-types="PostgreSQL" />
+    <sql-case id="alter_sequence_no_cycle" value="ALTER SEQUENCE IF EXISTS seq1 NO CYCLE;" db-types="PostgreSQL" />
 </sql-cases>

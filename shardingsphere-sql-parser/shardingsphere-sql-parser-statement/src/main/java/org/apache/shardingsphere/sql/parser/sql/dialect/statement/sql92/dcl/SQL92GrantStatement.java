@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.SQL92Sta
 /**
  * SQL92 grant statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class SQL92GrantStatement extends GrantStatement implements SQL92Statement {
 }

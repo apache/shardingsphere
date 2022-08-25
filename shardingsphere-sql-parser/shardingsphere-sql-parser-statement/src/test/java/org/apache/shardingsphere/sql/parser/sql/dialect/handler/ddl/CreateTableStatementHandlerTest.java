@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.ddl.SQL92CreateTableStatement;
@@ -30,55 +31,15 @@ import static org.junit.Assert.assertTrue;
 public final class CreateTableStatementHandlerTest {
     
     @Test
-    public void assertContainsIfNotExistClauseForMySQL() {
-        MySQLCreateTableStatement createTableStatement = new MySQLCreateTableStatement();
-        createTableStatement.setContainsNotExistClause(true);
-        boolean containsNotExistClause = CreateTableStatementHandler.containsNotExistClause(createTableStatement);
-        assertTrue(containsNotExistClause);
-    }
-    
-    @Test
-    public void assertContainsIfNotExistClauseForPostgreSQL() {
-        PostgreSQLCreateTableStatement createTableStatement = new PostgreSQLCreateTableStatement();
-        createTableStatement.setContainsNotExistClause(true);
-        boolean containsNotExistClause = CreateTableStatementHandler.containsNotExistClause(createTableStatement);
-        assertTrue(containsNotExistClause);
-    }
-    
-    @Test
-    public void assertNotContainsIfNotExistClauseForMySQL() {
-        MySQLCreateTableStatement createTableStatement = new MySQLCreateTableStatement();
-        createTableStatement.setContainsNotExistClause(false);
-        boolean containsNotExistClause = CreateTableStatementHandler.containsNotExistClause(createTableStatement);
-        assertFalse(containsNotExistClause);
-    }
-    
-    @Test
-    public void assertNotContainsIfNotExistClauseForOracle() {
-        OracleCreateTableStatement createTableStatement = new OracleCreateTableStatement();
-        boolean containsNotExistClause = CreateTableStatementHandler.containsNotExistClause(createTableStatement);
-        assertFalse(containsNotExistClause);
-    }
-    
-    @Test
-    public void assertNotContainsIfNotExistClauseForPostgreSQL() {
-        PostgreSQLCreateTableStatement createTableStatement = new PostgreSQLCreateTableStatement();
-        createTableStatement.setContainsNotExistClause(false);
-        boolean containsNotExistClause = CreateTableStatementHandler.containsNotExistClause(createTableStatement);
-        assertFalse(containsNotExistClause);
-    }
-    
-    @Test
-    public void assertNotContainsNotExistClauseForSQL92() {
-        SQL92CreateTableStatement createTableStatement = new SQL92CreateTableStatement();
-        boolean containsNotExistClause = CreateTableStatementHandler.containsNotExistClause(createTableStatement);
-        assertFalse(containsNotExistClause);
-    }
-    
-    @Test
-    public void assertNotContainsIfNotExistClauseForSQLServer() {
-        SQLServerCreateTableStatement createTableStatement = new SQLServerCreateTableStatement();
-        boolean containsNotExistClause = CreateTableStatementHandler.containsNotExistClause(createTableStatement);
-        assertFalse(containsNotExistClause);
+    public void assertIfNotExists() {
+        assertTrue(CreateTableStatementHandler.ifNotExists(new MySQLCreateTableStatement(true)));
+        assertFalse(CreateTableStatementHandler.ifNotExists(new MySQLCreateTableStatement(false)));
+        assertTrue(CreateTableStatementHandler.ifNotExists(new PostgreSQLCreateTableStatement(true)));
+        assertFalse(CreateTableStatementHandler.ifNotExists(new PostgreSQLCreateTableStatement(false)));
+        assertTrue(CreateTableStatementHandler.ifNotExists(new OpenGaussCreateTableStatement(true)));
+        assertFalse(CreateTableStatementHandler.ifNotExists(new OpenGaussCreateTableStatement(false)));
+        assertFalse(CreateTableStatementHandler.ifNotExists(new OracleCreateTableStatement()));
+        assertFalse(CreateTableStatementHandler.ifNotExists(new SQLServerCreateTableStatement()));
+        assertFalse(CreateTableStatementHandler.ifNotExists(new SQL92CreateTableStatement()));
     }
 }

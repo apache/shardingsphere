@@ -27,10 +27,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
  */
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 public abstract class CreateDatabaseStatement extends AbstractSQLStatement implements DDLStatement {
     
     private String databaseName;
     
-    private boolean containsNotExistClause;
+    private boolean ifNotExists;
 }

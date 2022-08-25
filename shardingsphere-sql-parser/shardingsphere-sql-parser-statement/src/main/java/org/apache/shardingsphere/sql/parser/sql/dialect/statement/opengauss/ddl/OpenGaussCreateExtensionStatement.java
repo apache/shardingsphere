@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.Open
 /**
  * OpenGauss create extension statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OpenGaussCreateExtensionStatement extends CreateExtensionStatement implements OpenGaussStatement {
 }

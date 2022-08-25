@@ -20,9 +20,15 @@ package org.apache.shardingsphere.dbdiscovery.rule;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.schedule.core.ScheduleContextFactory;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -37,14 +43,27 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class DatabaseDiscoveryRuleTest {
     
-    private final Map<String, DataSource> dataSourceMap = Collections.singletonMap("primary", new MockedDataSource());
+    private final Map<String, DataSource> dataSourceMap = Collections.singletonMap("primary_ds", new MockedDataSource());
+    
+    @BeforeClass
+    public static void setUp() {
+        ScheduleContextFactory.getInstance().init("foo_id", new ModeConfiguration("Cluster", mock(PersistRepositoryConfiguration.class), false));
+    }
+    
+    @AfterClass
+    public static void tearDown() {
+        ScheduleContextFactory.getInstance().getScheduleStrategy().remove("foo_id");
+    }
     
     @Test
     public void assertFindDataSourceRule() {
-        Optional<DatabaseDiscoveryDataSourceRule> actual = createRule().findDataSourceRule("test_pr");
+        Optional<DatabaseDiscoveryDataSourceRule> actual = createRule().findDataSourceRule("replica_ds");
         assertTrue(actual.isPresent());
         assertDataSourceRule(actual.get());
     }
@@ -55,8 +74,8 @@ public final class DatabaseDiscoveryRuleTest {
     }
     
     private void assertDataSourceRule(final DatabaseDiscoveryDataSourceRule actual) {
-        assertThat(actual.getGroupName(), is("test_pr"));
-        assertThat(actual.getDataSourceNames(), is(Arrays.asList("ds_0", "ds_1")));
+        assertThat(actual.getGroupName(), is("replica_ds"));
+        assertThat(actual.getDataSourceNames(), is(Arrays.asList("primary_ds", "replica_ds_0", "replica_ds_1")));
     }
     
     @Test
@@ -68,22 +87,24 @@ public final class DatabaseDiscoveryRuleTest {
     }
     
     private Map<String, Collection<String>> getDataSourceMapper() {
-        Map<String, Collection<String>> result = new HashMap<>(2, 1);
-        result.put("ds_0", Collections.singletonList("ds_0"));
-        result.put("ds_1", Collections.singletonList("ds_1"));
+        Map<String, Collection<String>> result = new HashMap<>(1, 1);
+        result.put("replica_ds", Collections.singletonList("replica_ds_1"));
         return result;
     }
     
     @Test
     public void assertGetExportedMethods() {
         DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
-        assertThat(databaseDiscoveryRule.getExportedMethods().get(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES).get(), is(Collections.singletonMap("test_pr", "primary")));
+        assertThat(databaseDiscoveryRule.getExportData().get(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES), is(Collections.singletonMap("replica_ds", "primary_ds")));
     }
     
     private DatabaseDiscoveryRule createRule() {
-        DatabaseDiscoveryDataSourceRuleConfiguration config = new DatabaseDiscoveryDataSourceRuleConfiguration("test_pr", Arrays.asList("ds_0", "ds_1"), "", "CORE.FIXTURE");
+        DatabaseDiscoveryDataSourceRuleConfiguration config =
+                new DatabaseDiscoveryDataSourceRuleConfiguration("replica_ds", Arrays.asList("primary_ds", "replica_ds_0", "replica_ds_1"), "", "CORE.FIXTURE");
+        InstanceContext instanceContext = mock(InstanceContext.class, RETURNS_DEEP_STUBS);
+        when(instanceContext.getInstance().getCurrentInstanceId()).thenReturn("foo_id");
         return new DatabaseDiscoveryRule("db_discovery", dataSourceMap, new DatabaseDiscoveryRuleConfiguration(
                 Collections.singleton(config), Collections.singletonMap("discovery_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties())),
-                Collections.singletonMap("CORE.FIXTURE", new ShardingSphereAlgorithmConfiguration("CORE.FIXTURE", new Properties()))));
+                Collections.singletonMap("CORE.FIXTURE", new AlgorithmConfiguration("CORE.FIXTURE", new Properties()))), instanceContext);
     }
 }

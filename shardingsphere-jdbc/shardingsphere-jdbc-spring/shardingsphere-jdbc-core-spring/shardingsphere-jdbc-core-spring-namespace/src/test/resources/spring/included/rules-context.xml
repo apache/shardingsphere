@@ -66,17 +66,11 @@
     </encrypt:rule>
     
     <readwrite-splitting:rule id="readWriteSplittingRule">
-        <readwrite-splitting:data-source-rule id="ds_0" type="Static">
-            <props>
-                <prop key="write-data-source-name">ds_0_write</prop>
-                <prop key="read-data-source-names">ds_0_read_0, ds_0_read_1</prop>
-            </props>
+        <readwrite-splitting:data-source-rule id="ds_0">
+            <readwrite-splitting:static-strategy id="staticReadwriteSplittingStrategyWithDs0" write-data-source-name="ds_0_write" read-data-source-names="ds_0_read_0, ds_0_read_1"/>
         </readwrite-splitting:data-source-rule>
-        <readwrite-splitting:data-source-rule id="ds_1" type="Static">
-            <props>
-                <prop key="write-data-source-name">ds_1_write</prop>
-                <prop key="read-data-source-names">ds_1_read_0, ds_1_read_1</prop>
-            </props>
+        <readwrite-splitting:data-source-rule id="ds_1">
+            <readwrite-splitting:static-strategy id="staticReadwriteSplittingStrategyWithDs1" write-data-source-name="ds_1_write" read-data-source-names="ds_1_read_0, ds_1_read_1"/>
         </readwrite-splitting:data-source-rule>
     </readwrite-splitting:rule>
     

@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
 /**
  * SQLServer truncate table statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class SQLServerTruncateStatement extends TruncateStatement implements SQLServerStatement {
 }

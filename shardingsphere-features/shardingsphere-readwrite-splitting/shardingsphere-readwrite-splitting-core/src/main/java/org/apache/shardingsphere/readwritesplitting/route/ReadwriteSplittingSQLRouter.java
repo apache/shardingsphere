@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.readwritesplitting.route;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -40,17 +41,19 @@ import java.util.Optional;
 public final class ReadwriteSplittingSQLRouter implements SQLRouter<ReadwriteSplittingRule> {
     
     @Override
-    public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereDatabase database, final ReadwriteSplittingRule rule, final ConfigurationProperties props) {
+    public RouteContext createRouteContext(final QueryContext queryContext, final ShardingSphereDatabase database, final ReadwriteSplittingRule rule,
+                                           final ConfigurationProperties props, final ConnectionContext connectionContext) {
         RouteContext result = new RouteContext();
         ReadwriteSplittingDataSourceRule singleDataSourceRule = rule.getSingleDataSourceRule();
-        String dataSourceName = new ReadwriteSplittingDataSourceRouter(singleDataSourceRule).route(logicSQL.getSqlStatementContext());
+        String dataSourceName = new ReadwriteSplittingDataSourceRouter(singleDataSourceRule, connectionContext).route(queryContext.getSqlStatementContext());
         result.getRouteUnits().add(new RouteUnit(new RouteMapper(singleDataSourceRule.getName(), dataSourceName), Collections.emptyList()));
         return result;
     }
     
     @Override
     public void decorateRouteContext(final RouteContext routeContext,
-                                     final LogicSQL logicSQL, final ShardingSphereDatabase database, final ReadwriteSplittingRule rule, final ConfigurationProperties props) {
+                                     final QueryContext queryContext, final ShardingSphereDatabase database, final ReadwriteSplittingRule rule,
+                                     final ConfigurationProperties props, final ConnectionContext connectionContext) {
         Collection<RouteUnit> toBeRemoved = new LinkedList<>();
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
         for (RouteUnit each : routeContext.getRouteUnits()) {
@@ -58,7 +61,7 @@ public final class ReadwriteSplittingSQLRouter implements SQLRouter<ReadwriteSpl
             Optional<ReadwriteSplittingDataSourceRule> dataSourceRule = rule.findDataSourceRule(dataSourceName);
             if (dataSourceRule.isPresent() && dataSourceRule.get().getName().equalsIgnoreCase(each.getDataSourceMapper().getActualName())) {
                 toBeRemoved.add(each);
-                String actualDataSourceName = new ReadwriteSplittingDataSourceRouter(dataSourceRule.get()).route(logicSQL.getSqlStatementContext());
+                String actualDataSourceName = new ReadwriteSplittingDataSourceRouter(dataSourceRule.get(), connectionContext).route(queryContext.getSqlStatementContext());
                 toBeAdded.add(new RouteUnit(new RouteMapper(each.getDataSourceMapper().getLogicName(), actualDataSourceName), each.getTableMappers()));
             }
         }

@@ -31,7 +31,7 @@ import java.util.LinkedList;
  * MySQL repair table statement.
  */
 @Getter
-@ToString
+@ToString(callSuper = true)
 public final class MySQLRepairTableStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
     private final Collection<SimpleTableSegment> tables = new LinkedList<>();

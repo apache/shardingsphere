@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.traffic.spi;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.spi.type.required.RequiredSPI;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
 
 import java.util.List;
 
@@ -35,5 +35,5 @@ public interface TrafficLoadBalanceAlgorithm extends ShardingSphereAlgorithm, Re
      * @param instances instance collection
      * @return instance definition
      */
-    InstanceDefinition getInstanceId(String name, List<InstanceDefinition> instances);
+    InstanceMetaData getInstanceId(String name, List<InstanceMetaData> instances);
 }

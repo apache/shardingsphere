@@ -723,6 +723,10 @@ VARCHAR2
     : V A R C H A R [2]
     ;
 
+STRING
+    : S T R I N G
+    ;
+
 NVARCHAR2
     : N V A R C H A R [2]
     ;
@@ -1109,6 +1113,14 @@ CELL_FLASH_CACHE
 
 MAXSIZE
     : M A X S I Z E
+    ;
+
+MAX_AUDIT_SIZE
+    : M A X UL_ A U D I T UL_ S I Z E
+    ;
+
+MAX_DIAG_SIZE
+    : M A X UL_ D I A G UL_ S I Z E
     ;
 
 STORE
@@ -2833,4 +2845,221 @@ CLEAN
 
 GUARANTEE
     : G U A R A N T E E
+    ;
+
+PRUNING
+    : P R U N I N G
+    ;
+
+DEMAND
+    : D E M A N D
+    ;
+
+RESOLVE
+   : R E S O L V E
+   ;
+
+RESOLVER
+   : R E S O L V E R
+   ;
+
+SHARE
+    : S H A R E
+    ;
+
+EXCLUSIVE
+    : E X C L U S I V E
+    ;
+
+ANCILLARY
+    : A N C I L L A R Y
+    ;
+
+BINDING
+    : B I N D I N G
+    ;
+
+SCAN
+    : S C A N
+    ;
+
+COMPUTE
+    : C O M P U T E
+    ;
+
+UNDROP
+    : U N D R O P
+    ;
+
+DISKS
+    : D I S K S
+    ;
+
+COARSE
+    : C O A R S E
+    ;
+
+FINE
+    : F I N E
+    ;
+
+ALIAS
+    : A L I A S
+    ;
+
+SCRUB
+    : S C R U B
+    ;
+
+DISMOUNT
+    : D I S M O U N T
+    ;
+
+REBALANCE
+    : R E B A L A N C E
+    ;
+
+COMPUTATION
+    : C O M P U T A T I O N
+    ;
+
+CONSIDER
+    : C O N S I D E R
+    ;
+
+FRESH
+    : F R E S H
+    ;
+
+MASTER
+    : M A S T E R
+    ;
+
+ENFORCED
+    : E N F O R C E D
+    ;
+
+TRUSTED
+    : T R U S T E D
+    ;
+
+ID
+    : I D
+    ;
+
+SYNCHRONOUS
+    : S Y N C H R O N O U S
+    ;
+
+ASYNCHRONOUS
+    : A S Y N C H R O N O U S
+    ;
+
+REPEAT
+    : R E P E A T
+    ;
+
+FEATURE
+    : F E A T U R E
+    ;
+
+STATEMENT
+    : S T A T E M E N T
+    ;
+
+CLAUSE
+   : C L A U S E
+   ;
+
+
+UNPLUG
+    : U N P L U G
+    ;
+
+HOST
+    : H O S T
+    ;
+
+PORT
+    : P O R T
+    ;
+
+EVERY
+    : E V E R Y
+    ;
+
+MINUTES
+    : M I N U T E S
+    ;
+
+HOURS
+    : H O U R S
+    ;
+
+NORELOCATE
+    : N O R E L O C A T E
+    ;
+
+SAVE
+    : S A V E
+    ;
+
+DISCARD
+    : D I S C A R D
+    ;
+
+STATE
+    : S T A T E
+    ;
+
+APPLICATION
+    : A P P L I C A T I O N
+    ;
+
+INSTALL
+    : I N S T A L L
+    ;
+
+MINIMUM
+    : M I N I M U M
+    ;
+
+VERSION
+    : V E R S I O N
+    ;
+
+UNINSTALL
+    : U N I N S T A L L
+    ;
+
+COMPATIBILITY
+    : C O M P A T I B I L I T Y
+    ;
+
+MATERIALIZE
+    : M A T E R I A L I Z E
+    ;
+
+SUBTYPE
+    : S U B T Y P E
+    ;
+
+RECORD
+    : R E C O R D
+    ;
+
+CONSTANT
+    : C O N S T A N T
+    ;
+
+CURSOR
+    : C U R S O R
+    ;
+
+OTHERS
+    : O T H E R S
+    ;
+
+EXCEPTION
+    : E X C E P T I O N
     ;

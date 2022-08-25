@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shadow.algorithm.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.config.function.DistributedRuleConfiguration;
-import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.function.DistributedRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
@@ -33,7 +33,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public final class AlgorithmProvidedShadowRuleConfiguration implements SchemaRuleConfiguration, DistributedRuleConfiguration {
+public final class AlgorithmProvidedShadowRuleConfiguration implements DatabaseRuleConfiguration, DistributedRuleConfiguration {
     
     private String defaultShadowAlgorithmName;
     

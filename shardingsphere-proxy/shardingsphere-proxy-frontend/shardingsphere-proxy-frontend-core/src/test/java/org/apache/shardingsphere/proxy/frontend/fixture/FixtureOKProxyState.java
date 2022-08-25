@@ -21,6 +21,7 @@ import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.proxy.frontend.state.impl.OKProxyState;
+import org.apache.shardingsphere.test.fixture.database.type.MockedDatabaseType;
 
 public final class FixtureOKProxyState implements OKProxyState {
     
@@ -30,6 +31,6 @@ public final class FixtureOKProxyState implements OKProxyState {
     
     @Override
     public String getType() {
-        return new FixtureDatabaseType().getType();
+        return new MockedDatabaseType().getType();
     }
 }

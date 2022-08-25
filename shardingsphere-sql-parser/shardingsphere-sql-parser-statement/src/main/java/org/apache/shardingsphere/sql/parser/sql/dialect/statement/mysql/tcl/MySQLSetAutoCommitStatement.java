@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL set auto commit statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class MySQLSetAutoCommitStatement extends SetAutoCommitStatement implements MySQLStatement {
 }

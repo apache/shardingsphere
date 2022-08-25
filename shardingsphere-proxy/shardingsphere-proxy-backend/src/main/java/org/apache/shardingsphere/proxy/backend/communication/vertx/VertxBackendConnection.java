@@ -24,6 +24,7 @@ import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.sqlclient.SqlClient;
 import io.vertx.sqlclient.SqlConnection;
+import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.vertx.ExecutorVertxConnectionManager;
@@ -52,10 +53,13 @@ public final class VertxBackendConnection implements BackendConnection<Future<Vo
     
     private final Multimap<String, Future<SqlConnection>> cachedConnections = LinkedHashMultimap.create();
     
+    private final AtomicBoolean closed;
+    
     public VertxBackendConnection(final ConnectionSession connectionSession) {
         if (TransactionType.LOCAL != connectionSession.getTransactionStatus().getTransactionType()) {
             throw new UnsupportedOperationException("Vert.x backend supports LOCAL transaction only for now.");
         }
+        closed = new AtomicBoolean(false);
         this.connectionSession = connectionSession;
     }
     
@@ -69,7 +73,7 @@ public final class VertxBackendConnection implements BackendConnection<Future<Vo
     private List<Future<? extends SqlClient>> getConnectionsWithTransaction(final String dataSourceName, final int connectionSize) {
         Collection<Future<SqlConnection>> connections;
         synchronized (cachedConnections) {
-            connections = cachedConnections.get(dataSourceName);
+            connections = cachedConnections.get(connectionSession.getDatabaseName() + "." + dataSourceName);
         }
         List<Future<SqlConnection>> result;
         if (connections.size() >= connectionSize) {
@@ -80,12 +84,12 @@ public final class VertxBackendConnection implements BackendConnection<Future<Vo
             List<Future<SqlConnection>> newConnections = createNewConnections(dataSourceName, connectionSize - connections.size());
             result.addAll(newConnections);
             synchronized (cachedConnections) {
-                cachedConnections.putAll(dataSourceName, newConnections);
+                cachedConnections.putAll(connectionSession.getDatabaseName() + "." + dataSourceName, newConnections);
             }
         } else {
             result = createNewConnections(dataSourceName, connectionSize);
             synchronized (cachedConnections) {
-                cachedConnections.putAll(dataSourceName, result);
+                cachedConnections.putAll(connectionSession.getDatabaseName() + "." + dataSourceName, result);
             }
         }
         return new ArrayList<>(result);
@@ -131,12 +135,15 @@ public final class VertxBackendConnection implements BackendConnection<Future<Vo
     public Future<Void> closeExecutionResources() {
         if (!connectionSession.getTransactionStatus().isInTransaction()) {
             return closeAllConnections(false);
+        } else if (closed.get()) {
+            return closeAllConnections(true);
         }
         return Future.succeededFuture();
     }
     
     @Override
     public Future<Void> closeAllResources() {
+        closed.set(true);
         return closeAllConnections(true);
     }
     

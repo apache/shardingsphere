@@ -23,5 +23,5 @@
     <sql-case id="associate_statistics_with_function" value="ASSOCIATE STATISTICS WITH FUNCTIONS myFunction USING stat_MyFunction" db-types="Oracle" />
     <sql-case id="associate_statistics_with_package" value="ASSOCIATE STATISTICS WITH PACKAGES emp_mgmt DEFAULT SELECTIVITY 10" db-types="Oracle" />
     <sql-case id="associate_statistics_with_type" value="ASSOCIATE STATISTICS WITH TYPES Example_typ DEFAULT SELECTIVITY 30, DEFAULT COST (100,5,0)" db-types="Oracle" />
-    <sql-case id="associate_statistics_with_indextype" value="ASSOCIATE STATISTICS WITH INDEXTYPES indtype USING stat_indtype WITH SYSTEM MANAGED STORAGE TABLES" db-types="Oracle" />
+    <sql-case id="associate_statistics_with_index_type" value="ASSOCIATE STATISTICS WITH INDEXTYPES indtype USING stat_indtype WITH SYSTEM MANAGED STORAGE TABLES" db-types="Oracle" />
 </sql-cases>

@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDirectoryStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle drop directory statement.
  */
-@ToString
-public final class OracleDropDirectoryStatement extends AbstractSQLStatement implements DDLStatement, OracleStatement {
+@ToString(callSuper = true)
+public final class OracleDropDirectoryStatement extends DropDirectoryStatement implements DDLStatement, OracleStatement {
 }

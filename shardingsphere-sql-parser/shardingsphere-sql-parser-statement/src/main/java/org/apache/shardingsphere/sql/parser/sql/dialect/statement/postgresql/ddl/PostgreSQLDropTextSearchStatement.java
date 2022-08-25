@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL drop text search statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLDropTextSearchStatement extends DropTextSearchStatement implements PostgreSQLStatement {
 }

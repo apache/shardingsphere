@@ -25,8 +25,10 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.S
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.value.IdentifierValueAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CloseStatementTestCase;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Close statement assert.
@@ -43,15 +45,20 @@ public final class CloseStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final CloseStatement actual, final CloseStatementTestCase expected) {
         assertCursorName(assertContext, actual, expected);
+        assertCloseAll(assertContext, actual, expected);
     }
     
     private static void assertCursorName(final SQLCaseAssertContext assertContext, final CloseStatement actual, final CloseStatementTestCase expected) {
         if (null != expected.getCursorName()) {
-            assertNotNull(assertContext.getText("Actual cursor name should exist."), actual.getCursorName());
-            IdentifierValueAssert.assertIs(assertContext, actual.getCursorName().getIdentifier(), expected.getCursorName(), "Close");
-            SQLSegmentAssert.assertIs(assertContext, actual.getCursorName(), expected.getCursorName());
+            assertTrue(assertContext.getText("Actual cursor name should exist."), actual.getCursorName().isPresent());
+            IdentifierValueAssert.assertIs(assertContext, actual.getCursorName().get().getIdentifier(), expected.getCursorName(), "Close");
+            SQLSegmentAssert.assertIs(assertContext, actual.getCursorName().get(), expected.getCursorName());
         } else {
-            assertNull(assertContext.getText("Actual cursor name should not exist."), actual.getCursorName());
+            assertFalse(assertContext.getText("Actual cursor name should not exist."), actual.getCursorName().isPresent());
         }
+    }
+    
+    private static void assertCloseAll(final SQLCaseAssertContext assertContext, final CloseStatement actual, final CloseStatementTestCase expected) {
+        assertThat(assertContext.getText("Cursor's close all assertion error: "), actual.isCloseAll(), is(expected.isCloseAll()));
     }
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateKeyGeneratorException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
@@ -54,37 +54,26 @@ public final class CreateShardingKeyGeneratorStatementUpdaterTest {
     
     @Test(expected = DuplicateKeyGeneratorException.class)
     public void assertExecuteWithDuplicate() throws DistSQLException {
-        ShardingKeyGeneratorSegment keyGeneratorSegment = buildShardingKeyGeneratorSegment();
+        ShardingKeyGeneratorSegment keyGeneratorSegment = new ShardingKeyGeneratorSegment("uuid_key_generator", new AlgorithmSegment("uuid", new Properties()));
         updater.checkSQLStatement(database, createSQLStatement(keyGeneratorSegment, keyGeneratorSegment), null);
     }
     
     @Test(expected = DuplicateKeyGeneratorException.class)
     public void assertExecuteWithExist() throws DistSQLException {
-        ShardingKeyGeneratorSegment keyGeneratorSegment = buildShardingKeyGeneratorSegment();
+        ShardingKeyGeneratorSegment keyGeneratorSegment = new ShardingKeyGeneratorSegment("uuid_key_generator", new AlgorithmSegment("uuid", new Properties()));
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
-        ruleConfig.getKeyGenerators().put("uuid_key_generator", new ShardingSphereAlgorithmConfiguration("uuid", new Properties()));
+        ruleConfig.getKeyGenerators().put("uuid_key_generator", new AlgorithmConfiguration("uuid", new Properties()));
         updater.checkSQLStatement(database, createSQLStatement(keyGeneratorSegment), ruleConfig);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
-    public void assertExecuteWithoutRuleConfiguration() throws DistSQLException {
-        ShardingKeyGeneratorSegment keyGeneratorSegment = buildShardingKeyGeneratorSegment();
-        updater.checkSQLStatement(database, createSQLStatement(keyGeneratorSegment), null);
-    }
-    
-    @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertExecuteWithInvalidAlgorithm() throws DistSQLException {
-        ShardingKeyGeneratorSegment keyGeneratorSegment = buildShardingKeyGeneratorSegment();
+        ShardingKeyGeneratorSegment keyGeneratorSegment = new ShardingKeyGeneratorSegment("invalid_key_generator", new AlgorithmSegment("INVALID_ALGORITHM", new Properties()));
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
-        ruleConfig.getKeyGenerators().put("snowflake_key_generator", new ShardingSphereAlgorithmConfiguration("INVALID_ALGORITHM", new Properties()));
         updater.checkSQLStatement(database, createSQLStatement(keyGeneratorSegment), ruleConfig);
     }
     
     private CreateShardingKeyGeneratorStatement createSQLStatement(final ShardingKeyGeneratorSegment... ruleSegments) {
         return new CreateShardingKeyGeneratorStatement(Arrays.asList(ruleSegments));
-    }
-    
-    private ShardingKeyGeneratorSegment buildShardingKeyGeneratorSegment() {
-        return new ShardingKeyGeneratorSegment("uuid_key_generator", new AlgorithmSegment("uuid", new Properties()));
     }
 }

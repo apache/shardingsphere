@@ -20,9 +20,9 @@ package org.apache.shardingsphere.authority.factory;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.authority.spi.AuthorityProviderAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 
 /**
  * Authority provide algorithm factory.
@@ -40,7 +40,7 @@ public final class AuthorityProviderAlgorithmFactory {
      * @param authorityProviderConfig authority provider configuration
      * @return created instance
      */
-    public static AuthorityProviderAlgorithm newInstance(final ShardingSphereAlgorithmConfiguration authorityProviderConfig) {
+    public static AuthorityProviderAlgorithm newInstance(final AlgorithmConfiguration authorityProviderConfig) {
         return ShardingSphereAlgorithmFactory.createAlgorithm(authorityProviderConfig, AuthorityProviderAlgorithm.class);
     }
 }

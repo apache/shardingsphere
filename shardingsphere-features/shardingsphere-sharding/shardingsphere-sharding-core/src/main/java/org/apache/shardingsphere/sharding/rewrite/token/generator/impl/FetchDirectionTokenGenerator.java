@@ -21,19 +21,23 @@ import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.FetchStatementContext;
+import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.ConnectionContextAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.FetchDirectionToken;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.DirectionType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.DirectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussFetchStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.FetchStatement;
 
 /**
  * Fetch direction token generator.
  */
 @Setter
-public final class FetchDirectionTokenGenerator implements OptionalSQLTokenGenerator<SQLStatementContext<?>> {
+public final class FetchDirectionTokenGenerator implements OptionalSQLTokenGenerator<SQLStatementContext<?>>, ConnectionContextAware {
+    
+    private ConnectionContext connectionContext;
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
@@ -43,12 +47,17 @@ public final class FetchDirectionTokenGenerator implements OptionalSQLTokenGener
     @Override
     public SQLToken generateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
         Preconditions.checkArgument(sqlStatementContext instanceof FetchStatementContext, "SQLStatementContext must be instance of FetchStatementContext.");
-        OpenGaussFetchStatement fetchStatement = ((FetchStatementContext) sqlStatementContext).getSqlStatement();
+        FetchStatement fetchStatement = ((FetchStatementContext) sqlStatementContext).getSqlStatement();
         CursorNameSegment cursorName = fetchStatement.getCursorName();
-        int startIndex = fetchStatement.getDirection().map(DirectionSegment::getStartIndex).orElseGet(() -> cursorName.getStartIndex() - 1);
-        int stopIndex = fetchStatement.getDirection().map(DirectionSegment::getStopIndex).orElseGet(() -> cursorName.getStartIndex() - 1);
-        DirectionType directionType = fetchStatement.getDirection().map(DirectionSegment::getDirectionType).orElse(DirectionType.NEXT);
+        int startIndex = fetchStatement.getDirection().map(DirectionSegment::getStartIndex).orElseGet("FETCH"::length);
+        int stopIndex = fetchStatement.getDirection().map(DirectionSegment::getStopIndex).orElseGet("FETCH"::length);
+        DirectionType directionType = fetchStatement.getDirection().flatMap(DirectionSegment::getDirectionType).orElse(DirectionType.NEXT);
         long fetchCount = fetchStatement.getDirection().flatMap(DirectionSegment::getCount).orElse(1L);
-        return new FetchDirectionToken(startIndex, stopIndex, directionType, fetchCount, cursorName.getIdentifier().getValue().toLowerCase());
+        return new FetchDirectionToken(startIndex, stopIndex, directionType, fetchCount, cursorName.getIdentifier().getValue().toLowerCase(), connectionContext);
+    }
+    
+    @Override
+    public void setConnectionContext(final ConnectionContext connectionContext) {
+        this.connectionContext = connectionContext;
     }
 }

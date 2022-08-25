@@ -19,6 +19,8 @@ package org.apache.shardingsphere.sharding.route.engine.type.unicast;
 
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -43,12 +45,16 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
     
+    private final SQLStatementContext<?> sqlStatementContext;
+    
     private final Collection<String> logicTables;
     
     @Override
     public RouteContext route(final ShardingRule shardingRule) {
         RouteContext result = new RouteContext();
-        String dataSourceName = getRandomDataSourceName(shardingRule.getDataSourceNames());
+        String dataSourceName = sqlStatementContext instanceof CursorAvailable
+                ? shardingRule.getDataSourceNames().iterator().next()
+                : getRandomDataSourceName(shardingRule.getDataSourceNames());
         RouteMapper dataSourceMapper = new RouteMapper(dataSourceName, dataSourceName);
         if (shardingRule.isAllBroadcastTables(logicTables)) {
             List<RouteMapper> tableMappers = new ArrayList<>(logicTables.size());
@@ -75,25 +81,25 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
     
     private void routeWithMultipleTables(final RouteContext routeContext, final ShardingRule shardingRule) throws ShardingSphereConfigurationException {
         List<RouteMapper> tableMappers = new ArrayList<>(logicTables.size());
-        Set<String> availableDatasourceNames = Collections.emptySet();
+        Set<String> availableDataSourceNames = Collections.emptySet();
         boolean first = true;
         for (String each : logicTables) {
             TableRule tableRule = shardingRule.getTableRule(each);
             DataNode dataNode = tableRule.getActualDataNodes().get(0);
             tableMappers.add(new RouteMapper(each, dataNode.getTableName()));
             Set<String> currentDataSourceNames = tableRule.getActualDataNodes().stream().map(DataNode::getDataSourceName).collect(
-                    Collectors.toCollection(() -> new HashSet<>(tableRule.getActualDatasourceNames().size())));
+                    Collectors.toCollection(() -> new HashSet<>(tableRule.getActualDataSourceNames().size())));
             if (first) {
-                availableDatasourceNames = currentDataSourceNames;
+                availableDataSourceNames = currentDataSourceNames;
                 first = false;
             } else {
-                availableDatasourceNames = Sets.intersection(availableDatasourceNames, currentDataSourceNames);
+                availableDataSourceNames = Sets.intersection(availableDataSourceNames, currentDataSourceNames);
             }
         }
-        if (availableDatasourceNames.isEmpty()) {
-            throw new ShardingSphereConfigurationException("Cannot find actual datasource intersection for logic tables: %s", logicTables);
+        if (availableDataSourceNames.isEmpty()) {
+            throw new ShardingSphereConfigurationException("Cannot find actual datasource intersection for logic tables: %s", logicTables.toArray(new String[0]));
         }
-        String dataSourceName = getRandomDataSourceName(availableDatasourceNames);
+        String dataSourceName = getRandomDataSourceName(availableDataSourceNames);
         routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), tableMappers));
     }
     

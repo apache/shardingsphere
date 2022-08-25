@@ -19,19 +19,13 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command;
 
 import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLAggregatedCommandPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.simple.PostgreSQLComQueryPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLComTerminationPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -43,13 +37,6 @@ public final class PostgreSQLCommandPacketFactoryTest {
     
     @Mock
     private PostgreSQLPacketPayload payload;
-    
-    @Before
-    public void init() {
-        PostgreSQLPreparedStatementRegistry.getInstance().register(1);
-        PostgreSQLPreparedStatementRegistry.getInstance().register(1, "sts-id", "", new EmptyStatement(),
-                Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT8));
-    }
     
     @Test
     public void assertNewInstanceWithQueryComPacket() {

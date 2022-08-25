@@ -19,6 +19,11 @@ package org.apache.shardingsphere.data.pipeline.api.job;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Job type.
@@ -26,12 +31,35 @@ import lombok.Getter;
 @Getter
 public enum JobType {
     
-    RULE_ALTERED("01");
+    MIGRATION("MIGRATION", "01");
     
-    private final String value;
+    private static final Map<String, JobType> CODE_JOB_TYPE_MAP;
     
-    JobType(final String value) {
-        Preconditions.checkArgument(value.length() == 2, "value length is not 2");
-        this.value = value;
+    static {
+        CODE_JOB_TYPE_MAP = Arrays.stream(JobType.values()).collect(Collectors.toMap(JobType::getTypeCode, each -> each));
+    }
+    
+    private final String typeName;
+    
+    private final String lowercaseTypeName;
+    
+    private final String typeCode;
+    
+    JobType(final String typeName, final String typeCode) {
+        Preconditions.checkArgument(StringUtils.isAlpha(typeName), "type name must be character of [a-z]");
+        this.typeName = typeName;
+        this.lowercaseTypeName = typeName.toLowerCase();
+        Preconditions.checkArgument(typeCode.length() == 2, "code length is not 2");
+        this.typeCode = typeCode;
+    }
+    
+    /**
+     * Value of by code.
+     *
+     * @param typeCode type code
+     * @return job type, might be null
+     */
+    public static JobType valueOfByCode(final String typeCode) {
+        return CODE_JOB_TYPE_MAP.get(typeCode);
     }
 }

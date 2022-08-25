@@ -17,15 +17,16 @@
 
 package org.apache.shardingsphere.agent.config;
 
-import java.util.Properties;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Properties;
 
 /**
  * Plugin configuration.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class PluginConfiguration {
     
     private final String host;

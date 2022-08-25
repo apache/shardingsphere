@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.watcher;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.mode.metadata.persist.node.GlobalNode;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
+import org.apache.shardingsphere.mode.metadata.persist.node.GlobalNode;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -38,7 +38,7 @@ import java.util.Optional;
 public final class GlobalRuleChangedWatcher implements GovernanceWatcher<GlobalRuleConfigurationsChangedEvent> {
     
     @Override
-    public Collection<String> getWatchingKeys() {
+    public Collection<String> getWatchingKeys(final String databaseName) {
         return Collections.singleton(GlobalNode.getGlobalRuleNode());
     }
     
@@ -49,7 +49,7 @@ public final class GlobalRuleChangedWatcher implements GovernanceWatcher<GlobalR
     
     @Override
     public Optional<GlobalRuleConfigurationsChangedEvent> createGovernanceEvent(final DataChangedEvent event) {
-        return getWatchingKeys().contains(event.getKey()) ? Optional.of(new GlobalRuleConfigurationsChangedEvent(getGlobalRuleConfigurations(event))) : Optional.empty();
+        return GlobalNode.getGlobalRuleNode().equals(event.getKey()) ? Optional.of(new GlobalRuleConfigurationsChangedEvent(getGlobalRuleConfigurations(event))) : Optional.empty();
     }
     
     @SuppressWarnings("unchecked")

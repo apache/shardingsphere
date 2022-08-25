@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL alter sequence statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLAlterSequenceStatement extends AlterSequenceStatement implements PostgreSQLStatement {
 }

@@ -23,10 +23,9 @@ import org.apache.shardingsphere.db.protocol.parameter.TypeUnspecifiedSQLParamet
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.DatabaseTypeAware;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCStatementManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
-import org.apache.shardingsphere.proxy.backend.communication.SQLStatementDatabaseHolder;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -41,9 +40,9 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public final class JDBCBackendStatement implements ExecutorJDBCStatementManager {
+public final class JDBCBackendStatement implements ExecutorJDBCStatementManager, DatabaseTypeAware {
     
-    private String databaseName;
+    private DatabaseType databaseType;
     
     @Override
     public Statement createStorageResource(final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
@@ -76,8 +75,6 @@ public final class JDBCBackendStatement implements ExecutorJDBCStatementManager 
     }
     
     private void setFetchSize(final Statement statement) throws SQLException {
-        DatabaseType databaseType = ProxyContext.getInstance().getContextManager().getMetaDataContexts()
-                .getMetaData().getDatabases().get(null == databaseName ? SQLStatementDatabaseHolder.get() : databaseName).getResource().getDatabaseType();
         Optional<StatementMemoryStrictlyFetchSizeSetter> fetchSizeSetter = StatementMemoryStrictlyFetchSizeSetterFactory.findInstance(databaseType.getType());
         if (fetchSizeSetter.isPresent()) {
             fetchSizeSetter.get().setFetchSize(statement);

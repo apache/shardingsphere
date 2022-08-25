@@ -21,8 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.proxy.backend.exception.BackendException;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.CommonDistSQLException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.DistSQLException;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 
 import java.util.Collection;
@@ -38,10 +38,10 @@ public final class ExpectedExceptions {
     
     static {
         EXCEPTIONS.add(ShardingSphereException.class);
+        EXCEPTIONS.add(ShardingSphereInsideException.class);
         EXCEPTIONS.add(ShardingSphereConfigurationException.class);
         EXCEPTIONS.add(SQLParsingException.class);
-        EXCEPTIONS.add(CommonDistSQLException.class);
-        EXCEPTIONS.add(BackendException.class);
+        EXCEPTIONS.add(DistSQLException.class);
         EXCEPTIONS.add(UnsupportedPreparedStatementException.class);
     }
     

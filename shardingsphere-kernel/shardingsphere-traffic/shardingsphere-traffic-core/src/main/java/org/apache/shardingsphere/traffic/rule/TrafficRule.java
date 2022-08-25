@@ -19,9 +19,9 @@ package org.apache.shardingsphere.traffic.rule;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.hint.SQLHintProperties;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -56,25 +56,28 @@ import java.util.Properties;
 @Getter
 public final class TrafficRule implements GlobalRule {
     
+    private final TrafficRuleConfiguration configuration;
+    
     private final Collection<TrafficStrategyRule> strategyRules;
     
-    public TrafficRule(final TrafficRuleConfiguration config) {
-        Map<String, TrafficAlgorithm> trafficAlgorithms = createTrafficAlgorithms(config.getTrafficAlgorithms());
-        Map<String, TrafficLoadBalanceAlgorithm> loadBalancers = createTrafficLoadBalanceAlgorithms(config.getLoadBalancers());
-        strategyRules = createTrafficStrategyRules(config.getTrafficStrategies(), trafficAlgorithms, loadBalancers);
+    public TrafficRule(final TrafficRuleConfiguration ruleConfig) {
+        configuration = ruleConfig;
+        Map<String, TrafficAlgorithm> trafficAlgorithms = createTrafficAlgorithms(ruleConfig.getTrafficAlgorithms());
+        Map<String, TrafficLoadBalanceAlgorithm> loadBalancers = createTrafficLoadBalanceAlgorithms(ruleConfig.getLoadBalancers());
+        strategyRules = createTrafficStrategyRules(ruleConfig.getTrafficStrategies(), trafficAlgorithms, loadBalancers);
     }
     
-    private Map<String, TrafficAlgorithm> createTrafficAlgorithms(final Map<String, ShardingSphereAlgorithmConfiguration> trafficAlgorithms) {
+    private Map<String, TrafficAlgorithm> createTrafficAlgorithms(final Map<String, AlgorithmConfiguration> trafficAlgorithms) {
         Map<String, TrafficAlgorithm> result = new LinkedHashMap<>();
-        for (Entry<String, ShardingSphereAlgorithmConfiguration> entry : trafficAlgorithms.entrySet()) {
+        for (Entry<String, AlgorithmConfiguration> entry : trafficAlgorithms.entrySet()) {
             result.put(entry.getKey(), TrafficAlgorithmFactory.newInstance(entry.getValue()));
         }
         return result;
     }
     
-    private Map<String, TrafficLoadBalanceAlgorithm> createTrafficLoadBalanceAlgorithms(final Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers) {
+    private Map<String, TrafficLoadBalanceAlgorithm> createTrafficLoadBalanceAlgorithms(final Map<String, AlgorithmConfiguration> loadBalancers) {
         Map<String, TrafficLoadBalanceAlgorithm> result = new LinkedHashMap<>();
-        for (Entry<String, ShardingSphereAlgorithmConfiguration> entry : loadBalancers.entrySet()) {
+        for (Entry<String, AlgorithmConfiguration> entry : loadBalancers.entrySet()) {
             result.put(entry.getKey(), TrafficLoadBalanceAlgorithmFactory.newInstance(entry.getValue()));
         }
         return result;
@@ -116,13 +119,13 @@ public final class TrafficRule implements GlobalRule {
     /**
      * Find matched strategy rule.
      * 
-     * @param logicSQL logic SQL
+     * @param queryContext query context
      * @param inTransaction is in transaction
      * @return matched strategy rule
      */
-    public Optional<TrafficStrategyRule> findMatchedStrategyRule(final LogicSQL logicSQL, final boolean inTransaction) {
+    public Optional<TrafficStrategyRule> findMatchedStrategyRule(final QueryContext queryContext, final boolean inTransaction) {
         for (TrafficStrategyRule each : strategyRules) {
-            if (match(each.getTrafficAlgorithm(), logicSQL, inTransaction)) {
+            if (match(each.getTrafficAlgorithm(), queryContext, inTransaction)) {
                 return Optional.of(each);
             }
         }
@@ -136,19 +139,19 @@ public final class TrafficRule implements GlobalRule {
     }
     
     @SuppressWarnings("rawtypes")
-    private boolean match(final TrafficAlgorithm trafficAlgorithm, final LogicSQL logicSQL, final boolean inTransaction) {
+    private boolean match(final TrafficAlgorithm trafficAlgorithm, final QueryContext queryContext, final boolean inTransaction) {
         if (trafficAlgorithm instanceof TransactionTrafficAlgorithm) {
             return matchTransactionTraffic((TransactionTrafficAlgorithm) trafficAlgorithm, inTransaction);
         }
         if (trafficAlgorithm instanceof HintTrafficAlgorithm) {
-            SQLHintProperties sqlHintProps = logicSQL.getSqlStatementContext() instanceof CommonSQLStatementContext
-                    ? ((CommonSQLStatementContext) logicSQL.getSqlStatementContext()).getSqlHintExtractor().getSqlHintProperties()
+            SQLHintProperties sqlHintProps = queryContext.getSqlStatementContext() instanceof CommonSQLStatementContext
+                    ? ((CommonSQLStatementContext) queryContext.getSqlStatementContext()).getSqlHintExtractor().getSqlHintProperties()
                     : new SQLHintProperties(new Properties());
             return matchHintTraffic((HintTrafficAlgorithm) trafficAlgorithm, sqlHintProps);
         }
         if (trafficAlgorithm instanceof SegmentTrafficAlgorithm) {
-            SQLStatement sqlStatement = logicSQL.getSqlStatementContext().getSqlStatement();
-            return matchSegmentTraffic((SegmentTrafficAlgorithm) trafficAlgorithm, logicSQL.getSql(), sqlStatement);
+            SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
+            return matchSegmentTraffic((SegmentTrafficAlgorithm) trafficAlgorithm, queryContext.getSql(), sqlStatement);
         }
         return false;
     }

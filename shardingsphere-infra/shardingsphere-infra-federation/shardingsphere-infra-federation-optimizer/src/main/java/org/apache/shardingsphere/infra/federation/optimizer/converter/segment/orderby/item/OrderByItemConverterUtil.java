@@ -19,9 +19,7 @@ package org.apache.shardingsphere.infra.federation.optimizer.converter.segment.o
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.calcite.sql.SqlNodeList;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
@@ -43,33 +41,17 @@ public final class OrderByItemConverterUtil {
      * @param orderByItems order by item list
      * @return SQL nodes converted by order by item
      */
-    public static Collection<SqlNode> convertToSQLNode(final Collection<OrderByItemSegment> orderByItems) {
+    public static Collection<SqlNode> convert(final Collection<OrderByItemSegment> orderByItems) {
         Collection<SqlNode> result = new LinkedList<>();
         for (OrderByItemSegment each : orderByItems) {
             if (each instanceof ColumnOrderByItemSegment) {
-                new ColumnOrderByItemConverter().convertToSQLNode((ColumnOrderByItemSegment) each).ifPresent(result::add);
+                new ColumnOrderByItemConverter().convert((ColumnOrderByItemSegment) each).ifPresent(result::add);
             } else if (each instanceof ExpressionOrderByItemSegment) {
-                throw new UnsupportedOperationException("unsupported ExpressionOrderByItemSegment");
+                new ExpressionOrderByItemConverter().convert((ExpressionOrderByItemSegment) each).ifPresent(result::add);
             } else if (each instanceof IndexOrderByItemSegment) {
-                throw new UnsupportedOperationException("unsupported IndexOrderByItemSegment");
+                new IndexOrderByItemConverter().convert((IndexOrderByItemSegment) each).ifPresent(result::add);
             } else if (each instanceof TextOrderByItemSegment) {
                 throw new UnsupportedOperationException("unsupported TextOrderByItemSegment");
-            }
-        }
-        return result;
-    }
-    
-    /**
-     * Convert sql node list to order by items.
-     *
-     * @param sqlNodeList sql node list
-     * @return order by items converted by sql node list
-     */
-    public static Collection<OrderByItemSegment> convertToSQLSegment(final SqlNodeList sqlNodeList) {
-        Collection<OrderByItemSegment> result = new LinkedList<>();
-        for (SqlNode each : sqlNodeList) {
-            if (each instanceof SqlIdentifier) {
-                new ColumnOrderByItemConverter().convertToSQLSegment(each).ifPresent(result::add);
             }
         }
         return result;

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.driver.executor.callback;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -35,8 +36,8 @@ import java.util.Optional;
  */
 public abstract class ExecuteQueryCallback extends JDBCExecutorCallback<QueryResult> {
     
-    protected ExecuteQueryCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
-        super(databaseType, sqlStatement, isExceptionThrown);
+    protected ExecuteQueryCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final boolean isExceptionThrown, final EventBusContext eventBusContext) {
+        super(databaseType, sqlStatement, isExceptionThrown, eventBusContext);
     }
     
     @Override
@@ -46,7 +47,7 @@ public abstract class ExecuteQueryCallback extends JDBCExecutorCallback<QueryRes
     }
     
     @Override
-    protected final Optional<QueryResult> getSaneResult(final SQLStatement sqlStatement) {
+    protected final Optional<QueryResult> getSaneResult(final SQLStatement sqlStatement, final SQLException ex) {
         return Optional.empty();
     }
     

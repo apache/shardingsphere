@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.properties.PropertiesConverter;
+import org.apache.shardingsphere.infra.util.props.PropertiesConverter;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowUnusedShardingKeyGeneratorsStatement;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
@@ -41,63 +42,22 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Result set for show unused sharding key generators.
+ * Query result set for show unused sharding key generators.
  */
-public final class UnusedShardingKeyGeneratorsQueryResultSet implements DistSQLResultSet {
+public final class UnusedShardingKeyGeneratorsQueryResultSet implements DatabaseDistSQLResultSet {
     
-    private static final String TYPE = ShowUnusedShardingKeyGeneratorsStatement.class.getName();
-    
-    private static final String NAME = "name";
-    
-    private static final String COLUMN_TYPE = "type";
-    
-    private static final String PROPS = "props";
-    
-    private Iterator<Entry<String, ShardingSphereAlgorithmConfiguration>> data = Collections.emptyIterator();
+    private Iterator<Entry<String, AlgorithmConfiguration>> data = Collections.emptyIterator();
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        Optional<ShardingRuleConfiguration> ruleConfig = database.getRuleMetaData().getConfigurations()
-                .stream().filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findAny();
-        ruleConfig.ifPresent(this::getUnusedKeyGenerators);
-    }
-    
-    @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList(NAME, COLUMN_TYPE, PROPS);
-    }
-    
-    @Override
-    public boolean next() {
-        return data.hasNext();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        return buildTableRowData(data.next());
-    }
-    
-    private Collection<Object> buildTableRowData(final Entry<String, ShardingSphereAlgorithmConfiguration> data) {
-        Collection<Object> result = new LinkedList<>();
-        result.add(data.getKey());
-        result.add(data.getValue().getType());
-        result.add(buildProps(data.getValue().getProps()));
-        return result;
-    }
-    
-    private Object buildProps(final Properties props) {
-        return Objects.nonNull(props) ? PropertiesConverter.convert(props) : "";
-    }
-    
-    @Override
-    public String getType() {
-        return TYPE;
+        Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
+        rule.ifPresent(optional -> getUnusedKeyGenerators((ShardingRuleConfiguration) optional.getConfiguration()));
     }
     
     private void getUnusedKeyGenerators(final ShardingRuleConfiguration shardingRuleConfig) {
         Collection<String> inUsedKeyGenerators = getUsedKeyGenerators(shardingRuleConfig);
-        Map<String, ShardingSphereAlgorithmConfiguration> map = new HashMap<>();
-        for (Entry<String, ShardingSphereAlgorithmConfiguration> each : shardingRuleConfig.getKeyGenerators().entrySet()) {
+        Map<String, AlgorithmConfiguration> map = new HashMap<>();
+        for (Entry<String, AlgorithmConfiguration> each : shardingRuleConfig.getKeyGenerators().entrySet()) {
             if (!inUsedKeyGenerators.contains(each.getKey())) {
                 map.put(each.getKey(), each.getValue());
             }
@@ -114,5 +74,37 @@ public final class UnusedShardingKeyGeneratorsQueryResultSet implements DistSQLR
             result.add(keyGenerateStrategy.getKeyGeneratorName());
         }
         return result;
+    }
+    
+    @Override
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("name", "type", "props");
+    }
+    
+    @Override
+    public boolean next() {
+        return data.hasNext();
+    }
+    
+    @Override
+    public Collection<Object> getRowData() {
+        return buildTableRowData(data.next());
+    }
+    
+    private Collection<Object> buildTableRowData(final Entry<String, AlgorithmConfiguration> data) {
+        Collection<Object> result = new LinkedList<>();
+        result.add(data.getKey());
+        result.add(data.getValue().getType());
+        result.add(buildProps(data.getValue().getProps()));
+        return result;
+    }
+    
+    private Object buildProps(final Properties props) {
+        return Objects.nonNull(props) ? PropertiesConverter.convert(props) : "";
+    }
+    
+    @Override
+    public String getType() {
+        return ShowUnusedShardingKeyGeneratorsStatement.class.getName();
     }
 }

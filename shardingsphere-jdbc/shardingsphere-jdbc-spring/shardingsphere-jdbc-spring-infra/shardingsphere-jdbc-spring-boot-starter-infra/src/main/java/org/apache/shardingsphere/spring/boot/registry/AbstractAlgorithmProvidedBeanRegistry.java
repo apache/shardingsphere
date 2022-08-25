@@ -19,10 +19,10 @@ package org.apache.shardingsphere.spring.boot.registry;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spring.boot.util.PropertyUtil;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -64,28 +64,28 @@ public abstract class AbstractAlgorithmProvidedBeanRegistry<T extends ShardingSp
         }
         Map<String, Object> parameterMap = PropertyUtil.handle(environment, prefix, Map.class);
         Collection<String> algorithmNames = parameterMap.keySet().stream().map(key -> key.contains(POINT) ? key.substring(0, key.indexOf(POINT)) : key).collect(Collectors.toSet());
-        Map<String, ShardingSphereAlgorithmConfiguration> algorithmConfigs = createAlgorithmConfigurations(prefix, algorithmNames);
+        Map<String, AlgorithmConfiguration> algorithmConfigs = createAlgorithmConfigurations(prefix, algorithmNames);
         ShardingSphereServiceLoader.register(algorithmClass);
-        for (Entry<String, ShardingSphereAlgorithmConfiguration> entry : algorithmConfigs.entrySet()) {
-            ShardingSphereAlgorithmConfiguration algorithmConfig = entry.getValue();
+        for (Entry<String, AlgorithmConfiguration> entry : algorithmConfigs.entrySet()) {
+            AlgorithmConfiguration algorithmConfig = entry.getValue();
             BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(ShardingSphereAlgorithmFactory.createAlgorithm(algorithmConfig, algorithmClass).getClass());
             registry.registerBeanDefinition(entry.getKey(), builder.getBeanDefinition());
             propsMap.put(entry.getKey(), algorithmConfig.getProps());
         }
     }
     
-    private Map<String, ShardingSphereAlgorithmConfiguration> createAlgorithmConfigurations(final String prefix, final Collection<String> algorithmNames) {
-        Map<String, ShardingSphereAlgorithmConfiguration> result = new LinkedHashMap<>(algorithmNames.size(), 1);
+    private Map<String, AlgorithmConfiguration> createAlgorithmConfigurations(final String prefix, final Collection<String> algorithmNames) {
+        Map<String, AlgorithmConfiguration> result = new LinkedHashMap<>(algorithmNames.size(), 1);
         for (String each : algorithmNames) {
             result.put(each, createAlgorithmConfiguration(prefix, each));
         }
         return result;
     }
     
-    private ShardingSphereAlgorithmConfiguration createAlgorithmConfiguration(final String prefix, final String algorithmName) {
+    private AlgorithmConfiguration createAlgorithmConfiguration(final String prefix, final String algorithmName) {
         String type = environment.getProperty(String.join("", prefix, algorithmName, TYPE_SUFFIX));
         Properties props = getProperties(prefix, algorithmName);
-        return new ShardingSphereAlgorithmConfiguration(type, props);
+        return new AlgorithmConfiguration(type, props);
     }
     
     private Properties getProperties(final String prefix, final String algorithmName) {

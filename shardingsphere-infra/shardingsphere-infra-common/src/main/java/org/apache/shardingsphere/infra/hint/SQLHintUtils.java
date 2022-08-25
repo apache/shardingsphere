@@ -22,6 +22,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 
@@ -38,6 +40,8 @@ public final class SQLHintUtils {
     private static final String SQL_HINT_SPLIT = ",";
     
     private static final String SQL_HINT_VALUE_SPLIT = "=";
+    
+    private static final String SQL_HINT_VALUE_COLLECTION_SPLIT = " ";
     
     private static final int SQL_HINT_VALUE_SIZE = 2;
     
@@ -63,5 +67,15 @@ public final class SQLHintUtils {
             }
         }
         return result;
+    }
+    
+    /**
+     * Get splitter SQL hint Value.
+     *
+     * @param value SQL hint value
+     * @return Splitter SQL hint value
+     */
+    public static Collection<String> getSplitterSQLHintValue(final String value) {
+        return value.isEmpty() ? Collections.emptySet() : new HashSet<>(Splitter.on(SQLHintUtils.SQL_HINT_VALUE_COLLECTION_SPLIT).omitEmptyStrings().trimResults().splitToList(value));
     }
 }

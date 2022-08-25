@@ -36,6 +36,7 @@ public final class ProxyJDBCExecutorCallbackFactory {
      * Create new instance of Proxy JDBC executor callback.
      *
      * @param type driver type
+     * @param protocolType protocol type
      * @param databaseType database type
      * @param sqlStatement SQL statement
      * @param databaseCommunicationEngine database communication engine
@@ -44,14 +45,14 @@ public final class ProxyJDBCExecutorCallbackFactory {
      * @param isFetchMetaData is fetch meta data or not
      * @return created instance
      */
-    public static ProxyJDBCExecutorCallback newInstance(final String type, final DatabaseType databaseType, final SQLStatement sqlStatement,
+    public static ProxyJDBCExecutorCallback newInstance(final String type, final DatabaseType protocolType, final DatabaseType databaseType, final SQLStatement sqlStatement,
                                                         final JDBCDatabaseCommunicationEngine databaseCommunicationEngine, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown,
                                                         final boolean isFetchMetaData) {
         if (JDBCDriverType.STATEMENT.equals(type)) {
-            return new ProxyStatementExecutorCallback(databaseType, sqlStatement, databaseCommunicationEngine, isReturnGeneratedKeys, isExceptionThrown, isFetchMetaData);
+            return new ProxyStatementExecutorCallback(protocolType, databaseType, sqlStatement, databaseCommunicationEngine, isReturnGeneratedKeys, isExceptionThrown, isFetchMetaData);
         }
         if (JDBCDriverType.PREPARED_STATEMENT.equals(type)) {
-            return new ProxyPreparedStatementExecutorCallback(databaseType, sqlStatement, databaseCommunicationEngine, isReturnGeneratedKeys, isExceptionThrown, isFetchMetaData);
+            return new ProxyPreparedStatementExecutorCallback(protocolType, databaseType, sqlStatement, databaseCommunicationEngine, isReturnGeneratedKeys, isExceptionThrown, isFetchMetaData);
         }
         throw new UnsupportedOperationException(String.format("Unsupported driver type: `%s`", type));
     }

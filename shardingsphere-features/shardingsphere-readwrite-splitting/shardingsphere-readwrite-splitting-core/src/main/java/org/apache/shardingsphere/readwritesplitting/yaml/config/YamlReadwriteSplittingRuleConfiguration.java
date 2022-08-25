@@ -19,8 +19,8 @@ package org.apache.shardingsphere.readwritesplitting.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
 
@@ -36,7 +36,7 @@ public final class YamlReadwriteSplittingRuleConfiguration implements YamlRuleCo
     
     private Map<String, YamlReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedHashMap<>();
     
-    private Map<String, YamlShardingSphereAlgorithmConfiguration> loadBalancers = new LinkedHashMap<>();
+    private Map<String, YamlAlgorithmConfiguration> loadBalancers = new LinkedHashMap<>();
     
     @Override
     public Class<ReadwriteSplittingRuleConfiguration> getRuleConfigurationType() {

@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.encrypt.merge.dal;
 
-import org.apache.shardingsphere.encrypt.merge.dal.impl.DecoratedEncryptColumnsMergedResult;
-import org.apache.shardingsphere.encrypt.merge.dal.impl.MergedEncryptColumnsMergedResult;
+import org.apache.shardingsphere.encrypt.merge.dal.show.DecoratedEncryptShowColumnsMergedResult;
+import org.apache.shardingsphere.encrypt.merge.dal.show.DecoratedEncryptShowCreateTableMergedResult;
+import org.apache.shardingsphere.encrypt.merge.dal.show.MergedEncryptShowColumnsMergedResult;
+import org.apache.shardingsphere.encrypt.merge.dal.show.MergedEncryptShowCreateTableMergedResult;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -28,6 +30,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.transparent.Transparent
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLExplainStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowColumnsStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTableStatement;
 
 /**
  * DAL result decorator for encrypt.
@@ -36,17 +39,25 @@ public final class EncryptDALResultDecorator implements ResultDecorator<EncryptR
     
     @Override
     public MergedResult decorate(final QueryResult queryResult, final SQLStatementContext<?> sqlStatementContext, final EncryptRule rule) {
-        return isNeedMergeEncryptColumns(sqlStatementContext.getSqlStatement())
-                ? new MergedEncryptColumnsMergedResult(queryResult, sqlStatementContext, rule)
-                : new TransparentMergedResult(queryResult);
+        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
+        if (sqlStatement instanceof MySQLExplainStatement || sqlStatement instanceof MySQLShowColumnsStatement) {
+            return new MergedEncryptShowColumnsMergedResult(queryResult, sqlStatementContext, rule);
+        }
+        if (sqlStatement instanceof MySQLShowCreateTableStatement) {
+            return new MergedEncryptShowCreateTableMergedResult(queryResult, sqlStatementContext, rule);
+        }
+        return new TransparentMergedResult(queryResult);
     }
     
     @Override
     public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext<?> sqlStatementContext, final EncryptRule rule) {
-        return isNeedMergeEncryptColumns(sqlStatementContext.getSqlStatement()) ? new DecoratedEncryptColumnsMergedResult(mergedResult, sqlStatementContext, rule) : mergedResult;
-    }
-    
-    private boolean isNeedMergeEncryptColumns(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof MySQLExplainStatement || sqlStatement instanceof MySQLShowColumnsStatement;
+        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
+        if (sqlStatement instanceof MySQLExplainStatement || sqlStatement instanceof MySQLShowColumnsStatement) {
+            return new DecoratedEncryptShowColumnsMergedResult(mergedResult, sqlStatementContext, rule);
+        }
+        if (sqlStatement instanceof MySQLShowCreateTableStatement) {
+            return new DecoratedEncryptShowCreateTableMergedResult(mergedResult, sqlStatementContext, rule);
+        }
+        return mergedResult;
     }
 }

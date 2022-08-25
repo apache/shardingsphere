@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Oracle commit statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OracleCommitStatement extends CommitStatement implements OracleStatement {
 }

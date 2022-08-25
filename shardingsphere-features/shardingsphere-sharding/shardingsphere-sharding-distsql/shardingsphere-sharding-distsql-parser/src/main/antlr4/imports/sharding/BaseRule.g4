@@ -23,7 +23,7 @@ tableName
     : IDENTIFIER
     ;
 
-algorithmName
+shardingAlgorithmName
     : IDENTIFIER
     ;
 
@@ -31,6 +31,6 @@ keyGeneratorName
     : IDENTIFIER
     ;
 
-existsClause
+ifExists
     : IF EXISTS
     ;

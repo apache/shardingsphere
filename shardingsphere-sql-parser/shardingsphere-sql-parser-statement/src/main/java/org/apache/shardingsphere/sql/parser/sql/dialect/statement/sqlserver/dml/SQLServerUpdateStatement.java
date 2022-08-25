@@ -29,7 +29,7 @@ import java.util.Optional;
  * SQLServer update statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class SQLServerUpdateStatement extends UpdateStatement implements SQLServerStatement {
     
     private WithSegment withSegment;

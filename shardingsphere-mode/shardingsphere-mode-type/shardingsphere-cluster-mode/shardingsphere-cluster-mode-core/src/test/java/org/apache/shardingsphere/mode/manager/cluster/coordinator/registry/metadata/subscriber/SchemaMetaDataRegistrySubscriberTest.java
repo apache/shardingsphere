@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.subscriber;
 
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.AddSchemaEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.AlterSchemaEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.DropSchemaEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.SchemaAlteredEvent;
-import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseMetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,13 +42,13 @@ import static org.mockito.Mockito.verify;
 public final class SchemaMetaDataRegistrySubscriberTest {
     
     @Mock
-    private SchemaMetaDataPersistService persistService;
+    private DatabaseMetaDataPersistService persistService;
     
     private SchemaMetaDataRegistrySubscriber schemaMetaDataRegistrySubscriber;
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        schemaMetaDataRegistrySubscriber = new SchemaMetaDataRegistrySubscriber(mock(ClusterPersistRepository.class));
+        schemaMetaDataRegistrySubscriber = new SchemaMetaDataRegistrySubscriber(mock(ClusterPersistRepository.class), new EventBusContext());
         Field field = schemaMetaDataRegistrySubscriber.getClass().getDeclaredField("persistService");
         field.setAccessible(true);
         field.set(schemaMetaDataRegistrySubscriber, persistService);

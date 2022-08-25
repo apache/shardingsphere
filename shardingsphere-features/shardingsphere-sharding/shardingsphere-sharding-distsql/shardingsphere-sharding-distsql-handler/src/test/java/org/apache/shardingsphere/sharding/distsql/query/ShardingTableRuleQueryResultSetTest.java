@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sharding.distsql.query;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -28,11 +28,12 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShard
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableRuleQueryResultSet;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesStatement;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -45,25 +46,31 @@ public final class ShardingTableRuleQueryResultSetTest {
     
     @Test
     public void assertGetRowData() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createRuleConfiguration()));
-        DistSQLResultSet resultSet = new ShardingTableRuleQueryResultSet();
-        resultSet.init(database, mock(ShowShardingTableRulesStatement.class));
+        DatabaseDistSQLResultSet resultSet = new ShardingTableRuleQueryResultSet();
+        resultSet.init(mockDatabase(), mock(ShowShardingTableRulesStatement.class));
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
         assertThat(actual.size(), is(14));
         assertThat(actual.get(0), is("t_order"));
         assertThat(actual.get(1), is("ds_${0..1}.t_order_${0..1}"));
         assertThat(actual.get(2), is(""));
-        assertThat(actual.get(3), is("INLINE"));
+        assertThat(actual.get(3), is("STANDARD"));
         assertThat(actual.get(4), is("user_id"));
         assertThat(actual.get(5), is("INLINE"));
         assertThat(actual.get(6), is("algorithm-expression=ds_${user_id % 2}"));
-        assertThat(actual.get(7), is("INLINE"));
+        assertThat(actual.get(7), is("STANDARD"));
         assertThat(actual.get(8), is("order_id"));
         assertThat(actual.get(9), is("INLINE"));
         assertThat(actual.get(10), is("algorithm-expression=t_order_${order_id % 2}"));
         assertThat(actual.get(11), is("order_id"));
         assertThat(actual.get(12), is("SNOWFLAKE"));
+    }
+    
+    private ShardingSphereDatabase mockDatabase() {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
+        when(result.getRuleMetaData().findSingleRule(ShardingRule.class)).thenReturn(Optional.of(rule));
+        return result;
     }
     
     private RuleConfiguration createRuleConfiguration() {
@@ -85,13 +92,13 @@ public final class ShardingTableRuleQueryResultSetTest {
         return result;
     }
     
-    private ShardingSphereAlgorithmConfiguration createShardingInlineAlgorithmConfiguration(final String algorithmExpression) {
+    private AlgorithmConfiguration createShardingInlineAlgorithmConfiguration(final String algorithmExpression) {
         Properties props = new Properties();
         props.put("algorithm-expression", algorithmExpression);
-        return new ShardingSphereAlgorithmConfiguration("INLINE", props);
+        return new AlgorithmConfiguration("INLINE", props);
     }
     
-    private ShardingSphereAlgorithmConfiguration createKeyGeneratorConfiguration() {
-        return new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", new Properties());
+    private AlgorithmConfiguration createKeyGeneratorConfiguration() {
+        return new AlgorithmConfiguration("SNOWFLAKE", new Properties());
     }
 }

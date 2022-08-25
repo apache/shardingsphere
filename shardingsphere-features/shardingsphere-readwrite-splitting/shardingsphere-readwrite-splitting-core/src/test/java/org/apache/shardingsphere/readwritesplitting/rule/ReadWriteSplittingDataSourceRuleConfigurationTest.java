@@ -18,13 +18,15 @@
 package org.apache.shardingsphere.readwritesplitting.rule;
 
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-
+import org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwriteSplittingStrategyConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.junit.Before;
 import org.junit.Test;
-import java.util.Properties;
+
+import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class ReadWriteSplittingDataSourceRuleConfigurationTest {
@@ -35,29 +37,24 @@ public final class ReadWriteSplittingDataSourceRuleConfigurationTest {
     
     @Before
     public void setup() {
-        readwriteSplittingDataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("ds", "Static", getProperties("write_ds", "read_ds_0,read_ds_1"), "");
-        readwriteSplittingDataSourceRuleConfigDynamic = new ReadwriteSplittingDataSourceRuleConfiguration("ds", "Dynamic", getProperties("write_ds", "read_ds_0,read_ds_1"), "");
+        readwriteSplittingDataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("ds",
+                new StaticReadwriteSplittingStrategyConfiguration("write_ds", Arrays.asList("read_ds_0", "read_ds_1")), null, "");
+        readwriteSplittingDataSourceRuleConfigDynamic = new ReadwriteSplittingDataSourceRuleConfiguration("ds", null,
+                new DynamicReadwriteSplittingStrategyConfiguration("readwrite_ds", "false"), "");
     }
     
     @Test
-    public void assertGetAutoAwareDataSourceName() {
-        assertNull(readwriteSplittingDataSourceRuleConfigDynamic.getProps().getProperty("auto-aware-data-source-name"));
+    public void assertStaticReadWriteSplittingConfig() {
+        assertNotNull(readwriteSplittingDataSourceRuleConfig.getStaticStrategy());
+        StaticReadwriteSplittingStrategyConfiguration actual = readwriteSplittingDataSourceRuleConfig.getStaticStrategy();
+        assertThat(actual.getWriteDataSourceName(), is("write_ds"));
+        assertThat(actual.getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
     }
     
     @Test
-    public void assertGetWriteDataSourceName() {
-        assertThat(readwriteSplittingDataSourceRuleConfig.getProps().getProperty("write-data-source-name"), is("write_ds"));
-    }
-    
-    @Test
-    public void assertGetReadDataSourceNames() {
-        assertThat(readwriteSplittingDataSourceRuleConfig.getProps().getProperty("read-data-source-names"), is("read_ds_0,read_ds_1"));
-    }
-    
-    private Properties getProperties(final String writeDataSource, final String readDataSources) {
-        Properties result = new Properties();
-        result.setProperty("write-data-source-name", writeDataSource);
-        result.setProperty("read-data-source-names", readDataSources);
-        return result;
+    public void assertDynamicReadWriteSplittingConfig() {
+        assertNotNull(readwriteSplittingDataSourceRuleConfigDynamic.getDynamicStrategy());
+        DynamicReadwriteSplittingStrategyConfiguration actual = readwriteSplittingDataSourceRuleConfigDynamic.getDynamicStrategy();
+        assertThat(actual.getAutoAwareDataSourceName(), is("readwrite_ds"));
     }
 }

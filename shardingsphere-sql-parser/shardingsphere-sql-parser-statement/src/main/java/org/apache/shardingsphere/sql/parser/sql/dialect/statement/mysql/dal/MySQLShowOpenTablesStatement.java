@@ -31,7 +31,7 @@ import java.util.Optional;
  * MySQL show open tables statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class MySQLShowOpenTablesStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
     private FromSchemaSegment fromSchema;

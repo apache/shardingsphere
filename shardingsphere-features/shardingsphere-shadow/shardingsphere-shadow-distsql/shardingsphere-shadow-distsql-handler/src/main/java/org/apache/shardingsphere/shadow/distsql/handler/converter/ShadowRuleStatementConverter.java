@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shadow.distsql.handler.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -73,12 +73,12 @@ public final class ShadowRuleStatementConverter {
         return rules.stream().collect(Collectors.toMap(ShadowRuleSegment::getRuleName, each -> new ShadowDataSourceConfiguration(each.getSource(), each.getShadow())));
     }
     
-    private static Map<String, ShardingSphereAlgorithmConfiguration> getShadowAlgorithms(final Collection<ShadowRuleSegment> rules) {
+    private static Map<String, AlgorithmConfiguration> getShadowAlgorithms(final Collection<ShadowRuleSegment> rules) {
         return rules.stream().flatMap(each -> each.getShadowTableRules().values().stream()).flatMap(Collection::stream)
                 .collect(Collectors.toMap(ShadowAlgorithmSegment::getAlgorithmName, ShadowRuleStatementConverter::buildAlgorithmConfiguration));
     }
     
-    private static ShardingSphereAlgorithmConfiguration buildAlgorithmConfiguration(final ShadowAlgorithmSegment segment) {
-        return new ShardingSphereAlgorithmConfiguration(segment.getAlgorithmSegment().getName(), segment.getAlgorithmSegment().getProps());
+    private static AlgorithmConfiguration buildAlgorithmConfiguration(final ShadowAlgorithmSegment segment) {
+        return new AlgorithmConfiguration(segment.getAlgorithmSegment().getName(), segment.getAlgorithmSegment().getProps());
     }
 }

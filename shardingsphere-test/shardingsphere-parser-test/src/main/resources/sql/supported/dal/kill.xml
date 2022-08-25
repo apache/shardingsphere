@@ -17,5 +17,5 @@
   -->
 
 <sql-cases>
-    <sql-case id="kill_processlist_id" value="KILL 2" db-types="MySQL" />
+    <sql-case id="kill_processlist_id" value="KILL abc" db-types="MySQL" />
 </sql-cases>

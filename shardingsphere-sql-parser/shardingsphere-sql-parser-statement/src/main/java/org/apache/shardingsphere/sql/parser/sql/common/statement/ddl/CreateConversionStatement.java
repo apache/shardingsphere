@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Create conversion statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class CreateConversionStatement extends AbstractSQLStatement implements DDLStatement {
 }

@@ -104,7 +104,11 @@ execute
     | deallocate
     | explain
     | analyzeTable
+    | listen
+    | notifyStmt
+    | unlisten
     | load
+    | lock
     | createTablespace
     | alterTablespace
     | dropTablespace
@@ -144,8 +148,33 @@ execute
     | dropOperatorFamily
     | dropAccessMethod
     | dropServer
+    | alterPolicy
     | checkpoint
+    | fetch
+    | move
     | close
     | cluster
+    | alterOperator
+    | createAccessMethod
+    | alterPublication
+    | createAggregate
+    | createCast
+    | alterRoutine
+    | alterRule
+    | createCollation
+    | prepareTransaction
+    | reassignOwned
+    | refreshMatViewStmt
+    | reindex
+    | securityLabelStmt
+    | createEventTrigger
+    | createForeignDataWrapper
+    | createForeignTable
+    | alterStatistics
+    | createGroup
+    | alterSubscription
+    | createMaterializedView
+    | createOperator
+    | alterTextSearchConfiguration
     ) SEMI_? EOF
     ;

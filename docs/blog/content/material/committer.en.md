@@ -53,9 +53,7 @@ How about starting with a task and training hands? The tasks currently announced
 
 We will also regularly publish some development function tasks in the form of issue on GitHub in the future. Welcome to follow us by subscribing to our mailing list. For details, please refer to the official website:
 
-http://shardingsphere.io/community/cn/contribute/subscribe/
-
-
+http://shardingsphere.io/community/cn/involved/subscribe/
 
 By subscribing to the Apache ShardingSphere mailing list, you can also learn about the latest project progress, function development plans, bug lists, etc. of Apache ShardingSphere; you can also talk directly with ShardingSphere developers to discuss your problems, your ideas and suggestions, etc. We will definitely reply positively.
 
@@ -68,9 +66,8 @@ Official website (http://shardingsphere.apache.org/)
 GitHub (https://github.com/apache/incubator-shardingsphere) 
 
 ### Conclusion
+
 Since Apache ShardingSphere (Incubating) was open sourced in 2016, it has been constantly improving and developing, and is recognized by more and more enterprises and individuals: 6000+ stars and 70+ company success stories have been harvested on Github. In addition, more and more enterprises and individuals have joined the open source project of Apache ShardingSphere (Incubating), which has contributed tremendously to its growth and development.
-
-
 
 We have never stopped, listen to the needs and suggestions of community partners, and continue to develop new and powerful functions to make them robust and reliable!
 

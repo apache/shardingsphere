@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.dcl;
 
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
  * Set role statement.
  */
+@ToString(callSuper = true)
 public abstract class SetRoleStatement extends AbstractSQLStatement implements DCLStatement {
 }

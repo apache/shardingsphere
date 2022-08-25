@@ -16,7 +16,7 @@
   -->
 <command>
     <create-table-order>
-        CREATE TABLE `t_order` (
+        CREATE TABLE `T_ORDER` (
         `id` varchar(255) NOT NULL COMMENT 'pk id',
         `order_id` INT NOT NULL,
         `user_id` INT NOT NULL,
@@ -26,4 +26,12 @@
         INDEX ( `order_id` )
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     </create-table-order>
+
+    <update-table-order-status>
+        UPDATE t_order SET status= 'unlock'
+    </update-table-order-status>
+
+    <create-index-status>
+        CREATE index idx_order_status ON t_order (status)
+    </create-index-status>
 </command>

@@ -42,7 +42,7 @@ public final class DropDefaultShardingStrategyStatementUpdaterTest {
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutCurrentRule() throws DistSQLException {
-        updater.checkSQLStatement(database, new DropDefaultShardingStrategyStatement("TABLE"), null);
+        updater.checkSQLStatement(database, new DropDefaultShardingStrategyStatement(false, "TABLE"), null);
     }
     
     @Test(expected = RequiredRuleMissedException.class)
@@ -64,7 +64,7 @@ public final class DropDefaultShardingStrategyStatementUpdaterTest {
     }
     
     private DropDefaultShardingStrategyStatement createSQLStatement(final String defaultType) {
-        return new DropDefaultShardingStrategyStatement(defaultType);
+        return new DropDefaultShardingStrategyStatement(false, defaultType);
     }
     
     private ShardingRuleConfiguration createCurrentRuleConfiguration() {

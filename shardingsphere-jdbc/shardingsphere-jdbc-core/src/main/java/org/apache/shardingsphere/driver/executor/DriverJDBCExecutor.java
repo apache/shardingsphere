@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.driver.executor;
 
-import lombok.Getter;
 import org.apache.shardingsphere.driver.executor.callback.ExecuteQueryCallback;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefreshEngine;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
@@ -33,15 +31,14 @@ import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRe
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Driver JDBC executor.
@@ -54,36 +51,36 @@ public final class DriverJDBCExecutor {
     
     private final ContextManager contextManager;
     
-    @Getter
     private final JDBCExecutor jdbcExecutor;
     
     private final MetaDataRefreshEngine metadataRefreshEngine;
+    
+    private final EventBusContext eventBusContext;
     
     public DriverJDBCExecutor(final String databaseName, final ContextManager contextManager, final JDBCExecutor jdbcExecutor) {
         this.databaseName = databaseName;
         this.contextManager = contextManager;
         this.jdbcExecutor = jdbcExecutor;
         metaDataContexts = contextManager.getMetaDataContexts();
-        metadataRefreshEngine = new MetaDataRefreshEngine(metaDataContexts.getMetaData().getDatabases().get(databaseName),
-                metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName),
-                metaDataContexts.getOptimizerContext().getPlannerContexts(), metaDataContexts.getMetaData().getProps());
+        eventBusContext = contextManager.getInstanceContext().getEventBusContext();
+        metadataRefreshEngine = new MetaDataRefreshEngine(metaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getProps());
     }
     
     /**
      * Execute query.
      *
      * @param executionGroupContext execution group context
-     * @param logicSQL logic SQL
+     * @param queryContext query context
      * @param callback execute query callback
      * @return query results
      * @throws SQLException SQL exception
      */
     public List<QueryResult> executeQuery(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext,
-                                          final LogicSQL logicSQL, final ExecuteQueryCallback callback) throws SQLException {
+                                          final QueryContext queryContext, final ExecuteQueryCallback callback) throws SQLException {
         try {
-            ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, metaDataContexts.getMetaData().getProps());
+            ExecuteProcessEngine.initialize(queryContext, executionGroupContext, eventBusContext);
             List<QueryResult> result = jdbcExecutor.execute(executionGroupContext, callback);
-            ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
+            ExecuteProcessEngine.finish(executionGroupContext.getExecutionID(), eventBusContext);
             return result;
         } finally {
             ExecuteProcessEngine.clean();
@@ -94,20 +91,20 @@ public final class DriverJDBCExecutor {
      * Execute update.
      *
      * @param executionGroupContext execution group context
-     * @param logicSQL logic SQL
+     * @param queryContext query context
      * @param routeUnits route units
      * @param callback JDBC executor callback
      * @return effected records count
      * @throws SQLException SQL exception
      */
     public int executeUpdate(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext,
-                             final LogicSQL logicSQL, final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Integer> callback) throws SQLException {
+                             final QueryContext queryContext, final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Integer> callback) throws SQLException {
         try {
-            ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, metaDataContexts.getMetaData().getProps());
-            SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
+            ExecuteProcessEngine.initialize(queryContext, executionGroupContext, eventBusContext);
+            SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
             List<Integer> results = doExecute(executionGroupContext, sqlStatementContext, routeUnits, callback);
-            int result = isNeedAccumulate(metaDataContexts.getMetaData().getDatabases().get(databaseName).getRuleMetaData().getRules(), sqlStatementContext) ? accumulate(results) : results.get(0);
-            ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
+            int result = isNeedAccumulate(metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules(), sqlStatementContext) ? accumulate(results) : results.get(0);
+            ExecuteProcessEngine.finish(executionGroupContext.getExecutionID(), eventBusContext);
             return result;
         } finally {
             ExecuteProcessEngine.clean();
@@ -135,19 +132,19 @@ public final class DriverJDBCExecutor {
      * Execute SQL.
      *
      * @param executionGroupContext execution group context
-     * @param logicSQL logic SQL
+     * @param queryContext query context
      * @param routeUnits route units
      * @param callback JDBC executor callback
      * @return return true if is DQL, false if is DML
      * @throws SQLException SQL exception
      */
-    public boolean execute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final LogicSQL logicSQL,
+    public boolean execute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final QueryContext queryContext,
                            final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Boolean> callback) throws SQLException {
         try {
-            ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, metaDataContexts.getMetaData().getProps());
-            List<Boolean> results = doExecute(executionGroupContext, logicSQL.getSqlStatementContext(), routeUnits, callback);
+            ExecuteProcessEngine.initialize(queryContext, executionGroupContext, eventBusContext);
+            List<Boolean> results = doExecute(executionGroupContext, queryContext.getSqlStatementContext(), routeUnits, callback);
             boolean result = null != results && !results.isEmpty() && null != results.get(0) && results.get(0);
-            ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
+            ExecuteProcessEngine.finish(executionGroupContext.getExecutionID(), eventBusContext);
             return result;
         } finally {
             ExecuteProcessEngine.clean();
@@ -162,10 +159,9 @@ public final class DriverJDBCExecutor {
     }
     
     private void refreshMetaData(final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits) throws SQLException {
-        Optional<MetaDataRefreshedEvent> event = metadataRefreshEngine.refresh(sqlStatementContext, () -> routeUnits.stream()
-                .map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toCollection(() -> new ArrayList<>(routeUnits.size()))));
+        Optional<MetaDataRefreshedEvent> event = metadataRefreshEngine.refresh(sqlStatementContext, routeUnits);
         if (contextManager.getInstanceContext().isCluster() && event.isPresent()) {
-            ShardingSphereEventBus.getInstance().post(event.get());
+            eventBusContext.post(event.get());
         }
     }
 }

@@ -1633,7 +1633,7 @@
         </table>
         <select>
             <from>
-                <join-table>
+                <join-table join-type="INNER">
                     <left>
                         <simple-table name="t_order" alias="o" start-index="111" stop-index="119" />
                     </left>
@@ -1669,7 +1669,7 @@
         <table name="t_order_new" start-index="20" stop-index="30" />
         <select>
             <from>
-                <join-table>
+                <join-table join-type="INNER">
                     <left>
                         <simple-table name="t_order_item" alias="i" start-index="119" stop-index="132" />
                     </left>
@@ -1727,6 +1727,60 @@
             <column name="id" />
         </column-definition>
         <column-definition type="varchar" start-index="39" stop-index="56">
+            <column name="status" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_bit_xor_table">
+        <table name="BIT_XOR" start-index="13" stop-index="19" />
+        <column-definition type="int" start-index="21" stop-index="25">
+            <column name="a" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_bit_xor_table_with_space">
+        <table name="BIT_XOR" start-index="13" stop-index="19" />
+        <column-definition type="int" start-index="22" stop-index="26">
+            <column name="a" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_path">
+        <table name="files" start-index="13" stop-index="17" />
+        <column-definition type="PATH" start-index="20" stop-index="28">
+            <column name="path" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_national">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="int" start-index="22" stop-index="33">
+            <column name="national" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_visible">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT" start-index="22" stop-index="33">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT" start-index="36" stop-index="46">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="49" stop-index="74">
+            <column name="status" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_invisible">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT" start-index="22" stop-index="33">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT" start-index="36" stop-index="46">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="49" stop-index="76">
             <column name="status" />
         </column-definition>
     </create-table>

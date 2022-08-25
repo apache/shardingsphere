@@ -24,11 +24,12 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.Pos
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.simple.PostgreSQLComQueryPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
@@ -59,7 +60,7 @@ public final class PostgreSQLComQueryExecutorTest {
     private PostgreSQLConnectionContext connectionContext;
     
     @Mock
-    private TextProtocolBackendHandler textProtocolBackendHandler;
+    private ProxyBackendHandler proxyBackendHandler;
     
     private PostgreSQLComQueryExecutor queryExecutor;
     
@@ -74,15 +75,15 @@ public final class PostgreSQLComQueryExecutorTest {
     
     @SneakyThrows
     private void setMockFieldIntoExecutor(final PostgreSQLComQueryExecutor executor) {
-        Field field = PostgreSQLComQueryExecutor.class.getDeclaredField("textProtocolBackendHandler");
+        Field field = PostgreSQLComQueryExecutor.class.getDeclaredField("proxyBackendHandler");
         field.setAccessible(true);
-        field.set(executor, textProtocolBackendHandler);
+        field.set(executor, proxyBackendHandler);
     }
     
     @Test
     public void assertExecuteQueryAndReturnEmptyResult() throws SQLException {
         QueryResponseHeader queryResponseHeader = mock(QueryResponseHeader.class);
-        when(textProtocolBackendHandler.execute()).thenReturn(queryResponseHeader);
+        when(proxyBackendHandler.execute()).thenReturn(queryResponseHeader);
         Collection<DatabasePacket<?>> actual = queryExecutor.execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(instanceOf(PostgreSQLRowDescriptionPacket.class)));
@@ -94,7 +95,7 @@ public final class PostgreSQLComQueryExecutorTest {
     public void assertExecuteQueryAndReturnResult() throws SQLException {
         QueryResponseHeader queryResponseHeader = mock(QueryResponseHeader.class);
         when(queryResponseHeader.getQueryHeaders()).thenReturn(Collections.singletonList(new QueryHeader("schema", "table", "label", "column", 1, "type", 2, 3, true, true, true, true)));
-        when(textProtocolBackendHandler.execute()).thenReturn(queryResponseHeader);
+        when(proxyBackendHandler.execute()).thenReturn(queryResponseHeader);
         Collection<DatabasePacket<?>> actual = queryExecutor.execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(instanceOf(PostgreSQLRowDescriptionPacket.class)));
@@ -104,7 +105,7 @@ public final class PostgreSQLComQueryExecutorTest {
     
     @Test
     public void assertExecuteUpdate() throws SQLException {
-        when(textProtocolBackendHandler.execute()).thenReturn(new UpdateResponseHeader(mock(InsertStatement.class)));
+        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(mock(InsertStatement.class)));
         Collection<DatabasePacket<?>> actual = queryExecutor.execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(instanceOf(PostgreSQLCommandCompletePacket.class)));
@@ -113,13 +114,14 @@ public final class PostgreSQLComQueryExecutorTest {
     
     @Test
     public void assertNext() throws SQLException {
-        when(textProtocolBackendHandler.next()).thenReturn(true, false);
+        when(proxyBackendHandler.next()).thenReturn(true, false);
         assertTrue(queryExecutor.next());
         assertFalse(queryExecutor.next());
     }
     
     @Test
     public void assertGetQueryRowPacket() throws SQLException {
+        when(proxyBackendHandler.getRowData()).thenReturn(new QueryResponseRow(Collections.emptyList()));
         PostgreSQLPacket actual = queryExecutor.getQueryRowPacket();
         assertThat(actual, is(instanceOf(PostgreSQLDataRowPacket.class)));
     }

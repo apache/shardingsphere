@@ -52,15 +52,6 @@ public final class EncryptColumnSegment implements ASTNode {
     
     private final AlgorithmSegment assistedQueryEncryptor;
     
-    public EncryptColumnSegment(final String name, final String cipherColumn, final String plainColumn, final String assistedQueryColumn, final AlgorithmSegment encryptor) {
-        this(name, cipherColumn, plainColumn, assistedQueryColumn, encryptor, null);
-    }
-    
-    public EncryptColumnSegment(final String name, final String cipherColumn, final String plainColumn, final String assistedQueryColumn, final String dataType, final String cipherDataType,
-                                final String plainDataType, final String assistedQueryDataType, final AlgorithmSegment encryptor) {
-        this(name, cipherColumn, plainColumn, assistedQueryColumn, dataType, cipherDataType, plainDataType, assistedQueryDataType, encryptor, null);
-    }
-    
     /**
      * Is the data type correct.
      *

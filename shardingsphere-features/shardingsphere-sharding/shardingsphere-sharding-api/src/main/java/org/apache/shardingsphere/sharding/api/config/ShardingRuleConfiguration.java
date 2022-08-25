@@ -17,34 +17,28 @@
 
 package org.apache.shardingsphere.sharding.api.config;
 
-import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.function.DistributedRuleConfiguration;
-import org.apache.shardingsphere.infra.config.function.ResourceRequiredRuleConfiguration;
-import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
-import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
-import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.rule.function.DistributedRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
-import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Sharding rule configuration.
  */
 @Getter
 @Setter
-public final class ShardingRuleConfiguration implements SchemaRuleConfiguration, DistributedRuleConfiguration, ResourceRequiredRuleConfiguration {
+public final class ShardingRuleConfiguration implements DatabaseRuleConfiguration, DistributedRuleConfiguration {
     
     private Collection<ShardingTableRuleConfiguration> tables = new LinkedList<>();
     
@@ -60,23 +54,13 @@ public final class ShardingRuleConfiguration implements SchemaRuleConfiguration,
     
     private KeyGenerateStrategyConfiguration defaultKeyGenerateStrategy;
     
+    private ShardingAuditStrategyConfiguration defaultAuditStrategy;
+    
     private String defaultShardingColumn;
     
-    private Map<String, ShardingSphereAlgorithmConfiguration> shardingAlgorithms = new LinkedHashMap<>();
+    private Map<String, AlgorithmConfiguration> shardingAlgorithms = new LinkedHashMap<>();
     
-    private Map<String, ShardingSphereAlgorithmConfiguration> keyGenerators = new LinkedHashMap<>();
+    private Map<String, AlgorithmConfiguration> keyGenerators = new LinkedHashMap<>();
     
-    private String scalingName;
-    
-    private Map<String, OnRuleAlteredActionConfiguration> scaling = new LinkedHashMap<>();
-    
-    @Override
-    public Collection<String> getRequiredResource() {
-        Collection<String> result = new LinkedHashSet<>();
-        result.addAll(autoTables.stream().map(ShardingAutoTableRuleConfiguration::getActualDataSources)
-                .map(each -> Splitter.on(",").trimResults().splitToList(each)).flatMap(Collection::stream).collect(Collectors.toSet()));
-        result.addAll(tables.stream().map(each -> new InlineExpressionParser(each.getActualDataNodes()).splitAndEvaluate())
-                .flatMap(Collection::stream).distinct().map(each -> new DataNode(each).getDataSourceName()).collect(Collectors.toSet()));
-        return result;
-    }
+    private Map<String, AlgorithmConfiguration> auditors = new LinkedHashMap<>();
 }

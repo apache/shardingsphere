@@ -31,7 +31,7 @@ import java.util.Optional;
  * Oracle select statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class OracleSelectStatement extends SelectStatement implements OracleStatement {
     
     private LockSegment lock;

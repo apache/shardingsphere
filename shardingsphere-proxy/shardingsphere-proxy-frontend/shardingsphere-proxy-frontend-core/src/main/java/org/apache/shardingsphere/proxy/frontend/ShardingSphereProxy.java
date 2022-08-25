@@ -39,6 +39,9 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.netty.ServerHandlerInitializer;
 import org.apache.shardingsphere.proxy.frontend.protocol.FrontDatabaseProtocolTypeFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * ShardingSphere-Proxy.
  */
@@ -52,13 +55,14 @@ public final class ShardingSphereProxy {
     /**
      * Start ShardingSphere-Proxy.
      *
-     * @param port port
+     * @param port      port
+     * @param addresses addresses
      */
     @SneakyThrows(InterruptedException.class)
-    public void start(final int port) {
+    public void start(final int port, final List<String> addresses) {
         try {
-            ChannelFuture future = startInternal(port);
-            accept(future);
+            List<ChannelFuture> futures = startInternal(port, addresses);
+            accept(futures);
         } finally {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
@@ -66,16 +70,23 @@ public final class ShardingSphereProxy {
         }
     }
     
-    private ChannelFuture startInternal(final int port) throws InterruptedException {
+    private List<ChannelFuture> startInternal(final int port, final List<String> addresses) throws InterruptedException {
         createEventLoopGroup();
         ServerBootstrap bootstrap = new ServerBootstrap();
         initServerBootstrap(bootstrap);
-        return bootstrap.bind(port).sync();
+        
+        List<ChannelFuture> futures = new ArrayList<>();
+        for (String address : addresses) {
+            futures.add(bootstrap.bind(address, port).sync());
+        }
+        return futures;
     }
     
-    private void accept(final ChannelFuture future) throws InterruptedException {
+    private void accept(final List<ChannelFuture> futures) throws InterruptedException {
         log.info("ShardingSphere-Proxy {} mode started successfully", ProxyContext.getInstance().getContextManager().getInstanceContext().getModeConfiguration().getType());
-        future.channel().closeFuture().sync();
+        for (ChannelFuture future : futures) {
+            future.channel().closeFuture().sync();
+        }
     }
     
     private void createEventLoopGroup() {

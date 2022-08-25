@@ -20,8 +20,6 @@ package org.apache.shardingsphere.infra.context.refresher.type;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
-import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
@@ -34,7 +32,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.AlterIndexSt
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -42,22 +39,18 @@ import java.util.Optional;
  */
 public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresher<AlterIndexStatement> {
     
-    private static final String TYPE = AlterIndexStatement.class.getName();
-    
     @Override
-    public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final FederationDatabaseMetaData federationDatabaseMetaData,
-                                                    final Map<String, OptimizerPlannerContext> optimizerPlanners,
-                                                    final Collection<String> logicDataSourceNames, final String schemaName, final AlterIndexStatement sqlStatement,
-                                                    final ConfigurationProperties props) throws SQLException {
+    public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
+                                                    final String schemaName, final AlterIndexStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         Optional<IndexSegment> renameIndex = AlterIndexStatementHandler.getRenameIndexSegment(sqlStatement);
         if (!sqlStatement.getIndex().isPresent() || !renameIndex.isPresent()) {
             return Optional.empty();
         }
-        String actualSchemaName = sqlStatement.getIndex().get().getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(schemaName);
+        String actualSchemaName = sqlStatement.getIndex().get().getOwner().map(optional -> optional.getIdentifier().getValue().toLowerCase()).orElse(schemaName);
         String indexName = sqlStatement.getIndex().get().getIndexName().getIdentifier().getValue();
-        Optional<String> logicTableName = findLogicTableName(database.getSchemas().get(actualSchemaName), indexName);
+        Optional<String> logicTableName = findLogicTableName(database.getSchema(actualSchemaName), indexName);
         if (logicTableName.isPresent()) {
-            ShardingSphereTable table = database.getSchemas().get(actualSchemaName).get(logicTableName.get());
+            ShardingSphereTable table = database.getSchema(actualSchemaName).get(logicTableName.get());
             Preconditions.checkNotNull(table, "Can not get the table '%s' metadata!", logicTableName.get());
             table.getIndexes().remove(indexName);
             String renameIndexName = renameIndex.get().getIndexName().getIdentifier().getValue();
@@ -75,6 +68,6 @@ public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresh
     
     @Override
     public String getType() {
-        return TYPE;
+        return AlterIndexStatement.class.getName();
     }
 }

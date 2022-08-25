@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL drop subscription statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLDropSubscriptionStatement extends DropSubscriptionStatement implements PostgreSQLStatement {
 }

@@ -510,3 +510,7 @@ savepointVariableName
 entityType
     : OBJECT | TYPE
     ;
+
+ifExists
+    : IF EXISTS
+    ;

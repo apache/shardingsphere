@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.distsql.update;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
@@ -110,7 +110,7 @@ public final class CreateShadowRuleStatementUpdaterTest {
     public void assertExecuteDuplicateAlgorithmInMetaData() throws DistSQLException {
         Properties prop = new Properties();
         prop.setProperty("type", "value");
-        when(currentConfig.getShadowAlgorithms()).thenReturn(Collections.singletonMap("algorithmName", new ShardingSphereAlgorithmConfiguration("type", prop)));
+        when(currentConfig.getShadowAlgorithms()).thenReturn(Collections.singletonMap("algorithmName", new AlgorithmConfiguration("type", prop)));
         ShadowAlgorithmSegment segment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("type", prop));
         CreateShadowRuleStatement sqlStatement = createSQLStatement(new ShadowRuleSegment("ruleName", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment))));
         updater.checkSQLStatement(database, sqlStatement, currentConfig);

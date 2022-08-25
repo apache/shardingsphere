@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <select sql-case-id="select_with_geometric_translation_plus">
+        <projections start-index="7" stop-index="53">
+            <expression-projection text="box '((0,0),(1,1))' + point '(2.0,0)'" alias="RESULT" start-index="7" stop-index="53" />
+        </projections>
+    </select>
+    <select sql-case-id="select_with_geometric_translation_minus">
+        <projections start-index="7" stop-index="53">
+            <expression-projection text="box '((0,0),(1,1))' - point '(2.0,0)'" alias="RESULT" start-index="7" stop-index="53" />
+        </projections>
+    </select>
+    <select sql-case-id="select_with_geometric_rotation_multiply">
+        <projections start-index="7" stop-index="53">
+            <expression-projection text="box '((0,0),(1,1))' * point '(2.0,0)'" alias="RESULT" start-index="7" stop-index="53" />
+        </projections>
+    </select>
+    <select sql-case-id="select_with_geometric_rotation_divide">
+        <projections start-index="7" stop-index="53">
+            <expression-projection text="box '((0,0),(2,2))' / point '(2.0,0)'" alias="RESULT" start-index="7" stop-index="53" />
+        </projections>
+    </select>
+    <select sql-case-id="select_with_geometric_intersection">
+        <projections start-index="7" stop-index="61">
+            <expression-projection text="box '((1,-1),(-1,1))' # box '((1,1),(-2,-2))'" alias="RESULT" start-index="7" stop-index="61" />
+        </projections>
+    </select>
+    <select sql-case-id="select_with_geometric_number_of_path">
+        <projections start-index="7" stop-index="44">
+            <expression-projection text="# path'((1,0),(0,1),(-1,0))'" alias="RESULT" start-index="7" stop-index="44" />
+        </projections>
+    </select>
+    <select sql-case-id="select_with_geometric_length">
+        <projections start-index="7" stop-index="40">
+            <expression-projection text="@-@ path '((0,0),(1,0))'" alias="RESULT" start-index="7" stop-index="40" />
+        </projections>
+    </select>
+    <select sql-case-id="select_with_geometric_center_of_box">
+        <projections start-index="7" stop-index="38">
+            <expression-projection text="@@ circle '((0,0),10)'" alias="RESULT" start-index="7" stop-index="38" />
+        </projections>
+    </select>
+    <select sql-case-id="select_with_geometric_distance">
+        <projections start-index="7" stop-index="57">
+            <expression-projection text="circle '((0,0),1)' &lt;-> circle '((5,0),1)'" alias="RESULT" start-index="7" stop-index="57" />
+        </projections>
+    </select>
+    <select sql-case-id="select_with_geometric_overlaps">
+        <projections start-index="7" stop-index="58">
+            <expression-projection text="box '((0,0),(1,1))' &amp;&amp; box '((0,0),(2,2))'" alias="RESULT" start-index="7" stop-index="58" />
+        </projections>
+    </select>
+    <select sql-case-id="select_with_geometric_strict_left">
+        <projections start-index="7" stop-index="56">
+            <expression-projection text="circle '((0,0),1)' &lt;&lt; circle '((5,0),1)'" alias="RESULT" start-index="7" stop-index="56" />
+        </projections>
+    </select>
+    <select sql-case-id="select_with_geometric_strict_right">
+        <projections start-index="7" stop-index="56">
+            <expression-projection text="circle '((5,0),1)' >> circle '((0,0),1)'" alias="RESULT" start-index="7" stop-index="56" />
+        </projections>
+    </select>
+    <select sql-case-id="select_with_geometric_extend_to_right">
+        <projections start-index="7" stop-index="58">
+            <expression-projection text="box '((0,0),(1,1))' &amp;&lt; box '((0,0),(2,2))'" alias="RESULT" start-index="7" stop-index="58" />
+        </projections>
+    </select>
+    <select sql-case-id="select_with_geometric_extend_to_left">
+        <projections start-index="7" stop-index="58">
+            <expression-projection text="box '((0,0),(3,3))' &amp;> box '((0,0),(2,2))'" alias="RESULT" start-index="7" stop-index="58" />
+        </projections>
+    </select>
+    <select sql-case-id="select_with_geometric_strict_below">
+        <projections start-index="7" stop-index="59">
+            <expression-projection text="box '((0,0),(3,3))' &lt;&lt;| box '((3,4),(5,5))'" alias="RESULT" start-index="7" stop-index="59" />
+        </projections>
+    </select>
+    <select sql-case-id="select_with_geometric_strict_above">
+        <projections start-index="7" stop-index="59">
+            <expression-projection text="box '((3,4),(5,5))' |>> box '((0,0),(3,3))'" alias="RESULT" start-index="7" stop-index="59" />
+        </projections>
+    </select>
+    <select sql-case-id="select_with_geometric_extend_above">
+        <projections start-index="7" stop-index="59">
+            <expression-projection text="box '((0,0),(1,1))' &amp;&lt;| box '((0,0),(2,2))'" alias="RESULT" start-index="7" stop-index="59" />
+        </projections>
+    </select>
+    <select sql-case-id="select_with_geometric_extend_below">
+        <projections start-index="7" stop-index="59">
+            <expression-projection text="box '((0,0),(3,3))' |&amp;> box '((0,0),(2,2))'" alias="RESULT" start-index="7" stop-index="59" />
+        </projections>
+    </select>
+    <select sql-case-id="select_with_geometric_below">
+        <projections start-index="7" stop-index="60">
+            <expression-projection text="box '((0,0),(-3,-3))' &lt;^ box '((0,0),(2,2))'" alias="RESULT" start-index="7" stop-index="60" />
+        </projections>
+    </select>
+    <select sql-case-id="select_with_geometric_above">
+        <projections start-index="7" stop-index="61">
+            <expression-projection text="box '((0,0),(2,2))' >^ box '((0,0),(-3,-3))'" alias="RESULT" start-index="7" stop-index="61" />
+        </projections>
+    </select>
+    <select sql-case-id="select_with_geometric_intersect">
+        <projections start-index="7" stop-index="62">
+            <expression-projection text="lseg '((-1,0),(1,0))' ?# box '((-2,-2),(2,2))'" alias="RESULT" start-index="7" stop-index="62" />
+        </projections>
+    </select>
+    <select sql-case-id="select_with_geometric_horizontal">
+        <projections start-index="7" stop-index="40">
+            <expression-projection text="?- lseg '((-1,0),(1,0))'" alias="RESULT" start-index="7" stop-index="40" />
+        </projections>
+    </select>
+    <select sql-case-id="select_with_geometric_horizontal_aligned">
+        <projections start-index="7" stop-index="46">
+            <expression-projection text="point '(1,0)' ?- point '(0,0)'" alias="RESULT" start-index="7" stop-index="46" />
+        </projections>
+    </select>
+    <select sql-case-id="select_with_geometric_vertical">
+        <projections start-index="7" stop-index="40">
+            <expression-projection text="?| lseg '((-1,0),(1,0))'" alias="RESULT" start-index="7" stop-index="40" />
+        </projections>
+    </select>
+    <select sql-case-id="select_with_geometric_vertical_aligned">
+        <projections start-index="7" stop-index="46">
+            <expression-projection text="point '(0,1)' ?| point '(0,0)'" alias="RESULT" start-index="7" stop-index="46" />
+        </projections>
+    </select>
+    <select sql-case-id="select_with_geometric_perpendicular">
+        <projections start-index="7" stop-index="61">
+            <expression-projection text="lseg '((0,0),(0,1))' ?-| lseg '((0,0),(1,0))'" alias="RESULT" start-index="7" stop-index="61" />
+        </projections>
+    </select>
+    <select sql-case-id="select_with_geometric_parallel">
+        <projections start-index="7" stop-index="63">
+            <expression-projection text="lseg '((-1,0),(1,0))' ?|| lseg '((-1,2),(1,2))'" alias="RESULT" start-index="7" stop-index="63" />
+        </projections>
+    </select>
+    <select sql-case-id="select_with_geometric_contains">
+        <projections start-index="7" stop-index="51">
+            <expression-projection text="circle '((0,0),2)' @> point '(1,1)'" alias="RESULT" start-index="7" stop-index="51" />
+        </projections>
+    </select>
+    <select sql-case-id="select_with_geometric_contains_in">
+        <projections start-index="7" stop-index="51">
+            <expression-projection text="point '(1,1)' &lt;@ circle '((0,0),2)'" alias="RESULT" start-index="7" stop-index="51" />
+        </projections>
+    </select>
+    <select sql-case-id="select_with_geometric_same_as">
+        <projections start-index="7" stop-index="66">
+            <expression-projection text="polygon '((0,0),(1,1))' ~= polygon '((1,1),(0,0))'" alias="RESULT" start-index="7" stop-index="66" />
+        </projections>
+    </select>
+</sql-parser-test-cases>

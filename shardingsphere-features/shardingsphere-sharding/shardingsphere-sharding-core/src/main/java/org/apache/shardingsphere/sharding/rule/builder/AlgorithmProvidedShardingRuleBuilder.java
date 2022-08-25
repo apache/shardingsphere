@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.sharding.rule.builder;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -32,13 +32,13 @@ import java.util.Map;
 /**
  * Algorithm provided sharding rule builder.
  */
-public final class AlgorithmProvidedShardingRuleBuilder implements SchemaRuleBuilder<AlgorithmProvidedShardingRuleConfiguration> {
+public final class AlgorithmProvidedShardingRuleBuilder implements DatabaseRuleBuilder<AlgorithmProvidedShardingRuleConfiguration> {
     
     @Override
     public ShardingRule build(final AlgorithmProvidedShardingRuleConfiguration config, final String databaseName,
-                              final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
+                              final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
         Preconditions.checkArgument(null != dataSources && !dataSources.isEmpty(), "Data sources cannot be empty.");
-        return new ShardingRule(config, dataSources.keySet());
+        return new ShardingRule(config, dataSources.keySet(), instanceContext);
     }
     
     @Override

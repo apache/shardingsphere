@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Alter type statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class AlterTypeStatement extends AbstractSQLStatement implements DDLStatement {
 }

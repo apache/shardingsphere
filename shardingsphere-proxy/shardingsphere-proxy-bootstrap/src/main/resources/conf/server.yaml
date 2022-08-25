@@ -44,21 +44,6 @@
 #  - !TRANSACTION
 #    defaultType: XA
 #    providerType: Atomikos
-#    # When the provider type is Narayana, the following properties can be configured or not
-#    props:
-#      recoveryStoreUrl: jdbc:mysql://127.0.0.1:3306/jbossts
-#      recoveryStoreDataSource: com.mysql.jdbc.jdbc2.optional.MysqlDataSource
-#      recoveryStoreUser: root
-#      recoveryStorePassword: 12345678
-#      commitOnePhase: true
-#      transactionSync: false
-#      recoveryBackoffPeriod: 1
-#      defaultTimeout: 180
-#      expiryScanInterval: 12
-#      periodicRecoveryPeriod: 120
-#      createTable: true
-#      stateStoreCreateTable: true
-#      communicationStoreCreateTable: true
 #  - !SQL_PARSER
 #    sqlCommentParseEnabled: true
 #    sqlStatementCache:
@@ -75,11 +60,9 @@
 #  proxy-hint-enabled: false
 #  sql-show: false
 #  check-table-metadata-enabled: false
-#  show-process-list-enabled: false
 #    # Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
 #    # The default value is -1, which means set the minimum value for different JDBC drivers.
 #  proxy-backend-query-fetch-size: -1
-#  check-duplicate-table-enabled: false
 #  proxy-frontend-executor-size: 0 # Proxy frontend executor size. The default value is 0, which means let Netty decide.
 #    # Available options of proxy backend executor suitable: OLAP(default), OLTP. The OLTP option may reduce time cost of writing packets to client, but it may increase the latency of SQL execution
 #    # and block other clients if client connections are more than `proxy-frontend-executor-size`, especially executing slow SQL.

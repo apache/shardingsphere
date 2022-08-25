@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.rewrite.context;
 
-import org.apache.shardingsphere.infra.rewrite.fixture.FixtureRule;
+import org.apache.shardingsphere.test.fixture.rule.MockedRule;
 import org.apache.shardingsphere.infra.rewrite.fixture.FixtureSQLRewriteContextDecorator;
 import org.junit.Test;
 
@@ -30,7 +30,7 @@ public final class SQLRewriteContextDecoratorFactoryTest {
     
     @Test
     public void assertGetInstance() {
-        FixtureRule rule = new FixtureRule();
+        MockedRule rule = new MockedRule();
         assertThat(SQLRewriteContextDecoratorFactory.getInstance(Collections.singleton(rule)).get(rule), instanceOf(FixtureSQLRewriteContextDecorator.class));
     }
 }

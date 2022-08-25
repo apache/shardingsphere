@@ -19,9 +19,9 @@
     <metadata>
         <column name="schema_name" />
     </metadata>
-    <row values="readwrite_splitting" />
-    <row values="mysql" />
     <row values="information_schema" />
     <row values="performance_schema" />
+    <row values="readwrite_splitting" />
+    <row values="mysql" />
     <row values="sys" />
 </dataset>

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.distsql.parser.statement;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
-import org.apache.shardingsphere.distsql.parser.subject.impl.ShardingSubjectSupplier;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
 
 import java.util.Collection;
@@ -31,7 +30,7 @@ import java.util.LinkedList;
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterShardingBindingTableRulesStatement extends AlterRuleStatement implements ShardingSubjectSupplier {
+public final class AlterShardingBindingTableRulesStatement extends AlterRuleStatement {
     
     private final Collection<BindingTableRuleSegment> rules;
     
@@ -46,10 +45,5 @@ public final class AlterShardingBindingTableRulesStatement extends AlterRuleStat
             result.addAll(each.getBindingTables());
         }
         return result;
-    }
-    
-    @Override
-    public Collection<String> getSubjectNames() {
-        return getBindingTables();
     }
 }

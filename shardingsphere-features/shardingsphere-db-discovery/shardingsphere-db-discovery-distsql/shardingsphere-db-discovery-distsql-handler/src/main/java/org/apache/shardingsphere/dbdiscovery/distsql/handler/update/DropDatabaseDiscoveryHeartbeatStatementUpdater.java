@@ -46,7 +46,7 @@ public final class DropDatabaseDiscoveryHeartbeatStatementUpdater implements Rul
     
     private void checkCurrentRuleConfiguration(final String databaseName,
                                                final DropDatabaseDiscoveryHeartbeatStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
-        if (sqlStatement.isContainsExistClause()) {
+        if (sqlStatement.isIfExists()) {
             return;
         }
         DistSQLException.predictionThrow(null != currentRuleConfig, () -> new RequiredRuleMissedException(RULE_TYPE, databaseName));

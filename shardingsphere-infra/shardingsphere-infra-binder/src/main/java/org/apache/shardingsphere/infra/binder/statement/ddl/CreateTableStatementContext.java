@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 
@@ -75,6 +76,15 @@ public final class CreateTableStatementContext extends CommonSQLStatementContext
         Collection<ConstraintSegment> result = new LinkedList<>();
         for (ConstraintDefinitionSegment each : getSqlStatement().getConstraintDefinitions()) {
             each.getConstraintName().ifPresent(result::add);
+        }
+        return result;
+    }
+    
+    @Override
+    public Collection<ColumnSegment> getIndexColumns() {
+        Collection<ColumnSegment> result = new LinkedList<>();
+        for (ConstraintDefinitionSegment each : getSqlStatement().getConstraintDefinitions()) {
+            result.addAll(each.getIndexColumns());
         }
         return result;
     }

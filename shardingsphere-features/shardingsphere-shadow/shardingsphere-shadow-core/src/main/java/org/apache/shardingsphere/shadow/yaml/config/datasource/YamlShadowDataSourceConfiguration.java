@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shadow.yaml.config.datasource;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
  * Shadow data source configuration for YAML.
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 @Setter
 public final class YamlShadowDataSourceConfiguration implements YamlConfiguration {
     
-    private String sourceDataSourceName;
+    private String productionDataSourceName;
     
     private String shadowDataSourceName;
 }

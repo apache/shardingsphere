@@ -17,35 +17,12 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql;
 
-import org.apache.shardingsphere.data.pipeline.mysql.importer.MySQLImporter;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.MySQLIncrementalDumper;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.MySQLInventoryDumper;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 
 /**
  * MySQL scaling entry.
  */
 public final class MySQLScalingEntry implements ScalingEntry {
-    
-    @Override
-    public Class<MySQLInventoryDumper> getInventoryDumperClass() {
-        return MySQLInventoryDumper.class;
-    }
-    
-    @Override
-    public Class<MySQLIncrementalDumper> getIncrementalDumperClass() {
-        return MySQLIncrementalDumper.class;
-    }
-    
-    @Override
-    public Class<MySQLImporter> getImporterClass() {
-        return MySQLImporter.class;
-    }
-    
-    @Override
-    public Class<MySQLEnvironmentChecker> getEnvironmentCheckerClass() {
-        return MySQLEnvironmentChecker.class;
-    }
     
     @Override
     public String getType() {

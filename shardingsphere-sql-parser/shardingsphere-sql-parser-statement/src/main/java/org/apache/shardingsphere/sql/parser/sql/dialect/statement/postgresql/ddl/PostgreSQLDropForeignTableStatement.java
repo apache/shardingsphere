@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL drop foreign table statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLDropForeignTableStatement extends DropForeignTableStatement implements PostgreSQLStatement {
 }

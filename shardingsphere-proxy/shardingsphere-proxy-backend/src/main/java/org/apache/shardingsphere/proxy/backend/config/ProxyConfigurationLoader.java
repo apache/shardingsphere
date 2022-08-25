@@ -22,8 +22,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperFactory;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
 
@@ -35,6 +38,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -105,8 +110,29 @@ public final class ProxyConfigurationLoader {
             result.setDatabaseName(result.getSchemaName());
         }
         Preconditions.checkNotNull(result.getDatabaseName(), "Property `databaseName` in file `%s` is required.", yamlFile.getName());
-        Preconditions.checkState(!result.getDataSources().isEmpty(), "Data sources configuration in file `%s` is required.", yamlFile.getName());
+        checkDuplicateRule(result.getRules(), yamlFile);
         return Optional.of(result);
+    }
+    
+    private static void checkDuplicateRule(final Collection<YamlRuleConfiguration> ruleConfigurations, final File yamlFile) {
+        if (ruleConfigurations.isEmpty()) {
+            return;
+        }
+        Map<Class<? extends RuleConfiguration>, Long> ruleConfigTypeCountMap = ruleConfigurations.stream()
+                .collect(Collectors.groupingBy(YamlRuleConfiguration::getRuleConfigurationType, Collectors.counting()));
+        Optional<Entry<Class<? extends RuleConfiguration>, Long>> duplicateRuleConfiguration = ruleConfigTypeCountMap.entrySet().stream().filter(each -> each.getValue() > 1).findFirst();
+        if (duplicateRuleConfiguration.isPresent()) {
+            throw new IllegalStateException(String.format("Duplicate rule tag '!%s' in file %s.", getDuplicateRuleTagName(duplicateRuleConfiguration.get().getKey()), yamlFile.getName()));
+        }
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private static Object getDuplicateRuleTagName(final Class<? extends RuleConfiguration> ruleConfigurationClass) {
+        Optional<YamlRuleConfigurationSwapper> optional = YamlRuleConfigurationSwapperFactory.getAllInstances().stream().filter(each -> ruleConfigurationClass.equals(each.getTypeClass())).findFirst();
+        if (optional.isPresent()) {
+            return optional.get().getRuleTagName();
+        }
+        throw new IllegalStateException("Not find rule tag name of class " + ruleConfigurationClass);
     }
     
     private static File[] findRuleConfigurationFiles(final File path) {

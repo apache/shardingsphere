@@ -31,7 +31,7 @@ import java.util.Optional;
  * OpenGauss select statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class OpenGaussSelectStatement extends SelectStatement implements OpenGaussStatement {
     
     private LimitSegment limit;

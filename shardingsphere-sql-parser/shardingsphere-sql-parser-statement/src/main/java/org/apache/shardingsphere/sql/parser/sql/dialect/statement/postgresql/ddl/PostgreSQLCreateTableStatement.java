@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
@@ -26,10 +26,10 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL create table statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLCreateTableStatement extends CreateTableStatement implements PostgreSQLStatement {
     
-    private boolean containsNotExistClause;
+    private final boolean ifNotExists;
 }

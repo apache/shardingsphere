@@ -22,15 +22,15 @@ import org.antlr.v4.runtime.Token;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableLockContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LockContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnlockContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BeginTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CommitContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LockContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RollbackContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAutoCommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetTransactionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableLockContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnlockContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.XaContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OperationScope;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionAccessType;
@@ -153,7 +153,7 @@ public final class MySQLTCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitLock(final LockContext ctx) {
         MySQLLockStatement result = new MySQLLockStatement();
         if (null != ctx.tableLock()) {
-            result.setTables(getLockTables(ctx.tableLock()));
+            result.getTables().addAll(getLockTables(ctx.tableLock()));
         }
         return result;
     }

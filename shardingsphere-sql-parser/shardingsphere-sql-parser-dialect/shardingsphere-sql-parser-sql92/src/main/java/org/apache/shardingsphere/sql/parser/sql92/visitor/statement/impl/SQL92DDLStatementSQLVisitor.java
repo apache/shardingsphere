@@ -108,9 +108,9 @@ public final class SQL92DDLStatementSQLVisitor extends SQL92StatementSQLVisitor 
     public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
         DataTypeSegment dataType = (DataTypeSegment) visit(ctx.dataType());
-        boolean isPrimaryKey = isPrimaryKey(ctx);
-        ColumnDefinitionSegment result = new ColumnDefinitionSegment(
-                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, isPrimaryKey);
+        boolean isPrimaryKey = ctx.dataTypeOption().stream().anyMatch(each -> null != each.primaryKey());
+        // TODO parse not null
+        ColumnDefinitionSegment result = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, isPrimaryKey, false);
         for (DataTypeOptionContext each : ctx.dataTypeOption()) {
             if (null != each.referenceDefinition()) {
                 result.getReferencedTables().add((SimpleTableSegment) visit(each.referenceDefinition().tableName()));
@@ -122,15 +122,6 @@ public final class SQL92DDLStatementSQLVisitor extends SQL92StatementSQLVisitor 
     @Override
     public ASTNode visitCheckConstraintDefinition(final CheckConstraintDefinitionContext ctx) {
         return new ConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
-    }
-    
-    private boolean isPrimaryKey(final ColumnDefinitionContext ctx) {
-        for (DataTypeOptionContext each : ctx.dataTypeOption()) {
-            if (null != each.primaryKey()) {
-                return true;
-            }
-        }
-        return false;
     }
     
     @Override

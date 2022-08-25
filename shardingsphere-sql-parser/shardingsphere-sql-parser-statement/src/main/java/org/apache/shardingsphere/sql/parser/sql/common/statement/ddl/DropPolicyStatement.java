@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Drop policy statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class DropPolicyStatement extends AbstractSQLStatement implements DDLStatement {
 }

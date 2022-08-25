@@ -20,23 +20,16 @@ package org.apache.shardingsphere.sharding.distsql.parser.statement;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
-import org.apache.shardingsphere.distsql.parser.subject.impl.ShardingSubjectSupplier;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.AbstractTableRuleSegment;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 /**
  * Create sharding table rule statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CreateShardingTableRuleStatement extends CreateRuleStatement implements ShardingSubjectSupplier {
+public final class CreateShardingTableRuleStatement extends CreateRuleStatement {
     
     private final Collection<AbstractTableRuleSegment> rules;
-    
-    @Override
-    public Collection<String> getSubjectNames() {
-        return rules.stream().map(AbstractTableRuleSegment::getLogicTable).collect(Collectors.toSet());
-    }
 }

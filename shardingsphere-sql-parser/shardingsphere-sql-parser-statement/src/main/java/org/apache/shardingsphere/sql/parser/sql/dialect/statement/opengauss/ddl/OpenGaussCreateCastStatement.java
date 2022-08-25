@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.Open
 /**
  * OpenGauss create cast statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OpenGaussCreateCastStatement extends CreateCastStatement implements OpenGaussStatement {
 }

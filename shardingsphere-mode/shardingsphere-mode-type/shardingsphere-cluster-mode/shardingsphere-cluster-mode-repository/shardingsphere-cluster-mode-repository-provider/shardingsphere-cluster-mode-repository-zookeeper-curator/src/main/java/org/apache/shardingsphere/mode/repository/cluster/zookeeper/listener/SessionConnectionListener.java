@@ -28,6 +28,7 @@ import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler.CuratorZookeeperExceptionHandler;
 
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -57,8 +58,11 @@ public final class SessionConnectionListener implements ConnectionStateListener 
     private boolean reRegister(final CuratorFramework client) {
         try {
             if (client.getZookeeperClient().blockUntilConnectedOrTimedOut()) {
+                if (isNeedGenerateWorkerId()) {
+                    instanceContext.generateWorkerId(new Properties());
+                }
                 repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceContext.getInstance().getCurrentInstanceId(),
-                        instanceContext.getInstance().getInstanceDefinition().getInstanceType()), "");
+                        instanceContext.getInstance().getMetaData().getType()), instanceContext.getInstance().getMetaData().getAttributes());
                 return true;
             }
             sleepInterval();
@@ -67,6 +71,10 @@ public final class SessionConnectionListener implements ConnectionStateListener 
             CuratorZookeeperExceptionHandler.handleException(ex);
             return true;
         }
+    }
+    
+    private boolean isNeedGenerateWorkerId() {
+        return -1L != instanceContext.getInstance().getWorkerId();
     }
     
     @SneakyThrows(InterruptedException.class)

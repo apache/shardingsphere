@@ -28,6 +28,6 @@ public final class H2XADataSourceDefinitionTest {
     
     @Test
     public void assertGetXADriverClassName() {
-        assertThat(new H2XADataSourceDefinition().getXADriverClassName(), is(Collections.singletonList("org.h2.jdbcx.JdbcDataSource")));
+        assertThat(new H2XADataSourceDefinition().getXADriverClassNames(), is(Collections.singletonList("org.h2.jdbcx.JdbcDataSource")));
     }
 }

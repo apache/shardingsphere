@@ -7,23 +7,23 @@ weight = 5
 
 ```sql
 ADD RESOURCE ds_0 (
-HOST=127.0.0.1,
-PORT=3306,
-DB=ds_0,
-USER=root,
-PASSWORD=root
+    HOST="127.0.0.1",
+    PORT=3306,
+    DB="ds_0",
+    USER="root",
+    PASSWORD="root"
 ),ds_1 (
-HOST=127.0.0.1,
-PORT=3306,
-DB=ds_1,
-USER=root,
-PASSWORD=root
+    HOST="127.0.0.1",
+    PORT=3306,
+    DB="ds_1",
+    USER="root",
+    PASSWORD="root"
 ),ds_2 (
-HOST=127.0.0.1,
-PORT=3306,
-DB=ds_2,
-USER=root,
-PASSWORD=root
+    HOST="127.0.0.1",
+    PORT=3306,
+    DB="ds_2",
+    USER="root",
+    PASSWORD="root"
 );
 ```
 
@@ -35,8 +35,8 @@ PASSWORD=root
 CREATE SHADOW RULE group_0(
 SOURCE=ds_0,
 SHADOW=ds_1,
-t_order((simple_hint_algorithm, TYPE(NAME=SIMPLE_HINT, PROPERTIES("foo"="bar"))),(TYPE(NAME=REGEX_MATCH, PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]')))), 
-t_order_item((TYPE(NAME=SIMPLE_HINT, PROPERTIES("foo"="bar")))));
+t_order((simple_hint_algorithm, TYPE(NAME="SIMPLE_HINT", PROPERTIES("foo"="bar"))),(TYPE(NAME="REGEX_MATCH", PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]')))), 
+t_order_item((TYPE(NAME="SIMPLE_HINT", PROPERTIES("foo"="bar")))));
 ```
 
 - Alter shadow rule
@@ -45,7 +45,7 @@ t_order_item((TYPE(NAME=SIMPLE_HINT, PROPERTIES("foo"="bar")))));
 ALTER SHADOW RULE group_0(
 SOURCE=ds_0,
 SHADOW=ds_2,
-t_order_item((TYPE(NAME=SIMPLE_HINT, PROPERTIES("foo"="bar")))));
+t_order_item((TYPE(NAME="SIMPLE_HINT", PROPERTIES("foo"="bar")))));
 ```
 
 - Drop shadow rule

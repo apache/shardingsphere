@@ -119,7 +119,7 @@
     <alter-readwrite-splitting-rule sql-case-id="alter-readwrite-splitting-rule">
         <rule name="ms_group_0" auto-aware-resource="group_0" load-balancer="random">
             <properties>
-                <property key="read_weight" value="'2:1'" />
+                <property key="read_weight" value="2:1" />
             </properties>
         </rule>
         <rule name="ms_group_1" write-data-source="primary_ds" load-balancer="random">
@@ -280,6 +280,12 @@
         </shardingKeyGenerator>
     </alter-sharding-key-generator>
 
+    <alter-sharding-auditor sql-case-id="alter-sharding-auditor">
+        <shardingAuditor auditor-name="sharding_key_required_auditor">
+            <algorithm algorithm-name="DML_SHARDING_CONDITIONS" />
+        </shardingAuditor>
+    </alter-sharding-auditor>
+
     <alter-default-single-table sql-case-id="alter-default-single-table" default-data-source="ds_0" />
 
     <alter-default-sharding-strategy sql-case-id="alter-default-sharding-strategy">
@@ -291,7 +297,4 @@
         <strategy default-type="TABLE" strategy-type="complex" sharding-column="order_id,user_id" sharding-algorithm-name="algorithms_name">
         </strategy>
     </alter-default-sharding-strategy>
-
-    <enable-sharding-scaling-rule sql-case-id="enable-sharding-scaling-rule" scaling-name="scalingName" />
-    <disable-sharding-scaling-rule sql-case-id="disable-sharding-scaling-rule" scaling-name="scalingName" />
 </sql-parser-test-cases>

@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.scenario.rulealtered.spi.RuleAlteredContextManagerLifecycleListener
+org.apache.shardingsphere.data.pipeline.core.listener.PipelineContextManagerLifecycleListener

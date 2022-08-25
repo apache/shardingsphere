@@ -3,7 +3,13 @@ title = "Bitronix Transaction"
 weight = 5
 +++
 
-## Import Maven Dependency
+## background
+
+Apache ShardingSphere provides XA transactions that integrate with the Bitronix implementation.
+
+## Prerequisites
+
+Introducing Maven dependency
 
 ```xml
 <properties>
@@ -16,12 +22,13 @@ weight = 5
     <version>${shardingsphere.version}</version>
 </dependency>
 
+<!-- This module is required when using XA transactions -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>shardingsphere-transaction-xa-core</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
-
+    
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>shardingsphere-transaction-xa-bitronix</artifactId>
@@ -35,11 +42,14 @@ weight = 5
 </dependency>
 ```
 
-## Customize Configuration Items
+## Procedure
 
-Please refer to [Bitronix official documentation](https://github.com/bitronix/btm/wiki) for more details.
+1. Configure the XA transaction type
+2. Configure Bitronix
 
-## Configure XA Transaction Manager Type
+## Sample
+
+### Configure the XA transaction type
 
 Yaml:
 
@@ -67,3 +77,6 @@ Spring Namespace:
     </props>
 </shardingsphere:data-source>
 ```
+
+### Configure Bitronix (Deletable)
+See [Bitronix's Official Documentation](https://github.com/bitronix/btm/wiki) for more details.

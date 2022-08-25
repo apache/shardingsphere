@@ -17,35 +17,35 @@
 
 package org.apache.shardingsphere.singletable.route.engine;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class SingleTableDatabaseBroadcastRouteEngineTest {
     
     @Test
-    public void assertRoute() {
-        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(),
-                DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
+    public void assertRoute() throws SQLException {
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, createDataSourceMap(), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         SingleTableDatabaseBroadcastRouteEngine engine = new SingleTableDatabaseBroadcastRouteEngine();
         engine.route(routeContext, singleTableRule);
@@ -57,10 +57,12 @@ public final class SingleTableDatabaseBroadcastRouteEngineTest {
         assertTrue(routeUnits.get(1).getTableMappers().isEmpty());
     }
     
-    private Map<String, DataSource> createDataSourceMap() {
+    private Map<String, DataSource> createDataSourceMap() throws SQLException {
         Map<String, DataSource> result = new LinkedHashMap<>(2, 1);
-        result.put("ds_0", mock(DataSource.class, RETURNS_DEEP_STUBS));
-        result.put("ds_1", mock(DataSource.class, RETURNS_DEEP_STUBS));
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.getMetaData().getURL()).thenReturn("jdbc:h2:mem:db");
+        result.put("ds_0", new MockedDataSource(connection));
+        result.put("ds_1", new MockedDataSource(connection));
         return result;
     }
 }

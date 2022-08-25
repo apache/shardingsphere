@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.singletable.route;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -53,12 +54,13 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereDatabase database, final SingleTableRule rule, final ConfigurationProperties props) {
+    public RouteContext createRouteContext(final QueryContext queryContext, final ShardingSphereDatabase database, final SingleTableRule rule,
+                                           final ConfigurationProperties props, final ConnectionContext connectionContext) {
         if (1 == database.getResource().getDataSources().size()) {
             return createSingleDataSourceRouteContext(rule, database);
         }
         RouteContext result = new RouteContext();
-        SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
+        SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
         Optional<SingleTableMetadataValidator> validator = SingleTableMetadataValidatorFactory.newInstance(sqlStatementContext.getSqlStatement());
         validator.ifPresent(optional -> optional.validate(rule, sqlStatementContext, database));
         Collection<QualifiedTable> singleTableNames = getSingleTableNames(sqlStatementContext, database, rule, result);
@@ -70,9 +72,9 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
     }
     
     @Override
-    public void decorateRouteContext(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereDatabase database,
-                                     final SingleTableRule rule, final ConfigurationProperties props) {
-        SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
+    public void decorateRouteContext(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database,
+                                     final SingleTableRule rule, final ConfigurationProperties props, final ConnectionContext connectionContext) {
+        SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
         Collection<QualifiedTable> singleTableNames = getSingleTableNames(sqlStatementContext, database, rule, routeContext);
         if (singleTableNames.isEmpty()) {
             return;

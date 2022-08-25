@@ -17,9 +17,17 @@
 
 package org.apache.shardingsphere.infra.rule.builder.fixture;
 
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 
+import static org.mockito.Mockito.mock;
+
 public final class FixtureGlobalRule implements GlobalRule {
+    
+    @Override
+    public RuleConfiguration getConfiguration() {
+        return mock(RuleConfiguration.class);
+    }
     
     @Override
     public String getType() {

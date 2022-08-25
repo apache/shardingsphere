@@ -19,14 +19,16 @@ package org.apache.shardingsphere.sharding.algorithm.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.config.function.DistributedRuleConfiguration;
-import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.function.DistributedRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -38,7 +40,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public final class AlgorithmProvidedShardingRuleConfiguration implements SchemaRuleConfiguration, DistributedRuleConfiguration {
+public final class AlgorithmProvidedShardingRuleConfiguration implements DatabaseRuleConfiguration, DistributedRuleConfiguration {
     
     private Collection<ShardingTableRuleConfiguration> tables = new LinkedList<>();
     
@@ -54,9 +56,13 @@ public final class AlgorithmProvidedShardingRuleConfiguration implements SchemaR
     
     private KeyGenerateStrategyConfiguration defaultKeyGenerateStrategy;
     
+    private ShardingAuditStrategyConfiguration defaultAuditStrategy;
+    
     private String defaultShardingColumn;
     
     private Map<String, ShardingAlgorithm> shardingAlgorithms = new LinkedHashMap<>();
     
     private Map<String, KeyGenerateAlgorithm> keyGenerators = new LinkedHashMap<>();
+    
+    private Map<String, ShardingAuditAlgorithm> auditors = new LinkedHashMap<>();
 }

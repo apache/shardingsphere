@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.Open
 /**
  * OpenGauss drop publication statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OpenGaussDropPublicationStatement extends DropPublicationStatement implements OpenGaussStatement {
 }

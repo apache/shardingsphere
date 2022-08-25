@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.datetime.database.provider;
 
-import org.apache.shardingsphere.datetime.database.fixture.FixtureDatabaseType;
 import org.apache.shardingsphere.datetime.database.fixture.FixtureDatetimeLoadingSQLProvider;
+import org.apache.shardingsphere.test.fixture.database.type.MockedDatabaseType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -28,6 +28,6 @@ public final class DatetimeLoadingSQLProviderFactoryTest {
     
     @Test
     public void assertGetInstance() {
-        assertThat(DatetimeLoadingSQLProviderFactory.getInstance(new FixtureDatabaseType()), instanceOf(FixtureDatetimeLoadingSQLProvider.class));
+        assertThat(DatetimeLoadingSQLProviderFactory.getInstance(new MockedDatabaseType()), instanceOf(FixtureDatetimeLoadingSQLProvider.class));
     }
 }

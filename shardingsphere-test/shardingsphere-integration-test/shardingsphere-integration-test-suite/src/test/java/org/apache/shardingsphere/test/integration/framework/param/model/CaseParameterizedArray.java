@@ -35,6 +35,8 @@ public final class CaseParameterizedArray implements ParameterizedArray {
     
     private final String scenario;
     
+    private final String mode;
+    
     private final DatabaseType databaseType;
     
     @Override

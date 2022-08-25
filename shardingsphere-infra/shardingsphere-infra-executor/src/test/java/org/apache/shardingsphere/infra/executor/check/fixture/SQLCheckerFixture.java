@@ -17,37 +17,37 @@
 
 package org.apache.shardingsphere.infra.executor.check.fixture;
 
-import org.apache.shardingsphere.infra.executor.check.SQLCheckResult;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.check.SQLCheckResult;
 import org.apache.shardingsphere.infra.executor.check.SQLChecker;
-import org.apache.shardingsphere.infra.executor.sql.fixture.FixtureRule;
+import org.apache.shardingsphere.test.fixture.rule.MockedRule;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiPredicate;
 
-public final class SQLCheckerFixture implements SQLChecker<FixtureRule> {
+public final class SQLCheckerFixture implements SQLChecker<MockedRule> {
     
     @Override
-    public boolean check(final String databaseName, final Grantee grantee, final FixtureRule rule) {
+    public boolean check(final String databaseName, final Grantee grantee, final MockedRule rule) {
         return false;
     }
     
     @Override
-    public SQLCheckResult check(final SQLStatement sqlStatement, final List<Object> parameters, final Grantee grantee, final String currentDatabase,
-                                final Map<String, ShardingSphereDatabase> databases, final FixtureRule rule) {
+    public SQLCheckResult check(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, final Grantee grantee, final String currentDatabase,
+                                final Map<String, ShardingSphereDatabase> databases, final MockedRule rule) {
         return null;
     }
     
     @Override
-    public boolean check(final Grantee grantee, final FixtureRule rule) {
+    public boolean check(final Grantee grantee, final MockedRule rule) {
         return false;
     }
     
     @Override
-    public boolean check(final Grantee grantee, final BiPredicate<Object, Object> validator, final Object cipher, final FixtureRule rule) {
+    public boolean check(final Grantee grantee, final BiPredicate<Object, Object> validator, final Object cipher, final MockedRule rule) {
         return false;
     }
     
@@ -57,7 +57,7 @@ public final class SQLCheckerFixture implements SQLChecker<FixtureRule> {
     }
     
     @Override
-    public Class<FixtureRule> getTypeClass() {
-        return FixtureRule.class;
+    public Class<MockedRule> getTypeClass() {
+        return MockedRule.class;
     }
 }

@@ -19,16 +19,18 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwriteSplittingStrategyConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Readwrite splitting rule statement converter.
@@ -44,40 +46,32 @@ public final class ReadwriteSplittingRuleStatementConverter {
      */
     public static ReadwriteSplittingRuleConfiguration convert(final Collection<ReadwriteSplittingRuleSegment> ruleSegments) {
         Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedList<>();
-        Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = new HashMap<>(ruleSegments.size(), 1);
+        Map<String, AlgorithmConfiguration> loadBalancers = new HashMap<>(ruleSegments.size(), 1);
         for (ReadwriteSplittingRuleSegment each : ruleSegments) {
             if (null != each.getLoadBalancer()) {
                 String loadBalancerName = getLoadBalancerName(each.getName(), each.getLoadBalancer());
                 loadBalancers.put(loadBalancerName, createLoadBalancer(each));
-                dataSources.add(createDataSourceRuleConfiguration(each.getName(), createProperties(each), loadBalancerName, each.isAutoAware()));
+                dataSources.add(createDataSourceRuleConfiguration(each, loadBalancerName, each.isAutoAware()));
             } else {
-                dataSources.add(createDataSourceRuleConfiguration(each.getName(), createProperties(each), null, each.isAutoAware()));
+                dataSources.add(createDataSourceRuleConfiguration(each, null, each.isAutoAware()));
             }
         }
         return new ReadwriteSplittingRuleConfiguration(dataSources, loadBalancers);
     }
     
-    private static ReadwriteSplittingDataSourceRuleConfiguration createDataSourceRuleConfiguration(final String name, final Properties prop, final String loadBalancerName, final boolean isAutoAware) {
-        return isAutoAware ? new ReadwriteSplittingDataSourceRuleConfiguration(name, "Dynamic", prop, loadBalancerName)
-                : new ReadwriteSplittingDataSourceRuleConfiguration(name, "Static", prop, loadBalancerName);
+    private static ReadwriteSplittingDataSourceRuleConfiguration createDataSourceRuleConfiguration(final ReadwriteSplittingRuleSegment segment,
+                                                                                                   final String loadBalancerName, final boolean isAutoAware) {
+        return isAutoAware ? new ReadwriteSplittingDataSourceRuleConfiguration(segment.getName(), null,
+                new DynamicReadwriteSplittingStrategyConfiguration(segment.getAutoAwareResource(), segment.getWriteDataSourceQueryEnabled()), loadBalancerName)
+                : new ReadwriteSplittingDataSourceRuleConfiguration(segment.getName(),
+                        new StaticReadwriteSplittingStrategyConfiguration(segment.getWriteDataSource(), new ArrayList<>(segment.getReadDataSources())), null, loadBalancerName);
     }
     
-    private static ShardingSphereAlgorithmConfiguration createLoadBalancer(final ReadwriteSplittingRuleSegment ruleSegment) {
-        return new ShardingSphereAlgorithmConfiguration(ruleSegment.getLoadBalancer(), ruleSegment.getProps());
+    private static AlgorithmConfiguration createLoadBalancer(final ReadwriteSplittingRuleSegment ruleSegment) {
+        return new AlgorithmConfiguration(ruleSegment.getLoadBalancer(), ruleSegment.getProps());
     }
     
     private static String getLoadBalancerName(final String ruleName, final String type) {
         return String.format("%s_%s", ruleName, type);
-    }
-    
-    private static Properties createProperties(final ReadwriteSplittingRuleSegment segment) {
-        Properties result = new Properties();
-        if (segment.isAutoAware()) {
-            result.setProperty("auto-aware-data-source-name", segment.getAutoAwareResource());
-        } else {
-            result.setProperty("write-data-source-name", segment.getWriteDataSource());
-            result.setProperty("read-data-source-names", String.join(",", segment.getReadDataSources()));
-        }
-        return result;
     }
 }

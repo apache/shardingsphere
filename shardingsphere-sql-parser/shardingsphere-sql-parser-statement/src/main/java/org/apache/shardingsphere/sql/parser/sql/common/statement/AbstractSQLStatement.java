@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ParameterMarkerSegment;
 
@@ -29,6 +30,7 @@ import java.util.LinkedList;
  * SQL statement abstract class.
  */
 @Getter
+@ToString
 public abstract class AbstractSQLStatement implements SQLStatement {
     
     @Setter

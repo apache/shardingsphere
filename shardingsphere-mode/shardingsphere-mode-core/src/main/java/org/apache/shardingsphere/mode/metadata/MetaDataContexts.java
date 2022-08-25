@@ -19,16 +19,9 @@ package org.apache.shardingsphere.mode.metadata;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
-import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Optional;
 
 /**
  * Meta data contexts.
@@ -41,27 +34,10 @@ public final class MetaDataContexts implements AutoCloseable {
     
     private final ShardingSphereMetaData metaData;
     
-    private final OptimizerContext optimizerContext;
-    
-    public MetaDataContexts(final MetaDataPersistService persistService) {
-        this(persistService, new ShardingSphereMetaData(), OptimizerContextFactory.create(new HashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList())));
-    }
-    
-    /**
-     * Get persist service.
-     *
-     * @return persist service
-     */
-    public Optional<MetaDataPersistService> getPersistService() {
-        return Optional.ofNullable(persistService);
-    }
-    
     @Override
     public void close() throws Exception {
-        if (null != persistService) {
-            persistService.getRepository().close();
-        }
-        metaData.getGlobalRuleMetaData().findRules(ResourceHeldRule.class).forEach(ResourceHeldRule::closeStaleResources);
-        metaData.getDatabases().values().forEach(each -> each.getRuleMetaData().findRules(ResourceHeldRule.class).forEach(ResourceHeldRule::closeStaleResources));
+        persistService.getRepository().close();
+        metaData.getGlobalRuleMetaData().findRules(ResourceHeldRule.class).forEach(ResourceHeldRule::closeStaleResource);
+        metaData.getDatabases().values().forEach(each -> each.getRuleMetaData().findRules(ResourceHeldRule.class).forEach(ResourceHeldRule::closeStaleResource));
     }
 }

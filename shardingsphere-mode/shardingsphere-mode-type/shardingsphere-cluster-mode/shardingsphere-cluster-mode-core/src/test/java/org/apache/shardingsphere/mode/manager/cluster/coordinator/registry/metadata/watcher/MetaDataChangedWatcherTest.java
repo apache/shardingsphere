@@ -82,9 +82,24 @@ public final class MetaDataChangedWatcherTest {
     }
     
     @Test
+    public void assertCreateDataSourceChangedEventWithAddEvent() {
+        String key = "/metadata/sharding_db/versions/0/dataSources";
+        String value = "{}";
+        Optional<GovernanceEvent> actual = createEvent(key, value, Type.ADDED);
+        assertTrue(actual.isPresent());
+    }
+    
+    @Test
     public void assertCreateRuleChangedEvent() {
         String key = "/metadata/sharding_db/versions/0/rules";
         Optional<GovernanceEvent> actual = createEvent(key, "[]", Type.UPDATED);
+        assertTrue(actual.isPresent());
+    }
+    
+    @Test
+    public void assertCreateRuleChangedEventWithAddEvent() {
+        String key = "/metadata/sharding_db/versions/0/rules";
+        Optional<GovernanceEvent> actual = createEvent(key, "[]", Type.ADDED);
         assertTrue(actual.isPresent());
     }
     

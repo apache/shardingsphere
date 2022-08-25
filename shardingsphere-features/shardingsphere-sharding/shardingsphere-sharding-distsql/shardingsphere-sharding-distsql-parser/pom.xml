@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-sharding-distsql</artifactId>
-        <version>5.1.2-SNAPSHOT</version>
+        <version>5.1.3-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-sharding-distsql-parser</artifactId>
     <name>${project.artifactId}</name>
@@ -69,8 +69,8 @@
                             <goal>antlr4</goal>
                         </goals>
                         <configuration>
-                            <sourceDirectory>src/main/antlr4/scaling/</sourceDirectory>
-                            <libDirectory>src/main/antlr4/imports/scaling/</libDirectory>
+                            <sourceDirectory>src/main/antlr4/migration/</sourceDirectory>
+                            <libDirectory>src/main/antlr4/imports/migration/</libDirectory>
                             <listener>false</listener>
                             <visitor>true</visitor>
                         </configuration>

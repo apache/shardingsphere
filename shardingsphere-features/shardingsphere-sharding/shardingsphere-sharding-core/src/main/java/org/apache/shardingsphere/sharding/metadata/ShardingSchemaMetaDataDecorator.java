@@ -107,7 +107,7 @@ public final class ShardingSchemaMetaDataDecorator implements RuleBasedSchemaMet
         Collection<ColumnMetaData> result = new LinkedList<>();
         for (ColumnMetaData each : tableMetaData.getColumns()) {
             boolean generated = each.getName().equalsIgnoreCase(tableRule.getGenerateKeyColumn().orElse(null));
-            result.add(new ColumnMetaData(each.getName(), each.getDataType(), each.isPrimaryKey(), generated, each.isCaseSensitive()));
+            result.add(new ColumnMetaData(each.getName(), each.getDataType(), each.isPrimaryKey(), generated, each.isCaseSensitive(), each.isVisible()));
         }
         return result;
     }

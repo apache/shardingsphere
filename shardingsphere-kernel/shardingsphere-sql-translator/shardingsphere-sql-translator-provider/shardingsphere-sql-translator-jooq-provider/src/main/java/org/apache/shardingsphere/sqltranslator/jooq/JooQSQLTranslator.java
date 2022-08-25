@@ -38,17 +38,12 @@ public final class JooQSQLTranslator implements SQLTranslator {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            throw new UnsupportedTranslatedSQLException(sql, ex);
+            throw new UnsupportedTranslatedSQLException(sql);
         }
     }
     
     @Override
     public String getType() {
         return "JOOQ";
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
     }
 }

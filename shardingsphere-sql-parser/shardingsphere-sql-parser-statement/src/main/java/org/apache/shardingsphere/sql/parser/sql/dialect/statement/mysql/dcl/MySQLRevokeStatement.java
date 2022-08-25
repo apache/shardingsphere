@@ -33,9 +33,9 @@ import java.util.LinkedList;
 /**
  * MySQL revoke statement.
  */
-@ToString
 @Getter
 @Setter
+@ToString(callSuper = true)
 public final class MySQLRevokeStatement extends RevokeStatement implements MySQLStatement {
     
     private final Collection<MySQLRoleOrPrivilegeSegment> roleOrPrivileges = new LinkedList<>();

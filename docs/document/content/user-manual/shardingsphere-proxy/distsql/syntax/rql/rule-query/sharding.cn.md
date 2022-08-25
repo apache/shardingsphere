@@ -13,8 +13,10 @@ SHOW SHARDING TABLE tableRule | RULES [FROM databaseName]
 SHOW SHARDING ALGORITHMS [FROM databaseName]
 
 SHOW UNUSED SHARDING ALGORITHMS [FROM databaseName]
+    
+SHOW SHARDING AUDITORS [FROM databaseName]
 
-SHOW SHARDING TABLE RULES USED ALGORITHM algorithmName [FROM databaseName]
+SHOW SHARDING TABLE RULES USED ALGORITHM shardingAlgorithmName [FROM databaseName]
 
 SHOW SHARDING KEY GENERATORS [FROM databaseName]
 
@@ -24,13 +26,14 @@ SHOW SHARDING TABLE RULES USED KEY GENERATOR keyGeneratorName [FROM databaseName
 
 SHOW DEFAULT SHARDING STRATEGY 
 
-SHOW SHARDING TABLE NODES;
+SHOW SHARDING TABLE NODES
 
 tableRule:
     RULE tableName
 ```
 -  支持查询所有数据分片规则和指定表查询；
--  支持查询所有分片算法。
+-  支持查询所有分片算法；
+-  支持查询所有分片审计算法。
 
 ### Sharding Binding Table Rule
 
@@ -43,13 +46,6 @@ SHOW SHARDING BINDING TABLE RULES [FROM databaseName]
 ```sql
 SHOW SHARDING BROADCAST TABLE RULES [FROM databaseName]
 ```
-
-### Sharding Scaling Rule
-```sql
-SHOW SHARDING SCALING RULES [FROM databaseName]
-```
-
-## 返回值说明
 
 ### Sharding Table Rule
 
@@ -85,6 +81,14 @@ SHOW SHARDING SCALING RULES [FROM databaseName]
 | name  | 分片算法名称    |
 | type  | 分片算法类型    |
 | props | 分片算法参数    |
+
+### Sharding Auditors
+
+| 列     | 说明              |
+| ------|-------------------|
+| name  | 分片审计算法名称     |
+| type  | 分片审计算法类型     |
+| props | 分片审计算法参数     |
 
 ### Sharding Key Generators
 
@@ -131,19 +135,6 @@ SHOW SHARDING SCALING RULES [FROM databaseName]
 | 列                        | 说明      |
 | ------------------------- | -------- |
 | sharding_broadcast_tables | 广播表名称 |
-
-### Sharding Scaling Rule
-
-| 列                        | 说明              |
-|--------------------------|-------------------|
-| name                     | 弹性伸缩配置名称     |
-| input                    | 数据读取配置        |
-| output                   | 数据写入配置        |
-| stream_channel           | 数据通道配置        |
-| completion_detector      | 作业完成检测算法配置  |
-| data_consistency_checker | 数据一致性校验算法配置 |
-
-## 示例
 
 ### Sharding Table Rule
 
@@ -194,7 +185,18 @@ mysql> SHOW UNUSED SHARDING ALGORITHMS;
 1 row in set (0.01 sec)
 ```
 
-*SHOW SHARDING TABLE RULES USED ALGORITHM algorithmName*
+*SHOW SHARDING AUDITORS*
+```sql
+mysql> SHOW SHARDING AUDITORS;
++------------+-------------------------+-------+
+| name       | type                    | props |
++------------+-------------------------+-------+
+| dml_audit  | DML_SHARDING_CONDITIONS |       |
++------------+-------------------------+-------+
+2 row in set (0.01 sec)
+```
+
+*SHOW SHARDING TABLE RULES USED ALGORITHM shardingAlgorithmName*
 ```sql
 mysql> SHOW SHARDING TABLE RULES USED ALGORITHM t_order_inline;
 +-------+---------+
@@ -289,16 +291,4 @@ mysql> SHOW SHARDING BROADCAST TABLE RULES;
 | t_2                    |
 +------------------------+
 2 rows in set (0.00 sec)
-```
-
-### Sharding Scaling Rule
-
-```sql
-mysql> SHOW SHARDING SCALING RULES;
-+------------------+----------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------+--------------------------------------------------------+-------------------------------------------------------------------------+-----------------------------------------------------+
-| name             | input                                                                                  | output                                                                                   | stream_channel                                         | completion_detector                                                     | data_consistency_checker                            |
-+------------------+----------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------+--------------------------------------------------------+-------------------------------------------------------------------------+-----------------------------------------------------+
-| sharding_scaling | {"workerThread":40,"batchSize":1000} | {"workerThread":40,"batchSize":1000} | {"type":"MEMORY","props":{"block-queue-size":"10000"}} | {"type":"IDLE","props":{"incremental-task-idle-seconds-threshold":"1800"}} | {"type":"DATA_MATCH","props":{"chunk-size":"1000"}} |
-+------------------+----------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------+--------------------------------------------------------+-------------------------------------------------------------------------+-----------------------------------------------------+
-1 row in set (0.00 sec)
 ```

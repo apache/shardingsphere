@@ -1,6 +1,6 @@
 +++
 title = "YAML 配置"
-weight = 2
+weight = 1
 chapter = true
 +++
 
@@ -25,12 +25,12 @@ YAML 配置是最常见的配置方式，可以省略编程的复杂度，简化
 
 ### 配置 YAML
 
-ShardingSphere-JDBC 的 YAML 配置文件通过 Schema 名称、运行模式、数据源集合、规则集合以及属性配置组成。
+ShardingSphere-JDBC 的 YAML 配置文件通过 Database 名称、运行模式、数据源集合、规则集合以及属性配置组成。
 
 ```yaml
-# JDBC 中的数据源的别名。在集群模式，使用该参数联通 ShardingSphere-JDBC 与 ShardingSphere-Proxy 共同使用。
+# JDBC 逻辑库名称。在集群模式中，使用该参数来联通 ShardingSphere-JDBC 与 ShardingSphere-Proxy。
 # 默认值：logic_db
-schemaName (?):
+databaseName (?):
 
 mode:
 

@@ -17,35 +17,80 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.generator;
 
+import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.exception.WorkIdAssignedException;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.node.WorkerIdNode;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryException;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Optional;
+import java.util.PriorityQueue;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * Worker id generator for cluster mode.
  */
 @RequiredArgsConstructor
+@Slf4j
 public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
-    
-    private final ClusterPersistRepository repository;
     
     private final RegistryCenter registryCenter;
     
-    private final InstanceDefinition instanceDefinition;
+    private final InstanceMetaData instanceMetaData;
+    
+    private volatile boolean isWarned;
     
     @Override
-    public long generate() {
-        return registryCenter.getComputeNodeStatusService().loadInstanceWorkerId(instanceDefinition.getInstanceId()).orElseGet(this::reGenerate);
+    public long generate(final Properties props) {
+        long result = registryCenter.getComputeNodeStatusService().loadInstanceWorkerId(instanceMetaData.getId()).orElseGet(this::reGenerate);
+        checkIneffectiveConfiguration(result, props);
+        return result;
     }
     
     private Long reGenerate() {
-        Long result = Long.valueOf(Optional.ofNullable(repository.getSequentialId(WorkerIdNode.getWorkerIdGeneratorPath(instanceDefinition.getInstanceId()), "")).orElse("0"));
-        registryCenter.getComputeNodeStatusService().persistInstanceWorkerId(instanceDefinition.getInstanceId(), result);
-        return result;
+        Optional<Long> result;
+        do {
+            result = generateAvailableWorkerId();
+        } while (!result.isPresent());
+        Long generatedWorkId = result.get();
+        registryCenter.getComputeNodeStatusService().persistInstanceWorkerId(instanceMetaData.getId(), generatedWorkId);
+        return generatedWorkId;
+    }
+    
+    private Optional<Long> generateAvailableWorkerId() {
+        Set<Long> assignedWorkerIds = registryCenter.getComputeNodeStatusService().getAssignedWorkerIds();
+        if (assignedWorkerIds.size() > 1024) {
+            throw new WorkIdAssignedException();
+        }
+        Collection<Long> maxAvailableIds = new ArrayList<>(1024);
+        for (int i = 0; i < 1024; i++) {
+            maxAvailableIds.add((long) i);
+        }
+        PriorityQueue<Long> priorityQueue = new PriorityQueue<>(maxAvailableIds);
+        for (Long each : assignedWorkerIds) {
+            priorityQueue.remove(each);
+        }
+        Long preselectedWorkerId = priorityQueue.poll();
+        Preconditions.checkState(null != preselectedWorkerId, "Preselected worker-id can not be null.");
+        try {
+            registryCenter.getRepository().persistExclusiveEphemeral(WorkerIdNode.getWorkerIdGeneratorPath(preselectedWorkerId.toString()), instanceMetaData.getId());
+            return Optional.of(preselectedWorkerId);
+        } catch (final ClusterPersistRepositoryException ignore) {
+            return Optional.empty();
+        }
+    }
+    
+    private void checkIneffectiveConfiguration(final long generatedWorkerId, final Properties props) {
+        if (!isWarned && null != props && props.containsKey(WORKER_ID_KEY)) {
+            isWarned = true;
+            log.warn("No need to configured {} in cluster mode, system assigned {} was {}", WORKER_ID_KEY, WORKER_ID_KEY, generatedWorkerId);
+        }
     }
 }

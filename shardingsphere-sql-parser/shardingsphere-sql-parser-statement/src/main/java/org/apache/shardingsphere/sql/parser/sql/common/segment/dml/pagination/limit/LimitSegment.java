@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.l
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
@@ -29,6 +30,7 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
+@ToString
 public final class LimitSegment implements SQLSegment {
     
     private final int startIndex;

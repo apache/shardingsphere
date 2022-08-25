@@ -39,7 +39,7 @@ public abstract class AbstractShardingSphereDataSourceForReadwriteSplittingTest 
     
     private static final String CONFIG_FILE = "config/config-readwrite-splitting.yaml";
     
-    private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("test_write_ds", "test_read_ds");
+    private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("test_primary_ds", "test_replica_ds");
     
     @BeforeClass
     public static void initReadwriteSplittingDataSources() throws SQLException, IOException {

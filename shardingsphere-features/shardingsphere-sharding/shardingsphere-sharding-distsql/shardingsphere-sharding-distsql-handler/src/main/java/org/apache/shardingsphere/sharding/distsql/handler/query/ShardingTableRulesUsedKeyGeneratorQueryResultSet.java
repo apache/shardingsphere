@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
+import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesUsedKeyGeneratorStatement;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.ArrayList;
@@ -29,11 +30,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 /**
- * Result set for show sharding table rules used key generator.
+ * Query result set for show sharding table rules used key generator.
  */
-public final class ShardingTableRulesUsedKeyGeneratorQueryResultSet implements DistSQLResultSet {
+public final class ShardingTableRulesUsedKeyGeneratorQueryResultSet implements DatabaseDistSQLResultSet {
     
     private Iterator<Collection<Object>> data = Collections.emptyIterator();
     
@@ -41,21 +43,22 @@ public final class ShardingTableRulesUsedKeyGeneratorQueryResultSet implements D
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         ShowShardingTableRulesUsedKeyGeneratorStatement statement = (ShowShardingTableRulesUsedKeyGeneratorStatement) sqlStatement;
         List<Collection<Object>> result = new ArrayList<>();
-        Collection<ShardingRuleConfiguration> shardingTableRules = database.getRuleMetaData().findRuleConfigurations(ShardingRuleConfiguration.class);
-        shardingTableRules.forEach(each -> requireResult(statement, result, each));
+        Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
+        rule.ifPresent(optional -> requireResult(statement, result, optional));
         data = result.iterator();
     }
     
-    private void requireResult(final ShowShardingTableRulesUsedKeyGeneratorStatement statement, final List<Collection<Object>> result, final ShardingRuleConfiguration shardingRuleConfig) {
+    private void requireResult(final ShowShardingTableRulesUsedKeyGeneratorStatement statement, final List<Collection<Object>> result, final ShardingRule rule) {
         if (!statement.getKeyGeneratorName().isPresent()) {
             return;
         }
-        shardingRuleConfig.getTables().forEach(each -> {
+        ShardingRuleConfiguration config = (ShardingRuleConfiguration) rule.getConfiguration();
+        config.getTables().forEach(each -> {
             if (null != each.getKeyGenerateStrategy() && statement.getKeyGeneratorName().get().equals(each.getKeyGenerateStrategy().getKeyGeneratorName())) {
                 result.add(Arrays.asList("table", each.getLogicTable()));
             }
         });
-        shardingRuleConfig.getAutoTables().forEach(each -> {
+        config.getAutoTables().forEach(each -> {
             if (null != each.getKeyGenerateStrategy() && statement.getKeyGeneratorName().get().equals(each.getKeyGenerateStrategy().getKeyGeneratorName())) {
                 result.add(Arrays.asList("auto_table", each.getLogicTable()));
             }

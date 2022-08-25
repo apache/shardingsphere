@@ -7,23 +7,23 @@ weight = 5
 
 ```sql
 ADD RESOURCE ds_0 (
-HOST=127.0.0.1,
-PORT=3306,
-DB=ds_0,
-USER=root,
-PASSWORD=root
+    HOST="127.0.0.1",
+    PORT=3306,
+    DB="ds_0",
+    USER="root",
+    PASSWORD="root"
 ),ds_1 (
-HOST=127.0.0.1,
-PORT=3306,
-DB=ds_1,
-USER=root,
-PASSWORD=root
+    HOST="127.0.0.1",
+    PORT=3306,
+    DB="ds_1",
+    USER="root",
+    PASSWORD="root"
 ),ds_2 (
-HOST=127.0.0.1,
-PORT=3306,
-DB=ds_2,
-USER=root,
-PASSWORD=root
+    HOST="127.0.0.1",
+    PORT=3306,
+    DB="ds_2",
+    USER="root",
+    PASSWORD="root"
 );
 ```
 
@@ -34,7 +34,7 @@ PASSWORD=root
 ```sql
 CREATE DB_DISCOVERY RULE db_discovery_group_0 (
 RESOURCES(ds_0, ds_1),
-TYPE(NAME=mgr,PROPERTIES('group-name'='92504d5b-6dec')),
+TYPE(NAME='MySQL.MGR',PROPERTIES('group-name'='92504d5b-6dec')),
 HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 );
 ```
@@ -44,7 +44,7 @@ HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 ```sql
 ALTER DB_DISCOVERY RULE db_discovery_group_0 (
 RESOURCES(ds_0, ds_1, ds_2),
-TYPE(NAME=mgr,PROPERTIES('group-name'='92504d5b-6dec')),
+TYPE(NAME='MySQL.MGR',PROPERTIES('group-name'='92504d5b-6dec')),
 HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 );
 ```

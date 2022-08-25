@@ -31,5 +31,6 @@ execute
     | createDefaultShadowAlgorithm
     | alterShadowAlgorithm
     | createShadowAlgorithm
+    | countShadowRule
     ) SEMI?
     ;

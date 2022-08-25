@@ -54,8 +54,12 @@
 #          shardingColumn: order_id
 #          shardingAlgorithmName: t_order_inline
 #      keyGenerateStrategy:
-#          column: order_id
-#          keyGeneratorName: snowflake
+#        column: order_id
+#        keyGeneratorName: snowflake
+#      auditStrategy:
+#        auditorNames:
+#          - sharding_key_required_auditor
+#        allowHintDisable: true
 #    t_order_item:
 #      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
 #      tableStrategy:
@@ -73,7 +77,11 @@
 #      shardingAlgorithmName: database_inline
 #  defaultTableStrategy:
 #    none:
-#  
+#  defaultAuditStrategy:
+#    auditorNames:
+#      - sharding_key_required_auditor
+#    allowHintDisable: true
+#
 #  shardingAlgorithms:
 #    database_inline:
 #      type: INLINE
@@ -92,15 +100,27 @@
 #    snowflake:
 #      type: SNOWFLAKE
 #
+#  auditors:
+#    sharding_key_required_auditor:
+#      type: DML_SHARDING_CONDITIONS
+#
 #  scalingName: default_scaling
 #  scaling:
 #    default_scaling:
 #      input:
 #        workerThread: 40
 #        batchSize: 1000
+#        rateLimiter:
+#          type: QPS
+#          props:
+#            qps: 50
 #      output:
 #        workerThread: 40
 #        batchSize: 1000
+#        rateLimiter:
+#          type: TPS
+#          props:
+#            tps: 2000
 #      streamChannel:
 #        type: MEMORY
 #        props:
@@ -154,6 +174,10 @@
 #      keyGenerateStrategy:
 #        column: order_id
 #        keyGeneratorName: snowflake
+#      auditStrategy:
+#        auditorNames:
+#          - sharding_key_required_auditor
+#        allowHintDisable: true
 #    t_order_item:
 #      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
 #      tableStrategy:
@@ -171,6 +195,10 @@
 #      shardingAlgorithmName: database_inline
 #  defaultTableStrategy:
 #    none:
+#  defaultAuditStrategy:
+#    auditorNames:
+#      - sharding_key_required_auditor
+#    allowHintDisable: true
 #
 #  shardingAlgorithms:
 #    database_inline:
@@ -190,15 +218,27 @@
 #    snowflake:
 #      type: SNOWFLAKE
 #
+#  auditors:
+#    sharding_key_required_auditor:
+#      type: DML_SHARDING_CONDITIONS
+#
 #  scalingName: default_scaling
 #  scaling:
 #    default_scaling:
 #      input:
 #        workerThread: 40
 #        batchSize: 1000
+#        rateLimiter:
+#          type: QPS
+#          props:
+#            qps: 50
 #      output:
 #        workerThread: 40
 #        batchSize: 1000
+#        rateLimiter:
+#          type: TPS
+#          props:
+#            tps: 2000
 #      streamChannel:
 #        type: MEMORY
 #        props:

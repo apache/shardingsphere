@@ -24,8 +24,8 @@ import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgori
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.util.exception.sql.SQLWrapperException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -84,14 +84,14 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
     private CompletableFuture<Void> runAsyncCheckEnvironment(final String databaseName, final DataSource dataSource, final ExecutorService executorService) {
         return CompletableFuture.runAsync(() -> {
             try {
-                checkSingleDatasourceEnvironment(databaseName, dataSource);
+                checkSingleDataSourceEnvironment(databaseName, dataSource);
             } catch (SQLException ex) {
-                throw new ShardingSphereException(ex);
+                throw new SQLWrapperException(ex);
             }
         }, executorService);
     }
     
-    private void checkSingleDatasourceEnvironment(final String databaseName, final DataSource dataSource) throws SQLException {
+    private void checkSingleDataSourceEnvironment(final String databaseName, final DataSource dataSource) throws SQLException {
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {

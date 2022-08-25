@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.Open
 /**
  * OpenGauss alter user statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OpenGaussAlterUserStatement extends AlterUserStatement implements OpenGaussStatement {
 }

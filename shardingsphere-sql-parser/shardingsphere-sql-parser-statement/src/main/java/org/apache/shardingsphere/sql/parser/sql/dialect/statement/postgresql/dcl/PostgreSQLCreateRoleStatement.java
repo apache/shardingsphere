@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL create role statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLCreateRoleStatement extends CreateRoleStatement implements PostgreSQLStatement {
 }

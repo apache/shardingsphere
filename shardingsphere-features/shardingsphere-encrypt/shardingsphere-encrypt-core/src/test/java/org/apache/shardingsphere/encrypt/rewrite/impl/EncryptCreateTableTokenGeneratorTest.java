@@ -81,7 +81,7 @@ public final class EncryptCreateTableTokenGeneratorTest {
         CreateTableStatementContext result = mock(CreateTableStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement().getTable().getTableName().getIdentifier().getValue()).thenReturn("t_encrypt");
         ColumnDefinitionSegment segment = new ColumnDefinitionSegment(25, 78,
-                new ColumnSegment(25, 42, new IdentifierValue("certificate_number")), new DataTypeSegment(), false);
+                new ColumnSegment(25, 42, new IdentifierValue("certificate_number")), new DataTypeSegment(), false, false);
         when(result.getSqlStatement().getColumnDefinitions()).thenReturn(Collections.singletonList(segment));
         return result;
     }

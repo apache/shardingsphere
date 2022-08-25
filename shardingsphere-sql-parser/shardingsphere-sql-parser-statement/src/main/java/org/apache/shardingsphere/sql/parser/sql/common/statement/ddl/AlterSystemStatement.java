@@ -25,6 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
  * Alter system statement.
  */
 @Setter
-@ToString
-public class AlterSystemStatement extends AbstractSQLStatement implements DDLStatement {
+@ToString(callSuper = true)
+public abstract class AlterSystemStatement extends AbstractSQLStatement implements DDLStatement {
 }

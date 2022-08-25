@@ -17,10 +17,18 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
  * Reset parameter statement.
  */
+@RequiredArgsConstructor
+@Getter
+@ToString(callSuper = true)
 public abstract class ResetParameterStatement extends AbstractSQLStatement implements DALStatement {
+    
+    private final String configurationParameter;
 }

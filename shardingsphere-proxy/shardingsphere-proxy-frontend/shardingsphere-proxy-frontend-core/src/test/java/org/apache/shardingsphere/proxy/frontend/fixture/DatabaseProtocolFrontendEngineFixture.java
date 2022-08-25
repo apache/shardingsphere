@@ -19,10 +19,11 @@ package org.apache.shardingsphere.proxy.frontend.fixture;
 
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
+import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
+import org.apache.shardingsphere.test.fixture.database.type.MockedDatabaseType;
 
 public final class DatabaseProtocolFrontendEngineFixture implements DatabaseProtocolFrontendEngine {
     
@@ -51,11 +52,11 @@ public final class DatabaseProtocolFrontendEngineFixture implements DatabaseProt
     }
     
     @Override
-    public void handleException(final ConnectionSession connectionSession) {
+    public void handleException(final ConnectionSession connectionSession, final Exception exception) {
     }
     
     @Override
     public String getType() {
-        return new FixtureDatabaseType().getType();
+        return new MockedDatabaseType().getType();
     }
 }

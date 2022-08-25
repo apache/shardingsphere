@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import groovy.lang.Closure;
 import groovy.util.Expando;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
+import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 
@@ -88,7 +88,7 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
         }
         Map<String, Collection<Comparable<?>>> columnNameAndShardingValuesMap = shardingValue.getColumnNameAndShardingValuesMap();
         if (!shardingColumns.isEmpty() && shardingColumns.size() != columnNameAndShardingValuesMap.size()) {
-            throw new IllegalArgumentException("Complex inline need " + shardingColumns.stream() + " sharing columns, but only found " + columnNameAndShardingValuesMap.size());
+            throw new IllegalArgumentException("Complex inline need " + shardingColumns.size() + " sharing columns, but only found " + columnNameAndShardingValuesMap.size());
         }
         Collection<Map<String, Comparable<?>>> combine = combine(columnNameAndShardingValuesMap);
         return combine.stream().map(this::doSharding).collect(Collectors.toList());

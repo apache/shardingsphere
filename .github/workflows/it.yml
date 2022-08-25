@@ -30,8 +30,10 @@ on:
       - '!shardingsphere-distribution/shardingsphere-proxy-distribution/src/main/release-docs/**'
       - '!shardingsphere-kernel/shardingsphere-data-pipeline/**'
       - '!shardingsphere-test/**'
-      - 'shardingsphere-test/shardingsphere-integration-test/**'
-      - '!shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/**'
+      - 'shardingsphere-test/pom.xml'
+      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-fixture/**'
+      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-env/**'
+      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/**'
       - 'shardingsphere-test/shardingsphere-integration-agent-test/**'
       - '!*.md'
   pull_request:
@@ -46,8 +48,10 @@ on:
       - '!shardingsphere-distribution/shardingsphere-proxy-distribution/src/main/release-docs/**'
       - '!shardingsphere-kernel/shardingsphere-data-pipeline/**'
       - '!shardingsphere-test/**'
-      - 'shardingsphere-test/shardingsphere-integration-test/**'
-      - '!shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/**'
+      - 'shardingsphere-test/pom.xml'
+      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-fixture/**'
+      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-env/**'
+      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/**'
       - 'shardingsphere-test/shardingsphere-integration-agent-test/**'
       - '!*.md'
 
@@ -56,7 +60,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true
 
 jobs:
   build-it-image:
@@ -89,7 +93,7 @@ jobs:
           name: it-image
           path: /tmp/shardingsphere-proxy-test.tar
           retention-days: 1
-  
+
   it-empty-rule:
     name: empty rule
     runs-on: ubuntu-latest
@@ -97,7 +101,6 @@ jobs:
     needs: build-it-image
     strategy:
       matrix:
-        env: [ docker ]
         adapter: [ proxy, jdbc ]
         database: [ MySQL, PostgreSQL ]
         scenario: [ empty_rules ]
@@ -123,19 +126,27 @@ jobs:
         if: matrix.adapter == 'proxy'
         run: docker load -i /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
-        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
-  
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dspotless.apply.skip=true -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
+
   it-single-rule:
     name: single rule
     needs: it-empty-rule
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
+      max-parallel: 10
       matrix:
-        env: [ docker ]
         adapter: [ proxy, jdbc ]
+        mode: [ Standalone, Cluster ]
         database: [ MySQL, PostgreSQL ]
         scenario: [ db, tbl, encrypt, readwrite_splitting, shadow ]
+        exclude:
+          - adapter: jdbc
+            mode: Cluster
+          - adapter: proxy
+            mode: Cluster
+            database: PostgreSQL
+            scenario: shadow
     steps:
       - uses: actions/checkout@v2
       - name: Cache Maven Repos
@@ -158,19 +169,23 @@ jobs:
         if: matrix.adapter == 'proxy'
         run: docker load -i /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
-        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.culster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
-  
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dspotless.apply.skip=true -Dit.cluster.env.type=DOCKER -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.run.modes=${{ matrix.mode }} -Dit.cluster.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }}
+
   it-mixture-rule:
     name: mixture rule
-    needs: [ it-empty-rule, it-single-rule ]
+    needs: it-single-rule
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
+      max-parallel: 8
       matrix:
-        env: [ docker ]
         adapter: [ proxy, jdbc ]
+        mode: [ Standalone, Cluster ]
         database: [ MySQL, PostgreSQL ]
-        scenario: [ dbtbl_with_readwrite_splitting, dbtbl_with_readwrite_splitting_and_encrypt ]
+        scenario: [ dbtbl_with_readwrite_splitting, dbtbl_with_readwrite_splitting_and_encrypt, sharding_and_encrypt, encrypt_and_readwrite_splitting, encrypt_shadow ]
+        exclude:
+          - adapter: jdbc
+            mode: Cluster
     steps:
       - uses: actions/checkout@v2
       - name: Cache Maven Repos
@@ -193,14 +208,14 @@ jobs:
         if: matrix.adapter == 'proxy'
         run: docker load -i /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
-        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
-  
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dspotless.apply.skip=true -Dit.cluster.env.type=DOCKER -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.run.modes=${{ matrix.mode }} -Dit.cluster.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }}
+
   mysql-proxy-agent:
     name: Agent Metrics & OpenTelemetry
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Maven resolve ranges
+      - name: Maven Resolve Ranges
         run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
       - name: Cache Maven Repos
         uses: actions/cache@v2
@@ -215,12 +230,12 @@ jobs:
           distribution: 'temurin'
           java-version: 8
       - name: Build Project
-        run: ./mvnw -B clean install -Dcheckstyle.skip=true -DskipITs -DskipTests
+        run: ./mvnw -B clean install -DskipITs -DskipTests
       - name: Verify
         run: |
           ./mvnw -B clean verify -pl shardingsphere-test/shardingsphere-integration-agent-test/shardingsphere-integration-agent-test-plugins/shardingsphere-integration-agent-test-metrics -DskipITs -DskipTests -Dspotless.apply.skip=true
           ./mvnw -B clean verify -pl shardingsphere-test/shardingsphere-integration-agent-test/shardingsphere-integration-agent-test-plugins/shardingsphere-integration-agent-test-opentelemetry -DskipITs -DskipTests -Dspotless.apply.skip=true
       - name: Run Integration Test
         run: |
-          ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-agent-test/shardingsphere-integration-agent-test-plugins/shardingsphere-integration-agent-test-metrics/pom.xml -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Pit.env.metrics
-          ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-agent-test/shardingsphere-integration-agent-test-plugins/shardingsphere-integration-agent-test-opentelemetry/pom.xml -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Pit.env.opentelemetry
+          ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-agent-test/shardingsphere-integration-agent-test-plugins/shardingsphere-integration-agent-test-metrics/pom.xml -Dspotless.apply.skip=true -Pit.env.metrics
+          ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-agent-test/shardingsphere-integration-agent-test-plugins/shardingsphere-integration-agent-test-opentelemetry/pom.xml -Dspotless.apply.skip=true -Pit.env.opentelemetry

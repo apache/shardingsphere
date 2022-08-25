@@ -76,21 +76,21 @@
 
     <rewrite-assertion id="update_null_to_clear_plain_where_is_null" db-types="MySQL">
         <input sql="UPDATE t_account_bak SET certificate_number = NULL WHERE certificate_number IS NULL" />
-        <output sql="UPDATE t_account_bak SET certificate_number = NULL WHERE certificate_number IS NULL" />
+        <output sql="UPDATE t_account_bak SET certificate_number = NULL WHERE assisted_query_certificate_number IS NULL" />
     </rewrite-assertion>
 
     <rewrite-assertion id="update_null_to_clear_plain_where_is_null_with_multi" db-types="MySQL">
         <input sql="UPDATE t_account_bak SET certificate_number = NULL WHERE certificate_number IS NULL AND status = 'OK' AND certificate_number = '111X'" />
-        <output sql="UPDATE t_account_bak SET certificate_number = NULL WHERE certificate_number IS NULL AND status = 'OK' AND assisted_query_certificate_number = 'assisted_query_111X'" />
+        <output sql="UPDATE t_account_bak SET certificate_number = NULL WHERE assisted_query_certificate_number IS NULL AND status = 'OK' AND assisted_query_certificate_number = 'assisted_query_111X'" />
     </rewrite-assertion>
 
     <rewrite-assertion id="update_null_to_clear_plain_where_is_not_null" db-types="MySQL">
         <input sql="UPDATE t_account_bak SET certificate_number = NULL WHERE certificate_number IS NOT NULL" />
-        <output sql="UPDATE t_account_bak SET certificate_number = NULL WHERE certificate_number IS NOT NULL" />
+        <output sql="UPDATE t_account_bak SET certificate_number = NULL WHERE assisted_query_certificate_number IS NOT NULL" />
     </rewrite-assertion>
 
     <rewrite-assertion id="update_null_to_clear_plain_where_is_not_null_with_multi" db-types="MySQL">
         <input sql="UPDATE t_account_bak SET certificate_number = NULL WHERE certificate_number IS NOT NULL AND status = 'OK' AND certificate_number = '111X'" />
-        <output sql="UPDATE t_account_bak SET certificate_number = NULL WHERE certificate_number IS NOT NULL AND status = 'OK' AND assisted_query_certificate_number = 'assisted_query_111X'" />
+        <output sql="UPDATE t_account_bak SET certificate_number = NULL WHERE assisted_query_certificate_number IS NOT NULL AND status = 'OK' AND assisted_query_certificate_number = 'assisted_query_111X'" />
     </rewrite-assertion>
 </rewrite-assertions>

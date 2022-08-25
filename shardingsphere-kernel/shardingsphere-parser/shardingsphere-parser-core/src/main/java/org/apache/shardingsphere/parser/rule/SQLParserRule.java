@@ -29,6 +29,8 @@ import org.apache.shardingsphere.sql.parser.api.CacheOption;
 @Getter
 public final class SQLParserRule implements GlobalRule {
     
+    private final SQLParserRuleConfiguration configuration;
+    
     private final boolean sqlCommentParseEnabled;
     
     private final CacheOption sqlStatementCache;
@@ -36,6 +38,7 @@ public final class SQLParserRule implements GlobalRule {
     private final CacheOption parseTreeCache;
     
     public SQLParserRule(final SQLParserRuleConfiguration ruleConfig) {
+        configuration = ruleConfig;
         sqlCommentParseEnabled = ruleConfig.isSqlCommentParseEnabled();
         sqlStatementCache = ruleConfig.getSqlStatementCache();
         parseTreeCache = ruleConfig.getParseTreeCache();

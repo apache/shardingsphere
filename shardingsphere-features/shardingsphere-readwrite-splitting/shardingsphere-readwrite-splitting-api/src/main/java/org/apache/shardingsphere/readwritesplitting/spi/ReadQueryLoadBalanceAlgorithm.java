@@ -18,22 +18,24 @@
 package org.apache.shardingsphere.readwritesplitting.spi;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.spi.type.required.RequiredSPI;
+import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
 
 import java.util.List;
 
 /**
- * Replica load-balance algorithm.
+ * Read query load-balance algorithm.
  */
 public interface ReadQueryLoadBalanceAlgorithm extends ShardingSphereAlgorithm, RequiredSPI {
     
     /**
      * Get data source.
      * 
-     * @param name replica query logic data source name
-     * @param writeDataSourceName name of write data sources
+     * @param name read query logic data source name
+     * @param writeDataSourceName name of write data source
      * @param readDataSourceNames names of read data sources
+     * @param context context
      * @return name of selected data source
      */
-    String getDataSource(String name, String writeDataSourceName, List<String> readDataSourceNames);
+    String getDataSource(String name, String writeDataSourceName, List<String> readDataSourceNames, TransactionConnectionContext context);
 }

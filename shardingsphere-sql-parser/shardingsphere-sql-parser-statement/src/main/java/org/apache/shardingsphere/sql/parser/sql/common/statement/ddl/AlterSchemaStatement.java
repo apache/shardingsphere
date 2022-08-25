@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
  */
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 public abstract class AlterSchemaStatement extends AbstractSQLStatement implements DDLStatement {
     
     private IdentifierValue schemaName;

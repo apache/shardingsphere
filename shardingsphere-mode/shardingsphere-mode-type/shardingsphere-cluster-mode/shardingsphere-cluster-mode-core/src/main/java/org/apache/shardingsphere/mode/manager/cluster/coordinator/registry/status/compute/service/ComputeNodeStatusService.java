@@ -21,18 +21,21 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.infra.instance.definition.InstanceType;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilderFactory;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Compute node status service.
@@ -46,11 +49,10 @@ public final class ComputeNodeStatusService {
     /**
      * Register online.
      * 
-     * @param instanceDefinition instance definition
+     * @param instanceMetaData instance definition
      */
-    public void registerOnline(final InstanceDefinition instanceDefinition) {
-        repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceDefinition.getInstanceId(), instanceDefinition.getInstanceType()),
-                instanceDefinition.getAttributes());
+    public void registerOnline(final InstanceMetaData instanceMetaData) {
+        repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceMetaData.getId(), instanceMetaData.getType()), instanceMetaData.getAttributes());
     }
     
     /**
@@ -73,24 +75,6 @@ public final class ComputeNodeStatusService {
      */
     public void persistInstanceWorkerId(final String instanceId, final Long workerId) {
         repository.persistEphemeral(ComputeNode.getInstanceWorkerIdNodePath(instanceId), String.valueOf(workerId));
-    }
-    
-    /**
-     * Persist instance xa recovery id.
-     *
-     * @param instanceId instance id
-     * @param xaRecoveryIds collection of xa recovery id
-     */
-    public void persistInstanceXaRecoveryId(final String instanceId, final Collection<String> xaRecoveryIds) {
-        Collection<String> originalXaRecoveryIds = loadXaRecoveryIds(instanceId);
-        if (originalXaRecoveryIds.isEmpty()) {
-            xaRecoveryIds.forEach(each -> repository.persistEphemeral(ComputeNode.getInstanceXaRecoveryIdNodePath(each, instanceId), ""));
-        } else {
-            originalXaRecoveryIds.stream().filter(each -> !xaRecoveryIds.contains(each)).forEach(each -> repository.delete(ComputeNode
-                    .getInstanceXaRecoveryIdNodePath(each, instanceId)));
-            xaRecoveryIds.stream().filter(each -> !originalXaRecoveryIds.contains(each)).forEach(each -> repository.persistEphemeral(ComputeNode
-                    .getInstanceXaRecoveryIdNodePath(each, instanceId), ""));
-        }
     }
     
     /**
@@ -134,51 +118,51 @@ public final class ComputeNodeStatusService {
     }
     
     /**
-     * Load instance xa recovery id list.
-     *
-     * @param instanceId instance id
-     * @return collection of xa recovery id
-     */
-    public Collection<String> loadXaRecoveryIds(final String instanceId) {
-        Collection<String> result = new LinkedList<>();
-        List<String> xaRecoveryIds = repository.getChildrenKeys(ComputeNode.getXaRecoveryIdNodePath());
-        for (String xaRecoveryId : xaRecoveryIds) {
-            if (repository.getChildrenKeys(String.join("/", ComputeNode.getXaRecoveryIdNodePath(), xaRecoveryId)).contains(instanceId)) {
-                result.add(xaRecoveryId);
-            }
-        }
-        return result;
-    }
-    
-    /**
      * Load all compute node instances.
      *
      * @return compute node instances
      */
     public Collection<ComputeNodeInstance> loadAllComputeNodeInstances() {
-        Collection<ComputeNodeInstance> result = new ArrayList<>();
-        Arrays.stream(InstanceType.values()).forEach(instanceType -> {
-            Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(instanceType));
-            onlineComputeNodes.forEach(each -> {
-                InstanceDefinition instanceDefinition = new InstanceDefinition(instanceType, each, repository.get(ComputeNode.getOnlineInstanceNodePath(each, instanceType)));
-                result.add(loadComputeNodeInstance(instanceDefinition));
-            });
-        });
+        Collection<ComputeNodeInstance> result = new LinkedList<>();
+        for (InstanceType each : InstanceType.values()) {
+            result.addAll(loadComputeNodeInstances(each));
+        }
         return result;
+    }
+    
+    private Collection<ComputeNodeInstance> loadComputeNodeInstances(final InstanceType instanceType) {
+        Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(instanceType));
+        return onlineComputeNodes.stream().map(each -> loadComputeNodeInstance(
+                InstanceMetaDataBuilderFactory.create(each, instanceType, repository.get(ComputeNode.getOnlineInstanceNodePath(each, instanceType))))).collect(Collectors.toList());
     }
     
     /**
      * Load compute node instance by instance definition.
      *
-     * @param instanceDefinition instance definition
+     * @param instanceMetaData instance definition
      * @return compute node instance
      */
-    public ComputeNodeInstance loadComputeNodeInstance(final InstanceDefinition instanceDefinition) {
-        ComputeNodeInstance result = new ComputeNodeInstance(instanceDefinition);
-        result.setLabels(loadInstanceLabels(instanceDefinition.getInstanceId()));
-        result.switchState(loadInstanceStatus(instanceDefinition.getInstanceId()));
-        result.getXaRecoveryIds().addAll(loadXaRecoveryIds(instanceDefinition.getInstanceId()));
-        loadInstanceWorkerId(instanceDefinition.getInstanceId()).ifPresent(result::setWorkerId);
+    public ComputeNodeInstance loadComputeNodeInstance(final InstanceMetaData instanceMetaData) {
+        ComputeNodeInstance result = new ComputeNodeInstance(instanceMetaData);
+        result.setLabels(loadInstanceLabels(instanceMetaData.getId()));
+        result.switchState(loadInstanceStatus(instanceMetaData.getId()));
+        return result;
+    }
+    
+    /**
+     * Get assigned worker ids.
+     *
+     * @return assigned worker ids
+     */
+    public Set<Long> getAssignedWorkerIds() {
+        Set<Long> result = new LinkedHashSet<>();
+        List<String> childrenKeys = repository.getChildrenKeys(ComputeNode.getInstanceWorkerIdRootNodePath());
+        for (String each : childrenKeys) {
+            String workerId = repository.get(ComputeNode.getInstanceWorkerIdNodePath(each));
+            if (null != workerId) {
+                result.add(Long.parseLong(workerId));
+            }
+        }
         return result;
     }
 }

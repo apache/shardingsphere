@@ -28,5 +28,5 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.Gover
 @Getter
 public final class ShowProcessListUnitCompleteEvent implements GovernanceEvent {
     
-    private final String showProcessListId;
+    private final String processListId;
 }

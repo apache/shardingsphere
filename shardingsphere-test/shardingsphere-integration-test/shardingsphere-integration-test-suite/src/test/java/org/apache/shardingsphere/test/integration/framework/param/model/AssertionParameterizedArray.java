@@ -39,6 +39,8 @@ public final class AssertionParameterizedArray implements ParameterizedArray {
     
     private final String scenario;
     
+    private final String mode;
+    
     private final DatabaseType databaseType;
     
     private final SQLExecuteType sqlExecuteType;

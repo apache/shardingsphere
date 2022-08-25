@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.parser.spring.boot;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.parser.spring.boot.condition.SQLParserSpringBootCondition;
 import org.apache.shardingsphere.parser.spring.boot.rule.YamlSQLParserRuleSpringBootConfiguration;
 import org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfiguration;
-import org.apache.shardingsphere.parser.yaml.swapper.SQLParserRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.parser.yaml.swapper.YamlSQLParserRuleConfigurationSwapper;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -39,7 +39,7 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 public class SQLParserRuleSpringBootConfiguration {
     
-    private final SQLParserRuleConfigurationYamlSwapper swapper = new SQLParserRuleConfigurationYamlSwapper();
+    private final YamlSQLParserRuleConfigurationSwapper swapper = new YamlSQLParserRuleConfigurationSwapper();
     
     private final YamlSQLParserRuleSpringBootConfiguration yamlConfig;
     

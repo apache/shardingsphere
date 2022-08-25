@@ -25,6 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL show process list statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class MySQLShowProcessListStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
 }

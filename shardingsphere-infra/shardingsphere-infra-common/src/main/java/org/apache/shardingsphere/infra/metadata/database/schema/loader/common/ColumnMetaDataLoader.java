@@ -32,6 +32,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Column meta data loader.
@@ -72,18 +73,19 @@ public final class ColumnMetaDataLoader {
                 }
             }
         }
-        try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(generateEmptyResultSQL(tableNamePattern, databaseType))) {
+        try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(generateEmptyResultSQL(tableNamePattern, columnNames, databaseType))) {
             for (int i = 0; i < columnNames.size(); i++) {
                 boolean generated = resultSet.getMetaData().isAutoIncrement(i + 1);
                 isCaseSensitives.add(resultSet.getMetaData().isCaseSensitive(resultSet.findColumn(columnNames.get(i))));
-                result.add(new ColumnMetaData(columnNames.get(i), columnTypes.get(i), isPrimaryKeys.get(i), generated, isCaseSensitives.get(i)));
+                result.add(new ColumnMetaData(columnNames.get(i), columnTypes.get(i), isPrimaryKeys.get(i), generated, isCaseSensitives.get(i), true));
             }
         }
         return result;
     }
     
-    private static String generateEmptyResultSQL(final String table, final DatabaseType databaseType) {
-        return String.format("SELECT * FROM %s WHERE 1 != 1", databaseType.getQuoteCharacter().wrap(table));
+    private static String generateEmptyResultSQL(final String table, final List<String> columnNames, final DatabaseType databaseType) {
+        String wrappedColumnNames = columnNames.stream().map(each -> databaseType.getQuoteCharacter().wrap(each)).collect(Collectors.joining(","));
+        return String.format("SELECT %s FROM %s WHERE 1 != 1", wrappedColumnNames, databaseType.getQuoteCharacter().wrap(table));
     }
     
     private static Collection<String> loadPrimaryKeys(final Connection connection, final String table) throws SQLException {

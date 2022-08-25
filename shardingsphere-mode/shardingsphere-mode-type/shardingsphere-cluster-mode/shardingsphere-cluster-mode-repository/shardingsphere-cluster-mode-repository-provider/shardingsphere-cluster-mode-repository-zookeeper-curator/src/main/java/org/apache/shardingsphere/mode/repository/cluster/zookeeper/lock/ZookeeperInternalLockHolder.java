@@ -20,53 +20,32 @@ package org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock;
 import lombok.RequiredArgsConstructor;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.locks.InterProcessLock;
-import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.curator.framework.recipes.locks.InterProcessSemaphoreMutex;
+import org.apache.shardingsphere.mode.repository.cluster.lock.InternalLock;
+import org.apache.shardingsphere.mode.repository.cluster.lock.InternalLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler.CuratorZookeeperExceptionHandler;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
 
 /**
  * Zookeeper internal lock holder.
  */
 @RequiredArgsConstructor
-public class ZookeeperInternalLockHolder {
+public final class ZookeeperInternalLockHolder implements InternalLockHolder {
     
     private final Map<String, ZookeeperInternalLock> locks = new LinkedHashMap<>();
     
     private final CuratorFramework client;
     
-    /**
-     * Get internal mutex lock.
-     *
-     * @param lockName lock name
-     * @return internal mutex lock
-     */
-    public synchronized Lock getInternalMutexLock(final String lockName) {
-        ZookeeperInternalLock result = locks.get(lockName);
+    @Override
+    public InternalLock getInternalLock(final String lockKey) {
+        ZookeeperInternalLock result = locks.get(lockKey);
         if (Objects.isNull(result)) {
-            result = new ZookeeperInternalLock(new InterProcessSemaphoreMutex(client, lockName));
-            locks.put(lockName, result);
-        }
-        return result;
-    }
-    
-    /**
-     * Get internal reentrant mutex lock.
-     *
-     * @param lockName lock name
-     * @return internal reentrant mutex lock
-     */
-    public synchronized Lock getInternalReentrantMutexLock(final String lockName) {
-        ZookeeperInternalLock result = locks.get(lockName);
-        if (Objects.isNull(result)) {
-            result = new ZookeeperInternalLock(new InterProcessMutex(client, lockName));
-            locks.put(lockName, result);
+            result = new ZookeeperInternalLock(new InterProcessSemaphoreMutex(client, lockKey));
+            locks.put(lockKey, result);
         }
         return result;
     }
@@ -75,30 +54,14 @@ public class ZookeeperInternalLockHolder {
      * Zookeeper internal lock.
      */
     @RequiredArgsConstructor
-    public static class ZookeeperInternalLock implements Lock {
+    public static class ZookeeperInternalLock implements InternalLock {
         
         private final InterProcessLock lock;
         
         @Override
-        public void lock() {
+        public boolean tryLock(final long timeout) {
             try {
-                lock.acquire();
-                // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
-                // CHECKSTYLE:ON
-                CuratorZookeeperExceptionHandler.handleException(ex);
-            }
-        }
-        
-        @Override
-        public boolean tryLock() {
-            throw new UnsupportedOperationException();
-        }
-        
-        @Override
-        public boolean tryLock(final long time, final TimeUnit timeUnit) {
-            try {
-                return lock.acquire(time, timeUnit);
+                return lock.acquire(timeout, TimeUnit.MILLISECONDS);
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
@@ -116,16 +79,6 @@ public class ZookeeperInternalLockHolder {
                 // CHECKSTYLE:ON
                 CuratorZookeeperExceptionHandler.handleException(ex);
             }
-        }
-        
-        @Override
-        public void lockInterruptibly() {
-            throw new UnsupportedOperationException();
-        }
-        
-        @Override
-        public Condition newCondition() {
-            throw new UnsupportedOperationException();
         }
     }
 }

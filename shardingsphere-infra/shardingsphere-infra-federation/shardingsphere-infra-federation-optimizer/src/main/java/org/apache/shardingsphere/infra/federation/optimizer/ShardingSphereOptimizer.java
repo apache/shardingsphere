@@ -19,29 +19,12 @@ package org.apache.shardingsphere.infra.federation.optimizer;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
-import org.apache.calcite.plan.Convention;
 import org.apache.calcite.plan.RelOptPlanner;
-import org.apache.calcite.plan.RelTraitSet;
-import org.apache.calcite.rel.RelCollation;
-import org.apache.calcite.rel.RelCollations;
 import org.apache.calcite.rel.RelNode;
-import org.apache.calcite.rel.RelRoot;
-import org.apache.calcite.rel.core.Sort;
-import org.apache.calcite.rel.type.RelDataType;
-import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
-import org.apache.calcite.tools.Programs;
-import org.apache.calcite.util.ImmutableIntList;
-import org.apache.calcite.util.Pair;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.SQLNodeConverterEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * ShardingSphere optimizer.
@@ -49,43 +32,34 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class ShardingSphereOptimizer {
     
-    private final OptimizerContext context;
+    private final SqlToRelConverter converter;
+    
+    private final RelOptPlanner hepPlannerWithoutCalc;
+    
+    private final RelOptPlanner hepPlannerWithCalc;
     
     /**
      * Optimize query execution plan.
      * 
-     * @param databaseName database name
-     * @param schemaName schema name
      * @param sqlStatement SQL statement
      * @return optimized relational node
      */
-    public RelNode optimize(final String databaseName, final String schemaName, final SQLStatement sqlStatement) {
-        try {
-            SqlToRelConverter converter = context.getPlannerContexts().get(databaseName).getConverters().get(schemaName);
-            SqlNode sqlNode = SQLNodeConverterEngine.convertToSQLNode(sqlStatement);
-            RelRoot relRoot = converter.convertQuery(sqlNode, true, true);
-            return optimize(converter, relRoot);
-        } catch (final UnsupportedOperationException ex) {
-            throw new ShardingSphereException(ex);
-        }
+    public RelNode optimize(final SQLStatement sqlStatement) {
+        SqlNode sqlNode = SQLNodeConverterEngine.convert(sqlStatement);
+        RelNode logicPlan = converter.convertQuery(sqlNode, true, true).rel;
+        RelNode ruleBasedPlan = optimizeWithRBO(logicPlan, hepPlannerWithoutCalc);
+        RelNode costBasedPlan = optimizeWithCBO(ruleBasedPlan, converter);
+        return optimizeWithRBO(costBasedPlan, hepPlannerWithCalc);
     }
     
-    private RelNode optimize(final SqlToRelConverter converter, final RelRoot relRoot) {
+    private static RelNode optimizeWithRBO(final RelNode logicPlan, final RelOptPlanner hepPlanner) {
+        hepPlanner.setRoot(logicPlan);
+        return hepPlanner.findBestExp();
+    }
+    
+    private RelNode optimizeWithCBO(final RelNode bestPlan, final SqlToRelConverter converter) {
         RelOptPlanner planner = converter.getCluster().getPlanner();
-        RelNode optimizedRelNode = planner.changeTraits(relRoot.rel, getDesiredTraitSet(converter.getCluster().traitSet(), EnumerableConvention.INSTANCE));
-        RelRoot optimizedRelRoot = createOptimizedRelRoot(optimizedRelNode, relRoot.validatedRowType);
-        return Programs.standard().run(planner, optimizedRelRoot.rel, optimizedRelRoot.rel.getTraitSet(), Collections.emptyList(), Collections.emptyList());
-    }
-    
-    // TODO replace to related convention
-    private RelTraitSet getDesiredTraitSet(final RelTraitSet relTraitSet, final Convention convention) {
-        return relTraitSet.replace(convention).simplify();
-    }
-    
-    private RelRoot createOptimizedRelRoot(final RelNode relNode, final RelDataType resultType) {
-        RelDataType rowType = relNode.getRowType();
-        List<Pair<Integer, String>> fields = Pair.zip(ImmutableIntList.identity(rowType.getFieldCount()), rowType.getFieldNames());
-        RelCollation collation = relNode instanceof Sort ? ((Sort) relNode).collation : RelCollations.EMPTY;
-        return new RelRoot(relNode, resultType, SqlKind.SELECT, fields, collation, new ArrayList<>());
+        planner.setRoot(planner.changeTraits(bestPlan, converter.getCluster().traitSet().replace(EnumerableConvention.INSTANCE)));
+        return planner.findBestExp();
     }
 }

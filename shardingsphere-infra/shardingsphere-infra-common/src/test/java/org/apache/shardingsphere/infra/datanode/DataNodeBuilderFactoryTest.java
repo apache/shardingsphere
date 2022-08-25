@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.datanode;
 
-import org.apache.shardingsphere.infra.fixture.TestDataSourceContainedDataNodeBuilder;
-import org.apache.shardingsphere.infra.fixture.TestShardingSphereRule;
+import org.apache.shardingsphere.infra.fixture.DataNodeBuilderFixture;
+import org.apache.shardingsphere.infra.fixture.FixtureRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.junit.Test;
 
@@ -28,16 +28,15 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 
 public final class DataNodeBuilderFactoryTest {
     
     @SuppressWarnings("rawtypes")
     @Test
     public void assertGetInstances() {
-        TestShardingSphereRule rule = mock(TestShardingSphereRule.class);
+        FixtureRule rule = new FixtureRule();
         Map<ShardingSphereRule, DataNodeBuilder> actual = DataNodeBuilderFactory.getInstances(Collections.singleton(rule));
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(rule), instanceOf(TestDataSourceContainedDataNodeBuilder.class));
+        assertThat(actual.get(rule), instanceOf(DataNodeBuilderFixture.class));
     }
 }

@@ -19,17 +19,18 @@ package org.apache.shardingsphere.infra.federation.optimizer.converter.segment.e
 
 import com.google.common.base.Preconditions;
 import org.apache.calcite.sql.SqlBasicCall;
-import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.expression.ExpressionConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -71,26 +72,19 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
     }
     
     @Override
-    public Optional<SqlBasicCall> convertToSQLNode(final BinaryOperationExpression segment) {
+    public Optional<SqlBasicCall> convert(final BinaryOperationExpression segment) {
         SqlOperator operator = convertOperator(segment.getOperator());
-        SqlNode left = new ExpressionConverter().convertToSQLNode(segment.getLeft()).orElseThrow(IllegalStateException::new);
-        SqlNode right = new ExpressionConverter().convertToSQLNode(segment.getRight()).orElseThrow(IllegalStateException::new);
-        return Optional.of(new SqlBasicCall(operator, new SqlNode[]{left, right}, SqlParserPos.ZERO));
+        List<SqlNode> sqlNodes = convertSqlNodes(segment);
+        return Optional.of(new SqlBasicCall(operator, sqlNodes, SqlParserPos.ZERO));
     }
     
-    @Override
-    public Optional<BinaryOperationExpression> convertToSQLSegment(final SqlBasicCall sqlBasicCall) {
-        ExpressionConverter expressionConverter = new ExpressionConverter();
-        ExpressionSegment left = expressionConverter.convertToSQLSegment(sqlBasicCall.getOperandList().get(0)).orElseThrow(IllegalStateException::new);
-        ExpressionSegment right = expressionConverter.convertToSQLSegment(sqlBasicCall.getOperandList().get(1)).orElseThrow(IllegalStateException::new);
-        String operator = sqlBasicCall.getOperator().getName();
-        String text = sqlBasicCall.toString();
-        if (SqlKind.LIKE == sqlBasicCall.getOperator().getKind()) {
-            ListExpression listExpression = new ListExpression(getStartIndex(sqlBasicCall.getOperandList().get(1)), getStopIndex(sqlBasicCall.getOperandList().get(1)));
-            listExpression.getItems().add(right);
-            return Optional.of(new BinaryOperationExpression(getStartIndex(sqlBasicCall), getStopIndex(sqlBasicCall), left, listExpression, operator, text));
-        }
-        return Optional.of(new BinaryOperationExpression(getStartIndex(sqlBasicCall), getStopIndex(sqlBasicCall), left, right, operator, text));
+    private List<SqlNode> convertSqlNodes(final BinaryOperationExpression segment) {
+        SqlNode left = new ExpressionConverter().convert(segment.getLeft()).orElseThrow(IllegalStateException::new);
+        SqlNode right = new ExpressionConverter().convert(segment.getRight()).orElseThrow(IllegalStateException::new);
+        List<SqlNode> result = new LinkedList<>();
+        result.add(left);
+        result.addAll(right instanceof SqlNodeList ? ((SqlNodeList) right).getList() : Collections.singletonList(right));
+        return result;
     }
     
     private SqlOperator convertOperator(final String operator) {

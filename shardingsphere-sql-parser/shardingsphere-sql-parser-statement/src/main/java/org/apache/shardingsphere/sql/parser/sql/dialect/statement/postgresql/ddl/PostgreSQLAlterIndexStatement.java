@@ -29,7 +29,7 @@ import java.util.Optional;
  * PostgreSQL alter index statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLAlterIndexStatement extends AlterIndexStatement implements PostgreSQLStatement {
     
     private IndexSegment renameIndex;

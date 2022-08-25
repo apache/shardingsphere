@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item;
 
 import lombok.Getter;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
@@ -25,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
  * Aggregation distinct projection segment.
  */
 @Getter
+@ToString(callSuper = true)
 public final class AggregationDistinctProjectionSegment extends AggregationProjectionSegment {
     
     private final String distinctExpression;

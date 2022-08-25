@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.singletable.datanode;
 
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.SchemaTableNamesLoader;
@@ -30,7 +27,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.Sc
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -51,13 +47,11 @@ public final class SingleTableDataNodeLoader {
      * @param databaseType database type
      * @param dataSourceMap data source map
      * @param excludedTables excluded tables
-     * @param props configuration properties
      * @return single table data node map
      */
-    public static Map<String, Collection<DataNode>> load(final String databaseName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
-                                                         final Collection<String> excludedTables, final ConfigurationProperties props) {
+    public static Map<String, Collection<DataNode>> load(final String databaseName, final DatabaseType databaseType,
+                                                         final Map<String, DataSource> dataSourceMap, final Collection<String> excludedTables) {
         Map<String, Collection<DataNode>> result = new ConcurrentHashMap<>();
-        boolean checkDuplicateTable = props.getValue(ConfigurationPropertyKey.CHECK_DUPLICATE_TABLE_ENABLED);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             Map<String, Collection<DataNode>> dataNodeMap = load(databaseName, databaseType, entry.getKey(), entry.getValue(), excludedTables);
             for (String each : dataNodeMap.keySet()) {
@@ -65,9 +59,6 @@ public final class SingleTableDataNodeLoader {
                 Collection<DataNode> existDataNodes = result.getOrDefault(each.toLowerCase(), new LinkedHashSet<>(addedDataNodes.size(), 1));
                 existDataNodes.addAll(addedDataNodes);
                 result.putIfAbsent(each.toLowerCase(), existDataNodes);
-                if (checkDuplicateTable) {
-                    Preconditions.checkState(!containsDuplicateTable(existDataNodes), "Single table conflict, there are multiple tables `%s` existed.", each);
-                }
             }
         }
         return result;
@@ -92,21 +83,11 @@ public final class SingleTableDataNodeLoader {
         return result;
     }
     
-    private static boolean containsDuplicateTable(final Collection<DataNode> dataNodes) {
-        Collection<String> schemas = new HashSet<>(dataNodes.size(), 1);
-        for (DataNode each : dataNodes) {
-            if (!schemas.add(each.getSchemaName())) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
     private static Map<String, Collection<String>> loadSchemaTableNames(final String databaseName, final DatabaseType databaseType, final DataSource dataSource, final String dataSourceName) {
         try {
             return SchemaTableNamesLoader.loadSchemaTableNames(databaseName, databaseType, dataSource);
         } catch (final SQLException ex) {
-            throw new ShardingSphereConfigurationException(String.format("Can not load table, databaseName: %s, dataSourceName: %s", databaseName, dataSourceName), ex);
+            throw new ShardingSphereConfigurationException("Can not load table, databaseName: %s, dataSourceName: %s", databaseName, dataSourceName);
         }
     }
 }

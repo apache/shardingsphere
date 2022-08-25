@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sqltranslator.api.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 
 /**
  * SQL translator rule configuration.

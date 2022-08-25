@@ -39,8 +39,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL9
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerInsertStatement;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.Types;
 import java.util.Collections;
@@ -54,7 +52,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class GeneratedKeyContextEngineTest {
     
     private ShardingSphereSchema schema;
@@ -62,7 +59,7 @@ public final class GeneratedKeyContextEngineTest {
     @Before
     public void setUp() {
         ShardingSphereTable table = new ShardingSphereTable(
-                "tbl", Collections.singletonList(new ShardingSphereColumn("id", Types.INTEGER, true, true, false)), Collections.emptyList(), Collections.emptyList());
+                "tbl", Collections.singletonList(new ShardingSphereColumn("id", Types.INTEGER, true, true, false, true)), Collections.emptyList(), Collections.emptyList());
         schema = new ShardingSphereSchema(Collections.singletonMap("tbl", table));
     }
     

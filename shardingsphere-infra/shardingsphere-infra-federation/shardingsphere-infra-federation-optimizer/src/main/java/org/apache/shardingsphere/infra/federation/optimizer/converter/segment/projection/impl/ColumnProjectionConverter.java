@@ -24,12 +24,9 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.expression.impl.ColumnConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
-import java.util.List;
+import java.util.Arrays;
 import java.util.Optional;
 
 /**
@@ -38,33 +35,12 @@ import java.util.Optional;
 public final class ColumnProjectionConverter implements SQLSegmentConverter<ColumnProjectionSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convertToSQLNode(final ColumnProjectionSegment segment) {
+    public Optional<SqlNode> convert(final ColumnProjectionSegment segment) {
         if (segment.getAlias().isPresent()) {
-            Optional<SqlIdentifier> columnSqlIdentifier = new ColumnConverter().convertToSQLNode(segment.getColumn());
+            Optional<SqlIdentifier> columnSqlIdentifier = new ColumnConverter().convert(segment.getColumn());
             SqlIdentifier aliasSqlIdentifier = new SqlIdentifier(segment.getAlias().get(), SqlParserPos.ZERO);
-            return Optional.of(new SqlBasicCall(new SqlAsOperator(), new SqlNode[]{columnSqlIdentifier.get(), aliasSqlIdentifier}, SqlParserPos.ZERO));
+            return Optional.of(new SqlBasicCall(new SqlAsOperator(), Arrays.asList(columnSqlIdentifier.get(), aliasSqlIdentifier), SqlParserPos.ZERO));
         }
-        return new ColumnConverter().convertToSQLNode(segment.getColumn()).map(optional -> optional);
-    }
-    
-    @Override
-    public Optional<ColumnProjectionSegment> convertToSQLSegment(final SqlNode sqlNode) {
-        if (sqlNode instanceof SqlBasicCall) {
-            List<SqlNode> operands = ((SqlBasicCall) sqlNode).getOperandList();
-            Optional<ColumnSegment> columnSegment = new ColumnConverter().convertToSQLSegment((SqlIdentifier) operands.get(0));
-            if (!columnSegment.isPresent()) {
-                return Optional.empty();
-            }
-            ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment(columnSegment.get());
-            if (2 == operands.size()) {
-                SqlIdentifier aliasSqlNode = (SqlIdentifier) operands.get(1);
-                columnProjectionSegment.setAlias(new AliasSegment(getStartIndex(aliasSqlNode), getStopIndex(aliasSqlNode), new IdentifierValue(aliasSqlNode.names.get(0))));
-            }
-            return Optional.of(columnProjectionSegment);
-        }
-        if (sqlNode instanceof SqlIdentifier) {
-            return new ColumnConverter().convertToSQLSegment((SqlIdentifier) sqlNode).map(ColumnProjectionSegment::new);
-        }
-        return Optional.empty();
+        return new ColumnConverter().convert(segment.getColumn()).map(optional -> optional);
     }
 }

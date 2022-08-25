@@ -33,9 +33,7 @@ import java.util.Properties;
  */
 public final class CosIdModShardingAlgorithm<T extends Number & Comparable<T>> implements StandardShardingAlgorithm<T> {
     
-    public static final String TYPE = CosIdAlgorithmConstants.TYPE_PREFIX + "MOD";
-    
-    public static final String MODULO_KEY = "mod";
+    private static final String MODULO_KEY = "mod";
     
     @Getter
     private Properties props;
@@ -68,6 +66,6 @@ public final class CosIdModShardingAlgorithm<T extends Number & Comparable<T>> i
     
     @Override
     public String getType() {
-        return TYPE;
+        return CosIdAlgorithmConstants.TYPE_PREFIX + "MOD";
     }
 }

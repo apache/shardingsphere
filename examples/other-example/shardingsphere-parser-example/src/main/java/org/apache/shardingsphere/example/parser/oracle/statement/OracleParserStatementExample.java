@@ -29,7 +29,7 @@ import java.util.Properties;
 
 public final class OracleParserStatementExample {
     
-    private static final String DML_SELECT_SQL = "SELECT t.id, t.name, t.age FROM table1 AS t ORDER BY t.id DESC;";
+    private static final String DML_SELECT_SQL = "SELECT t.id, t.name, t.age FROM table1 t ORDER BY t.id DESC;";
     
     private static final String DML_INSERT_SQL = "INSERT INTO table1 (name, age) VALUES ('z', 18);";
     

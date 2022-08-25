@@ -30,9 +30,9 @@ import java.util.Optional;
 /**
  * PostgreSQL cluster statement.
  */
-@ToString
 @Getter
 @Setter
+@ToString(callSuper = true)
 public final class PostgreSQLClusterStatement extends ClusterStatement implements PostgreSQLStatement {
     
     private SimpleTableSegment table;

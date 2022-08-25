@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyType;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowDefaultShardingStrategyStatement;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
@@ -37,20 +38,21 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * Result set for show default sharding strategy.
+ * Query result set for show default sharding strategy.
  */
-public final class DefaultShardingStrategyQueryResultSet implements DistSQLResultSet {
+public final class DefaultShardingStrategyQueryResultSet implements DatabaseDistSQLResultSet {
     
     private Iterator<Entry<String, LinkedList<Object>>> data = Collections.emptyIterator();
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        Optional<ShardingRuleConfiguration> shardingRuleConfig = database.getRuleMetaData().findRuleConfigurations(ShardingRuleConfiguration.class).stream().findAny();
-        shardingRuleConfig.ifPresent(optional -> data = buildData(optional).entrySet().iterator());
+        Optional<ShardingRule> shardingRule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
+        shardingRule.ifPresent(optional -> data = buildData(optional).entrySet().iterator());
     }
     
-    private Map<String, LinkedList<Object>> buildData(final ShardingRuleConfiguration ruleConfig) {
-        Map<String, LinkedList<Object>> result = new LinkedHashMap<>(2);
+    private Map<String, LinkedList<Object>> buildData(final ShardingRule rule) {
+        Map<String, LinkedList<Object>> result = new LinkedHashMap<>(2, 1);
+        ShardingRuleConfiguration ruleConfig = (ShardingRuleConfiguration) rule.getConfiguration();
         result.put("TABLE", buildDataItem(ruleConfig, ruleConfig.getDefaultTableShardingStrategy()));
         result.put("DATABASE", buildDataItem(ruleConfig, ruleConfig.getDefaultDatabaseShardingStrategy()));
         return result;
@@ -66,7 +68,7 @@ public final class DefaultShardingStrategyQueryResultSet implements DistSQLResul
         }
         LinkedList<Object> result = new LinkedList<>(Collections.singleton(strategyType.name()));
         result.addAll(strategyType.getConfigurationContents(strategyConfig));
-        ShardingSphereAlgorithmConfiguration algorithmConfig = ruleConfig.getShardingAlgorithms().get(strategyConfig.getShardingAlgorithmName());
+        AlgorithmConfiguration algorithmConfig = ruleConfig.getShardingAlgorithms().get(strategyConfig.getShardingAlgorithmName());
         result.add(algorithmConfig.getType());
         result.add(algorithmConfig.getProps());
         return result;

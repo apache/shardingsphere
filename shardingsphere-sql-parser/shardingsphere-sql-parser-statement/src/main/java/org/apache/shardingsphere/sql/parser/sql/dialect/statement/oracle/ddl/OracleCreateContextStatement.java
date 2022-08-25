@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Oracle create context statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OracleCreateContextStatement extends CreateContextStatement implements OracleStatement {
 }

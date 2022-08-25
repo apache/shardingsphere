@@ -18,3 +18,4 @@
 org.apache.shardingsphere.shadow.distsql.handler.query.ShadowRuleQueryResultSet
 org.apache.shardingsphere.shadow.distsql.handler.query.ShadowAlgorithmQueryResultSet
 org.apache.shardingsphere.shadow.distsql.handler.query.ShadowTableRuleQueryResultSet
+org.apache.shardingsphere.shadow.distsql.handler.query.CountShadowRuleQueryResultSet

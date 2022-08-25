@@ -19,25 +19,21 @@ package org.apache.shardingsphere.shadow.api.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.function.DistributedRuleConfiguration;
-import org.apache.shardingsphere.infra.config.function.ResourceRequiredRuleConfiguration;
-import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.rule.function.DistributedRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Shadow rule configuration.
  */
 @Getter
 @Setter
-public final class ShadowRuleConfiguration implements SchemaRuleConfiguration, DistributedRuleConfiguration, ResourceRequiredRuleConfiguration {
+public final class ShadowRuleConfiguration implements DatabaseRuleConfiguration, DistributedRuleConfiguration {
     
     private String defaultShadowAlgorithmName;
     
@@ -45,10 +41,5 @@ public final class ShadowRuleConfiguration implements SchemaRuleConfiguration, D
     
     private Map<String, ShadowTableConfiguration> tables = new LinkedHashMap<>();
     
-    private Map<String, ShardingSphereAlgorithmConfiguration> shadowAlgorithms = new LinkedHashMap<>();
-    
-    @Override
-    public Collection<String> getRequiredResource() {
-        return dataSources.values().stream().map(each -> Arrays.asList(each.getSourceDataSourceName(), each.getShadowDataSourceName())).flatMap(Collection::stream).collect(Collectors.toSet());
-    }
+    private Map<String, AlgorithmConfiguration> shadowAlgorithms = new LinkedHashMap<>();
 }

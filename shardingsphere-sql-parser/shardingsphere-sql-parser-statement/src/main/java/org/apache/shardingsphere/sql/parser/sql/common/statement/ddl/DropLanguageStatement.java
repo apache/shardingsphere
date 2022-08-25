@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Drop language statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class DropLanguageStatement extends AbstractSQLStatement implements DDLStatement {
 }

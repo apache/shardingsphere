@@ -34,7 +34,7 @@
     },
     {
       "name": "spring.shardingsphere.rules.database-discovery.discovery-types",
-      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration>",
+      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration>",
       "sourceType": "org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration"
     }
   ],
@@ -51,7 +51,7 @@
     },
     {
       "name": "spring.shardingsphere.rules.database-discovery.discovery-types",
-      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration>",
+      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration>",
       "sourceType": "org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration"
     }
   ],
@@ -87,7 +87,7 @@
         {
           "name": "handle-as",
           "parameters": {
-            "target": "org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration"
+            "target": "org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration"
           }
         }
       ]

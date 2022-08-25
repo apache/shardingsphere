@@ -48,7 +48,7 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RuleD
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database,
                                   final DropShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isContainsExistClause()) {
+        if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isIfExists()) {
             return;
         }
         String databaseName = database.getName();
@@ -69,7 +69,7 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RuleD
     
     private void checkBindingTableRuleExist(final String databaseName, final DropShardingBindingTableRulesStatement sqlStatement,
                                             final Map<String, String> bindingRelationship) throws DistSQLException {
-        if (sqlStatement.isContainsExistClause()) {
+        if (sqlStatement.isIfExists()) {
             return;
         }
         Collection<String> notExistBindingGroups = new LinkedList<>();

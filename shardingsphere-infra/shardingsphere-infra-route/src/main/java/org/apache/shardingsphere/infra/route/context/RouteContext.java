@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.route.context;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
@@ -45,9 +44,6 @@ public final class RouteContext {
     private final Collection<RouteUnit> routeUnits = new LinkedHashSet<>();
     
     private final Map<Class<? extends ShardingSphereRule>, RouteStageContext> routeStageContexts = new LinkedHashMap<>();
-    
-    @Setter
-    private boolean isFederated;
     
     /**
      * Judge is route for single database and table only or not.

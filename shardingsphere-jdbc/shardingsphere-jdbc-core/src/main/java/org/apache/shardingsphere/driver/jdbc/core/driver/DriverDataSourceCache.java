@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.driver.jdbc.core.driver;
 
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -44,23 +43,17 @@ public final class DriverDataSourceCache {
         if (dataSourceMap.containsKey(url)) {
             return dataSourceMap.get(url);
         }
-        DataSource dataSource;
+        return dataSourceMap.computeIfAbsent(url, DriverDataSourceCache::createDataSource);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static <T extends Throwable> DataSource createDataSource(final String url) throws T {
         try {
-            dataSource = YamlShardingSphereDataSourceFactory.createDataSource(new ShardingSphereDriverURL(url).toConfigurationFile());
+            return YamlShardingSphereDataSourceFactory.createDataSource(new ShardingSphereDriverURL(url).toConfigurationBytes());
         } catch (final IOException ex) {
-            throw new SQLException(ex);
+            throw (T) new SQLException(ex);
+        } catch (SQLException e) {
+            throw (T) e;
         }
-        DataSource previousDataSource = dataSourceMap.putIfAbsent(url, dataSource);
-        if (null == previousDataSource) {
-            return dataSource;
-        }
-        try {
-            ((ShardingSphereDataSource) dataSource).close();
-            // CHECKSTYLE:OFF
-        } catch (Exception ex) {
-            // CHECKSTYLE:ON
-            throw new SQLException(ex);
-        }
-        return previousDataSource;
     }
 }

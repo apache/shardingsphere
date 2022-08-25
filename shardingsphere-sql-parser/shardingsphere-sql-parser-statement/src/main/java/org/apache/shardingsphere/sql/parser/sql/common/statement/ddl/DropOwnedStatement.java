@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Drop Owned statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class DropOwnedStatement extends AbstractSQLStatement implements DDLStatement {
 }

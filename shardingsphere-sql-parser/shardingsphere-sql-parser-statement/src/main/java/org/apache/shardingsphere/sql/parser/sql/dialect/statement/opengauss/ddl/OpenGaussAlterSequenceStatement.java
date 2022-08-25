@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.Open
 /**
  * OpenGauss alter sequence statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OpenGaussAlterSequenceStatement extends AlterSequenceStatement implements OpenGaussStatement {
 }

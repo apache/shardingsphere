@@ -30,7 +30,7 @@ import java.util.Optional;
  * OpenGauss insert statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class OpenGaussInsertStatement extends InsertStatement implements OpenGaussStatement {
     
     private WithSegment withSegment;

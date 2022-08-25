@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.infra.executor.sql.process;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
@@ -29,6 +28,7 @@ import org.apache.shardingsphere.infra.executor.sql.process.fixture.ExecuteProce
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.junit.Before;
 import org.junit.Test;
+
 import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -41,19 +41,21 @@ public final class ExecuteProcessEngineTest {
     
     private ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext;
     
+    private final EventBusContext eventBusContext = new EventBusContext();
+    
     @Before
     public void setUp() {
         executionGroupContext = createMockedExecutionGroups();
-        ExecuteProcessEngine.initialize(createLogicSQL(), executionGroupContext, createConfigurationProperties());
+        ExecuteProcessEngine.initialize(createQueryContext(), executionGroupContext, eventBusContext);
         assertThat(ExecutorDataMap.getValue().get("EXECUTE_ID"), is(executionGroupContext.getExecutionID()));
         assertThat(ExecuteProcessReporterFixture.ACTIONS.get(0), is("Report the summary of this task."));
     }
     
     @Test
     public void assertFinish() {
-        ExecuteProcessEngine.finish(executionGroupContext.getExecutionID(), mock(RawSQLExecutionUnit.class));
+        ExecuteProcessEngine.finish(executionGroupContext.getExecutionID(), mock(RawSQLExecutionUnit.class), eventBusContext);
         assertThat(ExecuteProcessReporterFixture.ACTIONS.get(1), is("Report a unit of this task."));
-        ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
+        ExecuteProcessEngine.finish(executionGroupContext.getExecutionID(), eventBusContext);
         assertThat(ExecuteProcessReporterFixture.ACTIONS.get(2), is("Report this task on completion."));
     }
     
@@ -63,18 +65,11 @@ public final class ExecuteProcessEngineTest {
         assertTrue(ExecutorDataMap.getValue().isEmpty());
     }
     
-    private LogicSQL createLogicSQL() {
+    private QueryContext createQueryContext() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DDLStatement.class));
-        LogicSQL result = mock(LogicSQL.class);
+        QueryContext result = mock(QueryContext.class);
         when(result.getSqlStatementContext()).thenReturn(sqlStatementContext);
-        return result;
-    }
-    
-    private ConfigurationProperties createConfigurationProperties() {
-        ConfigurationProperties result = mock(ConfigurationProperties.class);
-        when(result.getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(Boolean.TRUE);
-        when(result.getValue(ConfigurationPropertyKey.SHOW_PROCESS_LIST_ENABLED)).thenReturn(Boolean.TRUE);
         return result;
     }
     

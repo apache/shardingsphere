@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.response.header.query;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
@@ -26,7 +25,6 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Col
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 
 import java.sql.SQLException;
 
@@ -44,15 +42,13 @@ public final class QueryHeaderBuilderEngine {
      * @param queryResultMetaData query result meta data
      * @param database database
      * @param columnIndex column index
-     * @param dataNodeContainedRule data node contained rule
      * @return query header
      * @throws SQLException SQL exception
      */
-    public QueryHeader build(final QueryResultMetaData queryResultMetaData, final ShardingSphereDatabase database,
-                             final int columnIndex, final LazyInitializer<DataNodeContainedRule> dataNodeContainedRule) throws SQLException {
+    public QueryHeader build(final QueryResultMetaData queryResultMetaData, final ShardingSphereDatabase database, final int columnIndex) throws SQLException {
         String columnName = queryResultMetaData.getColumnName(columnIndex);
         String columnLabel = queryResultMetaData.getColumnLabel(columnIndex);
-        return QueryHeaderBuilderFactory.getInstance(databaseType).build(queryResultMetaData, database, columnName, columnLabel, columnIndex, dataNodeContainedRule);
+        return QueryHeaderBuilderFactory.getInstance(databaseType).build(queryResultMetaData, database, columnName, columnLabel, columnIndex);
     }
     
     /**
@@ -62,15 +58,14 @@ public final class QueryHeaderBuilderEngine {
      * @param queryResultMetaData query result meta data
      * @param database database
      * @param columnIndex column index
-     * @param dataNodeContainedRule data node contained rule
      * @return query header
      * @throws SQLException SQL exception
      */
-    public QueryHeader build(final ProjectionsContext projectionsContext, final QueryResultMetaData queryResultMetaData,
-                             final ShardingSphereDatabase database, final int columnIndex, final LazyInitializer<DataNodeContainedRule> dataNodeContainedRule) throws SQLException {
+    public QueryHeader build(final ProjectionsContext projectionsContext,
+                             final QueryResultMetaData queryResultMetaData, final ShardingSphereDatabase database, final int columnIndex) throws SQLException {
         String columnName = getColumnName(projectionsContext, queryResultMetaData, columnIndex);
         String columnLabel = getColumnLabel(projectionsContext, queryResultMetaData, columnIndex);
-        return QueryHeaderBuilderFactory.getInstance(databaseType).build(queryResultMetaData, database, columnName, columnLabel, columnIndex, dataNodeContainedRule);
+        return QueryHeaderBuilderFactory.getInstance(databaseType).build(queryResultMetaData, database, columnName, columnLabel, columnIndex);
     }
     
     private String getColumnLabel(final ProjectionsContext projectionsContext, final QueryResultMetaData queryResultMetaData, final int columnIndex) throws SQLException {

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.mod;
 
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
@@ -39,26 +39,26 @@ public final class ModShardingAlgorithmTest {
     
     @Test
     public void assertPreciseDoShardingWithIntShardingValue() {
-        ModShardingAlgorithm algorithm = (ModShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("MOD", createProperties()));
+        ModShardingAlgorithm algorithm = (ModShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("MOD", createProperties()));
         assertThat(algorithm.doSharding(createAvailableTargetNames(), new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 17)), is("t_order_1"));
     }
     
     @Test
     public void assertPreciseDoShardingWithBigIntegerShardingValue() {
-        ModShardingAlgorithm algorithm = (ModShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("MOD", createProperties()));
+        ModShardingAlgorithm algorithm = (ModShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("MOD", createProperties()));
         assertThat(algorithm.doSharding(createAvailableTargetNames(), new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, "12345678910111213141516")), is("t_order_12"));
     }
     
     @Test
     public void assertRangeDoShardingWithAllTargets() {
-        ModShardingAlgorithm algorithm = (ModShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("MOD", createProperties()));
+        ModShardingAlgorithm algorithm = (ModShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("MOD", createProperties()));
         Collection<String> actual = algorithm.doSharding(createAvailableTargetNames(), new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, Range.closed(1L, 16L)));
         assertThat(actual.size(), is(16));
     }
     
     @Test
     public void assertRangeDoShardingWithPartTargets() {
-        ModShardingAlgorithm algorithm = (ModShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("MOD", createProperties()));
+        ModShardingAlgorithm algorithm = (ModShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("MOD", createProperties()));
         Collection<String> actual = algorithm.doSharding(createAvailableTargetNames(),
                 new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, Range.closed(1L, 2L)));
         assertThat(actual.size(), is(2));
@@ -79,13 +79,13 @@ public final class ModShardingAlgorithmTest {
     
     @Test
     public void assertPreciseDoShardingWithValueIsBigIntegerAndZeroPadding() {
-        ModShardingAlgorithm algorithm = (ModShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("MOD", createZeroPaddingProperties()));
+        ModShardingAlgorithm algorithm = (ModShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("MOD", createZeroPaddingProperties()));
         assertThat(algorithm.doSharding(createAvailableIncludeZeroTargetNames(), new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, "12345678910111213141516")), is("t_order_07"));
     }
     
     @Test
     public void assertRangeDoShardingWithAllTargetsZeroPadding() {
-        ModShardingAlgorithm algorithm = (ModShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("MOD", createZeroPaddingProperties()));
+        ModShardingAlgorithm algorithm = (ModShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("MOD", createZeroPaddingProperties()));
         Collection<String> actual = algorithm.doSharding(createAvailableIncludeZeroTargetNames(),
                 new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, Range.closed(1L, 16L)));
         assertThat(actual.size(), is(16));
@@ -95,7 +95,7 @@ public final class ModShardingAlgorithmTest {
     public void assertRangeDoShardingWithWrongArgumentForStartOffset() {
         Properties properties = createZeroPaddingProperties();
         properties.setProperty("start-offset", "-1");
-        ModShardingAlgorithm algorithm = (ModShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("MOD", properties));
+        ModShardingAlgorithm algorithm = (ModShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("MOD", properties));
         assertThat(algorithm.doSharding(createAvailableIncludeZeroTargetNames(), new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, "12345678910111213141516")), is("t_order_07"));
     }
     
@@ -103,7 +103,7 @@ public final class ModShardingAlgorithmTest {
     public void assertRangeDoShardingWithWrongArgumentForStopOffset() {
         Properties properties = createZeroPaddingProperties();
         properties.setProperty("stop-offset", "-1");
-        ModShardingAlgorithm algorithm = (ModShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("MOD", properties));
+        ModShardingAlgorithm algorithm = (ModShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("MOD", properties));
         assertThat(algorithm.doSharding(createAvailableIncludeZeroTargetNames(), new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, "12345678910111213141516")), is("t_order_07"));
     }
     

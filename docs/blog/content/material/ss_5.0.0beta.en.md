@@ -172,7 +172,7 @@ In addition to above mentioned features, for a comprehensive list of enhancement
 
 **Project Address:** <https://shardingsphere.apache.org/>
 
-**Mailing List:** <https://shardingsphere.apache.org/community/en/contribute/subscribe/>
+**Mailing List:** <https://shardingsphere.apache.org/community/en/involved/subscribe/>
 
 #### Community Contribution:
 
@@ -192,5 +192,3 @@ Since the 5.0.0-alpha release until now, 41 contributors have contributed 1574 P
 Recipient of the "2020 China Open-Source Pioneer" award, she is frequently invited to speak and share her insights at relevant conferences in the fields of database & database architecture.
 >
 >**GitHub:** <https://tristazero.github.io>
-
-

@@ -27,9 +27,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
  * Clone action segment.
  */
 @RequiredArgsConstructor
-@ToString
 @Getter
 @Setter
+@ToString
 public final class CloneActionSegment implements SQLSegment {
     
     private final int startIndex;

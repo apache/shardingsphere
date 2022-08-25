@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.sharding.yaml.engine.representer.processor;
 
-import org.apache.shardingsphere.infra.yaml.engine.representer.processor.ShardingSphereYamlTupleProcessor;
+import org.apache.shardingsphere.infra.util.yaml.representer.processor.ShardingSphereYamlTupleProcessor;
 import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.ScalarNode;
@@ -36,11 +37,15 @@ public final class NoneYamlTupleProcessor implements ShardingSphereYamlTupleProc
     
     @Override
     public NodeTuple process(final NodeTuple nodeTuple) {
-        return isNullNode(nodeTuple.getValueNode()) ? null : processNoneTuple(nodeTuple);
+        return (isNullNode(nodeTuple.getValueNode()) || isEmptyMappingNode(nodeTuple.getValueNode())) ? null : processNoneTuple(nodeTuple);
     }
     
     private boolean isNullNode(final Node valueNode) {
         return Tag.NULL.equals(valueNode.getTag());
+    }
+    
+    private boolean isEmptyMappingNode(final Node valueNode) {
+        return Tag.MAP.equals(valueNode.getTag()) && ((MappingNode) valueNode).getValue().isEmpty();
     }
     
     private NodeTuple processNoneTuple(final NodeTuple noneTuple) {

@@ -23,11 +23,8 @@ import java.util.Properties;
 
 public final class KeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
     
-    public static final String TYPE = "FIXTURE";
-    
     @Override
-    public Comparable<?> generateKey() {
-        return null;
+    public void init(final Properties props) {
     }
     
     @Override
@@ -36,11 +33,12 @@ public final class KeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
     }
     
     @Override
-    public void init(final Properties props) {
+    public Comparable<?> generateKey() {
+        return null;
     }
     
     @Override
     public String getType() {
-        return TYPE;
+        return "FIXTURE";
     }
 }

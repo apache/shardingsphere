@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.Open
 /**
  * OpenGauss grant statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OpenGaussGrantStatement extends GrantStatement implements OpenGaussStatement {
 }

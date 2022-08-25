@@ -48,7 +48,7 @@ public final class ParameterMarkerProjection implements Projection {
     
     @Override
     public String getColumnLabel() {
-        return getAlias().orElse(String.valueOf(parameterMarkerIndex));
+        return getAlias().orElseGet(() -> String.valueOf(parameterMarkerIndex));
     }
     
     @Override

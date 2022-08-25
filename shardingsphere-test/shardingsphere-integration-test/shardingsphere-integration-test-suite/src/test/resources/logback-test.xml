@@ -25,9 +25,9 @@
     <logger name="org.apache.shardingsphere" level="warn" additivity="true">
         <appender-ref ref="console" />
     </logger>
-    <logger name="com.zaxxer.hikari.pool.ProxyConnection" level="off" />
+    <logger name="com.zaxxer.hikari" level="warn" />
     <root>
-        <level value="warn" />
+        <level value="info" />
         <appender-ref ref="console" />
     </root>
 </configuration> 

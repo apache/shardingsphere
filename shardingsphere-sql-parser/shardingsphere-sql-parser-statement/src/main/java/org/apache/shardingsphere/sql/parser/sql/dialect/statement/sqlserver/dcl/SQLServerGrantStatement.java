@@ -29,8 +29,8 @@ import java.util.List;
 /**
  * SQLServer grant statement.
  */
-@ToString
 @Getter
+@ToString(callSuper = true)
 public final class SQLServerGrantStatement extends GrantStatement implements SQLServerStatement {
     
     private final List<ColumnSegment> columns = new LinkedList<>();

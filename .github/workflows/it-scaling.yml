@@ -28,12 +28,15 @@ on:
       - 'shardingsphere-jdbc/shardingsphere-jdbc-core/src/main/**'
       - '**/*-distsql*/**/src/main/**'
       - 'shardingsphere-kernel/shardingsphere-data-pipeline/**/src/main/**'
+      - 'shardingsphere-kernel/shardingsphere-data-pipeline/**/pom.xml'
       - 'shardingsphere-features/**/src/main/**/scaling/**'
       - '**/src/main/**/data/pipeline/**'
       - '**/src/main/resources/META-INF/services/*.data.pipeline.*'
       - '!shardingsphere-test/**'
-      - 'shardingsphere-test/shardingsphere-integration-test/**'
-      - '!shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/**'
+      - 'shardingsphere-test/pom.xml'
+      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-fixture/**'
+      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-env/**'
+      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/**'
       - '!*.md'
   pull_request:
     branches: [ master ]
@@ -45,12 +48,15 @@ on:
       - 'shardingsphere-jdbc/shardingsphere-jdbc-core/src/main/**'
       - '**/*-distsql*/**/src/main/**'
       - 'shardingsphere-kernel/shardingsphere-data-pipeline/**/src/main/**'
+      - 'shardingsphere-kernel/shardingsphere-data-pipeline/**/pom.xml'
       - 'shardingsphere-features/**/src/main/**/scaling/**'
       - '**/src/main/**/data/pipeline/**'
       - '**/src/main/resources/META-INF/services/*.data.pipeline.*'
       - '!shardingsphere-test/**'
-      - 'shardingsphere-test/shardingsphere-integration-test/**'
-      - '!shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/**'
+      - 'shardingsphere-test/pom.xml'
+      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-fixture/**'
+      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-env/**'
+      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/**'
       - '!*.md'
   schedule:
     - cron: '0 22 */1 * *'  # once a day. UTC time
@@ -60,7 +66,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Drat.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Djacoco.skip=true -Dfailsafe.skipAfterFailureCount=1
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Drat.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Djacoco.skip=true -Dfailsafe.skipAfterFailureCount=1 -Dio.netty.leakDetectionLevel=advanced
 
 jobs:
   scaling-it-test:
@@ -75,10 +81,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Cache Maven Repos
-        uses: actions/cache@v3
+        uses: actions/cache@v2
         with:
           path: ~/.m2/repository
           key: shardingsphere-it-cache-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
       - name: Set up JDK 8
         uses: actions/setup-java@v3
         with:
@@ -86,9 +94,13 @@ jobs:
           java-version: 8
       - name: Build Scaling IT image
         run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling -Pit.env.docker -DskipTests
-      - name: Run Scaling Integration Test
-        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dit.cluster.env.type=DOCKER -Dit.env.mysql.version=${{ env.mysql_version }} -Dit.env.postgresql.version=${{ env.postgresql_version }}
-  
+      - name: Run Scaling MySQL Integration Test
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dscaling.it.env.type=docker -Dscaling.it.docker.mysql.version=${{ env.mysql_version }}
+      - name: Run Scaling PostgreSQL Integration Test
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dscaling.it.env.type=docker -Dscaling.it.docker.postgresql.version=${{ env.postgresql_version }}
+      - name: Run Scaling openGauss Integration Test
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dscaling.it.env.type=docker -Dscaling.it.docker.opengauss.version=${{ env.opengauss_version }}
+
   scaling-daily-it-test:
     if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
     name: scaling-daily-it-test
@@ -112,5 +124,9 @@ jobs:
           java-version: 8
       - name: Build Scaling IT image
         run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling -Pit.env.docker -DskipTests
-      - name: Run Scaling Daily Integration Test
-        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dit.cluster.env.type=DOCKER -Dit.env.postgresql.version=${{ env.postgresql_version }} -Dit.env.mysql.version=${{ env.mysql_version }}
+      - name: Run Scaling Daily MySQL Integration Test
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dscaling.it.env.type=docker -Dscaling.it.docker.mysql.version=${{ env.mysql_version }}
+      - name: Run Scaling Daily PostgreSQL Integration Test
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dscaling.it.env.type=docker -Dscaling.it.docker.postgresql.version=${{ env.postgresql_version }}
+      - name: Run Scaling Daily openGauss Integration Test
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dscaling.it.env.type=docker -Dscaling.it.docker.opengauss.version=${{ env.opengauss_version }}

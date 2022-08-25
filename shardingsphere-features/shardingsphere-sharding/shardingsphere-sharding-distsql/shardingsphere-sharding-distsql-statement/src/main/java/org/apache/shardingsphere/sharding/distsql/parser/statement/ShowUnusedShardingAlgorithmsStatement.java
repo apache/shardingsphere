@@ -18,13 +18,12 @@
 package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
-import org.apache.shardingsphere.distsql.parser.subject.impl.ShardingSubjectSupplier;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
  * Show unused sharding algorithms statement.
  */
-public final class ShowUnusedShardingAlgorithmsStatement extends ShowRulesStatement implements ShardingSubjectSupplier {
+public final class ShowUnusedShardingAlgorithmsStatement extends ShowRulesStatement {
     
     public ShowUnusedShardingAlgorithmsStatement(final DatabaseSegment database) {
         super(database);

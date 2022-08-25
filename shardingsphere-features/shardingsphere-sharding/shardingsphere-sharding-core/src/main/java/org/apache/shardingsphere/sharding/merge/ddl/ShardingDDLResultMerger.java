@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.merge.ddl;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.FetchStatementContext;
+import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.engine.merger.ResultMerger;
@@ -43,7 +44,8 @@ import java.util.TreeMap;
 public final class ShardingDDLResultMerger implements ResultMerger {
     
     @Override
-    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext, final ShardingSphereDatabase database) throws SQLException {
+    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext,
+                              final ShardingSphereDatabase database, final ConnectionContext connectionContext) throws SQLException {
         if (!(sqlStatementContext instanceof FetchStatementContext)) {
             return new TransparentMergedResult(queryResults.get(0));
         }
@@ -53,12 +55,12 @@ public final class ShardingDDLResultMerger implements ResultMerger {
         FetchStatementContext fetchStatementContext = (FetchStatementContext) sqlStatementContext;
         Map<String, Integer> columnLabelIndexMap = getColumnLabelIndexMap(queryResults.get(0));
         fetchStatementContext.getCursorStatementContext().getSelectStatementContext().setIndexes(columnLabelIndexMap);
-        return new FetchStreamMergedResult(queryResults, fetchStatementContext, getSchema(sqlStatementContext, database));
+        return new FetchStreamMergedResult(queryResults, fetchStatementContext, getSchema(sqlStatementContext, database), connectionContext);
     }
     
     private ShardingSphereSchema getSchema(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereDatabase database) {
         String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName());
-        return sqlStatementContext.getTablesContext().getSchemaName().map(optional -> database.getSchemas().get(optional)).orElseGet(() -> database.getSchemas().get(defaultSchemaName));
+        return sqlStatementContext.getTablesContext().getSchemaName().map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName));
     }
     
     private Map<String, Integer> getColumnLabelIndexMap(final QueryResult queryResult) throws SQLException {

@@ -22,6 +22,9 @@
             <simple-table name="t_log" start-index="28" stop-index="32" />
         </table>
         <index name="t_log_index" start-index="13" stop-index="23" />
+        <columns start-index="35" stop-index="36">
+            <column start-index="35" stop-index="36" name="id" />
+        </columns>
     </create-index>
     
     <create-index sql-case-id="create_unique_index">
@@ -29,18 +32,27 @@
             <simple-table name="t_log" start-index="35" stop-index="39" />
         </table>
         <index name="t_log_index" start-index="20" stop-index="30" />
+        <columns start-index="42" stop-index="43">
+            <column start-index="42" stop-index="43" name="id" />
+        </columns>
     </create-index>
     
     <create-index sql-case-id="create_index_with_space">
         <table>
             <simple-table name="t_order" start-index="52" stop-index="58" />
         </table>
+        <columns>
+            <column start-index="61" stop-index="68" name="order_id" />
+        </columns>
     </create-index>
     
     <create-index sql-case-id="create_index_with_back_quota">
         <table>
             <simple-table name="t_order" start-delimiter="`" end-delimiter="`" start-index="30" stop-index="38" />
         </table>
+        <columns start-index="41" stop-index="50">
+            <column start-index="41" stop-index="50" name="order_id" start-delimiter="`" end-delimiter="`" />
+        </columns>
     </create-index>
     
     <create-index sql-case-id="create_composite_index">
@@ -48,12 +60,20 @@
             <simple-table name="t_order" start-index="28" stop-index="34" />
         </table>
         <index name="order_index" start-index="13" stop-index="23" />
+        <columns start-index="37" stop-index="61">
+            <column name="order_id" start-index="37" stop-index="44" />
+            <column name="user_id" start-index="47" stop-index="53" />
+            <column name="status" start-index="56" stop-index="61" />
+        </columns>
     </create-index>
     
     <create-index sql-case-id="create_btree_index">
         <table>
             <simple-table name="t_order" start-index="28" stop-index="34" />
         </table>
+        <columns start-index="49" stop-index="56">
+            <column start-index="49" stop-index="56" name="order_id" />
+        </columns>
     </create-index>
     
     <create-index sql-case-id="create_index_with_quota">
@@ -61,6 +81,9 @@
             <simple-table name="t_order" start-delimiter="&quot;" end-delimiter="&quot;" start-index="30" stop-index="38" />
         </table>
         <index name="order_index" start-delimiter="&quot;" end-delimiter="&quot;" start-index="13" stop-index="25" />
+        <columns start-index="41" stop-index="50">
+            <column start-index="41" stop-index="50" name="order_id" start-delimiter="&quot;" end-delimiter="&quot;" />
+        </columns>
     </create-index>
     
     <create-index sql-case-id="create_index_with_function">
@@ -74,6 +97,9 @@
         <table>
             <simple-table name="t_order" start-delimiter="&quot;" end-delimiter="&quot;" start-index="30" stop-index="38" />
         </table>
+        <columns start-index="41" stop-index="50">
+            <column start-index="41" stop-index="50" name="order_id" start-delimiter="&quot;" end-delimiter="&quot;" />
+        </columns>
     </create-index>
     
     <create-index sql-case-id="create_index_with_double_quota_and_uescape">
@@ -81,24 +107,36 @@
         <table>
             <simple-table name="u&amp;t_order" start-index="58" stop-index="68" />
         </table>
+        <columns start-index="71" stop-index="82">
+            <column start-index="71" stop-index="82" name="u&amp;order_id" />
+        </columns>
     </create-index>
     
     <create-index sql-case-id="create_index_concurrently">
         <table>
             <simple-table name="t_order" start-index="41" stop-index="47" />
         </table>
+        <columns start-index="50" stop-index="57">
+            <column start-index="50" stop-index="57" name="order_id" />
+        </columns>
     </create-index>
     
     <create-index sql-case-id="create_index_if_not_exists">
         <table>
             <simple-table name="t_order" start-index="42" stop-index="48" />
         </table>
+        <columns start-index="51" stop-index="58">
+            <column start-index="51" stop-index="58" name="order_id" />
+        </columns>
     </create-index>
     
     <create-index sql-case-id="create_index_using_btree">
         <table>
             <simple-table name="t_order" start-index="28" stop-index="34" />
         </table>
+        <columns start-index="49" stop-index="56">
+            <column start-index="49" stop-index="56" name="order_id" />
+        </columns>
     </create-index>
     
     <create-index sql-case-id="create_index_with_unique">
@@ -106,6 +144,9 @@
             <simple-table name="t_order" start-index="35" stop-index="41" />
         </table>
         <index name="order_index" start-index="20" stop-index="30" />
+        <columns start-index="44" stop-index="51">
+            <column start-index="44" stop-index="51" name="order_id" />
+        </columns>
     </create-index>
     
     <create-index sql-case-id="create_index_with_usable">
@@ -113,6 +154,9 @@
             <simple-table name="t_order" start-index="35" stop-index="41" />
         </table>
         <index name="order_index" start-index="20" stop-index="30" />
+        <columns start-index="44" stop-index="51">
+            <column start-index="44" stop-index="51" name="order_id" />
+        </columns>
     </create-index>
     
     <create-index sql-case-id="create_index_with_unusable">
@@ -120,6 +164,9 @@
             <simple-table name="t_order" start-index="35" stop-index="41" />
         </table>
         <index name="order_index" start-index="20" stop-index="30" />
+        <columns start-index="44" stop-index="51">
+            <column start-index="44" stop-index="51" name="order_id" />
+        </columns>
     </create-index>
     
     <create-index sql-case-id="create_index_with_immediate_invalidation">
@@ -127,6 +174,9 @@
             <simple-table name="t_order" start-index="35" stop-index="41" />
         </table>
         <index name="order_index" start-index="20" stop-index="30" />
+        <columns start-index="44" stop-index="51">
+            <column start-index="44" stop-index="51" name="order_id" />
+        </columns>
     </create-index>
     
     <create-index sql-case-id="create_index_with_cluster_index">
@@ -138,24 +188,36 @@
             <simple-table name="t_order" start-index="35" stop-index="41" />
         </table>
         <index name="order_index" start-index="20" stop-index="30" />
+        <columns start-index="44" stop-index="51">
+            <column start-index="44" stop-index="51" name="order_id" />
+        </columns>
     </create-index>
     
     <create-index sql-case-id="create_index_with_bracket">
         <table>
             <simple-table name="t_order" start-delimiter="[" end-delimiter="]" start-index="30" stop-index="38" />
         </table>
+        <columns start-index="41" stop-index="50">
+            <column start-index="41" stop-index="50" name="order_id" start-delimiter="[" end-delimiter="]" />
+        </columns>
     </create-index>
 
     <create-index sql-case-id="create_index_with_no_default_fill_factor">
         <table>
             <simple-table name="t_order" start-index="35" stop-index="41" />
         </table>
+        <columns start-index="44" stop-index="51">
+            <column start-index="44" stop-index="51" name="order_id" />
+        </columns>
     </create-index>
 
     <create-index sql-case-id="create_index_with_tablespace">
         <table>
             <simple-table name="t_order" start-index="25" stop-index="31" />
         </table>
+        <columns start-index="34" stop-index="37">
+            <column start-index="34" stop-index="37" name="code" />
+        </columns>
     </create-index>
 
     <create-index sql-case-id="create_index_using_gist">
@@ -168,23 +230,35 @@
         <table>
             <simple-table name="t_order" start-index="50" stop-index="56" />
         </table>
+        <columns start-index="58" stop-index="65">
+            <column start-index="58" stop-index="65" name="quantity" />
+        </columns>
     </create-index>
 
     <create-index sql-case-id="create_gin_index">
         <table>
             <simple-table name="t_order" start-index="24" stop-index="30" />
         </table>
+        <columns start-index="43" stop-index="51">
+            <column start-index="43" stop-index="51" name="locations" />
+        </columns>
     </create-index>
 
     <create-index sql-case-id="create_index_using_ignore_dup_key">
         <table>
             <simple-table name="t_order" start-index="32" stop-index="38" />
         </table>
+        <columns start-index="41" stop-index="48">
+            <column start-index="41" stop-index="48" name="order_id" />
+        </columns>
     </create-index>
 
     <create-index sql-case-id="create_index_using_drop_existing">
         <table>
             <simple-table name="t_order" start-index="52" stop-index="58" />
         </table>
+        <columns start-index="60" stop-index="67">
+            <column start-index="60" stop-index="67" name="order_id" />
+        </columns>
     </create-index>
 </sql-parser-test-cases>

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.s
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.sql.SQLException;
 import java.util.Optional;
 
 /**
@@ -29,7 +30,7 @@ import java.util.Optional;
 public final class PostgreSQLSaneQueryResultEngine implements SaneQueryResultEngine {
     
     @Override
-    public Optional<ExecuteResult> getSaneQueryResult(final SQLStatement sqlStatement) {
+    public Optional<ExecuteResult> getSaneQueryResult(final SQLStatement sqlStatement, final SQLException ex) {
         return Optional.empty();
     }
     

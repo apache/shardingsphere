@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.Open
 /**
  * OpenGauss create domain statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OpenGaussCreateDomainStatement extends CreateDomainStatement implements OpenGaussStatement {
 }

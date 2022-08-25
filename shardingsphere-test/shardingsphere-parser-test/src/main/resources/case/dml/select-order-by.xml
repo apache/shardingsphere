@@ -34,7 +34,7 @@
 
     <select sql-case-id="select_order_by_desc_and_index_asc">
         <from>
-            <join-table>
+            <join-table join-type="COMMA">
                 <left>
                     <simple-table name="t_order" alias="o" start-index="16" stop-index="24" />
                 </left>
@@ -109,7 +109,7 @@
 
     <select sql-case-id="select_order_by_with_date">
         <from>
-            <join-table>
+            <join-table join-type="COMMA">
                 <left>
                     <simple-table name="t_order" alias="o" start-index="16" stop-index="24" />
                 </left>
@@ -320,7 +320,7 @@
 
     <select sql-case-id="select_order_by_with_table_star_without_table_name">
         <from>
-            <join-table>
+            <join-table join-type="INNER">
                 <left>
                     <simple-table name="t_order" alias="o" start-index="21" stop-index="29" />
                 </left>

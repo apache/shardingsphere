@@ -19,9 +19,9 @@ package org.apache.shardingsphere.spring.boot;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.mode.YamlModeConfigurationSwapper;
 import org.apache.shardingsphere.spring.boot.datasource.DataSourceMapSetter;
 import org.apache.shardingsphere.spring.boot.prop.SpringBootPropertiesConfiguration;
 import org.apache.shardingsphere.spring.boot.rule.LocalRulesCondition;
@@ -31,7 +31,6 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
@@ -56,7 +55,6 @@ import java.util.Optional;
 @Configuration
 @ComponentScan("org.apache.shardingsphere.spring.boot.converter")
 @EnableConfigurationProperties(SpringBootPropertiesConfiguration.class)
-@ConditionalOnProperty(prefix = "spring.shardingsphere", name = "enabled", havingValue = "true", matchIfMissing = true)
 @AutoConfigureBefore(DataSourceAutoConfiguration.class)
 @RequiredArgsConstructor
 public class ShardingSphereAutoConfiguration implements EnvironmentAware {
@@ -74,7 +72,7 @@ public class ShardingSphereAutoConfiguration implements EnvironmentAware {
      */
     @Bean
     public ModeConfiguration modeConfiguration() {
-        return null == props.getMode() ? null : new ModeConfigurationYamlSwapper().swapToObject(props.getMode());
+        return null == props.getMode() ? null : new YamlModeConfigurationSwapper().swapToObject(props.getMode());
     }
     
     /**

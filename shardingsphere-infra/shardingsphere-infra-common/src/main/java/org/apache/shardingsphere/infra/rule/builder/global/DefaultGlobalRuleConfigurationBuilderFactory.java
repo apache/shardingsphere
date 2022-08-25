@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.rule.builder.global;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPIRegistry;
 
 import java.util.Collection;
 import java.util.Map;

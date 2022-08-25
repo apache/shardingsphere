@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Create flashback archive statement.
  */
-@ToString
-public class CreateFlashbackArchiveStatement extends AbstractSQLStatement implements DDLStatement {
+@ToString(callSuper = true)
+public abstract class CreateFlashbackArchiveStatement extends AbstractSQLStatement implements DDLStatement {
 }

@@ -46,9 +46,10 @@ public final class ResponsePacketBuilder {
      * 
      * @param queryResponseHeader query response header
      * @param characterSet MySQL character set id
+     * @param statusFlags server status flags
      * @return query response packets
      */
-    public static Collection<DatabasePacket<?>> buildQueryResponsePackets(final QueryResponseHeader queryResponseHeader, final int characterSet) {
+    public static Collection<DatabasePacket<?>> buildQueryResponsePackets(final QueryResponseHeader queryResponseHeader, final int characterSet, final int statusFlags) {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
         int sequenceId = 0;
         List<QueryHeader> queryHeaders = queryResponseHeader.getQueryHeaders();
@@ -57,7 +58,7 @@ public final class ResponsePacketBuilder {
             result.add(new MySQLColumnDefinition41Packet(++sequenceId, characterSet, getColumnFieldDetailFlag(each), each.getSchema(), each.getTable(), each.getTable(),
                     each.getColumnLabel(), each.getColumnName(), each.getColumnLength(), MySQLBinaryColumnType.valueOfJDBCType(each.getColumnType()), each.getDecimals(), false));
         }
-        result.add(new MySQLEofPacket(++sequenceId));
+        result.add(new MySQLEofPacket(++sequenceId, statusFlags));
         return result;
     }
     
@@ -80,20 +81,12 @@ public final class ResponsePacketBuilder {
     
     /**
      * Build update response packets.
-     * 
+     *
      * @param updateResponseHeader update response header
+     * @param serverStatusFlag server status flag
      * @return update response packets
      */
-    public static Collection<DatabasePacket<?>> buildUpdateResponsePackets(final UpdateResponseHeader updateResponseHeader) {
-        return Collections.singletonList(new MySQLOKPacket(1, updateResponseHeader.getUpdateCount(), updateResponseHeader.getLastInsertId()));
-    }
-    
-    /**
-     * Build client encoding response packets.
-     *
-     * @return client encoding response packets
-     */
-    public static Collection<DatabasePacket<?>> buildClientEncodingResponsePackets() {
-        return Collections.singletonList(new MySQLOKPacket(1, 0, 0));
+    public static Collection<DatabasePacket<?>> buildUpdateResponsePackets(final UpdateResponseHeader updateResponseHeader, final int serverStatusFlag) {
+        return Collections.singletonList(new MySQLOKPacket(1, updateResponseHeader.getUpdateCount(), updateResponseHeader.getLastInsertId(), serverStatusFlag));
     }
 }

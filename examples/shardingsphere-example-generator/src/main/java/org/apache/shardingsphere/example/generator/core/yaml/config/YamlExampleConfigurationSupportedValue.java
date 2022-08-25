@@ -33,7 +33,7 @@ public enum YamlExampleConfigurationSupportedValue {
     
     PRODUCTS("products", new HashSet<>(Arrays.asList("jdbc", "proxy"))),
     
-    MODES("modes", new HashSet<>(Arrays.asList("memory", "proxy", "cluster-zookeeper", "cluster-etcd", "standalone-file"))),
+    MODES("modes", new HashSet<>(Arrays.asList("memory", "proxy", "cluster-zookeeper", "cluster-etcd", "standalone"))),
     
     TRANSACTIONS("transactions", new HashSet<>(Arrays.asList("local", "xa-atomikos", "xa-narayana", "xa-bitronix", "base-seata"))),
     

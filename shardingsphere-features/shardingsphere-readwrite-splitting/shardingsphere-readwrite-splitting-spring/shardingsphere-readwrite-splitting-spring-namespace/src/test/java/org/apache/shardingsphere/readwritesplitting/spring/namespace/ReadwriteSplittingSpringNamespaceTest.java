@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.spring.namespace;
 
 import org.apache.shardingsphere.readwritesplitting.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 import org.junit.Test;
@@ -26,11 +26,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertNotNull;
 
 @ContextConfiguration(locations = "classpath:META-INF/spring/readwrite-splitting-application-context.xml")
 public final class ReadwriteSplittingSpringNamespaceTest extends AbstractJUnit4SpringContextTests {
@@ -58,13 +60,14 @@ public final class ReadwriteSplittingSpringNamespaceTest extends AbstractJUnit4S
     
     private void assertLoadBalancers(final Map<String, ReadQueryLoadBalanceAlgorithm> loadBalances) {
         assertThat(loadBalances.size(), is(1));
-        assertThat(loadBalances.get("randomLoadbalancer"), instanceOf(RandomReplicaLoadBalanceAlgorithm.class));
+        assertThat(loadBalances.get("randomLoadbalancer"), instanceOf(RandomReadQueryLoadBalanceAlgorithm.class));
     }
     
     private void assertDefaultDataSourceRule(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig) {
+        assertNotNull(dataSourceRuleConfig.getStaticStrategy());
         assertThat(dataSourceRuleConfig.getName(), is("default_ds"));
-        assertThat(dataSourceRuleConfig.getProps().getProperty("write-data-source-name"), is("write_ds"));
-        assertThat(dataSourceRuleConfig.getProps().getProperty("read-data-source-names"), is("read_ds_0, read_ds_1"));
+        assertThat(dataSourceRuleConfig.getStaticStrategy().getWriteDataSourceName(), is("write_ds"));
+        assertThat(dataSourceRuleConfig.getStaticStrategy().getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
         assertThat(dataSourceRuleConfig.getLoadBalancerName(), is(""));
     }
     
@@ -77,8 +80,9 @@ public final class ReadwriteSplittingSpringNamespaceTest extends AbstractJUnit4S
     
     private void assertRandomDataSourceRule(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig) {
         assertThat(dataSourceRuleConfig.getName(), is("random_ds"));
-        assertThat(dataSourceRuleConfig.getProps().getProperty("write-data-source-name"), is("write_ds"));
-        assertThat(dataSourceRuleConfig.getProps().getProperty("read-data-source-names"), is("read_ds_0, read_ds_1"));
+        assertNotNull(dataSourceRuleConfig.getStaticStrategy());
+        assertThat(dataSourceRuleConfig.getStaticStrategy().getWriteDataSourceName(), is("write_ds"));
+        assertThat(dataSourceRuleConfig.getStaticStrategy().getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
         assertThat(dataSourceRuleConfig.getLoadBalancerName(), is("randomLoadbalancer"));
     }
 }

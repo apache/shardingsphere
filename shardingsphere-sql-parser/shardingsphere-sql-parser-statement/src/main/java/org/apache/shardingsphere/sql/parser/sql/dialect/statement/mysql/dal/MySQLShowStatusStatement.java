@@ -29,8 +29,8 @@ import java.util.Optional;
 /**
  * MySQL show status statement.
  */
-@ToString
 @Setter
+@ToString(callSuper = true)
 public final class MySQLShowStatusStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
     private ShowFilterSegment filter;

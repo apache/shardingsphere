@@ -20,8 +20,8 @@ package org.apache.shardingsphere.proxy.backend.response.data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Query response row.
@@ -30,14 +30,18 @@ import java.util.stream.Collectors;
 @Getter
 public final class QueryResponseRow {
     
-    private final Collection<QueryResponseCell> cells;
+    private final List<QueryResponseCell> cells;
     
     /**
      * Get row data.
      * 
      * @return row data
      */
-    public Collection<Object> getData() {
-        return cells.stream().map(QueryResponseCell::getData).collect(Collectors.toList());
+    public List<Object> getData() {
+        List<Object> result = new ArrayList<>(cells.size());
+        for (QueryResponseCell cell : cells) {
+            result.add(cell.getData());
+        }
+        return result;
     }
 }

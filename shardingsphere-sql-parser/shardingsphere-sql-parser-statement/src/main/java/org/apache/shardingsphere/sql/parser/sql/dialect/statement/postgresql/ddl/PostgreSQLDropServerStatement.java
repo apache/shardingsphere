@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL drop server statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLDropServerStatement extends DropServerStatement implements PostgreSQLStatement {
 }

@@ -53,7 +53,7 @@ public final class ShardingUpdateStatementValidator extends ShardingDMLStatement
         if (setAssignmentRouteContext.isPresent() && !isSameRouteContext(routeContext, setAssignmentRouteContext.get())) {
             throw new ShardingSphereException("Can not update sharding key since the updated value will change %s's data nodes.", tableName);
         }
-        if (UpdateStatementHandler.getLimitSegment(sqlStatementContext.getSqlStatement()).isPresent() && routeContext.getRouteUnits().size() > 1) {
+        if (!shardingRule.isBroadcastTable(tableName) && UpdateStatementHandler.getLimitSegment(sqlStatementContext.getSqlStatement()).isPresent() && routeContext.getRouteUnits().size() > 1) {
             throw new ShardingSphereException("UPDATE ... LIMIT can not support sharding route to multiple data nodes.");
         }
     }

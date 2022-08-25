@@ -31,7 +31,7 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
         List<Object> parameters = new LinkedList<>();
         parameters.add(3);
         parameters.add(2);
-        assertRoute(sql, parameters, 2);
+        assertRoute(sql, parameters);
     }
     
     @Test
@@ -40,7 +40,7 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
         parameters.add(1);
-        assertRoute(sql, parameters, 2);
+        assertRoute(sql, parameters);
     }
     
     @Test
@@ -49,7 +49,7 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
         parameters.add(1);
-        assertRoute(sql, parameters, 2);
+        assertRoute(sql, parameters);
     }
     
     @Test
@@ -67,7 +67,7 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
         List<Object> parameters = new LinkedList<>();
         parameters.add(2);
         parameters.add(3);
-        assertRoute(sql, parameters, 2);
+        assertRoute(sql, parameters);
     }
     
     @Test
@@ -77,7 +77,7 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
         parameters.add(2);
         parameters.add(1);
         String sql = "select (select max(id) from t_order_item b where b.user_id in(?,?)) from t_order a where user_id = ? ";
-        assertRoute(sql, parameters, 2);
+        assertRoute(sql, parameters);
     }
     
     @Test
@@ -88,7 +88,7 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
         parameters.add(1);
         parameters.add(3);
         String sql = "select (select max(id) from t_order_item b where b.user_id in(?,?)) from t_order a where user_id in(?,?) ";
-        assertRoute(sql, parameters, 2);
+        assertRoute(sql, parameters);
     }
     
     @Test

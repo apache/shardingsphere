@@ -20,8 +20,8 @@ package org.apache.shardingsphere.authority.yaml.config;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -39,9 +39,9 @@ public final class YamlAuthorityConfiguration implements YamlRuleConfiguration {
     
     private Collection<YamlAuthorityUserConfiguration> users = new LinkedList<>();
     
-    private YamlShardingSphereAlgorithmConfiguration privilege;
+    private YamlAlgorithmConfiguration privilege;
     
-    private Map<String, YamlShardingSphereAlgorithmConfiguration> authenticators = new LinkedHashMap<>();
+    private Map<String, YamlAlgorithmConfiguration> authenticators = new LinkedHashMap<>();
     
     private String defaultAuthenticator;
     

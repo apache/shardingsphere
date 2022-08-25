@@ -19,7 +19,7 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
+import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
@@ -106,39 +106,39 @@ public final class PostgreSQLErrorResponsePacket implements PostgreSQLIdentifier
      * Create PostgreSQL error response packet builder with required arguments.
      *
      * @param severity severity
-     * @param postgreSQLErrorCode PostgreSQL error code
+     * @param vendorError PostgreSQL vendor error
      * @param message message
      * @return PostgreSQL error response packet builder
      * @see <a href="https://www.postgresql.org/docs/12/protocol-error-fields.html">52.8. Error and Notice Message Fields</a>
      */
-    public static Builder newBuilder(final String severity, final PostgreSQLErrorCode postgreSQLErrorCode, final String message) {
-        return newBuilder(severity, postgreSQLErrorCode.getErrorCode(), message);
+    public static Builder newBuilder(final String severity, final PostgreSQLVendorError vendorError, final String message) {
+        return newBuilder(severity, vendorError.getSqlState().getValue(), message);
     }
     
     /**
      * Create PostgreSQL error response packet builder with required arguments.
      *
      * @param severity severity
-     * @param code code
+     * @param sqlState SQL state
      * @param message message
      * @return PostgreSQL error response packet builder
      * @see <a href="https://www.postgresql.org/docs/12/protocol-error-fields.html">52.8. Error and Notice Message Fields</a>
      */
-    public static Builder newBuilder(final String severity, final String code, final String message) {
-        return new Builder(severity, code, message);
+    public static Builder newBuilder(final String severity, final String sqlState, final String message) {
+        return new Builder(severity, sqlState, message);
     }
     
     public static final class Builder {
         
         private final Map<Character, String> fields = new LinkedHashMap<>(16, 1);
         
-        private Builder(final String severity, final String code, final String message) {
+        private Builder(final String severity, final String sqlState, final String message) {
             Preconditions.checkArgument(null != severity, "The severity is always present!");
-            Preconditions.checkArgument(!Strings.isNullOrEmpty(code), "The SQLSTATE code is always present!");
+            Preconditions.checkArgument(!Strings.isNullOrEmpty(sqlState), "The SQLSTATE code is always present!");
             Preconditions.checkArgument(!Strings.isNullOrEmpty(message), "The message is always present!");
             fields.put(FIELD_TYPE_SEVERITY, severity);
             fields.put(FIELD_TYPE_SEVERITY_NON_LOCALIZED, severity);
-            fields.put(FIELD_TYPE_CODE, code);
+            fields.put(FIELD_TYPE_CODE, sqlState);
             fields.put(FIELD_TYPE_MESSAGE, message);
         }
         

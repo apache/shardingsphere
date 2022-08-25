@@ -19,42 +19,26 @@ package org.apache.shardingsphere.authority.checker;
 
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.executor.check.SQLChecker;
 import org.apache.shardingsphere.infra.executor.check.SQLCheckerFactory;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Answers;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class AuthorityCheckerTest {
-    
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereDatabase database;
     
     @SuppressWarnings("unchecked")
     @Test
@@ -62,24 +46,10 @@ public final class AuthorityCheckerTest {
         Collection<ShardingSphereUser> users = new LinkedList<>();
         ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
         users.add(root);
-        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new ShardingSphereAlgorithmConfiguration("ALL_PERMITTED", new Properties()));
+        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties()));
         AuthorityRule rule = new AuthorityRule(ruleConfig, Collections.emptyMap());
         SQLChecker<AuthorityRule> sqlChecker = SQLCheckerFactory.getInstance(Collections.singleton(rule)).get(rule);
         assertTrue(sqlChecker.check("db0", new Grantee("root", "localhost"), rule));
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Test
-    public void assertCheckSchemaByNative() throws SQLException {
-        Collection<ShardingSphereUser> users = new LinkedList<>();
-        ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
-        users.add(root);
-        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
-        AuthorityRule rule = new AuthorityRule(ruleConfig, createDatabases(users));
-        SQLChecker<AuthorityRule> sqlChecker = SQLCheckerFactory.getInstance(Collections.singleton(rule)).get(rule);
-        assertTrue(sqlChecker.check("db0", new Grantee("root", "localhost"), rule));
-        assertFalse(sqlChecker.check("db1", new Grantee("root", "localhost"), rule));
-        assertFalse(sqlChecker.check("db0", new Grantee("other", "localhost"), rule));
     }
     
     @SuppressWarnings("unchecked")
@@ -88,7 +58,7 @@ public final class AuthorityCheckerTest {
         Collection<ShardingSphereUser> users = new LinkedList<>();
         ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
         users.add(root);
-        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
+        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties()));
         AuthorityRule rule = new AuthorityRule(ruleConfig, Collections.emptyMap());
         SQLChecker<AuthorityRule> sqlChecker = SQLCheckerFactory.getInstance(Collections.singleton(rule)).get(rule);
         assertTrue(sqlChecker.check(new Grantee("root", "localhost"), rule));
@@ -102,70 +72,14 @@ public final class AuthorityCheckerTest {
         Collection<ShardingSphereUser> users = new LinkedList<>();
         ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
         users.add(root);
-        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
+        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties()));
         AuthorityRule rule = new AuthorityRule(ruleConfig, Collections.emptyMap());
         SQLChecker<AuthorityRule> sqlChecker = SQLCheckerFactory.getInstance(Collections.singleton(rule)).get(rule);
-        SelectStatement selectStatement = mock(SelectStatement.class);
-        CreateTableStatement createTableStatement = mock(CreateTableStatement.class);
-        InsertStatement insertStatement = mock(InsertStatement.class);
-        assertTrue(sqlChecker.check(selectStatement, Collections.emptyList(), new Grantee("root", "localhost"), "db0", Collections.emptyMap(), rule).isPassed());
-        assertTrue(sqlChecker.check(insertStatement, Collections.emptyList(), new Grantee("root", "localhost"), "db0", Collections.emptyMap(), rule).isPassed());
-        assertTrue(sqlChecker.check(createTableStatement, Collections.emptyList(), new Grantee("root", "localhost"), "db0", Collections.emptyMap(), rule).isPassed());
-    }
-    
-    private Map<String, ShardingSphereDatabase> createDatabases(final Collection<ShardingSphereUser> users) throws SQLException {
-        when(database.getName()).thenReturn("db0");
-        DataSource dataSource = mockDataSourceForPrivileges(users);
-        when(database.getResource().getAllInstanceDataSources()).thenReturn(Collections.singletonList(dataSource));
-        when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        return Collections.singletonMap("db0", database);
-    }
-    
-    private DataSource mockDataSourceForPrivileges(final Collection<ShardingSphereUser> users) throws SQLException {
-        ResultSet globalPrivilegeResultSet = mockGlobalPrivilegeResultSet();
-        ResultSet schemaPrivilegeResultSet = mockSchemaPrivilegeResultSet();
-        ResultSet tablePrivilegeResultSet = mockTablePrivilegeResultSet();
-        DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
-        String globalPrivilegeSQL = "SELECT * FROM mysql.user WHERE (user, host) in (%s)";
-        String schemaPrivilegeSQL = "SELECT * FROM mysql.db WHERE (user, host) in (%s)";
-        String tablePrivilegeSQL = "SELECT Db, Table_name, Table_priv FROM mysql.tables_priv WHERE (user, host) in (%s)";
-        String useHostTuples = users.stream().map(each -> String.format("('%s', '%s')", each.getGrantee().getUsername(), each.getGrantee().getHostname())).collect(Collectors.joining(", "));
-        when(result.getConnection().createStatement().executeQuery(String.format(globalPrivilegeSQL, useHostTuples))).thenReturn(globalPrivilegeResultSet);
-        when(result.getConnection().createStatement().executeQuery(String.format(schemaPrivilegeSQL, useHostTuples))).thenReturn(schemaPrivilegeResultSet);
-        when(result.getConnection().createStatement().executeQuery(String.format(tablePrivilegeSQL, useHostTuples))).thenReturn(tablePrivilegeResultSet);
-        when(result.getConnection().getMetaData().getURL()).thenReturn("jdbc:mysql://localhost:3306/test");
-        return result;
-    }
-    
-    private ResultSet mockGlobalPrivilegeResultSet() throws SQLException {
-        ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, false);
-        when(result.getString("user")).thenReturn("root");
-        when(result.getString("host")).thenReturn("localhost");
-        return result;
-    }
-    
-    private ResultSet mockSchemaPrivilegeResultSet() throws SQLException {
-        ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, false);
-        when(result.getString("Db")).thenReturn("db0");
-        when(result.getObject("Select_priv")).thenReturn(true);
-        when(result.getObject("Insert_priv")).thenReturn(true);
-        when(result.getObject("Update_priv")).thenReturn(true);
-        when(result.getObject("Delete_priv")).thenReturn(true);
-        when(result.getString("user")).thenReturn("root");
-        when(result.getString("host")).thenReturn("localhost");
-        return result;
-    }
-    
-    private ResultSet mockTablePrivilegeResultSet() throws SQLException {
-        ResultSet result = mock(ResultSet.class, RETURNS_DEEP_STUBS);
-        when(result.next()).thenReturn(true, false);
-        when(result.getString("Db")).thenReturn("db0");
-        when(result.getString("Table_name")).thenReturn("sys_config");
-        when(result.getArray("Table_priv").getArray()).thenReturn(new String[]{"Select"});
-        when(result.getString("user")).thenReturn("root");
-        when(result.getString("host")).thenReturn("localhost");
-        return result;
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
+        CreateTableStatementContext createTableStatementContext = mock(CreateTableStatementContext.class);
+        InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
+        assertTrue(sqlChecker.check(selectStatementContext, Collections.emptyList(), new Grantee("root", "localhost"), "db0", Collections.emptyMap(), rule).isPassed());
+        assertTrue(sqlChecker.check(insertStatementContext, Collections.emptyList(), new Grantee("root", "localhost"), "db0", Collections.emptyMap(), rule).isPassed());
+        assertTrue(sqlChecker.check(createTableStatementContext, Collections.emptyList(), new Grantee("root", "localhost"), "db0", Collections.emptyMap(), rule).isPassed());
     }
 }

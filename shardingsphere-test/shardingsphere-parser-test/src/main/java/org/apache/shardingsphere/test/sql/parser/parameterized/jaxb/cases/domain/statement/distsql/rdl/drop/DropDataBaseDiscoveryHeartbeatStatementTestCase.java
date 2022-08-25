@@ -36,6 +36,6 @@ public final class DropDataBaseDiscoveryHeartbeatStatementTestCase extends SQLPa
     @XmlElement(name = "heartbeat")
     private final List<String> heartbeats = new LinkedList<>();
     
-    @XmlAttribute(name = "contains-exist-clause")
-    private boolean containsExistClause;
+    @XmlAttribute(name = "if-exists")
+    private boolean ifExists;
 }

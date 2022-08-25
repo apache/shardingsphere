@@ -1,6 +1,6 @@
 +++
 title = "Spring Namespace"
-weight = 5
+weight = 4
 chapter = true
 +++
 
@@ -20,11 +20,11 @@ ShardingSphere-JDBC provides official Spring Namespace to make convenient for de
 </dependency>
 ```
 
-## Configure Spring Bean
+### Configure Spring Bean
 
-### Configuration Item Explanation
+#### Configuration Item Explanation
 
-Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.1.xsd)
+Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.2.xsd](http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.2.xsd)
 
 \<shardingsphere:data-source />
 
@@ -37,7 +37,7 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/datasource/da
 | mode (?)          | Tag       | Mode configuration                                                                                                                             |
 | props (?)         | Tag       | Properties configuration, Please refer to [Properties Configuration](/en/user-manual/shardingsphere-jdbc/props) for more details |
 
-### Example
+#### Example
 
 ```xml
 <beans xmlns="http://www.springframework.org/schema/beans"
@@ -57,6 +57,6 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/datasource/da
 </beans>
 ```
 
-## Use ShardingSphere Data Source in Spring
+### Use Data Source
 
 Same with Spring Boot Starter.

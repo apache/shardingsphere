@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.nanoid.algorithm.keygen;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.factory.KeyGenerateAlgorithmFactory;
 import org.junit.Test;
 
@@ -30,6 +30,6 @@ public final class NanoIdKeyGenerateAlgorithmTest {
     
     @Test
     public void assertGenerateKey() {
-        assertThat(((String) KeyGenerateAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("NANOID", new Properties())).generateKey()).length(), is(21));
+        assertThat(((String) KeyGenerateAlgorithmFactory.newInstance(new AlgorithmConfiguration("NANOID", new Properties())).generateKey()).length(), is(21));
     }
 }

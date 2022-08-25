@@ -25,6 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
 /**
  * SQLServer revert statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class SQLServerRevertStatement extends AbstractSQLStatement implements DCLStatement, SQLServerStatement {
 }

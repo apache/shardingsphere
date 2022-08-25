@@ -20,8 +20,8 @@ databaseName: tbl
 dataSources:
   tbl:
     url: jdbc:mysql://mysql.tbl.host:3306/tbl?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
-    username: root
-    password: root
+    username: test_user
+    password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000

@@ -491,30 +491,30 @@
     <test-case sql="SELECT * FROM t_broadcast_table" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
-    <test-case sql="SELECT * FROM t_user WHERE user_id &lt;= 15 ORDER BY user_id" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="SELECT * FROM t_user WHERE user_id &lt;= 15 ORDER BY user_id" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT user_id, pwd FROM t_user WHERE pwd = 'a10'" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="SELECT user_id, pwd FROM t_user WHERE pwd = 'a10'" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT user_id FROM t_user WHERE pwd in ('a10', 'b11')" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="SELECT user_id FROM t_user WHERE pwd in ('a10', 'b11')" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT user_id FROM t_user WHERE pwd in ('a10', 'b11') and user_id = 10" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="SELECT user_id FROM t_user WHERE pwd in ('a10', 'b11') and user_id = 10" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
-    <test-case sql="SELECT * FROM t_user WHERE pwd in ('a10', 'b11') OR user_id = 10" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM t_user u INNER JOIN t_user_item m ON u.user_id=m.user_id WHERE u.user_id IN (0, 11)" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="SELECT * FROM t_user WHERE pwd in ('a10', 'b11') OR user_id = 10" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_single_table" db-types="MySQL,Oracle,SQLServer" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="SELECT * FROM t_user u INNER JOIN t_user_item m ON u.user_id=m.user_id WHERE u.user_id IN (0, 11)" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_single_table" db-types="MySQL,Oracle,SQLServer" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -523,27 +523,27 @@
 <!--        <assertion expected-data-source-name="read_dataset" />-->
 <!--    </test-case>-->
     
-    <test-case sql="SELECT * FROM t_single_table s INNER JOIN t_user o ON s.id = o.user_id" db-types="MySQL,Oracle,SQLServer" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="SELECT * FROM t_single_table s INNER JOIN t_user o ON s.id = o.user_id" db-types="MySQL,Oracle,SQLServer" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT o.*, i.* FROM t_order_federate o, t_order_item_federate i WHERE o.order_id = ? AND i.item_id = ?" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="SELECT o.*, i.* FROM t_order_federate o, t_order_item_federate i WHERE o.order_id = ? AND i.item_id = ?" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion parameters="1000:int, 100000:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT user_id, CONCAT('SUM:', total, '.') content FROM (SELECT user_id, SUM(order_id_sharding) AS total FROM t_order_federate_sharding GROUP BY user_id HAVING SUM(order_id_sharding) > ?) AS temp" db-types="MySQL,PostgreSQL" scenario-types="tbl">
+    <test-case sql="SELECT user_id, CONCAT('SUM:', total, '.') AS content FROM (SELECT user_id, SUM(order_id_sharding) AS total FROM t_order_federate_sharding GROUP BY user_id HAVING SUM(order_id_sharding) > ?) AS temp ORDER BY temp.user_id" db-types="MySQL,PostgreSQL" scenario-types="tbl">
         <assertion parameters="1000:int" />
     </test-case>
     
-    <test-case sql="SELECT GROUP_CONCAT(i.item_id SEPARATOR ';') AS item_ids FROM t_order_federate o INNER JOIN t_order_item_federate_sharding i ON o.order_id = i.item_id WHERE i.order_id >= ?" db-types="MySQL" scenario-types="dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="SELECT GROUP_CONCAT(i.item_id SEPARATOR ';') AS item_ids FROM t_order_federate o INNER JOIN t_order_item_federate_sharding i ON o.order_id = i.item_id WHERE i.order_id >= ?" db-types="MySQL" scenario-types="dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion parameters="10000:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="select t_order_federate.*, t_order_item_federate_sharding.* from t_order_federate,t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id" scenario-types="dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="select t_order_federate.*, t_order_item_federate_sharding.* from t_order_federate,t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id" scenario-types="dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="select t_order_federate.*, t_order_item_federate_sharding.* from t_order_federate, t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id AND t_order_item_federate_sharding.order_id = ?" scenario-types="dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="select t_order_federate.*, t_order_item_federate_sharding.* from t_order_federate, t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id AND t_order_item_federate_sharding.order_id = ?" scenario-types="dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion parameters="10001:int" expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -555,7 +555,7 @@
         <assertion parameters="1100:int" />
     </test-case>
     
-    <test-case sql="SELECT user_id, SUM(order_id_sharding) FROM t_order_federate_sharding GROUP BY user_id HAVING SUM(order_id_sharding) > ?" db-types="MySQL,PostgreSQL" scenario-types="tbl">
+    <test-case sql="SELECT user_id, SUM(order_id_sharding) FROM t_order_federate_sharding GROUP BY user_id HAVING SUM(order_id_sharding) > ? ORDER BY user_id" db-types="MySQL,PostgreSQL" scenario-types="tbl">
         <assertion parameters="1000:int" />
     </test-case>
     
@@ -567,59 +567,59 @@
         <assertion parameters="1000:int" />
     </test-case>
     
-    <test-case sql="select o.order_id_sharding, i.order_id from t_order_federate_sharding o, t_order_item_federate_sharding i where o.order_id_sharding = i.item_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="select o.order_id_sharding, i.order_id from t_order_federate_sharding o, t_order_item_federate_sharding i where o.order_id_sharding = i.item_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="select o.order_id_sharding, i.order_id from t_order_federate_sharding o, t_order_item_federate_sharding i where o.order_id_sharding = i.item_id and i.order_id > ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="select o.order_id_sharding, i.order_id from t_order_federate_sharding o, t_order_item_federate_sharding i where o.order_id_sharding = i.item_id and i.order_id > ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion parameters="10000:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="select o.order_id_sharding, i.order_id from t_order_federate_sharding o, t_order_item_federate_sharding i where o.order_id_sharding = i.item_id and i.order_id > ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="select o.order_id_sharding, i.order_id from t_order_federate_sharding o, t_order_item_federate_sharding i where o.order_id_sharding = i.item_id and i.order_id > ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion parameters="10000:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="select t_user_encrypt_federate_sharding.user_id, t_user_encrypt_federate_sharding.pwd, t_user_info.information from t_user_encrypt_federate_sharding, t_user_info where t_user_encrypt_federate_sharding.user_id = t_user_info.user_id order by t_user_encrypt_federate_sharding.user_id" scenario-types="dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="select t_user_encrypt_federate_sharding.user_id, t_user_encrypt_federate_sharding.pwd, t_user_info.information from t_user_encrypt_federate_sharding, t_user_info where t_user_encrypt_federate_sharding.user_id = t_user_info.user_id order by t_user_encrypt_federate_sharding.user_id" scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="select t_user_encrypt_federate_sharding.user_id, t_user_encrypt_federate_sharding.pwd, t_user_info.information from t_user_encrypt_federate_sharding, t_user_info where t_user_encrypt_federate_sharding.user_id = t_user_info.user_id and t_user_encrypt_federate_sharding.user_id > ? " scenario-types="dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="select t_user_encrypt_federate_sharding.user_id, t_user_encrypt_federate_sharding.pwd, t_user_info.information from t_user_encrypt_federate_sharding, t_user_info where t_user_encrypt_federate_sharding.user_id = t_user_info.user_id and t_user_encrypt_federate_sharding.user_id > ? " scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion parameters="1:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="select t_order_federate.* from t_order_federate, t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id ORDER BY t_order_item_federate_sharding.user_id" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="select t_order_federate.* from t_order_federate, t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id ORDER BY t_order_item_federate_sharding.user_id" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="select t_user_encrypt_federate.user_id, t_user_encrypt_federate.pwd, t_user_info.information from t_user_encrypt_federate, t_user_info where t_user_encrypt_federate.user_id = t_user_info.user_id " scenario-types="dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="select t_user_encrypt_federate.user_id, t_user_encrypt_federate.pwd, t_user_info.information from t_user_encrypt_federate, t_user_info where t_user_encrypt_federate.user_id = t_user_info.user_id " scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="select t_user_encrypt_federate.user_id, t_user_encrypt_federate.pwd, t_user_info.information from t_user_encrypt_federate, t_user_info where t_user_encrypt_federate.user_id = t_user_info.user_id and t_user_encrypt_federate.user_id > ? " scenario-types="dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="select t_user_encrypt_federate.user_id, t_user_encrypt_federate.pwd, t_user_info.information from t_user_encrypt_federate, t_user_info where t_user_encrypt_federate.user_id = t_user_info.user_id and t_user_encrypt_federate.user_id > ? " scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion parameters="1:int" expected-data-source-name="read_dataset" />
     </test-case>
     
     <test-case sql="SELECT o.item_id, o.order_id, o.creation_date, s.id FROM t_order_item o INNER JOIN t_single_table s ON o.order_id = s.id ORDER BY o.item_id " scenario-types="db,tbl" />
     
     <!-- FIXME #15592 Expected: is "1000", but: was "10000" -->
-<!--    <test-case sql="select t_order_federate.*, t_order_item_federate_sharding.* from t_order_federate, t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id AND t_order_item_federate_sharding.remarks = 't_order_item_federate_sharding' " scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">-->
+<!--    <test-case sql="select t_order_federate.*, t_order_item_federate_sharding.* from t_order_federate, t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id AND t_order_item_federate_sharding.remarks = 't_order_item_federate_sharding' " scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">-->
 <!--        <assertion expected-data-source-name="read_dataset" />-->
 <!--    </test-case>-->
     
     <!-- FIXME #15592 Expected: is "1000", but: was "10000" -->
-<!--    <test-case sql="select o.*, i.* from t_order_federate o, t_order_item_federate_sharding i where o.order_id = i.item_id " scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">-->
+<!--    <test-case sql="select o.*, i.* from t_order_federate o, t_order_item_federate_sharding i where o.order_id = i.item_id " scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">-->
 <!--        <assertion expected-data-source-name="read_dataset" />-->
 <!--    </test-case>-->
     
-    <test-case sql="SELECT * FROM (SELECT order_id_sharding, user_id FROM t_order_federate_sharding WHERE order_id_sharding = 1010) AS TEMP" scenario-types="db,dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="SELECT * FROM (SELECT order_id_sharding, user_id FROM t_order_federate_sharding WHERE order_id_sharding = 1010) AS TEMP" scenario-types="db,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT AVG(order_id_sharding) AS order_id_sharding_avg FROM (SELECT order_id_sharding, user_id FROM t_order_federate_sharding WHERE order_id_sharding = 1010) AS TEMP" scenario-types="db,dbtbl_with_readwrite_splitting_and_encrypt" db-types="MySQL">
+    <test-case sql="SELECT AVG(order_id_sharding) AS order_id_sharding_avg FROM (SELECT order_id_sharding, user_id FROM t_order_federate_sharding WHERE order_id_sharding = 1010) AS TEMP" scenario-types="db,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting" db-types="MySQL">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT order_id_sharding AS order_id, user_id, status FROM t_order_federate_sharding WHERE order_id_sharding = ? UNION ALL SELECT order_id, user_id, status FROM t_order_item_federate_sharding WHERE user_id = ?" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,tbl">
+    <test-case sql="SELECT order_id_sharding AS order_id, user_id, status FROM t_order_federate_sharding WHERE order_id_sharding = ? UNION ALL SELECT order_id, user_id, status FROM t_order_item_federate_sharding WHERE user_id = ?" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting,tbl">
         <assertion parameters="1010:int, 10:int" expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -627,5 +627,10 @@
     <test-case sql="SELECT order_id, user_id, order_name, type_char, type_boolean, type_smallint, type_enum, type_decimal, type_date, type_time, type_timestamp FROM t_shadow WHERE user_id = ?" db-types="MySQL,PostgreSQL" scenario-types="shadow">
         <assertion parameters="1:int" expected-data-source-name="prod_dataset" />
         <assertion parameters="0:int" expected-data-source-name="shadow_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT order_id, user_id, order_name, type_char, type_boolean, type_smallint, type_enum, type_decimal, type_date, type_time, type_timestamp FROM t_shadow WHERE user_id = ?" db-types="MySQL,PostgreSQL" scenario-types="encrypt_shadow">
+        <assertion parameters="1:int" expected-data-source-name="prod_dataset" />
+        <assertion parameters="0:int" expected-data-source-name="encrypt_shadow_dataset" />
     </test-case>
 </integration-test-cases>

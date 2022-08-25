@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL update statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLUpdateStatement extends UpdateStatement implements PostgreSQLStatement {
 }

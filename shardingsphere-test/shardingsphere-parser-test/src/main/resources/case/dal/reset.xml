@@ -17,8 +17,8 @@
   -->
 
 <sql-parser-test-cases>
-    <common sql-case-id="reset_all" />
-    <common sql-case-id="reset_timezone" />
+    <reset-parameter sql-case-id="reset_all" configuration-parameter="ALL" />
+    <reset-parameter sql-case-id="reset_timezone" configuration-parameter="timezone" />
     <reset sql-case-id="reset_master">
         <option master="true" start-index="6" stop-index="11" />
     </reset>
@@ -45,5 +45,5 @@
     <reset sql-case-id="reset_replica" />
     <reset-persist sql-case-id="reset_persist" />
     <reset-persist sql-case-id="reset_persist_identifier" identifier="TEST_ID" />
-    <reset-persist sql-case-id="reset_persist_exist_identifier" exist-clause="true" identifier="TEST_ID" />
+    <reset-persist sql-case-id="reset_persist_exist_identifier" if-exists="true" identifier="TEST_ID" />
 </sql-parser-test-cases>

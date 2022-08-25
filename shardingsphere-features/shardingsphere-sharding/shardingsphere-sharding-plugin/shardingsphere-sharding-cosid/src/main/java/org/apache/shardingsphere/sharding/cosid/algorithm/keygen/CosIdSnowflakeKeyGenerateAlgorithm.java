@@ -37,8 +37,6 @@ import java.util.Properties;
  */
 public final class CosIdSnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm, InstanceAwareAlgorithm {
     
-    public static final String TYPE = CosIdAlgorithmConstants.TYPE_PREFIX + "SNOWFLAKE";
-    
     public static final long DEFAULT_EPOCH;
     
     public static final String AS_STRING_KEY = "as-string";
@@ -81,7 +79,7 @@ public final class CosIdSnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgo
     
     @Override
     public void setInstanceContext(final InstanceContext instanceContext) {
-        long workerId = instanceContext.getWorkerId();
+        long workerId = instanceContext.generateWorkerId(props);
         MillisecondSnowflakeId millisecondSnowflakeId =
                 new MillisecondSnowflakeId(epoch, MillisecondSnowflakeId.DEFAULT_TIMESTAMP_BIT, MillisecondSnowflakeId.DEFAULT_MACHINE_BIT, MillisecondSnowflakeId.DEFAULT_SEQUENCE_BIT, workerId);
         snowflakeId = new StringSnowflakeId(new ClockSyncSnowflakeId(millisecondSnowflakeId), Radix62IdConverter.PAD_START);
@@ -102,6 +100,6 @@ public final class CosIdSnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgo
     
     @Override
     public String getType() {
-        return TYPE;
+        return CosIdAlgorithmConstants.TYPE_PREFIX + "SNOWFLAKE";
     }
 }

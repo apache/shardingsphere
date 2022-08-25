@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.datetime.database.config;
 
 import lombok.Getter;
+import org.apache.shardingsphere.datetime.database.exception.DatetimeConfigurationFileNotFoundException;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.yaml.snakeyaml.Yaml;
 
 import javax.sql.DataSource;
@@ -55,7 +55,7 @@ public final class DatabaseDatetimeServiceConfiguration {
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(CONFIG_FILE)) {
             return new Yaml().loadAs(inputStream, Map.class);
         } catch (final IOException ex) {
-            throw new ShardingSphereException("Cannot load " + CONFIG_FILE + "file.", ex);
+            throw new DatetimeConfigurationFileNotFoundException(CONFIG_FILE);
         }
     }
     

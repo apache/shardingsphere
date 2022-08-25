@@ -17,13 +17,16 @@
 
 package org.apache.shardingsphere.data.pipeline.opengauss.ddlgenerator;
 
+import org.apache.shardingsphere.data.pipeline.core.exception.CreateTableSQLGenerateException;
 import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGenerator;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
 * Create table SQL generator for openGauss.
@@ -34,16 +37,20 @@ public final class OpenGaussCreateTableSQLGenerator implements CreateTableSQLGen
     
     private static final String COLUMN_LABEL = "pg_get_tabledef";
     
+    private static final String DELIMITER = ";";
+    
     @Override
-    public String generate(final String tableName, final String schemaName, final DataSource dataSource) throws SQLException {
+    public Collection<String> generate(final DataSource dataSource, final String schemaName, final String tableName) throws SQLException {
         try (
-                Statement statement = dataSource.getConnection().createStatement();
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(String.format(SELECT_TABLE_DEF_SQL, schemaName, tableName))) {
             if (resultSet.next()) {
-                return resultSet.getString(COLUMN_LABEL);
+                // TODO use ";" to split is not always correct
+                return Arrays.asList(resultSet.getString(COLUMN_LABEL).split(DELIMITER));
             }
         }
-        throw new ShardingSphereException("Failed to get ddl sql for table %s", tableName);
+        throw new CreateTableSQLGenerateException(tableName);
     }
     
     @Override

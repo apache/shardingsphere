@@ -20,4 +20,15 @@
     <create-procedure sql-case-id="create_procedure" />
     <create-procedure sql-case-id="create_procedure_with_parameters" />
     <create-procedure sql-case-id="create_procedure_declare_without_at" />
+    <create-procedure sql-case-id="create_procedure_with_declare_and_view" />
+    <create-procedure sql-case-id="create_procedure_with_create_view_as_select" />
+    <create-procedure sql-case-id="create_procedure_with_create_view_as_double_select" />
+    <create-procedure sql-case-id="create_procedure_with_create_view_as_select_lowercase" />
+    <create-procedure sql-case-id="create_procedure_with_create_view_as_select_i" />
+    <create-procedure sql-case-id="create_procedure_with_create_view_as_select_into" />
+    <create-procedure sql-case-id="create_procedure_with_create_view_as_select_into_dumpfile" />
+    <create-procedure sql-case-id="create_procedure_with_create_view_as_select_into_outfile" />
+    <create-procedure sql-case-id="create_procedure_with_sqlexception_and_create_view" />
+    <create-procedure sql-case-id="create_procedure_with_deterministic_create_view" />
+    <create-procedure sql-case-id="create_procedure_with_update_statement_oracle" />
 </sql-parser-test-cases>

@@ -17,35 +17,12 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql;
 
-import org.apache.shardingsphere.data.pipeline.postgresql.importer.PostgreSQLImporter;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLInventoryDumper;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLWalDumper;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 
 /**
  * PostgreSQL scaling entry.
  */
 public final class PostgreSQLScalingEntry implements ScalingEntry {
-    
-    @Override
-    public Class<PostgreSQLInventoryDumper> getInventoryDumperClass() {
-        return PostgreSQLInventoryDumper.class;
-    }
-    
-    @Override
-    public Class<PostgreSQLWalDumper> getIncrementalDumperClass() {
-        return PostgreSQLWalDumper.class;
-    }
-    
-    @Override
-    public Class<PostgreSQLImporter> getImporterClass() {
-        return PostgreSQLImporter.class;
-    }
-    
-    @Override
-    public Class<PostgreSQLEnvironmentChecker> getEnvironmentCheckerClass() {
-        return PostgreSQLEnvironmentChecker.class;
-    }
     
     @Override
     public String getType() {

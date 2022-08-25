@@ -29,13 +29,13 @@ public final class DropSchemaStatementHandlerTest {
     public void assertIsContainsCascadeForPostgreSQL() {
         PostgreSQLDropSchemaStatement dropSchemaStatement = new PostgreSQLDropSchemaStatement();
         dropSchemaStatement.setContainsCascade(true);
-        assertTrue(DropSchemaStatementHandler.isContainsCascade(dropSchemaStatement));
+        assertTrue(DropSchemaStatementHandler.containsCascade(dropSchemaStatement));
     }
     
     @Test
     public void assertIsContainsCascadeForOpenGauss() {
         OpenGaussDropSchemaStatement dropSchemaStatement = new OpenGaussDropSchemaStatement();
         dropSchemaStatement.setContainsCascade(true);
-        assertTrue(DropSchemaStatementHandler.isContainsCascade(dropSchemaStatement));
+        assertTrue(DropSchemaStatementHandler.containsCascade(dropSchemaStatement));
     }
 }

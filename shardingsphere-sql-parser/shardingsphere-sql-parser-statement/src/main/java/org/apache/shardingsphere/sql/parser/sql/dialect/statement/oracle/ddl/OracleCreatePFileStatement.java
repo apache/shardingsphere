@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateSPFileStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreatePFileStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle create parameter file statement.
  */
-@ToString
-public class OracleCreatePFileStatement extends CreateSPFileStatement implements OracleStatement {
+@ToString(callSuper = true)
+public class OracleCreatePFileStatement extends CreatePFileStatement implements OracleStatement {
 }

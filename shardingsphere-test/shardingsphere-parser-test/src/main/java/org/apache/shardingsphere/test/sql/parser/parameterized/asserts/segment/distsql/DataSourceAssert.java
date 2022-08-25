@@ -20,6 +20,8 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
+import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
+import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedDataSource;
 
@@ -46,21 +48,21 @@ public final class DataSourceAssert {
             assertNull(assertContext.getText("Actual dataSource should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual dataSource should exist."), actual);
-            assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
-                    actual.getClass().getSimpleName())), actual.getName(), is(expected.getName()));
-            assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
-                    actual.getClass().getSimpleName())), actual.getUrl(), is(expected.getUrl()));
-            assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
-                    actual.getClass().getSimpleName())), actual.getHostname(), is(expected.getHostname()));
-            assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
-                    actual.getClass().getSimpleName())), actual.getPort(), is(expected.getPort()));
-            assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
-                    actual.getClass().getSimpleName())), actual.getDatabase(), is(expected.getDb()));
-            assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
-                    actual.getClass().getSimpleName())), actual.getUser(), is(expected.getUser()));
-            assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
-                    actual.getClass().getSimpleName())), actual.getPassword(), is(expected.getPassword()));
-            PropertiesAssert.assertIs(assertContext, actual.getProperties(), expected.getProps());
+            assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ", actual.getClass().getSimpleName())), actual.getName(), is(expected.getName()));
+            assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ", actual.getClass().getSimpleName())), actual.getUser(), is(expected.getUser()));
+            assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ", actual.getClass().getSimpleName())), actual.getPassword(), is(expected.getPassword()));
+            PropertiesAssert.assertIs(assertContext, actual.getProps(), expected.getProps());
+            if (actual instanceof URLBasedDataSourceSegment) {
+                assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
+                        actual.getClass().getSimpleName())), ((URLBasedDataSourceSegment) actual).getUrl(), is(expected.getUrl()));
+            }
+            if (actual instanceof HostnameAndPortBasedDataSourceSegment) {
+                HostnameAndPortBasedDataSourceSegment actualSegment = (HostnameAndPortBasedDataSourceSegment) actual;
+                assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
+                        actual.getClass().getSimpleName())), actualSegment.getHostname(), is(expected.getHostname()));
+                assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ", actual.getClass().getSimpleName())), actualSegment.getPort(), is(expected.getPort()));
+                assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ", actual.getClass().getSimpleName())), actualSegment.getDatabase(), is(expected.getDb()));
+            }
         }
     }
 }

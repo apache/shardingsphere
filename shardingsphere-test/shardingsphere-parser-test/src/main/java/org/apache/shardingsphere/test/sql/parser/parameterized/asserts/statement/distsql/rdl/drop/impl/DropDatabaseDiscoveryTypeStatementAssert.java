@@ -47,7 +47,7 @@ public final class DropDatabaseDiscoveryTypeStatementAssert {
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
             assertThat(assertContext.getText("database discovery type assertion error: "), actual.getTypes(), is(expected.getTypes()));
-            assertThat(assertContext.getText("database discovery type assertion error: "), actual.isContainsExistClause(), is(expected.isContainsExistClause()));
+            assertThat(assertContext.getText("database discovery type assertion error: "), actual.isIfExists(), is(expected.isIfExists()));
         }
     }
 }

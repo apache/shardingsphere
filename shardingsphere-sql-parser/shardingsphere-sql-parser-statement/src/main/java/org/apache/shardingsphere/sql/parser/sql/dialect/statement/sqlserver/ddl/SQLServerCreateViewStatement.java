@@ -22,8 +22,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewS
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
- * SQLServer create table statement.
+ * SQLServer create view statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class SQLServerCreateViewStatement extends CreateViewStatement implements SQLServerStatement {
 }

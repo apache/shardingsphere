@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.factory;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.fixture.ShardingAlgorithmFixture;
 import org.junit.Test;
 
@@ -31,7 +31,7 @@ public final class ShardingAlgorithmFactoryTest {
     
     @Test
     public void assertNewInstance() {
-        ShardingSphereAlgorithmConfiguration configuration = new ShardingSphereAlgorithmConfiguration("FIXTURE", new Properties());
+        AlgorithmConfiguration configuration = new AlgorithmConfiguration("FIXTURE", new Properties());
         assertThat(ShardingAlgorithmFactory.newInstance(configuration), instanceOf(ShardingAlgorithmFixture.class));
     }
     

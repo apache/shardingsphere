@@ -17,13 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.response.header.query.impl;
 
-import lombok.SneakyThrows;
-import org.apache.commons.lang3.concurrent.ConcurrentException;
-import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilder;
@@ -32,22 +29,22 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 /**
- * QueryHeaderBuilder for MySQL.
+ * Query header builder for MySQL.
  */
 public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
     
-    @SneakyThrows(ConcurrentException.class)
     @Override
-    public QueryHeader build(final QueryResultMetaData queryResultMetaData, final ShardingSphereDatabase database, final String columnName, final String columnLabel,
-                             final int columnIndex, final LazyInitializer<DataNodeContainedRule> dataNodeContainedRule) throws SQLException {
+    public QueryHeader build(final QueryResultMetaData queryResultMetaData,
+                             final ShardingSphereDatabase database, final String columnName, final String columnLabel, final int columnIndex) throws SQLException {
         String schemaName = null == database ? "" : database.getName();
         String actualTableName = queryResultMetaData.getTableName(columnIndex);
         String tableName;
         boolean primaryKey;
-        if (null != actualTableName && null != dataNodeContainedRule.get()) {
-            tableName = dataNodeContainedRule.get().findLogicTableByActualTable(actualTableName).orElse("");
-            ShardingSphereTable table = database.getSchemas().get(schemaName).get(tableName);
-            primaryKey = null != table && Optional.ofNullable(table.getColumns().get(columnName.toLowerCase())).map(ShardingSphereColumn::isPrimaryKey).orElse(false);
+        if (null != actualTableName && null != database) {
+            tableName = getLogicTableName(database, actualTableName);
+            ShardingSphereSchema schema = database.getSchema(schemaName);
+            primaryKey = null != schema
+                    && Optional.ofNullable(schema.get(tableName)).map(optional -> optional.getColumns().get(columnName.toLowerCase())).map(ShardingSphereColumn::isPrimaryKey).orElse(false);
         } else {
             tableName = actualTableName;
             primaryKey = false;
@@ -62,11 +59,22 @@ public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
         return new QueryHeader(schemaName, tableName, columnLabel, columnName, columnType, columnTypeName, columnLength, decimals, signed, primaryKey, notNull, autoIncrement);
     }
     
+    private String getLogicTableName(final ShardingSphereDatabase database, final String actualTableName) {
+        for (DataNodeContainedRule each : database.getRuleMetaData().findRules(DataNodeContainedRule.class)) {
+            Optional<String> logicTable = each.findLogicTableByActualTable(actualTableName);
+            if (logicTable.isPresent()) {
+                return logicTable.get();
+            }
+        }
+        return actualTableName;
+    }
+    
     @Override
     public String getType() {
         return "MySQL";
     }
     
+    // TODO to be confirmed, QueryHeaderBuilder should not has default value, just throw unsupport exception if database type missing
     @Override
     public boolean isDefault() {
         return true;

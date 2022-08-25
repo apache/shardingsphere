@@ -17,21 +17,23 @@
 
 package org.apache.shardingsphere.infra.route.fixture.router;
 
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.context.ConnectionContext;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.fixture.rule.RouteRuleFixture;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
 
 import java.util.Collections;
 
 public final class SQLRouterFixture implements SQLRouter<RouteRuleFixture> {
     
     @Override
-    public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereDatabase database, final RouteRuleFixture rule, final ConfigurationProperties props) {
+    public RouteContext createRouteContext(final QueryContext queryContext, final ShardingSphereDatabase database, final RouteRuleFixture rule,
+                                           final ConfigurationProperties props, final ConnectionContext connectionContext) {
         RouteContext result = new RouteContext();
         result.getRouteUnits().add(new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.emptyList()));
         return result;
@@ -39,7 +41,8 @@ public final class SQLRouterFixture implements SQLRouter<RouteRuleFixture> {
     
     @Override
     public void decorateRouteContext(final RouteContext routeContext,
-                                     final LogicSQL logicSQL, final ShardingSphereDatabase database, final RouteRuleFixture rule, final ConfigurationProperties props) {
+                                     final QueryContext queryContext, final ShardingSphereDatabase database, final RouteRuleFixture rule,
+                                     final ConfigurationProperties props, final ConnectionContext connectionContext) {
         routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.emptyList()));
     }
     

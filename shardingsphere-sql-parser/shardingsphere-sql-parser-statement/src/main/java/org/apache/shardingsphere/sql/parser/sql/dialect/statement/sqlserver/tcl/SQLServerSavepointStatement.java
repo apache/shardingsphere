@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
 /**
  * SQLServer savepoint statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class SQLServerSavepointStatement extends SavepointStatement implements SQLServerStatement {
 }

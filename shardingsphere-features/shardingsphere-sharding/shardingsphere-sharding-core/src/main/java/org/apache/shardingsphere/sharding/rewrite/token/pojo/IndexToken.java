@@ -25,13 +25,10 @@ import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDa
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.RouteUnitAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
-import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -72,7 +69,7 @@ public final class IndexToken extends SQLToken implements Substitutable, RouteUn
     }
     
     private String getIndexValue(final RouteUnit routeUnit) {
-        Map<String, String> logicAndActualTables = getLogicAndActualTables(routeUnit);
+        Map<String, String> logicAndActualTables = TokenUtil.getLogicAndActualTables(routeUnit, sqlStatementContext, shardingRule);
         String actualTableName = findLogicTableNameFromMetaData(identifier.getValue()).map(logicAndActualTables::get)
                 .orElseGet(() -> logicAndActualTables.values().stream().findFirst().orElse(null));
         return IndexMetaDataUtil.getActualIndexName(identifier.getValue(), actualTableName);
@@ -85,15 +82,5 @@ public final class IndexToken extends SQLToken implements Substitutable, RouteUn
             }
         }
         return Optional.empty();
-    }
-    
-    private Map<String, String> getLogicAndActualTables(final RouteUnit routeUnit) {
-        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
-        Map<String, String> result = new HashMap<>(tableNames.size(), 1);
-        for (RouteMapper each : routeUnit.getTableMappers()) {
-            result.put(each.getLogicName().toLowerCase(), each.getActualName());
-            result.putAll(shardingRule.getLogicAndActualTablesFromBindingTable(routeUnit.getDataSourceMapper().getLogicName(), each.getLogicName(), each.getActualName(), tableNames));
-        }
-        return result;
     }
 }

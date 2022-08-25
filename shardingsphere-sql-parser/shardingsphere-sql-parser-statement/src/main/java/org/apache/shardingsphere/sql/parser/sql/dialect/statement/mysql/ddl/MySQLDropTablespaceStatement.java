@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL drop tablespace statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class MySQLDropTablespaceStatement extends DropTablespaceStatement implements MySQLStatement {
 }

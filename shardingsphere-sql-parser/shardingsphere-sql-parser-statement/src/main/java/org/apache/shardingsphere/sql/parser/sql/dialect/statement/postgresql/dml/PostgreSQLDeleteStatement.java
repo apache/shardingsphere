@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL delete statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLDeleteStatement extends DeleteStatement implements PostgreSQLStatement {
 }

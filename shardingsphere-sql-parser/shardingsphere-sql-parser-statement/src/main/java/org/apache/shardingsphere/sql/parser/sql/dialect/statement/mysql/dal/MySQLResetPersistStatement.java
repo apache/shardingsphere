@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
@@ -28,12 +28,12 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL reset persist statement.
  */
-@ToString
+@RequiredArgsConstructor
 @Getter
-@Setter
+@ToString(callSuper = true)
 public final class MySQLResetPersistStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
-    private boolean containsExistClause;
+    private final boolean ifExists;
     
-    private IdentifierValue identifier;
+    private final IdentifierValue identifier;
 }

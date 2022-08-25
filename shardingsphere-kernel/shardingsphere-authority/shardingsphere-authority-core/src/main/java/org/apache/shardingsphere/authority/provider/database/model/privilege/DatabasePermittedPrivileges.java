@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.authority.model.AccessSubject;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.provider.natived.model.subject.DatabaseAccessSubject;
+import org.apache.shardingsphere.authority.provider.database.model.subject.DatabaseAccessSubject;
 
 import java.util.Collection;
 import java.util.Set;
@@ -32,6 +32,8 @@ import java.util.Set;
 @RequiredArgsConstructor
 public final class DatabasePermittedPrivileges implements ShardingSpherePrivileges {
     
+    private static final String KEY_SUPER = "*";
+    
     private final Set<String> databases;
     
     @Override
@@ -40,7 +42,7 @@ public final class DatabasePermittedPrivileges implements ShardingSpherePrivileg
     
     @Override
     public boolean hasPrivileges(final String database) {
-        return databases.contains(database);
+        return databases.contains(KEY_SUPER) || databases.contains(database);
     }
     
     @Override

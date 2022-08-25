@@ -30,7 +30,7 @@ import java.util.Optional;
  * SQLServer insert statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class SQLServerInsertStatement extends InsertStatement implements SQLServerStatement {
     
     private WithSegment withSegment;

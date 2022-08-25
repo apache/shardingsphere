@@ -29,7 +29,7 @@ import java.util.Optional;
  * MySQL create function statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class MySQLCreateFunctionStatement extends CreateFunctionStatement implements MySQLStatement {
     
     private RoutineBodySegment routineBody;

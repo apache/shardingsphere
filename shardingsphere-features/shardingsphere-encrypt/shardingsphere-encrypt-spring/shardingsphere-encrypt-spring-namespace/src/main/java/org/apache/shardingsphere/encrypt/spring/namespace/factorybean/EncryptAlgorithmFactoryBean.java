@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.spring.namespace.factorybean;
 
 import org.apache.shardingsphere.encrypt.factory.EncryptAlgorithmFactory;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.spring.namespace.factorybean.ShardingSphereAlgorithmFactoryBean;
 
 import java.util.Properties;
@@ -36,6 +36,6 @@ public final class EncryptAlgorithmFactoryBean extends ShardingSphereAlgorithmFa
     
     @Override
     public EncryptAlgorithm<?, ?> getObject() {
-        return EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration(getType(), getProps()));
+        return EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration(getType(), getProps()));
     }
 }

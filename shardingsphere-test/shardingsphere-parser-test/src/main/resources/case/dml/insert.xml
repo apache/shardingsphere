@@ -851,7 +851,7 @@
                 </assignment-value>
                 <assignment-value>
                     <parameter-marker-expression parameter-index="2" start-index="121" stop-index="128" />
-                    <literal-expression value="{&quot;rule&quot;:&quot;null&quot;}'::json" start-index="123" stop-index="146" />
+                    <common-expression text="'{&quot;rule&quot;:&quot;null&quot;}'::jsonb" start-index="123" stop-index="146" />
                 </assignment-value>
             </value>
         </values>
@@ -946,7 +946,7 @@
         <values>
             <value>
                 <assignment-value>
-                    <common-expression text="null" />
+                    <common-expression text="null" start-index="43" stop-index="46"/>
                 </assignment-value>
             </value>
         </values>
@@ -960,8 +960,7 @@
         <values>
             <value>
                 <assignment-value>
-    <!--            TODO StringLiteralValue should consider about _binary/_utf8mb4-->
-                    <literal-expression value="BINARY'This is a binary value." start-index="43" stop-index="74" />
+                    <common-expression text="_BINARY'This is a binary value.'" start-index="43" stop-index="74" />
                 </assignment-value>
             </value>
         </values>
@@ -1470,13 +1469,17 @@
 
     <insert sql-case-id="insert_with_digit_literals_value">
         <table name="digit_literals_value_test" start-index="12" stop-index="36" />
-        <columns start-index="37" stop-index="42">
+        <columns start-index="37" stop-index="48">
             <column name="col1" start-index="38" stop-index="41" />
+            <column name="col2" start-index="44" stop-index="47" />
         </columns>
         <values>
             <value>
                 <assignment-value>
-                    <literal-expression value="x'1234'" />
+                    <common-expression text="x'1234'" start-index="57" stop-index="63" />
+                </assignment-value>
+                <assignment-value>
+                    <common-expression text="x''" start-index="66" stop-index="68" />
                 </assignment-value>
             </value>
         </values>
@@ -1798,7 +1801,7 @@
                     <literal-expression value="1.2E+3" start-index="178" stop-index="182" />
                 </assignment-value>
                 <assignment-value>
-                    <literal-expression value="185..188" start-index="185" stop-index="188" />
+                    <common-expression text="NULL" start-index="185" stop-index="188" />
                 </assignment-value>
             </value>
         </values>

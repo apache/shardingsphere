@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Create context statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class CreateContextStatement extends AbstractSQLStatement implements DDLStatement {
 }

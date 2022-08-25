@@ -25,6 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Oracle create database link statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OracleCreateDatabaseLinkStatement extends AbstractSQLStatement implements DDLStatement, OracleStatement {
 }

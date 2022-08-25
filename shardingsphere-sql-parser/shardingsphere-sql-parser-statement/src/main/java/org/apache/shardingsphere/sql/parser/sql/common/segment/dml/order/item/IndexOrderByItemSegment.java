@@ -36,7 +36,6 @@ public final class IndexOrderByItemSegment extends OrderByItemSegment {
     }
     
     public IndexOrderByItemSegment(final int startIndex, final int stopIndex, final int columnIndex, final OrderDirection orderDirection) {
-        super(startIndex, stopIndex, orderDirection, OrderDirection.ASC);
-        this.columnIndex = columnIndex;
+        this(startIndex, stopIndex, columnIndex, orderDirection, OrderDirection.ASC);
     }
 }

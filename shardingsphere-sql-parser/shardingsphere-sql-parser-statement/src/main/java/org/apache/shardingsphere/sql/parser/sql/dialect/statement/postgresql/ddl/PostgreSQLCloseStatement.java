@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL close statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLCloseStatement extends CloseStatement implements PostgreSQLStatement {
 }

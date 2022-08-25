@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Alter database dictionary statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class AlterDatabaseDictionaryStatement extends AbstractSQLStatement implements DDLStatement {
 }

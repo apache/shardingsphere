@@ -20,6 +20,7 @@ package org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
+import org.apache.shardingsphere.encrypt.exception.UnsupportedEncryptInsertValueException;
 import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseNameAware;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
@@ -28,7 +29,6 @@ import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
@@ -69,12 +69,12 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
             String columnName = descendingColumnNames.next();
             EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, tableName, columnName);
             encryptRule.findEncryptor(tableName, columnName).ifPresent(optional -> encryptInsertValues((GroupedParameterBuilder) parameterBuilder, insertStatementContext, optional,
-                    encryptRule.findAssistedQueryEncryptor(tableName, columnName), encryptContext));
+                    encryptRule.findAssistedQueryEncryptor(tableName, columnName).orElse(null), encryptContext));
         }
     }
     
     private void encryptInsertValues(final GroupedParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext,
-                                     final EncryptAlgorithm<?, ?> encryptAlgorithm, final Optional<EncryptAlgorithm> assistEncryptAlgorithm, final EncryptContext encryptContext) {
+                                     final EncryptAlgorithm<?, ?> encryptAlgorithm, final EncryptAlgorithm<?, ?> assistEncryptAlgorithm, final EncryptContext encryptContext) {
         int columnIndex = getColumnIndex(parameterBuilder, insertStatementContext, encryptContext.getColumnName());
         int count = 0;
         for (List<Object> each : insertStatementContext.getGroupedParameters()) {
@@ -83,10 +83,9 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
                 StandardParameterBuilder standardParameterBuilder = parameterBuilder.getParameterBuilders().get(count);
                 ExpressionSegment expressionSegment = insertStatementContext.getInsertValueContexts().get(count).getValueExpressions().get(columnIndex);
                 if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
-                    encryptInsertValue(
-                            encryptAlgorithm, assistEncryptAlgorithm, parameterIndex, insertStatementContext.getInsertValueContexts().get(count).getValue(columnIndex)
-                                    .orElseThrow(() -> new ShardingSphereException("Not support for encrypt!")),
-                            standardParameterBuilder, encryptContext);
+                    Object literalValue = insertStatementContext.getInsertValueContexts().get(count).getLiteralValue(columnIndex)
+                            .orElseThrow(() -> new UnsupportedEncryptInsertValueException(columnIndex));
+                    encryptInsertValue(encryptAlgorithm, assistEncryptAlgorithm, parameterIndex, literalValue, standardParameterBuilder, encryptContext);
                 }
             }
             count++;
@@ -105,23 +104,23 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private void encryptInsertValue(final EncryptAlgorithm encryptAlgorithm, final Optional<EncryptAlgorithm> assistEncryptor, final int parameterIndex,
+    private void encryptInsertValue(final EncryptAlgorithm encryptAlgorithm, final EncryptAlgorithm assistEncryptor, final int parameterIndex,
                                     final Object originalValue, final StandardParameterBuilder parameterBuilder, final EncryptContext encryptContext) {
         parameterBuilder.addReplacedParameters(parameterIndex, encryptAlgorithm.encrypt(originalValue, encryptContext));
         Collection<Object> addedParameters = new LinkedList<>();
-        if (assistEncryptor.isPresent()) {
+        if (null != assistEncryptor) {
             Optional<String> assistedColumnName = encryptRule.findAssistedQueryColumn(encryptContext.getTableName(), encryptContext.getColumnName());
             Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
-            addedParameters.add(assistEncryptor.get().encrypt(originalValue, encryptContext));
+            addedParameters.add(assistEncryptor.encrypt(originalValue, encryptContext));
         }
         if (encryptRule.findPlainColumn(encryptContext.getTableName(), encryptContext.getColumnName()).isPresent()) {
             addedParameters.add(originalValue);
         }
         if (!addedParameters.isEmpty()) {
-            if (!parameterBuilder.getAddedIndexAndParameters().containsKey(parameterIndex + 1)) {
-                parameterBuilder.getAddedIndexAndParameters().put(parameterIndex + 1, new LinkedList<>());
+            if (!parameterBuilder.getAddedIndexAndParameters().containsKey(parameterIndex)) {
+                parameterBuilder.getAddedIndexAndParameters().put(parameterIndex, new LinkedList<>());
             }
-            parameterBuilder.getAddedIndexAndParameters().get(parameterIndex + 1).addAll(addedParameters);
+            parameterBuilder.getAddedIndexAndParameters().get(parameterIndex).addAll(addedParameters);
         }
     }
 }

@@ -17,29 +17,10 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.ral;
 
-import org.apache.shardingsphere.distsql.parser.subject.DistSQLSubjectSupplier;
-import org.apache.shardingsphere.distsql.parser.operation.DistSQLOperationTypeEnum;
-import org.apache.shardingsphere.distsql.parser.subject.DistSQLSubjectTypeEnum;
 import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
-import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatementType;
 
 /**
  * RAL statement.
  */
-public abstract class RALStatement extends DistSQLStatement implements DistSQLSubjectSupplier {
-    
-    @Override
-    public DistSQLStatementType getStatementType() {
-        return DistSQLStatementType.RAL;
-    }
-    
-    @Override
-    public DistSQLOperationTypeEnum getOperationType() {
-        return DistSQLOperationTypeEnum.RAL_OPERATION;
-    }
-    
-    @Override
-    public DistSQLSubjectTypeEnum getSubjectType() {
-        return DistSQLSubjectTypeEnum.DEFAULT;
-    }
+public abstract class RALStatement extends DistSQLStatement {
 }

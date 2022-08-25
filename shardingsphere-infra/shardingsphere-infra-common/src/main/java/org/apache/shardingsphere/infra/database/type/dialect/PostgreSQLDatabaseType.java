@@ -32,7 +32,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Database type of PostgreSQL.
@@ -60,11 +59,6 @@ public final class PostgreSQLDatabaseType implements SchemaSupportedDatabaseType
     @Override
     public PostgreSQLDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
         return new PostgreSQLDataSourceMetaData(url);
-    }
-    
-    @Override
-    public Optional<String> getDataSourceClassName() {
-        return Optional.of("org.postgresql.ds.PGSimpleDataSource");
     }
     
     @Override

@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 
@@ -35,13 +36,13 @@ public final class ShardingTableRuleConfiguration {
     
     private final String actualDataNodes;
     
-    private String actualTablePrefix;
-    
     private ShardingStrategyConfiguration databaseShardingStrategy;
     
     private ShardingStrategyConfiguration tableShardingStrategy;
     
     private KeyGenerateStrategyConfiguration keyGenerateStrategy;
+    
+    private ShardingAuditStrategyConfiguration auditStrategy;
     
     public ShardingTableRuleConfiguration(final String logicTable) {
         this(logicTable, null);

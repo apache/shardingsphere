@@ -86,10 +86,10 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
                     addedParameters.add(plainColumnValue);
                 }
                 if (!addedParameters.isEmpty()) {
-                    if (!groupedParameterBuilder.getGenericParameterBuilder().getAddedIndexAndParameters().containsKey(columnIndex + 1)) {
-                        groupedParameterBuilder.getGenericParameterBuilder().getAddedIndexAndParameters().put(columnIndex + 1, new LinkedList<>());
+                    if (!groupedParameterBuilder.getGenericParameterBuilder().getAddedIndexAndParameters().containsKey(columnIndex)) {
+                        groupedParameterBuilder.getGenericParameterBuilder().getAddedIndexAndParameters().put(columnIndex, new LinkedList<>());
                     }
-                    groupedParameterBuilder.getGenericParameterBuilder().getAddedIndexAndParameters().get(columnIndex + 1).addAll(addedParameters);
+                    groupedParameterBuilder.getGenericParameterBuilder().getAddedIndexAndParameters().get(columnIndex).addAll(addedParameters);
                 }
             });
         }

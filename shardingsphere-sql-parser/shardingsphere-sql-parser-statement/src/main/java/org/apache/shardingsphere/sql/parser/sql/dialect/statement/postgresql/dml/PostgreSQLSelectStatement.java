@@ -31,7 +31,7 @@ import java.util.Optional;
  * PostgreSQL select statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLSelectStatement extends SelectStatement implements PostgreSQLStatement {
     
     private LimitSegment limit;

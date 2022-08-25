@@ -49,11 +49,10 @@ public final class OracleDatabaseType implements DatabaseType {
     }
     
     @Override
-    public Optional<String> getDataSourceClassName() {
-        return Optional.empty();
+    public boolean isSchemaAvailable() {
+        return true;
     }
     
-    @SuppressWarnings("ReturnOfNull")
     @Override
     public String getSchema(final Connection connection) {
         try {

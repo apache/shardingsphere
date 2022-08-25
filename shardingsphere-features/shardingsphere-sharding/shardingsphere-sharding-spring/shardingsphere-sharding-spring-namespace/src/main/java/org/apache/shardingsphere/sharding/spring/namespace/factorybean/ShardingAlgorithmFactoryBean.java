@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.spring.namespace.factorybean;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.spring.namespace.factorybean.ShardingSphereAlgorithmFactoryBean;
@@ -35,6 +35,6 @@ public final class ShardingAlgorithmFactoryBean extends ShardingSphereAlgorithmF
     
     @Override
     public ShardingAlgorithm getObject() {
-        return ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration(getType(), getProps()));
+        return ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration(getType(), getProps()));
     }
 }

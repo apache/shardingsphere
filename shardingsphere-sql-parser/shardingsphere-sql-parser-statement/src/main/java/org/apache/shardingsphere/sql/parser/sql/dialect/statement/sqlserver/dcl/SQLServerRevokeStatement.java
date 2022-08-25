@@ -29,8 +29,8 @@ import java.util.LinkedList;
 /**
  * SQLServer revoke statement.
  */
-@ToString
 @Getter
+@ToString(callSuper = true)
 public final class SQLServerRevokeStatement extends RevokeStatement implements SQLServerStatement {
     
     private final Collection<ColumnSegment> columns = new LinkedList<>();

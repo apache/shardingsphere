@@ -18,11 +18,16 @@
 package org.apache.shardingsphere.integration.data.pipeline.cases.base;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.data.pipeline.cases.command.ExtraSQLCommand;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
+import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 
 import javax.xml.bind.JAXB;
+import java.sql.SQLException;
+import java.util.Objects;
 
+@Slf4j
 public abstract class BaseExtraSQLITCase extends BaseITCase {
     
     @Getter
@@ -30,19 +35,26 @@ public abstract class BaseExtraSQLITCase extends BaseITCase {
     
     public BaseExtraSQLITCase(final ScalingParameterized parameterized) {
         super(parameterized);
-        extraSQLCommand = JAXB.unmarshal(BaseExtraSQLITCase.class.getClassLoader().getResource(parameterized.getScenario()), ExtraSQLCommand.class);
+        extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BaseExtraSQLITCase.class.getClassLoader().getResource(parameterized.getScenario())), ExtraSQLCommand.class);
     }
     
-    protected void createNoUseTable() {
-        executeWithLog("CREATE SHARDING TABLE RULE no_use (RESOURCES(ds_0, ds_1), SHARDING_COLUMN=sharding_id, TYPE(NAME=MOD,PROPERTIES('sharding-count'=4)))");
-        executeWithLog("CREATE TABLE no_use(id int(11) NOT NULL,sharding_id int(11) NOT NULL, PRIMARY KEY (id))");
+    protected void createSourceOrderTable() throws SQLException {
+        sourceExecuteWithLog(extraSQLCommand.getCreateTableOrder());
     }
     
-    protected void createOrderTable() {
-        executeWithLog(extraSQLCommand.getCreateTableOrder());
+    protected void createSourceTableIndexList(final String schema) throws SQLException {
+        if (DatabaseTypeUtil.isPostgreSQL(getDatabaseType())) {
+            sourceExecuteWithLog(String.format("CREATE INDEX IF NOT EXISTS idx_user_id ON %s.t_order ( user_id )", schema));
+        } else if (DatabaseTypeUtil.isOpenGauss(getDatabaseType())) {
+            sourceExecuteWithLog(String.format("CREATE INDEX idx_user_id ON %s.t_order ( user_id )", schema));
+        }
     }
     
-    protected void createOrderItemTable() {
-        executeWithLog(extraSQLCommand.getCreateTableOrderItem());
+    protected void createSourceCommentOnList(final String schema) throws SQLException {
+        sourceExecuteWithLog(String.format("COMMENT ON COLUMN %s.t_order.user_id IS 'user id'", schema));
+    }
+    
+    protected void createSourceOrderItemTable() throws SQLException {
+        sourceExecuteWithLog(extraSQLCommand.getCreateTableOrderItem());
     }
 }

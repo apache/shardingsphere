@@ -1,36 +1,37 @@
 +++
-pre = "<b>4.8. </b>"
-title = "Scaling"
-weight = 8
+pre = "<b>3.7. </b>"
+title = "Data Migration"
+weight = 7
 chapter = true
 +++
 
 ## Background
 
-There is a problem which how to migrate data from stand-alone database to sharding data nodes safely and simply;
-For applications which have used Apache ShardingSphere, scale out elastically is a mandatory requirement.
+In a scenario where the business continues to develop and the amount of data and concurrency reaches a certain extent, the traditional single database may face problems in terms of performance, scalability and availability.
+
+Although NoSQL solutions can solve the above problems through data sharding and horizontal scale-out, NoSQL databases generally do not support transactions and SQL.
+
+ShardingSphere can also solve the above problems and supports data sharding and horizontal scale-out, while at the same time, also supporting distributed transactions and SQL.
+
+The data migration scheme provided by ShardingSphere can help the traditional single database smoothly switch to ShardingSphere.
 
 ## Challenges
 
-Apache ShardingSphere provides great flexibility in sharding algorithms, but it gives a great challenge to scaling out.
-So it's the first challenge that how to find a way can support kinds of sharding algorithms and scale data nodes efficiently.
+The data migration process should not affect the running services. So the first challenge is to minimize the time window during which data is not available.
 
-What's more, During the scaling process, it should not affect the running applications. 
-So It is another big challenge for scaling to reduce the time window of data unavailability during the scaling as much as possible, or even completely unaware.
-
-Finally, scaling should not affect the existing data. How to ensure the availability and correctness of data is the third challenge of scaling.
-
-ShardingSphere-Scaling is a common solution for migrating or scaling data.
-
-![Overview](https://shardingsphere.apache.org/document/current/img/scaling/overview_v2.png)
+Next, data migration should not affect existing data. So the second challenge is to ensure the data correctness.
 
 ## Goal
 
-**The main design goal of ShardingSphere-Scaling is providing common solution which can support kinds of sharding algorithm and reduce the impact as much as possible during scaling.**
+The major goal of Apache ShardingSphere in performing data migration is to reduce the impact of data migration on services and provide a one-stop universal data migration solution.
 
-## Status
+## Application Scenarios
 
-ShardingSphere-Scaling since version **4.1.0**.
-Current status is in **alpha** development.
+Application scenario one: when an application system is using a traditional single database, and the amount of data in a single table reaches 100 million and is still growing rapidly, a single database that continues to run with a high load will become the bottleneck of the system. 
 
-**Source Codes: https://github.com/apache/shardingsphere/tree/master/shardingsphere-kernel/shardingsphere-data-pipeline**
+Once the database becomes the bottleneck, it is useless to scale out the application server. Instead, it is the database that needs to be scaled out. 
+
+## Related References
+
+- [Configurations of data migration ](/en/user-manual/shardingsphere-proxy/scaling/)
+- [Reference of data migration](/en/reference/scaling/)

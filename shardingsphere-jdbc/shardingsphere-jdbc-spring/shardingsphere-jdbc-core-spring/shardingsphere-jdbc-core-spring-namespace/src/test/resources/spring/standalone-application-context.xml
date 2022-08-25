@@ -35,11 +35,7 @@
     <import resource="included/data-sources-context.xml" />
     <import resource="included/rules-context.xml" />
     
-    <standalone:repository id="fileRepository" type="File" >
-        <props>
-            <prop key="path">target</prop>
-        </props>
-    </standalone:repository>
+    <standalone:repository id="fileRepository" type="JDBC" />
     
     <shardingsphere:data-source id="dataSource" data-source-names="ds_0_write,ds_0_read_0,ds_0_read_1,ds_1_write,ds_1_read_0,ds_1_read_1" rule-refs="shardingRule, readWriteSplittingRule, encryptRule, sqlParseRule">
         <shardingsphere:mode type="Standalone" repository-ref="fileRepository" overwrite="true" />

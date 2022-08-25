@@ -31,7 +31,7 @@ import java.util.Optional;
  * MySQL show table status statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class MySQLShowTableStatusStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
     private FromSchemaSegment fromSchema;

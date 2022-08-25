@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.SQL92Sta
 /**
  * SQL92 delete statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class SQL92DeleteStatement extends DeleteStatement implements SQL92Statement {
 }

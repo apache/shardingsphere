@@ -31,7 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
  */
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class MySQLTableStatement extends TableStatement implements MySQLStatement {
     
     private SimpleTableSegment table;

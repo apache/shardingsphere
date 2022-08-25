@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.datetime.database;
 
 import org.apache.shardingsphere.datetime.database.config.DatabaseDatetimeServiceConfiguration;
+import org.apache.shardingsphere.datetime.database.exception.DatetimeLoadingException;
 import org.apache.shardingsphere.datetime.database.provider.DatetimeLoadingSQLProviderFactory;
 import org.apache.shardingsphere.infra.datetime.DatetimeService;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -41,7 +41,7 @@ public final class DatabaseDatetimeService implements DatetimeService {
         try {
             return loadDatetime(timeServiceConfig.getDataSource(), DatetimeLoadingSQLProviderFactory.getInstance(timeServiceConfig.getDatabaseType()).getDatetimeLoadingSQL());
         } catch (final SQLException ex) {
-            throw new ShardingSphereException("Load datetime from database error!", ex);
+            throw new DatetimeLoadingException(ex);
         }
     }
     

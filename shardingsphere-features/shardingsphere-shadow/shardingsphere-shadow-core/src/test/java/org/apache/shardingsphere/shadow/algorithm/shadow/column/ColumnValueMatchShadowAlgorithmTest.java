@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shadow.algorithm.shadow.column;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.shadow.algorithm.shadow.ShadowAlgorithmException;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.shadow.algorithm.shadow.UnsupportedShadowColumnTypeException;
 import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
 import org.junit.Test;
 
@@ -31,19 +31,19 @@ public final class ColumnValueMatchShadowAlgorithmTest extends AbstractColumnSha
     
     @Test
     public void assertIsShadow() {
-        ColumnValueMatchShadowAlgorithm shadowAlgorithm = createShadowAlgorithm();
+        ColumnValueMatchedShadowAlgorithm shadowAlgorithm = createShadowAlgorithm();
         createPreciseColumnShadowValuesTrueCase().forEach(each -> assertTrue(shadowAlgorithm.isShadow(each)));
         createPreciseColumnShadowValuesFalseCase().forEach(each -> assertFalse(shadowAlgorithm.isShadow(each)));
     }
     
-    @Test(expected = ShadowAlgorithmException.class)
+    @Test(expected = UnsupportedShadowColumnTypeException.class)
     public void assertExceptionCase() {
-        ColumnValueMatchShadowAlgorithm shadowAlgorithm = createShadowAlgorithm();
+        ColumnValueMatchedShadowAlgorithm shadowAlgorithm = createShadowAlgorithm();
         createPreciseColumnShadowValuesExceptionCase().forEach(each -> assertFalse(shadowAlgorithm.isShadow(each)));
     }
     
-    private ColumnValueMatchShadowAlgorithm createShadowAlgorithm() {
-        return (ColumnValueMatchShadowAlgorithm) ShadowAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("VALUE_MATCH", createProperties()));
+    private ColumnValueMatchedShadowAlgorithm createShadowAlgorithm() {
+        return (ColumnValueMatchedShadowAlgorithm) ShadowAlgorithmFactory.newInstance(new AlgorithmConfiguration("VALUE_MATCH", createProperties()));
     }
     
     private Properties createProperties() {

@@ -178,4 +178,5 @@
     <test-case sql="REVOKE SELECT ON t_order FROM user_dev" db-types="SQLServer" />
     <test-case sql="SET ROLE ALL EXCEPT role_dev" db-types="MySQL" />
     <test-case sql="SET ROLE ALL EXCEPT role_dev, role2" db-types="MySQL" />
+    <test-case sql="REASSIGN OWNED BY regress_dep_user0 TO regress_dep_user1" db-types="PostgreSQL" />
 </integration-test-cases>

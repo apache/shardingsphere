@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.bind;
 
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLBindCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLComBindPacket;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.PreparedStatementRegistry;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.JDBCPortal;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLPreparedStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -36,7 +36,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -61,46 +60,18 @@ public final class PostgreSQLComBindExecutorTest {
     @InjectMocks
     private PostgreSQLComBindExecutor executor;
     
-    @Before
-    public void setup() {
-        PostgreSQLPreparedStatementRegistry.getInstance().register(1);
-        PostgreSQLPreparedStatementRegistry.getInstance().register(1, "1", "", new EmptyStatement(), Collections.emptyList());
-        when(bindPacket.getStatementId()).thenReturn("1");
+    @Test
+    public void assertExecuteBind() throws SQLException {
+        when(connectionSession.getPreparedStatementRegistry()).thenReturn(new PreparedStatementRegistry());
+        JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class);
+        when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
+        when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
+        String statementId = "S_1";
+        connectionSession.getPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLPreparedStatement("", new EmptyStatement(), null, Collections.emptyList()));
+        when(bindPacket.getStatementId()).thenReturn(statementId);
         when(bindPacket.getPortal()).thenReturn("C_1");
         when(bindPacket.readParameters(anyList())).thenReturn(Collections.emptyList());
         when(bindPacket.readResultFormats()).thenReturn(Collections.emptyList());
-        when(connectionSession.getConnectionId()).thenReturn(1);
-        JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class);
-        when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
-    }
-    
-    @Test
-    public void assertExecuteEmptyBindPacket() throws SQLException {
-        Collection<DatabasePacket<?>> actual = executor.execute();
-        assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), is(PostgreSQLBindCompletePacket.getInstance()));
-        verify(connectionContext).addPortal(any(JDBCPortal.class));
-    }
-    
-    @Test
-    public void assertExecuteBindPacketWithQuerySQLAndReturnEmptyResult() throws SQLException {
-        Collection<DatabasePacket<?>> actual = executor.execute();
-        assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), is(PostgreSQLBindCompletePacket.getInstance()));
-        verify(connectionContext).addPortal(any(JDBCPortal.class));
-    }
-    
-    @Test
-    public void assertExecuteBindPacketWithQuerySQL() throws SQLException {
-        Collection<DatabasePacket<?>> actual = executor.execute();
-        assertThat(actual.size(), is(1));
-        Iterator<DatabasePacket<?>> actualPackets = actual.iterator();
-        assertThat(actualPackets.next(), is(PostgreSQLBindCompletePacket.getInstance()));
-        verify(connectionContext).addPortal(any(JDBCPortal.class));
-    }
-    
-    @Test
-    public void assertExecuteBindPacketWithUpdateSQL() throws SQLException {
         Collection<DatabasePacket<?>> actual = executor.execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(PostgreSQLBindCompletePacket.getInstance()));

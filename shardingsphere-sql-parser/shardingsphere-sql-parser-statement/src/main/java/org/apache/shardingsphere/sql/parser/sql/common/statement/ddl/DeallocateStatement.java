@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Deallocate statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class DeallocateStatement extends AbstractSQLStatement implements DDLStatement {
 }

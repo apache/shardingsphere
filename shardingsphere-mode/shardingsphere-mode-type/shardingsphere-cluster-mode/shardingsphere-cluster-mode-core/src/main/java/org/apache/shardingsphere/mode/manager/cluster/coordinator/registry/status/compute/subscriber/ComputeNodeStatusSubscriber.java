@@ -19,13 +19,11 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ComputeNodeStatusChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdChangedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
@@ -36,6 +34,7 @@ import java.util.Collections;
 /**
  * Compute node status subscriber.
  */
+@SuppressWarnings("UnstableApiUsage")
 public final class ComputeNodeStatusSubscriber {
     
     private final RegistryCenter registryCenter;
@@ -45,7 +44,7 @@ public final class ComputeNodeStatusSubscriber {
     public ComputeNodeStatusSubscriber(final RegistryCenter registryCenter, final ClusterPersistRepository repository) {
         this.registryCenter = registryCenter;
         this.repository = repository;
-        ShardingSphereEventBus.getInstance().register(this);
+        registryCenter.getEventBusContext().register(this);
     }
     
     /**
@@ -64,16 +63,6 @@ public final class ComputeNodeStatusSubscriber {
             status.remove(ComputeNodeStatus.CIRCUIT_BREAK.name());
         }
         repository.persistEphemeral(computeStatusNodePath, YamlEngine.marshal(status));
-    }
-    
-    /**
-     * Update compute node xa recovery id.
-     * 
-     * @param event xa recovery id changed event
-     */
-    @Subscribe
-    public void update(final XaRecoveryIdChangedEvent event) {
-        registryCenter.getComputeNodeStatusService().persistInstanceXaRecoveryId(event.getInstanceId(), event.getXaRecoveryIds());
     }
     
     /**

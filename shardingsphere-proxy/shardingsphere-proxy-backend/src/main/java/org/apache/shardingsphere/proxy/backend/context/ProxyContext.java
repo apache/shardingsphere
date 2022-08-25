@@ -26,11 +26,12 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
-import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
+import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Proxy context.
@@ -70,7 +71,7 @@ public final class ProxyContext {
      * @return database exists or not
      */
     public boolean databaseExists(final String name) {
-        return contextManager.getMetaDataContexts().getMetaData().getDatabases().containsKey(name);
+        return contextManager.getMetaDataContexts().getMetaData().containsDatabase(name);
     }
     
     /**
@@ -80,10 +81,10 @@ public final class ProxyContext {
      * @return got database
      */
     public ShardingSphereDatabase getDatabase(final String name) {
-        if (Strings.isNullOrEmpty(name) || !contextManager.getMetaDataContexts().getMetaData().getDatabases().containsKey(name)) {
+        if (Strings.isNullOrEmpty(name) || !contextManager.getMetaDataContexts().getMetaData().containsDatabase(name)) {
             throw new NoDatabaseSelectedException();
         }
-        return contextManager.getMetaDataContexts().getMetaData().getDatabases().get(name);
+        return contextManager.getMetaDataContexts().getMetaData().getDatabase(name);
     }
     
     /**
@@ -92,7 +93,7 @@ public final class ProxyContext {
      * @return all database names
      */
     public Collection<String> getAllDatabaseNames() {
-        return contextManager.getMetaDataContexts().getMetaData().getDatabases().keySet();
+        return contextManager.getMetaDataContexts().getMetaData().getDatabases().values().stream().map(ShardingSphereDatabase::getName).collect(Collectors.toList());
     }
     
     /**
@@ -114,7 +115,7 @@ public final class ProxyContext {
     public Collection<ShardingSphereRule> getRules(final String databaseName) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         if (!Strings.isNullOrEmpty(databaseName) && databaseExists(databaseName)) {
-            result.addAll(contextManager.getMetaDataContexts().getMetaData().getDatabases().get(databaseName).getRuleMetaData().getRules());
+            result.addAll(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getRuleMetaData().getRules());
         }
         result.addAll(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
         return result;

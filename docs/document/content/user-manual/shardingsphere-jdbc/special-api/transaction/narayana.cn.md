@@ -3,11 +3,17 @@ title = "Narayana 事务"
 weight = 5
 +++
 
-## 引入 Maven 依赖
+## 背景信息
+
+Apache ShardingSphere 提供 XA 事务，集成了 Narayana 的实现。
+
+## 前提条件
+
+引入 Maven 依赖
 
 ```xml
 <properties>
-    <narayana.version>5.9.1.Final</narayana.version>
+    <narayana.version>5.12.4.Final</narayana.version>
     <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
     <jboss-logging.version>3.2.1.Final</jboss-logging.version>
 </properties>
@@ -51,14 +57,20 @@ weight = 5
        <version>${jboss-logging.version}</version>
 </dependency>
 ```
+## 操作步骤
 
-## 定制化配置项
+1. 配置 Narayana
+2. 设置 XA 事务类型
+
+## 配置示例
+
+### 配置 Narayana
 
 可以通过在项目的 classpath 中添加 `jbossts-properties.xml` 来定制化 Narayana 配置项。
 
-详情请参见 [Narayana 官方文档](https://narayana.io/documentation/index.html)。
+详情请参见 [Narayana 官方文档](https://narayana.io/documentation/index.html) 。
 
-## 设置 XA 事务管理类型
+### 设置 XA 事务类型
 
 Yaml:
 

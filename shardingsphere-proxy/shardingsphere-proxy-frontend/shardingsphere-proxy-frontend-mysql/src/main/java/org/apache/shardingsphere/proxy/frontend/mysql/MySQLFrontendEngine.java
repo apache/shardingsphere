@@ -22,7 +22,7 @@ import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.mysql.codec.MySQLPacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
-import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementRegistry;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIDGenerator;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -39,7 +39,7 @@ import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngi
 @Getter
 public final class MySQLFrontendEngine implements DatabaseProtocolFrontendEngine {
     
-    private final FrontendContext frontendContext = new FrontendContext(false);
+    private final FrontendContext frontendContext = new MySQLFrontendContext();
     
     private final AuthenticationEngine authenticationEngine = new MySQLAuthenticationEngine();
     
@@ -59,11 +59,11 @@ public final class MySQLFrontendEngine implements DatabaseProtocolFrontendEngine
     
     @Override
     public void release(final ConnectionSession connectionSession) {
-        MySQLPreparedStatementRegistry.getInstance().unregisterConnection(connectionSession.getConnectionId());
+        MySQLStatementIDGenerator.getInstance().unregisterConnection(connectionSession.getConnectionId());
     }
     
     @Override
-    public void handleException(final ConnectionSession connectionSession) {
+    public void handleException(final ConnectionSession connectionSession, final Exception exception) {
     }
     
     @Override

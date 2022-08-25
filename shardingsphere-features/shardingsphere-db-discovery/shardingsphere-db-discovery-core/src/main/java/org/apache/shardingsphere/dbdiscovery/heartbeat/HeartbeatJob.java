@@ -22,6 +22,7 @@ import org.apache.shardingsphere.dbdiscovery.algorithm.DatabaseDiscoveryEngine;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -45,8 +46,11 @@ public final class HeartbeatJob implements SimpleJob {
     
     private final Collection<String> disabledDataSourceNames;
     
+    private final EventBusContext eventBusContext;
+    
     @Override
     public void execute(final ShardingContext shardingContext) {
-        new DatabaseDiscoveryEngine(databaseDiscoveryProviderAlgorithm).changePrimaryDataSource(databaseName, groupName, originalPrimaryDataSourceName, dataSourceMap, disabledDataSourceNames);
+        new DatabaseDiscoveryEngine(databaseDiscoveryProviderAlgorithm, eventBusContext).changePrimaryDataSource(databaseName, groupName, originalPrimaryDataSourceName,
+                dataSourceMap, disabledDataSourceNames);
     }
 }

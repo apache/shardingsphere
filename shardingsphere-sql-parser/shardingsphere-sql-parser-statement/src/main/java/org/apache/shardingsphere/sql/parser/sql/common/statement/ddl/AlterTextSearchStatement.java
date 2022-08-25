@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Alter text search statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class AlterTextSearchStatement extends AbstractSQLStatement implements DDLStatement {
 }

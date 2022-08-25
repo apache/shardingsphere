@@ -33,7 +33,7 @@ import java.util.Optional;
  * MySQL show columns statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class MySQLShowColumnsStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
     @Getter

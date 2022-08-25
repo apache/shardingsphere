@@ -46,15 +46,17 @@ ShardingSphere’s capability to transform any DBMS into a distributed database 
 Link: [https://fosdem.org/2022/schedule/event/postgresql_postgresql_distributed_secure_database_ecosystem_building/](https://fosdem.org/2022/schedule/event/postgresql_postgresql_distributed_secure_database_ecosystem_building/)
 
 ## Apache ShardingSphere Open Source Project Links:
+
 [ShardingSphere Github](https://github.com/apache/shardingsphere)
 
 [ShardingSphere Twitter](https://twitter.com/ShardingSphere)
 
 [ShardingSphere Slack Channel](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg)
 
-[Contributor Guide](https://shardingsphere.apache.org/community/cn/contribute/)
+[Contributor Guide](https://shardingsphere.apache.org/community/cn/involved/)
 
 ## Author
+
 **Yacine Si Tayeb**
 
 > SphereEx Head of International Operations
@@ -64,13 +66,3 @@ Link: [https://fosdem.org/2022/schedule/event/postgresql_postgresql_distributed_
 > Passionate about technology and innovation, Yacine moved to Beijing to pursue his Ph.D. in Business Administration, and fell in awe of the local startup and tech scene. His career path has so far been shaped by opportunities at the intersection of technology and business. Recently he took on a keen interest in the development of the ShardingSphere database middleware ecosystem and Open-Source community building.
 
 ![2](https://shardingsphere.apache.org/blog/img/Yacine_Si_Tayeb_Photo.png)
-
-
-
-
-
-
-
-
-
-

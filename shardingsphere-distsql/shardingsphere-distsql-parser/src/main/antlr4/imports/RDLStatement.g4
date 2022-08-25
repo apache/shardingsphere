@@ -20,34 +20,34 @@ grammar RDLStatement;
 import BaseRule;
 
 addResource
-    : ADD RESOURCE dataSource (COMMA dataSource)*
+    : ADD RESOURCE resourceDefinition (COMMA resourceDefinition)*
     ;
 
 alterResource
-    : ALTER RESOURCE dataSource (COMMA dataSource)*
+    : ALTER RESOURCE resourceDefinition (COMMA resourceDefinition)*
     ;
 
 dropResource
-    : DROP RESOURCE existClause? IDENTIFIER (COMMA IDENTIFIER)* ignoreSingleTables?
+    : DROP RESOURCE ifExists? resourceName (COMMA resourceName)* ignoreSingleTables?
     ;
 
 createDefaultSingleTableRule
-    : CREATE DEFAULT SINGLE TABLE RULE RESOURCE EQ dataSourceName
+    : CREATE DEFAULT SINGLE TABLE RULE RESOURCE EQ resourceName
     ;
 
 alterDefaultSingleTableRule
-    : ALTER DEFAULT SINGLE TABLE RULE RESOURCE EQ dataSourceName
+    : ALTER DEFAULT SINGLE TABLE RULE RESOURCE EQ resourceName
     ;
 
 dropDefaultSingleTableRule
-    : DROP  DEFAULT SINGLE TABLE RULE existClause?
+    : DROP  DEFAULT SINGLE TABLE RULE ifExists?
     ;
 
-dataSource
-    : dataSourceName LP (simpleSource | urlSource) COMMA USER EQ user (COMMA PASSWORD EQ password+)? propertiesDefinition? RP
+resourceDefinition
+    : resourceName LP (simpleSource | urlSource) COMMA USER EQ user (COMMA PASSWORD EQ password)? (COMMA propertiesDefinition)? RP
     ;
 
-dataSourceName
+resourceName
     : IDENTIFIER
     ;
 
@@ -60,33 +60,33 @@ urlSource
     ;
 
 hostname
-    : IDENTIFIER | ip
+    : STRING
+    ;
+
+port
+    : INT
     ;
 
 dbName
-    : IDENTIFIER
+    : STRING
     ;
 
 url
-    : (IDENTIFIER | STRING)
+    : STRING
     ;
 
 user
-    : IDENTIFIER | NUMBER
+    : STRING
     ;
 
 password
-    : IDENTIFIER | INT | STRING 
-    | TILDE | NOT | AT | POUND | DL | MOD | CARET 
-    | AMPERSAND | ASTERISK | LP | RP | UL | MINUS | PLUS 
-    | EQ| LBE | RBE | LBT | RBT | SLASH | LT | GT | COMMA 
-    | DOT | SEMI | QUESTION | SQ | COLON | VERTICALBAR | PASSWORD                    
+    : STRING
     ;
 
 ignoreSingleTables
     : IGNORE SINGLE TABLES
     ;
 
-existClause
+ifExists
     : IF EXISTS
     ;

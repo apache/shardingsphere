@@ -115,7 +115,7 @@
 
     <select sql-case-id="select_group_by_without_grouped_column" parameters="1, 2, 9, 10">
         <from>
-            <join-table>
+            <join-table join-type="INNER">
                 <left>
                     <simple-table name="t_order" alias="o" start-index="36" stop-index="44" />
                 </left>
@@ -375,6 +375,32 @@
         </having>
     </select>
 
+    <select sql-case-id="select_group_by_with_having_count">
+        <from>
+            <simple-table name="t_order" start-index="37" stop-index="43" />
+        </from>
+        <projections start-index="7" stop-index="30">
+            <aggregation-projection type="COUNT" inner-expression="(order_id)" start-index="7" stop-index="21" />
+            <column-projection name="user_id" start-index="24" stop-index="30" />
+        </projections>
+        <group-by>
+            <column-item name="user_id" start-index="54" stop-index="60" />
+        </group-by>
+        <having start-index="62" stop-index="87">
+            <expr>
+                <binary-operation-expression start-index="69" stop-index="87">
+                    <left>
+                        <aggregation-projection type="COUNT" inner-expression="(order_id)" start-index="69" stop-index="83" />
+                    </left>
+                    <operator>&gt;</operator>
+                    <right>
+                        <literal-expression start-index="87" stop-index="87" value="0"/>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </having>
+    </select>
+
     <select sql-case-id="select_group_by_with_having_and_window">
         <from>
             <simple-table name="t_order" start-index="53" stop-index="59" />
@@ -404,7 +430,7 @@
 
     <select sql-case-id="select_group_by_cube">
         <from>
-            <join-table>
+            <join-table join-type="COMMA">
                 <left>
                     <simple-table name="employees" alias="e" start-index="218" stop-index="228" />
                 </left>
@@ -448,13 +474,13 @@
 
     <select sql-case-id="select_group_by_grouping_sets">
         <from>
-            <join-table>
+            <join-table join-type="COMMA">
                 <left>
-                    <join-table>
+                    <join-table join-type="COMMA">
                         <left>
-                            <join-table>
+                            <join-table join-type="COMMA">
                                 <left>
-                                    <join-table>
+                                    <join-table join-type="COMMA">
                                         <left>
                                             <simple-table name="sales" start-index="113" stop-index="117" />
                                         </left>

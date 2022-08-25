@@ -1,18 +1,24 @@
 +++
-pre = "<b>6.14. </b>"
+pre = "<b>5.13. </b>"
 title = "影子库"
-weight = 14
+weight = 13
 chapter = true
 +++
 
 ## ShadowAlgorithm
 
-| *SPI 名称*       | *详细说明*   |
-|---------------- |------------ |
-| ShadowAlgorithm | 影子库路由算法 |
+### 全限定类名
 
-| *已知实现类*                      | *详细说明*              |
-|-------------------------------- |----------------------- |
-| ColumnValueMatchShadowAlgorithm | 基于字段值匹配影子算法     |
-| ColumnRegexMatchShadowAlgorithm | 基于字段值正则匹配影子算法  |
-| SimpleHintShadowAlgorithm    | 基于 Hint 简单匹配影子算法 |
+[`org.apache.shardingsphere.shadow.spi.ShadowAlgorithm`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-shadow/shardingsphere-shadow-api/src/main/java/org/apache/shardingsphere/shadow/spi/ShadowAlgorithm.java)
+
+### 定义
+
+影子库提供的影子算法
+
+### 已知实现
+
+| *已知实现类*                        | *详细说明*              | *完全限定类名* |
+| --------------------------------- | ---------------------- | ------------- |
+| ColumnValueMatchedShadowAlgorithm | 基于字段值匹配影子算法     | [`org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnValueMatchedShadowAlgorithm`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-shadow/shardingsphere-shadow-core/src/main/java/org/apache/shardingsphere/shadow/algorithm/shadow/column/ColumnValueMatchedShadowAlgorithm.java) |
+| ColumnRegexMatchedShadowAlgorithm | 基于字段值正则匹配影子算法  | [`org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchedShadowAlgorithm`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-shadow/shardingsphere-shadow-core/src/main/java/org/apache/shardingsphere/shadow/algorithm/shadow/column/ColumnRegexMatchedShadowAlgorithm.java) |
+| SimpleHintShadowAlgorithm         | 基于 Hint 简单匹配影子算法 | [`org.apache.shardingsphere.shadow.algorithm.shadow.hint.SimpleHintShadowAlgorithm`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-shadow/shardingsphere-shadow-core/src/main/java/org/apache/shardingsphere/shadow/algorithm/shadow/hint/SimpleHintShadowAlgorithm.java) |

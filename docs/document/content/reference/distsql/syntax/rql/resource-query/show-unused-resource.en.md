@@ -5,21 +5,21 @@ weight = 3
 
 ### Description
 
-The `SHOW UNUSED RESOURCE` syntax is used to query resources in the specified schema that have not been referenced by rules.
+The `SHOW UNUSED RESOURCE` syntax is used to query resources in the specified database that have not been referenced by rules.
 
 ### Syntax
 
 ```SQL
 ShowUnusedResource ::=
-  'SHOW' 'UNUSED' 'SCHEMA'? 'RESOURCES' ('FROM' schemaName)?
+  'SHOW' 'UNUSED' 'DATABASE'? 'RESOURCES' ('FROM' databaseName)?
 
-schemaName ::=
+databaseName ::=
   identifier
 ```
 
 ### Supplement
 
-- When `schemaName` is not specified, the default is the currently used `SCHEMA`; if `SCHEMA` is not used, it will prompt `No database selected`.
+- When `databaseName` is not specified, the default is the currently used `DATABASE`; if `DATABASE` is not used, it will prompt `No database selected`.
 
  ### Return Value Description
 
@@ -34,10 +34,10 @@ schemaName ::=
 
  ### Example
 
-- Query resources for the specified schema
+- Query resources for the specified database
 
 ```sql
-SHOW UNUSED SCHEMA RESOURCES FROM sharding_db;
+SHOW UNUSED DATABASE RESOURCES FROM sharding_db;
 ```
 ```sql
 +------+-------+-----------+------+------+---------------------------------+---------------------------+---------------------------+---------------+---------------+-----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
@@ -48,10 +48,10 @@ SHOW UNUSED SCHEMA RESOURCES FROM sharding_db;
 1 rows in set (0.26 sec)
 ```
 
-- Query resources for the current schema
+- Query resources for the current database
 
 ```sql
-SHOW UNUSED SCHEMA RESOURCES;
+SHOW UNUSED DATABASE RESOURCES;
 ```
 ```sql
 +------+-------+-----------+------+------+---------------------------------+---------------------------+---------------------------+---------------+---------------+-----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+

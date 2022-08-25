@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL rollback statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLRollbackStatement extends RollbackStatement implements PostgreSQLStatement {
 }

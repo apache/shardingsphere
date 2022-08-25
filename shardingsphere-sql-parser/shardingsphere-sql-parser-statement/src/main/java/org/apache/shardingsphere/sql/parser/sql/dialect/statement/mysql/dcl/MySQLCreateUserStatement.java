@@ -32,12 +32,12 @@ import java.util.LinkedList;
 /**
  * MySQL create user statement.
  */
-@ToString
 @Getter
 @Setter
+@ToString(callSuper = true)
 public final class MySQLCreateUserStatement extends CreateUserStatement implements MySQLStatement {
     
-    private Collection<String> defaultRoles = new LinkedList<>();
+    private final Collection<String> defaultRoles = new LinkedList<>();
     
     private TLSOptionSegment tlsOptionSegment;
     

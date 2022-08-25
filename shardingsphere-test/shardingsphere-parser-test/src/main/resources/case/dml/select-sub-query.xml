@@ -252,7 +252,7 @@
             </column-projection>
         </projections>
         <from start-index="70" stop-index="90">
-            <join-table>
+            <join-table join-type="COMMA">
                 <left>
                     <simple-table name="t_order_federate" start-index="75" stop-index="90" />
                 </left>

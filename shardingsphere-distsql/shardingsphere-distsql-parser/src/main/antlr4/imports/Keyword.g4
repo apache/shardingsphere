@@ -239,10 +239,6 @@ COUNT
     : C O U N T
     ;
 
-TRAFFIC
-    : T R A F F I C
-    ;
-
 LABEL
     : L A B E L
     ;
@@ -259,20 +255,20 @@ LABELS
     : L A B E L S
     ;
 
-TRAFFIC_ALGORITHM
-    : T R A F F I C UL_ A L G O R I T H M
-    ;
-
-LOAD_BALANCER
-    : L O A D UL_ B A L A N C E R
-    ;
-
 EXPORT
     : E X P O R T
     ;
 
 IMPORT
     : I M P O R T
+    ;
+
+CONVERT
+    : C O N V E R T
+    ;
+
+YAML
+    : Y A M L
     ;
 
 CONFIGURATION
@@ -313,4 +309,52 @@ APPLY
 
 DISCARD
     : D I S C A R D
+    ;
+
+SINGLE_TABLE
+    : S I N G L E UL_ T A B L E
+    ;
+
+SQL_TRANSLATOR
+    : S Q L UL_ T R A N S L A T O R
+    ;
+
+INFO
+    : I N F O
+    ;
+
+MIGRATION
+    : M I G R A T I O N
+    ;
+
+PROCESS
+    : P R O C E S S
+    ;
+
+READ
+    : R E A D
+    ;
+
+WRITE
+    : W R I T E
+    ;
+
+WORKER_THREAD
+    : W O R K E R UL_ T H R E A D
+    ;
+
+BATCH_SIZE
+    : B A T C H UL_ S I Z E
+    ;
+
+SHARDING_SIZE
+    : S H A R D I N G UL_ S I Z E
+    ;
+
+RATE_LIMITER
+    : R A T E UL_ L I M I T E R
+    ;
+
+STREAM_CHANNEL
+    : S T R E A M UL_ C H A N N E L
     ;

@@ -45,7 +45,7 @@
         <type name="example_typ" start-index="35" stop-index="45" />
     </disassociate-statistics>
     
-    <disassociate-statistics sql-case-id="disassociate_statistics_from_indextype">
-        <indextype name="indtype" start-index="40" stop-index="46" />
+    <disassociate-statistics sql-case-id="disassociate_statistics_from_index_type">
+        <index-type name="indtype" start-index="40" stop-index="46" />
     </disassociate-statistics>
 </sql-parser-test-cases>

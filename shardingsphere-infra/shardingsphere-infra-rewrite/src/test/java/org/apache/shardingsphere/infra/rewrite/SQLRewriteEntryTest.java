@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.rewrite;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -36,7 +37,6 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -49,10 +49,12 @@ public final class SQLRewriteEntryTest {
     @Test
     public void assertRewriteForGenericSQLRewriteResult() {
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
-                DatabaseTypeFactory.getInstance("H2"), mockResource(), mockRuleMetaData(), Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
-        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(database, new ConfigurationProperties(new Properties()));
+                DatabaseTypeFactory.getInstance("H2"), mockResource(), mock(ShardingSphereRuleMetaData.class), Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
+        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(
+                database, new ShardingSphereRuleMetaData(Collections.singleton(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()))), new ConfigurationProperties(new Properties()));
         RouteContext routeContext = new RouteContext();
-        GenericSQLRewriteResult sqlRewriteResult = (GenericSQLRewriteResult) sqlRewriteEntry.rewrite("SELECT ?", Collections.singletonList(1), mock(SQLStatementContext.class), routeContext);
+        GenericSQLRewriteResult sqlRewriteResult = (GenericSQLRewriteResult) sqlRewriteEntry.rewrite("SELECT ?", Collections.singletonList(1), mock(SQLStatementContext.class), routeContext,
+                mock(ConnectionContext.class));
         assertThat(sqlRewriteResult.getSqlRewriteUnit().getSql(), is("SELECT ?"));
         assertThat(sqlRewriteResult.getSqlRewriteUnit().getParameters(), is(Collections.singletonList(1)));
     }
@@ -60,27 +62,23 @@ public final class SQLRewriteEntryTest {
     @Test
     public void assertRewriteForRouteSQLRewriteResult() {
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
-                DatabaseTypeFactory.getInstance("H2"), mockResource(), mockRuleMetaData(), Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
-        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(database, new ConfigurationProperties(new Properties()));
+                DatabaseTypeFactory.getInstance("H2"), mockResource(), mock(ShardingSphereRuleMetaData.class), Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
+        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(
+                database, new ShardingSphereRuleMetaData(Collections.singleton(mock(SQLTranslatorRule.class))), new ConfigurationProperties(new Properties()));
         RouteContext routeContext = new RouteContext();
         RouteUnit firstRouteUnit = mock(RouteUnit.class);
         when(firstRouteUnit.getDataSourceMapper()).thenReturn(new RouteMapper("ds", "ds_0"));
         RouteUnit secondRouteUnit = mock(RouteUnit.class);
         when(secondRouteUnit.getDataSourceMapper()).thenReturn(new RouteMapper("ds", "ds_1"));
         routeContext.getRouteUnits().addAll(Arrays.asList(firstRouteUnit, secondRouteUnit));
-        RouteSQLRewriteResult sqlRewriteResult = (RouteSQLRewriteResult) sqlRewriteEntry.rewrite("SELECT ?", Collections.singletonList(1), mock(SQLStatementContext.class), routeContext);
+        RouteSQLRewriteResult sqlRewriteResult = (RouteSQLRewriteResult) sqlRewriteEntry.rewrite("SELECT ?", Collections.singletonList(1), mock(SQLStatementContext.class), routeContext,
+                mock(ConnectionContext.class));
         assertThat(sqlRewriteResult.getSqlRewriteUnits().size(), is(2));
     }
     
     private ShardingSphereResource mockResource() {
         ShardingSphereResource result = mock(ShardingSphereResource.class);
         when(result.getDatabaseType()).thenReturn(DatabaseTypeFactory.getInstance("H2"));
-        return result;
-    }
-    
-    private ShardingSphereRuleMetaData mockRuleMetaData() {
-        ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class);
-        when(result.findSingleRule(SQLTranslatorRule.class)).thenReturn(Optional.of(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration())));
         return result;
     }
 }

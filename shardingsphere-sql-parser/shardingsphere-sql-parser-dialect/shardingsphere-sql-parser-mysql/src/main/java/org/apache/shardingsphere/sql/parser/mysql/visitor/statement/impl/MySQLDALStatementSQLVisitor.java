@@ -21,7 +21,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowProfilesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterResourceGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AnalyzeTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BinaryLogFileIndexNumberContext;
@@ -52,6 +51,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.KillCon
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LoadIndexInfoContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LoadTableIndexListContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OptimizeTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OptionTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OptionValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OptionValueListContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OptionValueNoOptionTypeContext;
@@ -98,6 +98,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowPro
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowProcedureStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowProcesslistContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowProfileContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowProfilesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowRelaylogEventContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowReplicaStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowReplicasContext;
@@ -354,14 +355,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     @Override
     public ASTNode visitResetPersist(final ResetPersistContext ctx) {
-        MySQLResetPersistStatement result = new MySQLResetPersistStatement();
-        if (null != ctx.existClause()) {
-            result.setContainsExistClause(true);
-        }
-        if (null != ctx.identifier()) {
-            result.setIdentifier(new IdentifierValue(ctx.identifier().getText()));
-        }
-        return result;
+        return new MySQLResetPersistStatement(null != ctx.ifExists(), null == ctx.identifier() ? null : new IdentifierValue(ctx.identifier().getText()));
     }
     
     @Override
@@ -369,7 +363,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         if (null != ctx.MASTER()) {
             ResetMasterOptionSegment result = new ResetMasterOptionSegment();
             if (null != ctx.binaryLogFileIndexNumber()) {
-                result.setBinaryLogFileIndexNumber((NumberLiteralValue) visit(ctx.binaryLogFileIndexNumber()));
+                result.setBinaryLogFileIndexNumber(((NumberLiteralValue) visit(ctx.binaryLogFileIndexNumber())).getValue().longValue());
             }
             result.setStartIndex(ctx.start.getStartIndex());
             result.setStopIndex(ctx.stop.getStopIndex());
@@ -380,7 +374,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
             result.setAll(true);
         }
         if (null != ctx.channelOption()) {
-            result.setChannelOption((StringLiteralValue) visit(ctx.channelOption()));
+            result.setChannelOption(((StringLiteralValue) visit(ctx.channelOption())).getValue());
         }
         result.setStartIndex(ctx.start.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
@@ -487,7 +481,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitKill(final KillContext ctx) {
         MySQLKillStatement result = new MySQLKillStatement();
-        result.setProcesslistId(ctx.NUMBER_().getText());
+        result.setProcesslistId(ctx.IDENTIFIER_().getText());
         return result;
     }
     
@@ -962,9 +956,11 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
             result.setVariable(variable);
             result.setAssignValue(ctx.expr().getText());
         } else if (null != ctx.setSystemVariable()) {
-            variable.setVariable(ctx.setSystemVariable().getText());
+            variable.setVariable(ctx.setSystemVariable().internalVariableName().getText());
             result.setVariable(variable);
             result.setAssignValue(ctx.setExprOrDefault().getText());
+            OptionTypeContext optionType = ctx.setSystemVariable().optionType();
+            variable.setScope(null != optionType ? optionType.getText() : "SESSION");
         }
         return result;
     }

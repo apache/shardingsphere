@@ -18,16 +18,16 @@
     <!--FIXME! IP CANNOT CONNECT-->
 <!--    <test-case sql="SHOW SCHEMA RESOURCES" db-types="PostgreSQL">-->
 <!--        <assertion expected-data-file="alter_resource.xml">-->
-<!--            <initial-sql sql="ALTER RESOURCE rdl_test_0 (URL=&quot;jdbc:postgresql://postgresql.empty_rules.host:5432/rdl_test_0, USER=root, PASSWORD=root,-->
+<!--            <initial-sql sql="ALTER RESOURCE rdl_test_0 (URL=&quot;jdbc:postgresql://postgresql.empty_rules.host:5432/rdl_test_0, USER=root, PASSWORD=Root@123,-->
 <!--            PROPERTIES(&quot;maxPoolSize&quot;=10,&quot;maxPoolSize&quot;=10,&quot;connectionTimeoutMilliseconds&quot;=3000,&quot;idleTimeoutMilliseconds&quot;=6000,&quot;maxLifetimeMilliseconds&quot;=180000));"/>-->
-<!--            <destroy-sql sql="ALTER RESOURCE rdl_test_0 (URL=&quot;jdbc:postgresql://postgresql.empty_rules.host:5432/rdl_test_0, USER=root, PASSWORD=root,-->
+<!--            <destroy-sql sql="ALTER RESOURCE rdl_test_0 (URL=&quot;jdbc:postgresql://postgresql.empty_rules.host:5432/rdl_test_0, USER=root, PASSWORD=Root@123,-->
 <!--            PROPERTIES(&quot;maxPoolSize&quot;=2,&quot;maxPoolSize&quot;=2,&quot;connectionTimeoutMilliseconds&quot;=30000,&quot;idleTimeoutMilliseconds&quot;=60000,&quot;maxLifetimeMilliseconds&quot;=1800000));"/>-->
 <!--        </assertion>-->
 <!--    </test-case>-->
 
 <!--    <test-case sql="SHOW SCHEMA RESOURCES" db-types="PostgreSQL">-->
 <!--        <assertion expected-data-file="add_resource.xml">-->
-<!--            <initial-sql sql="ADD RESOURCE rdl_test_0 (URL=&quot;jdbc:postgresql://postgresql.empty_rules.host:5432/rdl_test_1&quot;, USER=root, PASSWORD=root,-->
+<!--            <initial-sql sql="ADD RESOURCE rdl_test_0 (URL=&quot;jdbc:postgresql://postgresql.empty_rules.host:5432/rdl_test_1&quot;, USER=root, PASSWORD=Root@123,-->
 <!--                PROPERTIES(&quot;maxPoolSize&quot;=2,&quot;maxPoolSize&quot;=2,&quot;connectionTimeoutMilliseconds&quot;=30000,&quot;idleTimeoutMilliseconds&quot;=60000,&quot;maxLifetimeMilliseconds&quot;=1800000));" />-->
 <!--            <destroy-sql sql="DROP RESOURCE rdl_test_0;"/>-->
 <!--        </assertion>-->
@@ -40,14 +40,14 @@
 <!--    <test-case sql="SHOW SCHEMA RESOURCES" db-types="PostgreSQL">-->
 <!--        <assertion expected-data-file="drop_resource.xml">-->
 <!--            <initial-sql sql="DROP RESOURCE rdl_test_0;"/>-->
-<!--            <destroy-sql sql="ADD RESOURCE rdl_test_0 (URL=&quot;jdbc:postgresql://postgresql.empty_rules.host:5432/rdl_test_0&quot;, USER=root, PASSWORD=root,-->
+<!--            <destroy-sql sql="ADD RESOURCE rdl_test_0 (URL=&quot;jdbc:postgresql://postgresql.empty_rules.host:5432/rdl_test_0&quot;, USER=root, PASSWORD=Root@123,-->
 <!--                PROPERTIES(&quot;maxPoolSize&quot;=2,&quot;maxPoolSize&quot;=2,&quot;connectionTimeoutMilliseconds&quot;=30000,&quot;idleTimeoutMilliseconds&quot;=60000,&quot;maxLifetimeMilliseconds&quot;=1800000));" />-->
 <!--        </assertion>-->
 <!--    </test-case>-->
 <!--    -->
 <!--    <test-case sql="SHOW SCHEMA RESOURCES" db-types="PostgreSQL">-->
 <!--        <assertion expected-data-file="alter_resource.xml">-->
-<!--            <initial-sql sql="ALTER RESOURCE rdl_test_0 (URL=&quot;jdbc:postgresql://postgresql.empty_rules.host:5432/rdl_test_0&quot;, USER=root, PASSWORD=root,-->
+<!--            <initial-sql sql="ALTER RESOURCE rdl_test_0 (URL=&quot;jdbc:postgresql://postgresql.empty_rules.host:5432/rdl_test_0&quot;, USER=root, PASSWORD=Root@123,-->
 <!--                PROPERTIES(&quot;maxPoolSize&quot;=2,&quot;maxPoolSize&quot;=2,&quot;connectionTimeoutMilliseconds&quot;=30000,&quot;idleTimeoutMilliseconds&quot;=60000,&quot;maxLifetimeMilliseconds&quot;=1800000));" />-->
 <!--            <destroy-sql sql="DROP RESOURCE rdl_test_0;"/>-->
 <!--        </assertion>-->
@@ -56,7 +56,7 @@
 <!--    <test-case sql="SHOW SCHEMA RESOURCES" db-types="MySQL">-->
 <!--        <assertion expected-data-file="drop_resource.xml">-->
 <!--            <initial-sql sql="DROP RESOURCE rdl_test_0;"/>-->
-<!--            <destroy-sql sql="ADD RESOURCE rdl_test_0 (URL=&quot;jdbc:mysql://mysql.empty_rules.host:3306/rdl_test_0?serverTimezone=UTC&amp;useSSL=false&amp;characterEncoding=utf-8&quot;, USER=root, PASSWORD=root,-->
+<!--            <destroy-sql sql="ADD RESOURCE rdl_test_0 (URL=&quot;jdbc:mysql://mysql.empty_rules.host:3306/rdl_test_0?serverTimezone=UTC&amp;useSSL=false&amp;characterEncoding=utf-8&quot;, USER=root, PASSWORD=Root@123,-->
 <!--                PROPERTIES(&quot;maxPoolSize&quot;=2,&quot;maxPoolSize&quot;=2,&quot;connectionTimeoutMilliseconds&quot;=30000,&quot;idleTimeoutMilliseconds&quot;=60000,&quot;maxLifetimeMilliseconds&quot;=1800000));" />-->
 <!--        </assertion>-->
 <!--    </test-case>-->
@@ -94,9 +94,8 @@
 <!--            <initial-sql sql="CREATE SHARDING TABLE RULE t_user (-->
 <!--                RESOURCES(&quot;encrypt_write_ds_${0..9}&quot;),-->
 <!--                SHARDING_COLUMN=user_id, TYPE(NAME=MOD, PROPERTIES(&quot;sharding-count&quot;=40)))));-->
-<!--                CREATE SHARDING SCALING RULE default_scaling;-->
 <!--                ALTER SHARDING BINDING TABLE RULES (t_user,t_user_item);"/>-->
-<!--            <destroy-sql sql="DROP SHARDING BINDING TABLE RULES;DROP SHARDING TABLE RULE t_user;DROP SHARDING SCALING RULE default_scaling" />-->
+<!--            <destroy-sql sql="DROP SHARDING BINDING TABLE RULES;DROP SHARDING TABLE RULE t_user" />-->
 <!--        </assertion>-->
 <!--    </test-case>-->
 <!--    -->
@@ -127,7 +126,7 @@
 <!--    <test-case sql="SHOW ENCRYPT TABLE RULE t_user">-->
 <!--        <assertion expected-data-file="create_encrypt_rule.xml">-->
 <!--            <initial-sql sql="CREATE ENCRYPT RULE t_user (COLUMNS ((-->
-<!--                NAME=pwd, PLAIN=pwd_plain, CIPHER=pwd_cipher, TYPE(NAME=AES,-->
+<!--                NAME=pwd, PLAIN=pwd_plain, CIPHER=pwd_cipher, TYPE(NAME="AES",-->
 <!--                PROPERTIES(&quot;aes-key-value&quot;='123456abc')))))"/>-->
 <!--            <destroy-sql sql="DROP ENCRYPT RULE t_user" />-->
 <!--        </assertion>-->
@@ -136,18 +135,17 @@
 <!--    <test-case sql="SHOW ENCRYPT TABLE RULE t_user">-->
 <!--        <assertion expected-data-file="alter_encrypt_rule.xml">-->
 <!--            <initial-sql sql="CREATE ENCRYPT RULE t_user (COLUMNS ((-->
-<!--                NAME=pwd, PLAIN=pwd_plain, CIPHER=pwd_cipher, TYPE(NAME=AES, PROPERTIES(&quot;aes-key-value&quot;='123456abc')))));-->
-<!--                CREATE SHARDING SCALING RULE default_scaling;-->
-<!--                ALTER ENCRYPT RULE t_user (COLUMNS ((NAME=pwd, PLAIN=pwd_plain, CIPHER=pwd_cipher, TYPE(NAME=AES,-->
+<!--                NAME=pwd, PLAIN=pwd_plain, CIPHER=pwd_cipher, TYPE(NAME="AES", PROPERTIES(&quot;aes-key-value&quot;='123456abc')))));-->
+<!--                ALTER ENCRYPT RULE t_user (COLUMNS ((NAME=pwd, PLAIN=pwd_plain, CIPHER=pwd_cipher, TYPE(NAME="AES",-->
 <!--                PROPERTIES(&quot;aes-key-value&quot;='123abc')))))"/>-->
-<!--            <destroy-sql sql="DROP ENCRYPT RULE t_user;DROP SHARDING SCALING RULE default_scaling" />-->
+<!--            <destroy-sql sql="DROP ENCRYPT RULE t_user" />-->
 <!--        </assertion>-->
 <!--    </test-case>-->
 <!--    -->
 <!--    <test-case sql="SHOW ENCRYPT RULES">-->
 <!--        <assertion expected-data-file="drop_encrypt_rule.xml">-->
 <!--            <initial-sql sql="CREATE ENCRYPT RULE t_user (COLUMNS ((-->
-<!--                NAME=pwd, PLAIN=pwd_plain, CIPHER=pwd_cipher, TYPE(NAME=AES,-->
+<!--                NAME=pwd, PLAIN=pwd_plain, CIPHER=pwd_cipher, TYPE(NAME="AES",-->
 <!--                PROPERTIES(&quot;aes-key-value&quot;='123456abc')))));-->
 <!--                DROP ENCRYPT RULE t_user"/>-->
 <!--        </assertion>-->
@@ -165,10 +163,9 @@
 <!--        <assertion expected-data-file="alter_readwrite_splitting_rules.xml">-->
 <!--            <initial-sql sql="CREATE READWRITE_SPLITTING RULE readwrite_ds_1 (WRITE_RESOURCE=encrypt_write_ds_1,-->
 <!--            READ_RESOURCES(encrypt_read_ds_1), TYPE(NAME=ROUND_ROBIN));-->
-<!--            CREATE SHARDING SCALING RULE default_scaling;-->
 <!--            ALTER READWRITE_SPLITTING RULE readwrite_ds_1 (WRITE_RESOURCE=encrypt_write_ds_1,-->
 <!--            READ_RESOURCES(encrypt_read_ds_1, encrypt_read_ds_2), TYPE(NAME=RANDOM,PROPERTIES(read_weight='2:1')))"/>-->
-<!--            <destroy-sql sql="DROP READWRITE_SPLITTING RULE readwrite_ds_1;DROP SHARDING SCALING RULE default_scaling" />-->
+<!--            <destroy-sql sql="DROP READWRITE_SPLITTING RULE readwrite_ds_1;" />-->
 <!--        </assertion>-->
 <!--    </test-case>-->
 <!--    -->

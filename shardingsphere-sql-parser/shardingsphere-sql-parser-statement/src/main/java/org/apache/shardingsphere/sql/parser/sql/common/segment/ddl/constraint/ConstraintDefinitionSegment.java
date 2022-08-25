@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -36,6 +37,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Getter
 @Setter
+@ToString
 public final class ConstraintDefinitionSegment implements CreateDefinitionSegment, AlterDefinitionSegment {
     
     private final int startIndex;

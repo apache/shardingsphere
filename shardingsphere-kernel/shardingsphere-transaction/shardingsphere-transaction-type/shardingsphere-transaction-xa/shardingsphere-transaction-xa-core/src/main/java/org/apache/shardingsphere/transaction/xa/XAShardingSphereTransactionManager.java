@@ -74,9 +74,9 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     }
     
     @Override
-    public Connection getConnection(final String dataSourceName) throws SQLException {
+    public Connection getConnection(final String databaseName, final String dataSourceName) throws SQLException {
         try {
-            return cachedDataSources.get(dataSourceName).getConnection();
+            return cachedDataSources.get(databaseName + "." + dataSourceName).getConnection();
         } catch (final SystemException | RollbackException ex) {
             throw new SQLException(ex);
         }
@@ -121,6 +121,8 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
             each.close();
         }
         cachedDataSources.clear();
-        xaTransactionManagerProvider.close();
+        if (null != xaTransactionManagerProvider) {
+            xaTransactionManagerProvider.close();
+        }
     }
 }

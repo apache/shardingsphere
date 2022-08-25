@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL create text search statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLCreateTextSearchStatement extends CreateTextSearchStatement implements PostgreSQLStatement {
 }

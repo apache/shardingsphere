@@ -144,9 +144,11 @@
         <user name="user1" start-index="17" stop-index="24" />
     </show-create-user>
 
-    <show sql-case-id="show_all" />
-    <show sql-case-id="show_server_version" />
-    <show sql-case-id="show_transaction_isolation_level" />
+    <show sql-case-id="show_all" name="ALL" />
+    <show sql-case-id="show_server_version" name="SERVER_VERSION" />
+    <show sql-case-id="show_transaction_isolation_level" name="transaction_isolation" />
+    <show sql-case-id="show_time_zone" name="timezone" />
+    <show sql-case-id="show_session_authorization" name="session_authorization" />
 
     <show-databases sql-case-id="show_databases" />
 
@@ -864,5 +866,5 @@
     <show sql-case-id="show_charset" />
     <show sql-case-id="show_warnings_limit" />
     <show sql-case-id="show_warnings_count" />
-    <show sql-case-id="show_search_path" />
+    <show sql-case-id="show_search_path" name="search_path" />
 </sql-parser-test-cases>

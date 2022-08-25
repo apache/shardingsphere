@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateIndexStatementHandler;
 
 import java.util.Collections;
 import java.util.List;
@@ -40,13 +41,16 @@ public final class ShardingCreateIndexStatementValidator extends ShardingDDLStat
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateIndexStatement> sqlStatementContext,
                             final List<Object> parameters, final ShardingSphereDatabase database) {
+        if (CreateIndexStatementHandler.ifNotExists(sqlStatementContext.getSqlStatement())) {
+            return;
+        }
         String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName());
         ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName()
-                .map(optional -> database.getSchemas().get(optional)).orElseGet(() -> database.getSchemas().get(defaultSchemaName));
+                .map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName));
         validateTableExist(schema, Collections.singletonList(sqlStatementContext.getSqlStatement().getTable()));
         String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         String indexName = ((IndexAvailable) sqlStatementContext).getIndexes().stream().map(each -> each.getIndexName().getIdentifier().getValue()).findFirst().orElse(null);
-        if (schema.get(tableName).getIndexes().containsKey(indexName)) {
+        if (schema.containsIndex(tableName, indexName)) {
             throw new ShardingSphereException("Index '%s' already exists.", indexName);
         }
     }

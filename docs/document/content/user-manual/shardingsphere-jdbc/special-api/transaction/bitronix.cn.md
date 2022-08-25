@@ -3,7 +3,13 @@ title = "Bitronix 事务"
 weight = 6
 +++
 
-## 引入 Maven 依赖
+## 背景信息
+
+Apache ShardingSphere 提供 XA 事务，集成了 Bitronix 的实现。
+
+## 前提条件
+
+引入 Maven 依赖
 
 ```xml
 <properties>
@@ -36,11 +42,14 @@ weight = 6
 </dependency>
 ```
 
-## 定制化配置项
+## 操作步骤
 
-详情请参见 [Bitronix 官方文档](https://github.com/bitronix/btm/wiki)。
+1. 配置 XA 事务类型
+2. 配置 Bitronix
 
-## 设置 XA 事务管理类型
+## 配置示例
+
+### 配置 XA 事务类型
 
 Yaml:
 
@@ -68,3 +77,7 @@ Spring Namespace:
     </props>
 </shardingsphere:data-source>
 ```
+
+### 配置 Bitronix （可省略）
+
+详情请参见 [Bitronix 官方文档](https://github.com/bitronix/btm/wiki) 。

@@ -23,6 +23,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.util.exception.sql.SQLWrapperException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -42,8 +43,19 @@ public final class DatabaseTypeEngine {
     
     /**
      * Get protocol type.
+     * 
+     * @param databaseConfig database configuration
+     * @param props props
+     * @return protocol type
+     */
+    public static DatabaseType getProtocolType(final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) {
+        return findConfiguredDatabaseType(props).orElseGet(() -> getDatabaseType(databaseConfig.getDataSources().values()));
+    }
+    
+    /**
+     * Get protocol type.
      *
-     * @param databaseConfigs database configs
+     * @param databaseConfigs database configurations
      * @param props props
      * @return protocol type
      */
@@ -53,7 +65,7 @@ public final class DatabaseTypeEngine {
             return configuredDatabaseType.get();
         }
         Collection<DataSource> dataSources = databaseConfigs.values().stream()
-                .filter(DatabaseTypeEngine::hasDataSource).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList);
+                .filter(each -> !each.getDataSources().isEmpty()).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList);
         return getDatabaseType(dataSources);
     }
     
@@ -65,7 +77,7 @@ public final class DatabaseTypeEngine {
      */
     public static DatabaseType getStorageType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
         return getDatabaseType(
-                databaseConfigs.values().stream().filter(DatabaseTypeEngine::hasDataSource).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList));
+                databaseConfigs.values().stream().filter(each -> !each.getDataSources().isEmpty()).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList));
     }
     
     /**
@@ -98,17 +110,13 @@ public final class DatabaseTypeEngine {
         try (Connection connection = dataSource.getConnection()) {
             return getDatabaseType(connection.getMetaData().getURL());
         } catch (final SQLException ex) {
-            throw new IllegalArgumentException(ex.getMessage(), ex);
+            throw new SQLWrapperException(ex);
         }
     }
     
     private static Optional<DatabaseType> findConfiguredDatabaseType(final ConfigurationProperties props) {
         String configuredDatabaseType = props.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
         return configuredDatabaseType.isEmpty() ? Optional.empty() : Optional.of(DatabaseTypeEngine.getTrunkDatabaseType(configuredDatabaseType));
-    }
-    
-    private static boolean hasDataSource(final DatabaseConfiguration databaseConfig) {
-        return !databaseConfig.getDataSources().isEmpty();
     }
     
     private static boolean matchURLs(final String url, final DatabaseType databaseType) {
@@ -144,6 +152,6 @@ public final class DatabaseTypeEngine {
      * @return default schema name
      */
     public static String getDefaultSchemaName(final DatabaseType databaseType, final String databaseName) {
-        return databaseType instanceof SchemaSupportedDatabaseType ? ((SchemaSupportedDatabaseType) databaseType).getDefaultSchema() : databaseName;
+        return databaseType instanceof SchemaSupportedDatabaseType ? ((SchemaSupportedDatabaseType) databaseType).getDefaultSchema() : databaseName.toLowerCase();
     }
 }

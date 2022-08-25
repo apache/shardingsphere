@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingKeyGeneratorsStatement;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
@@ -32,16 +33,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Result set for show sharding key generators.
+ * Query result set for show sharding key generators.
  */
-public final class ShardingKeyGeneratorsQueryResultSet implements DistSQLResultSet {
+public final class ShardingKeyGeneratorsQueryResultSet implements DatabaseDistSQLResultSet {
     
-    private Iterator<Entry<String, ShardingSphereAlgorithmConfiguration>> data = Collections.emptyIterator();
+    private Iterator<Entry<String, AlgorithmConfiguration>> data = Collections.emptyIterator();
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        database.getRuleMetaData().findRuleConfigurations(ShardingRuleConfiguration.class)
-                .forEach(each -> data = each.getKeyGenerators().entrySet().iterator());
+        database.getRuleMetaData().findSingleRule(ShardingRule.class).map(optional -> data = ((ShardingRuleConfiguration) optional.getConfiguration()).getKeyGenerators().entrySet().iterator());
     }
     
     @Override
@@ -56,7 +56,7 @@ public final class ShardingKeyGeneratorsQueryResultSet implements DistSQLResultS
     
     @Override
     public Collection<Object> getRowData() {
-        Map.Entry<String, ShardingSphereAlgorithmConfiguration> entry = data.next();
+        Map.Entry<String, AlgorithmConfiguration> entry = data.next();
         return Arrays.asList(entry.getKey(), entry.getValue().getType(), entry.getValue().getProps());
     }
     

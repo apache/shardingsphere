@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
  */
 @RequiredArgsConstructor
 @Getter
+@ToString
 public final class AliasSegment implements SQLSegment {
     
     private final int startIndex;

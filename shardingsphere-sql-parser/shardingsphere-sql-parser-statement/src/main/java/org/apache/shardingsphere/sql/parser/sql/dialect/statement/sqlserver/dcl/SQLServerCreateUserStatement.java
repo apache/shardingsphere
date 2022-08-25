@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
 /**
  * SQLServer create user statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class SQLServerCreateUserStatement extends CreateUserStatement implements SQLServerStatement {
 }

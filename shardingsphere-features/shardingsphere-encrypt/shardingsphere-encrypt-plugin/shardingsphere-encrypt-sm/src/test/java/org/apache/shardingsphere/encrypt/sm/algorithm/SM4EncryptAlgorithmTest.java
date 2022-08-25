@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.sm.algorithm;
 import org.apache.shardingsphere.encrypt.factory.EncryptAlgorithmFactory;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -34,7 +34,7 @@ public final class SM4EncryptAlgorithmTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertInitWithoutKey() {
-        EncryptAlgorithm<Object, String> algorithm = EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SM4", createECBProperties()));
+        EncryptAlgorithm<Object, String> algorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("SM4", createECBProperties()));
         algorithm.init(createInvalidProperties());
     }
     
@@ -47,25 +47,25 @@ public final class SM4EncryptAlgorithmTest {
     
     @Test
     public void assertEncryptNullValue() {
-        EncryptAlgorithm<Object, String> algorithm = EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SM4", createECBProperties()));
+        EncryptAlgorithm<Object, String> algorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("SM4", createECBProperties()));
         assertNull(algorithm.encrypt(null, mock(EncryptContext.class)));
     }
     
     @Test
     public void assertEncryptWithECBMode() {
-        EncryptAlgorithm<Object, String> algorithm = EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SM4", createECBProperties()));
+        EncryptAlgorithm<Object, String> algorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("SM4", createECBProperties()));
         assertThat(algorithm.encrypt("test", mock(EncryptContext.class)), is("028654f2ca4f575dee9e1faae85dadde"));
     }
     
     @Test
     public void assertDecryptNullValue() {
-        EncryptAlgorithm<Object, String> algorithm = EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SM4", createECBProperties()));
+        EncryptAlgorithm<Object, String> algorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("SM4", createECBProperties()));
         assertNull(algorithm.decrypt(null, mock(EncryptContext.class)));
     }
     
     @Test
     public void assertDecryptWithECBMode() {
-        EncryptAlgorithm<Object, String> algorithm = EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SM4", createECBProperties()));
+        EncryptAlgorithm<Object, String> algorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("SM4", createECBProperties()));
         assertThat(algorithm.decrypt("028654f2ca4f575dee9e1faae85dadde", mock(EncryptContext.class)).toString(), is("test"));
     }
     
@@ -79,13 +79,13 @@ public final class SM4EncryptAlgorithmTest {
     
     @Test
     public void assertEncryptWithCBCMode() {
-        EncryptAlgorithm<Object, String> algorithm = EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SM4", createCBCProperties()));
+        EncryptAlgorithm<Object, String> algorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("SM4", createCBCProperties()));
         assertThat(algorithm.encrypt("test", mock(EncryptContext.class)), is("dca2127b57ba8cac36a0914e0208dc11"));
     }
     
     @Test
     public void assertDecrypt() {
-        EncryptAlgorithm<Object, String> algorithm = EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SM4", createCBCProperties()));
+        EncryptAlgorithm<Object, String> algorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("SM4", createCBCProperties()));
         assertThat(algorithm.decrypt("dca2127b57ba8cac36a0914e0208dc11", mock(EncryptContext.class)).toString(), is("test"));
     }
     

@@ -61,21 +61,21 @@
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>
-
+    
     <sharding:rule id="shardingRule">
         <sharding:table-rules>
             <sharding:table-rule actual-data-nodes="ds_${0..1}.t_user" logic-table="t_user" database-strategy-ref="databaseStrategy"/>
         </sharding:table-rules>
     </sharding:rule>
-
+    
     <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="inlineStrategyShardingAlgorithm" />
-
+    
     <sharding:sharding-algorithm id="inlineStrategyShardingAlgorithm" type="INLINE">
         <props>
             <prop key="algorithm-expression">ds_${user_id % 2}</prop>
         </props>
     </sharding:sharding-algorithm>
-
+    
     <shadow:shadow-algorithm id="user-id-insert-match-algorithm" type="REGEX_MATCH">
         <props>
             <prop key="operation">insert</prop>
@@ -83,7 +83,7 @@
             <prop key="regex">[1]</prop>
         </props>
     </shadow:shadow-algorithm>
-
+    
     <shadow:shadow-algorithm id="user-id-delete-match-algorithm" type="REGEX_MATCH">
         <props>
             <prop key="operation">delete</prop>
@@ -91,7 +91,7 @@
             <prop key="regex">[1]</prop>
         </props>
     </shadow:shadow-algorithm>
-
+    
     <shadow:shadow-algorithm id="user-id-select-match-algorithm" type="REGEX_MATCH">
         <props>
             <prop key="operation">select</prop>
@@ -99,17 +99,17 @@
             <prop key="regex">[1]</prop>
         </props>
     </shadow:shadow-algorithm>
-
+    
     <shadow:shadow-algorithm id="simple-hint-algorithm" type="SIMPLE_HINT">
         <props>
             <prop key="shadow">true</prop>
             <prop key="foo">bar</prop>
         </props>
     </shadow:shadow-algorithm>
-
+    
     <shadow:rule id="shadowRule">
-        <shadow:data-source id="shadow-data-source-0" source-data-source-name="ds_0" shadow-data-source-name="ds_shadow_0"/>
-        <shadow:data-source id="shadow-data-source-1" source-data-source-name="ds_1" shadow-data-source-name="ds_shadow_1"/>
+        <shadow:data-source id="shadow-data-source-0" production-data-source-name="ds_0" shadow-data-source-name="ds_shadow_0"/>
+        <shadow:data-source id="shadow-data-source-1" production-data-source-name="ds_1" shadow-data-source-name="ds_shadow_1"/>
         <shadow:shadow-table name="t_user" data-sources="shadow-data-source-0,shadow-data-source-1">
             <shadow:algorithm shadow-algorithm-ref="user-id-insert-match-algorithm" />
             <shadow:algorithm shadow-algorithm-ref="user-id-delete-match-algorithm" />
@@ -117,24 +117,24 @@
             <shadow:algorithm shadow-algorithm-ref="simple-hint-algorithm" />
         </shadow:shadow-table>
     </shadow:rule>
-
+    
     <sql-parser:rule id="sqlParseRule" sql-comment-parse-enable="true" parse-tree-cache-ref="parseTreeCache" sql-statement-cache-ref="sqlStatementCache" />
     <sql-parser:cache-option id="sqlStatementCache" initial-capacity="1024" maximum-size="1024"/>
     <sql-parser:cache-option id="parseTreeCache" initial-capacity="1024" maximum-size="1024"/>
-
-    <shardingsphere:data-source id="shadowShardingDatasourceDataSource" data-source-names="write-ds,read-ds,write-ds-shadow,read-ds-shadow" rule-refs="shadowRule,readWriteSplittingRule,sqlParseRule">
+    
+    <shardingsphere:data-source id="shadowShardingDataSource" data-source-names="write-ds,read-ds,write-ds-shadow,read-ds-shadow" rule-refs="shadowRule,readWriteSplittingRule,sqlParseRule">
         <props>
             <prop key="sql-show">true</prop>
         </props>
     </shardingsphere:data-source>
-
+    
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="shadowShardingDatasourceDataSource" />
+        <property name="dataSource" ref="shadowShardingDataSource" />
     </bean>
     <tx:annotation-driven />
     
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-        <property name="dataSource" ref="shadowShardingDatasourceDataSource"/>
+        <property name="dataSource" ref="shadowShardingDataSource"/>
         <property name="mapperLocations" value="classpath*:META-INF/mappers/*.xml"/>
     </bean>
 

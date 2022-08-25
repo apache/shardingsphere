@@ -16,110 +16,78 @@
   -->
 
 <command>
-    <create-database-sharding-algorithm>
-        CREATE SHARDING ALGORITHM database_inline (
-        TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="ds_${user_id % 2}")))
-    </create-database-sharding-algorithm>
+    <add-migration-process-config>
+        CREATE MIGRATION PROCESS CONFIGURATION (
+        READ(
+        WORKER_THREAD=40,
+        BATCH_SIZE=1000,
+        SHARDING_SIZE=10000000,
+        RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='500')))
+        ),
+        WRITE(
+        WORKER_THREAD=40,
+        BATCH_SIZE=1000,
+        RATE_LIMITER (TYPE(NAME='TPS',PROPERTIES('tps'='2000')))
+        ),
+        STREAM_CHANNEL (TYPE(NAME='MEMORY',PROPERTIES('block-queue-size'='10000')))
+        );
+    </add-migration-process-config>
     
-    <create-order-sharding-algorithm>
-        CREATE SHARDING ALGORITHM t_order_inline (
-        TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="t_order_${order_id % 2}")))
-    </create-order-sharding-algorithm>
-    
-    <create-order-item-sharding-algorithm>
-        CREATE SHARDING ALGORITHM t_order_item_inline (
-        TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="t_order_item_${order_id % 2}")))
-    </create-order-item-sharding-algorithm>
-    
-    <create-order-with-item-sharding-table-rule>
-        CREATE SHARDING TABLE RULE t_order (
-        DATANODES("ds_${0..1}.t_order_${0..1}"),
-        DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
-        TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_inline),
-        KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
-        ), t_order_item (
-        DATANODES("ds_${0..1}.t_order_item_${0..1}"),
-        DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
-        TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_item_inline),
-        KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
-        )
-    </create-order-with-item-sharding-table-rule>
-    
-    <create-order-sharding-table-rule>
-        CREATE SHARDING TABLE RULE t_order (
-        DATANODES("ds_${0..1}.t_order_${0..1}"),
-        DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
-        TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_inline),
-        KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
-        )
-    </create-order-sharding-table-rule>
-    
-    <alter-sharding-algorithm>
-        ALTER SHARDING ALGORITHM database_inline
-        (TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="ds_${user_id % 3 + 2}")))
-    </alter-sharding-algorithm>
-    
-    <alter-sharding-table-rule>
-        ALTER SHARDING TABLE RULE t_order (
-        DATANODES("ds_${2..4}.t_order_${0..1}"),
-        DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
-        TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_inline),
-        KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
-        ), t_order_item (
-        DATANODES("ds_${2..4}.t_order_item_${0..1}"),
-        DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
-        TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_item_inline),
-        KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake)))
-    </alter-sharding-table-rule>
-    
-    <auto-alter-order-with-item-sharding-table-rule>
-        ALTER SHARDING TABLE RULE t_order(
-        RESOURCES(ds_2, ds_3, ds_4),
-        SHARDING_COLUMN=order_id,
-        TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=6)),
-        KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
-        ),t_order_item(
-        RESOURCES(ds_2, ds_3, ds_4),
-        SHARDING_COLUMN=order_id,
-        TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=6)),
-        KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
-        )
-    </auto-alter-order-with-item-sharding-table-rule>
-    
-    <auto-alter-order-sharding-table-rule>
-        ALTER SHARDING TABLE RULE t_order(
-        RESOURCES(ds_2, ds_3, ds_4),
-        SHARDING_COLUMN=order_id,
-        TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=6)),
-        KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
-        )
-    </auto-alter-order-sharding-table-rule>
-    
-    <source-add-resource-template>
-        ADD RESOURCE ds_0 (
+    <add-migration-source-resource-template>
+        ADD MIGRATION SOURCE RESOURCE ds_0 (
         URL="${ds0}",
-        USER=${user},
-        PASSWORD=${password}
-        ), ds_1 (
-        URL="${ds1}",
-        USER=${user},
-        PASSWORD=${password}
-        )
-    </source-add-resource-template>
+        USER="${user}",
+        PASSWORD="${password}"
+        );
+    </add-migration-source-resource-template>
     
-    <target-add-resource-template>
+    <add-migration-target-resource-template>
         ADD RESOURCE ds_2 (
         URL="${ds2}",
-        USER=${user},
-        PASSWORD=${password}
+        USER="${user}",
+        PASSWORD="${password}"
         ),ds_3 (
         URL="${ds3}",
-        USER=${user},
-        PASSWORD=${password}
+        USER="${user}",
+        PASSWORD="${password}"
         ),ds_4 (
         URL="${ds4}",
-        USER=${user},
-        PASSWORD=${password}
+        USER="${user}",
+        PASSWORD="${password}"
         )
-    </target-add-resource-template>
+    </add-migration-target-resource-template>
+    
+    <create-target-order-table-rule>
+        CREATE SHARDING TABLE RULE t_order(
+        RESOURCES(ds_2,ds_3,ds_4),
+        SHARDING_COLUMN=order_id,
+        TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="6")),
+        KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
+        )
+    </create-target-order-table-rule>
+    
+    <create-target-order-item-table-rule>
+        CREATE SHARDING TABLE RULE t_order_item(
+        RESOURCES(ds_2,ds_3,ds_4),
+        SHARDING_COLUMN=order_id,
+        TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="6")),
+        KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
+        );
+    </create-target-order-item-table-rule>
+    
+    <migration-order-single-table>
+        MIGRATE TABLE ds_0.t_order INTO sharding_db.t_order;
+    </migration-order-single-table>
+    
+    <migration-order-single-table-with-schema>
+        MIGRATE TABLE ds_0.test.t_order INTO sharding_db.t_order;
+    </migration-order-single-table-with-schema>
+    
+    <migration-order-item-single-table>
+        MIGRATE TABLE ds_0.t_order_item INTO sharding_db.t_order_item;
+    </migration-order-item-single-table>
+    
+    <migration-order-item-single-table-with-schema>
+        MIGRATE TABLE ds_0.test.t_order_item INTO sharding_db.t_order_item;
+    </migration-order-item-single-table-with-schema>
 </command>

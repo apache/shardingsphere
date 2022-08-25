@@ -17,9 +17,17 @@
 
 package org.apache.shardingsphere.infra.metadata.database.rule;
 
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
+import static org.mockito.Mockito.mock;
+
 public class ShardingSphereRuleFixture implements ShardingSphereRule {
+    
+    @Override
+    public RuleConfiguration getConfiguration() {
+        return mock(RuleConfiguration.class);
+    }
     
     @Override
     public String getType() {

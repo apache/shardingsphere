@@ -20,7 +20,7 @@ mode:
   repository:
     type: ZooKeeper
     props:
-      namespace: opengauss_db
+      namespace: it_db_opengauss
       server-lists: zk.host:2181
       retryIntervalMilliseconds: 500
       timeToLiveSeconds: 60
@@ -31,8 +31,7 @@ mode:
 rules:
   - !AUTHORITY
     users:
-      - root@%:root
-      - sharding@:sharding
+      - proxy@:Proxy@123
     provider:
       type: ALL_PERMITTED
 
@@ -43,9 +42,7 @@ props:
   proxy-hint-enabled: false
   sql-show: true
   check-table-metadata-enabled: false
-  show-process-list-enabled: false
   proxy-backend-query-fetch-size: -1
-  check-duplicate-table-enabled: false
   proxy-backend-executor-suitable: OLAP
   proxy-frontend-max-connections: 0 # Less than or equal to 0 means no limitation.
   sql-federation-enabled: false

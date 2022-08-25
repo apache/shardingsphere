@@ -19,4 +19,11 @@
 <sql-cases>
     <sql-case id="alter_materialized_view_alter" value="ALTER MATERIALIZED VIEW compressmv ALTER COLUMN x SET COMPRESSION lz4;" db-types="PostgreSQL" />
     <sql-case id="alter_materialized_view_set" value="ALTER MATERIALIZED VIEW mvtest_tvm SET SCHEMA mvtest_mvschema;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_materialized_view_refresh_fast" value="ALTER MATERIALIZED VIEW sales_by_month_by_state REFRESH FAST;" db-types="Oracle" />
+    <sql-case id="alter_materialized_view_refresh_next" value="ALTER MATERIALIZED VIEW sales_by_month_by_state REFRESH NEXT SYSDATE+7;" db-types="Oracle" />
+    <sql-case id="alter_materialized_view_refresh_consider_fresh" value="ALTER MATERIALIZED VIEW sales_by_month_by_state CONSIDER FRESH;" db-types="Oracle" />
+    <sql-case id="alter_materialized_view_refresh_complete_refresh" value="ALTER MATERIALIZED VIEW emp_data REFRESH COMPLETE START WITH TRUNC(SYSDATE+1) + 9/24 NEXT SYSDATE+7;" db-types="Oracle" />
+    <sql-case id="alter_materialized_view_refresh_enable_query_rewrite" value="ALTER MATERIALIZED VIEW emp_data ENABLE QUERY REWRITE;" db-types="Oracle" />
+    <sql-case id="alter_materialized_view_refresh_with_primary_key" value="ALTER MATERIALIZED VIEW order_data REFRESH WITH PRIMARY KEY;" db-types="Oracle" />
+    <sql-case id="alter_materialized_view_compile" value="ALTER MATERIALIZED VIEW order_data COMPILE;" db-types="Oracle" />
 </sql-cases>

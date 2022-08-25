@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.example.proxy.distsql.factory;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.example.proxy.distsql.config.DatasourceConfiguration;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.example.proxy.distsql.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -28,7 +28,7 @@ import java.io.IOException;
 public final class DataSourceFactory {
     
     public static DataSource createDataSource(final File yamlFile) throws IOException {
-        DatasourceConfiguration datasourceConfig = YamlEngine.unmarshal(yamlFile, DatasourceConfiguration.class);
+        DataSourceConfiguration datasourceConfig = YamlEngine.unmarshal(yamlFile, DataSourceConfiguration.class);
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(datasourceConfig.getDriverClassName());
         result.setJdbcUrl(datasourceConfig.getJdbcUrl());

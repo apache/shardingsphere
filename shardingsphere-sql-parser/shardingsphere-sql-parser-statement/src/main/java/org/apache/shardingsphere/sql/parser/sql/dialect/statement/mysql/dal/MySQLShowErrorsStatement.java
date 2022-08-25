@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
  */
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class MySQLShowErrorsStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
     private LimitSegment limit;

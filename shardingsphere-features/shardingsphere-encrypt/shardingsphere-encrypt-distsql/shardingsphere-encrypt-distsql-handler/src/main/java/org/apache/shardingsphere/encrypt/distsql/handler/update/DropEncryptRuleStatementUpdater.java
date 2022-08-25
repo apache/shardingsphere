@@ -41,7 +41,7 @@ public final class DropEncryptRuleStatementUpdater implements RuleDefinitionDrop
     
     private void checkToBeDroppedEncryptTableNames(final String databaseName, final DropEncryptRuleStatement sqlStatement,
                                                    final EncryptRuleConfiguration currentRuleConfig) throws DistSQLException {
-        if (sqlStatement.isContainsExistClause()) {
+        if (sqlStatement.isIfExists()) {
             return;
         }
         DistSQLException.predictionThrow(isExistRuleConfig(currentRuleConfig), () -> new RequiredRuleMissedException("Encrypt", databaseName));

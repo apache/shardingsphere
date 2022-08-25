@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL alter procedure statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class MySQLAlterProcedureStatement extends AlterProcedureStatement implements MySQLStatement {
 }

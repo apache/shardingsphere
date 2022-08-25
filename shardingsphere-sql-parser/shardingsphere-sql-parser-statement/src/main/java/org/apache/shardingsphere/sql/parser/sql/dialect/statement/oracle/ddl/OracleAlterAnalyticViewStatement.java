@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Oracle alter analytic view statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OracleAlterAnalyticViewStatement extends AlterAnalyticViewStatement implements OracleStatement {
 }

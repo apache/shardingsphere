@@ -49,21 +49,6 @@ rules:
       type: INLINE
       props:
         algorithm-expression: t_order
-  scalingName: default_scaling
-  scaling:
-    default_scaling:
-      input:
-        workerThread: 40
-        batchSize: 1000
-        shardingSize: 10
-      output:
-        workerThread: 40
-        batchSize: 1000
-      streamChannel:
-        type: MEMORY
-        props:
-          block-queue-size: 10000
-#      completionDetector:
-#        type: FIXTURE
-      dataConsistencyChecker:
-        type: FIXTURE
+  keyGenerators:
+    snowflake:
+      type: SNOWFLAKE

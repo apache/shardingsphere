@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.rule;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeRole;
@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.metadata.storage.event.StorageNodeDataSourceChangedEvent;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -40,14 +41,9 @@ import static org.junit.Assert.assertTrue;
 
 public final class ReadwriteSplittingRuleTest {
     
-    @Test(expected = IllegalArgumentException.class)
-    public void assertNewWithEmptyDataSourceRule() {
-        new ReadwriteSplittingRule(new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
-    }
-    
     @Test
     public void assertFindDataSourceRule() {
-        Optional<ReadwriteSplittingDataSourceRule> actual = createReadwriteSplittingRule().findDataSourceRule("test_pr");
+        Optional<ReadwriteSplittingDataSourceRule> actual = createReadwriteSplittingRule().findDataSourceRule("readwrite");
         assertTrue(actual.isPresent());
         assertDataSourceRule(actual.get());
     }
@@ -59,20 +55,13 @@ public final class ReadwriteSplittingRuleTest {
     
     private ReadwriteSplittingRule createReadwriteSplittingRule() {
         ReadwriteSplittingDataSourceRuleConfiguration config =
-                new ReadwriteSplittingDataSourceRuleConfiguration("test_pr", "Static", createProperties(), "random");
+                new ReadwriteSplittingDataSourceRuleConfiguration("readwrite", new StaticReadwriteSplittingStrategyConfiguration("write_ds", Arrays.asList("read_ds_0", "read_ds_1")), null, "random");
         return new ReadwriteSplittingRule(new ReadwriteSplittingRuleConfiguration(
-                Collections.singleton(config), Collections.singletonMap("random", new ShardingSphereAlgorithmConfiguration("RANDOM", new Properties()))));
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("write-data-source-name", "write_ds");
-        result.setProperty("read-data-source-names", "read_ds_0,read_ds_1");
-        return result;
+                Collections.singleton(config), Collections.singletonMap("random", new AlgorithmConfiguration("RANDOM", new Properties()))), Collections.emptyList());
     }
     
     private void assertDataSourceRule(final ReadwriteSplittingDataSourceRule actual) {
-        assertThat(actual.getName(), is("test_pr"));
+        assertThat(actual.getName(), is("readwrite"));
         assertThat(actual.getReadwriteSplittingStrategy().getWriteDataSource(), is("write_ds"));
         assertThat(actual.getReadwriteSplittingStrategy().getReadDataSources(), is(Arrays.asList("read_ds_0", "read_ds_1")));
         assertThat(actual.getLoadBalancer().getType(), is("RANDOM"));
@@ -109,7 +98,7 @@ public final class ReadwriteSplittingRuleTest {
     public void assertGetDataSourceMapper() {
         ReadwriteSplittingRule readwriteSplittingRule = createReadwriteSplittingRule();
         Map<String, Collection<String>> actual = readwriteSplittingRule.getDataSourceMapper();
-        Map<String, Collection<String>> expected = Collections.singletonMap("test_pr", Arrays.asList("write_ds", "read_ds_0", "read_ds_1"));
+        Map<String, Collection<String>> expected = Collections.singletonMap("readwrite", Arrays.asList("write_ds", "read_ds_0", "read_ds_1"));
         assertThat(actual, is(expected));
     }
 }

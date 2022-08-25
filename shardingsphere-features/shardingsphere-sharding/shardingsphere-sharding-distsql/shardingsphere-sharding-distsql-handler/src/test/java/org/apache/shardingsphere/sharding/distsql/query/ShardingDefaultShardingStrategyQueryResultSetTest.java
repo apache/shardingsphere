@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sharding.distsql.query;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
@@ -27,16 +27,16 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShard
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.query.DefaultShardingStrategyQueryResultSet;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingAlgorithmsStatement;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -46,7 +46,9 @@ public final class ShardingDefaultShardingStrategyQueryResultSetTest {
     @Test
     public void assertGetRowData() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getRuleMetaData().findRuleConfigurations(any())).thenReturn(Collections.singleton(createRuleConfiguration1()));
+        ShardingRule rule1 = mock(ShardingRule.class);
+        when(rule1.getConfiguration()).thenReturn(createRuleConfiguration1());
+        when(database.getRuleMetaData().findSingleRule(ShardingRule.class)).thenReturn(Optional.of(rule1));
         DefaultShardingStrategyQueryResultSet resultSet = new DefaultShardingStrategyQueryResultSet();
         resultSet.init(database, mock(ShowShardingAlgorithmsStatement.class));
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
@@ -65,7 +67,9 @@ public final class ShardingDefaultShardingStrategyQueryResultSetTest {
         assertThat(actual.get(3), is("database_inline"));
         assertThat(actual.get(4), is("INLINE"));
         assertThat(actual.get(5).toString(), is("{algorithm-expression=ds_${user_id % 2}}"));
-        when(database.getRuleMetaData().findRuleConfigurations(any())).thenReturn(Collections.singleton(createRuleConfiguration2()));
+        ShardingRule rule2 = mock(ShardingRule.class);
+        when(rule2.getConfiguration()).thenReturn(createRuleConfiguration2());
+        when(database.getRuleMetaData().findSingleRule(ShardingRule.class)).thenReturn(Optional.of(rule2));
         resultSet = new DefaultShardingStrategyQueryResultSet();
         resultSet.init(database, mock(ShowShardingAlgorithmsStatement.class));
         actual = new ArrayList<>(resultSet.getRowData());
@@ -90,7 +94,7 @@ public final class ShardingDefaultShardingStrategyQueryResultSetTest {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         Properties props = new Properties();
         props.put("algorithm-expression", "ds_${user_id % 2}");
-        result.getShardingAlgorithms().put("database_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props));
+        result.getShardingAlgorithms().put("database_inline", new AlgorithmConfiguration("INLINE", props));
         result.setDefaultTableShardingStrategy(new NoneShardingStrategyConfiguration());
         result.setDefaultDatabaseShardingStrategy(new ComplexShardingStrategyConfiguration("use_id, order_id", "database_inline"));
         return result;
@@ -100,7 +104,7 @@ public final class ShardingDefaultShardingStrategyQueryResultSetTest {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         Properties props = new Properties();
         props.put("algorithm-expression", "ds_${user_id % 2}");
-        result.getShardingAlgorithms().put("database_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props));
+        result.getShardingAlgorithms().put("database_inline", new AlgorithmConfiguration("INLINE", props));
         result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("use_id", "database_inline"));
         result.setDefaultDatabaseShardingStrategy(new HintShardingStrategyConfiguration("database_inline"));
         return result;

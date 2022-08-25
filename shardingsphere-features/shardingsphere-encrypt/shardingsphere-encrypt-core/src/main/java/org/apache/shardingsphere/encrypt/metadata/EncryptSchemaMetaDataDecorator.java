@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.Tab
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -56,16 +57,20 @@ public final class EncryptSchemaMetaDataDecorator implements RuleBasedSchemaMeta
     }
     
     private Collection<ColumnMetaData> getEncryptColumnMetaDataList(final EncryptTable encryptTable, final Collection<ColumnMetaData> originalColumnMetaDataList) {
-        Collection<ColumnMetaData> result = new LinkedList<>();
+        Collection<ColumnMetaData> result = new LinkedHashSet<>();
         Collection<String> plainColumns = encryptTable.getPlainColumns();
         Collection<String> assistedQueryColumns = encryptTable.getAssistedQueryColumns();
         for (ColumnMetaData each : originalColumnMetaDataList) {
             String columnName = each.getName();
-            if (encryptTable.isCipherColumn(columnName)) {
-                result.add(createColumnMetaData(encryptTable.getLogicColumn(columnName), each));
+            if (plainColumns.contains(columnName)) {
+                result.add(createColumnMetaData(encryptTable.getLogicColumnByPlainColumn(columnName), each));
                 continue;
             }
-            if (!plainColumns.contains(columnName) && !assistedQueryColumns.contains(columnName)) {
+            if (encryptTable.isCipherColumn(columnName)) {
+                result.add(createColumnMetaData(encryptTable.getLogicColumnByCipherColumn(columnName), each));
+                continue;
+            }
+            if (!assistedQueryColumns.contains(columnName)) {
                 result.add(each);
             }
         }
@@ -73,7 +78,7 @@ public final class EncryptSchemaMetaDataDecorator implements RuleBasedSchemaMeta
     }
     
     private ColumnMetaData createColumnMetaData(final String columnName, final ColumnMetaData columnMetaData) {
-        return new ColumnMetaData(columnName, columnMetaData.getDataType(), columnMetaData.isPrimaryKey(), columnMetaData.isGenerated(), columnMetaData.isCaseSensitive());
+        return new ColumnMetaData(columnName, columnMetaData.getDataType(), columnMetaData.isPrimaryKey(), columnMetaData.isGenerated(), columnMetaData.isCaseSensitive(), columnMetaData.isVisible());
     }
     
     @Override

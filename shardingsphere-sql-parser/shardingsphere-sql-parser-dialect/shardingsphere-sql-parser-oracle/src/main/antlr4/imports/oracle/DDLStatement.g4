@@ -17,7 +17,7 @@
 
 grammar DDLStatement;
 
-import BaseRule;
+import BaseRule, DCLStatement;
 
 createTable
     : CREATE createTableSpecification TABLE tableName createSharingClause createDefinitionClause createMemOptimizeClause createParentClause
@@ -561,7 +561,7 @@ segmentAttributesClause
     ;
 
 physicalAttributesClause
-    : (PCTFREE NUMBER_ | PCTUSED NUMBER_ | INITRANS NUMBER_ | storageClause)+
+    : (PCTFREE INTEGER_ | PCTUSED INTEGER_ | INITRANS INTEGER_ | storageClause)+
     ;
 
 loggingClause
@@ -587,7 +587,7 @@ storageClause
     ;
 
 sizeClause
-    : (NUMBER_ | INTEGER_) capacityUnit?
+    : INTEGER_ capacityUnit?
     ;
 
 maxsizeClause
@@ -1915,7 +1915,7 @@ functionAssociation
     | PACKAGES packageName (COMMA_ packageName)*
     | TYPES typeName (COMMA_ typeName)*
     | INDEXES indexName (COMMA_ indexName)*
-    | INDEXTYPES indextypeName (COMMA_ indextypeName)*) 
+    | INDEXTYPES indexTypeName (COMMA_ indexTypeName)*)
     (usingStatisticsType | defaultCostClause (COMMA_ defaultSelectivityClause)? | defaultSelectivityClause (COMMA_ defaultCostClause)?)
     ;
 
@@ -1942,7 +1942,7 @@ disassociateStatistics
     | PACKAGES packageName (COMMA_ packageName)*
     | TYPES typeName (COMMA_ typeName)*
     | INDEXES indexName (COMMA_ indexName)*
-    | INDEXTYPES indextypeName (COMMA_ indextypeName)*) FORCE?
+    | INDEXTYPES indexTypeName (COMMA_ indexTypeName)*) FORCE?
     ;
 
 audit
@@ -1978,7 +1978,7 @@ comment
     | AUDIT POLICY policyName
     | COLUMN (tableName | viewName | materializedViewName) DOT_ columnName
     | EDITION editionName
-    | INDEXTYPE indextypeName
+    | INDEXTYPE indexTypeName
     | MATERIALIZED VIEW materializedViewName
     | MINING MODEL modelName
     | OPERATOR operatorName
@@ -2199,7 +2199,7 @@ sharingClause
     ;
 
 invokerRightsClause
-    : AUTHID (CURRENT_USER DEFINER)
+    : AUTHID (CURRENT_USER | DEFINER)
     ;
 
 accessibleByClause
@@ -2420,15 +2420,7 @@ dropFlashbackArchive
     ;
 
 createDiskgroup
-    : CREATE DISKGROUP diskgroupName (redundancyClause REDUNDANCY)? diskClause+ attribute?
-    ;
-
-redundancyClause
-    : HIGH
-    | NORMAL
-    | FLEX
-    | EXTENDED (SITE siteName)?
-    | EXTERNAL
+    : CREATE DISKGROUP diskgroupName ((HIGH | NORMAL | FLEX | EXTENDED (SITE siteName)? | EXTERNAL) REDUNDANCY)? diskClause+ attribute?
     ;
 
 diskClause
@@ -2488,6 +2480,10 @@ tableColumnClause
     : (schemaName DOT_)? tableName LP_ columnName RP_
     ;
 
+alterInmemoryJoinGroup
+    : ALTER INMEMORY JOIN GROUP (schemaName DOT_)? joinGroupName (ADD | REMOVE) LP_ tableName LP_ columnName RP_ RP_
+    ;
+
 dropInmemoryJoinGroup
     : DROP INMEMORY JOIN GROUP (schemaName DOT_)? joinGroupName
     ;
@@ -2502,3 +2498,983 @@ dropRestorePoint
     : DROP RESTORE POINT restorePointName (FOR PLUGGABLE DATABASE pdbName)?
     ;
     
+dropOperator
+    : DROP OPERATOR (schemaName DOT_)? operatorName FORCE?
+    ;
+
+alterLibrary
+    : ALTER LIBRARY (schemaName DOT_)? libraryName (libraryCompileClause | EDITIONABLE | NONEDITIONABLE)
+    ;
+
+libraryCompileClause
+    : COMPILE DEBUG? compilerParametersClause* (REUSE SETTINGS)?
+    ;
+
+alterMaterializedZonemap
+    : ALTER MATERIALIZED ZONEMAP (schemaName DOT_)? zonemapName
+    ( alterZonemapAttributes
+    | zonemapRefreshClause
+    | (ENABLE | DISABLE) PRUNING
+    | COMPILE
+    | REBUILD
+    | UNUSABLE)
+    ;
+
+alterZonemapAttributes
+    : (PCTFREE INTEGER_ | PCTUSED INTEGER_ | CACHE | NOCACHE)+
+    ;
+
+zonemapRefreshClause
+    : REFRESH (FAST | COMPLETE | FORCE)?
+      (ON (DEMAND | COMMIT | LOAD | DATA MOVEMENT | LOAD DATA MOVEMENT) )?
+    ;
+
+alterJava
+   : ALTER JAVA (SOURCE | CLASS) objectName resolveClauses (COMPILE | RESOLVE | invokerRightsClause)
+   ;
+
+resolveClauses
+    : RESOLVER LP_ resolveClause+ RP_
+    ;
+
+resolveClause
+    : LP_ matchString DOT_? (schemaName | MINUS_) RP_
+    ;
+
+alterAuditPolicy
+    : ALTER AUDIT POLICY policyName
+      ((ADD | DROP) subAuditClause)?
+      (CONDITION (DROP | SQ_ condition SQ_ EVALUATE PER (STATEMENT | SESSION | INSTANCE)))?
+    ;
+
+subAuditClause
+    : (privilegeAuditClause)? (actionAuditClause)? (roleAuditClause)? (ONLY TOPLEVEL)?
+    ;
+
+privilegeAuditClause
+    : PRIVILEGES systemPrivilegeClause (COMMA_ systemPrivilegeClause)*
+    ;
+
+actionAuditClause
+    : (standardActions | componentActions)*
+    ;
+
+standardActions
+    : ACTIONS standardActionsClause standardActionsClause*
+    ;
+
+standardActionsClause
+    : (objectAction ON (DIRECTORY directoryName | MINING MODEL objectName | objectName) | systemAction)
+    ;
+
+objectAction
+    : ALL
+    | ALTER
+    | AUDIT
+    | COMMENT
+    | CREATE
+    | DELETE
+    | EXECUTE
+    | FLASHBACK
+    | GRANT
+    | INDEX
+    | INSERT
+    | LOCK
+    | READ
+    | RENAME
+    | SELECT
+    | UPDATE
+    | USE
+    | WRITE
+    ;
+
+systemAction
+    : ALL
+    | ALTER EDITION
+    | ALTER REWRITE EQUIVALENCE
+    | ALTER SUMMARY
+    | ALTER TRACING
+    | CREATE BITMAPFILE
+    | CREATE CONTROL FILE
+    | CREATE DATABASE
+    | CREATE SUMMARY
+    | DECLARE REWRITE EQUIVALENCE
+    | DROP BITMAPFILE
+    | DROP DATABASE
+    | DROP REWRITE EQUIVALENCE
+    | DROP SUMMARY
+    | FLASHBACK DATABASE
+    | MERGE
+    | SAVEPOINT
+    | SET CONSTRAINTS
+    | UNDROP OBJECT
+    | UPDATE INDEXES
+    | UPDATE JOIN INDEX
+    | VALIDATE INDEX
+    ;
+
+componentActions
+    : ACTIONS COMPONENT EQ_ (DATAPUMP | DIRECT_LOAD | OLS | XS) componentAction (COMMA_ componentAction)*
+    | DV componentAction ON objectName (COMMA_ componentAction ON objectName)*
+    ;
+
+componentAction
+    : ALL
+    | dataDumpAction
+    | directLoadAction
+    | labelSecurityAction
+    | securityAction
+    | databaseVaultAction
+    ;
+
+dataDumpAction
+    : EXPORT
+    | IMPORT
+    ;
+
+directLoadAction
+    : LOAD
+    ;
+
+labelSecurityAction
+    : CREATE POLICY
+    | ALTER POLICY
+    | DROP POLICY
+    | APPLY POLICY
+    | REMOVE POLICY
+    | SET AUTHORIZATION
+    | PRIVILEGED ACTION
+    | ENABLE POLICY
+    | DISABLE POLICY
+    | SUBSCRIBE OID
+    | UNSUBSCRIBE OID
+    | CREATE DATA LABEL
+    | ALTER DATA LABEL
+    | DROP DATA LABEL
+    | CREATE LABEL COMPONENT
+    | ALTER LABEL COMPONENTS
+    | DROP LABEL COMPONENTS
+    ;
+
+securityAction
+    : CREATE USER
+    | UPDATE USER
+    | DELETE USER
+    | CREATE ROLE
+    | UPDATE ROLE
+    | DELETE ROLE
+    | GRANT ROLE
+    | REVOKE ROLE
+    | ADD PROXY
+    | REMOVE PROXY
+    | SET USER PASSWORD
+    | SET USER VERIFIER
+    | CREATE ROLESET
+    | UPDATE ROLESET
+    | DELETE ROLESET
+    | CREATE SECURITY CLASS
+    | UPDATE SECURITY CLASS
+    | DELETE SECURITY CLASS
+    | CREATE NAMESPACE TEMPLATE
+    | UPDATE NAMESPACE TEMPLATE
+    | DELETE NAMESPACE TEMPLATE
+    | CREATE ACL
+    | UPDATE ACL
+    | DELETE ACL
+    | CREATE DATA SECURITY
+    | UPDATE DATA SECURITY
+    | DELETE DATA SECURITY
+    | ENABLE DATA SECURITY
+    | DISABLE DATA SECURITY
+    | ADD GLOBAL CALLBACK
+    | DELETE GLOBAL CALLBACK
+    | ENABLE GLOBAL CALLBACK
+    | ENABLE ROLE
+    | DISABLE ROLE
+    | SET COOKIE
+    | SET INACTIVE TIMEOUT
+    | CREATE SESSION
+    | DESTROY SESSION
+    | SWITCH USER
+    | ASSIGN USER
+    | CREATE SESSION NAMESPACE
+    | DELETE SESSION NAMESPACE
+    | CREATE NAMESPACE ATTRIBUTE
+    | GET NAMESPACE ATTRIBUTE
+    | SET NAMESPACE ATTRIBUTE
+    | DELETE NAMESPACE ATTRIBUTE
+    | SET USER PROFILE
+    | GRANT SYSTEM PRIVILEGE
+    | REVOKE SYSTEM PRIVILEGE
+    ;
+
+databaseVaultAction
+    : REALM VIOLATION
+    | REALM SUCCESS
+    | REALM ACCESS
+    | RULE SET FAILURE
+    | RULE SET SUCCESS
+    | RULE SET EVAL
+    | FACTOR ERROR
+    | FACTOR NULL
+    | FACTOR VALIDATE ERROR
+    | FACTOR VALIDATE FALSE
+    | FACTOR TRUST LEVEL NULL
+    | FACTOR TRUST LEVEL NEG
+    | FACTOR ALL
+    ;
+
+roleAuditClause
+    : ROLES roleName (COMMA_ roleName)*
+    ;
+
+alterCluster
+    : ALTER CLUSTER clusterName
+    (physicalAttributesClause
+    | SIZE sizeClause
+    | (MODIFY PARTITION partitionName)? allocateExtentClause
+    | deallocateUnusedClause
+    | (CACHE | NOCACHE))+ (parallelClause)?
+    ;
+
+alterOperator
+    : ALTER OPERATOR operatorName (addBindingClause | dropBindingClause | COMPILE)
+    ;
+
+addBindingClause
+    : ADD BINDING LP_ parameterType (COMMA_ parameterType)* RP_
+      RETURN LP_ returnType RP_ implementationClause? usingFunctionClause
+    ;
+
+implementationClause
+    : (ANCILLARY TO primaryOperatorClause (COMMA_ primaryOperatorClause)*) | contextClauseWithOpeartor
+    ;
+
+primaryOperatorClause
+    : operatorName LP_ parameterType (COMMA_ parameterType)* RP_
+    ;
+
+contextClauseWithOpeartor
+    : withIndexClause? withColumnClause?
+    ;
+
+withIndexClause
+    : WITH INDEX CONTEXT COMMA_ SCAN CONTEXT implementationType (COMPUTE ANCILLARY DATA)?
+    ;
+
+withColumnClause
+    : WITH COLUMN CONTEXT
+    ;
+
+usingFunctionClause
+    : USING (packageName DOT_ | typeName DOT_)? functionName
+    ;
+
+dropBindingClause
+    : DROP BINDING LP_ parameterType (COMMA_ parameterType)* RP_ FORCE?
+    ;
+
+alterDiskgroup
+    : ALTER DISKGROUP ((diskgroupName ((((addDiskClause | dropDiskClause) (COMMA_ (addDiskClause | dropDiskClause))* | resizeDiskClause) (rebalanceDiskgroupClause)?)
+    | replaceDiskClause
+    | renameDiskClause
+    | diskOnlineClause
+    | diskOfflineClause
+    | rebalanceDiskgroupClause
+    | checkDiskgroupClause
+    | diskgroupTemplateClauses
+    | diskgroupDirectoryClauses
+    | diskgroupAliasClauses
+    | diskgroupVolumeClauses
+    | diskgroupAttributes
+    | modifyDiskgroupFile
+    | dropDiskgroupFileClause
+    | convertRedundancyClause
+    | usergroupClauses
+    | userClauses
+    | filePermissionsClause
+    | fileOwnerClause
+    | scrubClause
+    | quotagroupClauses
+    | filegroupClauses))
+    | (((diskgroupName (COMMA_ diskgroupName)*) | ALL) (undropDiskClause | diskgroupAvailability | enableDisableVolume)))
+    ;
+
+addDiskClause
+    : ADD ((SITE siteName)? (QUORUM | REGULAR)? (FAILGROUP failgroupName)? DISK qualifiedDiskClause (COMMA_ qualifiedDiskClause)*)+
+    ;
+
+qualifiedDiskClause
+    : searchString (NAME diskName)? (SIZE sizeClause)? (FORCE | NOFORCE)?
+    ;
+
+dropDiskClause
+    : DROP ((QUORUM | REGULAR)? DISK diskName (FORCE | NOFORCE)? (COMMA diskName (FORCE | NOFORCE)?)*
+    | DISKS IN (QUORUM | REGULAR)? FAILGROUP failgroupName (FORCE | NOFORCE)? (COMMA_ failgroupName (FORCE | NOFORCE)?)*)
+    ;
+
+resizeDiskClause
+    : RESIZE ALL (SIZE sizeClause)?
+    ;
+
+rebalanceDiskgroupClause
+    : REBALANCE ((((WITH withPhases) | (WITHOUT withoutPhases))? (POWER INTEGER_)? (WAIT | NOWAIT)?)
+    | (MODIFY POWER (INTEGER_)?))?
+    ;
+
+withPhases
+    : withPhase (COMMA_ withPhase)*
+    ;
+
+withPhase
+    : RESTORE | BALANCE | PREPARE | COMPACT
+    ;
+
+withoutPhases
+    : withoutPhase (COMMA_ withoutPhase)*
+    ;
+
+withoutPhase
+    : BALANCE | PREPARE | COMPACT
+    ;
+
+replaceDiskClause
+    : REPLACE DISK diskName WITH pathString (FORCE | NOFORCE)?
+    (COMMA_ diskName WITH pathString (FORCE | NOFORCE)?)*
+    (POWER INTEGER_)? (WAIT | NOWAIT)?
+    ;
+
+renameDiskClause
+    : RENAME (DISK diskName TO diskName (COMMA_ diskName TO diskName)* | DISKS ALL)
+    ;
+
+diskOnlineClause
+    : ONLINE (((QUORUM | REGULAR)? DISK diskName (COMMA_ diskName)*
+    | DISKS IN (QUORUM | REGULAR)? FAILGROUP failgroupName (COMMA_ failgroupName)*)+
+    | ALL) (POWER INTEGER_)? (WAIT | NOWAIT)?
+    ;
+
+diskOfflineClause
+    : OFFLINE ((QUORUM | REGULAR)? DISK diskName (COMMA_ diskName)*
+    | DISKS IN (QUORUM | REGULAR)? FAILGROUP failgroupName (COMMA_ failgroupName)*)+ (timeoutClause)?
+    ;
+
+timeoutClause
+    : DROP AFTER INTEGER_ (M | H)
+    ;
+
+checkDiskgroupClause
+    : CHECK (REPAIR | NOREPAIR)?
+    ;
+
+diskgroupTemplateClauses
+    : (((ADD | MODIFY) TEMPLATE templateName qualifiedTemplateClause (COMMA_ templateName qualifiedTemplateClause)*)
+    | (DROP TEMPLATE templateName (COMMA_ templateName)*))
+    ;
+
+qualifiedTemplateClause
+    : ATTRIBUTE LP_ redundancyClause stripingClause diskRegionClause RP_
+    ;
+
+redundancyClause
+    : (MIRROR | HIGH | UNPROTECTED | PARITY)?
+    ;
+
+stripingClause
+    : (FINE | COARSE)?
+    ;
+
+diskRegionClause
+    : (HOT | COLD)? (MIRRORHOT | MIRRORCOLD)?
+    ;
+
+diskgroupDirectoryClauses
+    : (ADD DIRECTORY fileName (COMMA_ fileName)*
+    | DROP DIRECTORY fileName (FORCE | NOFORCE)? (COMMA_ fileName (FORCE | NOFORCE)?)*
+    | RENAME DIRECTORY directoryName TO directoryName (COMMA_ directoryName TO directoryName)*)
+    ;
+
+diskgroupAliasClauses
+    : ((ADD ALIAS aliasName FOR fileName (COMMA_ aliasName FOR fileName)*)
+    | (DROP ALIAS aliasName (COMMA_ aliasName)*)
+    | (RENAME ALIAS aliasName TO aliasName (COMMA_ aliasName TO aliasName)*))
+    ;
+
+diskgroupVolumeClauses
+    : (addVolumeClause
+    | modifyVolumeClause
+    | RESIZE VOLUME asmVolumeName SIZE sizeClause
+    | DROP VOLUME asmVolumeName)
+    ;
+
+addVolumeClause
+    : ADD VOLUME asmVolumeName SIZE sizeClause (redundancyClause)? (STRIPE_WIDTH INTEGER_ (K | M))? (STRIPE_COLUMNS INTEGER_)? (ATTRIBUTE (diskRegionClause))?
+    ;
+
+modifyVolumeClause
+    : MODIFY VOLUME asmVolumeName (ATTRIBUTE (diskRegionClause))? (MOUNTPATH mountpathName)? (USAGE usageName)?
+    ;
+
+diskgroupAttributes
+    : SET ATTRIBUTE attributeNameAndValue
+    ;
+
+modifyDiskgroupFile
+    : MODIFY FILE fileName ATTRIBUTE LP_ diskRegionClause RP_ (COMMA_ fileName ATTRIBUTE ( diskRegionClause ))*
+    ;
+
+dropDiskgroupFileClause
+    : DROP FILE fileName (COMMA_ fileName)*
+    ;
+
+convertRedundancyClause
+    : CONVERT REDUNDANCY TO FLEX
+    ;
+
+usergroupClauses
+    : (ADD USERGROUP SQ_ usergroupName SQ_ WITH MEMBER SQ_ username SQ_ (COMMA_ SQ_ username SQ_)*
+    | MODIFY USERGROUP SQ_ usergroupName SQ_ (ADD | DROP) MEMBER SQ_ username SQ_ (COMMA_ SQ_ username SQ_)*
+    | DROP USERGROUP SQ_ usergroupName SQ_)
+    ;
+
+userClauses
+    : (ADD USER SQ_ username SQ_ (COMMA_ SQ_ username SQ_)*
+    | DROP USER SQ_ username SQ_ (COMMA_ SQ_ username SQ_)* (CASCADE)?
+    | REPLACE USER SQ_ username SQ_ WITH SQ_ username SQ_ (COMMA_ SQ_ username SQ_ WITH SQ_ username SQ_)*)
+    ;
+
+filePermissionsClause
+    : SET PERMISSION (OWNER | GROUP | OTHER) EQ_ (NONE | READ ONLY | READ WRITE) (COMMA_ (OWNER | GROUP | OTHER | ALL)
+    EQ_ (NONE | READ ONLY | READ WRITE))* FOR FILE fileName (COMMA_ fileName)*
+    ;
+
+fileOwnerClause
+    : SET OWNERSHIP (setOwnerClause (COMMA_ setOwnerClause)*) FOR FILE fileName (COMMA_ fileName)*
+    ;
+
+setOwnerClause
+    :OWNER EQ_ SQ_ username SQ_ | GROUP EQ_ SQ_ usergroupName SQ_
+    ;
+
+scrubClause
+    : SCRUB (FILE asmFileName | DISK diskName)? (REPAIR | NOREPAIR)?
+    (POWER (AUTO | LOW | HIGH | MAX))? (WAIT | NOWAIT)? (FORCE | NOFORCE)? (STOP)?
+    ;
+
+quotagroupClauses
+    : (ADD QUOTAGROUP quotagroupName (setPropertyClause)?
+    | MODIFY QUOTAGROUP quotagroupName setPropertyClause
+    | MOVE FILEGROUP filegroupName TO quotagroupName
+    | DROP QUOTAGROUP quotagroupName)
+    ;
+
+setPropertyClause
+    : SET propertyName EQ_ propertyValue
+    ;
+
+quotagroupName
+    : identifier
+    ;
+
+propertyName
+    : QUOTA
+    ;
+
+propertyValue
+    : sizeClause | UNLIMITED
+    ;
+
+filegroupName
+    : identifier
+    ;
+
+filegroupClauses
+    : (addFilegroupClause
+    | modifyFilegroupClause
+    | moveToFilegroupClause
+    | dropFilegroupClause)
+    ;
+
+addFilegroupClause
+    : ADD FILEGROUP filegroupName (DATABASE databaseName
+    | CLUSTER clusterName
+    | VOLUME asmVolumeName) (setFileTypePropertyclause)?
+    ;
+
+setFileTypePropertyclause
+    :SET SQ_ (fileType DOT_)? propertyName SQ_ EQ_ SQ_ propertyValue SQ_
+    ;
+
+modifyFilegroupClause
+    : MODIFY FILEGROUP filegroupName setFileTypePropertyclause
+    ;
+
+moveToFilegroupClause
+    : MOVE FILE asmFileName TO FILEGROUP filegroupName
+    ;
+
+dropFilegroupClause
+    : DROP FILEGROUP filegroupName (CASCADE)?
+    ;
+
+undropDiskClause
+    : UNDROP DISKS
+    ;
+
+diskgroupAvailability
+    : ((MOUNT (RESTRICTED | NORMAL)? (FORCE | NOFORCE)?) | (DISMOUNT (FORCE | NOFORCE)?))
+    ;
+
+enableDisableVolume
+    : (ENABLE | DISABLE) VOLUME (asmVolumeName (COMMA_ asmVolumeName)* | ALL)
+    ;
+
+alterIndexType
+    : ALTER INDEXTYPE indexTypeName ((addOrDropClause (COMMA_ addOrDropClause)* usingTypeClause?) | COMPILE) withLocalClause
+    ;
+
+addOrDropClause
+    : (ADD | DROP) operatorName LP_ parameterType RP_
+    ;
+
+usingTypeClause
+    : USING implementationType arrayDMLClause?
+    ;
+
+withLocalClause
+    : (WITH LOCAL RANGE? PARTITION)? storageTableClause?
+    ;
+
+arrayDMLClause
+    : (WITH | WITHOUT)? ARRAY DML arryDMLSubClause (COMMA_ arryDMLSubClause)*
+    ;
+
+arryDMLSubClause
+    : LP_ typeName (COMMA_ varrayType)? RP_
+    ;
+
+alterMaterializedView
+    : ALTER MATERIALIZED VIEW materializedViewName materializedViewAttribute? alterIotClauses? (USING INDEX physicalAttributesClause)?
+    ((MODIFY scopedTableRefConstraint) | alterMvRefresh)? evaluationEditionClause?
+    ((ENABLE | DISABLE) ON QUERY COMPUTATION)? (alterQueryRewriteClause | COMPILE | CONSIDER FRESH)?
+    ;
+
+materializedViewAttribute
+    : physicalAttributesClause
+    | modifyMvColumnClause
+    | tableCompression
+    | inmemoryTableClause
+    | lobStorageClause (COMMA_ lobStorageClause)*
+    | modifylobStorageClause (COMMA_ modifylobStorageClause)*
+    | alterTablePartitioning
+    | parallelClause
+    | loggingClause
+    | allocateExtentClause
+    | deallocateUnusedClause
+    | shrinkClause
+    | CACHE
+    | NOCACHE
+    ;
+
+modifyMvColumnClause
+    : MODIFY LP_ columnName ((ENCRYPT encryptionSpecification) | DECRYPT)? RP_
+    ;
+
+modifylobStorageClause
+    : MODIFY LOB LP_ lobItem RP_ LP_ modifylobParameters+ RP_
+    ;
+
+modifylobParameters
+    : storageClause
+    | PCTVERSION INTEGER_
+    | FREEPOOLS INTEGER_
+    | REBUILD FREEPOOLS
+    | lobRetentionClause
+    | lobDeduplicateClause
+    | lobCompressionClause
+    | ENCRYPT encryptionSpecification
+    | DECRYPT
+    | CACHE
+    | (NOCACHE | (CACHE READS)) loggingClause?
+    | allocateExtentClause
+    | shrinkClause
+    | deallocateUnusedClause
+    ;
+
+ alterIotClauses
+    : indexOrgTableClause
+    | alterOverflowClause
+    | COALESCE
+    ;
+
+alterOverflowClause
+    : addOverflowClause | overflowClause
+    ;
+
+overflowClause
+    : OVERFLOW (segmentAttributesClause | allocateExtentClause | shrinkClause | deallocateUnusedClause)+
+    ;
+
+addOverflowClause
+    : ADD OVERFLOW segmentAttributesClause? LP_ PARTITION segmentAttributesClause? (COMMA_ PARTITION segmentAttributesClause?)* RP_
+    ;
+
+scopedTableRefConstraint
+    : SCOPE FOR LP_ (columnName | attributeName) RP_ IS (schemaName DOT_)? (tableName | alias)
+    ;
+
+alterMvRefresh
+    : REFRESH (FAST
+    | COMPLETE
+    | FORCE
+    | ON DEMAND
+    | ON COMMIT
+    | START WITH dateValue
+    | NEXT dateValue
+    | WITH PRIMARY KEY
+    | USING DEFAULT MASTER ROLLBACK SEGMENT
+    | USING MASTER ROLLBACK SEGMENT rollbackSegment
+    | USING ENFORCED CONSTRAINTS
+    | USING TRUSTED CONSTRAINTS)
+    ;
+
+evaluationEditionClause
+    : EVALUATE USING (CURRENT EDITION | EDITION editionName | NULL EDITION)
+    ;
+
+alterQueryRewriteClause
+    : (ENABLE | DISABLE)? QUERY REWRITE unusableEditionsClause
+    ;
+
+unusableEditionsClause
+    : unusableBefore? unusableBeginning?
+    ;
+
+unusableBefore
+    : UNUSABLE BEFORE (CURRENT EDITION | EDITION editionName)
+    ;
+
+unusableBeginning
+    : UNUSABLE BEGINNING WITH (CURRENT EDITION | EDITION editionName | NULL EDITION)
+    ;
+
+alterMaterializedViewLog
+    : ALTER MATERIALIZED VIEW LOG FORCE? ON tableName
+    ( physicalAttributesClause
+    | addMvLogColumnClause
+    | alterTablePartitioning
+    | parallelClause
+    | loggingClause
+    | allocateExtentClause
+    | shrinkClause
+    | moveMvLogClause
+    | CACHE
+    | NOCACHE)? mvLogAugmentation? mvLogPurgeClause? forRefreshClause?
+    ;
+
+addMvLogColumnClause
+    : ADD LP_ columnName RP_
+    ;
+
+moveMvLogClause
+    : MOVE segmentAttributesClause parallelClause?
+    ;
+
+mvLogAugmentation
+    : ADD addClause (COMMA_ addClause)* newValuesClause?
+    ;
+
+addClause
+    : OBJECT ID columns?
+    | PRIMARY KEY columns?
+    | ROWID columns?
+    | SEQUENCE columns?
+    | columns
+    ;
+
+columns
+    : LP_ columnName (COMMA_ columnName)* RP_
+    ;
+
+newValuesClause
+    : (INCLUDING | EXCLUDING) NEW VALUES
+    ;
+
+mvLogPurgeClause
+    : PURGE IMMEDIATE (SYNCHRONOUS | ASYNCHRONOUS)?
+    | START WITH dateValue nextOrRepeatClause?
+    | (START WITH dateValue)? nextOrRepeatClause
+    ;
+
+nextOrRepeatClause
+    : NEXT dateValue | REPEAT INTERVAL intervalExpression
+    ;
+
+forRefreshClause
+    : FOR ((SYNCHRONOUS REFRESH USING stagingLogName) | (FAST REFRESH))
+    ;
+
+alterFunction
+    : ALTER FUNCTION function (functionCompileClause | (EDITIONABLE | NONEDITIONABLE))
+    ;
+
+functionCompileClause
+    : COMPILE DEBUG? compilerParametersClause* (REUSE SETTINGS)?
+    ;
+
+alterHierarchy
+    : ALTER HIERARCHY hierarchyName (RENAME TO hierarchyName | COMPILE)
+    ;
+
+alterLockdownProfile
+    : ALTER LOCKDOWN PROFILE profileName (lockdownFeatures | lockdownOptions | lockdownStatements)
+    ;
+
+lockdownFeatures
+    : (DISABLE | ENABLE) FEATURE featureClauses
+    ;
+
+featureClauses
+    : EQ_ LP_ featureName (COMMA_ featureName)* RP_
+    | ALL (EXCEPT (EQ_ LP_ featureName (COMMA_ featureName)* RP_))?
+    ;
+
+lockdownOptions
+    : (DISABLE | ENABLE) OPTION lockDownOptionClauses
+    ;
+
+lockDownOptionClauses
+    : EQ_ LP_ optionName (COMMA_ optionName)* RP_
+    | ALL (EXCEPT (EQ_ LP_ optionName (COMMA_ optionName)* RP_))?
+    ;
+
+lockdownStatements
+    : (DISABLE | ENABLE) STATEMENT lockdownStatementsClauses
+    ;
+
+lockdownStatementsClauses
+    : EQ_ LP_ sqlStatement (COMMA_ sqlStatement )* RP_
+    | EQ_ LP_ sqlStatement RP_ statementClauses
+    | ALL (EXCEPT (EQ_ LP_ sqlStatement (COMMA_ sqlStatement)* RP_))?
+    ;
+
+statementClauses
+    : CLAUSE statementsSubClauses
+    ;
+
+statementsSubClauses
+    : EQ_ LP_ clause (COMMA_ clause)* RP_
+    | EQ_ LP_ clause RP_ clauseOptions
+    | ALL (EXCEPT (EQ_ LP_ clause (COMMA_ clause)* RP_))?
+    ;
+
+clauseOptions
+    : OPTION optionClauses
+    ;
+
+optionClauses
+    : EQ_ LP_ clauseOptionOrPattern (COMMA_ clauseOptionOrPattern)* RP_
+    | EQ_ LP_ clauseOption RP_ optionValues+
+    | ALL (EXCEPT EQ_ LP_ clauseOptionOrPattern (COMMA_ clauseOptionOrPattern)* RP_)?
+    ;
+
+clauseOptionOrPattern
+    : clauseOption | clauseOptionPattern
+    ;
+
+optionValues
+    : VALUE EQ_ LP_ optionValue (COMMA_ optionValue)* RP_
+    | MINVALUE EQ_ optionValue
+    | MAXVALUE EQ_ optionValue
+    ;
+
+alterPluggableDatabase
+    : ALTER databaseClause (pdbUnplugClause
+    | pdbSettingsClauses
+    | pdbDatafileClause
+    | pdbRecoveryClauses
+    | pdbChangeState
+    | pdbChangeStateFromRoot
+    | applicationClauses
+    | snapshotClauses
+    | prepareClause
+    | dropMirrorCopy
+    | lostWriteProtection)
+    ;
+
+databaseClause
+    : DATABASE dbName?
+    | PLUGGABLE DATABASE pdbName?
+    ;
+
+pdbUnplugClause
+    : pdbName UNPLUG INTO fileName pdbUnplugEncrypt?
+    ;
+
+pdbUnplugEncrypt
+    : ENCRYPT USING transportSecret
+    ;
+
+pdbSettingsClauses
+    : pdbName? pdbSettingClause
+    | CONTAINERS containersClause
+    ;
+
+pdbSettingClause
+    : DEFAULT EDITION EQ_ editionName
+    | SET DEFAULT (BIGFILE | SMALLFILE) TABLESPACE
+    | DEFAULT TABLESPACE tablespaceName
+    | DEFAULT TEMPORARY TABLESPACE (tablespaceName | tablespaceGroupName)
+    | RENAME GLOBAL_NAME TO databaseName (DOT_ domain)+
+    | setTimeZoneClause
+    | databaseFileClauses
+    | supplementalDbLogging
+    | pdbStorageClause
+    | pdbLoggingClauses
+    | pdbRefreshModeClause
+    | REFRESH pdbRefreshSwitchoverClause?
+    | SET CONTAINER_MAP EQ_ mapObject
+    ;
+
+containersClause
+    : DEFAULT TARGET EQ_ ((LP_ containerName RP_) | NONE)
+    | HOST EQ_ hostName
+    | PORT EQ_ NUMBER_
+    ;
+
+pdbStorageClause
+    : STORAGE ((LP_ storageMaxSizeClauses+ RP_) | UNLIMITED)
+    ;
+
+storageMaxSizeClauses
+    : (MAXSIZE | MAX_AUDIT_SIZE | MAX_DIAG_SIZE) (UNLIMITED | sizeClause)
+    ;
+
+pdbLoggingClauses
+    : loggingClause | pdbForceLoggingClause
+    ;
+
+pdbForceLoggingClause
+    : (ENABLE | DISABLE) FORCE (LOGGING | NOLOGGING)
+    | SET STANDBY NOLOGGING FOR ((DATA AVAILABILITY) | (LOAD PERFORMANCE))
+    ;
+
+pdbRefreshModeClause
+    : REFRESH MODE (MANUAL | (EVERY refreshInterval (MINUTES | HOURS)) | NONE )
+    ;
+
+pdbRefreshSwitchoverClause
+    : FROM sourcePdbName AT_ dbLink SWITCHOVER
+    ;
+
+pdbDatafileClause
+    : pdbName? DATAFILE (fileNameAndNumber | ALL)  (ONLINE | OFFLINE)
+    ;
+
+fileNameAndNumber
+    : (fileName | fileNumber) (COMMA_ (fileName | fileNumber))*
+    ;
+
+pdbRecoveryClauses
+    : pdbName? (pdbGeneralRecovery
+    | BEGIN BACKUP
+    | END BACKUP
+    | ENABLE RECOVERY
+    | DISABLE RECOVERY)
+    ;
+
+pdbGeneralRecovery
+    : RECOVER AUTOMATIC? (FROM locationName)? (DATABASE
+    | TABLESPACE tablespaceName (COMMA_ tablespaceName)*
+    | DATAFILE fileNameAndNumber
+    | LOGFILE fileName
+    | CONTINUE DEFAULT?)?
+    ;
+
+pdbChangeState
+    : pdbName? (pdbOpen | pdbClose | pdbSaveOrDiscardState)
+    ;
+
+pdbOpen
+    : OPEN (((READ WRITE) | (READ ONLY))? RESTRICTED? FORCE?
+    | (READ WRITE)? UPGRADE RESTRICTED?
+    | RESETLOGS) instancesClause?
+    ;
+
+instancesClause
+    : INSTANCES EQ_ (instanceNameClause | (ALL (EXCEPT instanceName)?))
+    ;
+
+instanceNameClause
+    : LP_ instanceName (COMMA_ instanceName )* RP_
+    ;
+
+pdbClose
+    : CLOSE ((IMMEDIATE? (instancesClause | relocateClause)?) | (ABORT? instancesClause?))
+    ;
+
+relocateClause
+    : RELOCATE (TO instanceName)?
+    | NORELOCATE
+    ;
+
+pdbSaveOrDiscardState
+    : (SAVE | DISCARD) STATE instancesClause?
+    ;
+
+pdbChangeStateFromRoot
+    : (pdbNameClause | (ALL (EXCEPT pdbNameClause)?)) (pdbOpen | pdbClose | pdbSaveOrDiscardState)
+    ;
+
+pdbNameClause
+    : pdbName (COMMA_ pdbName)*
+    ;
+
+applicationClauses
+    : APPLICATION ((appName appClause) | (ALL SYNC))
+    ;
+
+appClause
+    : BEGIN INSTALL SQ_ appVersion SQ_ (COMMENT SQ_ commentValue SQ_)?
+    | END INSTALL (SQ_ appVersion SQ_)?
+    | BEGIN PATCH NUMBER_ (MINIMUM VERSION SQ_ appVersion SQ_)? (COMMENT SQ_ commentValue SQ_)?
+    | END PATCH NUMBER_?
+    | BEGIN UPGRADE (SQ_ startAppVersion SQ_)? TO SQ_ endAppVersion SQ_ (COMMENT SQ_ commentValue SQ_)?
+    | END UPGRADE (TO SQ_ endAppVersion SQ_)?
+    | BEGIN UNINSTALL
+    | END UNINSTALL
+    | SET PATCH NUMBER_
+    | SET VERSION SQ_ appVersion SQ_
+    | SET COMPATIBILITY VERSION ((SQ_ appVersion SQ_) | CURRENT)
+    | SYNC TO ((SQ_ appVersion SQ_) | (PATCH patchNumber))
+    | SYNC
+    ;
+
+snapshotClauses
+    : pdbSnapshotClause
+    | materializeClause
+    | createSnapshotClause
+    | dropSnapshotClause
+    | setMaxPdbSnapshotsClause
+    ;
+
+pdbSnapshotClause
+    : SNAPSHOT (MANUAL | (EVERY snapshotInterval (HOURS | MINUTES)) | NONE)
+    ;
+
+materializeClause
+    : MATERIALIZE
+    ;
+
+createSnapshotClause
+    : SNAPSHOT snapshotName
+    ;
+
+dropSnapshotClause
+    : DROP SNAPSHOT snapshotName
+    ;
+
+setMaxPdbSnapshotsClause
+    : SET maxPdbSnapshots EQ_ maxNumberOfSnapshots
+    ;
+

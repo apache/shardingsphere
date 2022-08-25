@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.complex;
 
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import org.junit.Test;
@@ -43,7 +43,7 @@ public final class ComplexInlineShardingAlgorithmTest {
         sharingValueMap.put("order_id", Collections.singletonList(2));
         ComplexKeysShardingValue<Comparable<?>> shardingValue = new ComplexKeysShardingValue<>("t_order", sharingValueMap, Collections.emptyMap());
         ComplexInlineShardingAlgorithm algorithm = (ComplexInlineShardingAlgorithm) ShardingAlgorithmFactory.newInstance(
-                new ShardingSphereAlgorithmConfiguration("COMPLEX_INLINE", createDisallowRangeQueryProperties()));
+                new AlgorithmConfiguration("COMPLEX_INLINE", createDisallowRangeQueryProperties()));
         Collection<String> actual = algorithm.doSharding(availableTargetNames, shardingValue);
         assertTrue(1 == actual.size() && actual.contains("t_order_0_0"));
     }
@@ -56,7 +56,7 @@ public final class ComplexInlineShardingAlgorithmTest {
         sharingValueMap.put("order_id", Arrays.asList(1, 2));
         ComplexKeysShardingValue<Comparable<?>> shardingValue = new ComplexKeysShardingValue<>("t_order", sharingValueMap, Collections.emptyMap());
         ComplexInlineShardingAlgorithm algorithm = (ComplexInlineShardingAlgorithm) ShardingAlgorithmFactory.newInstance(
-                new ShardingSphereAlgorithmConfiguration("COMPLEX_INLINE", createDisallowRangeQueryProperties()));
+                new AlgorithmConfiguration("COMPLEX_INLINE", createDisallowRangeQueryProperties()));
         Collection<String> actual = algorithm.doSharding(availableTargetNames, shardingValue);
         assertTrue(actual.containsAll(availableTargetNames));
     }
@@ -73,7 +73,7 @@ public final class ComplexInlineShardingAlgorithmTest {
         List<String> availableTargetNames = Arrays.asList("t_order_0_0", "t_order_0_1", "t_order_1_0", "t_order_1_1");
         ComplexKeysShardingValue<Comparable<?>> shardingValue = new ComplexKeysShardingValue<>("t_order", Collections.emptyMap(), Collections.singletonMap("type", Range.all()));
         ComplexInlineShardingAlgorithm algorithm = (ComplexInlineShardingAlgorithm) ShardingAlgorithmFactory.newInstance(
-                new ShardingSphereAlgorithmConfiguration("COMPLEX_INLINE", createAllowRangeQueryProperties()));
+                new AlgorithmConfiguration("COMPLEX_INLINE", createAllowRangeQueryProperties()));
         Collection<String> actual = algorithm.doSharding(availableTargetNames, shardingValue);
         assertTrue(actual.containsAll(availableTargetNames));
     }

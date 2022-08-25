@@ -42,7 +42,7 @@ public final class OtherShardingSphereTransactionManagerFixture implements Shard
     }
     
     @Override
-    public Connection getConnection(final String dataSourceName) {
+    public Connection getConnection(final String databaseName, final String dataSourceName) {
         return null;
     }
     

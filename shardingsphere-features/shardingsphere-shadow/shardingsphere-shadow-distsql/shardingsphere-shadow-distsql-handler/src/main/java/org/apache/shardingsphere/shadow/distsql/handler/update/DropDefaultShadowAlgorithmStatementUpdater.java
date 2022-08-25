@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
@@ -38,19 +38,19 @@ public final class DropDefaultShadowAlgorithmStatementUpdater implements RuleDef
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final DropDefaultShadowAlgorithmStatement sqlStatement,
                                   final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
-        if (sqlStatement.isContainsExistClause() && !isExistRuleConfig(currentRuleConfig)) {
+        if (sqlStatement.isIfExists() && !isExistRuleConfig(currentRuleConfig)) {
             return;
         }
         checkConfigurationExist(database.getName(), currentRuleConfig);
         checkAlgorithm(database.getName(), sqlStatement, currentRuleConfig);
     }
     
-    private void checkConfigurationExist(final String databaseName, final SchemaRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkConfigurationExist(final String databaseName, final DatabaseRuleConfiguration currentRuleConfig) throws DistSQLException {
         ShadowRuleStatementChecker.checkConfigurationExist(databaseName, currentRuleConfig);
     }
     
     private void checkAlgorithm(final String databaseName, final DropDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
-        if (!sqlStatement.isContainsExistClause()) {
+        if (!sqlStatement.isIfExists()) {
             DistSQLException.predictionThrow(null != currentRuleConfig.getDefaultShadowAlgorithmName(), () -> new RequiredAlgorithmMissedException(
                     SHADOW, databaseName, Collections.singleton("default")));
         }

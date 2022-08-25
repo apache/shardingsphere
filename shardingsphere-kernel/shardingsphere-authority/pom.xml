@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-kernel</artifactId>
-        <version>5.1.2-SNAPSHOT</version>
+        <version>5.1.3-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-authority</artifactId>
     <packaging>pom</packaging>
@@ -31,5 +31,6 @@
     <modules>
         <module>shardingsphere-authority-api</module>
         <module>shardingsphere-authority-core</module>
+        <module>shardingsphere-authority-distsql</module>
     </modules>
 </project>

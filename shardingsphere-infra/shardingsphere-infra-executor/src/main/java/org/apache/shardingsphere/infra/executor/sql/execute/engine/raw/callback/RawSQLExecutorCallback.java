@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.callback;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawSQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
@@ -36,7 +37,10 @@ public final class RawSQLExecutorCallback implements ExecutorCallback<RawSQLExec
     @SuppressWarnings("rawtypes")
     private final Collection<RawExecutorCallback> callbacks;
     
-    public RawSQLExecutorCallback() {
+    private final EventBusContext eventBusContext;
+    
+    public RawSQLExecutorCallback(final EventBusContext eventBusContext) {
+        this.eventBusContext = eventBusContext;
         callbacks = RawExecutorCallbackFactory.getAllInstances();
         Preconditions.checkState(!callbacks.isEmpty(), "No raw executor callback implementation found.");
     }
@@ -48,7 +52,7 @@ public final class RawSQLExecutorCallback implements ExecutorCallback<RawSQLExec
         if (dataMap.containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
             String executionID = dataMap.get(ExecuteProcessConstants.EXECUTE_ID.name()).toString();
             for (RawSQLExecutionUnit each : inputs) {
-                ExecuteProcessEngine.finish(executionID, each);
+                ExecuteProcessEngine.finish(executionID, each, eventBusContext);
             }
         }
         return result;

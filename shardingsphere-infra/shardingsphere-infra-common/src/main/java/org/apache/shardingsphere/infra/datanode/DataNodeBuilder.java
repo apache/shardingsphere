@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.datanode;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.spi.type.ordered.OrderedSPI;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPI;
 
 import java.util.Collection;
 
@@ -32,11 +32,11 @@ import java.util.Collection;
 public interface DataNodeBuilder<T extends ShardingSphereRule> extends OrderedSPI<T> {
     
     /**
-     * Build data node.
+     * Build data nodes.
      *
-     * @param dataNodes data node collection
+     * @param dataNodes data nodes
      * @param rule rule
-     * @return data node collection
+     * @return data nodes
      */
     Collection<DataNode> build(Collection<DataNode> dataNodes, T rule);
 }

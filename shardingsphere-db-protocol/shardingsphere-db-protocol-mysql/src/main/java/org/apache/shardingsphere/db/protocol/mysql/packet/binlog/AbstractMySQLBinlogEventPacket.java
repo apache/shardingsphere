@@ -20,6 +20,7 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.binlog;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
  */
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Slf4j
 public abstract class AbstractMySQLBinlogEventPacket implements MySQLPacket, MySQLBinlogEventPacket {
     
     private final MySQLBinlogEventHeader binlogEventHeader;
@@ -44,6 +46,15 @@ public abstract class AbstractMySQLBinlogEventPacket implements MySQLPacket, MyS
      * @param payload packet payload to be written
      */
     protected abstract void writeEvent(MySQLPacketPayload payload);
+    
+    protected int getRemainBytesLength(final MySQLPacketPayload payload) {
+        // minus checksum bytes, add seq id 1 byte, statusCode 1 byte(not include at event size)
+        int alreadyReadIndex = binlogEventHeader.getEventSize() + 2 - binlogEventHeader.getChecksumLength();
+        if (payload.getByteBuf().readerIndex() > alreadyReadIndex) {
+            return -1;
+        }
+        return alreadyReadIndex - payload.getByteBuf().readerIndex();
+    }
     
     @Override
     public final int getSequenceId() {

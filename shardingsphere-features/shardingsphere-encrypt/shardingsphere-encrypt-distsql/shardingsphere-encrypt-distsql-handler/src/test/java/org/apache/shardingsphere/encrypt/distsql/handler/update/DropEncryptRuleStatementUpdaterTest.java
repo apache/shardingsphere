@@ -21,7 +21,7 @@ import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.DropEncryptRuleStatement;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -76,32 +76,35 @@ public final class DropEncryptRuleStatementUpdaterTest {
         assertThat(ruleConfig.getEncryptors().size(), is(1));
     }
     
-    private DropEncryptRuleStatement createSQLStatement(final String tableName) {
-        return new DropEncryptRuleStatement(Collections.singleton(tableName));
-    }
-    
     @Test
     public void assertUpdateCurrentRuleConfigurationWithIfExists() throws DistSQLException {
         EncryptRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
-        DropEncryptRuleStatement statement = createSQLStatement("t_encrypt_1");
-        statement.setContainsExistClause(true);
+        DropEncryptRuleStatement statement = createSQLStatement(true, "t_encrypt_1");
         updater.checkSQLStatement(database, statement, mock(EncryptRuleConfiguration.class));
         assertFalse(updater.updateCurrentRuleConfiguration(statement, ruleConfig));
         assertThat(ruleConfig.getEncryptors().size(), is(1));
     }
     
+    private DropEncryptRuleStatement createSQLStatement(final String tableName) {
+        return new DropEncryptRuleStatement(false, Collections.singleton(tableName));
+    }
+    
+    private DropEncryptRuleStatement createSQLStatement(final boolean ifExists, final String tableName) {
+        return new DropEncryptRuleStatement(ifExists, Collections.singleton(tableName));
+    }
+    
     private EncryptRuleConfiguration createCurrentRuleConfiguration() {
         EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", "user_cipher", "", "user_plain", "t_encrypt_user_id_MD5", null);
         EncryptTableRuleConfiguration tableRuleConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singleton(columnRuleConfig), null);
-        Map<String, ShardingSphereAlgorithmConfiguration> encryptors = new HashMap<>(
-                Collections.singletonMap("t_encrypt_user_id_MD5", new ShardingSphereAlgorithmConfiguration("TEST", new Properties())));
+        Map<String, AlgorithmConfiguration> encryptors = new HashMap<>(
+                Collections.singletonMap("t_encrypt_user_id_MD5", new AlgorithmConfiguration("TEST", new Properties())));
         return new EncryptRuleConfiguration(new LinkedList<>(Collections.singleton(tableRuleConfig)), encryptors, true);
     }
     
     private EncryptRuleConfiguration createCurrentRuleConfigurationWithMultipleTableRules() {
         EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", "user_cipher", "", "user_plain", "t_encrypt_user_id_MD5", null);
         EncryptTableRuleConfiguration tableRuleConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singleton(columnRuleConfig), null);
-        Map<String, ShardingSphereAlgorithmConfiguration> encryptors = Collections.singletonMap("t_encrypt_user_id_MD5", new ShardingSphereAlgorithmConfiguration("TEST", new Properties()));
+        Map<String, AlgorithmConfiguration> encryptors = Collections.singletonMap("t_encrypt_user_id_MD5", new AlgorithmConfiguration("TEST", new Properties()));
         return new EncryptRuleConfiguration(new LinkedList<>(Arrays.asList(tableRuleConfig,
                 new EncryptTableRuleConfiguration("t_encrypt_another", Collections.singleton(columnRuleConfig), null))), encryptors, true);
     }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.authentication;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
+import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 
 /**
  * PostgreSQL login result.
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLError
 @Getter
 public final class PostgreSQLLoginResult {
     
-    private final PostgreSQLErrorCode errorCode;
+    private final PostgreSQLVendorError vendorError;
     
     private final String errorMessage;
 }

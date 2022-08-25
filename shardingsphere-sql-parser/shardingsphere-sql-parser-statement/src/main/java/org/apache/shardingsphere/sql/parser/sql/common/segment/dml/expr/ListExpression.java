@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -27,6 +28,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Getter
 @Setter
+@ToString
 public final class ListExpression implements ExpressionSegment {
     
     private final int startIndex;

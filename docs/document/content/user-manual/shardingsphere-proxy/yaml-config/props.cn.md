@@ -4,11 +4,11 @@ weight = 2
 chapter = true
 +++
 
-## 简介
+## 背景信息
 
-Apache ShardingSphere 提供属性配置的方式配置系统级配置。
+Apache ShardingSphere 提供属性配置的方式配置系统级配置。本节介绍 `server.yaml` 中的配置项。
 
-## 配置项说明
+## 参数解释
 
 | *名称*                                | *数据类型*  | *说明*                                                                                                                                   | *默认值*    | *动态生效* |             
 |-------------------------------------|---------|----------------------------------------------------------------------------------------------------------------------------------------|----------|--------| 
@@ -26,10 +26,13 @@ Apache ShardingSphere 提供属性配置的方式配置系统级配置。
 | proxy-backend-executor-suitable (?) | String  | 可选选项：OLAP、OLTP。OLTP 选项可能会减少向客户端写入数据包的时间开销，但如果客户端连接数超过 `proxy-frontend-executor-size`，尤其是执行慢 SQL 时，它可能会增加 SQL 执行的延迟甚至阻塞其他客户端的连接。        | OLAP     | 是      |
 | proxy-frontend-max-connections (?)  | int     | 允许连接 Proxy 的最大客户端数量，默认值 0 代表不限制。                                                                                                       | 0        | 是      |
 | sql-federation-enabled (?)          | boolean | 是否开启 federation 查询。                                                                                                                    | false    | 是      |
-| show-process-list-enabled (?)       | boolean | 是否开启 processlist 功能，同时仅在 Cluster 模式生效。功能和 MySQL show processlist 类似。目前只对 DDL 和 DML 语句生效。                                               | false    | 是      |
 | proxy-mysql-default-version (?)     | String  | Proxy 通过配置文件指定 MySQL 的版本号,默认版本：5.7.22。                                                                                                 | 5.7.22   | 否      |
 | proxy-default-port (?)              | String  | Proxy 通过配置文件指定默认端口。                                                                                                                    | 3307     | 否      |
 | proxy-netty-backlog (?)             | int     | Proxy 通过配置文件指定默认netty back_log参数。                                                                                                      | 1024     | 否      |
 
 属性配置可以通过 [DistSQL#RAL](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/) 修改。
 支持动态修改的属性可以立即生效，不支持动态修改的属性需要重启后生效。
+
+## 配置示例
+
+完整配置示例请参考 ShardingSphere 仓库内的 `server.yaml`：<https://github.com/apache/shardingsphere/blob/aac0d3026e00575114701be603ec189a02a45747/shardingsphere-proxy/shardingsphere-proxy-bootstrap/src/main/resources/conf/server.yaml#L71-L93>

@@ -36,7 +36,7 @@ SHOW DB_DISCOVERY HEARTBEATS [FROM databaseName]
 ### DB Discovery Heartbeat
 
 | Column                   | Description           |
-| ------------------------ | ----------------------|
+| ------------------------ | --------------------- |
 | name                     | Heartbeat name        |
 | props                    | Heartbeat properties  |
 
@@ -45,7 +45,7 @@ SHOW DB_DISCOVERY HEARTBEATS [FROM databaseName]
 *DB Discovery Rule*
 
 ```sql
-mysql> show db_discovery rules;
+mysql> SHOW DB_DISCOVERY RULES;
 +----------------------+-------------------+--------------------------+-----------------------------------------------------------------------------------+------------------------------------------------------------------------------+
 | group_name           | data_source_names | primary_data_source_name | discovery_type                                                                    | discovery_heartbeat                                                          |
 +----------------------+-------------------+--------------------------+-----------------------------------------------------------------------------------+------------------------------------------------------------------------------+
@@ -57,7 +57,7 @@ mysql> show db_discovery rules;
 *DB Discovery Type*
 
 ```sql
-mysql> show db_discovery types;
+mysql> SHOW DB_DISCOVERY TYPES;
 +---------------------------+------------+------------------------------+
 | name                      | type       | props                        |
 +---------------------------+------------+------------------------------+
@@ -69,7 +69,7 @@ mysql> show db_discovery types;
 *DB Discovery Heartbeat*
 
 ```sql
-mysql> show db_discovery heartbeats;
+mysql> SHOW DB_DISCOVERY HEARTBEATS;
 +--------------------------------+---------------------------------+
 | name                           | props                           |
 +--------------------------------+---------------------------------+

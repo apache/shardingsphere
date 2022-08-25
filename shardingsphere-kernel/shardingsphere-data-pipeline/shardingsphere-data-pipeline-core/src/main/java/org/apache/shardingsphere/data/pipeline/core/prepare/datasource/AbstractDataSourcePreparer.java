@@ -17,25 +17,29 @@
 
 package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
 
-import lombok.NonNull;
+import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeEntry;
+import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
-import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.TableDefinitionSQLType;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
+import org.apache.shardingsphere.data.pipeline.core.metadata.generator.PipelineDDLGenerator;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -49,29 +53,15 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     
     private static final Pattern PATTERN_CREATE_TABLE = Pattern.compile("CREATE\\s+TABLE\\s+", Pattern.CASE_INSENSITIVE);
     
-    private static final Pattern PATTERN_ALTER_TABLE = Pattern.compile("ALTER\\s+TABLE\\s+", Pattern.CASE_INSENSITIVE);
-    
-    private static final Pattern PATTERN_CREATE_INDEX = Pattern.compile("CREATE\\s+(UNIQUE\\s+)?INDEX+\\s", Pattern.CASE_INSENSITIVE);
-    
-    private static final Pattern PATTERN_DROP_INDEX = Pattern.compile("DROP\\s+INDEX+\\s", Pattern.CASE_INSENSITIVE);
-    
-    private static final Pattern PATTERN_COMMENT_ON = Pattern.compile("COMMENT\\s+ON\\s+(COLUMN\\s+|TABLE\\s+)", Pattern.CASE_INSENSITIVE);
-    
     private static final String[] IGNORE_EXCEPTION_MESSAGE = {"multiple primary keys for table", "already exists"};
     
     @Override
     public void prepareTargetSchemas(final PrepareTargetSchemasParameter parameter) {
-        DatabaseType sourceDatabaseType = DatabaseTypeFactory.getInstance(parameter.getTaskConfig().getJobConfig().getSourceDatabaseType());
-        DatabaseType targetDatabaseType = DatabaseTypeFactory.getInstance(parameter.getTaskConfig().getJobConfig().getTargetDatabaseType());
-        if (!sourceDatabaseType.isSchemaAvailable() || !targetDatabaseType.isSchemaAvailable()) {
-            log.info("prepareTargetSchemas, one of source or target database type schema is not available, ignore");
-            return;
-        }
         Set<String> schemaNames = getSchemaNames(parameter);
-        String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(targetDatabaseType, parameter.getTaskConfig().getJobConfig().getDatabaseName());
+        String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(parameter.getTargetDatabaseType(), parameter.getDatabaseName());
         log.info("prepareTargetSchemas, schemaNames={}, defaultSchema={}", schemaNames, defaultSchema);
-        PipelineSQLBuilder pipelineSQLBuilder = PipelineSQLBuilderFactory.getInstance(targetDatabaseType.getType());
-        try (Connection targetConnection = getTargetCachedDataSource(parameter.getTaskConfig(), parameter.getDataSourceManager()).getConnection()) {
+        PipelineSQLBuilder pipelineSQLBuilder = PipelineSQLBuilderFactory.getInstance(parameter.getTargetDatabaseType().getType());
+        try (Connection targetConnection = getCachedDataSource(parameter.getDataSourceConfig(), parameter.getDataSourceManager()).getConnection()) {
             for (String each : schemaNames) {
                 if (each.equalsIgnoreCase(defaultSchema)) {
                     continue;
@@ -90,7 +80,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     
     private Set<String> getSchemaNames(final PrepareTargetSchemasParameter parameter) {
         Set<String> result = new HashSet<>();
-        for (String each : parameter.getTaskConfig().getJobConfig().splitLogicTableNames()) {
+        for (String each : parameter.getLogicTableNames()) {
             String schemaName = parameter.getTableNameSchemaNameMapping().getSchemaName(each);
             if (null == schemaName) {
                 throw new PipelineJobPrepareFailedException("Can not get schemaName by logic table name " + each);
@@ -101,12 +91,12 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     }
     
     // TODO the invocation is disabled for now, it might be used again for next new feature
-    protected final PipelineDataSourceWrapper getSourceCachedDataSource(final RuleAlteredJobConfiguration jobConfig, final PipelineDataSourceManager dataSourceManager) {
+    protected final PipelineDataSourceWrapper getSourceCachedDataSource(final MigrationJobConfiguration jobConfig, final PipelineDataSourceManager dataSourceManager) {
         return dataSourceManager.getDataSource(PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getSource().getType(), jobConfig.getSource().getParameter()));
     }
     
-    protected final PipelineDataSourceWrapper getTargetCachedDataSource(final TaskConfiguration taskConfig, final PipelineDataSourceManager dataSourceManager) {
-        return dataSourceManager.getDataSource(taskConfig.getImporterConfig().getDataSourceConfig());
+    protected final PipelineDataSourceWrapper getCachedDataSource(final PipelineDataSourceConfiguration dataSourceConfig, final PipelineDataSourceManager dataSourceManager) {
+        return dataSourceManager.getDataSource(dataSourceConfig);
     }
     
     protected final void executeTargetTableSQL(final Connection targetConnection, final String sql) throws SQLException {
@@ -114,6 +104,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         try (Statement statement = targetConnection.createStatement()) {
             statement.execute(sql);
         } catch (final SQLException ex) {
+            log.warn("execute target table sql failed", ex);
             for (String ignoreMessage : IGNORE_EXCEPTION_MESSAGE) {
                 if (ex.getMessage().contains(ignoreMessage)) {
                     return;
@@ -123,26 +114,6 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         }
     }
     
-    // TODO simple lexer
-    protected final TableDefinitionSQLType getTableDefinitionSQLType(final String sql) {
-        if (PATTERN_CREATE_TABLE.matcher(sql).find()) {
-            return TableDefinitionSQLType.CREATE_TABLE;
-        }
-        if (PATTERN_ALTER_TABLE.matcher(sql).find()) {
-            return TableDefinitionSQLType.ALTER_TABLE;
-        }
-        if (PATTERN_CREATE_INDEX.matcher(sql).find()) {
-            return TableDefinitionSQLType.CREATE_INDEX;
-        }
-        if (PATTERN_DROP_INDEX.matcher(sql).find()) {
-            return TableDefinitionSQLType.DROP_INDEX;
-        }
-        if (PATTERN_COMMENT_ON.matcher(sql).find()) {
-            return TableDefinitionSQLType.COMMENT_ON;
-        }
-        return TableDefinitionSQLType.UNKNOWN;
-    }
-    
     protected final String addIfNotExistsForCreateTableSQL(final String createTableSQL) {
         if (PATTERN_CREATE_TABLE_IF_NOT_EXISTS.matcher(createTableSQL).find()) {
             return createTableSQL;
@@ -150,21 +121,18 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         return PATTERN_CREATE_TABLE.matcher(createTableSQL).replaceFirst("CREATE TABLE IF NOT EXISTS ");
     }
     
-    protected String replaceActualTableNameToLogicTableName(final String createOrAlterTableSQL, final @NonNull String actualTableName, final @NonNull String logicTableName) {
-        if (actualTableName.equalsIgnoreCase(logicTableName)) {
-            return createOrAlterTableSQL;
+    protected final List<String> listCreateLogicalTableSQL(final PrepareTargetTablesParameter parameter) throws SQLException {
+        PipelineDDLGenerator generator = new PipelineDDLGenerator();
+        List<String> result = new LinkedList<>();
+        for (JobDataNodeEntry each : parameter.getTablesFirstDataNodes().getEntries()) {
+            String dataSourceName = each.getDataNodes().get(0).getDataSourceName();
+            DataSource dataSource = parameter.getSourceDataSourceMap().get(dataSourceName);
+            DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(Collections.singletonList(dataSource));
+            String schemaName = parameter.getTableNameSchemaNameMapping().getSchemaName(each.getLogicTableName());
+            String actualTableName = each.getDataNodes().get(0).getTableName();
+            Preconditions.checkNotNull(actualTableName, "Could not get actualTableName, nodeEntry={}", each);
+            result.add(generator.generateLogicDDL(databaseType, dataSource, schemaName, each.getLogicTableName(), actualTableName, parameter.getSqlParserEngine()));
         }
-        StringBuilder logicalTableSQL = new StringBuilder(createOrAlterTableSQL);
-        for (int i = 0; i < 10_000; i++) {
-            int start = logicalTableSQL.indexOf(actualTableName);
-            if (start <= 0) {
-                return logicalTableSQL.toString();
-            }
-            int end = start + actualTableName.length();
-            logicalTableSQL.replace(start, end, logicTableName);
-        }
-        log.error("replaceActualTableNameToLogicTableName, too many times loop, createOrAlterTableSQL={}, actualTableName={}, logicTableName={}",
-                createOrAlterTableSQL, actualTableName, logicalTableSQL);
-        throw new RuntimeException("Too many times loop");
+        return result;
     }
 }

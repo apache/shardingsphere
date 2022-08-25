@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.Gover
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,17 +36,17 @@ import java.util.Properties;
 public final class PropertiesChangedWatcher implements GovernanceWatcher<PropertiesChangedEvent> {
     
     @Override
-    public Collection<String> getWatchingKeys() {
+    public Collection<String> getWatchingKeys(final String databaseName) {
         return Collections.singleton(GlobalNode.getPropsPath());
     }
     
     @Override
     public Collection<Type> getWatchingTypes() {
-        return Arrays.asList(Type.UPDATED, Type.ADDED);
+        return Arrays.asList(Type.ADDED, Type.UPDATED);
     }
     
     @Override
     public Optional<PropertiesChangedEvent> createGovernanceEvent(final DataChangedEvent event) {
-        return getWatchingKeys().contains(event.getKey()) ? Optional.of(new PropertiesChangedEvent(YamlEngine.unmarshal(event.getValue(), Properties.class))) : Optional.empty();
+        return GlobalNode.getPropsPath().equals(event.getKey()) ? Optional.of(new PropertiesChangedEvent(YamlEngine.unmarshal(event.getValue(), Properties.class))) : Optional.empty();
     }
 }

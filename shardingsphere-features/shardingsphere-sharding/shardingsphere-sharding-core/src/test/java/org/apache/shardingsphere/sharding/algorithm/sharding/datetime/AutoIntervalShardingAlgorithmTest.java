@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.datetime;
 
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
@@ -166,6 +166,6 @@ public final class AutoIntervalShardingAlgorithmTest {
     }
     
     private AutoIntervalShardingAlgorithm createAutoIntervalShardingAlgorithm(final Properties props) {
-        return (AutoIntervalShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("AUTO_INTERVAL", props));
+        return (AutoIntervalShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("AUTO_INTERVAL", props));
     }
 }

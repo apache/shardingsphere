@@ -75,4 +75,8 @@
     <drop-table sql-case-id="drop_table_with_bracket">
         <table name="t_order" start-delimiter="[" end-delimiter="]" start-index="11" stop-index="19" />
     </drop-table>
+
+    <drop-table sql-case-id="drop_bit_xor_table">
+        <table name="BIT_XOR" start-index="11" stop-index="17" />
+    </drop-table>
 </sql-parser-test-cases>

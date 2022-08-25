@@ -30,7 +30,7 @@ import java.util.Optional;
  * SQLServer delete statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class SQLServerDeleteStatement extends DeleteStatement implements SQLServerStatement {
     
     private WithSegment withSegment;

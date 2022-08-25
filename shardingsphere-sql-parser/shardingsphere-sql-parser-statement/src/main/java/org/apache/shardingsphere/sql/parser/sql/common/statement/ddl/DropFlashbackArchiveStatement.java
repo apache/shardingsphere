@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Drop flashback archive statement.
  */
-@ToString
-public class DropFlashbackArchiveStatement extends AbstractSQLStatement implements DDLStatement {
+@ToString(callSuper = true)
+public abstract class DropFlashbackArchiveStatement extends AbstractSQLStatement implements DDLStatement {
 }

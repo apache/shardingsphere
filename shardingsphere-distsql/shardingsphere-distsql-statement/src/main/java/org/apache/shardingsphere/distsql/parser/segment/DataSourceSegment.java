@@ -28,21 +28,13 @@ import java.util.Properties;
  */
 @RequiredArgsConstructor
 @Getter
-public final class DataSourceSegment implements ASTNode {
+public class DataSourceSegment implements ASTNode {
     
     private final String name;
-    
-    private final String url;
-    
-    private final String hostname;
-    
-    private final String port;
-    
-    private final String database;
     
     private final String user;
     
     private final String password;
     
-    private final Properties properties;
+    private final Properties props;
 }

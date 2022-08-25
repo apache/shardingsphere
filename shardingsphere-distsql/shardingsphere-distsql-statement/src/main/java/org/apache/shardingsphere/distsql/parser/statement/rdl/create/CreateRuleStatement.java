@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.rdl.create;
 
-import org.apache.shardingsphere.distsql.parser.operation.impl.CreateOperationSupplier;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
 
 /**
  * Create rule statement.
  */
-public abstract class CreateRuleStatement extends RuleDefinitionStatement implements CreateOperationSupplier {
-    
+public abstract class CreateRuleStatement extends RuleDefinitionStatement {
 }

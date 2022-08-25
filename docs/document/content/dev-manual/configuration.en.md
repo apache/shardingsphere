@@ -1,5 +1,5 @@
 +++
-pre = "<b>6.2. </b>"
+pre = "<b>5.2. </b>"
 title = "Configuration"
 weight = 2
 chapter = true
@@ -7,56 +7,75 @@ chapter = true
 
 ## RuleBuilder
 
-| *SPI Name*                                     | *Description*                                                                                                    |
-| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| RuleBuilder                                    | Used to convert user configurations to rule objects                                                              |
+### Fully-qualified class name
 
-| *Implementation Class*                         | *Description*                                                                                                    |
-| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| AlgorithmProvidedReadwriteSplittingRuleBuilder | Used to convert algorithm-based read-write separation user configuration into read-write separation rule objects |
-| AlgorithmProvidedDatabaseDiscoveryRuleBuilder  | Used to convert algorithm-based database discovery user configuration into database discovery rule objects       |
-| AlgorithmProvidedShardingRuleBuilder           | Used to convert algorithm-based sharding user configuration into sharding rule objects                           |
-| AlgorithmProvidedEncryptRuleBuilder            | Used to convert algorithm-based encryption user configuration into encryption rule objects                       |
-| AlgorithmProvidedShadowRuleBuilder             | Used to convert algorithm-based shadow database user configuration into shadow database rule objects             |
-| ReadwriteSplittingRuleBuilder                  | Used to convert read-write separation user configuration into read-write separation rule objects                 |
-| DatabaseDiscoveryRuleBuilder                   | Used to convert database discovery user configuration into database discovery rule objects                       |
-| SingleTableRuleBuilder                         | Used to convert single-table user configuration into a single-table rule objects                                 |
-| AuthorityRuleBuilder                           | Used to convert permission user configuration into permission rule objects                                       |
-| ShardingRuleBuilder                            | Used to convert sharding user configuration into sharding rule objects                                           |
-| EncryptRuleBuilder                             | Used to convert encrypted user configuration into encryption rule objects                                        |
-| ShadowRuleBuilder                              | Used to convert shadow database user configuration into shadow database rule objects                             |
-| TransactionRuleBuilder                         | Used to convert transaction user configuration into transaction rule objects                                     |
-| SQLParserRuleBuilder                           | Used to convert SQL parser user configuration into SQL parser rule objects                                       |
+[`org.apache.shardingsphere.infra.rule.builder.RuleBuilder`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-infra/shardingsphere-infra-common/src/main/java/org/apache/shardingsphere/infra/rule/builder/RuleBuilder.java)
+
+### Definition
+
+Used to convert user configurations into rule objects
+
+### Implementation classes
+
+| *Configuration Type*                                | *Description*                                                                                                  | *Fully-qualified class name* |
+| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ---------------------------- |
+| AuthorityRuleConfiguration                          | Used to convert authority user configuration into authority rule objects                                       | [`org.apache.shardingsphere.authority.rule.builder.AuthorityRuleBuilder`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-kernel/shardingsphere-authority/shardingsphere-authority-core/src/main/java/org/apache/shardingsphere/authority/rule/builder/AuthorityRuleBuilder.java) |
+| SQLParserRuleConfiguration                          | Used to convert SQL parser user configuration into SQL parser rule objects                                     | [`org.apache.shardingsphere.parser.rule.builder.SQLParserRuleBuilder`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-kernel/shardingsphere-parser/shardingsphere-parser-core/src/main/java/org/apache/shardingsphere/parser/rule/builder/SQLParserRuleBuilder.java) |
+| TransactionRuleConfiguration                        | Used to convert transaction user configuration into transaction rule objects                                   | [`org.apache.shardingsphere.transaction.rule.builder.TransactionRuleBuilder`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-kernel/shardingsphere-transaction/shardingsphere-transaction-core/src/main/java/org/apache/shardingsphere/transaction/rule/builder/TransactionRuleBuilder.java) |
+| SingleTableRuleConfiguration                        | Used to convert single-table user configuration into a single-table rule objects                               | [`org.apache.shardingsphere.singletable.rule.builder.SingleTableRuleBuilder`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-kernel/shardingsphere-single-table/shardingsphere-single-table-core/src/main/java/org/apache/shardingsphere/singletable/rule/builder/SingleTableRuleBuilder.java) |
+| ShardingRuleConfiguration                           | Used to convert sharding user configuration into sharding rule objects                                         | [`org.apache.shardingsphere.sharding.rule.builder.ShardingRuleBuilder`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-sharding/shardingsphere-sharding-core/src/main/java/org/apache/shardingsphere/sharding/rule/builder/ShardingRuleBuilder.java) |
+| AlgorithmShardingRuleConfiguration                  | Used to convert algorithm-based sharding user configuration into sharding rule objects                         | [`org.apache.shardingsphere.sharding.rule.builder.AlgorithmProvidedShardingRuleBuilder`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-sharding/shardingsphere-sharding-core/src/main/java/org/apache/shardingsphere/sharding/rule/builder/AlgorithmProvidedShardingRuleBuilder.java) |
+| ReadwriteSplittingRuleConfiguration                 | Used to convert read-write splitting user configuration into read-write splitting rule objects                 | [`org.apache.shardingsphere.readwritesplitting.rule.builder.ReadwriteSplittingRuleBuilder`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-readwrite-splitting/shardingsphere-readwrite-splitting-core/src/main/java/org/apache/shardingsphere/readwritesplitting/rule/builder/ReadwriteSplittingRuleBuilder.java) |
+| AlgorithmReadwriteSplittingRuleConfiguration        | Used to convert algorithm-based read-write splitting user configuration into read-write splitting rule objects | [`org.apache.shardingsphere.readwritesplitting.rule.builder.AlgorithmProvidedReadwriteSplittingRuleBuilder`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-readwrite-splitting/shardingsphere-readwrite-splitting-core/src/main/java/org/apache/shardingsphere/readwritesplitting/rule/builder/AlgorithmProvidedReadwriteSplittingRuleBuilder.java) |
+| DatabaseDiscoveryRuleConfiguration                  | Used to convert database discovery user configuration into database discovery rule objects                     | [`org.apache.shardingsphere.dbdiscovery.rule.builder.DatabaseDiscoveryRuleBuilder`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-db-discovery/shardingsphere-db-discovery-core/src/main/java/org/apache/shardingsphere/dbdiscovery/rule/builder/DatabaseDiscoveryRuleBuilder.java) |
+| AlgorithmProvidedDatabaseDiscoveryRuleConfiguration | Used to convert algorithm-based database discovery user configuration into database discovery rule objects     | [`org.apache.shardingsphere.dbdiscovery.rule.builder.AlgorithmProvidedDatabaseDiscoveryRuleBuilder`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-db-discovery/shardingsphere-db-discovery-core/src/main/java/org/apache/shardingsphere/dbdiscovery/rule/builder/AlgorithmProvidedDatabaseDiscoveryRuleBuilder.java) |
+| EncryptRuleConfiguration                            | Used to convert encrypted user configuration into encryption rule objects                                      | [`org.apache.shardingsphere.encrypt.rule.builder.EncryptRuleBuilder`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-encrypt/shardingsphere-encrypt-core/src/main/java/org/apache/shardingsphere/encrypt/rule/builder/EncryptRuleBuilder.java) |
+| AlgorithmProvidedEncryptRuleConfiguration           | Used to convert algorithm-based encryption user configuration into encryption rule objects                     | [`org.apache.shardingsphere.encrypt.rule.builder.AlgorithmProvidedEncryptRuleBuilder`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-encrypt/shardingsphere-encrypt-core/src/main/java/org/apache/shardingsphere/encrypt/rule/builder/AlgorithmProvidedEncryptRuleBuilder.java) |
+| ShadowRuleConfiguration                             | Used to convert shadow database user configuration into shadow database rule objects                           | [`org.apache.shardingsphere.shadow.rule.builder.ShadowRuleBuilder`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-shadow/shardingsphere-shadow-core/src/main/java/org/apache/shardingsphere/shadow/rule/builder/ShadowRuleBuilder.java) |
+| AlgorithmProvidedShadowRuleConfiguration            | Used to convert algorithm-based shadow database user configuration into shadow database rule objects           | [`org.apache.shardingsphere.shadow.rule.builder.AlgorithmProvidedShadowRuleBuilder`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-shadow/shardingsphere-shadow-core/src/main/java/org/apache/shardingsphere/shadow/rule/builder/AlgorithmProvidedShadowRuleBuilder.java) |
 
 ## YamlRuleConfigurationSwapper
 
-| *SPI Name*                                                      | *Description*                                                                                                            |
-| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| YamlRuleConfigurationSwapper                                    | Used to convert YAML configuration to standard user configuration                                                        |
+### Fully-qualified class name
 
-| *Implementation Class*                                          | *Description*                                                                                                            |
-| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapper | Used to convert algorithm-based read-write separation configuration into read-write separation standard configuration    |
-| DatabaseDiscoveryRuleAlgorithmProviderConfigurationYamlSwapper  | Used to convert algorithm-based database discovery configuration into database discovery standard configuration          |
-| ShardingRuleAlgorithmProviderConfigurationYamlSwapper           | Used to convert algorithm-based sharding configuration into sharding standard configuration                              |
-| EncryptRuleAlgorithmProviderConfigurationYamlSwapper            | Used to convert algorithm-based encryption configuration into encryption standard configuration                          |
-| ShadowRuleAlgorithmProviderConfigurationYamlSwapper             | Used to convert algorithm-based shadow database configuration into shadow database standard configuration                |
-| ReadwriteSplittingRuleConfigurationYamlSwapper                  | Used to convert the YAML configuration of read-write separation into the standard configuration of read-write separation |
-| DatabaseDiscoveryRuleConfigurationYamlSwapper                   | Used to convert the YAML configuration of database discovery into the standard configuration of database discovery       |
-| AuthorityRuleConfigurationYamlSwapper                           | Used to convert the YAML configuration of permission rules into standard configuration of permission rules               |
-| ShardingRuleConfigurationYamlSwapper                            | Used to convert the YAML configuration of the shard into the standard configuration of the shard                         |
-| EncryptRuleConfigurationYamlSwapper                             | Used to convert encrypted YAML configuration into encrypted standard configuration                                       |
-| ShadowRuleConfigurationYamlSwapper                              | Used to convert the YAML configuration of the shadow database into the standard configuration of the shadow database     |
-| TransactionRuleConfigurationYamlSwapper                         | Used to convert the YAML configuration of the transaction into the standard configuration of the transaction             |
-| SingleTableRuleConfigurationYamlSwapper                         | Used to convert the YAML configuration of the single table into the standard configuration of the single table           |
-| SQLParserRuleConfigurationYamlSwapper                           | Used to convert the YAML configuration of the SQL parser into the standard configuration of the SQL parser               |
+[`org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-infra/shardingsphere-infra-common/src/main/java/org/apache/shardingsphere/infra/yaml/config/swapper/YamlRuleConfigurationSwapper.java)
+
+### Definition
+
+Used to convert YAML configuration to standard user configuration
+
+### Implementation classes
+
+| *Configuration Type* | *Description*                                                                                                          | *Fully-qualified class name* |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------- | ---------------------------- |
+| AUTHORITY            | Used to convert the YAML configuration of authority rules into standard configuration of authority rules               | [`org.apache.shardingsphere.authority.yaml.swapper.YamlAuthorityRuleConfigurationSwapper`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-kernel/shardingsphere-authority/shardingsphere-authority-core/src/main/java/org/apache/shardingsphere/authority/yaml/swapper/YamlAuthorityRuleConfigurationSwapper.java) |
+| SQL_PARSER           | Used to convert the YAML configuration of the SQL parser into the standard configuration of the SQL parser             | [`org.apache.shardingsphere.parser.yaml.swapper.YamlSQLParserRuleConfigurationSwapper`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-kernel/shardingsphere-parser/shardingsphere-parser-core/src/main/java/org/apache/shardingsphere/parser/yaml/swapper/YamlSQLParserRuleConfigurationSwapper.java) |
+| TRANSACTION          | Used to convert the YAML configuration of the transaction into the standard configuration of the transaction           | [`org.apache.shardingsphere.transaction.yaml.swapper.YamlTransactionRuleConfigurationSwapper`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-kernel/shardingsphere-transaction/shardingsphere-transaction-core/src/main/java/org/apache/shardingsphere/transaction/yaml/swapper/YamlTransactionRuleConfigurationSwapper.java) |
+| SINGLE               | Used to convert the YAML configuration of the single table into the standard configuration of the single table         | [`org.apache.shardingsphere.singletable.yaml.config.swapper.YamlSingleTableRuleConfigurationSwapper`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-kernel/shardingsphere-single-table/shardingsphere-single-table-core/src/main/java/org/apache/shardingsphere/singletable/yaml/config/swapper/YamlSingleTableRuleConfigurationSwapper.java) |
+| SHARDING             | Used to convert the YAML configuration of the sharding into the standard configuration of the sharding                 | [`org.apache.shardingsphere.sharding.yaml.swapper.YamlShardingRuleConfigurationSwapper`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-sharding/shardingsphere-sharding-core/src/main/java/org/apache/shardingsphere/sharding/yaml/swapper/YamlShardingRuleConfigurationSwapper.java) |
+| SHARDING             | Used to convert algorithm-based sharding configuration into sharding standard configuration                            | [`org.apache.shardingsphere.sharding.yaml.swapper.YamlShardingRuleAlgorithmProviderConfigurationSwapper`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-sharding/shardingsphere-sharding-core/src/main/java/org/apache/shardingsphere/sharding/yaml/swapper/YamlShardingRuleAlgorithmProviderConfigurationSwapper.java) |
+| READWRITE_SPLITTING  | Used to convert the YAML configuration of read-write splitting into the standard configuration of read-write splitting | [`org.apache.shardingsphere.readwritesplitting.yaml.swapper.YamlReadwriteSplittingRuleConfigurationSwapper`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-readwrite-splitting/shardingsphere-readwrite-splitting-core/src/main/java/org/apache/shardingsphere/readwritesplitting/yaml/swapper/YamlReadwriteSplittingRuleConfigurationSwapper.java) |
+| READWRITE_SPLITTING  | Used to convert algorithm-based read-write splitting configuration into read-write splitting standard configuration    | [`org.apache.shardingsphere.readwritesplitting.yaml.swapper.YamlReadwriteSplittingRuleAlgorithmProviderConfigurationSwapper`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-readwrite-splitting/shardingsphere-readwrite-splitting-core/src/main/java/org/apache/shardingsphere/readwritesplitting/yaml/swapper/YamlReadwriteSplittingRuleAlgorithmProviderConfigurationSwapper.java) |
+| DB_DISCOVERY         | Used to convert the YAML configuration of database discovery into the standard configuration of database discovery     | [`org.apache.shardingsphere.dbdiscovery.yaml.swapper.YamlDatabaseDiscoveryRuleConfigurationSwapper`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-db-discovery/shardingsphere-db-discovery-core/src/main/java/org/apache/shardingsphere/dbdiscovery/yaml/swapper/YamlDatabaseDiscoveryRuleConfigurationSwapper.java) |
+| DB_DISCOVERY         | Used to convert algorithm-based database discovery configuration into database discovery standard configuration        | [`org.apache.shardingsphere.dbdiscovery.yaml.swapper.YamlDatabaseDiscoveryRuleAlgorithmProviderConfigurationSwapper`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-db-discovery/shardingsphere-db-discovery-core/src/main/java/org/apache/shardingsphere/dbdiscovery/yaml/swapper/YamlDatabaseDiscoveryRuleAlgorithmProviderConfigurationSwapper.java) |
+| ENCRYPT              | Used to convert encrypted YAML configuration into encrypted standard configuration                                     | [`org.apache.shardingsphere.encrypt.yaml.swapper.YamlEncryptRuleConfigurationSwapper`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-encrypt/shardingsphere-encrypt-core/src/main/java/org/apache/shardingsphere/encrypt/yaml/swapper/YamlEncryptRuleConfigurationSwapper.java) |
+| ENCRYPT              | Used to convert algorithm-based encryption configuration into encryption standard configuration                        | [`org.apache.shardingsphere.encrypt.yaml.swapper.YamlEncryptRuleAlgorithmProviderConfigurationSwapper`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-encrypt/shardingsphere-encrypt-core/src/main/java/org/apache/shardingsphere/encrypt/yaml/swapper/YamlEncryptRuleAlgorithmProviderConfigurationSwapper.java) |
+| SHADOW               | Used to convert the YAML configuration of the shadow database into the standard configuration of the shadow database   | [`org.apache.shardingsphere.shadow.yaml.swapper.YamlShadowRuleConfigurationSwapper`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-shadow/shardingsphere-shadow-core/src/main/java/org/apache/shardingsphere/shadow/yaml/swapper/YamlShadowRuleConfigurationSwapper.java) |
+| SHADOW               | Used to convert algorithm-based shadow database configuration into shadow database standard configuration              | [`org.apache.shardingsphere.shadow.yaml.swapper.YamlShadowRuleAlgorithmProviderConfigurationSwapper`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-shadow/shardingsphere-shadow-core/src/main/java/org/apache/shardingsphere/shadow/yaml/swapper/YamlShadowRuleAlgorithmProviderConfigurationSwapper.java) |
+| SQL_TRANSLATOR       | Used to convert the YAML configuration of the SQL transformation to the SQL transformation standard configuration      | [`org.apache.shardingsphere.sqltranslator.yaml.swapper.YamlSQLTranslatorRuleConfigurationSwapper`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-kernel/shardingsphere-sql-translator/shardingsphere-sql-translator-core/src/main/java/org/apache/shardingsphere/sqltranslator/yaml/swapper/YamlSQLTranslatorRuleConfigurationSwapper.java) |
 
 ## ShardingSphereYamlConstruct
 
-| *SPI Name*                                     | *Description*                                                |
-| ---------------------------------------------- | ------------------------------------------------------------ |
-| ShardingSphereYamlConstruct                    | Used to convert customized objects and YAML to each other    |
+### Fully-qualified class name
 
-| *Implementation Class*                         | *Description*                                                |
-| ---------------------------------------------- | ------------------------------------------------------------ |
-| NoneShardingStrategyConfigurationYamlConstruct | Used to convert non sharding strategy and YAML to each other |
+[`org.apache.shardingsphere.infra.yaml.engine.constructor.ShardingSphereYamlConstruct`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-infra/shardingsphere-infra-common/src/main/java/org/apache/shardingsphere/infra/yaml/engine/constructor/ShardingSphereYamlConstruct.java)
+
+### Definition
+
+Used to convert custom objects and YAML to and from each other
+
+### Implementation classes
+
+| *Configuration Type*                  | *Description*                                                               | *Fully-qualified class name* |
+| ------------------------------------- | --------------------------------------------------------------------------- | ---------------------------- |
+| YamlNoneShardingStrategyConfiguration | Used to convert non-sharding policy objects and YAML to and from each other | [`org.apache.shardingsphere.sharding.yaml.engine.construct.NoneShardingStrategyConfigurationYamlConstruct`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-sharding/shardingsphere-sharding-core/src/main/java/org/apache/shardingsphere/sharding/yaml/engine/construct/NoneShardingStrategyConfigurationYamlConstruct.java) |

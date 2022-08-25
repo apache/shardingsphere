@@ -70,7 +70,11 @@ rules:
   defaultTableStrategy: 
     none:
   defaultShardingColumn: order_id
-  
+  defaultAuditStrategy:
+    auditorNames:
+      - sharding_key_required_auditor
+    allowHintDisable: true
+
   shardingAlgorithms:
     core_standard_fixture:
       type: CORE.STANDARD.FIXTURE
@@ -90,29 +94,10 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-  
-  scalingName: default_scaling
-  scaling:
-    default_scaling:
-      input:
-        workerThread: 40
-        batchSize: 1000
-        shardingSize: 10000000
-      output:
-        workerThread: 40
-        batchSize: 1000
-      streamChannel:
-        type: MEMORY
-        props:
-          block-queue-size: 10000
-      completionDetector:
-        type: IDLE
-        props:
-          incremental-task-idle-seconds-threshold: 1800
-      dataConsistencyChecker:
-        type: DATA_MATCH
-        props:
-          chunk-size: 1000
+
+  auditors:
+    sharding_key_required_auditor:
+      type: DML_SHARDING_CONDITIONS
 
 props:
   sql-show: true

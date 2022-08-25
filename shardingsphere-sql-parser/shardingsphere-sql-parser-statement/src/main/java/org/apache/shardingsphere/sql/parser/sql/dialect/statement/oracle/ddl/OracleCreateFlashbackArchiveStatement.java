@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Oracle create flashback archive statement.
  */
-@ToString
+@ToString(callSuper = true)
 public class OracleCreateFlashbackArchiveStatement extends CreateFlashbackArchiveStatement implements OracleStatement {
 }

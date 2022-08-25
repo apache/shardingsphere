@@ -54,22 +54,4 @@ public final class CombineOperatorConverter {
         Preconditions.checkState(REGISTRY.containsKey(combineType), "Unsupported combine type: `%s`", combineType);
         return REGISTRY.get(combineType);
     }
-    
-    /**
-     * Convert to combine type.
-     * @param sqlOperator SQL operator to be converted
-     * @return converted combine type
-     */
-    public static CombineType convert(final SqlOperator sqlOperator) {
-        CombineType result = null;
-        for (CombineType each : REGISTRY.keySet()) {
-            SqlOperator currentOperator = REGISTRY.get(each);
-            if (currentOperator == sqlOperator) {
-                result = each;
-                break;
-            }
-        }
-        Preconditions.checkState(result != null, "Unsupported sql operator: `%s`", sqlOperator);
-        return result;
-    }
 }

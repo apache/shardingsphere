@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL set statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class MySQLSetStatement extends SetStatement implements MySQLStatement {
 }

@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.api;
 
-import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
+import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
 import java.util.List;
@@ -39,20 +37,22 @@ public interface GovernanceRepositoryAPI {
     boolean isExisted(String key);
     
     /**
-     * Persist job progress.
-     *
-     * @param jobContext job context
-     */
-    void persistJobProgress(RuleAlteredJobContext jobContext);
-    
-    /**
-     * Get job progress.
+     * Persist job item progress.
      *
      * @param jobId job id
      * @param shardingItem sharding item
-     * @return job progress
+     * @param progressValue progress value
      */
-    JobProgress getJobProgress(String jobId, int shardingItem);
+    void persistJobItemProgress(String jobId, int shardingItem, String progressValue);
+    
+    /**
+     * Get job item progress.
+     *
+     * @param jobId job id
+     * @param shardingItem sharding item
+     * @return job item progress
+     */
+    String getJobItemProgress(String jobId, int shardingItem);
     
     /**
      * Persist job check result.
@@ -110,11 +110,34 @@ public interface GovernanceRepositoryAPI {
     List<Integer> getShardingItems(String jobId);
     
     /**
-     * Update sharding job status.
+     * Get meta data data sources.
      *
-     * @param jobId job id
-     * @param shardingItem sharding item
-     * @param status status
+     * @param jobType job type
+     * @return data source properties
      */
-    void updateShardingJobStatus(String jobId, int shardingItem, JobStatus status);
+    String getMetaDataDataSources(JobType jobType);
+    
+    /**
+     * Persist meta data data sources.
+     *
+     * @param jobType job type
+     * @param metaDataDataSources data source properties
+     */
+    void persistMetaDataDataSources(JobType jobType, String metaDataDataSources);
+    
+    /**
+     * Get meta data process configuration.
+     *
+     * @param jobType job type, nullable
+     * @return process configuration YAML text
+     */
+    String getMetaDataProcessConfiguration(JobType jobType);
+    
+    /**
+     * Persist meta data process configuration.
+     *
+     * @param jobType job type, nullable
+     * @param processConfigYamlText process configuration YAML text
+     */
+    void persistMetaDataProcessConfiguration(JobType jobType, String processConfigYamlText);
 }

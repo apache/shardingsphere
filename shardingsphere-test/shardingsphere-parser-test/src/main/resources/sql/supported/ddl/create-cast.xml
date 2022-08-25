@@ -18,4 +18,10 @@
 
 <sql-cases>
     <sql-case id="create_cast" value="CREATE CAST (bigint AS int4) WITH FUNCTION int4(bigint) AS ASSIGNMENT;" db-types="openGauss" />
+    <sql-case id="create_cast_without_function" value="CREATE CAST (bigint AS xfloat8) WITHOUT FUNCTION;" db-types="PostgreSQL" />
+    <sql-case id="create_cast_with_function" value="CREATE CAST (integer AS date) WITH FUNCTION sql_to_date(integer) AS ASSIGNMENT;" db-types="PostgreSQL" />
+    <sql-case id="create_cast_with_function_as_implicit" value="CREATE CAST (int4 AS casttesttype) WITH FUNCTION int4_casttesttype(int4) AS IMPLICIT;" db-types="PostgreSQL" />
+    <sql-case id="create_cast_with_inout" value="CREATE CAST (int4 AS casttesttype) WITH INOUT;" db-types="PostgreSQL" />
+    <sql-case id="create_cast_without_function_as_implicit" value="CREATE CAST (text AS casttesttype) WITHOUT FUNCTION AS IMPLICIT;" db-types="PostgreSQL" />
+    <sql-case id="create_cast_without" value="CREATE CAST (text AS casttesttype) WITHOUT FUNCTION;" db-types="PostgreSQL" />
 </sql-cases>

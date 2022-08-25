@@ -20,7 +20,6 @@ package org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.st
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
-import org.apache.shardingsphere.distsql.parser.subject.impl.ReadwriteSplittingSubjectSupplier;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromDatabaseAvailable;
 
@@ -29,9 +28,9 @@ import java.util.Optional;
 /**
  * Set readwrite-splitting status statement.
  */
-@Getter
 @RequiredArgsConstructor
-public class SetReadwriteSplittingStatusStatement extends UpdatableRALStatement implements FromDatabaseAvailable, ReadwriteSplittingSubjectSupplier {
+@Getter
+public class SetReadwriteSplittingStatusStatement extends UpdatableRALStatement implements FromDatabaseAvailable {
     
     private final String status;
     

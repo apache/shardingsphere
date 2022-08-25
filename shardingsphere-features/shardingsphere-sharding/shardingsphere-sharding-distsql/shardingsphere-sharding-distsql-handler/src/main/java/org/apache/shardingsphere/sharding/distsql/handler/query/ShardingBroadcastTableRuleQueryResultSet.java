@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
+import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBroadcastTableRulesStatement;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
@@ -29,17 +29,16 @@ import java.util.Iterator;
 import java.util.Optional;
 
 /**
- * Result set for show sharding broadcast table rules.
+ * Query result set for show sharding broadcast table rules.
  */
-public final class ShardingBroadcastTableRuleQueryResultSet implements DistSQLResultSet {
+public final class ShardingBroadcastTableRuleQueryResultSet implements DatabaseDistSQLResultSet {
     
     private Iterator<String> data;
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        Optional<ShardingRuleConfiguration> shardingRuleConfig = database.getRuleMetaData().getConfigurations()
-                .stream().filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findFirst();
-        data = shardingRuleConfig.map(optional -> optional.getBroadcastTables().iterator()).orElseGet(Collections::emptyIterator);
+        Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
+        data = rule.map(optional -> optional.getBroadcastTables().iterator()).orElseGet(Collections::emptyIterator);
     }
     
     @Override

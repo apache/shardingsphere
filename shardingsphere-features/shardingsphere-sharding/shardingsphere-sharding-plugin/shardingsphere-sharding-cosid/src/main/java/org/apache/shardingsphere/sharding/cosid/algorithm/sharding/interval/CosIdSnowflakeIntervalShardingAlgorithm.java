@@ -33,8 +33,6 @@ import java.util.Properties;
  */
 public final class CosIdSnowflakeIntervalShardingAlgorithm extends AbstractCosIdIntervalShardingAlgorithm<Comparable<?>> {
     
-    public static final String TYPE = CosIdAlgorithmConstants.TYPE_PREFIX + "INTERVAL_SNOWFLAKE";
-    
     public static final String EPOCH_KEY = "epoch";
     
     private SnowflakeIdStateParser snowflakeIdStateParser;
@@ -70,6 +68,6 @@ public final class CosIdSnowflakeIntervalShardingAlgorithm extends AbstractCosId
     
     @Override
     public String getType() {
-        return TYPE;
+        return CosIdAlgorithmConstants.TYPE_PREFIX + "INTERVAL_SNOWFLAKE";
     }
 }

@@ -31,7 +31,7 @@ import java.util.LinkedList;
  * MySQL load index info statement.
  */
 @Getter
-@ToString
+@ToString(callSuper = true)
 public final class MySQLLoadIndexInfoStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
     private final Collection<LoadTableIndexSegment> tableIndexes = new LinkedList<>();

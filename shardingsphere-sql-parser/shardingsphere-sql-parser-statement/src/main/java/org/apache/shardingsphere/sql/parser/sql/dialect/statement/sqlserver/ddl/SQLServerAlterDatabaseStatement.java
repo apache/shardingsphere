@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
 /**
  * SQLServer alter database statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class SQLServerAlterDatabaseStatement extends AlterDatabaseStatement implements SQLServerStatement {
 }

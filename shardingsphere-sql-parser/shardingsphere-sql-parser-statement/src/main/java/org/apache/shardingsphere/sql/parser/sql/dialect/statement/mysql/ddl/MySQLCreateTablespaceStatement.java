@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL create tablespace statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class MySQLCreateTablespaceStatement extends CreateTablespaceStatement implements MySQLStatement {
 }

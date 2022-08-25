@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
 import lombok.Getter;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
@@ -29,6 +30,7 @@ import java.util.List;
  * MySQL uninstall component statement.
  */
 @Getter
+@ToString(callSuper = true)
 public final class MySQLUninstallComponentStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
     private final List<String> components = new LinkedList<>();

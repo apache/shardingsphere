@@ -25,6 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
 /**
  * SQLServer alter service statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class SQLServerAlterServiceStatement extends AbstractSQLStatement implements DDLStatement, SQLServerStatement {
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.dbdiscovery.distsql.handler.update;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.DropDatabaseDiscoveryTypeStatement;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleInUsedException;
@@ -84,17 +84,17 @@ public final class DropDatabaseDiscoveryProviderAlgorithmStatementUpdaterTest {
     }
     
     private DropDatabaseDiscoveryTypeStatement createSQLStatement() {
-        return new DropDatabaseDiscoveryTypeStatement(Collections.singleton("type_name"));
+        return new DropDatabaseDiscoveryTypeStatement(false, Collections.singleton("type_name"));
     }
     
     private DropDatabaseDiscoveryTypeStatement createSQLStatementWithIfExists() {
-        return new DropDatabaseDiscoveryTypeStatement(Collections.singleton("type_name_0"), true);
+        return new DropDatabaseDiscoveryTypeStatement(true, Collections.singleton("type_name_0"));
     }
     
     private DatabaseDiscoveryRuleConfiguration createCurrentRuleConfiguration() {
-        Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypes = new HashMap<>(2, 1);
-        discoveryTypes.put("type_name", new ShardingSphereAlgorithmConfiguration("MySQL.MGR", new Properties()));
-        discoveryTypes.put("other", new ShardingSphereAlgorithmConfiguration("MySQL.MGR", new Properties()));
+        Map<String, AlgorithmConfiguration> discoveryTypes = new HashMap<>(2, 1);
+        discoveryTypes.put("type_name", new AlgorithmConfiguration("MySQL.MGR", new Properties()));
+        discoveryTypes.put("other", new AlgorithmConfiguration("MySQL.MGR", new Properties()));
         return new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), discoveryTypes);
     }
 }

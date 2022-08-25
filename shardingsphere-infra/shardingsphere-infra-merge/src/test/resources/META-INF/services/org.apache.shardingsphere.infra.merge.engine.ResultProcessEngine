@@ -17,3 +17,4 @@
 
 org.apache.shardingsphere.infra.merge.fixture.merger.ResultMergerEngineFixture
 org.apache.shardingsphere.infra.merge.fixture.decorator.ResultDecoratorEngineFixture
+org.apache.shardingsphere.infra.merge.fixture.ResultProcessEngineFixture

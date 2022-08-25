@@ -27,20 +27,14 @@
     <readwrite-splitting:load-balance-algorithm id="randomLoadbalancer" type="RANDOM" />
     
     <readwrite-splitting:rule id="defaultRule">
-        <readwrite-splitting:data-source-rule id="default_ds" type="Static">
-            <props>
-                <prop key="write-data-source-name">write_ds</prop>
-                <prop key="read-data-source-names">read_ds_0, read_ds_1</prop>
-            </props>
+        <readwrite-splitting:data-source-rule id="default_ds" >
+            <readwrite-splitting:static-strategy id="StaticReadwriteSplittingStrategy" write-data-source-name="write_ds" read-data-source-names="read_ds_0, read_ds_1" />
         </readwrite-splitting:data-source-rule>
     </readwrite-splitting:rule>
-    
+
     <readwrite-splitting:rule id="randomRule">
-        <readwrite-splitting:data-source-rule id="random_ds" type="Static" load-balance-algorithm-ref="randomLoadbalancer">
-            <props>
-                <prop key="write-data-source-name">write_ds</prop>
-                <prop key="read-data-source-names">read_ds_0, read_ds_1</prop>
-            </props>
+        <readwrite-splitting:data-source-rule id="random_ds" load-balance-algorithm-ref="randomLoadbalancer">
+            <readwrite-splitting:static-strategy id="StaticReadwriteSplittingStrategy" write-data-source-name="write_ds" read-data-source-names="read_ds_0, read_ds_1" />
         </readwrite-splitting:data-source-rule>
     </readwrite-splitting:rule>
 </beans>

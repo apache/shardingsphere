@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.framework.param.array;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
-import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.test.integration.env.runtime.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
@@ -41,8 +41,8 @@ public final class ClusterParameterizedArrayGenerator {
      * @return assertion parameterized array
      */
     public static Collection<AssertionParameterizedArray> getAssertionParameterized(final SQLCommandType sqlCommandType) {
-        return new ParameterizedArrayGenerator(
-                ENV.getClusterEnvironment().getAdapters(), ENV.getScenarios(), ENV.getClusterEnvironment().getDatabaseTypes()).getAssertionParameterized(sqlCommandType);
+        return new ParameterizedArrayGenerator(ENV.getClusterEnvironment().getAdapters(), ENV.getScenarios(), "Cluster",
+                ENV.getClusterEnvironment().getDatabaseTypes()).getAssertionParameterized(sqlCommandType);
     }
     
     /**
@@ -52,6 +52,7 @@ public final class ClusterParameterizedArrayGenerator {
      * @return case parameterized array
      */
     public static Collection<ParameterizedArray> getCaseParameterized(final SQLCommandType sqlCommandType) {
-        return new ParameterizedArrayGenerator(ENV.getClusterEnvironment().getAdapters(), ENV.getScenarios(), ENV.getClusterEnvironment().getDatabaseTypes()).getCaseParameterized(sqlCommandType);
+        return new ParameterizedArrayGenerator(ENV.getClusterEnvironment().getAdapters(), ENV.getScenarios(), "Cluster",
+                ENV.getClusterEnvironment().getDatabaseTypes()).getCaseParameterized(sqlCommandType);
     }
 }

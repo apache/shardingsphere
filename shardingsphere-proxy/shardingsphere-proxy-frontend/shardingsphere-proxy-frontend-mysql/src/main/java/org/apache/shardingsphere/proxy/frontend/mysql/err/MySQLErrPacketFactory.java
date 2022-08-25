@@ -20,33 +20,17 @@ package org.apache.shardingsphere.proxy.frontend.mysql.err;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobNotFoundException;
-import org.apache.shardingsphere.db.protocol.error.CommonErrorCode;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
-import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
-import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
-import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
-import org.apache.shardingsphere.proxy.backend.exception.DBDropNotExistsException;
-import org.apache.shardingsphere.proxy.backend.exception.DatabaseLockedException;
-import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
-import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
-import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
-import org.apache.shardingsphere.proxy.backend.exception.TableLockWaitTimeoutException;
-import org.apache.shardingsphere.proxy.backend.exception.TableLockedException;
-import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactionException;
-import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.CommonDistSQLErrorCode;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.CommonDistSQLException;
-import org.apache.shardingsphere.proxy.frontend.exception.FrontendTooManyConnectionsException;
-import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedCommandException;
+import org.apache.shardingsphere.dialect.exception.SQLDialectException;
+import org.apache.shardingsphere.dialect.mapper.SQLDialectExceptionMapperFactory;
+import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
+import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.sql.UnknownSQLException;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.DistSQLException;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.DistSQLVendorError;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
-import org.apache.shardingsphere.proxy.frontend.mysql.command.query.exception.UnknownCharacterSetException;
-import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
-import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
-import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 
+import java.nio.charset.UnsupportedCharsetException;
 import java.sql.SQLException;
 
 /**
@@ -64,87 +48,32 @@ public final class MySQLErrPacketFactory {
     public static MySQLErrPacket newInstance(final Exception cause) {
         if (cause instanceof SQLException) {
             SQLException sqlException = (SQLException) cause;
-            return null == sqlException.getSQLState() ? new MySQLErrPacket(1, MySQLServerErrorCode.ER_INTERNAL_ERROR, getErrorMessage(sqlException))
+            return null == sqlException.getSQLState() ? new MySQLErrPacket(1, MySQLVendorError.ER_INTERNAL_ERROR, getErrorMessage(sqlException))
                     : new MySQLErrPacket(1, sqlException.getErrorCode(), sqlException.getSQLState(), sqlException.getMessage());
         }
-        if (cause instanceof CommonDistSQLException) {
-            CommonDistSQLException commonDistSQLException = (CommonDistSQLException) cause;
-            return new MySQLErrPacket(1, CommonDistSQLErrorCode.valueOf(commonDistSQLException), commonDistSQLException.getVariable());
+        if (cause instanceof SQLDialectException) {
+            SQLException sqlException = SQLDialectExceptionMapperFactory.getInstance("MySQL").convert((SQLDialectException) cause);
+            return new MySQLErrPacket(1, sqlException.getErrorCode(), sqlException.getSQLState(), sqlException.getMessage());
         }
-        if (cause instanceof TableModifyInTransactionException) {
-            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, ((TableModifyInTransactionException) cause).getTableName());
+        if (cause instanceof ShardingSphereSQLException) {
+            SQLException sqlException = ((ShardingSphereSQLException) cause).toSQLException();
+            return new MySQLErrPacket(1, sqlException.getErrorCode(), sqlException.getSQLState(), sqlException.getMessage());
         }
-        if (cause instanceof UnknownDatabaseException) {
-            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, ((UnknownDatabaseException) cause).getDatabaseName());
-        }
-        if (cause instanceof DatabaseNotExistedException) {
-            return null != ((DatabaseNotExistedException) cause).getDatabaseName()
-                    ? new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, ((DatabaseNotExistedException) cause).getDatabaseName())
-                    : new MySQLErrPacket(1, MySQLServerErrorCode.ER_NO_DB_ERROR);
-        }
-        if (cause instanceof NoDatabaseSelectedException) {
-            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_NO_DB_ERROR);
-        }
-        if (cause instanceof DBCreateExistsException) {
-            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_DB_CREATE_EXISTS_ERROR, ((DBCreateExistsException) cause).getDatabaseName());
-        }
-        if (cause instanceof DBDropNotExistsException) {
-            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_DB_DROP_NOT_EXISTS_ERROR, ((DBDropNotExistsException) cause).getDatabaseName());
-        }
-        if (cause instanceof TableExistsException) {
-            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_TABLE_EXISTS_ERROR, ((TableExistsException) cause).getTableName());
-        }
-        if (cause instanceof NoSuchTableException) {
-            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_NO_SUCH_TABLE, ((NoSuchTableException) cause).getTableName());
-        }
-        if (cause instanceof CircuitBreakException) {
-            return new MySQLErrPacket(1, CommonErrorCode.CIRCUIT_BREAK_MODE);
-        }
-        if (cause instanceof UnsupportedCommandException) {
-            return new MySQLErrPacket(1, CommonErrorCode.UNSUPPORTED_COMMAND, ((UnsupportedCommandException) cause).getCommandType());
+        if (cause instanceof DistSQLException) {
+            DistSQLException distSQLException = (DistSQLException) cause;
+            return new MySQLErrPacket(1, DistSQLVendorError.valueOf(distSQLException), distSQLException.getVariable());
         }
         if (cause instanceof UnsupportedPreparedStatementException) {
-            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_UNSUPPORTED_PS);
+            return new MySQLErrPacket(1, MySQLVendorError.ER_UNSUPPORTED_PS);
         }
-        if (cause instanceof ShardingSphereConfigurationException || cause instanceof SQLParsingException) {
-            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_NOT_SUPPORTED_YET, cause.getMessage());
+        if (cause instanceof UnsupportedCharsetException) {
+            return new MySQLErrPacket(1, MySQLVendorError.ER_UNKNOWN_CHARACTER_SET, cause.getMessage());
         }
-        if (cause instanceof RuleNotExistedException || cause instanceof ResourceNotExistedException) {
-            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_SP_DOES_NOT_EXIST);
-        }
-        if (cause instanceof DatabaseLockedException) {
-            DatabaseLockedException exception = (DatabaseLockedException) cause;
-            return new MySQLErrPacket(1, CommonErrorCode.DATABASE_WRITE_LOCKED, exception.getDatabaseName());
-        }
-        if (cause instanceof TableLockWaitTimeoutException) {
-            TableLockWaitTimeoutException exception = (TableLockWaitTimeoutException) cause;
-            return new MySQLErrPacket(1, CommonErrorCode.TABLE_LOCK_WAIT_TIMEOUT, exception.getTableName(),
-                    exception.getSchemaName(), exception.getTimeoutMilliseconds());
-        }
-        if (cause instanceof TableLockedException) {
-            TableLockedException exception = (TableLockedException) cause;
-            return new MySQLErrPacket(1, CommonErrorCode.TABLE_LOCKED, exception.getTableName(),
-                    exception.getSchemaName());
-        }
-        if (cause instanceof PipelineJobNotFoundException) {
-            return new MySQLErrPacket(1, CommonErrorCode.SCALING_JOB_NOT_EXIST, ((PipelineJobNotFoundException) cause).getJobId());
-        }
-        if (cause instanceof FrontendTooManyConnectionsException) {
-            return new MySQLErrPacket(0, MySQLServerErrorCode.ER_CON_COUNT_ERROR, MySQLServerErrorCode.ER_CON_COUNT_ERROR.getErrorMessage());
-        }
-        if (cause instanceof UnknownCharacterSetException) {
-            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_UNKNOWN_CHARACTER_SET, cause.getMessage());
-        }
-        if (cause instanceof RuntimeException) {
-            return new MySQLErrPacket(1, CommonErrorCode.RUNTIME_EXCEPTION, cause.getMessage());
-        }
-        return new MySQLErrPacket(1, CommonErrorCode.UNKNOWN_EXCEPTION, cause.getMessage());
+        SQLException unknownSQLException = new UnknownSQLException(cause).toSQLException();
+        return new MySQLErrPacket(1, unknownSQLException.getErrorCode(), unknownSQLException.getSQLState(), unknownSQLException.getMessage());
     }
     
     private static String getErrorMessage(final SQLException cause) {
-        if (null != cause.getNextException() && Strings.isNullOrEmpty(cause.getMessage())) {
-            return cause.getNextException().getMessage();
-        }
-        return cause.getMessage();
+        return null == cause.getNextException() || !Strings.isNullOrEmpty(cause.getMessage()) ? cause.getMessage() : cause.getNextException().getMessage();
     }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.config.database;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 
 import javax.sql.DataSource;
 import java.util.Collection;

@@ -25,6 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL set role statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class MySQLSetRoleStatement extends AbstractSQLStatement implements DCLStatement, MySQLStatement {
 }

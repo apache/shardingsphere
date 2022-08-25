@@ -17,15 +17,17 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.ddlgenerator;
 
+import org.apache.shardingsphere.data.pipeline.spi.fixture.CreateTableSQLGeneratorFixture;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 
 public final class CreateTableSQLGeneratorFactoryTest {
     
     @Test
-    public void assertFindInstance() {
-        assertTrue(CreateTableSQLGeneratorFactory.findInstance(DatabaseTypeFactory.getInstance("DDL.GENERATOR.FIXTURE")).isPresent());
+    public void assertGetInstance() {
+        assertThat(CreateTableSQLGeneratorFactory.getInstance(DatabaseTypeFactory.getInstance("FIXTURE")), instanceOf(CreateTableSQLGeneratorFixture.class));
     }
 }

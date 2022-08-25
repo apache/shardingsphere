@@ -18,12 +18,16 @@
 
 <configuration>
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="org.apache.shardingsphere.integration.data.pipeline.logger.ScalingLoggerFilter" />
         <encoder>
             <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-    <logger name="org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer" level="WARN" />
+    <logger name="org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer" level="WARN" />
     <logger name="com.zaxxer.hikari.pool.ProxyConnection" level="OFF" />
+    <logger name="com.github.dockerjava" level="WARN"/>
+    <logger name="org.apache.zookeeper.ZooKeeper" level="OFF"/>
+    
     <root level="INFO">
         <appender-ref ref="console" />
     </root>

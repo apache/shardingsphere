@@ -19,8 +19,6 @@ package org.apache.shardingsphere.distsql.parser.statement.rdl.create;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.operation.impl.AddOperationSupplier;
-import org.apache.shardingsphere.distsql.parser.operation.DistSQLOperationTypeEnum;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.ResourceDefinitionStatement;
 
@@ -31,12 +29,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class AddResourceStatement extends ResourceDefinitionStatement implements AddOperationSupplier {
+public final class AddResourceStatement extends ResourceDefinitionStatement {
     
     private final Collection<DataSourceSegment> dataSources;
-    
-    @Override
-    public DistSQLOperationTypeEnum getOperationType() {
-        return DistSQLOperationTypeEnum.ADD;
-    }
 }

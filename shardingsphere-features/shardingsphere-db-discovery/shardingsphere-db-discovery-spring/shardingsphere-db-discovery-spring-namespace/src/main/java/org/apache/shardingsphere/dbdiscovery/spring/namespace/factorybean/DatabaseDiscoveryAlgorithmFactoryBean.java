@@ -19,7 +19,7 @@ package org.apache.shardingsphere.dbdiscovery.spring.namespace.factorybean;
 
 import org.apache.shardingsphere.dbdiscovery.factory.DatabaseDiscoveryProviderAlgorithmFactory;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.spring.namespace.factorybean.ShardingSphereAlgorithmFactoryBean;
 
 import java.util.Properties;
@@ -35,6 +35,6 @@ public final class DatabaseDiscoveryAlgorithmFactoryBean extends ShardingSphereA
     
     @Override
     public DatabaseDiscoveryProviderAlgorithm getObject() {
-        return DatabaseDiscoveryProviderAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration(getType(), getProps()));
+        return DatabaseDiscoveryProviderAlgorithmFactory.newInstance(new AlgorithmConfiguration(getType(), getProps()));
     }
 }

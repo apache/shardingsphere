@@ -49,7 +49,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     
     private static final String INSERT_ON_DUPLICATE_KEY_SQL = "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (?, ?, ?, ?), (?, ?, ?, ?) ON DUPLICATE KEY UPDATE status = ?";
     
-    private static final String INSERT_NO_SHARDING_SQL = "INSERT INTO t_sys_0 (param_key, param_value) VALUES (?, ?)";
+    private static final String INSERT_SINGLE_TABLE_SQL = "INSERT INTO t_role (user_name) VALUES (?)";
     
     private static final String SELECT_SQL_WITHOUT_PARAMETER_MARKER = "SELECT item_id FROM t_order_item WHERE user_id = %d AND order_id= %s AND status = 'BATCH'";
     
@@ -368,9 +368,8 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     public void assertAddGetGeneratedKeysForNoGeneratedValues() throws SQLException {
         try (
                 Connection connection = getShardingSphereDataSource().getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(INSERT_NO_SHARDING_SQL, Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setString(1, "show");
-            preparedStatement.setString(2, "yes");
+                PreparedStatement preparedStatement = connection.prepareStatement(INSERT_SINGLE_TABLE_SQL, Statement.RETURN_GENERATED_KEYS)) {
+            preparedStatement.setString(1, "admin");
             preparedStatement.execute();
             ResultSet generateKeyResultSet = preparedStatement.getGeneratedKeys();
             assertTrue(generateKeyResultSet.next());
@@ -431,7 +430,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
             preparedStatement.setString(8, status);
             preparedStatement.setString(9, updatedStatus);
             int result = preparedStatement.executeUpdate();
-            assertThat(result, is(2));
+            assertThat(result, is(4));
             queryStatement.setInt(1, orderId);
             queryStatement.setInt(2, userId1);
             try (ResultSet resultSet = queryStatement.executeQuery()) {

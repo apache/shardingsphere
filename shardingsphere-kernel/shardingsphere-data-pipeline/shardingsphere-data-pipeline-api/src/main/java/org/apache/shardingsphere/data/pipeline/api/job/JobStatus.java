@@ -38,6 +38,11 @@ public enum JobStatus {
     PREPARING(true),
     
     /**
+     * Job is in prepare success status.
+     */
+    PREPARE_SUCCESS(true),
+    
+    /**
      * Job is in execute inventory task status.
      */
     EXECUTE_INVENTORY_TASK(true),
@@ -47,6 +52,7 @@ public enum JobStatus {
      */
     EXECUTE_INCREMENTAL_TASK(true),
     
+    // TODO rename to SUCCESS
     /**
      * Job is finished.
      */

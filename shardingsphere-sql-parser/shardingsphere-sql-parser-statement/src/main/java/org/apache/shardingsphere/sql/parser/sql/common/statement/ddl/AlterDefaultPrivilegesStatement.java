@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Alter default privileges statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class AlterDefaultPrivilegesStatement extends AbstractSQLStatement implements DDLStatement {
 }

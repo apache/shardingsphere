@@ -22,7 +22,7 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfig
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -42,7 +42,7 @@ public final class EncryptRuleStatementConverter {
      */
     public static EncryptRuleConfiguration convert(final Collection<EncryptRuleSegment> ruleSegments) {
         Collection<EncryptTableRuleConfiguration> tables = new LinkedList<>();
-        Map<String, ShardingSphereAlgorithmConfiguration> encryptors = new HashMap<>();
+        Map<String, AlgorithmConfiguration> encryptors = new HashMap<>();
         for (EncryptRuleSegment each : ruleSegments) {
             tables.add(createEncryptTableRuleConfiguration(each));
             encryptors.putAll(createEncryptorConfigurations(each));
@@ -59,25 +59,28 @@ public final class EncryptRuleStatementConverter {
     }
     
     private static EncryptColumnRuleConfiguration createEncryptColumnRuleConfiguration(final String tableName, final EncryptColumnSegment columnSegment) {
+        String assistedQueryEncryptorName = null == columnSegment.getAssistedQueryEncryptor() ? null : getAssistedQueryEncryptorName(tableName, columnSegment.getName());
         return new EncryptColumnRuleConfiguration(columnSegment.getName(), columnSegment.getCipherColumn(), columnSegment.getAssistedQueryColumn(),
-                columnSegment.getPlainColumn(), getEncryptorName(tableName, columnSegment.getName()), getAssistedQueryEncryptorName(tableName, columnSegment.getName()), null);
+                columnSegment.getPlainColumn(), getEncryptorName(tableName, columnSegment.getName()), assistedQueryEncryptorName, null);
     }
     
-    private static Map<String, ShardingSphereAlgorithmConfiguration> createEncryptorConfigurations(final EncryptRuleSegment ruleSegment) {
-        Map<String, ShardingSphereAlgorithmConfiguration> result = new HashMap<>();
+    private static Map<String, AlgorithmConfiguration> createEncryptorConfigurations(final EncryptRuleSegment ruleSegment) {
+        Map<String, AlgorithmConfiguration> result = new HashMap<>(ruleSegment.getColumns().size(), 1);
         for (EncryptColumnSegment each : ruleSegment.getColumns()) {
             result.put(getEncryptorName(ruleSegment.getTableName(), each.getName()), createEncryptorConfiguration(each));
-            result.put(getAssistedQueryEncryptorName(ruleSegment.getTableName(), each.getName()), createAssistedQueryEncryptorConfiguration(each));
+            if (null != each.getAssistedQueryEncryptor()) {
+                result.put(getAssistedQueryEncryptorName(ruleSegment.getTableName(), each.getName()), createAssistedQueryEncryptorConfiguration(each));
+            }
         }
         return result;
     }
     
-    private static ShardingSphereAlgorithmConfiguration createEncryptorConfiguration(final EncryptColumnSegment columnSegment) {
-        return new ShardingSphereAlgorithmConfiguration(columnSegment.getEncryptor().getName(), columnSegment.getEncryptor().getProps());
+    private static AlgorithmConfiguration createEncryptorConfiguration(final EncryptColumnSegment columnSegment) {
+        return new AlgorithmConfiguration(columnSegment.getEncryptor().getName(), columnSegment.getEncryptor().getProps());
     }
     
-    private static ShardingSphereAlgorithmConfiguration createAssistedQueryEncryptorConfiguration(final EncryptColumnSegment columnSegment) {
-        return new ShardingSphereAlgorithmConfiguration(columnSegment.getAssistedQueryEncryptor().getName(), columnSegment.getAssistedQueryEncryptor().getProps());
+    private static AlgorithmConfiguration createAssistedQueryEncryptorConfiguration(final EncryptColumnSegment columnSegment) {
+        return new AlgorithmConfiguration(columnSegment.getAssistedQueryEncryptor().getName(), columnSegment.getAssistedQueryEncryptor().getProps());
     }
     
     private static String getEncryptorName(final String tableName, final String columnName) {

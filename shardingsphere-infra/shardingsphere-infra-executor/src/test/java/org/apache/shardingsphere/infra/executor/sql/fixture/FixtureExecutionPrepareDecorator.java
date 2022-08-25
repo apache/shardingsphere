@@ -20,14 +20,15 @@ package org.apache.shardingsphere.infra.executor.sql.fixture;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.prepare.ExecutionPrepareDecorator;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.test.fixture.rule.MockedRule;
 
 import java.util.Collection;
 import java.util.Collections;
 
-public final class FixtureExecutionPrepareDecorator implements ExecutionPrepareDecorator<Object, FixtureRule> {
+public final class FixtureExecutionPrepareDecorator implements ExecutionPrepareDecorator<Object, MockedRule> {
     
     @Override
-    public Collection<ExecutionGroup<Object>> decorate(final RouteContext routeContext, final FixtureRule rule, final Collection<ExecutionGroup<Object>> executionGroups) {
+    public Collection<ExecutionGroup<Object>> decorate(final RouteContext routeContext, final MockedRule rule, final Collection<ExecutionGroup<Object>> executionGroups) {
         return Collections.emptyList();
     }
     
@@ -37,7 +38,7 @@ public final class FixtureExecutionPrepareDecorator implements ExecutionPrepareD
     }
     
     @Override
-    public Class<FixtureRule> getTypeClass() {
-        return FixtureRule.class;
+    public Class<MockedRule> getTypeClass() {
+        return MockedRule.class;
     }
 }

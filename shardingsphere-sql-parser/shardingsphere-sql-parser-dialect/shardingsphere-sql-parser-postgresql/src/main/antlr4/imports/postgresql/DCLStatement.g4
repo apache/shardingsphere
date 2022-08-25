@@ -56,10 +56,14 @@ alterOptRoleElem
     | VALID UNTIL STRING_
     | USER roleList
     | identifier
+    | SUPERUSER | NOSUPERUSER | CREATEDB | NOCREATEDB
+    | CREATEROLE | NOCREATEROLE | INHERIT | NOINHERIT
+    | LOGIN | NOLOGIN | REPLICATION | NOREPLICATION
+    | BYPASSRLS | NOBYPASSRLS 
     ;
 
 dropUser
-    : DROP USER existClause? roleList
+    : DROP USER ifExists? roleList
     ;
 
 alterUser
@@ -82,7 +86,7 @@ createRole
     ;
 
 dropRole
-    : DROP ROLE existClause? roleList
+    : DROP ROLE ifExists? roleList
     ;
 
 alterRole
@@ -93,10 +97,10 @@ createGroup
     : CREATE GROUP roleSpec WITH? createOptRoleElem*
     ;
 
-dropDroup
-    : DROP GROUP existClause? roleList
-    ;
-
 reassignOwned
     : REASSIGN OWNED BY roleList TO roleSpec
+    ;
+
+dropDroup
+    : DROP GROUP ifExists? roleList
     ;

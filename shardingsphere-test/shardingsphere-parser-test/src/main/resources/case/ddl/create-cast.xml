@@ -18,4 +18,10 @@
 
 <sql-parser-test-cases>
     <create-cast sql-case-id="create_cast" />
+    <create-cast sql-case-id="create_cast_without_function" />
+    <create-cast sql-case-id="create_cast_with_function" />
+    <create-cast sql-case-id="create_cast_with_function_as_implicit" />
+    <create-cast sql-case-id="create_cast_with_inout" />
+    <create-cast sql-case-id="create_cast_without_function_as_implicit" />
+    <create-cast sql-case-id="create_cast_without" />
 </sql-parser-test-cases>

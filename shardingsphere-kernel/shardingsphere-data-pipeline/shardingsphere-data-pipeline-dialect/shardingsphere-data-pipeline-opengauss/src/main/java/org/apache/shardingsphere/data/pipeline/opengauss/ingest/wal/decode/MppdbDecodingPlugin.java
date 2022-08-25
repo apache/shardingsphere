@@ -138,6 +138,9 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
     }
     
     private Object readColumnData(final String data, final String columnType) {
+        if ("null".equals(data)) {
+            return null;
+        }
         if (columnType.startsWith("numeric")) {
             return new BigDecimal(data);
         }

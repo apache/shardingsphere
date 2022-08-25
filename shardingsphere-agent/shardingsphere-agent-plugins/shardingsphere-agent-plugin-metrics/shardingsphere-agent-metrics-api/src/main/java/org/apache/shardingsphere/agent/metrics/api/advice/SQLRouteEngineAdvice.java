@@ -23,7 +23,7 @@ import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.api.MetricsWrapper;
 import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -52,8 +52,8 @@ public final class SQLRouteEngineAdvice implements InstanceMethodAroundAdvice {
     
     @Override
     public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        LogicSQL logicSQL = (LogicSQL) args[0];
-        SQLStatement sqlStatement = logicSQL.getSqlStatementContext().getSqlStatement();
+        QueryContext queryContext = (QueryContext) args[0];
+        SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         if (sqlStatement instanceof InsertStatement) {
             MetricsPool.get(MetricIds.ROUTE_SQL_INSERT).ifPresent(MetricsWrapper::inc);
         } else if (sqlStatement instanceof DeleteStatement) {

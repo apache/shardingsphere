@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.position;
 
 import lombok.Getter;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 
 /**
  * Column after position segment.
  */
 @Getter
+@ToString(callSuper = true)
 public final class ColumnAfterPositionSegment extends ColumnPositionSegment {
     
     public ColumnAfterPositionSegment(final int startIndex, final int stopIndex, final ColumnSegment columnName) {

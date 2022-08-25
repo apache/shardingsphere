@@ -18,18 +18,22 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockRegistryService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.MutexLockRegistryService;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
+import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.mode.lock.LockPersistService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcherFactory;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.subscriber.ScalingRegistrySubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.subscriber.SchemaMetaDataRegistrySubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber.ProcessRegistrySubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service.ComputeNodeStatusService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.subscriber.ComputeNodeStatusSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.service.StorageNodeStatusService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.subscriber.StorageNodeStatusSubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.process.subscriber.ProcessRegistrySubscriber;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+
+import java.util.Map;
 
 /**
  * Registry center.
@@ -46,25 +50,39 @@ public final class RegistryCenter {
     private final ComputeNodeStatusService computeNodeStatusService;
     
     @Getter
-    private final LockRegistryService lockService;
+    private final LockPersistService lockPersistService;
+    
+    @Getter
+    private final EventBusContext eventBusContext;
+    
+    private final InstanceMetaData instanceMetaData;
+    
+    private final Map<String, DatabaseConfiguration> databaseConfigs;
     
     private final GovernanceWatcherFactory listenerFactory;
     
-    public RegistryCenter(final ClusterPersistRepository repository) {
+    public RegistryCenter(final ClusterPersistRepository repository, final EventBusContext eventBusContext,
+                          final InstanceMetaData instanceMetaData, final Map<String, DatabaseConfiguration> databaseConfigs) {
         this.repository = repository;
+        this.eventBusContext = eventBusContext;
+        this.instanceMetaData = instanceMetaData;
+        this.databaseConfigs = databaseConfigs;
         storageNodeStatusService = new StorageNodeStatusService(repository);
         computeNodeStatusService = new ComputeNodeStatusService(repository);
-        lockService = new MutexLockRegistryService(repository);
-        listenerFactory = new GovernanceWatcherFactory(repository);
+        lockPersistService = new ClusterLockPersistService(repository);
+        listenerFactory = new GovernanceWatcherFactory(repository, eventBusContext, getJDBCDatabaseName());
         createSubscribers(repository);
     }
     
+    private String getJDBCDatabaseName() {
+        return instanceMetaData instanceof JDBCInstanceMetaData ? databaseConfigs.keySet().stream().findFirst().orElse(null) : null;
+    }
+    
     private void createSubscribers(final ClusterPersistRepository repository) {
-        new SchemaMetaDataRegistrySubscriber(repository);
+        new SchemaMetaDataRegistrySubscriber(repository, eventBusContext);
         new ComputeNodeStatusSubscriber(this, repository);
-        new StorageNodeStatusSubscriber(repository);
-        new ScalingRegistrySubscriber(repository);
-        new ProcessRegistrySubscriber(repository);
+        new StorageNodeStatusSubscriber(repository, eventBusContext);
+        new ProcessRegistrySubscriber(repository, eventBusContext);
     }
     
     /**
@@ -73,9 +91,8 @@ public final class RegistryCenter {
      * @param computeNodeInstance compute node instance
      */
     public void onlineInstance(final ComputeNodeInstance computeNodeInstance) {
-        computeNodeStatusService.registerOnline(computeNodeInstance.getInstanceDefinition());
+        computeNodeStatusService.registerOnline(computeNodeInstance.getMetaData());
         computeNodeStatusService.persistInstanceLabels(computeNodeInstance.getCurrentInstanceId(), computeNodeInstance.getLabels());
-        computeNodeStatusService.persistInstanceXaRecoveryId(computeNodeInstance.getCurrentInstanceId(), computeNodeInstance.getXaRecoveryIds());
         listenerFactory.watchListeners();
     }
 }

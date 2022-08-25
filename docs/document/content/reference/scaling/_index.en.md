@@ -1,60 +1,63 @@
 +++
-pre = "<b>7.4. </b>"
-title = "Scaling"
-weight = 4
+pre = "<b>7.6. </b>"
+title = "Data Migration"
+weight = 6
 +++
 
-## Principle Description
+## Explanation
 
-Consider about these challenges of ShardingSphere-Scaling, the solution is: Use two database clusters temporarily, and switch after the scaling is completed.
+The current data migration solution uses a completely new database cluster as the migration target.
 
-![Scaling Principle Overview](https://shardingsphere.apache.org/document/current/img/scaling/principle_v2.png)
+![Migration Overview](https://shardingsphere.apache.org/document/current/img/scaling/overview_v2.png)
 
-Advantages:
+This implementation has the following advantages:
 
-1. No effect for origin data during scaling.
-2. No risk for scaling failure.
-3. No limited by sharding strategies.
+1. No impact on the original data during migration.
+2. No risk in case of migration failure.
+3. Free from sharding policy limitations.
 
-Disadvantages：
+The implementation has the following disadvantages:
 
-1. Redundant servers during scaling.
+1. Redundant servers can exist for a certain period of time.
 2. All data needs to be moved.
 
-ShardingSphere-Scaling will analyze the sharding rules and extract information like datasource and data nodes.
-According the sharding rules, ShardingSphere-Scaling create a scaling job with 4 main phases.
+A single data migration mainly consists of the following phases:
 
-1. Preparing Phase.
-2. Inventory Phase.
-3. Incremental Phase.
-4. Switching Phase.
+1. Preparation.
+2. Stock data migration.
+3. The synchronization of incremental data.
+4. Traffic switching .
 
-![Workflow](https://shardingsphere.apache.org/document/current/img/scaling/workflow.en.png)
+![Illustration](https://shardingsphere.apache.org/document/current/img/scaling/principle_v2.png)
 
-## Phase Description
+## Execution Stage Explained
 
-### Preparing Phase
+### Preparation 
 
-ShardingSphere-Scaling will check the datasource connectivity and permissions, statistic the amount of inventory data, record position of log, 
-shard tasks based on amount of inventory data and the parallelism set by the user.
+In the preparation stage, the data migration module verifies data source connectivity and permissions, counts stock data statistics, records the log and finally shards the tasks according to data volume and parallelism set by the users.
 
-### Inventory Phase
+### Stock data migration
 
-Executing the Inventory data migration tasks sharded in preparing phase.
-ShardingSphere-Scaling uses JDBC to query inventory data directly from data nodes and write to the new cluster using new rules.
+Execute the stock data migration tasks that have been sharded during preparation stage. The stock migration stage uses JDBC queries to read data directly from the source and write into the target based on the sharding rules and other configurations.
 
-### Incremental Phase
+### The Synchronization of incremental data
 
-The data in data nodes is still changing during the inventory phase, so ShardingSphere-Scaling need to synchronize these incremental data to new data nodes.
-Different databases have different implementations, but generally implemented by change data capture function based on replication protocols or WAL logs.
+Since the duration of stock data migration depends on factors such as data volume and parallelism, it is necessary to synchronize the data added to the business operations during this period.
+Different databases differ in technical details, but in general they are all based on replication protocols or WAL logs to achieve the capture of changed data.
 
-- MySQL：subscribe and parse binlog.
-- PostgreSQL：official logic replication [test_decoding](https://www.postgresql.org/docs/9.4/test-decoding.html).
+- MySQL: subscribe and parse binlog
+- PostgreSQL: uses official logical replication [test_decoding](https://www.postgresql.org/docs/9.4/test-decoding.html).
 
-These captured incremental data, Apache ShardingSphere also write to the new cluster using new rules.
+These incremental data captured are also written into the new data nodes by the data migration modules. When synchronization of  incremental data is basically completed (the incremental data flow is not interrupted since the business system is still in function), you can then move to the traffic switching stage.
 
-### Switching Phase
+### Traffic Switching
 
-In this phase, there may be a temporary read only time, make the data in old data nodes static so that the incremental phase complete fully.
-The read only time is range seconds to minutes, it depends on the amount of data and the checking data.
-After finished, Apache ShardingSphere can switch the configuration by register-center and config-center, make application use new sharding rule and new data nodes.
+During this stage, there may be a read-only period of time, where data in the source data nodes is allowed to be in static mode for a short period of time to ensure that the incremental synchronization can be fully completed. Users can set this by using ShardingSphere's stop-write feature or by shifting the database to read-only status or by controlling the traffic flow generated from the source.
+
+The length of this read-only window depends on whether users need to perform consistency checks on the data and the exact amount of data in this scenario. Once confirmed, the data migration is complete.
+
+Users can then switch the read traffic or write traffic to Apache ShardingSphere.
+
+## References
+
+[Configurations of data migration ](/en/user-manual/shardingsphere-proxy/scaling/)

@@ -17,25 +17,26 @@
 
 package org.apache.shardingsphere.proxy.fixture;
 
-import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.test.fixture.rule.MockedRuleConfiguration;
 
-public final class YamlRuleConfigurationSwapperFixture implements YamlRuleConfigurationSwapper<YamlRuleConfigurationFixture, RuleConfigurationFixture> {
+public final class YamlRuleConfigurationSwapperFixture implements YamlRuleConfigurationSwapper<YamlRuleConfigurationFixture, MockedRuleConfiguration> {
     
     @Override
-    public Class<RuleConfigurationFixture> getTypeClass() {
-        return RuleConfigurationFixture.class;
+    public Class<MockedRuleConfiguration> getTypeClass() {
+        return MockedRuleConfiguration.class;
     }
     
     @Override
-    public YamlRuleConfigurationFixture swapToYamlConfiguration(final RuleConfigurationFixture data) {
+    public YamlRuleConfigurationFixture swapToYamlConfiguration(final MockedRuleConfiguration data) {
         YamlRuleConfigurationFixture result = new YamlRuleConfigurationFixture();
         result.setName(data.getName());
         return result;
     }
     
     @Override
-    public RuleConfigurationFixture swapToObject(final YamlRuleConfigurationFixture yamlConfig) {
-        return new RuleConfigurationFixture(yamlConfig.getName());
+    public MockedRuleConfiguration swapToObject(final YamlRuleConfigurationFixture yamlConfig) {
+        return new MockedRuleConfiguration(yamlConfig.getName());
     }
     
     @Override

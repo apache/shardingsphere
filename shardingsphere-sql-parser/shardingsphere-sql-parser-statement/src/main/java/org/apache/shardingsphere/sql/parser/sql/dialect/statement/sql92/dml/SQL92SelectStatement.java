@@ -29,7 +29,7 @@ import java.util.Optional;
  * SQL92 select statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class SQL92SelectStatement extends SelectStatement implements SQL92Statement {
     
     private LimitSegment limit;

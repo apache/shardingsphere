@@ -28,9 +28,9 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
 /**
  * SQLServer set user statement.
  */
-@ToString
 @Getter
 @Setter
+@ToString(callSuper = true)
 public final class SQLServerSetUserStatement extends AbstractSQLStatement implements DCLStatement, SQLServerStatement {
     
     private UserSegment user;

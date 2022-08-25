@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
 
-import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.TableDefinitionSQLType;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -40,35 +39,17 @@ public final class AbstractDataSourcePreparerTest {
     };
     
     @Test
-    public void assertGetTableDefinitionSQLType() {
-        assertThat(preparer.getTableDefinitionSQLType("SET search_path = public"), is(TableDefinitionSQLType.UNKNOWN));
-        assertThat(preparer.getTableDefinitionSQLType("CREATE TABLE t1_0 (id int NOT NULL)"), is(TableDefinitionSQLType.CREATE_TABLE));
-        assertThat(preparer.getTableDefinitionSQLType("ALTER TABLE t1_0 ADD CONSTRAINT t1_0_pkey PRIMARY KEY (id)"), is(TableDefinitionSQLType.ALTER_TABLE));
-    }
-    
-    @Test
     public void assertAddIfNotExistsForCreateTableSQL() {
         Collection<String> createTableSQLs = Arrays.asList("CREATE TABLE IF NOT EXISTS t (id int)", "CREATE TABLE t (id int)",
-                "CREATE  TABLE IF \nNOT \tEXISTS t (id int)", "CREATE \tTABLE t (id int)");
+                "CREATE  TABLE IF \nNOT \tEXISTS t (id int)", "CREATE \tTABLE t (id int)", "CREATE TABLE \tt_order (id bigint) WITH (orientation=row, compression=no);");
         for (String each : createTableSQLs) {
-            String sql = preparer.addIfNotExistsForCreateTableSQL(each);
-            assertTrue(PATTERN_CREATE_TABLE_IF_NOT_EXISTS.matcher(sql).find());
+            String actual = preparer.addIfNotExistsForCreateTableSQL(each);
+            assertTrue(PATTERN_CREATE_TABLE_IF_NOT_EXISTS.matcher(actual).find());
         }
-    }
-    
-    @Test
-    public void assertReplaceActualTableNameToLogicTableName() {
-        String sql = "ALTER TABLE t_order_0 ADD CONSTRAINT t_order_0_uniq UNIQUE (order_id)";
-        String expected = "ALTER TABLE t_order ADD CONSTRAINT t_order_uniq UNIQUE (order_id)";
-        String actual = preparer.replaceActualTableNameToLogicTableName(sql, "t_order_0", "t_order");
-        assertThat(actual, is(expected));
-    }
-    
-    @Test
-    public void assertReplaceActualTableNameToLogicTableNameTheSame() {
-        String sql = "ALTER TABLE t_order ADD CONSTRAINT t_order_uniq UNIQUE (order_id)";
-        String expected = "ALTER TABLE t_order ADD CONSTRAINT t_order_uniq UNIQUE (order_id)";
-        String actual = preparer.replaceActualTableNameToLogicTableName(sql, "t_order", "t_order");
-        assertThat(actual, is(expected));
+        Collection<String> mismatchedSQLs = Arrays.asList("SET search_path = public", "UPDATE t_order SET id = 1");
+        for (String each : mismatchedSQLs) {
+            String actual = preparer.addIfNotExistsForCreateTableSQL(each);
+            assertThat(actual, is(each));
+        }
     }
 }

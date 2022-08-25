@@ -24,6 +24,10 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL show statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLShowStatement extends ShowStatement implements PostgreSQLStatement {
+    
+    public PostgreSQLShowStatement(final String name) {
+        super(name);
+    }
 }

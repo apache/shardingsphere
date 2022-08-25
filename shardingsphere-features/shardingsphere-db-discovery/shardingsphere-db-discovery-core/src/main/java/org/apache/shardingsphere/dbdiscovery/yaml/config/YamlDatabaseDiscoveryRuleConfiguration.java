@@ -22,8 +22,8 @@ import lombok.Setter;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.config.rule.YamlDatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.config.rule.YamlDatabaseDiscoveryHeartBeatConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -39,7 +39,7 @@ public final class YamlDatabaseDiscoveryRuleConfiguration implements YamlRuleCon
     
     private Map<String, YamlDatabaseDiscoveryHeartBeatConfiguration> discoveryHeartbeats = new LinkedHashMap<>();
     
-    private Map<String, YamlShardingSphereAlgorithmConfiguration> discoveryTypes = new LinkedHashMap<>();
+    private Map<String, YamlAlgorithmConfiguration> discoveryTypes = new LinkedHashMap<>();
     
     @Override
     public Class<DatabaseDiscoveryRuleConfiguration> getRuleConfigurationType() {

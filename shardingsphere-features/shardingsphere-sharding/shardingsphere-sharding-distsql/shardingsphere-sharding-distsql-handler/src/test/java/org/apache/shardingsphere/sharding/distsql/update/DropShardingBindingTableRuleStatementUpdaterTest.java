@@ -126,18 +126,18 @@ public final class DropShardingBindingTableRuleStatementUpdaterTest {
     
     private DropShardingBindingTableRulesStatement createSQLStatement(final String... group) {
         Collection<BindingTableRuleSegment> segments = Arrays.stream(group).map(BindingTableRuleSegment::new).collect(Collectors.toList());
-        return new DropShardingBindingTableRulesStatement(segments);
+        return new DropShardingBindingTableRulesStatement(false, segments);
     }
     
-    private DropShardingBindingTableRulesStatement createSQLStatement(final boolean containsExistClause, final String... group) {
+    private DropShardingBindingTableRulesStatement createSQLStatement(final boolean ifExists, final String... group) {
         Collection<BindingTableRuleSegment> segments = Arrays.stream(group).map(BindingTableRuleSegment::new).collect(Collectors.toList());
-        return new DropShardingBindingTableRulesStatement(containsExistClause, segments);
+        return new DropShardingBindingTableRulesStatement(ifExists, segments);
     }
     
     private ShardingRuleConfiguration createCurrentRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
-        result.getAutoTables().add(new ShardingAutoTableRuleConfiguration("t_order"));
+        result.getAutoTables().add(new ShardingAutoTableRuleConfiguration("t_order", null));
         result.getBindingTableGroups().add("t_order,t_order_item");
         return result;
     }

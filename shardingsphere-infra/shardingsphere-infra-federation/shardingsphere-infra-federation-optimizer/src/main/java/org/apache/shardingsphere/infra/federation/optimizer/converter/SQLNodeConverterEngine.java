@@ -20,17 +20,16 @@ package org.apache.shardingsphere.infra.federation.optimizer.converter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlBasicCall;
-import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.calcite.sql.SqlOrderBy;
-import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.shardingsphere.infra.federation.optimizer.converter.exception.OptimizationSQLNodeConvertException;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.statement.select.SelectStatementConverter;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.type.CombineOperatorConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.CombineType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+
+import java.util.Arrays;
 
 /**
  * SQL node converter engine.
@@ -44,39 +43,15 @@ public final class SQLNodeConverterEngine {
      * @param statement SQL statement to be converted
      * @return sqlNode converted SQL node
      */
-    public static SqlNode convertToSQLNode(final SQLStatement statement) {
+    public static SqlNode convert(final SQLStatement statement) {
         if (statement instanceof SelectStatement) {
-            SqlNode sqlNode = new SelectStatementConverter().convertToSQLNode((SelectStatement) statement);
+            SqlNode sqlNode = new SelectStatementConverter().convert((SelectStatement) statement);
             for (CombineSegment each : ((SelectStatement) statement).getCombines()) {
-                SqlNode combineSqlNode = convertToSQLNode(each.getSelectStatement());
-                return new SqlBasicCall(CombineOperatorConverter.convert(each.getCombineType()), new SqlNode[]{sqlNode, combineSqlNode}, SqlParserPos.ZERO);
+                SqlNode combineSqlNode = convert(each.getSelectStatement());
+                return new SqlBasicCall(CombineOperatorConverter.convert(each.getCombineType()), Arrays.asList(sqlNode, combineSqlNode), SqlParserPos.ZERO);
             }
             return sqlNode;
         }
-        throw new UnsupportedOperationException("Unsupported SQL node conversion.");
-    }
-    
-    /**
-     * Convert SQL node to SQL statement.
-     *
-     * @param sqlNode sqlNode converted SQL node
-     * @return SQL statement to be converted
-     */
-    public static SQLStatement convertToSQLStatement(final SqlNode sqlNode) {
-        if (sqlNode instanceof SqlOrderBy || sqlNode instanceof SqlSelect) {
-            return new SelectStatementConverter().convertToSQLStatement(sqlNode);
-        }
-        if (sqlNode instanceof SqlBasicCall && null != ((SqlBasicCall) sqlNode).getOperator() && SqlKind.UNION == ((SqlBasicCall) sqlNode).getOperator().getKind()) {
-            SqlNode leftSqlNode = ((SqlBasicCall) sqlNode).getOperandList().get(0);
-            SqlNode rightSqlNode = ((SqlBasicCall) sqlNode).getOperandList().get(1);
-            SelectStatement leftSelectStatement = (SelectStatement) convertToSQLStatement(leftSqlNode);
-            SelectStatement rightSelectStatement = (SelectStatement) convertToSQLStatement(rightSqlNode);
-            CombineType combineType = CombineOperatorConverter.convert(((SqlBasicCall) sqlNode).getOperator());
-            int startIndex = rightSqlNode.getParserPosition().getColumnNum() - (((SqlBasicCall) sqlNode).getOperator().getName() + " ").length() - 1;
-            int stopIndex = rightSqlNode.getParserPosition().getEndColumnNum() - 1;
-            leftSelectStatement.getCombines().add(new CombineSegment(startIndex, stopIndex, combineType, rightSelectStatement));
-            return leftSelectStatement;
-        }
-        throw new UnsupportedOperationException("Unsupported SQL statement conversion.");
+        throw new OptimizationSQLNodeConvertException(statement);
     }
 }

@@ -32,7 +32,7 @@ alterStatement
     ;
 
 createTable
-    : CREATE TEMPORARY? TABLE notExistClause? tableName (createDefinitionClause? createTableOptions? partitionClause? duplicateAsQueryExpression? | createLikeClause)
+    : CREATE TEMPORARY? TABLE ifNotExists? tableName (createDefinitionClause? createTableOptions? partitionClause? duplicateAsQueryExpression? | createLikeClause)
     ;
 
 partitionClause
@@ -96,7 +96,7 @@ alterListItem
     | DROP (COLUMN? columnInternalRef=identifier restrict? | FOREIGN KEY columnInternalRef=identifier | PRIMARY KEY | keyOrIndex indexName | CHECK identifier | CONSTRAINT identifier)  # alterTableDrop
     | DISABLE KEYS  # disableKeys
     | ENABLE KEYS   # enableKeys
-    | ALTER COLUMN? columnInternalRef=identifier (SET DEFAULT (LP_ expr RP_| signedLiteral)| DROP DEFAULT) # alterColumn
+    | ALTER COLUMN? columnInternalRef=identifier (SET DEFAULT (LP_ expr RP_| signedLiteral)| SET visibility | DROP DEFAULT) # alterColumn
     | ALTER INDEX indexName visibility  # alterIndex
     | ALTER CHECK constraintName constraintEnforcement  # alterCheck
     | ALTER CONSTRAINT constraintName constraintEnforcement # alterConstraint
@@ -181,7 +181,7 @@ fulltextIndexOption
     ;
 
 dropTable
-    : DROP TEMPORARY? tableOrTables existClause? tableList restrict?
+    : DROP TEMPORARY? tableOrTables ifExists? tableList restrict?
     ;
 
 dropIndex
@@ -207,7 +207,7 @@ createIndex
     ;
 
 createDatabase
-    : CREATE (DATABASE | SCHEMA) notExistClause? schemaName createDatabaseSpecification_*
+    : CREATE (DATABASE | SCHEMA) ifNotExists? schemaName createDatabaseSpecification_*
     ;
 
 alterDatabase
@@ -226,7 +226,7 @@ alterDatabaseSpecification_
     ;
 
 dropDatabase
-    : DROP (DATABASE | SCHEMA) existClause? schemaName
+    : DROP (DATABASE | SCHEMA) ifExists? schemaName
     ;
 
 alterInstance
@@ -245,7 +245,7 @@ channel
     ;
 
 createEvent
-    : CREATE ownerStatement? EVENT notExistClause? eventName
+    : CREATE ownerStatement? EVENT ifNotExists? eventName
       ON SCHEDULE scheduleExpression
       (ON COMPLETION NOT? PRESERVE)? 
       (ENABLE | DISABLE | DISABLE ON SLAVE)?
@@ -263,7 +263,7 @@ alterEvent
     ;
 
 dropEvent
-    :  DROP EVENT existClause? eventName
+    :  DROP EVENT ifExists? eventName
     ;
 
 createFunction
@@ -279,7 +279,7 @@ alterFunction
     ;
 
 dropFunction
-    : DROP FUNCTION existClause? functionName
+    : DROP FUNCTION ifExists? functionName
     ;
 
 createProcedure
@@ -294,7 +294,7 @@ alterProcedure
     ;
 
 dropProcedure
-    : DROP PROCEDURE existClause? functionName
+    : DROP PROCEDURE ifExists? functionName
     ;
 
 createServer
@@ -309,7 +309,7 @@ alterServer
     ;
 
 dropServer
-    : DROP SERVER existClause? serverName
+    : DROP SERVER ifExists? serverName
     ;
 
 createView
@@ -332,7 +332,7 @@ alterView
     ;
 
 dropView
-    : DROP VIEW existClause? viewNames restrict?
+    : DROP VIEW ifExists? viewNames restrict?
     ;
 
 createTablespace
@@ -413,7 +413,7 @@ createTrigger
     ;
 
 dropTrigger
-    : DROP TRIGGER existClause? (schemaName DOT_)? triggerName
+    : DROP TRIGGER ifExists? (schemaName DOT_)? triggerName
     ;
 
 renameTable
@@ -448,6 +448,7 @@ columnAttribute
     | value = SRID NUMBER_
     | constraintClause? checkConstraint
     | constraintEnforcement
+    | visibility 
     ;
 
 checkConstraint
@@ -557,11 +558,11 @@ createTableOption
 
 createSRSStatement
     : CREATE OR REPLACE SPATIAL REFERENCE SYSTEM NUMBER_ srsAttribute*
-    | CREATE SPATIAL REFERENCE SYSTEM notExistClause? NUMBER_ srsAttribute*
+    | CREATE SPATIAL REFERENCE SYSTEM ifNotExists? NUMBER_ srsAttribute*
     ;
 
 dropSRSStatement
-    : DROP SPATIAL REFERENCE SYSTEM notExistClause? NUMBER_
+    : DROP SPATIAL REFERENCE SYSTEM ifNotExists? NUMBER_
     ;
 
 srsAttribute
@@ -664,6 +665,7 @@ compoundStatement
 validStatement
     : (createTable | alterTable | dropTable | truncateTable 
     | insert | replace | update | delete | select | call
+    | createView
     | setVariable | beginStatement | declareStatement | flowControlStatement | cursorStatement | conditionHandlingStatement) SEMI_?
     ;
 

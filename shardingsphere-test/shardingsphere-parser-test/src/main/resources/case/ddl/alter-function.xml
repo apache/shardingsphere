@@ -23,4 +23,5 @@
     <alter-function sql-case-id="alter_function_reset" />
     <alter-function sql-case-id="alter_function_set" />
     <alter-function sql-case-id="alter_function_depend_on" />
+    <alter-function sql-case-id="alter_function_compile" />
 </sql-parser-test-cases>

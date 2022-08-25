@@ -21,21 +21,18 @@ import org.apache.shardingsphere.infra.database.metadata.dialect.H2DataSourceMet
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertTrue;
 
 public final class H2DatabaseTypeTest {
     
     @Test
-    public void assertGetName() {
-        assertThat(new H2DatabaseType().getType(), is("H2"));
+    public void assertGetQuoteCharacter() {
+        assertThat(new H2DatabaseType().getQuoteCharacter(), is(QuoteCharacter.QUOTE));
     }
     
     @Test
@@ -45,8 +42,8 @@ public final class H2DatabaseTypeTest {
     
     @Test
     public void assertGetDataSourceMetaData() {
-        assertThat(new H2DatabaseType().getDataSourceMetaData("jdbc:h2:~:primary_ds_0", "sa"), instanceOf(H2DataSourceMetaData.class));
-        assertThat(new H2DatabaseType().getDataSourceMetaData("jdbc:h2:mem:primary_ds_0", "sa"), instanceOf(H2DataSourceMetaData.class));
+        assertThat(new H2DatabaseType().getDataSourceMetaData("jdbc:h2:~:foo_ds", "sa"), instanceOf(H2DataSourceMetaData.class));
+        assertThat(new H2DatabaseType().getDataSourceMetaData("jdbc:h2:mem:foo_ds", "sa"), instanceOf(H2DataSourceMetaData.class));
     }
     
     @Test
@@ -55,21 +52,12 @@ public final class H2DatabaseTypeTest {
     }
     
     @Test
-    public void assertGetSchema() throws SQLException {
-        Connection connection = mock(Connection.class);
-        when(connection.getSchema()).thenReturn("ds");
-        assertThat(new H2DatabaseType().getSchema(connection), is("ds"));
+    public void assertGetSystemDatabaseSchemaMap() {
+        assertTrue(new H2DatabaseType().getSystemDatabaseSchemaMap().isEmpty());
     }
     
     @Test
-    public void assertFormatTableNamePattern() {
-        assertThat(new H2DatabaseType().formatTableNamePattern("tbl"), is("tbl"));
-    }
-    
-    @Test
-    public void assertGetQuoteCharacter() {
-        QuoteCharacter actual = new H2DatabaseType().getQuoteCharacter();
-        assertThat(actual.getStartDelimiter(), is("\""));
-        assertThat(actual.getEndDelimiter(), is("\""));
+    public void assertGetSystemSchemas() {
+        assertTrue(new H2DatabaseType().getSystemSchemas().isEmpty());
     }
 }

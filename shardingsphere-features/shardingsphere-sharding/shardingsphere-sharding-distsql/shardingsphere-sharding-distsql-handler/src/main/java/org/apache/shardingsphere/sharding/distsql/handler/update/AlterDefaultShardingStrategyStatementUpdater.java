@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
@@ -39,8 +39,6 @@ import java.util.Optional;
  * Alter default sharding strategy statement updater.
  */
 public final class AlterDefaultShardingStrategyStatementUpdater implements RuleDefinitionAlterUpdater<AlterDefaultShardingStrategyStatement, ShardingRuleConfiguration> {
-    
-    private static final String TYPE = AlterDefaultShardingStrategyStatement.class.getName();
     
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database,
@@ -107,8 +105,8 @@ public final class AlterDefaultShardingStrategyStatementUpdater implements RuleD
         return result;
     }
     
-    private ShardingSphereAlgorithmConfiguration createAlgorithmConfiguration(final AlgorithmSegment segment) {
-        return new ShardingSphereAlgorithmConfiguration(segment.getName(), segment.getProps());
+    private AlgorithmConfiguration createAlgorithmConfiguration(final AlgorithmSegment segment) {
+        return new AlgorithmConfiguration(segment.getName(), segment.getProps());
     }
     
     private String getDefaultShardingAlgorithmName(final String defaultType, final String algorithmType) {
@@ -143,6 +141,6 @@ public final class AlterDefaultShardingStrategyStatementUpdater implements RuleD
     
     @Override
     public String getType() {
-        return TYPE;
+        return AlterDefaultShardingStrategyStatement.class.getName();
     }
 }

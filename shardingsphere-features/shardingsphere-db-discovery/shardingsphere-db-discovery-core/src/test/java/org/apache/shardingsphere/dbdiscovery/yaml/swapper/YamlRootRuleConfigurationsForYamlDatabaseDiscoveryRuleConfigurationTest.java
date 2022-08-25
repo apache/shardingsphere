@@ -19,7 +19,7 @@ package org.apache.shardingsphere.dbdiscovery.yaml.swapper;
 
 import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.junit.Test;
 
 import java.io.BufferedReader;

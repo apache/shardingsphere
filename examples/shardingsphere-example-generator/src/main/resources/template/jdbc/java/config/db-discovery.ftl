@@ -32,11 +32,11 @@
         return result;
     }
     
-    private Map<String, ShardingSphereAlgorithmConfiguration> createDiscoveryTypes() {
-        Map<String, ShardingSphereAlgorithmConfiguration> result = new LinkedHashMap<>();
+    private Map<String, AlgorithmConfiguration> createDiscoveryTypes() {
+        Map<String, AlgorithmConfiguration> result = new LinkedHashMap<>();
         Properties props = new Properties();
         props.put("keep-alive-cron", "0/5 * * * * ?");
         props.put("group-name", "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
-        result.put("mgr", new ShardingSphereAlgorithmConfiguration("MySQL.MGR", props));
+        result.put("mgr", new AlgorithmConfiguration("MySQL.MGR", props));
         return result;
     }

@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sharding.distsql.query;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -27,11 +27,12 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableNodesQueryResultSet;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableNodesStatement;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -44,10 +45,8 @@ public final class ShardingTableNodesQueryResultSetTest {
     
     @Test
     public void assertGetRowData() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createRuleConfiguration()));
-        DistSQLResultSet resultSet = new ShardingTableNodesQueryResultSet();
-        resultSet.init(database, mock(ShowShardingTableNodesStatement.class));
+        DatabaseDistSQLResultSet resultSet = new ShardingTableNodesQueryResultSet();
+        resultSet.init(mockDatabase(), mock(ShowShardingTableNodesStatement.class));
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0), is("t_order"));
@@ -61,13 +60,21 @@ public final class ShardingTableNodesQueryResultSetTest {
         assertThat(actual.get(1), is("ds_2.t_user_0, ds_3.t_user_1, ds_2.t_user_2, ds_3.t_user_3"));
     }
     
+    private ShardingSphereDatabase mockDatabase() {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
+        when(result.getRuleMetaData().findSingleRule(ShardingRule.class)).thenReturn(Optional.of(rule));
+        return result;
+    }
+    
     private RuleConfiguration createRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getTables().add(createShardingTableRuleConfiguration());
         result.getAutoTables().add(createProductAutoTableConfiguration());
         result.getAutoTables().add(createUserAutoTableConfiguration());
-        result.getShardingAlgorithms().put("t_product_algorithm", new ShardingSphereAlgorithmConfiguration("FOO.DISTSQL.FIXTURE", newProperties("sharding-count", 2)));
-        result.getShardingAlgorithms().put("t_user_algorithm", new ShardingSphereAlgorithmConfiguration("BAR.DISTSQL.FIXTURE", newProperties("sharding-ranges", "10,20,30")));
+        result.getShardingAlgorithms().put("t_product_algorithm", new AlgorithmConfiguration("FOO.DISTSQL.FIXTURE", newProperties("sharding-count", 2)));
+        result.getShardingAlgorithms().put("t_user_algorithm", new AlgorithmConfiguration("BAR.DISTSQL.FIXTURE", newProperties("sharding-ranges", "10,20,30")));
         result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "t_product_algorithm"));
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "t_product_algorithm"));
         return result;

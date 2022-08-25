@@ -22,11 +22,10 @@ import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleCon
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryRulesStatement;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
+import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.ExportableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
@@ -35,12 +34,14 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
- * Result set for show database discovery rule.
+ * Query result set for show database discovery rule.
  */
-public final class DatabaseDiscoveryRuleQueryResultSet implements DistSQLResultSet {
+public final class DatabaseDiscoveryRuleQueryResultSet implements DatabaseDistSQLResultSet {
     
     private static final String GROUP_NAME = "group_name";
     
@@ -54,28 +55,26 @@ public final class DatabaseDiscoveryRuleQueryResultSet implements DistSQLResultS
     
     private static final String HEARTBEAT = "discovery_heartbeat";
     
-    private Iterator<DatabaseDiscoveryDataSourceRuleConfiguration> data;
+    private Iterator<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRules;
     
-    private Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypes;
+    private Map<String, AlgorithmConfiguration> discoveryTypes;
     
     private Map<String, DatabaseDiscoveryHeartBeatConfiguration> discoveryHeartbeats;
     
     private Map<String, String> primaryDataSources;
     
-    @SuppressWarnings("unchecked")
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        Optional<DatabaseDiscoveryRuleConfiguration> ruleConfig = database.getRuleMetaData().getConfigurations()
-                .stream().filter(each -> each instanceof DatabaseDiscoveryRuleConfiguration).map(each -> (DatabaseDiscoveryRuleConfiguration) each).findAny();
-        data = ruleConfig.map(optional -> optional.getDataSources().iterator()).orElseGet(Collections::emptyIterator);
-        discoveryTypes = ruleConfig.map(DatabaseDiscoveryRuleConfiguration::getDiscoveryTypes).orElseGet(Collections::emptyMap);
-        discoveryHeartbeats = ruleConfig.map(DatabaseDiscoveryRuleConfiguration::getDiscoveryHeartbeats).orElseGet(Collections::emptyMap);
-        Optional<ExportableRule> exportableRule = database.getRuleMetaData().getRules()
-                .stream().filter(each -> each instanceof ExportableRule)
-                .filter(each -> ((ExportableRule) each).containExportableKey(Collections.singleton(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES)))
-                .map(each -> (ExportableRule) each).findAny();
-        primaryDataSources = (Map<String, String>) (exportableRule.map(optional -> optional.export(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES).orElseGet(Collections::emptyMap))
-                .orElseGet(Collections::emptyMap));
+        Optional<DatabaseDiscoveryRule> rule = database.getRuleMetaData().findSingleRule(DatabaseDiscoveryRule.class);
+        if (!rule.isPresent()) {
+            dataSourceRules = Collections.emptyIterator();
+            return;
+        }
+        DatabaseDiscoveryRuleConfiguration ruleConfig = (DatabaseDiscoveryRuleConfiguration) rule.get().getConfiguration();
+        dataSourceRules = ruleConfig.getDataSources().iterator();
+        discoveryTypes = ruleConfig.getDiscoveryTypes();
+        discoveryHeartbeats = ruleConfig.getDiscoveryHeartbeats();
+        primaryDataSources = rule.get().getDataSourceRules().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getPrimaryDataSourceName(), (a, b) -> b));
     }
     
     @Override
@@ -85,12 +84,12 @@ public final class DatabaseDiscoveryRuleQueryResultSet implements DistSQLResultS
     
     @Override
     public boolean next() {
-        return data.hasNext();
+        return dataSourceRules.hasNext();
     }
     
     @Override
     public Collection<Object> getRowData() {
-        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = data.next();
+        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = dataSourceRules.next();
         Map<String, String> typeMap = new LinkedHashMap<>();
         typeMap.put(NAME, dataSourceRuleConfig.getDiscoveryTypeName());
         typeMap.putAll(convertToMap(discoveryTypes.get(dataSourceRuleConfig.getDiscoveryTypeName())));

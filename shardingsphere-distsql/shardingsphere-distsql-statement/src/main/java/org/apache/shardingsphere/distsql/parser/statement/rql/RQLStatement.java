@@ -17,22 +17,10 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.rql;
 
-import org.apache.shardingsphere.distsql.parser.operation.DistSQLOperationTypeEnum;
 import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
-import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatementType;
 
 /**
  * RQL statement.
  */
 public abstract class RQLStatement extends DistSQLStatement {
-    
-    @Override
-    public DistSQLStatementType getStatementType() {
-        return DistSQLStatementType.RQL;
-    }
-    
-    @Override
-    public DistSQLOperationTypeEnum getOperationType() {
-        return DistSQLOperationTypeEnum.SHOW;
-    }
 }

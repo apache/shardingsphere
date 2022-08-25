@@ -46,6 +46,8 @@ public final class ShardingSphereTable {
     
     private final List<String> columnNames = new ArrayList<>();
     
+    private final List<String> visibleColumns = new ArrayList<>();
+    
     private final List<String> primaryKeyColumns = new ArrayList<>();
     
     public ShardingSphereTable() {
@@ -68,6 +70,9 @@ public final class ShardingSphereTable {
             columnNames.add(each.getName());
             if (each.isPrimaryKey()) {
                 primaryKeyColumns.add(lowerColumnName);
+            }
+            if (each.isVisible()) {
+                visibleColumns.add(each.getName());
             }
         }
         return result;

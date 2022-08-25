@@ -20,7 +20,7 @@ package org.apache.shardingsphere.spring.namespace.parser;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dbdiscovery.algorithm.config.AlgorithmProvidedDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
-import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
@@ -83,7 +83,7 @@ public final class ShardingSphereAlgorithmBeanDefinitionParser extends AbstractB
     }
     
     @SuppressWarnings("unchecked")
-    private void setPropertyValue(final ParserContext parserContext, final String elementId, final Class<? extends SchemaRuleConfiguration> ruleConfigClass, final String propertyName) {
+    private void setPropertyValue(final ParserContext parserContext, final String elementId, final Class<? extends DatabaseRuleConfiguration> ruleConfigClass, final String propertyName) {
         String[] beanDefinitionNames = parserContext.getRegistry().getBeanDefinitionNames();
         for (String each : beanDefinitionNames) {
             BeanDefinition beanDefinition = parserContext.getRegistry().getBeanDefinition(each);

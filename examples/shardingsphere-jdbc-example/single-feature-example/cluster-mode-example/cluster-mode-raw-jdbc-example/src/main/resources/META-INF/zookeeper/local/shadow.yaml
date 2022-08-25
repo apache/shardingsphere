@@ -31,7 +31,7 @@ dataSources:
     jdbcUrl: jdbc:mysql://localhost:3306/demo_ds?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
     username: root
     password:
-  ds_0:
+  shadow-ds:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.jdbc.Driver
     jdbcUrl: jdbc:mysql://localhost:3306/shadow_demo_ds?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
@@ -40,11 +40,44 @@ dataSources:
 
 rules:
   - !SHADOW
-    column: shadow
-    sourceDataSourceNames:
-      - ds
-    shadowDataSourceNames:
-      - ds_0
+    dataSources:
+      shadowDataSource:
+        sourceDataSourceName: ds
+        shadowDataSourceName: shadow-ds
+    tables:
+      t_user:
+        dataSourceNames:
+          - shadowDataSource
+        shadowAlgorithmNames:
+          - user-id-insert-match-algorithm
+          - user-id-select-match-algorithm
+          - user-id-update-match-algorithm
+          - user-id-delete-match-algorithm
+          - simple-hint-algorithm
+    shadowAlgorithms:
+      user-id-insert-match-algorithm:
+        type: VALUE_MATCH
+        props:
+          operation: insert
+          column: user_type
+          value: 1
+      user-id-select-match-algorithm:
+        type: VALUE_MATCH
+        props:
+          operation: select
+          column: user_type
+          value: 1
+      user-id-delete-match-algorithm:
+        type: VALUE_MATCH
+        props:
+          operation: delete
+          column: user_type
+          value: 1
+      simple-hint-algorithm:
+        type: SIMPLE_HINT
+        props:
+          shadow: true
+          foo: bar
 
 props:
   sql-show: true

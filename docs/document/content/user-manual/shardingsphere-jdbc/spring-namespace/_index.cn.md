@@ -1,6 +1,6 @@
 +++
 title = "Spring 命名空间"
-weight = 5
+weight = 4
 chapter = true
 +++
 
@@ -20,11 +20,11 @@ ShardingSphere-JDBC 提供官方的 Spring 命名空间，使开发者可以非�
 </dependency>
 ```
 
-## 配置 Spring Bean
+### 配置 Spring Bean
 
-### 配置项说明
+#### 配置项说明
 
-命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.1.xsd)
+命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.2.xsd](http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.2.xsd)
 
 \<shardingsphere:data-source />
 
@@ -37,7 +37,7 @@ ShardingSphere-JDBC 提供官方的 Spring 命名空间，使开发者可以非�
 | mode (?)          | 标签  | 运行模式配置                                                                         |
 | props (?)         | 标签  | 属性配置，详情请参见[属性配置](/cn/user-manual/shardingsphere-jdbc/props) |
 
-### 配置示例
+#### 配置示例
 
 ```xml
 <beans xmlns="http://www.springframework.org/schema/beans"
@@ -57,6 +57,6 @@ ShardingSphere-JDBC 提供官方的 Spring 命名空间，使开发者可以非�
 </beans>
 ```
 
-## 在 Spring 中使用 ShardingSphere 数据源
+### 使用数据源
 
 使用方式同 Spring Boot Starter。

@@ -44,7 +44,6 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
 /**
@@ -107,8 +106,8 @@ public final class EtcdRepository implements ClusterPersistRepository {
     }
     
     @Override
-    public String getSequentialId(final String key, final String value) {
-        return null;
+    public void persistExclusiveEphemeral(final String key, final String value) {
+        persistEphemeral(key, value);
     }
     
     @Override
@@ -151,13 +150,8 @@ public final class EtcdRepository implements ClusterPersistRepository {
     }
     
     @Override
-    public Lock getInternalMutexLock(final String lockName) {
-        return etcdInternalLockHolder.getInternalMutexLock(lockName);
-    }
-    
-    @Override
-    public Lock getInternalReentrantMutexLock(final String lockName) {
-        return etcdInternalLockHolder.getInternalReentrantMutexLock(lockName);
+    public boolean persistLock(final String lockKey, final long timeoutMillis) {
+        return etcdInternalLockHolder.getInternalLock(lockKey).tryLock(timeoutMillis);
     }
     
     @Override

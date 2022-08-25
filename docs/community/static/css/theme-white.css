@@ -64,6 +64,10 @@ header .select-style select{
     z-index: 2;
 }
 
+#sidebar .leftMenu{
+    overflow-y: auto;
+}
+
 #header-wrapper{
     position:sticky;
     background-color: #fff;
@@ -315,6 +319,11 @@ h2:first-of-type{
     margin-top:0;
 }
 
+h3{
+    text-align: left;
+    font-size: 1.2rem;
+}
+
 table{
     table-layout: fixed;
 }
@@ -446,6 +455,7 @@ table td,table td code{
         left:-300px;
         width: 300px;
         padding-left: 16px;
+        background-color: #fff;
     }
 
     .sidebar-hidden #body{
@@ -462,6 +472,22 @@ table td,table td code{
         transform: translateX(0);
     }
     .icon-3,.icon-2,.icon-1{display: none;}
+
+    .retro-theme #sidebar{
+        background-color: #F2EFDD;
+    }
+    .eyehelp-theme #sidebar{
+        background-color: #C7EBC9;
+    }
+    .haitian-theme #sidebar{
+        background-color: #E5EDFF;
+    }
+    .deep-theme #sidebar{
+        background-color: #15202F;
+    }
+    .dark-theme #sidebar{
+        background-color: #171717;
+    }
 }
 
 @keyframes mymove {

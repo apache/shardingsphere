@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Rename statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class RenameStatement extends AbstractSQLStatement implements DDLStatement {
 }

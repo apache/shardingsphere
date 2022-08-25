@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.route.engine.determiner;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -44,7 +44,7 @@ public final class HintShadowAlgorithmDeterminerTest {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private HintShadowAlgorithm<Comparable<?>> createHintShadowAlgorithm() {
-        return (HintShadowAlgorithm) ShadowAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SIMPLE_HINT", createProperties()));
+        return (HintShadowAlgorithm) ShadowAlgorithmFactory.newInstance(new AlgorithmConfiguration("SIMPLE_HINT", createProperties()));
     }
     
     private Properties createProperties() {

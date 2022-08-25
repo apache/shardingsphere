@@ -18,20 +18,17 @@
 package org.apache.shardingsphere.infra.federation.optimizer.converter.segment.expression.impl;
 
 import org.apache.calcite.sql.SqlBasicCall;
-import org.apache.calcite.sql.SqlCharStringLiteral;
 import org.apache.calcite.sql.SqlDataTypeSpec;
 import org.apache.calcite.sql.SqlDynamicParam;
 import org.apache.calcite.sql.SqlFunctionCategory;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlUnresolvedFunction;
 import org.apache.calcite.sql.SqlUserDefinedTypeNameSpec;
 import org.apache.calcite.sql.fun.SqlCastFunction;
 import org.apache.calcite.sql.fun.SqlPositionFunction;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.federation.optimizer.converter.context.ConverterContextHolder;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
@@ -47,10 +44,10 @@ import java.util.Optional;
 /**
  * Function converter.
  */
-public final class FunctionConverter implements SQLSegmentConverter<FunctionSegment, SqlBasicCall> {
+public final class FunctionConverter implements SQLSegmentConverter<FunctionSegment, SqlNode> {
     
     @Override
-    public Optional<SqlBasicCall> convertToSQLNode(final FunctionSegment segment) {
+    public Optional<SqlNode> convert(final FunctionSegment segment) {
         if ("POSITION".equalsIgnoreCase(segment.getFunctionName())) {
             return Optional.of(new SqlBasicCall(new SqlPositionFunction(), getSqlNodes(segment.getParameters()), SqlParserPos.ZERO));
         }
@@ -58,50 +55,20 @@ public final class FunctionConverter implements SQLSegmentConverter<FunctionSegm
             return Optional.of(new SqlBasicCall(new SqlCastFunction(), getSqlNodes(segment.getParameters()), SqlParserPos.ZERO));
         }
         if ("CONCAT".equalsIgnoreCase(segment.getFunctionName())) {
-            return Optional.of(new SqlBasicCall(new SqlUnresolvedFunction(new SqlIdentifier("CONCAT", SqlParserPos.ZERO),
+            return Optional.of(new SqlBasicCall(new SqlUnresolvedFunction(new SqlIdentifier(segment.getFunctionName(), SqlParserPos.ZERO),
                     null, null, null, null, SqlFunctionCategory.USER_DEFINED_FUNCTION), getSqlNodes(segment.getParameters()), SqlParserPos.ZERO));
+        }
+        if ("DATABASE".equalsIgnoreCase(segment.getFunctionName())) {
+            return Optional.of(new SqlBasicCall(new SqlUnresolvedFunction(new SqlIdentifier(segment.getFunctionName(), SqlParserPos.ZERO),
+                    null, null, null, null, SqlFunctionCategory.USER_DEFINED_FUNCTION), getSqlNodes(segment.getParameters()), SqlParserPos.ZERO));
+        }
+        if ("CURRENT_USER".equalsIgnoreCase(segment.getFunctionName())) {
+            return Optional.of(new SqlIdentifier(segment.getFunctionName(), SqlParserPos.ZERO));
         }
         return Optional.empty();
     }
     
-    @Override
-    public Optional<FunctionSegment> convertToSQLSegment(final SqlBasicCall sqlBasicCall) {
-        if (null == sqlBasicCall) {
-            return Optional.empty();
-        }
-        FunctionSegment functionSegment = new FunctionSegment(getStartIndex(sqlBasicCall), getStopIndex(sqlBasicCall), sqlBasicCall.getOperator().getName(), getFunctionText(sqlBasicCall));
-        functionSegment.getParameters().addAll(getParameters(sqlBasicCall));
-        return Optional.of(functionSegment);
-    }
-    
-    private String getFunctionText(final SqlBasicCall sqlBasicCall) {
-        SqlOperator operator;
-        if (null != (operator = sqlBasicCall.getOperator()) && (operator instanceof SqlCastFunction || operator instanceof SqlUnresolvedFunction)) {
-            return sqlBasicCall.toString().replace("`", "");
-        }
-        return sqlBasicCall.toString();
-    }
-    
-    private List<ExpressionSegment> getParameters(final SqlBasicCall sqlBasicCall) {
-        List<ExpressionSegment> result = new ArrayList<>();
-        sqlBasicCall.getOperandList().forEach(each -> {
-            if (each instanceof SqlDataTypeSpec) {
-                DataTypeSegment dataTypeSegment = new DataTypeSegment();
-                dataTypeSegment.setStartIndex(getStartIndex(each));
-                dataTypeSegment.setStopIndex(getStopIndex(each));
-                dataTypeSegment.setDataTypeName(each.toString().replace("`", ""));
-                result.add(dataTypeSegment);
-            } else if (each instanceof SqlCharStringLiteral) {
-                result.add(new LiteralExpressionSegment(getStartIndex(each), getStopIndex(each), each.toString().replace("'", "")));
-            } else if (each instanceof SqlDynamicParam) {
-                ConverterContextHolder.get().getParameterCount().getAndIncrement();
-                result.add(new ParameterMarkerExpressionSegment(getStartIndex(each), getStopIndex(each), ((SqlDynamicParam) each).getIndex()));
-            }
-        });
-        return result;
-    }
-    
-    private SqlNode[] getSqlNodes(final Collection<ExpressionSegment> sqlSegments) {
+    private List<SqlNode> getSqlNodes(final Collection<ExpressionSegment> sqlSegments) {
         List<SqlNode> sqlNodes = new ArrayList<>();
         sqlSegments.forEach(each -> {
             if (each instanceof LiteralExpressionSegment) {
@@ -114,6 +81,6 @@ public final class FunctionConverter implements SQLSegmentConverter<FunctionSegm
                 sqlNodes.add(new SqlDynamicParam(((ParameterMarkerExpressionSegment) each).getParameterMarkerIndex(), SqlParserPos.ZERO));
             }
         });
-        return sqlNodes.toArray(new SqlNode[0]);
+        return new ArrayList<>(sqlNodes);
     }
 }

@@ -20,8 +20,8 @@ databaseName: empty_rules
 dataSources:
   encrypt_write_ds_0:
     url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_write_ds_0
-    username: root
-    password: root
+    username: test_user
+    password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -29,8 +29,8 @@ dataSources:
     minPoolSize: 2
   encrypt_write_ds_1:
     url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_write_ds_1
-    username: root
-    password: root
+    username: test_user
+    password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -38,8 +38,8 @@ dataSources:
     minPoolSize: 2
   encrypt_write_ds_2:
     url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_write_ds_2
-    username: root
-    password: root
+    username: test_user
+    password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -47,8 +47,8 @@ dataSources:
     minPoolSize: 2
   encrypt_write_ds_3:
     url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_write_ds_3
-    username: root
-    password: root
+    username: test_user
+    password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -56,8 +56,8 @@ dataSources:
     minPoolSize: 2
   encrypt_write_ds_4:
     url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_write_ds_4
-    username: root
-    password: root
+    username: test_user
+    password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -65,8 +65,8 @@ dataSources:
     minPoolSize: 2
   encrypt_write_ds_5:
     url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_write_ds_5
-    username: root
-    password: root
+    username: test_user
+    password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -74,8 +74,8 @@ dataSources:
     minPoolSize: 2
   encrypt_write_ds_6:
     url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_write_ds_6
-    username: root
-    password: root
+    username: test_user
+    password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -83,8 +83,8 @@ dataSources:
     minPoolSize: 2
   encrypt_write_ds_7:
     url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_write_ds_7
-    username: root
-    password: root
+    username: test_user
+    password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -92,8 +92,8 @@ dataSources:
     minPoolSize: 2
   encrypt_write_ds_8:
     url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_write_ds_8
-    username: root
-    password: root
+    username: test_user
+    password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -101,8 +101,8 @@ dataSources:
     minPoolSize: 2
   encrypt_write_ds_9:
     url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_write_ds_9
-    username: root
-    password: root
+    username: test_user
+    password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -110,8 +110,8 @@ dataSources:
     minPoolSize: 2
   encrypt_read_ds_0:
     url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_read_ds_0
-    username: root
-    password: root
+    username: test_user
+    password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -119,8 +119,8 @@ dataSources:
     minPoolSize: 2
   encrypt_read_ds_1:
     url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_read_ds_1
-    username: root
-    password: root
+    username: test_user
+    password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -128,8 +128,8 @@ dataSources:
     minPoolSize: 2
   encrypt_read_ds_2:
     url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_read_ds_2
-    username: root
-    password: root
+    username: test_user
+    password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -137,8 +137,8 @@ dataSources:
     minPoolSize: 2
   encrypt_read_ds_3:
     url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_read_ds_3
-    username: root
-    password: root
+    username: test_user
+    password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -146,8 +146,8 @@ dataSources:
     minPoolSize: 2
   encrypt_read_ds_4:
     url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_read_ds_4
-    username: root
-    password: root
+    username: test_user
+    password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -155,8 +155,8 @@ dataSources:
     minPoolSize: 2
   encrypt_read_ds_5:
     url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_read_ds_5
-    username: root
-    password: root
+    username: test_user
+    password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -164,8 +164,8 @@ dataSources:
     minPoolSize: 2
   encrypt_read_ds_6:
     url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_read_ds_6
-    username: root
-    password: root
+    username: test_user
+    password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -173,8 +173,8 @@ dataSources:
     minPoolSize: 2
   encrypt_read_ds_7:
     url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_read_ds_7
-    username: root
-    password: root
+    username: test_user
+    password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -182,8 +182,8 @@ dataSources:
     minPoolSize: 2
   encrypt_read_ds_8:
     url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_read_ds_8
-    username: root
-    password: root
+    username: test_user
+    password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -191,8 +191,8 @@ dataSources:
     minPoolSize: 2
   encrypt_read_ds_9:
     url: jdbc:postgresql://postgresql.empty_rules.host:5432/encrypt_read_ds_9
-    username: root
-    password: root
+    username: test_user
+    password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -200,8 +200,8 @@ dataSources:
     minPoolSize: 2
   rdl_test_0:
     url: jdbc:postgresql://postgresql.empty_rules.host:5432/rdl_test_0
-    username: root
-    password: root
+    username: test_user
+    password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -243,10 +243,10 @@ rules:
 - !READWRITE_SPLITTING
   dataSources:
     readwrite_ds_0:
-      type: Static
-      props:
-        write-data-source-name: encrypt_write_ds_0
-        read-data-source-names: encrypt_read_ds_0
+      staticStrategy:
+        writeDataSourceName: encrypt_write_ds_0
+        readDataSourceNames:
+          - encrypt_read_ds_0
       loadBalancerName: roundRobin
   loadBalancers:
     roundRobin:

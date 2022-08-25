@@ -15,5 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.metadata.database.schema.fixture.loader.CommonFixtureSchemaMetaDataDecorator
-org.apache.shardingsphere.infra.metadata.database.schema.fixture.loader.DataNodeContainedFixtureRuleBasedSchemaMetaDataDecorator
+org.apache.shardingsphere.infra.metadata.database.schema.fixture.loader.RuleBasedSchemaMetaDataDecoratorFixture

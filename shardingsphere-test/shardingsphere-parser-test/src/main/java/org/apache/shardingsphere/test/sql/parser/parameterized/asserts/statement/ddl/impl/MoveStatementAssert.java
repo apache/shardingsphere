@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussMoveStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.MoveStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.cursor.DirectionSegmentAssert;
@@ -42,17 +42,17 @@ public final class MoveStatementAssert {
      * @param actual actual move statement
      * @param expected expected move statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final OpenGaussMoveStatement actual, final MoveStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MoveStatement actual, final MoveStatementTestCase expected) {
         assertCursorName(assertContext, actual, expected);
         assertDirection(assertContext, actual, expected);
     }
     
-    private static void assertCursorName(final SQLCaseAssertContext assertContext, final OpenGaussMoveStatement actual, final MoveStatementTestCase expected) {
+    private static void assertCursorName(final SQLCaseAssertContext assertContext, final MoveStatement actual, final MoveStatementTestCase expected) {
         IdentifierValueAssert.assertIs(assertContext, actual.getCursorName().getIdentifier(), expected.getCursorName(), "Move");
         SQLSegmentAssert.assertIs(assertContext, actual.getCursorName(), expected.getCursorName());
     }
     
-    private static void assertDirection(final SQLCaseAssertContext assertContext, final OpenGaussMoveStatement actual, final MoveStatementTestCase expected) {
+    private static void assertDirection(final SQLCaseAssertContext assertContext, final MoveStatement actual, final MoveStatementTestCase expected) {
         if (null != expected.getDirection()) {
             assertTrue(assertContext.getText("Actual direction segment should exist."), actual.getDirection().isPresent());
             DirectionSegmentAssert.assertIs(assertContext, actual.getDirection().get(), expected.getDirection());

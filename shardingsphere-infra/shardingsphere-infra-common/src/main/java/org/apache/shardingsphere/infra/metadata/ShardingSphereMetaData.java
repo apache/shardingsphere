@@ -18,20 +18,23 @@
 package org.apache.shardingsphere.infra.metadata;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
  * Meta data contexts.
  */
-@RequiredArgsConstructor
 @Getter
 public final class ShardingSphereMetaData {
     
@@ -42,6 +45,83 @@ public final class ShardingSphereMetaData {
     private final ConfigurationProperties props;
     
     public ShardingSphereMetaData() {
-        this(new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()), new ConfigurationProperties(new Properties()));
+        this(new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
+    }
+    
+    public ShardingSphereMetaData(final Map<String, ShardingSphereDatabase> databases, final ShardingSphereRuleMetaData globalRuleMetaData, final ConfigurationProperties props) {
+        this.databases = databases;
+        databases.forEach((key, value) -> this.databases.put(key.toLowerCase(), value));
+        this.globalRuleMetaData = globalRuleMetaData;
+        this.props = props;
+    }
+    
+    /**
+     * Add database.
+     * 
+     * @param databaseName database name
+     * @param protocolType protocol database type
+     * @throws SQLException SQL exception
+     */
+    public void addDatabase(final String databaseName, final DatabaseType protocolType) throws SQLException {
+        ShardingSphereDatabase database = ShardingSphereDatabase.create(databaseName, protocolType);
+        putDatabase(database);
+        globalRuleMetaData.findRules(ResourceHeldRule.class).forEach(each -> each.addResource(database));
+    }
+    
+    /**
+     * Judge contains database from meta data or not.
+     *
+     * @param databaseName database name
+     * @return contains database from meta data or not
+     */
+    public boolean containsDatabase(final String databaseName) {
+        return databases.containsKey(databaseName.toLowerCase());
+    }
+    
+    /**
+     * Get database.
+     *
+     * @param databaseName database name
+     * @return meta data database
+     */
+    public ShardingSphereDatabase getDatabase(final String databaseName) {
+        return databases.get(databaseName.toLowerCase());
+    }
+    
+    /**
+     * Put database.
+     *
+     * @param database database
+     */
+    public void putDatabase(final ShardingSphereDatabase database) {
+        databases.put(database.getName().toLowerCase(), database);
+    }
+    
+    /**
+     * Get actual database name.
+     *
+     * @param databaseName database name
+     * @return actual database name
+     */
+    public String getActualDatabaseName(final String databaseName) {
+        return getDatabase(databaseName).getName();
+    }
+    
+    /**
+     * Drop database.
+     *
+     * @param databaseName database name
+     */
+    public void dropDatabase(final String databaseName) {
+        ShardingSphereDatabase toBeRemovedDatabase = databases.remove(databaseName.toLowerCase());
+        closeResources(toBeRemovedDatabase);
+    }
+    
+    private void closeResources(final ShardingSphereDatabase database) {
+        String databaseName = database.getName();
+        globalRuleMetaData.findRules(ResourceHeldRule.class).forEach(each -> each.closeStaleResource(databaseName));
+        database.getRuleMetaData().findRules(ResourceHeldRule.class).forEach(each -> each.closeStaleResource(databaseName));
+        database.getRuleMetaData().findSingleRule(DynamicDataSourceContainedRule.class).ifPresent(DynamicDataSourceContainedRule::closeHeartBeatJob);
+        Optional.ofNullable(database.getResource()).ifPresent(optional -> optional.getDataSources().values().forEach(each -> database.getResource().close(each)));
     }
 }

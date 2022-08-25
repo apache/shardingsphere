@@ -45,7 +45,13 @@ import java.util.Optional;
  * Predicate right value token generator for encrypt.
  */
 @Setter
-public final class EncryptPredicateRightValueTokenGenerator implements CollectionSQLTokenGenerator, ParametersAware, EncryptConditionsAware, EncryptRuleAware, DatabaseNameAware {
+public final class EncryptPredicateRightValueTokenGenerator
+        implements
+            CollectionSQLTokenGenerator<SQLStatementContext<?>>,
+            ParametersAware,
+            EncryptConditionsAware,
+            EncryptRuleAware,
+            DatabaseNameAware {
     
     private List<Object> parameters;
     
@@ -56,14 +62,14 @@ public final class EncryptPredicateRightValueTokenGenerator implements Collectio
     private String databaseName;
     
     @Override
-    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+    public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
         return sqlStatementContext instanceof WhereAvailable && !((WhereAvailable) sqlStatementContext).getWhereSegments().isEmpty();
     }
     
     @Override
-    public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
+    public Collection<SQLToken> generateSQLTokens(final SQLStatementContext<?> sqlStatementContext) {
         Collection<SQLToken> result = new LinkedHashSet<>();
-        String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElse(DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), databaseName));
+        String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), databaseName));
         for (EncryptCondition each : encryptConditions) {
             result.add(generateSQLToken(schemaName, each));
         }

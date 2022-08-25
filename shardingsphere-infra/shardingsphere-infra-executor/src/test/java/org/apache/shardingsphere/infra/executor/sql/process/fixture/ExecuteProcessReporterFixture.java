@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.infra.executor.sql.process.fixture;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
@@ -30,17 +31,18 @@ public final class ExecuteProcessReporterFixture implements ExecuteProcessReport
     public static final LinkedList<String> ACTIONS = new LinkedList<>();
     
     @Override
-    public void report(final LogicSQL logicSQL, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessConstants constants) {
+    public void report(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessConstants constants,
+                       final EventBusContext eventBusContext) {
         ACTIONS.add("Report the summary of this task.");
     }
     
     @Override
-    public void report(final String executionID, final SQLExecutionUnit executionUnit, final ExecuteProcessConstants constants) {
+    public void report(final String executionID, final SQLExecutionUnit executionUnit, final ExecuteProcessConstants constants, final EventBusContext eventBusContext) {
         ACTIONS.add("Report a unit of this task.");
     }
     
     @Override
-    public void report(final String executionID, final ExecuteProcessConstants constants) {
+    public void report(final String executionID, final ExecuteProcessConstants constants, final EventBusContext eventBusContext) {
         ACTIONS.add("Report this task on completion.");
     }
     

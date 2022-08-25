@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL rename table statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class MySQLRenameTableStatement extends RenameTableStatement implements MySQLStatement {
 }

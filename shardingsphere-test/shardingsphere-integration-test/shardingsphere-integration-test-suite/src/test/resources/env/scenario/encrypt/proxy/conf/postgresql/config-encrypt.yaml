@@ -20,8 +20,8 @@ databaseName: encrypt
 dataSources:
   encrypt:
     url: jdbc:postgresql://postgresql.encrypt.host:5432/encrypt
-    username: root
-    password: root
+    username: test_user
+    password: Test@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000

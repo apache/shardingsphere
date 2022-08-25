@@ -30,7 +30,7 @@ import java.util.Optional;
  * SQLServer select statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class SQLServerSelectStatement extends SelectStatement implements SQLServerStatement {
     
     private LimitSegment limit;

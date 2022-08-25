@@ -31,26 +31,28 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.ClientEncodingResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLCommand;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.exception.InvalidParameterValueException;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Optional;
+import java.util.List;
 
 /**
  * Command query executor for openGauss.
@@ -59,7 +61,7 @@ public final class OpenGaussComQueryExecutor implements QueryCommandExecutor {
     
     private final PostgreSQLConnectionContext connectionContext;
     
-    private final TextProtocolBackendHandler textProtocolBackendHandler;
+    private final ProxyBackendHandler proxyBackendHandler;
     
     @Getter
     private volatile ResponseType responseType;
@@ -67,19 +69,17 @@ public final class OpenGaussComQueryExecutor implements QueryCommandExecutor {
     public OpenGaussComQueryExecutor(final PostgreSQLConnectionContext connectionContext, final PostgreSQLComQueryPacket comQueryPacket,
                                      final ConnectionSession connectionSession) throws SQLException {
         this.connectionContext = connectionContext;
-        textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeFactory.getInstance("openGauss"),
-                comQueryPacket.getSql(), Optional::empty, connectionSession);
+        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(DatabaseTypeFactory.getInstance("openGauss"), comQueryPacket.getSql(), connectionSession);
     }
     
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
-        ResponseHeader responseHeader = textProtocolBackendHandler.execute();
+        ResponseHeader responseHeader = proxyBackendHandler.execute();
         if (responseHeader instanceof QueryResponseHeader) {
             return Collections.singleton(createRowDescriptionPacket((QueryResponseHeader) responseHeader));
         }
         responseType = ResponseType.UPDATE;
-        return responseHeader instanceof UpdateResponseHeader ? Collections.singleton(createUpdatePacket((UpdateResponseHeader) responseHeader))
-                : createClientEncodingPackets((ClientEncodingResponseHeader) responseHeader);
+        return createUpdatePacket((UpdateResponseHeader) responseHeader);
     }
     
     private PostgreSQLRowDescriptionPacket createRowDescriptionPacket(final QueryResponseHeader queryResponseHeader) {
@@ -97,38 +97,39 @@ public final class OpenGaussComQueryExecutor implements QueryCommandExecutor {
         return result;
     }
     
-    private PostgreSQLPacket createUpdatePacket(final UpdateResponseHeader updateResponseHeader) {
+    private List<DatabasePacket<?>> createUpdatePacket(final UpdateResponseHeader updateResponseHeader) {
         SQLStatement sqlStatement = updateResponseHeader.getSqlStatement();
         if (sqlStatement instanceof CommitStatement || sqlStatement instanceof RollbackStatement) {
             connectionContext.closeAllPortals();
         }
-        return sqlStatement instanceof EmptyStatement ? new PostgreSQLEmptyQueryResponsePacket()
-                : new PostgreSQLCommandCompletePacket(PostgreSQLCommand.valueOf(sqlStatement.getClass()).map(PostgreSQLCommand::getTag).orElse(""), updateResponseHeader.getUpdateCount());
+        if (sqlStatement instanceof SetStatement) {
+            return createParameterStatusResponse((SetStatement) sqlStatement);
+        }
+        return Collections.singletonList(sqlStatement instanceof EmptyStatement ? new PostgreSQLEmptyQueryResponsePacket()
+                : new PostgreSQLCommandCompletePacket(PostgreSQLCommand.valueOf(sqlStatement.getClass()).map(PostgreSQLCommand::getTag).orElse(""), updateResponseHeader.getUpdateCount()));
     }
     
-    private Collection<DatabasePacket<?>> createClientEncodingPackets(final ClientEncodingResponseHeader clientEncodingResponseHeader) {
-        Collection<DatabasePacket<?>> result = new LinkedList<>();
-        Optional<String> currentCharsetValue = clientEncodingResponseHeader.getCurrentCharsetValue();
-        if (currentCharsetValue.isPresent()) {
-            result.add(new PostgreSQLCommandCompletePacket("SET", 0));
-            result.add(new PostgreSQLParameterStatusPacket("client_encoding", currentCharsetValue.get()));
-            return result;
+    private List<DatabasePacket<?>> createParameterStatusResponse(final SetStatement sqlStatement) {
+        List<DatabasePacket<?>> result = new ArrayList<>(2);
+        result.add(new PostgreSQLCommandCompletePacket("SET", 0));
+        for (VariableAssignSegment each : sqlStatement.getVariableAssigns()) {
+            result.add(new PostgreSQLParameterStatusPacket(each.getVariable().getVariable(), IdentifierValue.getQuotedContent(each.getAssignValue())));
         }
-        throw new InvalidParameterValueException(String.format("invalid value for parameter \"clientEncoding\": \"%s\"", clientEncodingResponseHeader.getInputValue()));
+        return result;
     }
     
     @Override
     public boolean next() throws SQLException {
-        return textProtocolBackendHandler.next();
+        return proxyBackendHandler.next();
     }
     
     @Override
     public PostgreSQLPacket getQueryRowPacket() throws SQLException {
-        return new PostgreSQLDataRowPacket(textProtocolBackendHandler.getRowData());
+        return new PostgreSQLDataRowPacket(proxyBackendHandler.getRowData().getData());
     }
     
     @Override
     public void close() throws SQLException {
-        textProtocolBackendHandler.close();
+        proxyBackendHandler.close();
     }
 }

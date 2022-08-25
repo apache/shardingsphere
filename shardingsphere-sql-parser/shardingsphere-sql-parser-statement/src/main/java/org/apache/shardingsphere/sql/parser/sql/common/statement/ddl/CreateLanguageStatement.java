@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Create language statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class CreateLanguageStatement extends AbstractSQLStatement implements DDLStatement {
 }

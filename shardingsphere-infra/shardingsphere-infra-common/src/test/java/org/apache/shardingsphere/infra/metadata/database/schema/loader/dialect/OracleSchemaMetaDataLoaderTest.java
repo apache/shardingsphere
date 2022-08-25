@@ -51,22 +51,22 @@ public final class OracleSchemaMetaDataLoaderTest {
     
     private static final String ALL_INDEXES_SQL = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, INDEX_NAME FROM ALL_INDEXES WHERE OWNER = ? AND TABLE_NAME IN ('tbl')";
     
-    private static final String ALL_TAB_COLUMNS_SQL_CONDITION1 = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_ID , IDENTITY_COLUMN, COLLATION"
-            + " FROM ALL_TAB_COLUMNS WHERE OWNER = ? AND TABLE_NAME IN ('tbl') ORDER BY COLUMN_ID";
+    private static final String ALL_TAB_COLUMNS_SQL_CONDITION1 = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_ID, HIDDEN_COLUMN , IDENTITY_COLUMN, COLLATION"
+            + " FROM ALL_TAB_COLS WHERE OWNER = ? AND TABLE_NAME IN ('tbl') ORDER BY COLUMN_ID";
     
-    private static final String ALL_TAB_COLUMNS_SQL_CONDITION2 = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_ID , IDENTITY_COLUMN FROM ALL_TAB_COLUMNS WHERE OWNER = ?"
+    private static final String ALL_TAB_COLUMNS_SQL_CONDITION2 = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_ID, HIDDEN_COLUMN , IDENTITY_COLUMN"
+            + " FROM ALL_TAB_COLS WHERE OWNER = ? AND TABLE_NAME IN ('tbl') ORDER BY COLUMN_ID";
+    
+    private static final String ALL_TAB_COLUMNS_SQL_CONDITION3 = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_ID, HIDDEN_COLUMN  FROM ALL_TAB_COLS WHERE OWNER = ?"
             + " AND TABLE_NAME IN ('tbl') ORDER BY COLUMN_ID";
     
-    private static final String ALL_TAB_COLUMNS_SQL_CONDITION3 = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_ID  FROM ALL_TAB_COLUMNS WHERE OWNER = ?"
-            + " AND TABLE_NAME IN ('tbl') ORDER BY COLUMN_ID";
+    private static final String ALL_TAB_COLUMNS_SQL_CONDITION4 = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_ID, HIDDEN_COLUMN , IDENTITY_COLUMN, COLLATION"
+            + " FROM ALL_TAB_COLS WHERE OWNER = ? AND TABLE_NAME IN ('tbl') ORDER BY COLUMN_ID";
     
-    private static final String ALL_TAB_COLUMNS_SQL_CONDITION4 = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_ID , IDENTITY_COLUMN, COLLATION FROM ALL_TAB_COLUMNS"
+    private static final String ALL_TAB_COLUMNS_SQL_CONDITION5 = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_ID, HIDDEN_COLUMN , IDENTITY_COLUMN FROM ALL_TAB_COLS"
             + " WHERE OWNER = ? AND TABLE_NAME IN ('tbl') ORDER BY COLUMN_ID";
     
-    private static final String ALL_TAB_COLUMNS_SQL_CONDITION5 = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_ID , IDENTITY_COLUMN FROM ALL_TAB_COLUMNS"
-            + " WHERE OWNER = ? AND TABLE_NAME IN ('tbl') ORDER BY COLUMN_ID";
-    
-    private static final String ALL_TAB_COLUMNS_SQL_CONDITION6 = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_ID  FROM ALL_TAB_COLUMNS"
+    private static final String ALL_TAB_COLUMNS_SQL_CONDITION6 = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_ID, HIDDEN_COLUMN  FROM ALL_TAB_COLS"
             + " WHERE OWNER = ? AND TABLE_NAME IN ('tbl') ORDER BY COLUMN_ID";
     
     @Test
@@ -84,8 +84,8 @@ public final class OracleSchemaMetaDataLoaderTest {
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, false, true, true)));
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, false, true, true, true)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false, false)));
     }
     
     @Test
@@ -103,8 +103,8 @@ public final class OracleSchemaMetaDataLoaderTest {
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, false, true, false)));
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, false, true, false, true)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false, false)));
     }
     
     @Test
@@ -122,8 +122,8 @@ public final class OracleSchemaMetaDataLoaderTest {
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, false, false, false)));
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, false, false, false, true)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false, false)));
     }
     
     @Test
@@ -141,8 +141,8 @@ public final class OracleSchemaMetaDataLoaderTest {
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, true, true, true)));
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, true, true, true, true)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false, false)));
     }
     
     @Test
@@ -160,8 +160,8 @@ public final class OracleSchemaMetaDataLoaderTest {
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, true, true, false)));
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, true, true, false, true)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false, false)));
     }
     
     @Test
@@ -179,8 +179,8 @@ public final class OracleSchemaMetaDataLoaderTest {
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, true, false, false)));
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, true, false, false, true)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false, false)));
     }
     
     private DataSource mockDataSource() throws SQLException {
@@ -204,6 +204,7 @@ public final class OracleSchemaMetaDataLoaderTest {
         when(result.getString("TABLE_NAME")).thenReturn("tbl");
         when(result.getString("COLUMN_NAME")).thenReturn("id", "name", "creation_time");
         when(result.getString("DATA_TYPE")).thenReturn("int", "varchar", "TIMESTAMP(6)");
+        when(result.getString("HIDDEN_COLUMN")).thenReturn("NO", "YES", "NO");
         when(result.getString("IDENTITY_COLUMN")).thenReturn("YES", "NO", "NO");
         when(result.getString("COLLATION")).thenReturn("BINARY_CS", "BINARY_CI", "BINARY_CI");
         return result;

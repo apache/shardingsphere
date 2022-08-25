@@ -17,25 +17,28 @@
 
 package org.apache.shardingsphere.infra.context.refresher.fixture;
 
+import lombok.Getter;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
-import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.Optional;
 
+import static org.mockito.Mockito.mock;
+
+@Getter
 public final class MetaDataRefresherFixture implements MetaDataRefresher<AbstractSQLStatement> {
     
+    private int count;
+    
     @Override
-    public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final FederationDatabaseMetaData federationDatabaseMetaData,
-                                                    final Map<String, OptimizerPlannerContext> optimizerPlanners, final Collection<String> logicDataSourceNames,
+    public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                                                     final String schemaName, final AbstractSQLStatement sqlStatement, final ConfigurationProperties props) {
-        return Optional.empty();
+        count++;
+        return Optional.of(mock(MetaDataRefreshedEvent.class));
     }
     
     @Override

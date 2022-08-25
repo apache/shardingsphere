@@ -33,6 +33,7 @@
         <module>spi-based-sharding-raw-jdbc-example</module>
         <module>spi-based-sharding-spring-boot-mybatis-example</module>
         <module>spi-based-sharding-spring-namespace-jpa-example</module>
+        <module>spi-based-sharding-spring-namespace-mybatis-example</module>
         <module>spi-based-sharding-spring-boot-jpa-example</module>
     </modules>
 </project>

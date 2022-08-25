@@ -81,7 +81,7 @@ public final class DataSourcePropertiesCreator {
         for (Entry<String, Object> entry : new DataSourceReflection(dataSource).convertToProperties().entrySet()) {
             String propertyName = entry.getKey();
             Object propertyValue = entry.getValue();
-            if (!poolMetaData.isPresent() || isValidProperty(propertyName, propertyValue, poolMetaData.get())) {
+            if (!poolMetaData.isPresent() || isValidProperty(propertyName, propertyValue, poolMetaData.get()) && !poolMetaData.get().getTransientFieldNames().contains(propertyName)) {
                 result.put(propertyName, propertyValue);
             }
         }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.callback;
 
-import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 
 import java.sql.SQLException;
 import java.util.Collection;

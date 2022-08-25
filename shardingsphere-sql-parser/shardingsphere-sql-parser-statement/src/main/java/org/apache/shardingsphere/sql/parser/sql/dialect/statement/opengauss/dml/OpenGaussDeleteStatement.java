@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.Open
 /**
  * OpenGauss delete statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OpenGaussDeleteStatement extends DeleteStatement implements OpenGaussStatement {
 }

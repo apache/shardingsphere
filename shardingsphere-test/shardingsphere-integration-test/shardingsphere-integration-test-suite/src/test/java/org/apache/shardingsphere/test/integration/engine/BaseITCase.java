@@ -21,8 +21,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
-import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainer;
-import org.apache.shardingsphere.test.integration.framework.container.compose.ComposedContainerRegistry;
+import org.apache.shardingsphere.test.integration.container.compose.ComposedContainer;
+import org.apache.shardingsphere.test.integration.container.compose.ComposedContainerRegistry;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.ShardingSphereIntegrationTestParameterized;
 import org.junit.AfterClass;
@@ -45,6 +45,8 @@ public abstract class BaseITCase {
     
     private static final AtomicInteger COMPLETED_SUITES_COUNT = new AtomicInteger(0);
     
+    private final String mode;
+    
     private final String scenario;
     
     private final DatabaseType databaseType;
@@ -63,6 +65,7 @@ public abstract class BaseITCase {
     private Map<String, DataSource> expectedDataSourceMap;
     
     public BaseITCase(final ParameterizedArray parameterizedArray) {
+        mode = parameterizedArray.getMode();
         scenario = parameterizedArray.getScenario();
         databaseType = parameterizedArray.getDatabaseType();
         itKey = parameterizedArray.getKey();

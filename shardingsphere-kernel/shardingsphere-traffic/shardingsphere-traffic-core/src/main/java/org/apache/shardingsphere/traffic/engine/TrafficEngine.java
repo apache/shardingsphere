@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.traffic.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.infra.instance.definition.InstanceType;
-import org.apache.shardingsphere.traffic.context.TrafficContext;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.traffic.rule.TrafficStrategyRule;
 import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
@@ -43,23 +42,22 @@ public final class TrafficEngine {
     /**
      * Dispatch.
      *
-     * @param logicSQL logic SQL
+     * @param queryContext query context
      * @param inTransaction is in transaction
-     * @return traffic context
+     * @return instance id
      */
-    public TrafficContext dispatch(final LogicSQL logicSQL, final boolean inTransaction) {
-        Optional<TrafficStrategyRule> strategyRule = trafficRule.findMatchedStrategyRule(logicSQL, inTransaction);
-        TrafficContext result = new TrafficContext();
+    public Optional<String> dispatch(final QueryContext queryContext, final boolean inTransaction) {
+        Optional<TrafficStrategyRule> strategyRule = trafficRule.findMatchedStrategyRule(queryContext, inTransaction);
         if (!strategyRule.isPresent() || isInvalidStrategyRule(strategyRule.get())) {
-            return result;
+            return Optional.empty();
         }
-        List<InstanceDefinition> instances = instanceContext.getComputeNodeInstances(InstanceType.PROXY, strategyRule.get().getLabels());
+        List<InstanceMetaData> instances = instanceContext.getAllClusterInstances(InstanceType.PROXY, strategyRule.get().getLabels());
         if (!instances.isEmpty()) {
             TrafficLoadBalanceAlgorithm loadBalancer = strategyRule.get().getLoadBalancer();
-            InstanceDefinition instanceDefinition = 1 == instances.size() ? instances.iterator().next() : loadBalancer.getInstanceId(strategyRule.get().getName(), instances);
-            result.setInstanceId(instanceDefinition.getInstanceId());
+            InstanceMetaData instanceMetaData = 1 == instances.size() ? instances.iterator().next() : loadBalancer.getInstanceId(strategyRule.get().getName(), instances);
+            return Optional.of(instanceMetaData.getId());
         }
-        return result;
+        return Optional.empty();
     }
     
     private boolean isInvalidStrategyRule(final TrafficStrategyRule strategyRule) {

@@ -22,6 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.cursor.ExpectedCursorName;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
@@ -33,4 +34,7 @@ public final class CloseStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "cursor-name")
     private ExpectedCursorName cursorName;
+    
+    @XmlAttribute(name = "close-all")
+    private boolean closeAll;
 }

@@ -23,5 +23,5 @@
     <sql-case id="disassociate_statistics_from_function" value="DISASSOCIATE STATISTICS FROM FUNCTIONS myFunction FORCE" db-types="Oracle" />
     <sql-case id="disassociate_statistics_from_package" value="DISASSOCIATE STATISTICS FROM PACKAGES emp_mgmt" db-types="Oracle" />
     <sql-case id="disassociate_statistics_from_type" value="DISASSOCIATE STATISTICS FROM TYPES example_typ" db-types="Oracle" />
-    <sql-case id="disassociate_statistics_from_indextype" value="DISASSOCIATE STATISTICS FROM INDEXTYPES indtype" db-types="Oracle" />
+    <sql-case id="disassociate_statistics_from_index_type" value="DISASSOCIATE STATISTICS FROM INDEXTYPES indtype" db-types="Oracle" />
 </sql-cases>

@@ -54,14 +54,16 @@ public class SpringBootJNDIDataSourceTest {
         System.setProperty(Context.INITIAL_CONTEXT_FACTORY, InitialDataSourceInitialContextFactory.class.getName());
         InitialDataSourceInitialContextFactory.bind("java:comp/env/jdbc/ds0", new MockedDataSource());
         InitialDataSourceInitialContextFactory.bind("java:comp/env/jdbc/ds1", new MockedDataSource());
+        InitialDataSourceInitialContextFactory.bind("java:comp/env/jdbc/write_ds", new MockedDataSource());
     }
     
     @Test
     public void assertDataSources() {
-        Map<String, DataSource> dataSources = getContextManager(dataSource).getMetaDataContexts().getMetaData().getDatabases().get("foo_db").getResource().getDataSources();
-        assertThat(dataSources.size(), is(2));
-        assertTrue(dataSources.containsKey("ds0"));
-        assertTrue(dataSources.containsKey("ds1"));
+        Map<String, DataSource> dataSources = getContextManager(dataSource).getMetaDataContexts().getMetaData().getDatabase("foo_db").getResource().getDataSources();
+        assertThat(dataSources.size(), is(3));
+        assertTrue(dataSources.containsKey("read_ds_0"));
+        assertTrue(dataSources.containsKey("read_ds_1"));
+        assertTrue(dataSources.containsKey("write_ds"));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

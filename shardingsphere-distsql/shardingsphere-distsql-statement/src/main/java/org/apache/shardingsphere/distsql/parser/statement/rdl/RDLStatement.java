@@ -18,15 +18,9 @@
 package org.apache.shardingsphere.distsql.parser.statement.rdl;
 
 import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
-import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatementType;
 
 /**
  * RDL statement.
  */
 public abstract class RDLStatement extends DistSQLStatement {
-    
-    @Override
-    public DistSQLStatementType getStatementType() {
-        return DistSQLStatementType.RDL;
-    }
 }

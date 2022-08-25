@@ -31,7 +31,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLAlterSchemaStatement extends AlterSchemaStatement implements PostgreSQLStatement {
     
     private IdentifierValue renameSchema;

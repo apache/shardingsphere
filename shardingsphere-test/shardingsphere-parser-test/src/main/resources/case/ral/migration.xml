@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <show-migration-source-resources sql-case-id="show-migration-source-resources" />
+    <show-migration-list sql-case-id="show-migration-list" />
+    <show-migration-check-algorithms sql-case-id="show-migration-check-algorithms" />
+    
+    <check-migration sql-case-id="check-migration">
+        <job-id>123</job-id>
+    </check-migration>
+    
+    <check-migration sql-case-id="check-migration-with-type">
+        <job-id>123</job-id>
+        <type-strategy algorithm-name="DEFAULT">
+            <properties>
+                <property key="test-property" value="4"/>
+            </properties>
+        </type-strategy>
+    </check-migration>
+    
+    <show-migration-status sql-case-id="show-migration-status">
+        <job-id>123</job-id>
+    </show-migration-status>
+    
+    <drop-migration-process-configuration sql-case-id="drop-migration-process-configuration-read">
+        <conf-path>/READ</conf-path>
+    </drop-migration-process-configuration>
+    
+    <drop-migration-process-configuration sql-case-id="drop-migration-process-configuration-read-rate-limiter">
+        <conf-path>/READ/RATE_LIMITER</conf-path>
+    </drop-migration-process-configuration>
+    
+    <migrate-table sql-case-id="migrate-table-without-schema-target-db">
+        <source-resource-name>ds_0</source-resource-name>
+        <source-table-name>t_order</source-table-name>
+        <target-table-name>t_order</target-table-name>
+    </migrate-table>
+    
+    <migrate-table sql-case-id="migrate-table-with-schema">
+        <source-resource-name>ds_0</source-resource-name>
+        <source-schema-name>public</source-schema-name>
+        <source-table-name>t_order</source-table-name>
+        <target-table-name>t_order</target-table-name>
+    </migrate-table>
+    
+    <migrate-table sql-case-id="migrate-table-with-target-db">
+        <source-resource-name>ds_0</source-resource-name>
+        <source-table-name>t_order</source-table-name>
+        <target-database-name>sharding_db</target-database-name>
+        <target-table-name>t_order</target-table-name>
+    </migrate-table>
+    
+    <migrate-table sql-case-id="migrate-table-with-schema-target-db">
+        <source-resource-name>ds_0</source-resource-name>
+        <source-schema-name>public</source-schema-name>
+        <source-table-name>t_order</source-table-name>
+        <target-database-name>sharding_db</target-database-name>
+        <target-table-name>t_order</target-table-name>
+    </migrate-table>
+    
+    <clean-migration sql-case-id="clean-migration">
+        <job-id>123</job-id>
+    </clean-migration>
+    
+    <reset-migration sql-case-id="reset-migration">
+        <job-id>123</job-id>
+    </reset-migration>
+    
+    <stop-migration sql-case-id="stop-migration">
+        <job-id>123</job-id>
+    </stop-migration>
+    
+    <start-migration sql-case-id="start-migration">
+        <job-id>123</job-id>
+    </start-migration>
+    
+    <drop-migration-source-resource sql-case-id="drop-migration-source-resource">
+        <data-source>ds_0</data-source>
+        <data-source>ds_1</data-source>
+    </drop-migration-source-resource>
+</sql-parser-test-cases>

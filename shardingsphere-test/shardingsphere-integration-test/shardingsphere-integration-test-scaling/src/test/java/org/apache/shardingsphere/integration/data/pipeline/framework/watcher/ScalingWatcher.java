@@ -19,14 +19,20 @@ package org.apache.shardingsphere.integration.data.pipeline.framework.watcher;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.BaseComposedContainer;
+import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.MigrationComposedContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.NativeComposedContainer;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.mode.repository.cluster.zookeeper.CuratorZookeeperRepository;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
-import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -34,17 +40,42 @@ public class ScalingWatcher extends TestWatcher {
     
     private final BaseComposedContainer composedContainer;
     
-    private final JdbcTemplate jdbcTemplate;
-    
     @Override
     protected void failed(final Throwable e, final Description description) {
         if (composedContainer instanceof NativeComposedContainer) {
             super.failed(e, description);
             return;
         }
-        List<Map<String, Object>> previewList = jdbcTemplate.queryForList("preview select * from t_order");
-        List<Map<String, Object>> shardingAlgorithms = jdbcTemplate.queryForList("SHOW SHARDING ALGORITHMS");
-        log.warn("watcher failed, preview:{}, shardingAlgorithms:{}", previewList, shardingAlgorithms);
+        outputZookeeperData();
+    }
+    
+    private void outputZookeeperData() {
+        MigrationComposedContainer migrationComposedContainer = (MigrationComposedContainer) composedContainer;
+        DatabaseType databaseType = migrationComposedContainer.getStorageContainer().getDatabaseType();
+        String namespace = "it_db_" + databaseType.getType().toLowerCase();
+        ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration("ZooKeeper", namespace,
+                migrationComposedContainer.getGovernanceContainer().getServerLists(), new Properties());
+        ClusterPersistRepository zookeeperRepository = new CuratorZookeeperRepository();
+        zookeeperRepository.init(config);
+        List<String> childrenKeys = zookeeperRepository.getChildrenKeys("/");
+        for (String each : childrenKeys) {
+            if (!"scaling".equals(each)) {
+                continue;
+            }
+            Map<String, String> nodeMap = new LinkedHashMap<>();
+            addZookeeperData(each, "", zookeeperRepository, nodeMap);
+            log.warn("zookeeper data, node:{}, data:{}", each, nodeMap);
+        }
+    }
+    
+    private void addZookeeperData(final String key, final String parentPath, final ClusterPersistRepository zookeeperRepository, final Map<String, String> nodeMap) {
+        String path = String.join("/", parentPath, key);
+        String data = zookeeperRepository.get(path);
+        nodeMap.put(path, data);
+        List<String> childrenKeys = zookeeperRepository.getChildrenKeys(path);
+        for (String each : childrenKeys) {
+            addZookeeperData(each, path, zookeeperRepository, nodeMap);
+        }
     }
     
     @Override

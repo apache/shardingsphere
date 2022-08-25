@@ -72,6 +72,13 @@ header .select-style select{
     z-index: 2;
 }
 
+#sidebar .leftMenu{
+    -ms-touch-action: auto;
+    touch-action: auto;
+    overflow: scroll;
+    -webkit-overflow-scrolling: touch;
+}
+
 #header-wrapper{
     position:sticky;
     background-color: #fff;
@@ -124,6 +131,7 @@ header .select-style select{
 #sidebar .highlightable{
     position:sticky;
     top:48px;
+    overflow: hidden;
 }
 
 #sidebar ul.topics > li.parent, #sidebar ul.topics > li.active{
@@ -465,6 +473,7 @@ table td,p,code{
         left:-300px;
         width: 300px;
         padding-left: 16px;
+        background-color: #fff;
     }
 
     .sidebar-hidden #body{
@@ -482,6 +491,21 @@ table td,p,code{
     }
     .icon-3,.icon-2,.icon-1{display: none;}
 
+    .retro-theme #sidebar{
+        background-color: #F2EFDD;
+    }
+    .eyehelp-theme #sidebar{
+        background-color: #C7EBC9;
+    }
+    .haitian-theme #sidebar{
+        background-color: #E5EDFF;
+    }
+    .deep-theme #sidebar{
+        background-color: #15202F;
+    }
+    .dark-theme #sidebar{
+        background-color: #171717;
+    }
 }
 
 @keyframes mymove {
@@ -548,7 +572,7 @@ table td,p,code{
 .retro-theme th{
     background-color: #F8F5EA;
 }
-.eyehelp-theme table,.retro-theme td,.retro-theme blockquote{
+.retro-theme table,.retro-theme td,.retro-theme blockquote{
     border-color: #dfdcdc;
 }
 /*eyehelp*/

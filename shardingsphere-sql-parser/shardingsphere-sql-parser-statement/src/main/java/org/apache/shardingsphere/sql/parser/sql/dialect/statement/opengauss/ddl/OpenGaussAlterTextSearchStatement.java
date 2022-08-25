@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.Open
 /**
  * OpenGauss alter text search statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OpenGaussAlterTextSearchStatement extends AlterTextSearchStatement implements OpenGaussStatement {
 }

@@ -19,12 +19,12 @@ package org.apache.shardingsphere.sharding.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rulealtered.YamlOnRuleAlteredActionConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.strategy.audit.YamlShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
 
@@ -54,15 +54,15 @@ public final class YamlShardingRuleConfiguration implements YamlRuleConfiguratio
     
     private YamlKeyGenerateStrategyConfiguration defaultKeyGenerateStrategy;
     
-    private Map<String, YamlShardingSphereAlgorithmConfiguration> shardingAlgorithms = new LinkedHashMap<>();
+    private YamlShardingAuditStrategyConfiguration defaultAuditStrategy;
     
-    private Map<String, YamlShardingSphereAlgorithmConfiguration> keyGenerators = new LinkedHashMap<>();
+    private Map<String, YamlAlgorithmConfiguration> shardingAlgorithms = new LinkedHashMap<>();
+    
+    private Map<String, YamlAlgorithmConfiguration> keyGenerators = new LinkedHashMap<>();
+    
+    private Map<String, YamlAlgorithmConfiguration> auditors = new LinkedHashMap<>();
     
     private String defaultShardingColumn;
-    
-    private String scalingName;
-    
-    private Map<String, YamlOnRuleAlteredActionConfiguration> scaling = new LinkedHashMap<>();
     
     @Override
     public Class<ShardingRuleConfiguration> getRuleConfigurationType() {

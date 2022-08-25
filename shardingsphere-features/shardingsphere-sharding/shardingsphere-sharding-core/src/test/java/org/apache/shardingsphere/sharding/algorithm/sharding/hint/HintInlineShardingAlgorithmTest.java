@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.hint;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
 import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import org.junit.Before;
@@ -39,7 +39,7 @@ public final class HintInlineShardingAlgorithmTest {
     
     @Before
     public void setUp() {
-        hintInlineShardingAlgorithm = (HintInlineShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("HINT_INLINE", createProperties()));
+        hintInlineShardingAlgorithm = (HintInlineShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("HINT_INLINE", createProperties()));
         hintInlineShardingAlgorithmDefault = new HintInlineShardingAlgorithm();
         hintInlineShardingAlgorithmDefault.init(new Properties());
     }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.authority.rule.builder;
 
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.constant.AuthorityOrder;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.builder.global.DefaultGlobalRuleConfigurationBuilder;
 
@@ -34,7 +34,7 @@ public final class DefaultAuthorityRuleConfigurationBuilder implements DefaultGl
     
     @Override
     public AuthorityRuleConfiguration build() {
-        return new AuthorityRuleConfiguration(createDefaultUsers(), new ShardingSphereAlgorithmConfiguration("ALL_PERMITTED", new Properties()));
+        return new AuthorityRuleConfiguration(createDefaultUsers(), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()));
     }
     
     private Collection<ShardingSphereUser> createDefaultUsers() {

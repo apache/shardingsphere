@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Oracle alter sequence statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OracleAlterSequenceStatement extends AlterSequenceStatement implements OracleStatement {
 }

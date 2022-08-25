@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry;
 
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
-import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -35,9 +35,10 @@ public interface GovernanceWatcher<T> {
     /**
      * Get watching keys.
      *
+     * @param databaseName database name
      * @return watching keys
      */
-    Collection<String> getWatchingKeys();
+    Collection<String> getWatchingKeys(String databaseName);
     
     /**
      * Get watching types.

@@ -89,12 +89,12 @@
     },
     {
       "name": "spring.shardingsphere.rules.sharding.sharding-algorithms",
-      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration>",
+      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration>",
       "sourceType": "org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration"
     },
     {
       "name": "spring.shardingsphere.rules.sharding.key-generators",
-      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration>",
+      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration>",
       "sourceType": "org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration"
     }
   ],
@@ -186,12 +186,12 @@
     },
     {
       "name": "spring.shardingsphere.rules.sharding.sharding-algorithms",
-      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration>",
+      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration>",
       "sourceType": "org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration"
     },
     {
       "name": "spring.shardingsphere.rules.sharding.key-generators",
-      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration>",
+      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration>",
       "sourceType": "org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration"
     }
   ],
@@ -228,7 +228,7 @@
         {
           "name": "handle-as",
           "parameters": {
-            "target": "org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration"
+            "target": "org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration"
           }
         }
       ]
@@ -240,7 +240,7 @@
         {
           "name": "handle-as",
           "parameters": {
-            "target": "org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration"
+            "target": "org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration"
           }
         }
       ]

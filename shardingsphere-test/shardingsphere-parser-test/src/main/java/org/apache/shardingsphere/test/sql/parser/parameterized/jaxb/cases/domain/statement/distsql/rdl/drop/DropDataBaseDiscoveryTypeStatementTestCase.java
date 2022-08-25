@@ -36,6 +36,6 @@ public final class DropDataBaseDiscoveryTypeStatementTestCase extends SQLParserT
     @XmlElement(name = "type")
     private final List<String> types = new LinkedList<>();
     
-    @XmlAttribute(name = "contains-exist-clause")
-    private boolean containsExistClause;
+    @XmlAttribute(name = "if-exists")
+    private boolean ifExists;
 }

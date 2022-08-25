@@ -8,21 +8,21 @@ weight = 5
 ```sql
 SHOW ENCRYPT RULES [FROM databaseName]
 
-SHOW ENCRYPT TABLE RULE tableName [from databaseName]
+SHOW ENCRYPT TABLE RULE tableName [FROM databaseName]
 ```
 - 支持查询所有的数据加密规则和指定逻辑表名查询。
 
 ## 返回值说明
 
 | 列                        | 说明                |
-| ---------------           | ----------         |
+| ------------------------- | ------------------ |
 | table                     | 逻辑表名             |
 | logic_column              | 逻辑列名             |
 | logic_data_type           | 逻辑列数据类型        |
 | cipher_column             | 密文列名             |
 | cipher_data_type          | 密文列数据类型        |
 | plain_column              | 明文列名             |
-| plain_data_type           | 明文列数据类型          |
+| plain_data_type           | 明文列数据类型        |
 | assisted_query_column     | 辅助查询列名          |
 | assisted_query_data_type  | 辅助查询列数据类型     |
 | encryptor_type            | 加密算法类型          |
@@ -33,7 +33,7 @@ SHOW ENCRYPT TABLE RULE tableName [from databaseName]
 
 *显示加密规则*
 ```sql
-mysql> show encrypt rules from encrypt_db;
+mysql> SHOW ENCRYPT RULES FROM encrypt_db;
 +-------------+--------------+-----------------+---------------+------------------+--------------+-----------------+-----------------------+--------------------------+----------------+-------------------------+--------------------------+
 | table       | logic_column | logic_data_type | cipher_column | cipher_data_type | plain_column | plain_data_type | assisted_query_column | assisted_query_data_type | encryptor_type | encryptor_props         | query_with_cipher_column |
 +-------------+--------------+-----------------+---------------+------------------+--------------+-----------------+-----------------------+--------------------------+----------------+-------------------------+--------------------------+
@@ -47,7 +47,7 @@ mysql> show encrypt rules from encrypt_db;
 
 *显示加密表规则表名*
 ```sql
-mysql> show encrypt table rule t_encrypt;
+mysql> SHOW ENCRYPT TABLE RULE t_encrypt;
 +-------------+--------------+-----------------+---------------+------------------+--------------+-----------------+-----------------------+--------------------------+----------------+-------------------------+--------------------------+
 | table       | logic_column | logic_data_type | cipher_column | cipher_data_type | plain_column | plain_data_type | assisted_query_column | assisted_query_data_type | encryptor_type | encryptor_props         | query_with_cipher_column |
 +-------------+--------------+-----------------+---------------+------------------+--------------+-----------------+-----------------------+--------------------------+----------------+-------------------------+--------------------------+
@@ -56,7 +56,7 @@ mysql> show encrypt table rule t_encrypt;
 +-------------+--------------+-----------------+---------------+------------------+--------------+-----------------+-----------------------+--------------------------+----------------+-------------------------+--------------------------+
 2 rows in set (0.01 sec)
 
-mysql> show encrypt table rule t_encrypt from encrypt_db;
+mysql> SHOW ENCRYPT TABLE RULE t_encrypt FROM encrypt_db;
 +-------------+--------------+-----------------+---------------+------------------+--------------+-----------------+-----------------------+--------------------------+----------------+-------------------------+--------------------------+
 | table       | logic_column | logic_data_type | cipher_column | cipher_data_type | plain_column | plain_data_type | assisted_query_column | assisted_query_data_type | encryptor_type | encryptor_props         | query_with_cipher_column |
 +-------------+--------------+-----------------+---------------+------------------+--------------+-----------------+-----------------------+--------------------------+----------------+-------------------------+--------------------------+

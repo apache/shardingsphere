@@ -24,6 +24,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.ServerStatusFlagCalculator;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -42,6 +43,6 @@ public final class MySQLComSetOptionExecutor implements CommandExecutor {
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
         connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_OPTION_MULTI_STATEMENTS).set(packet.getValue());
-        return Collections.singletonList(new MySQLOKPacket(1));
+        return Collections.singletonList(new MySQLOKPacket(1, ServerStatusFlagCalculator.calculateFor(connectionSession)));
     }
 }

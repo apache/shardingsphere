@@ -19,6 +19,9 @@ package org.apache.shardingsphere.proxy.arguments;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -29,11 +32,13 @@ public final class BootstrapArguments {
     
     private static final String DEFAULT_CONFIG_PATH = "/conf/";
     
+    private static final String DEFAULT_BIND_ADDRESS = "0.0.0.0";
+    
     private final String[] args;
     
     /**
      * Get port.
-     * 
+     *
      * @return port
      */
     public Optional<Integer> getPort() {
@@ -41,7 +46,11 @@ public final class BootstrapArguments {
             return Optional.empty();
         }
         try {
-            return Optional.of(Integer.parseInt(args[0]));
+            int port = Integer.parseInt(args[0]);
+            if (port < 0) {
+                return Optional.empty();
+            }
+            return Optional.of(port);
         } catch (final NumberFormatException ex) {
             throw new IllegalArgumentException(String.format("Invalid port `%s`.", args[0]));
         }
@@ -49,11 +58,20 @@ public final class BootstrapArguments {
     
     /**
      * Get configuration path.
-     * 
+     *
      * @return configuration path
      */
     public String getConfigurationPath() {
         return args.length < 2 ? DEFAULT_CONFIG_PATH : paddingWithSlash(args[1]);
+    }
+    
+    /**
+     * Get bind address list.
+     *
+     * @return address list
+     */
+    public List<String> getAddresses() {
+        return args.length < 3 ? Collections.singletonList(DEFAULT_BIND_ADDRESS) : Arrays.asList(args[2].split(","));
     }
     
     private String paddingWithSlash(final String pathArg) {

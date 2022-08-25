@@ -25,6 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL other show statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class MySQLShowOtherStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
 }

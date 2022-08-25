@@ -140,7 +140,7 @@ public final class GenericSchemaBuilder {
     private static Collection<ShardingSphereColumn> convertToColumns(final Collection<ColumnMetaData> columnMetaDataList) {
         Collection<ShardingSphereColumn> result = new LinkedList<>();
         for (ColumnMetaData each : columnMetaDataList) {
-            result.add(new ShardingSphereColumn(each.getName(), each.getDataType(), each.isPrimaryKey(), each.isGenerated(), each.isCaseSensitive()));
+            result.add(new ShardingSphereColumn(each.getName(), each.getDataType(), each.isPrimaryKey(), each.isGenerated(), each.isCaseSensitive(), each.isVisible()));
         }
         return result;
     }

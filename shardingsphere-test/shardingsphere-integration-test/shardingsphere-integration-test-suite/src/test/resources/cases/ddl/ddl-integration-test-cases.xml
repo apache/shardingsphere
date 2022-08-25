@@ -160,43 +160,43 @@
         </assertion>
     </test-case>
 
-    <test-case sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number VARCHAR(45), description varchar(10))" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number VARCHAR(45), description varchar(10))" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-file="create_table.xml">
             <initial-sql affected-table="t_user_details" />
         </assertion>
     </test-case>
     
-    <test-case sql="CREATE INDEX t_user_details_index ON t_user_details (user_id)"  scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="CREATE INDEX t_user_details_index ON t_user_details (user_id)"  scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-file="create_index.xml">
             <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_plain VARCHAR(45) NULL, number_cipher VARCHAR(45) NULL, description varchar(10))" affected-table="t_user_details" />
         </assertion>
     </test-case>
     
-    <test-case sql="CREATE UNIQUE INDEX t_user_details_index ON t_user_details (user_id)" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="CREATE UNIQUE INDEX t_user_details_index ON t_user_details (user_id)" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-file="create_unique_index.xml">
             <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_plain VARCHAR(45) NULL, number_cipher VARCHAR(45) NULL, description varchar(10))" affected-table="t_user_details" />
         </assertion>
     </test-case>
     
-    <test-case sql="ALTER TABLE t_user_details ADD name varchar(10)" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="ALTER TABLE t_user_details ADD name varchar(10)" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-file="alter_add.xml">
             <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_plain VARCHAR(45) NULL, number_cipher VARCHAR(45) NULL, description varchar(10))" affected-table="t_user_details" />
         </assertion>
     </test-case>
     
-    <test-case sql="ALTER TABLE t_user_details ADD number VARCHAR(45) NULL AFTER address_id" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt" db-types="MySQL">
+    <test-case sql="ALTER TABLE t_user_details ADD number VARCHAR(45) NULL AFTER address_id" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting" db-types="MySQL">
         <assertion expected-data-file="alter_add_encrypt_column.xml">
             <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, description varchar(10))" affected-table="t_user_details" />
         </assertion>
     </test-case>
 
-    <test-case sql="ALTER TABLE t_user_details MODIFY number INT NOT NULL AFTER description" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt" db-types="MySQL">
+    <test-case sql="ALTER TABLE t_user_details MODIFY number INT NOT NULL AFTER description" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting" db-types="MySQL">
         <assertion expected-data-file="alter_modify_encrypt_column.xml">
             <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_plain VARCHAR(45) NULL, number_cipher VARCHAR(45) NULL, description varchar(10))" affected-table="t_user_details" />
         </assertion>
     </test-case>
     
-    <test-case sql="ALTER TABLE t_user_details CHANGE number number_new VARCHAR(50)" db-types="MySQL" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="ALTER TABLE t_user_details CHANGE number number_new VARCHAR(50)" db-types="MySQL" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-file="alter_change.xml">
             <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_plain VARCHAR(45) NULL, number_cipher VARCHAR(45) NULL, description varchar(10))" affected-table="t_user_details" />
         </assertion>
@@ -208,41 +208,55 @@
 <!--        </assertion>-->
 <!--    </test-case>-->
     
-    <test-case sql="ALTER TABLE t_user_details DROP COLUMN number" db-types="MySQL,SQLServer,PostgreSQL,Oracle" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="ALTER TABLE t_user_details DROP COLUMN number" db-types="MySQL,SQLServer,PostgreSQL,Oracle" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-file="alter_drop.xml">
             <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_plain VARCHAR(45) NULL, number_cipher VARCHAR(45) NULL, description varchar(10))" affected-table="t_user_details"/>
         </assertion>
     </test-case>
     
-    <test-case sql="DROP TABLE t_user_details" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="DROP TABLE t_user_details" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-file="drop_table.xml">
             <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_plain VARCHAR(45) NULL, number_cipher VARCHAR(45) NULL, description varchar(10))" affected-table="t_user_details" />
         </assertion>
     </test-case>
     
-    <test-case sql="DROP INDEX t_user_details_index on t_user_details" db-types="MySQL,SQLServer,Oracle" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="DROP INDEX t_user_details_index on t_user_details" db-types="MySQL,SQLServer,Oracle" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-file="unchanged_table.xml">
             <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_plain VARCHAR(45) NULL, number_cipher VARCHAR(45) NULL, description varchar(10));CREATE INDEX t_user_details_index ON t_user_details(description)" affected-table="t_user_details" />
         </assertion>
     </test-case>
 
-    <test-case sql="DROP INDEX t_user_details_index" db-types="PostgreSQL" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="DROP INDEX t_user_details_index" db-types="PostgreSQL" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-file="unchanged_table.xml">
             <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_plain VARCHAR(45) NULL, number_cipher VARCHAR(45) NULL, description varchar(10));CREATE INDEX t_user_details_index ON t_user_details(description)" affected-table="t_user_details" />
         </assertion>
     </test-case>
     
-    <test-case sql="TRUNCATE TABLE t_user_details" db-types="MySQL,SQLServer,Oracle" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="TRUNCATE TABLE t_user_details" db-types="MySQL,SQLServer,Oracle" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-file="unchanged_table.xml">
             <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_plain VARCHAR(45) NULL, number_cipher VARCHAR(45) NULL, description varchar(10))" affected-table="t_user_details" />
         </assertion>
     </test-case>
 
-    <test-case sql="TRUNCATE t_user_details" db-types="PostgreSQL" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
+    <test-case sql="TRUNCATE t_user_details" db-types="PostgreSQL" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-file="unchanged_table.xml">
             <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_plain VARCHAR(45) NULL, number_cipher VARCHAR(45) NULL, description varchar(10))" affected-table="t_user_details" />
         </assertion>
     </test-case>
-    
+
+    <test-case sql="LISTEN notify_async2" db-types="PostgreSQL" />
+
+    <test-case sql="NOTIFY notify_async2" db-types="PostgreSQL" />
+
+    <test-case sql="UNLISTEN notify_async2" db-types="PostgreSQL" />
+
+    <test-case sql="REINDEX (CONCURRENTLY) TABLE t_user_details" db-types="PostgreSQL" />
+
+    <test-case sql="SECURITY LABEL ON TABLE t_user_details IS 'classified'" db-types="PostgreSQL" />
+
+    <test-case sql="MOVE BACKWARD ALL FROM t_user_details" db-types="PostgreSQL" />
+
+    <test-case sql="REFRESH MATERIALIZED VIEW CONCURRENTLY mvtest_boxmv" db-types="PostgreSQL" />
+
     <!-- TODO add single table DDL test cases -->
 </integration-test-cases>

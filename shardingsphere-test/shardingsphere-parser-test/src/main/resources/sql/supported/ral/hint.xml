@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <distsql-case id="show-sharding-hint-status" value="SHOW SHARDING HINT STATUS" />
+    <distsql-case id="add-sharding-hint-database-value" value="ADD SHARDING HINT DATABASE_VALUE T_ORDER=1" />
+    <distsql-case id="add-sharding-hint-table-value" value="ADD SHARDING HINT TABLE_VALUE T_ORDER=1" />
+    <distsql-case id="set-sharding-hint-database-value" value="SET SHARDING HINT DATABASE_VALUE=1" />
+    <distsql-case id="clear-sharding-hint" value="CLEAR SHARDING HINT" />
+    
+    <distsql-case id="show-readwrite-splitting-hint-source" value="SHOW READWRITE_SPLITTING HINT STATUS" />
+    <distsql-case id="set-readwrite-splitting-hint-source" value="SET READWRITE_SPLITTING HINT SOURCE=WRITE" />
+    <distsql-case id="clear-readwrite-splitting-hint-source" value="CLEAR READWRITE_SPLITTING HINT" />
+    
+    <distsql-case id="clear-hint" value="CLEAR HINT" />
+</sql-cases>

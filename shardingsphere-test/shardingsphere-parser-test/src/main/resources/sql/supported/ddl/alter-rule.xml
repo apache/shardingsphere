@@ -17,5 +17,5 @@
   -->
 
 <sql-cases>
-    <sql-case id="alter_rule" value="ALTER RULE notify_all ON emp RENAME TO notify_me;" db-types="openGauss" />
+    <sql-case id="alter_rule" value="ALTER RULE notify_all ON emp RENAME TO notify_me;" db-types="openGauss,PostgreSQL" />
 </sql-cases>

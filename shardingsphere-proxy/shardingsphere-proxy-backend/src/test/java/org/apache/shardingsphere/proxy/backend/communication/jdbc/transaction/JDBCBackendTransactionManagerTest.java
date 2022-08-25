@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.context.ConnectionContext;
+import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
@@ -37,8 +39,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.Optional;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -69,9 +69,12 @@ public final class JDBCBackendTransactionManagerTest extends ProxyContextRestore
     @Before
     public void setUp() {
         setTransactionContexts();
-        when(connectionSession.getDatabaseName()).thenReturn("db");
         when(connectionSession.getTransactionStatus()).thenReturn(transactionStatus);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
+        ConnectionContext connectionContext = mock(ConnectionContext.class);
+        when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
+        TransactionConnectionContext context = new TransactionConnectionContext();
+        when(connectionContext.getTransactionConnectionContext()).thenReturn(context);
     }
     
     private void setTransactionContexts() {
@@ -82,12 +85,12 @@ public final class JDBCBackendTransactionManagerTest extends ProxyContextRestore
     }
     
     private ShardingSphereRuleMetaData mockGlobalRuleMetaData() {
-        ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class, RETURNS_DEEP_STUBS);
+        ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class);
         TransactionRule transactionRule = mock(TransactionRule.class);
         ShardingSphereTransactionManagerEngine transactionManagerEngine = mock(ShardingSphereTransactionManagerEngine.class);
         when(transactionManagerEngine.getTransactionManager(TransactionType.XA)).thenReturn(shardingSphereTransactionManager);
-        when(transactionRule.getResources()).thenReturn(Collections.singletonMap("db", transactionManagerEngine));
-        when(result.findSingleRule(TransactionRule.class)).thenReturn(Optional.of(transactionRule));
+        when(transactionRule.getResource()).thenReturn(transactionManagerEngine);
+        when(result.getSingleRule(TransactionRule.class)).thenReturn(transactionRule);
         return result;
     }
     
@@ -96,7 +99,7 @@ public final class JDBCBackendTransactionManagerTest extends ProxyContextRestore
         newBackendTransactionManager(TransactionType.LOCAL, false);
         backendTransactionManager.begin();
         verify(transactionStatus).setInTransaction(true);
-        verify(backendConnection).closeDatabaseCommunicationEngines(true);
+        verify(backendConnection).closeHandlers(true);
         verify(backendConnection).closeConnections(false);
         verify(localTransactionManager).begin();
     }

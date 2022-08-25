@@ -41,6 +41,10 @@
     <show-sharding-algorithms sql-case-id="show-sharding-algorithms-from">
         <database name="databaseName" start-index="30" stop-index="41"/>
     </show-sharding-algorithms>
+
+    <show-sharding-auditors sql-case-id="show-sharding-auditors-from">
+        <database name="databaseName" start-index="28" stop-index="39"/>
+    </show-sharding-auditors>
     
     <show-readwrite-splitting-rules sql-case-id="show-readwrite-splitting-rules">
         <database name="readwrite_splitting_db" start-index="36" stop-index="57"/>
@@ -99,10 +103,6 @@
         <database name="sharding_db" start-index="36" stop-index="46"/>
     </show-default-sharding-strategy>
 
-    <show-sharding-scaling-rules sql-case-id="show-sharding-scaling-rules">
-        <database name="databaseName" start-index="33" stop-index="44"/>
-    </show-sharding-scaling-rules>
-
     <show-unused-sharding-algorithms sql-case-id="show-unused-sharding-algorithms">
         <database name="databaseName" start-index="37" stop-index="48"/>
     </show-unused-sharding-algorithms>
@@ -126,4 +126,28 @@
     <show-sharding-table-rules-used-algorithm sql-case-id="show-sharding-table-rules-used-algorithm" algorithmName="t_order_inline">
         <database name="sharding_db" start-index="61" stop-index="71"/>
     </show-sharding-table-rules-used-algorithm>
+    
+    <count-single-table-rule sql-case-id="count-single-table-rule">
+        <database name="db1" start-index="29" stop-index="31"/>
+    </count-single-table-rule>
+
+    <count-sharding-rule sql-case-id="count-sharding-rule">
+        <database name="db1" start-index="25" stop-index="27"/>
+    </count-sharding-rule>
+
+    <count-readwrite-splitting-rule sql-case-id="count-readwrite-splitting-rule">
+        <database name="db1" start-index="36" stop-index="38"/>
+    </count-readwrite-splitting-rule>
+
+    <count-db-discovery-rule sql-case-id="count-db-discovery-rule">
+        <database name="db1" start-index="29" stop-index="31"/>
+    </count-db-discovery-rule>
+
+    <count-encrypt-rule sql-case-id="count-encrypt-rule">
+        <database name="db1" start-index="24" stop-index="26"/>
+    </count-encrypt-rule>
+
+    <count-shadow-rule sql-case-id="count-shadow-rule">
+        <database name="db1" start-index="23" stop-index="25"/>
+    </count-shadow-rule>
 </sql-parser-test-cases>

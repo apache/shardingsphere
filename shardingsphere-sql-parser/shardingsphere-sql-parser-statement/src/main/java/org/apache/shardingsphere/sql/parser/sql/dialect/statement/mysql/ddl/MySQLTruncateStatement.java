@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL truncate table statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class MySQLTruncateStatement extends TruncateStatement implements MySQLStatement {
 }

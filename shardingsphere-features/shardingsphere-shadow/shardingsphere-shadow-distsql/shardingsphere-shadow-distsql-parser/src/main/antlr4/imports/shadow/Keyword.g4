@@ -122,3 +122,7 @@ IF
 EXISTS
     : E X I S T S
     ;
+
+COUNT
+    : C O U N T
+    ;

@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.MySQLBinlogTableMapEventPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,14 +30,15 @@ import java.util.Map;
  * Binlog context.
  */
 @Getter
-@Setter
+@RequiredArgsConstructor
 public final class BinlogContext {
     
+    @Setter
     private String fileName;
     
-    private int checksumLength;
+    private final int checksumLength;
     
-    private Map<Long, MySQLBinlogTableMapEventPacket> tableMap = new HashMap<>();
+    private final Map<Long, MySQLBinlogTableMapEventPacket> tableMap;
     
     /**
      * Cache table map event.

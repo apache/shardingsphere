@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Drop text search statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class DropTextSearchStatement extends AbstractSQLStatement implements DDLStatement {
 }

@@ -99,64 +99,64 @@ rules:
 - !READWRITE_SPLITTING
   dataSources:
     readwrite_ds_0:
-      type: Static
-      props:
-        write-data-source-name: encrypt_write_ds_0
-        read-data-source-names: encrypt_read_ds_0
+      staticStrategy:
+        writeDataSourceName: encrypt_write_ds_0
+        readDataSourceNames:
+          - encrypt_read_ds_0
       loadBalancerName: roundRobin
     readwrite_ds_1:
-      type: Static
-      props:
-        write-data-source-name: encrypt_write_ds_1
-        read-data-source-names: encrypt_read_ds_1
+      staticStrategy:
+        writeDataSourceName: encrypt_write_ds_1
+        readDataSourceNames:
+          - encrypt_read_ds_1
       loadBalancerName: roundRobin
     readwrite_ds_2:
-      type: Static
-      props:
-        write-data-source-name: encrypt_write_ds_2
-        read-data-source-names: encrypt_read_ds_2
+      staticStrategy:
+        writeDataSourceName: encrypt_write_ds_2
+        readDataSourceNames:
+          - encrypt_read_ds_2
       loadBalancerName: roundRobin
     readwrite_ds_3:
-      type: Static
-      props:
-        write-data-source-name: encrypt_write_ds_3
-        read-data-source-names: encrypt_read_ds_3
+      staticStrategy:
+        writeDataSourceName: encrypt_write_ds_3
+        readDataSourceNames:
+          - encrypt_read_ds_3
       loadBalancerName: roundRobin
     readwrite_ds_4:
-      type: Static
-      props:
-        write-data-source-name: encrypt_write_ds_4
-        read-data-source-names: encrypt_read_ds_4
+      staticStrategy:
+        writeDataSourceName: encrypt_write_ds_4
+        readDataSourceNames:
+          - encrypt_read_ds_4
       loadBalancerName: roundRobin
     readwrite_ds_5:
-      type: Static
-      props:
-        write-data-source-name: encrypt_write_ds_5
-        read-data-source-names: encrypt_read_ds_5
+      staticStrategy:
+        writeDataSourceName: encrypt_write_ds_5
+        readDataSourceNames:
+          - encrypt_read_ds_5
       loadBalancerName: roundRobin
     readwrite_ds_6:
-      type: Static
-      props:
-        write-data-source-name: encrypt_write_ds_6
-        read-data-source-names: encrypt_read_ds_6
+      staticStrategy:
+        writeDataSourceName: encrypt_write_ds_6
+        readDataSourceNames:
+          - encrypt_read_ds_6
       loadBalancerName: roundRobin
     readwrite_ds_7:
-      type: Static
-      props:
-        write-data-source-name: encrypt_write_ds_7
-        read-data-source-names: encrypt_read_ds_7
+      staticStrategy:
+        writeDataSourceName: encrypt_write_ds_7
+        readDataSourceNames:
+          - encrypt_read_ds_7
       loadBalancerName: roundRobin
     readwrite_ds_8:
-      type: Static
-      props:
-        write-data-source-name: encrypt_write_ds_8
-        read-data-source-names: encrypt_read_ds_8
+      staticStrategy:
+        writeDataSourceName: encrypt_write_ds_8
+        readDataSourceNames:
+          - encrypt_read_ds_8
       loadBalancerName: roundRobin
     readwrite_ds_9:
-      type: Static
-      props:
-        write-data-source-name: encrypt_write_ds_9
-        read-data-source-names: encrypt_read_ds_9
+      staticStrategy:
+        writeDataSourceName: encrypt_write_ds_9
+        readDataSourceNames:
+          - encrypt_read_ds_9
       loadBalancerName: roundRobin
   loadBalancers:
     roundRobin:
