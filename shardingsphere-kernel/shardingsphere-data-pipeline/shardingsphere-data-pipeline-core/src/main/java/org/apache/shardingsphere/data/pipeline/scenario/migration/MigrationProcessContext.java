@@ -19,11 +19,9 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.detect.RuleAlteredJobAlmostCompletedParameter;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCalculateAlgorithmFactory;
 import org.apache.shardingsphere.data.pipeline.core.context.AbstractPipelineProcessContext;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
-import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlgorithm;
 import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
 
 /**
@@ -33,13 +31,10 @@ import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcess
 @Slf4j
 public final class MigrationProcessContext extends AbstractPipelineProcessContext {
     
-    private final JobCompletionDetectAlgorithm<RuleAlteredJobAlmostCompletedParameter> completionDetectAlgorithm;
-    
     private final DataConsistencyCalculateAlgorithm dataConsistencyCalculateAlgorithm;
     
     public MigrationProcessContext(final String jobId, final PipelineProcessConfiguration originalProcessConfig) {
         super(jobId, originalProcessConfig);
-        completionDetectAlgorithm = null;
         dataConsistencyCalculateAlgorithm = DataConsistencyCalculateAlgorithmFactory.newInstance("DATA_MATCH", null);
     }
 }

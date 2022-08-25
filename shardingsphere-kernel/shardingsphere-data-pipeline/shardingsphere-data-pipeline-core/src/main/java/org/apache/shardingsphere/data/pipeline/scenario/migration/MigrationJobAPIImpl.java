@@ -262,13 +262,6 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         jobItemAPI.updateJobItemStatus(jobId, shardingItem, status);
     }
     
-    private void verifyManualMode(final MigrationJobConfiguration jobConfig) {
-        MigrationProcessContext processContext = buildPipelineProcessContext(jobConfig);
-        if (null != processContext.getCompletionDetectAlgorithm()) {
-            throw new PipelineVerifyFailedException("It's not necessary to do it in auto mode.");
-        }
-    }
-    
     @Override
     public Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms() {
         checkModeConfig();
@@ -303,7 +296,6 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         checkModeConfig();
         log.info("Data consistency check for job {}", jobId);
         MigrationJobConfiguration jobConfig = getJobConfiguration(getElasticJobConfigPOJO(jobId));
-        verifyDataConsistencyCheck(jobConfig);
         return dataConsistencyCheck(jobConfig);
     }
     
@@ -322,7 +314,6 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         checkModeConfig();
         log.info("Data consistency check for job {}, algorithmType: {}", jobId, algorithmType);
         MigrationJobConfiguration jobConfig = getJobConfiguration(getElasticJobConfigPOJO(jobId));
-        verifyDataConsistencyCheck(jobConfig);
         return dataConsistencyCheck(jobConfig, DataConsistencyCalculateAlgorithmFactory.newInstance(algorithmType, algorithmProps));
     }
     
@@ -333,10 +324,6 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         log.info("Scaling job {} with check algorithm '{}' data consistency checker result {}", jobId, calculator.getType(), result);
         PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobCheckResult(jobId, aggregateDataConsistencyCheckResults(jobId, result));
         return result;
-    }
-    
-    private void verifyDataConsistencyCheck(final MigrationJobConfiguration jobConfig) {
-        verifyManualMode(jobConfig);
     }
     
     @Override
