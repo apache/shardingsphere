@@ -114,7 +114,7 @@ public final class PostgreSQLMigrationGeneralIT extends BaseExtraSQLITCase {
         stopMigrationByJobId(jobId);
     }
     
-    private void checkOrderItemMigration() {
+    private void checkOrderItemMigration() throws SQLException {
         startMigrationOrderItem(true);
         String jobId = getJobIdByTableName("t_order_item");
         waitMigrationFinished(jobId);

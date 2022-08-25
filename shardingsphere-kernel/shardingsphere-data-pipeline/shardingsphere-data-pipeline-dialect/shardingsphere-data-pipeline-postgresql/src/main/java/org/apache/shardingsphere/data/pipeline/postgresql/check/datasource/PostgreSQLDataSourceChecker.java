@@ -54,11 +54,9 @@ public class PostgreSQLDataSourceChecker extends AbstractDataSourceChecker {
                     throw new PipelineJobPrepareFailedException(String.format("No role exists, rolname: %s.", metaData.getUserName()));
                 }
                 String isSuperRole = resultSet.getString("rolsuper");
-                // compatible openGauss database, role name is SYSADMIN;
-                String isSystemAdminRole = resultSet.getString("rolsystemadmin");
                 String isReplicationRole = resultSet.getString("rolreplication");
-                log.info("checkPrivilege: isSuperRole: {}, isReplicationRole: {}, isSystemAdminRole:{}", isSuperRole, isReplicationRole, isSystemAdminRole);
-                if (StringUtils.equalsIgnoreCase(isSuperRole, "f") && StringUtils.equalsIgnoreCase(isReplicationRole, "f") && StringUtils.equalsIgnoreCase(isSystemAdminRole, "f")) {
+                log.info("checkPrivilege: isSuperRole: {}, isReplicationRole: {}", isSuperRole, isReplicationRole);
+                if (StringUtils.equalsIgnoreCase(isSuperRole, "f") && StringUtils.equalsIgnoreCase(isReplicationRole, "f")) {
                     throw new PipelineJobPrepareFailedException(String.format("Source data source is lack of REPLICATION privileges, you could try `ALTER ROLE \"%s\" REPLICATION;`.",
                             metaData.getUserName()));
                 }

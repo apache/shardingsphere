@@ -194,8 +194,7 @@ public abstract class BaseITCase {
         connectionExecuteWithLog(connection, addSourceResource);
     }
     
-    @SneakyThrows
-    protected void addTargetResource() {
+    protected void addTargetResource() throws SQLException {
         String addTargetResource = migrationDistSQLCommand.getAddMigrationTargetResourceTemplate().replace("${user}", username)
                 .replace("${password}", password)
                 .replace("${ds2}", getActualJdbcUrlTemplate(DS_2, true))
@@ -218,15 +217,15 @@ public abstract class BaseITCase {
         return DataSourceEnvironment.getURL(getDatabaseType(), "127.0.0.1", ENV.getActualDataSourceDefaultPort(databaseType), databaseName);
     }
     
-    protected void createTargetOrderTableRule() {
+    protected void createTargetOrderTableRule() throws SQLException {
         proxyExecuteWithLog(migrationDistSQLCommand.getCreateTargetOrderTableRule(), 3);
     }
     
-    protected void createTargetOrderItemTableRule() {
+    protected void createTargetOrderItemTableRule() throws SQLException {
         proxyExecuteWithLog(migrationDistSQLCommand.getCreateTargetOrderItemTableRule(), 3);
     }
     
-    protected void startMigrationOrder(final boolean withSchema) {
+    protected void startMigrationOrder(final boolean withSchema) throws SQLException {
         if (withSchema) {
             proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderSingleTableWithSchema(), 5);
         } else {
@@ -234,7 +233,7 @@ public abstract class BaseITCase {
         }
     }
     
-    protected void startMigrationOrderItem(final boolean withSchema) {
+    protected void startMigrationOrderItem(final boolean withSchema) throws SQLException {
         if (withSchema) {
             proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderItemSingleTableWithSchema(), 5);
         } else {
@@ -242,9 +241,15 @@ public abstract class BaseITCase {
         }
     }
     
-    // TODO ignore error when sue native mode
-    protected void addMigrationProcessConfig() {
-        proxyExecuteWithLog(migrationDistSQLCommand.getAddMigrationProcessConfig(), 0);
+    protected void addMigrationProcessConfig() throws SQLException {
+        try {
+            proxyExecuteWithLog(migrationDistSQLCommand.getAddMigrationProcessConfig(), 0);
+        } catch (final SQLException ex) {
+            if ("58000".equals(ex.getSQLState())) {
+                log.warn(ex.getMessage());
+            }
+            throw ex;
+        }
     }
     
     protected void createSourceSchema(final String schemaName) throws SQLException {
@@ -259,6 +264,8 @@ public abstract class BaseITCase {
                 // only used for native mode.
                 if (ex instanceof PSQLException && "42P06".equals(ex.getSQLState())) {
                     log.info("Schema {} already exists.", schemaName);
+                } else {
+                    throw ex;
                 }
             }
         }
@@ -271,8 +278,7 @@ public abstract class BaseITCase {
         }
     }
     
-    @SneakyThrows(SQLException.class)
-    protected void proxyExecuteWithLog(final String sql, final int sleepSeconds) {
+    protected void proxyExecuteWithLog(final String sql, final int sleepSeconds) throws SQLException {
         log.info("proxy execute :{}", sql);
         try (Connection connection = proxyDataSource.getConnection()) {
             connection.createStatement().execute(sql);
@@ -321,16 +327,16 @@ public abstract class BaseITCase {
         getIncreaseTaskThread().start();
     }
     
-    protected void stopMigrationByJobId(final String jobId) {
+    protected void stopMigrationByJobId(final String jobId) throws SQLException {
         proxyExecuteWithLog(String.format("STOP MIGRATION '%s'", jobId), 5);
     }
     
     // TODO reopen later
-    protected void startMigrationByJobId(final String jobId) {
+    protected void startMigrationByJobId(final String jobId) throws SQLException {
         proxyExecuteWithLog(String.format("START MIGRATION '%s'", jobId), 10);
     }
     
-    protected void cleanMigrationByJobId(final String jobId) {
+    protected void cleanMigrationByJobId(final String jobId) throws SQLException {
         proxyExecuteWithLog(String.format("CLEAN MIGRATION '%s'", jobId), 1);
     }
     
@@ -366,7 +372,7 @@ public abstract class BaseITCase {
         }
     }
     
-    protected void assertGreaterThanOrderTableInitRows(final int tableInitRows, final String schema) {
+    protected void assertGreaterThanOrderTableInitRows(final int tableInitRows, final String schema) throws SQLException {
         proxyExecuteWithLog("REFRESH TABLE METADATA", 2);
         String countSQL = StringUtils.isBlank(schema) ? "SELECT COUNT(*) as count FROM t_order" : String.format("SELECT COUNT(*) as count FROM %s.t_order", schema);
         Map<String, Object> actual = queryForListWithLog(countSQL).get(0);

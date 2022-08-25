@@ -33,6 +33,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -100,7 +101,7 @@ public final class MySQLMigrationGeneralIT extends BaseExtraSQLITCase {
         assertGreaterThanOrderTableInitRows(TABLE_INIT_ROW_COUNT, "");
     }
     
-    private void assertMigrationSuccessById(final String jobId) {
+    private void assertMigrationSuccessById(final String jobId) throws SQLException {
         waitMigrationFinished(jobId);
         assertCheckMigrationSuccess(jobId);
         stopMigrationByJobId(jobId);
