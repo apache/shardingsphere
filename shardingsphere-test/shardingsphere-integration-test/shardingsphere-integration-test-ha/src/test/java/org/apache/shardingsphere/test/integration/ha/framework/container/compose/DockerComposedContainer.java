@@ -33,7 +33,6 @@ public final class DockerComposedContainer extends AbstractComposedContainer {
         super(scenario);
     }
     
-    
     public List<String> getProxyJdbcUrl(final String databaseName) {
         return null;
     }

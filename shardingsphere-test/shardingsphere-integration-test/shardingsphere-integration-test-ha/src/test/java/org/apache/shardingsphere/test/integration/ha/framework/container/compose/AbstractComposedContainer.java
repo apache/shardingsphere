@@ -51,21 +51,25 @@ public class AbstractComposedContainer implements Startable {
         getContainers().stop();
     }
     
-    public final Map<String, String> loadContainerNames() {
-        Map<String, String> result = new HashMap<>(3, 1);
+    private Map<String, Integer> loadContainerRawNamesAndQuantity() {
+        Map<String, Integer> result = new HashMap<>(3, 1);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        URL resource = classLoader.getResource("env/" + scenario + "/");
+        URL resource = classLoader.getResource("env/scenario/" + scenario);
         if (resource != null) {
             String[] containerNames = new File(resource.getPath()).list((dir, name) -> new File(dir, name).isDirectory());
             if (containerNames != null) {
-                
+                result = extractContainerNamesWithQuantity(containerNames);
             }
         }
         return result;
     }
     
-    public static void main(String[] args) throws Exception {
-        AbstractComposedContainer abstractComposedContainer = new AbstractComposedContainer("mysql/mysql-ha");
-        abstractComposedContainer.loadContainerNames();
+    private Map<String, Integer> extractContainerNamesWithQuantity(String[] rawContainerNames) {
+        Map<String, Integer> result = new HashMap<>(3, 1);
+        for (String each : rawContainerNames) {
+            String databaseTypeName = each.contains("_") ? each.substring(0, each.indexOf("_")) : each;
+            result.merge(databaseTypeName, 1, Integer::sum);
+        }
+        return result;
     }
 }
