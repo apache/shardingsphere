@@ -26,7 +26,8 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
 
  - Use linux line separators.
  - No meaningless blank lines. Please extract private methods to instead of blank lines if too long method body or different logic code fragments.
- - Use meaningful class, method and variable names, avoid to use abbreviate. 
+ - Use meaningful class, method and variable names, class and method name avoid to use abbreviation. Variables like `properties` could abbreviate to `props`, `configuration` could abbreviate to `config`.
+ - If the abbreviation of proper noun more than 3 characters should not be upper case, or keep it. For example: SQL, Jdbc, Http.
  - Return values are named with `result`; Variables in the loop structure are named with `each`; Replace `each` with `entry` in map.
  - Exceptions when catch are named with `ex`; Exceptions when catch but do nothing are named with `ignored`.
  - Name property files with `Spinal Case`(a variant of `Snake Case` which uses hyphens `-` to separate words). 
