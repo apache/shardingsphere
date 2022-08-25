@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.task;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
@@ -37,6 +38,7 @@ import java.util.Collection;
 /**
  * Inventory incremental tasks' runner.
  */
+@RequiredArgsConstructor
 @Slf4j
 public final class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
     
@@ -52,18 +54,6 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
     private final ExecuteEngine inventoryDumperExecuteEngine;
     
     private final ExecuteEngine incrementalDumperExecuteEngine;
-    
-    public InventoryIncrementalTasksRunner(final PipelineJobItemContext jobItemContext, final Collection<InventoryTask> inventoryTasks, final Collection<IncrementalTask> incrementalTasks,
-                                           final ExecuteEngine inventoryDumperExecuteEngine, final ExecuteEngine incrementalDumperExecuteEngine) {
-        this.jobItemContext = jobItemContext;
-        this.inventoryTasks = inventoryTasks;
-        this.incrementalTasks = incrementalTasks;
-        this.inventoryDumperExecuteEngine = inventoryDumperExecuteEngine;
-        this.incrementalDumperExecuteEngine = incrementalDumperExecuteEngine;
-        if (inventoryTasks.isEmpty() && incrementalTasks.isEmpty()) {
-            throw new PipelineJobCreationException("inventory and incremental tasks are all empty");
-        }
-    }
     
     @Override
     public void stop() {
