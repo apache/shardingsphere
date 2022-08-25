@@ -65,7 +65,7 @@ public final class MetaDataContextsFactory {
         Collection<RuleConfiguration> globalRuleConfigs = persistService.getGlobalRuleService().load();
         ConfigurationProperties props = new ConfigurationProperties(persistService.getPropsService().load());
         Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(effectiveDatabaseConfigs, props, instanceContext);
-        databases = getDatabases(databaseNames, parameter.getModeConfiguration().isOverwrite(), databases, persistService);
+        databases = getDatabases(databaseNames, databases, persistService, instanceContext);
         ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases, instanceContext));
         return new MetaDataContexts(persistService, new ShardingSphereMetaData(databases, globalMetaData, props));
     }
@@ -83,18 +83,18 @@ public final class MetaDataContextsFactory {
         return new DataSourceProvidedDatabaseConfiguration(effectiveDataSources, databaseRuleConfigs);
     }
     
-    private static Map<String, ShardingSphereDatabase> getDatabases(final Collection<String> databaseNames, final boolean isOverwrite,
-                                                                    final Map<String, ShardingSphereDatabase> databases, final MetaDataPersistService persistService) {
-        if (databaseNames.isEmpty()) {
-            compareAndPersistMetaData(databases, persistService);
+    private static Map<String, ShardingSphereDatabase> getDatabases(final Collection<String> databaseNames, final Map<String, ShardingSphereDatabase> databases,
+                                                                    final MetaDataPersistService persistService, final InstanceContext instanceContext) {
+        if (databaseNames.isEmpty() || instanceContext.getInstance().getMetaData() instanceof JDBCInstanceMetaData) {
+            persistMetaData(databases, persistService);
             return databases;
         }
         return reloadDatabases(databases, persistService);
     }
     
-    private static void compareAndPersistMetaData(final Map<String, ShardingSphereDatabase> databases, final MetaDataPersistService persistService) {
-        databases.values().forEach(each -> each.getSchemas().forEach((schemaName, tables)
-                -> persistService.getDatabaseMetaDataService().compareAndPersistMetaData(each.getName(), schemaName, tables)));
+    private static void persistMetaData(final Map<String, ShardingSphereDatabase> databases, final MetaDataPersistService persistService) {
+        databases.values().forEach(each -> each.getSchemas().forEach((schemaName, schema)
+                -> persistService.getDatabaseMetaDataService().persistMetaData(each.getName(), schemaName, schema.getTables())));
     }
     
     private static Map<String, ShardingSphereDatabase> reloadDatabases(final Map<String, ShardingSphereDatabase> databases,
