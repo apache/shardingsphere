@@ -1,6 +1,6 @@
 +++
 title = "Contributor Guide"
-weight = 3
+weight = 1
 chapter = true
 +++
 
