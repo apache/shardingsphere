@@ -230,18 +230,21 @@ We also tested the effect of the maximum connections MaxCon on efficiency. The r
 ![Figure 16 MaxCon Efficiency](https://miro.medium.com/max/1400/0*7di7eGuDWc0M2HTX)
 
 ## Conclusion
+
 With Extensive experiments completed by using two well-known benchmarking tools, we verify that under such settings, ShardingSphere outperforms other sharding systems and databases with new architectures in most cases.
 
 As more and more companies are adopting ShardingSphere, we will continue to follow the development guidance concept Database Plus and provide more products to build an plugin-oriented ecosystem with enhanced functions.
 
 ## Author
+
 Zheng LI, Chongqing University Spatio-Temporal Lab (CUST)
 
 ## Apache ShardingSphere Project Links:
+
 [ShardingSphere Github](https://github.com/apache/shardingsphere/issues?page=1&q=is%3Aopen+is%3Aissue+label%3A%22project%3A+OpenForce+2022%22)
 
 [ShardingSphere Twitter](https://twitter.com/ShardingSphere)
 
 [ShardingSphere Slack](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg)
 
-[Contributor Guide](https://shardingsphere.apache.org/community/cn/contribute/)
+[Contributor Guide](https://shardingsphere.apache.org/community/cn/involved/)

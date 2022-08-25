@@ -36,9 +36,7 @@ public final class TableNameTest {
     
     @Test
     public void assertToString() {
-        for (String tableName : Arrays.asList("t_order", "T_ORDER")) {
-            TableName actual = new TableName(tableName);
-            assertThat(actual.toString(), is("t_order"));
-        }
+        TableName actual = new TableName("T_ORDER");
+        assertThat(actual.toString(), is("T_ORDER"));
     }
 }

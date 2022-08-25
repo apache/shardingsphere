@@ -60,6 +60,10 @@ public final class MigrationJobAPIFixture implements MigrationJobAPI {
     }
     
     @Override
+    public void dropProcessConfiguration(final String confPath) {
+    }
+    
+    @Override
     public PipelineProcessConfiguration showProcessConfiguration() {
         return null;
     }
@@ -94,22 +98,6 @@ public final class MigrationJobAPIFixture implements MigrationJobAPI {
     @Override
     public Map<Integer, InventoryIncrementalJobItemProgress> getJobProgress(final MigrationJobConfiguration jobConfig) {
         return null;
-    }
-    
-    @Override
-    public void stopClusterWriteDB(final String jobId) {
-    }
-    
-    @Override
-    public void stopClusterWriteDB(final MigrationJobConfiguration jobConfig) {
-    }
-    
-    @Override
-    public void restoreClusterWriteDB(final String jobId) {
-    }
-    
-    @Override
-    public void restoreClusterWriteDB(final MigrationJobConfiguration jobConfig) {
     }
     
     @Override
@@ -148,14 +136,6 @@ public final class MigrationJobAPIFixture implements MigrationJobAPI {
     }
     
     @Override
-    public void switchClusterConfiguration(final String jobId) {
-    }
-    
-    @Override
-    public void switchClusterConfiguration(final MigrationJobConfiguration jobConfig) {
-    }
-    
-    @Override
     public void reset(final String jobId) {
     }
     
@@ -173,7 +153,8 @@ public final class MigrationJobAPIFixture implements MigrationJobAPI {
     }
     
     @Override
-    public void createJobAndStart(final CreateMigrationJobParameter parameter) {
+    public String createJobAndStart(final CreateMigrationJobParameter parameter) {
+        return null;
     }
     
     @Override

@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.mode.process;
 
 import org.apache.shardingsphere.infra.binder.QueryContext;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
@@ -27,6 +29,10 @@ import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecu
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.spi.ExecuteProcessReporter;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+
+import java.sql.Statement;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Governance execute process reporter.
@@ -38,6 +44,7 @@ public final class GovernanceExecuteProcessReporter implements ExecuteProcessRep
                        final ExecuteProcessConstants constants, final EventBusContext eventBusContext) {
         ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(queryContext.getSql(), executionGroupContext, constants);
         ShowProcessListManager.getInstance().putProcessContext(executeProcessContext.getExecutionID(), new YamlExecuteProcessContext(executeProcessContext));
+        ShowProcessListManager.getInstance().putProcessStatement(executeProcessContext.getExecutionID(), getProcessStatement(executionGroupContext));
     }
     
     @Override
@@ -60,10 +67,23 @@ public final class GovernanceExecuteProcessReporter implements ExecuteProcessRep
             }
         }
         ShowProcessListManager.getInstance().removeProcessContext(executionID);
+        ShowProcessListManager.getInstance().removeProcessStatement(executionID);
     }
     
     @Override
     public void reportClean(final String executionID) {
         ShowProcessListManager.getInstance().removeProcessContext(executionID);
+    }
+    
+    private Collection<Statement> getProcessStatement(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
+        Collection<Statement> result = new LinkedList<>();
+        for (ExecutionGroup<? extends SQLExecutionUnit> each : executionGroupContext.getInputGroups()) {
+            for (SQLExecutionUnit executionUnit : each.getInputs()) {
+                if (executionUnit instanceof JDBCExecutionUnit) {
+                    result.add(((JDBCExecutionUnit) executionUnit).getStorageResource());
+                }
+            }
+        }
+        return result;
     }
 }

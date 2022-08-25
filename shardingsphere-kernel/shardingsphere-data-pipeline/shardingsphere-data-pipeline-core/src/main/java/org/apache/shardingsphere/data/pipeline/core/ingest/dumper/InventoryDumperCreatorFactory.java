@@ -22,8 +22,10 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
+import java.util.Optional;
+
 /**
- * InventoryDumper creator factory.
+ * Inventory dumper creator factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class InventoryDumperCreatorFactory {
@@ -34,10 +36,12 @@ public class InventoryDumperCreatorFactory {
     
     /**
      * Get inventoryDumper creator instance.
+     *
      * @param databaseType databaseType
      * @return InventoryDumperCreator
      */
     public static InventoryDumperCreator getInstance(final String databaseType) {
-        return TypedSPIRegistry.getRegisteredService(InventoryDumperCreator.class, databaseType);
+        Optional<InventoryDumperCreator> result = TypedSPIRegistry.findRegisteredService(InventoryDumperCreator.class, databaseType);
+        return result.orElseGet(DefaultInventoryDumperCreator::new);
     }
 }

@@ -196,4 +196,4 @@ https://github.com/apache/shardingsphere/issues
 
 **贡献指南：**
 
-https://shardingsphere.apache.org/community/cn/contribute/
+https://shardingsphere.apache.org/community/cn/involved/

@@ -31,4 +31,10 @@ public class ProxyContainerConstants {
     public static final String PASSWORD = "Proxy@123";
     
     public static final String AGENT_HOME_IN_CONTAINER = "/usr/local/shardingsphere-agent";
+    
+    public static final String PROXY_CONTAINER_NAME_PREFIX = "ShardingSphere-Proxy";
+    
+    public static final String PROXY_CONTAINER_IMAGE = "apache/shardingsphere-proxy-test";
+    
+    public static final String PROXY_CONTAINER_ABBREVIATION = "proxy";
 }

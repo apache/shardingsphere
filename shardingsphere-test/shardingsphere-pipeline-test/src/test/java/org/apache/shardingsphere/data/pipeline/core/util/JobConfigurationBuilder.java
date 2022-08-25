@@ -43,7 +43,7 @@ public final class JobConfigurationBuilder {
     public static MigrationJobConfiguration createJobConfiguration() {
         YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
         result.setTargetDatabaseName("logic_db");
-        result.setSourceDataSourceName("standard_0");
+        result.setSourceResourceName("standard_0");
         // TODO add autoTables in config file
         result.setSource(createYamlPipelineDataSourceConfiguration(new StandardPipelineDataSourceConfiguration(ConfigurationFileUtil.readFile("migration_standard_jdbc_source.yaml"))));
         result.setTarget(createYamlPipelineDataSourceConfiguration(new ShardingSpherePipelineDataSourceConfiguration(

@@ -23,7 +23,6 @@ org.apache.shardingsphere.sharding.distsql.handler.query.ShardingAuditorsQueryRe
 org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableNodesQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.ShardingKeyGeneratorsQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.DefaultShardingStrategyQueryResultSet
-org.apache.shardingsphere.migration.distsql.handler.query.ShardingScalingRulesQueryResultSet
 org.apache.shardingsphere.migration.distsql.handler.query.CheckMigrationQueryResultSet
 org.apache.shardingsphere.migration.distsql.handler.query.ShowMigrationListQueryResultSet
 org.apache.shardingsphere.migration.distsql.handler.query.ShowMigrationJobStatusQueryResultSet

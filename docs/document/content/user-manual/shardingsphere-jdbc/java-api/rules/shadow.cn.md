@@ -27,10 +27,10 @@ weight = 6
 
 可配置属性：
 
-| *名称*                | *数据类型* | *说明*       |
-| -------------------- | --------- | ----------- |
-| sourceDataSourceName | String    | 生产数据源名称 |
-| shadowDataSourceName | String    | 影子数据源名称 |
+| *名称*                    | *数据类型* | *说明*       |
+| ------------------------ | --------- | ----------- |
+| productionDataSourceName | String    | 生产数据源名称 |
+| shadowDataSourceName     | String    | 影子数据源名称 |
 
 ### 影子表配置
 

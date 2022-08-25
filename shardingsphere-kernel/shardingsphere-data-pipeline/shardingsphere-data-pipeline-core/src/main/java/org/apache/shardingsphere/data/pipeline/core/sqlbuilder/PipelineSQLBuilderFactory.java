@@ -23,6 +23,8 @@ import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
+import java.util.Optional;
+
 /**
  * Pipeline SQL builder factory.
  */
@@ -40,6 +42,7 @@ public final class PipelineSQLBuilderFactory {
      * @return got instance
      */
     public static PipelineSQLBuilder getInstance(final String databaseType) {
-        return TypedSPIRegistry.getRegisteredService(PipelineSQLBuilder.class, databaseType, null);
+        Optional<PipelineSQLBuilder> result = TypedSPIRegistry.findRegisteredService(PipelineSQLBuilder.class, databaseType, null);
+        return result.orElseGet(DefaultPipelineSQLBuilder::new);
     }
 }

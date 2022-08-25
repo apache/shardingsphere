@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.cases.general;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -26,13 +27,13 @@ import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEn
 import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingCaseHelper;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -69,8 +70,9 @@ public final class MySQLMigrationGeneralIT extends BaseExtraSQLITCase {
     }
     
     @Test
+    @SneakyThrows
     public void assertMigrationSuccess() {
-        createScalingRule();
+        addMigrationProcessConfig();
         createSourceOrderTable();
         createSourceOrderItemTable();
         addSourceResource();
@@ -84,9 +86,13 @@ public final class MySQLMigrationGeneralIT extends BaseExtraSQLITCase {
             jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrder(), dataPair.getLeft());
             jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
         }
+        startMigrationOrder(false);
         startMigrationOrderItem(false);
-        checkOrderMigration(keyGenerateAlgorithm, jdbcTemplate);
-        checkOrderItemMigration();
+        startIncrementTask(new MySQLIncrementTask(jdbcTemplate, keyGenerateAlgorithm, true, 20));
+        String orderJobId = getJobIdByTableName("t_order");
+        String orderItemJobId = getJobIdByTableName("t_order_item");
+        assertMigrationSuccessById(orderJobId);
+        assertMigrationSuccessById(orderItemJobId);
         for (String each : listJobId()) {
             cleanMigrationByJobId(each);
         }
@@ -95,20 +101,9 @@ public final class MySQLMigrationGeneralIT extends BaseExtraSQLITCase {
         assertGreaterThanOrderTableInitRows(TABLE_INIT_ROW_COUNT, "");
     }
     
-    private void checkOrderMigration(final KeyGenerateAlgorithm keyGenerateAlgorithm, final JdbcTemplate jdbcTemplate) {
-        startMigrationOrder(false);
-        startIncrementTask(new MySQLIncrementTask(jdbcTemplate, keyGenerateAlgorithm, true, 20));
-        String jobId = getJobIdByTableName("t_order");
+    private void assertMigrationSuccessById(final String jobId) throws SQLException {
         waitMigrationFinished(jobId);
-        assertCheckScalingSuccess(jobId);
-        stopMigrationByJobId(jobId);
-    }
-    
-    private void checkOrderItemMigration() {
-        startMigrationOrderItem(false);
-        String jobId = getJobIdByTableName("t_order_item");
-        waitMigrationFinished(jobId);
-        assertCheckScalingSuccess(jobId);
+        assertCheckMigrationSuccess(jobId);
         stopMigrationByJobId(jobId);
     }
 }

@@ -280,7 +280,7 @@ The solutions presented in this article have been released with Apache ShardingS
 
 [GitHub issue](https://github.com/apache/shardingsphere/issues)
 
-[Contributor Guide](https://shardingsphere.apache.org/community/en/contribute/)
+[Contributor Guide](https://shardingsphere.apache.org/community/en/involved/)
 
 [ShardingSphere Twitter](https://twitter.com/ShardingSphere)
 
@@ -289,4 +289,5 @@ The solutions presented in this article have been released with Apache ShardingS
 [Chinese Community](https://community.sphere-ex.com/)
 
 ## Author
+
 Weijie Wu, Apache ShardingSphere PMC, R&D Engineer of [SphereEx](https://www.sphere-ex.com/en/) Infrastructure. Weijie focuses on the Apache ShardingSphere access side and the ShardingSphere subproject [ElasticJob](https://shardingsphere.apache.org/elasticjob/).

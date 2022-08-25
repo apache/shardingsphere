@@ -61,6 +61,13 @@ public final class InventoryDumperCreatorFactoryTest {
     }
     
     @Test
+    public void assertInventoryDumperCreatorForOpenGauss() {
+        InventoryDumper actual = InventoryDumperCreatorFactory.getInstance("openGauss")
+                .createInventoryDumper(mockInventoryDumperConfiguration(), new SimpleMemoryPipelineChannel(100), dataSource, new PipelineTableMetaDataLoader(dataSource));
+        assertThat(actual, instanceOf(PostgreSQLInventoryDumper.class));
+    }
+    
+    @Test
     public void assertInventoryDumperCreatorForFixture() {
         InventoryDumper actual = InventoryDumperCreatorFactory.getInstance("Fixture")
                 .createInventoryDumper(mockInventoryDumperConfiguration(), new SimpleMemoryPipelineChannel(100), dataSource, new PipelineTableMetaDataLoader(dataSource));

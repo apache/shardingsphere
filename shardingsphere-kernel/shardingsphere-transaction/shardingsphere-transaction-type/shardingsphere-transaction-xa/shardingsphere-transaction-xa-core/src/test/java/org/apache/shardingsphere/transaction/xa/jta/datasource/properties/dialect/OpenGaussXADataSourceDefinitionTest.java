@@ -28,6 +28,6 @@ public final class OpenGaussXADataSourceDefinitionTest {
     
     @Test
     public void assertGetXADriverClassName() {
-        assertThat(new OpenGaussXADataSourceDefinition().getXADriverClassName(), is(Collections.singletonList("org.opengauss.xa.PGXADataSource")));
+        assertThat(new OpenGaussXADataSourceDefinition().getXADriverClassNames(), is(Collections.singletonList("org.opengauss.xa.PGXADataSource")));
     }
 }

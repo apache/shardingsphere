@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
 
+import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeEntry;
@@ -128,7 +129,8 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
             DataSource dataSource = parameter.getSourceDataSourceMap().get(dataSourceName);
             DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(Collections.singletonList(dataSource));
             String schemaName = parameter.getTableNameSchemaNameMapping().getSchemaName(each.getLogicTableName());
-            String actualTableName = parameter.getTableNameMap().get(each.getLogicTableName());
+            String actualTableName = each.getDataNodes().get(0).getTableName();
+            Preconditions.checkNotNull(actualTableName, "Could not get actualTableName, nodeEntry={}", each);
             result.add(generator.generateLogicDDL(databaseType, dataSource, schemaName, each.getLogicTableName(), actualTableName, parameter.getSqlParserEngine()));
         }
         return result;

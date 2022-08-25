@@ -54,20 +54,6 @@ public interface MigrationJobPublicAPI extends PipelineJobPublicAPI, RequiredSPI
     Map<Integer, InventoryIncrementalJobItemProgress> getJobProgress(String jobId);
     
     /**
-     * Stop cluster writing.
-     *
-     * @param jobId job id
-     */
-    void stopClusterWriteDB(String jobId);
-    
-    /**
-     * Restore cluster writing.
-     *
-     * @param jobId job id
-     */
-    void restoreClusterWriteDB(String jobId);
-    
-    /**
      * List all data consistency check algorithms from SPI.
      *
      * @return data consistency check algorithms
@@ -101,13 +87,6 @@ public interface MigrationJobPublicAPI extends PipelineJobPublicAPI, RequiredSPI
     Map<String, DataConsistencyCheckResult> dataConsistencyCheck(String jobId, String algorithmType, Properties algorithmProps);
     
     /**
-     * Switch cluster configuration.
-     *
-     * @param jobId job id
-     */
-    void switchClusterConfiguration(String jobId);
-    
-    /**
      * Reset scaling job.
      *
      * @param jobId job id
@@ -139,6 +118,7 @@ public interface MigrationJobPublicAPI extends PipelineJobPublicAPI, RequiredSPI
      * Create job migration config and start.
      *
      * @param parameter create migration job parameter
+     * @return job id
      */
-    void createJobAndStart(CreateMigrationJobParameter parameter);
+    String createJobAndStart(CreateMigrationJobParameter parameter);
 }

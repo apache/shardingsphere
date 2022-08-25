@@ -78,11 +78,6 @@ public final class DatabaseRulesCountResultSetTest {
         resultSet.next();
         actual = resultSet.getRowData();
         rowData = actual.iterator();
-        assertThat(rowData.next(), is("sharding_scaling"));
-        assertThat(rowData.next(), is(0));
-        resultSet.next();
-        actual = resultSet.getRowData();
-        rowData = actual.iterator();
         assertThat(rowData.next(), is("readwrite_splitting"));
         assertThat(rowData.next(), is(1));
         resultSet.next();
@@ -171,11 +166,6 @@ public final class DatabaseRulesCountResultSetTest {
         actual = resultSet.getRowData();
         rowData = actual.iterator();
         assertThat(rowData.next(), is("sharding_broadcast_table"));
-        assertThat(rowData.next(), is(0));
-        resultSet.next();
-        actual = resultSet.getRowData();
-        rowData = actual.iterator();
-        assertThat(rowData.next(), is("sharding_scaling"));
         assertThat(rowData.next(), is(0));
         resultSet.next();
         actual = resultSet.getRowData();

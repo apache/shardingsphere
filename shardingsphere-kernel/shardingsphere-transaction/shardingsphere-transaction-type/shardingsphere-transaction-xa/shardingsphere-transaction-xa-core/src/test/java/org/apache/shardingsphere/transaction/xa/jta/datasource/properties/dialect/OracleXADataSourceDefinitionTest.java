@@ -28,6 +28,6 @@ public final class OracleXADataSourceDefinitionTest {
     
     @Test
     public void assertGetXADriverClassName() {
-        assertThat(new OracleXADataSourceDefinition().getXADriverClassName(), is(Collections.singletonList("oracle.jdbc.xa.client.OracleXADataSource")));
+        assertThat(new OracleXADataSourceDefinition().getXADriverClassNames(), is(Collections.singletonList("oracle.jdbc.xa.client.OracleXADataSource")));
     }
 }

@@ -23,4 +23,5 @@
     <alter-procedure sql-case-id="alter_procedure_depends_on" />
     <alter-procedure sql-case-id="alter_procedure_set_param" />
     <alter-procedure sql-case-id="alter_procedure_reset_param" />
+    <alter-procedure sql-case-id="alter_procedure_for_oracle" />
 </sql-parser-test-cases>

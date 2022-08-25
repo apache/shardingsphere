@@ -16,6 +16,23 @@
   -->
 
 <command>
+    <add-migration-process-config>
+        CREATE MIGRATION PROCESS CONFIGURATION (
+        READ(
+        WORKER_THREAD=40,
+        BATCH_SIZE=1000,
+        SHARDING_SIZE=10000000,
+        RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='500')))
+        ),
+        WRITE(
+        WORKER_THREAD=40,
+        BATCH_SIZE=1000,
+        RATE_LIMITER (TYPE(NAME='TPS',PROPERTIES('tps'='2000')))
+        ),
+        STREAM_CHANNEL (TYPE(NAME='MEMORY',PROPERTIES('block-queue-size'='10000')))
+        );
+    </add-migration-process-config>
+    
     <add-migration-source-resource-template>
         ADD MIGRATION SOURCE RESOURCE ds_0 (
         URL="${ds0}",

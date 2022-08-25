@@ -31,8 +31,8 @@ Therefore, enterprises usually select the full link voltage test method, i.e. a 
 |  *Name*  |  *Type*  | *Description*  |
 | ------- | -------- | ------- |
 | id | Attribute | Spring Bean Id |
-| source-data-source-name | Attribute | Production data source name |
-| shadow-data-source-name | Attribute | Shadow data source name |
+| production-data-source-name | Attribute | Production data source name |
+| shadow-data-source-name     | Attribute | Shadow data source name     |
 
 ###  Shadow table configuration:
 ```xml
@@ -88,7 +88,7 @@ Refer to [Builin Shadow Algorithm](/en/user-manual/common-config/builtin-algorit
     </shadow:shadow-algorithm>
 
     <shadow:rule id="shadowRule">
-        <shadow:data-source id="shadow-data-source" source-data-source-name="ds" shadow-data-source-name="ds_shadow"/>
+        <shadow:data-source id="shadow-data-source" production-data-source-name="ds" shadow-data-source-name="ds_shadow"/>
         <shadow:shadow-table name="t_user" data-sources="shadow-data-source">
             <shadow:algorithm shadow-algorithm-ref="user-id-insert-match-algorithm" />
         </shadow:shadow-table>

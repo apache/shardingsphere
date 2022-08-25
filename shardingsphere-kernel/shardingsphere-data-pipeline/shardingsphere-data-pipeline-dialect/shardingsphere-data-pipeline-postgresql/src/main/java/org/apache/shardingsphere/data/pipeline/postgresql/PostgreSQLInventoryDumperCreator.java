@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql;
 
-import javax.sql.DataSource;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.InventoryDumperCreator;
@@ -25,10 +24,16 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTabl
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLInventoryDumper;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.InventoryDumper;
 
+import javax.sql.DataSource;
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * PostgreSQL inventory dumper creator.
  */
 public class PostgreSQLInventoryDumperCreator implements InventoryDumperCreator {
+    
+    private static final Collection<String> TYPE_ALIASES = Collections.singletonList("openGauss");
     
     @Override
     public InventoryDumper createInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig,
@@ -40,5 +45,10 @@ public class PostgreSQLInventoryDumperCreator implements InventoryDumperCreator 
     @Override
     public String getType() {
         return "PostgreSQL";
+    }
+    
+    @Override
+    public Collection<String> getTypeAliases() {
+        return TYPE_ALIASES;
     }
 }

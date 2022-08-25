@@ -38,7 +38,7 @@ public final class MigrationJobConfiguration implements PipelineJobConfiguration
     
     private final String targetDatabaseName;
     
-    private final String sourceDataSourceName;
+    private final String sourceResourceName;
     
     private final String sourceSchemaName;
     

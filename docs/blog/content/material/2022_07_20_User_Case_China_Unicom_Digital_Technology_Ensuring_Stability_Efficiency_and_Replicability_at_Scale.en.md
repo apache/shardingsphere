@@ -11,6 +11,7 @@ The company integrates with China Unicom’s capabilities such as cloud computin
 Unicom Digital Tech has accumulated a large number of industry benchmark cases and successfully provided customers with diverse and professional products & services.
 
 ## Background
+
 In recent years, dozens of service hotline platforms have been launched with the help of Unicom Digital Tech, in a bid to improve enterprise and government services.
 
 The service hotlines are characterized by high concurrency and large amounts of data. Every time we dial a hotline, a work order record is generated. The business volumes of a hotline during the epidemic have increased several times compared to the past.
@@ -18,6 +19,7 @@ The service hotlines are characterized by high concurrency and large amounts of 
 In the work order module of the government or emergency services hotlines, to meet the business needs of massive amounts of data and high stability, Unicom Digital Tech adopts [ShardingSphere](https://shardingsphere.apache.org/) to carry out sharding and store work order information.
 
 ## Business challenges
+
 Government service hotlines are the main channel through which the government interacts with enterprises and the public. It provides 24/7 services for the public through a single telephone number.
 
 In addition to dealing with work orders, it also involves services such as telephone traffic, Wiki, voice chat, etc.
@@ -34,6 +36,7 @@ The hotline service raises the following requirements for database architecture 
 - Low coupling of business code
 
 ## Why did Unicom Digital Technology choose ShardingSphere?
+
 The technical team conducted several rounds of research and tests in terms of stability, features, access mode, and product performance, and they finally choose the “ShardingSphere + [MySQL](https://www.mysql.com/)” distributed database solution.
 
 - **Advanced concept**
@@ -71,6 +74,7 @@ In addition to the trade-offs of the above five key considerations, other databa
  
 
 ## Solutions
+
 As “ShardingSphere+MySQL” ensures stability, ease of use, and ultimate performance, this configuration has been replicated and used in many government and enterprise service hotline projects of Unicom Digital Tech.
 
 - **Deployment mode**
@@ -113,13 +117,15 @@ The business module of the hotline service adopts the micro-service architecture
 - It prevents database binding and provides enough flexibility for future upgrades.
 
 ## Conclusion
+
 The hotline service cases of China Unicom Digital Tech verified ShardingSphere’s capability to support government service scenarios and further proved that ShardingSphere can be used in any industry.
 
 ## Project Links:
+
 [ShardingSphere Github](https://github.com/apache/shardingsphere/issues?page=1&q=is%3Aopen+is%3Aissue+label%3A%22project%3A+OpenForce+2022%22)
 
 [ShardingSphere Twitter](https://github.com/apache/shardingsphere/issues?page=1&q=is%3Aopen+is%3Aissue+label%3A%22project%3A+OpenForce+2022%22)
 
 [ShardingSphere Slack](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg)
 
-[Contributor Guide](https://shardingsphere.apache.org/community/cn/contribute/)
+[Contributor Guide](https://shardingsphere.apache.org/community/cn/involved/)

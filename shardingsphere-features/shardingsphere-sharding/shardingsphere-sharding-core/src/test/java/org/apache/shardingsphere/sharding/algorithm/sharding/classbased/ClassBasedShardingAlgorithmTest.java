@@ -20,11 +20,11 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.classbased;
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
+import org.apache.shardingsphere.sharding.exception.ShardingAlgorithmClassImplementationException;
 import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import org.apache.shardingsphere.sharding.fixture.ClassBasedComplexKeysShardingAlgorithmFixture;
 import org.apache.shardingsphere.sharding.fixture.ClassBasedHintShardingAlgorithmFixture;
@@ -69,7 +69,7 @@ public final class ClassBasedShardingAlgorithmTest {
         ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("CLASS_BASED", props));
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = ShardingAlgorithmClassImplementationException.class)
     public void assertInitWithMismatchStrategy() {
         Properties props = new Properties();
         props.setProperty("strategy", "standard");

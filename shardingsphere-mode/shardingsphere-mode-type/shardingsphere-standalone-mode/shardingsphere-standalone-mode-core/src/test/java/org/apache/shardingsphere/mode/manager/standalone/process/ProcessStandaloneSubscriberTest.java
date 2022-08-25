@@ -55,9 +55,9 @@ public final class ProcessStandaloneSubscriberTest {
     @Test
     public void assertLoadShowProcessListData() {
         ShowProcessListRequestEvent showProcessListRequestEvent = mock(ShowProcessListRequestEvent.class);
-        when(showProcessListManager.getProcessContextMap()).thenReturn(Collections.emptyMap());
+        when(showProcessListManager.getProcessContexts()).thenReturn(Collections.emptyMap());
         processRegistrySubscriber.loadShowProcessListData(showProcessListRequestEvent);
-        verify(showProcessListManager, times(1)).getProcessContextMap();
+        verify(showProcessListManager, times(1)).getProcessContexts();
     }
     
     @After

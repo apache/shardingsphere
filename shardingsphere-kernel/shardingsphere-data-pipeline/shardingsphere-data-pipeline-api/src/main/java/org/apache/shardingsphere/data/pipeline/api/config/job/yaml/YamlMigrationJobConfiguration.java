@@ -32,14 +32,14 @@ import java.util.List;
 @Getter
 @Setter
 @Slf4j
-@ToString(exclude = {"source", "target", "schemaTablesMap"})
+@ToString(exclude = {"source", "target"})
 public final class YamlMigrationJobConfiguration implements YamlPipelineJobConfiguration {
     
     private String jobId;
     
     private String targetDatabaseName;
     
-    private String sourceDataSourceName;
+    private String sourceResourceName;
     
     private String sourceSchemaName;
     

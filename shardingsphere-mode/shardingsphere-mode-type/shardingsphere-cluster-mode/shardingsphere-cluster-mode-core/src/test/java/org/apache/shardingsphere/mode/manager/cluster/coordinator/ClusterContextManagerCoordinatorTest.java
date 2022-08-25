@@ -339,9 +339,9 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertCompleteUnitShowProcessList() {
-        String showProcessListId = "foo_process_id";
+        String processListId = "foo_process_id";
         ShowProcessListSimpleLock lock = new ShowProcessListSimpleLock();
-        ShowProcessListManager.getInstance().getLocks().put(showProcessListId, lock);
+        ShowProcessListManager.getInstance().getLocks().put(processListId, lock);
         long startTime = System.currentTimeMillis();
         ExecutorService executorService = Executors.newFixedThreadPool(1);
         executorService.submit(() -> {
@@ -349,21 +349,21 @@ public final class ClusterContextManagerCoordinatorTest {
                 Thread.sleep(50L);
             } catch (final InterruptedException ignored) {
             }
-            coordinator.completeUnitShowProcessList(new ShowProcessListUnitCompleteEvent(showProcessListId));
+            coordinator.completeUnitShowProcessList(new ShowProcessListUnitCompleteEvent(processListId));
         });
         lockAndAwaitDefaultTime(lock);
         long currentTime = System.currentTimeMillis();
         assertTrue(currentTime >= startTime + 50L);
         assertTrue(currentTime <= startTime + 5000L);
-        ShowProcessListManager.getInstance().getLocks().remove(showProcessListId);
+        ShowProcessListManager.getInstance().getLocks().remove(processListId);
     }
     
     @Test
     public void assertTriggerShowProcessList() throws NoSuchFieldException, IllegalAccessException {
         String instanceId = contextManager.getInstanceContext().getInstance().getMetaData().getId();
         ShowProcessListManager.getInstance().putProcessContext("foo_execution_id", new YamlExecuteProcessContext(mock(ExecuteProcessContext.class)));
-        String showProcessListId = "foo_process_id";
-        coordinator.triggerShowProcessList(new ShowProcessListTriggerEvent(instanceId, showProcessListId));
+        String processListId = "foo_process_id";
+        coordinator.triggerShowProcessList(new ShowProcessListTriggerEvent(instanceId, processListId));
         ClusterPersistRepository repository = ReflectionUtil.getFieldValue(coordinator, "registryCenter", RegistryCenter.class).getRepository();
         verify(repository).persist("/execution_nodes/foo_process_id/" + instanceId,
                 "contexts:" + System.lineSeparator() + "- startTimeMillis: 0" + System.lineSeparator());

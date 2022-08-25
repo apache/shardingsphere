@@ -182,12 +182,16 @@ public final class PipelineDDLGenerator {
         SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
         if (sqlStatementContext instanceof CreateTableStatementContext || sqlStatementContext instanceof CommentStatementContext
                 || sqlStatementContext instanceof CreateIndexStatementContext || sqlStatementContext instanceof AlterTableStatementContext) {
-            if (!sqlStatementContext.getTablesContext().getTables().isEmpty()) {
-                TableNameSegment tableNameSegment = sqlStatementContext.getTablesContext().getTables().iterator().next().getTableName();
-                Map<SQLSegment, String> replaceMap = new TreeMap<>(Comparator.comparing(SQLSegment::getStartIndex));
-                replaceMap.put(tableNameSegment, prefix + tableNameSegment.getIdentifier().getValue());
-                return doDecorateActualTable(replaceMap, sql);
+            if (sqlStatementContext.getTablesContext().getTables().isEmpty()) {
+                return sql;
             }
+            TableNameSegment tableNameSegment = sqlStatementContext.getTablesContext().getTables().iterator().next().getTableName();
+            if (sqlStatementContext.getTablesContext().getSchemaName().isPresent()) {
+                return sql;
+            }
+            Map<SQLSegment, String> replaceMap = new TreeMap<>(Comparator.comparing(SQLSegment::getStartIndex));
+            replaceMap.put(tableNameSegment, prefix + tableNameSegment.getIdentifier().getValue());
+            return doDecorateActualTable(replaceMap, sql);
         }
         return sql;
     }
