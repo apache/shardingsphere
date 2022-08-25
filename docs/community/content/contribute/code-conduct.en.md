@@ -27,11 +27,12 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - Use linux line separators.
  - No meaningless blank lines. Please extract private methods to instead of blank lines if too long method body or different logic code fragments.
  - Use meaningful class, method and variable names, class and method name avoid to use abbreviation. Some variables could use abbreviation.
-   - Variables `properties` could abbreviate to `props`, `configuration` could abbreviate to `config`.
- - Abbreviation composed of 2 or 3 characters should be uppercase, more than 3 characters must use camelCase naming rule.
-   - Example for abbreviation composed of 2 or 3 characters: DBDiscoveryExampleScenario, SQL92Lexer, XMLTransfer, MySQLAdminExecutorCreator.
+   - Variable `properties` could abbreviate to `props`;
+   - Variable `configuration` could abbreviate to `config`.
+ - Abbreviation composed less than 3 characters should be uppercase, more than 3 characters must use camel case naming rule.
+   - Example for abbreviation composed less than 3 characters: DBDiscoveryExampleScenario, SQL92Lexer, XMLTransfer, MySQLAdminExecutorCreator;
+   - Example for abbreviation composed more than 3 characters: JdbcUrlAppender, YamlAgentConfigurationSwapper;
    - A variable composed of abbreviation should be lowercase: dbName, mysqlAuthenticationMethod, sqlStatement, mysqlConfig.
-   - Abbreviation composed more than 3 characters should use camelCase naming rule: JdbcUrlAppender, YamlAgentConfigurationSwapper.
  - Return values are named with `result`; Variables in the loop structure are named with `each`; Replace `each` with `entry` in map.
  - Exceptions when catch are named with `ex`; Exceptions when catch but do nothing are named with `ignored`.
  - Name property files with `Spinal Case`(a variant of `Snake Case` which uses hyphens `-` to separate words). 
