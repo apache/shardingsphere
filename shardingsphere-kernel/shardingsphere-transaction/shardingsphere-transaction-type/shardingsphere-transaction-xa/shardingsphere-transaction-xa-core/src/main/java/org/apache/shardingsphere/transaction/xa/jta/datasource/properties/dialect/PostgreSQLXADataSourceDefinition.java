@@ -28,7 +28,7 @@ import java.util.Collections;
 public final class PostgreSQLXADataSourceDefinition implements XADataSourceDefinition {
     
     @Override
-    public Collection<String> getXADriverClassName() {
+    public Collection<String> getXADriverClassNames() {
         return Collections.singletonList("org.postgresql.xa.PGXADataSource");
     }
     

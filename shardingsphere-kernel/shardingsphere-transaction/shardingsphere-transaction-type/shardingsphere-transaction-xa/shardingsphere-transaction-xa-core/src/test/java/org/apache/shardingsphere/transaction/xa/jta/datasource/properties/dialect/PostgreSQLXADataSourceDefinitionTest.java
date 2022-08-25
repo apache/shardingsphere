@@ -28,6 +28,6 @@ public final class PostgreSQLXADataSourceDefinitionTest {
     
     @Test
     public void assertGetXADriverClassName() {
-        assertThat(new PostgreSQLXADataSourceDefinition().getXADriverClassName(), is(Collections.singletonList("org.postgresql.xa.PGXADataSource")));
+        assertThat(new PostgreSQLXADataSourceDefinition().getXADriverClassNames(), is(Collections.singletonList("org.postgresql.xa.PGXADataSource")));
     }
 }

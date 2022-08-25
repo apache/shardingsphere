@@ -20,7 +20,6 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource.swapper;
 import com.google.common.base.CaseFormat;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 
 import javax.sql.DataSource;
@@ -60,40 +59,28 @@ public final class DataSourceSwapper {
     
     private XADataSource createXADataSource() {
         XADataSource result = null;
-        List<ShardingSphereException> exceptions = new LinkedList<>();
-        for (String each : xaDataSourceDefinition.getXADriverClassName()) {
+        List<ReflectiveOperationException> exceptions = new LinkedList<>();
+        for (String each : xaDataSourceDefinition.getXADriverClassNames()) {
             try {
                 result = loadXADataSource(each);
-            } catch (final ShardingSphereException ex) {
+            } catch (final ReflectiveOperationException ex) {
                 exceptions.add(ex);
             }
         }
         if (null == result && !exceptions.isEmpty()) {
-            if (exceptions.size() > 1) {
-                throw new ShardingSphereException("Failed to create [%s] XA DataSource", xaDataSourceDefinition);
-            } else {
-                throw exceptions.iterator().next();
-            }
+            throw new XADataSourceInitializeException(xaDataSourceDefinition);
         }
         return result;
     }
     
-    private XADataSource loadXADataSource(final String xaDataSourceClassName) {
+    private XADataSource loadXADataSource(final String xaDataSourceClassName) throws ReflectiveOperationException {
         Class<?> xaDataSourceClass;
         try {
             xaDataSourceClass = Thread.currentThread().getContextClassLoader().loadClass(xaDataSourceClassName);
         } catch (final ClassNotFoundException ignored) {
-            try {
-                xaDataSourceClass = Class.forName(xaDataSourceClassName);
-            } catch (final ClassNotFoundException ex) {
-                throw new ShardingSphereException("Failed to load [%s]", xaDataSourceClassName);
-            }
+            xaDataSourceClass = Class.forName(xaDataSourceClassName);
         }
-        try {
-            return (XADataSource) xaDataSourceClass.getDeclaredConstructor().newInstance();
-        } catch (final ReflectiveOperationException ex) {
-            throw new ShardingSphereException("Failed to instance [%s]", xaDataSourceClassName);
-        }
+        return (XADataSource) xaDataSourceClass.getDeclaredConstructor().newInstance();
     }
     
     private Map<String, Object> getDatabaseAccessConfiguration(final DataSource dataSource) {
@@ -105,8 +92,7 @@ public final class DataSourceSwapper {
             result.put("password", findGetterMethod(dataSource, provider.getPasswordPropertyName()).invoke(dataSource));
             return result;
         } catch (final ReflectiveOperationException ex) {
-            throw new ShardingSphereException("Cannot swap data source type: `%s`, please provide an implementation from SPI `%s`",
-                    dataSource.getClass().getName(), DataSourcePropertyProvider.class.getName());
+            throw new XADataSourceInitializeException(xaDataSourceDefinition);
         }
     }
     
