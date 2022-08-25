@@ -1,6 +1,6 @@
 +++
 title = "贡献者指南"
-weight = 3
+weight = 1
 chapter = true
 +++
 

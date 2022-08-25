@@ -1,6 +1,6 @@
 +++
-title = "Documents Contributor Guide"
-weight = 7
+title = "Documents Contribute Guide"
+weight = 3
 chapter = true
 +++
 

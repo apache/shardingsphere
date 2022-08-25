@@ -1,6 +1,6 @@
 +++
-title = "官方文档贡献指南"
-weight = 7
+title = "文档贡献指南"
+weight = 3
 chapter = true
 +++
 
