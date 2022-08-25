@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.mysql.datasource;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.ServerVersion;
 import org.apache.shardingsphere.data.pipeline.spi.datasource.JdbcQueryPropertiesExtension;
 
 import java.util.Properties;
@@ -28,12 +29,14 @@ import java.util.Properties;
 @Slf4j
 public final class MySQLJdbcQueryPropertiesExtension implements JdbcQueryPropertiesExtension {
     
-    private static Class<?> mysqlDriverClass;
+    private static String mysqlConnectorVersion;
     
     static {
         try {
-            mysqlDriverClass = MySQLJdbcQueryPropertiesExtension.class.getClassLoader().loadClass("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
+            Class<?> mysqlDriverClass = MySQLJdbcQueryPropertiesExtension.class.getClassLoader().loadClass("com.mysql.jdbc.Driver");
+            mysqlConnectorVersion = mysqlDriverClass.getPackage().getImplementationVersion();
+            log.info("mysql connector version {}", mysqlConnectorVersion);
+        } catch (final ClassNotFoundException ex) {
             log.warn("not find com.mysql.jdbc.Driver class");
         }
     }
@@ -45,11 +48,11 @@ public final class MySQLJdbcQueryPropertiesExtension implements JdbcQueryPropert
         queryProps.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
         queryProps.setProperty("yearIsDateType", Boolean.FALSE.toString());
         // refer https://bugs.mysql.com/bug.php?id=91065
-        if (null != mysqlDriverClass && "com.mysql.cj.jdbc.Driver".equals(mysqlDriverClass.getSuperclass().getName())) {
-            queryProps.setProperty("zeroDateTimeBehavior", "CONVERT_TO_NULL");
-        } else {
-            queryProps.setProperty("zeroDateTimeBehavior", "convertToNull");
+        String zeroDateTimeBehavior = "convertToNull";
+        if (null != mysqlConnectorVersion) {
+            zeroDateTimeBehavior = new ServerVersion(mysqlConnectorVersion).greaterThanOrEqualTo(8, 0, 0) ? "CONVERT_TO_NULL" : zeroDateTimeBehavior;
         }
+        queryProps.setProperty("zeroDateTimeBehavior", zeroDateTimeBehavior);
         queryProps.setProperty("noDatetimeStringSync", Boolean.TRUE.toString());
         queryProps.setProperty("jdbcCompliantTruncation", Boolean.FALSE.toString());
     }
