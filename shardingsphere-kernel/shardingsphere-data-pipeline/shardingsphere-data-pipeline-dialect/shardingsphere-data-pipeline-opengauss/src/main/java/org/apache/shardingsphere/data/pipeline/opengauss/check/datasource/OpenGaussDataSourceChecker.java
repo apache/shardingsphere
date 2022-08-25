@@ -53,7 +53,6 @@ public final class OpenGaussDataSourceChecker extends AbstractDataSourceChecker 
                 if (!resultSet.next()) {
                     throw new PipelineJobPrepareFailedException(String.format("No role exists, rolname: %s.", metaData.getUserName()));
                 }
-                //refer https://support.huaweicloud.com/devg-opengauss/opengauss_devg_0170.html
                 String isSuperRole = resultSet.getString("rolsuper");
                 String isReplicationRole = resultSet.getString("rolreplication");
                 String isSystemAdminRole = resultSet.getString("rolsystemadmin");
