@@ -15,25 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect;
+package org.apache.shardingsphere.transaction.xa.jta.datasource.swapper;
 
+import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 
-import java.util.Collection;
-import java.util.Collections;
-
 /**
- * XA data source definition for Oracle.
+ * XA data source initialize exception.
  */
-public final class OracleXADataSourceDefinition implements XADataSourceDefinition {
+public final class XADataSourceInitializeException extends ShardingSphereSQLException {
     
-    @Override
-    public Collection<String> getXADriverClassNames() {
-        return Collections.singletonList("oracle.jdbc.xa.client.OracleXADataSource");
-    }
+    private static final long serialVersionUID = -4515239569528215614L;
     
-    @Override
-    public String getType() {
-        return "Oracle";
+    public XADataSourceInitializeException(final XADataSourceDefinition xaDataSourceDefinition) {
+        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 11322, "Failed to create `%s` XA data source", xaDataSourceDefinition.getType());
     }
 }
