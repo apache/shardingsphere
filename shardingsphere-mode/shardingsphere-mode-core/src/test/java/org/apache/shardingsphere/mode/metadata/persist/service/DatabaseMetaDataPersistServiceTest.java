@@ -58,7 +58,7 @@ public final class DatabaseMetaDataPersistServiceTest {
         ShardingSphereTable table = new YamlTableSwapper().swapToObject(YamlEngine.unmarshal(readYAML(), YamlShardingSphereTable.class));
         ShardingSphereSchema schema = new ShardingSphereSchema();
         schema.getTables().put("t_order", table);
-        new DatabaseMetaDataPersistService(repository).persistMetaData("foo_db", "foo_schema", schema);
+        new DatabaseMetaDataPersistService(repository).compareAndPersistMetaData("foo_db", "foo_schema", schema);
         verify(repository).persist(eq("/metadata/foo_db/schemas/foo_schema/tables/t_order"), anyString());
     }
     

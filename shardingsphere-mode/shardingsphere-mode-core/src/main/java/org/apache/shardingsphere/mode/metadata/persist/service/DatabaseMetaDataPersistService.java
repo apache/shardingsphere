@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.metadata.persist.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang.StringUtils;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -31,6 +32,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Database meta data registry service.
@@ -41,13 +43,13 @@ public final class DatabaseMetaDataPersistService {
     private final PersistRepository repository;
     
     /**
-     * Persist meta data.
+     * Compare and persist meta data.
      *
      * @param databaseName database name to be persisted
      * @param schemaName schema name to be persisted
      * @param schema schema to be persisted
      */
-    public void persistMetaData(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
+    public void compareAndPersistMetaData(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
         Optional<ShardingSphereSchema> originalSchema = load(databaseName, schemaName);
         if (originalSchema.isPresent()) {
             compareAndPersist(databaseName, schemaName, schema, originalSchema.get());
@@ -56,7 +58,14 @@ public final class DatabaseMetaDataPersistService {
         persistMetaData(databaseName, schemaName, schema.getTables());
     }
     
-    private void persistMetaData(final String databaseName, final String schemaName, final Map<String, ShardingSphereTable> tables) {
+    /**
+     * Persist meta data.
+     *
+     * @param databaseName database name to be persisted
+     * @param schemaName schema name to be persisted
+     * @param tables tables to be persisted
+     */
+    public void persistMetaData(final String databaseName, final String schemaName, final Map<String, ShardingSphereTable> tables) {
         if (tables.isEmpty()) {
             persistSchema(databaseName, schemaName);
             return;
@@ -159,10 +168,25 @@ public final class DatabaseMetaDataPersistService {
         ShardingSphereSchema schema = new ShardingSphereSchema();
         tables.forEach(each -> {
             String content = repository.get(DatabaseMetaDataNode.getTableMetaDataPath(databaseName, schemaName, each));
-            ShardingSphereTable table = new YamlTableSwapper().swapToObject(YamlEngine.unmarshal(content, YamlShardingSphereTable.class));
-            schema.put(each, table);
+            if (!StringUtils.isEmpty(content)) {
+                ShardingSphereTable table = new YamlTableSwapper().swapToObject(YamlEngine.unmarshal(content, YamlShardingSphereTable.class));
+                schema.put(each, table);
+            }
         });
         return Optional.of(schema);
+    }
+    
+    /**
+     * Load schemas.
+     *
+     * @param databaseName database name to be loaded
+     * @return Loaded schemas
+     */
+    public Map<String, ShardingSphereSchema> load(final String databaseName) {
+        Collection<String> schemas = repository.getChildrenKeys(DatabaseMetaDataNode.getMetaDataSchemasPath(databaseName));
+        Map<String, ShardingSphereSchema> result = new ConcurrentHashMap<>(schemas.size(), 1);
+        schemas.forEach(each -> result.put(each.toLowerCase(), load(databaseName, each).orElseGet(ShardingSphereSchema::new)));
+        return result;
     }
     
     /**
