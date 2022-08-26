@@ -181,4 +181,16 @@ READ(
 );
 ```
 
+7.4. 清除配置。
+
 DistSQL 示例：清空 `READ` 配置、恢复为默认值。
+
+```sql
+DROP MIGRATION PROCESS CONFIGURATION '/READ';
+```
+
+DistSQL 示例：清空 `READ/RATE_LIMITER` 配置。
+
+```sql
+DROP MIGRATION PROCESS CONFIGURATION '/READ/RATE_LIMITER';
+```
