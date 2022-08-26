@@ -37,14 +37,18 @@ import java.util.Optional;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ConditionValueGeneratorFactory {
+
     private static final ConditionValueCompareOperatorGenerator COMPARE_OPERATOR_GENERATOR = new ConditionValueCompareOperatorGenerator();
+
     private static final ConditionValueInOperatorGenerator IN_OPERATOR_GENERATOR = new ConditionValueInOperatorGenerator();
+
     private static final ConditionValueBetweenOperatorGenerator BETWEEN_OPERATOR_GENERATOR = new ConditionValueBetweenOperatorGenerator();
+
     /**
      * Generate condition value.
      *
-     * @param predicate predicate right value
-     * @param column column
+     * @param predicate  predicate right value
+     * @param column     column
      * @param parameters SQL parameters
      * @return route value
      */
