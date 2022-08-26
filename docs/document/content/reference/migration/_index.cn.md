@@ -8,7 +8,7 @@ weight = 6
 
 目前的数据迁移解决方案为：使用一个全新的数据库集群作为迁移目标库。
 
-![迁移概述](https://shardingsphere.apache.org/document/current/img/scaling/overview_v2.png)
+![迁移概述](https://shardingsphere.apache.org/document/current/img/migration/overview_v2.png)
 
 这种实现方式有以下优点：
 
@@ -28,7 +28,7 @@ weight = 6
 3. 增量数据同步阶段；
 4. 流量切换阶段。
 
-![迁移总览](https://shardingsphere.apache.org/document/current/img/scaling/principle_v2.png)
+![迁移总览](https://shardingsphere.apache.org/document/current/img/migration/principle_v2.png)
 
 
 ## 执行阶段说明
@@ -60,4 +60,4 @@ weight = 6
 
 ## 相关参考
 
-[数据迁移的配置](/cn/user-manual/shardingsphere-proxy/scaling/)
+[数据迁移的配置](/cn/user-manual/shardingsphere-proxy/migration/)
