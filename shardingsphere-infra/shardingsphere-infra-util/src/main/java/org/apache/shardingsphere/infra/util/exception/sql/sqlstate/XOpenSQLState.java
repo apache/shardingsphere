@@ -45,6 +45,8 @@ public enum XOpenSQLState implements SQLState {
     
     INVALID_AUTHORIZATION_SPECIFICATION("28000"),
     
+    INVALID_CURSOR_NAME("34000"),
+    
     INVALID_CATALOG_NAME("3D000"),
     
     SYNTAX_ERROR("42000"),
