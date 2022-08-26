@@ -35,7 +35,7 @@ chapter = true
  - 三位以内字符的专有名词缩写使用大写，超过三位字符的缩写采用驼峰形式。
    - 三位以内字符的类和方法名称缩写的示例：DBDiscoveryExampleScenario、SQL92Lexer、XMLTransfer、MySQLAdminExecutorCreator；
    - 三位以上字符的类和方法名称缩写的示例：JdbcUrlAppender、YamlAgentConfigurationSwapper；
-   - 变量缩写应该使用小写：dbName、mysqlAuthenticationMethod、sqlStatement、mysqlConfig。
+   - 变量应使用小驼峰形式：dbName、mysqlAuthenticationMethod、sqlStatement、mysqlConfig。
  - 返回值变量使用 `result` 命名；循环中使用 `each` 命名循环变量；map 中使用 `entry` 代替 `each`。
  - 捕获的异常名称命名为 `ex` ；捕获异常且不做任何事情，异常名称命名为 `ignored`。
  - 配置文件使用 `Spinal Case` 命名（一种使用 `-` 分割单词的特殊 `Snake Case`）。
