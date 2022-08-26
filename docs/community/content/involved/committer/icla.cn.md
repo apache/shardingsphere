@@ -1,10 +1,11 @@
 +++ 
 title = "签署 iCLA 指南" 
-weight = 12
+weight = 3
 chapter = true 
 +++
 
 ### Apache ICLA 签署流程指南
+
 Apache CLA 全称 Apache Contributor License Agreement，签署 ICLA 的目的是定义向 ASF 贡献的文档，保护知识产权，避免后续法律纠纷。ICLA 在官方存档后生效，贡献者方可参与 Apache 项目。
 
 当我们需要签署 ICLA 时步骤如下:
@@ -31,5 +32,6 @@ Apache CLA 全称 Apache Contributor License Agreement，签署 ICLA 的目的�
 ![](https://shardingsphere.apache.org/blog/img/icla4.png)
  
 ## 提交文件
+
 * 如果您是新 Committer，请扫描签署后文件的所有页合并到一个 PDF 的文档，发送 email 到 secretary@apache.org。
 * 其他情况，请联系需要您签署 ICLA 文档的负责人。

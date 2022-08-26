@@ -1,6 +1,6 @@
 +++
 title = "Release Guide"
-weight = 9
+weight = 5
 chapter = true
 +++
 

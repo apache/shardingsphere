@@ -1,6 +1,6 @@
 +++
 title = "贡献规约"
-weight = 8
+weight = 3
 chapter = true
 +++
 
