@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.sharding.exception.EngagedViewException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
@@ -54,10 +55,10 @@ public final class ShardingCreateViewStatementValidator extends ShardingDDLState
         extractor.extractTablesFromSelect(selectStatement.get());
         Collection<SimpleTableSegment> tableSegments = extractor.getRewriteTables();
         if (isShardingTablesWithoutBinding(shardingRule, sqlStatementContext, tableSegments)) {
-            throw new ShardingSphereException("View name has to bind to sharding tables!");
+            throw new EngagedViewException("sharding");
         }
         if (isAllBroadcastTablesWithoutConfigView(shardingRule, sqlStatementContext, tableSegments)) {
-            throw new ShardingSphereException("View name has to config as broadcast table!");
+            throw new EngagedViewException("broadcast");
         }
     }
     

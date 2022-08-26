@@ -44,6 +44,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 42S02     | 20006       | Index \`%s\` does not exist |
 | HY000     | 20007       | \`%s %s\` can not route correctly for %s \`%s\` |
 | 42S02     | 20008       | Can not get route result, please check your sharding rule configuration |
+| 42S01     | 20009       | View name has to bind to %s tables |
 | 44000     | 20012       | Inline sharding algorithms expression \`%s\` and sharding column \`%s\` are not match |
 | HY004     | 20013       | Found different types for sharding value \`%s\` |
 | HY004     | 24000       | Encrypt algorithm \`%s\` initialize failed, reason is: %s |
