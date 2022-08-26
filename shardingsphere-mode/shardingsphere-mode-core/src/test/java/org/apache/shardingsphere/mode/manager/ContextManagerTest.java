@@ -175,6 +175,7 @@ public final class ContextManagerTest {
         return new ShardingSphereSchema(Collections.singletonMap("foo_tbl", beforeChangedTable));
     }
     
+    // TODO fix me
     @Ignore
     @Test
     public void assertUpdateResources() throws SQLException {
@@ -185,6 +186,7 @@ public final class ContextManagerTest {
         contextManager.updateResources("foo_db", Collections.singletonMap("bar_ds", new DataSourceProperties(MockedDataSource.class.getName(),
                 createProperties("test", "test"))));
         verify(originalResource, times(1)).close(originalDataSource);
+        assertAlteredDataSource((MockedDataSource) contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResource().getDataSources().get("bar_ds"));
     }
     
     private ShardingSphereDatabase createOriginalDatabaseMetaData() {
