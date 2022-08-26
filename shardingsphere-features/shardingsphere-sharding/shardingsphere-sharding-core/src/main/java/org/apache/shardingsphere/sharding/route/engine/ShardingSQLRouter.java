@@ -24,11 +24,16 @@ import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
+import org.apache.shardingsphere.sharding.exception.ShardingAlgorithmClassImplementationException;
+import org.apache.shardingsphere.sharding.exception.ShardingAlgorithmLogicAbnormalException;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngine;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngineFactory;
+import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngineFactory;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidatorFactory;
@@ -56,7 +61,13 @@ public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
         if (sqlStatement instanceof DMLStatement && shardingConditions.isNeedMerge()) {
             shardingConditions.merge();
         }
-        RouteContext result = ShardingRouteEngineFactory.newInstance(rule, database, queryContext.getSqlStatementContext(), shardingConditions, props).route(rule);
+        ShardingRouteEngine shardingRouteEngine = ShardingRouteEngineFactory.newInstance(rule, database, queryContext.getSqlStatementContext(), shardingConditions, props);
+        RouteContext result;
+        try{
+            result = shardingRouteEngine.route(rule);
+        } catch (ShardingSphereInsideException e){
+            throw new ShardingAlgorithmLogicAbnormalException(e);
+        }
         validator.ifPresent(optional -> optional.postValidate(rule, queryContext.getSqlStatementContext(), queryContext.getParameters(), database, props, result));
         return result;
     }
