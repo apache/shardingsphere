@@ -45,7 +45,11 @@ public final class ParameterizedArrayFactory {
         Collection<AssertionParameterizedArray> result = new LinkedList<>();
         for (String each : ENV.getRunModes()) {
             if ("Standalone".equalsIgnoreCase(each)) {
-                result.addAll(StandaloneParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType));
+                if (distSQLCommandType(sqlCommandType)) {
+                    result.addAll(ProxyStandaloneParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType));
+                } else {
+                    result.addAll(JdbcStandaloneParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType));
+                }
             } else if ("Cluster".equalsIgnoreCase(each)) {
                 result.addAll(ClusterParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType));
             }
@@ -63,11 +67,19 @@ public final class ParameterizedArrayFactory {
         Collection<ParameterizedArray> result = new LinkedList<>();
         for (String each : ENV.getRunModes()) {
             if ("Standalone".equalsIgnoreCase(each)) {
-                result.addAll(StandaloneParameterizedArrayGenerator.getCaseParameterized(sqlCommandType));
+                if (distSQLCommandType(sqlCommandType)) {
+                    result.addAll(ProxyStandaloneParameterizedArrayGenerator.getCaseParameterized(sqlCommandType));
+                } else {
+                    result.addAll(JdbcStandaloneParameterizedArrayGenerator.getCaseParameterized(sqlCommandType));
+                }
             } else if ("Cluster".equalsIgnoreCase(each)) {
                 result.addAll(ClusterParameterizedArrayGenerator.getCaseParameterized(sqlCommandType));
             }
         }
         return result;
+    }
+    
+    private static boolean distSQLCommandType(final SQLCommandType sqlCommandType) {
+        return SQLCommandType.RDL == sqlCommandType || SQLCommandType.RAL == sqlCommandType || SQLCommandType.RQL == sqlCommandType;
     }
 }
