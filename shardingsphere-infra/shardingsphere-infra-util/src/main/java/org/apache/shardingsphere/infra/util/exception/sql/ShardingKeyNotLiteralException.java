@@ -31,7 +31,7 @@ public class ShardingKeyNotLiteralException extends ShardingSphereException {
         this(null);
     }
 
-    public ShardingKeyNotLiteralException(Exception cause) {
+    public ShardingKeyNotLiteralException(final Exception cause) {
         super(ERROR_CATEGORY, ERROR_CODE, ERROR_MSG, cause);
     }
 }
