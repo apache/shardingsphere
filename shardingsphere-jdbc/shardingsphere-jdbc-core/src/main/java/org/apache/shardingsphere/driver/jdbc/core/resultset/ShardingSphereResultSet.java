@@ -20,12 +20,12 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractResultSetAdapter;
 import org.apache.shardingsphere.driver.jdbc.exception.SQLExceptionErrorCode;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtil;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtil;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 
 import java.io.InputStream;
@@ -45,7 +45,10 @@ import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.temporal.TemporalAdjuster;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -405,7 +408,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
             return (T) getBlob(columnIndex);
         } else if (Clob.class.equals(type)) {
             return (T) getClob(columnIndex);
-        } else if (TemporalAdjuster.class.equals(type)) {
+        } else if (LocalDateTime.class.equals(type) || LocalDate.class.equals(type) || LocalTime.class.equals(type) || OffsetDateTime.class.equals(type)) {
             return (T) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, Timestamp.class), type);
         } else {
             return (T) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, type), type);
