@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 @Getter
 @RequiredArgsConstructor
 @ToString
-public final class Parameterized {
+public final class HAParameterized {
     
     private final DatabaseType databaseType;
     

@@ -51,7 +51,7 @@ public final class MySQLContainerConfigurationFactory {
             return Collections.singletonList(new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources(scenario, databaseType, 0)));
         }
         List<StorageContainerConfiguration> result = new LinkedList<>();
-        for (int i = 0; i < containerQuantity; i++) {
+        for (int i = 1; i <= containerQuantity; i++) {
             result.add(new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources(scenario, databaseType, i)));
         }
         return result;
@@ -71,7 +71,7 @@ public final class MySQLContainerConfigurationFactory {
     private static Map<String, String> getMountedResources(final String scenario, final DatabaseType databaseType, final int order) {
         return 0 == order 
                 ? Collections.singletonMap(String.format("/env/scenario/%s/my.cnf", scenario), StorageContainerConstants.MYSQL_CONF_IN_CONTAINER)
-                : Collections.singletonMap(String.format("/env/scenario/%s/%s/my.cnf", scenario, databaseType.getType().toLowerCase()), StorageContainerConstants.MYSQL_CONF_IN_CONTAINER);
+                : Collections.singletonMap(String.format("/env/scenario/%s/%s/my.cnf", scenario, databaseType.getType().toLowerCase() + "_" + order), StorageContainerConstants.MYSQL_CONF_IN_CONTAINER);
     }
     
     private static List<StorageContainerConfiguration> getDefaultConfiguration(final DatabaseType databaseType) {

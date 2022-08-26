@@ -20,8 +20,10 @@ package org.apache.shardingsphere.test.integration.ha.cases.mysql;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.test.integration.ha.cases.base.BaseITCase;
-import org.apache.shardingsphere.test.integration.ha.framework.parameter.Parameterized;
+import org.apache.shardingsphere.test.integration.ha.framework.parameter.HAParameterized;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Collection;
@@ -31,20 +33,25 @@ import java.util.LinkedList;
  * MySQL High Availability Integration Test.
  */
 @Slf4j
-@RunWith(org.junit.runners.Parameterized.class)
+@RunWith(Parameterized.class)
 public final class MySQLHAGeneralIT extends BaseITCase {
     
-    public MySQLHAGeneralIT(final Parameterized parameterized) {
-        super(parameterized);
+    public MySQLHAGeneralIT(final HAParameterized HAParameterized) {
+        super(HAParameterized);
     }
     
     @Parameters(name = "{0}")
-    public static Collection<Parameterized> getParameters() {
-        Collection<Parameterized> result = new LinkedList<>();
+    public static Collection<HAParameterized> getParameters() {
+        Collection<HAParameterized> result = new LinkedList<>();
         MySQLDatabaseType databaseType = new MySQLDatabaseType();
         for (String version : ENV.listDatabaseDockerImageNames(databaseType)) {
-            result.add(new Parameterized(databaseType, version, "mysql_ha"));
+            result.add(new HAParameterized(databaseType, version, "mysql_ha"));
         }
         return result;
+    }
+    
+    @Test
+    public void assertProxyJdbcConnection() {
+        
     }
 }

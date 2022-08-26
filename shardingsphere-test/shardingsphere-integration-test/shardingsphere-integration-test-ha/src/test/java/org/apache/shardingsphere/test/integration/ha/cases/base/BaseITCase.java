@@ -33,7 +33,7 @@ import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironm
 import org.apache.shardingsphere.test.integration.ha.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.ha.framework.container.compose.AbstractComposedContainer;
 import org.apache.shardingsphere.test.integration.ha.framework.container.compose.DockerComposedContainer;
-import org.apache.shardingsphere.test.integration.ha.framework.parameter.Parameterized;
+import org.apache.shardingsphere.test.integration.ha.framework.parameter.HAParameterized;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -63,9 +63,9 @@ public abstract class BaseITCase {
     @Setter
     private Thread increaseTaskThread;
     
-    public BaseITCase(final Parameterized parameterized) {
-        databaseType = parameterized.getDatabaseType();
-        composedContainer = new DockerComposedContainer(parameterized.getScenario(), parameterized.getDatabaseType(), parameterized.getDockerImageName());
+    public BaseITCase(final HAParameterized HAParameterized) {
+        databaseType = HAParameterized.getDatabaseType();
+        composedContainer = new DockerComposedContainer(HAParameterized.getScenario(), HAParameterized.getDatabaseType(), HAParameterized.getDockerImageName());
         composedContainer.start();
         initStorageDataSources();
         initProxyDataSource();
