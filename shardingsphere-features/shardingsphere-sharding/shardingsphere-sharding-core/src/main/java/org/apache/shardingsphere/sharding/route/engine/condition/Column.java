@@ -45,7 +45,7 @@ public final class Column {
     public boolean equals(final Object obj) {
         if (obj instanceof Column) {
             Column column = (Column) obj;
-            return (name == column.name || null != name && name.equalsIgnoreCase(column.name)) && (tableName == column.tableName || null != tableName && tableName.equalsIgnoreCase(column.tableName));
+            return null != name && name.equalsIgnoreCase(column.name) && null != tableName && tableName.equalsIgnoreCase(column.tableName);
         }
         return false;
     }
