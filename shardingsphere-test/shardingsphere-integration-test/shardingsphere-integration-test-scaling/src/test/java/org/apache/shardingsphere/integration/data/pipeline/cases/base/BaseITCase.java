@@ -218,11 +218,15 @@ public abstract class BaseITCase {
     }
     
     protected void createTargetOrderTableRule() throws SQLException {
-        proxyExecuteWithLog(migrationDistSQLCommand.getCreateTargetOrderTableRule(), 3);
+        proxyExecuteWithLog(migrationDistSQLCommand.getCreateTargetOrderTableRule(), 2);
+    }
+    
+    protected void createTargetOrderTableEncryptRule() throws SQLException {
+        proxyExecuteWithLog(migrationDistSQLCommand.getCreateTargetOrderTableEncryptRule(), 2);
     }
     
     protected void createTargetOrderItemTableRule() throws SQLException {
-        proxyExecuteWithLog(migrationDistSQLCommand.getCreateTargetOrderItemTableRule(), 3);
+        proxyExecuteWithLog(migrationDistSQLCommand.getCreateTargetOrderItemTableRule(), 2);
     }
     
     protected void startMigrationOrder(final boolean withSchema) throws SQLException {
@@ -245,8 +249,9 @@ public abstract class BaseITCase {
         try {
             proxyExecuteWithLog(migrationDistSQLCommand.getAddMigrationProcessConfig(), 0);
         } catch (final SQLException ex) {
-            if ("58000".equals(ex.getSQLState())) {
+            if ("58000".equals(ex.getSQLState()) || "42000".equals(ex.getSQLState())) {
                 log.warn(ex.getMessage());
+                return;
             }
             throw ex;
         }
