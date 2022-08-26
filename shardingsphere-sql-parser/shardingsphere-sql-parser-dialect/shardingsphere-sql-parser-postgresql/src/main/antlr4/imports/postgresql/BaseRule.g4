@@ -1896,7 +1896,7 @@ functionSetResetClause
     ;
 
 rowSecurityCmd
-    : ALL | SELECT | INSERT    | UPDATE | DELETE
+    : ALL | SELECT | INSERT | UPDATE | DELETE
     ;
 
 event
