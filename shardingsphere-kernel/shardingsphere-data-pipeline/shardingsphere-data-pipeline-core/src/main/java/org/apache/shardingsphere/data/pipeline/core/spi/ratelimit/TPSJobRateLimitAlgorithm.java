@@ -56,10 +56,14 @@ public final class TPSJobRateLimitAlgorithm implements JobRateLimitAlgorithm {
     
     @Override
     public void intercept(final JobOperationType type, final Number data) {
-        if (JobOperationType.SELECT == type) {
-            return;
+        switch (type) {
+            case INSERT:
+            case DELETE:
+            case UPDATE:
+                rateLimiter.acquire(null != data ? data.intValue() : 1);
+                break;
+            default:
         }
-        rateLimiter.acquire(null != data ? data.intValue() : 1);
     }
     
     @Override

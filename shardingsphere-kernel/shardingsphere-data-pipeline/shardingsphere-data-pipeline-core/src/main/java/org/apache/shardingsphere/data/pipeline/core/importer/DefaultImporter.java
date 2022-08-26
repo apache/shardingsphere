@@ -150,19 +150,19 @@ public final class DefaultImporter extends AbstractLifecycleExecutor implements 
             switch (buffer.get(0).getType()) {
                 case IngestDataChangeType.INSERT:
                     if (null != rateLimitAlgorithm) {
-                        rateLimitAlgorithm.intercept(JobOperationType.INSERT, buffer.size());
+                        rateLimitAlgorithm.intercept(JobOperationType.INSERT, 1);
                     }
                     executeBatchInsert(connection, buffer);
                     break;
                 case IngestDataChangeType.UPDATE:
                     if (null != rateLimitAlgorithm) {
-                        rateLimitAlgorithm.intercept(JobOperationType.UPDATE, buffer.size());
+                        rateLimitAlgorithm.intercept(JobOperationType.UPDATE, 1);
                     }
                     executeUpdate(connection, buffer);
                     break;
                 case IngestDataChangeType.DELETE:
                     if (null != rateLimitAlgorithm) {
-                        rateLimitAlgorithm.intercept(JobOperationType.DELETE, buffer.size());
+                        rateLimitAlgorithm.intercept(JobOperationType.DELETE, 1);
                     }
                     executeBatchDelete(connection, buffer);
                     break;

@@ -159,9 +159,8 @@ public final class PipelineContextUtil {
         PipelineProcessConfiguration processConfig = mockPipelineProcessConfiguration();
         MigrationProcessContext processContext = new MigrationProcessContext(jobConfig.getJobId(), processConfig);
         int jobShardingItem = 0;
-        TaskConfiguration taskConfig = new MigrationJobAPIImpl().buildTaskConfiguration(jobConfig, jobShardingItem, processConfig, processContext.getWriteRateLimitAlgorithm());
-        return new MigrationJobItemContext(jobConfig, jobShardingItem, null, 
-                processContext, taskConfig, new DefaultPipelineDataSourceManager());
+        TaskConfiguration taskConfig = new MigrationJobAPIImpl().buildTaskConfiguration(jobConfig, jobShardingItem, processConfig);
+        return new MigrationJobItemContext(jobConfig, jobShardingItem, null, processContext, taskConfig, new DefaultPipelineDataSourceManager());
     }
     
     private static PipelineProcessConfiguration mockPipelineProcessConfiguration() {
