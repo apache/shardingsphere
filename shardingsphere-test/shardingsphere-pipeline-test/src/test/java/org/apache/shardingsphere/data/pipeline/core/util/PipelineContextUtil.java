@@ -160,8 +160,7 @@ public final class PipelineContextUtil {
         MigrationProcessContext processContext = new MigrationProcessContext(jobConfig.getJobId(), processConfig);
         int jobShardingItem = 0;
         TaskConfiguration taskConfig = new MigrationJobAPIImpl().buildTaskConfiguration(jobConfig, jobShardingItem, processConfig);
-        return new MigrationJobItemContext(jobConfig, jobShardingItem, null,
-                processContext, taskConfig, new DefaultPipelineDataSourceManager());
+        return new MigrationJobItemContext(jobConfig, jobShardingItem, null, processContext, taskConfig, new DefaultPipelineDataSourceManager());
     }
     
     private static PipelineProcessConfiguration mockPipelineProcessConfiguration() {
