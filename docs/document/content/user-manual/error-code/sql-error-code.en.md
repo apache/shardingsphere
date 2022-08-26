@@ -37,6 +37,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | HY000     | 16001       | Failed to get DDL for table \`%s\` |
 | HY000     | 20000       | Sharding algorithm class \`%s\` should be implement \`%s\` |
 | 44000     | 20001       | Sharding value can't be null in insert statement |
+| 44000     | 20002       | Can not get uniformed table structure for logic table \`%s\`, it has different meta data of actual tables are as follows: %s |
 | 44000     | 20012       | Inline sharding algorithms expression \`%s\` and sharding column \`%s\` are not match |
 | HY004     | 24000       | Encrypt algorithm \`%s\` initialize failed, reason is: %s |
 | HY004     | 24001       | The SQL clause \`%s\` is unsupported in encrypt rule |
