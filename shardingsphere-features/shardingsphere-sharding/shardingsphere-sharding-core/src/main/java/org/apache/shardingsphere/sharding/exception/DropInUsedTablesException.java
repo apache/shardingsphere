@@ -29,7 +29,7 @@ public final class DropInUsedTablesException extends ShardingSphereSQLException 
     
     private static final long serialVersionUID = 8939233348292246498L;
     
-    public DropInUsedTablesException(Collection<String> inUsedTables) {
+    public DropInUsedTablesException(final Collection<String> inUsedTables) {
         super(XOpenSQLState.CHECK_OPTION_VIOLATION, 20006, "Actual tables `%s` are in use", inUsedTables.toString());
     }
 }
