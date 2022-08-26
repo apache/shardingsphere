@@ -46,7 +46,7 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
                                                     final String schemaName, final DropIndexStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         DropIndexEvent event = new DropIndexEvent();
         for (IndexSegment each : sqlStatement.getIndexes()) {
-            String actualSchemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(schemaName);
+            String actualSchemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue().toLowerCase()).orElse(schemaName);
             Optional<String> logicTableName = findLogicTableName(database, sqlStatement, Collections.singletonList(each));
             if (!logicTableName.isPresent()) {
                 continue;

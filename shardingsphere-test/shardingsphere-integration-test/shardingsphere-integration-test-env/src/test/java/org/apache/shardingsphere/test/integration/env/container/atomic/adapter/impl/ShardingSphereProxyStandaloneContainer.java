@@ -48,7 +48,7 @@ public final class ShardingSphereProxyStandaloneContainer extends DockerITContai
     private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
     
     public ShardingSphereProxyStandaloneContainer(final DatabaseType databaseType, final AdaptorContainerConfiguration config) {
-        super("ShardingSphere-Proxy", "apache/shardingsphere-proxy-test");
+        super(ProxyContainerConstants.PROXY_CONTAINER_NAME_PREFIX, ProxyContainerConstants.PROXY_CONTAINER_IMAGE);
         this.databaseType = databaseType;
         this.config = config;
     }
@@ -99,6 +99,6 @@ public final class ShardingSphereProxyStandaloneContainer extends DockerITContai
     
     @Override
     public String getAbbreviation() {
-        return "proxy";
+        return ProxyContainerConstants.PROXY_CONTAINER_ABBREVIATION;
     }
 }

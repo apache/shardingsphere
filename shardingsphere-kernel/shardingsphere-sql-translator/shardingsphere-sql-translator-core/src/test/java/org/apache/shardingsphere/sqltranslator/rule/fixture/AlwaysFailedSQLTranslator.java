@@ -20,13 +20,14 @@ package org.apache.shardingsphere.sqltranslator.rule.fixture;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqltranslator.exception.SQLTranslationException;
+import org.apache.shardingsphere.sqltranslator.exception.UnsupportedTranslatedDatabaseException;
 import org.apache.shardingsphere.sqltranslator.spi.SQLTranslator;
 
 public final class AlwaysFailedSQLTranslator implements SQLTranslator {
     
     @Override
     public String translate(final String sql, final SQLStatement sqlStatement, final DatabaseType protocolType, final DatabaseType storageType) throws SQLTranslationException {
-        throw new SQLTranslationException("Always failed");
+        throw new UnsupportedTranslatedDatabaseException(storageType);
     }
     
     @Override

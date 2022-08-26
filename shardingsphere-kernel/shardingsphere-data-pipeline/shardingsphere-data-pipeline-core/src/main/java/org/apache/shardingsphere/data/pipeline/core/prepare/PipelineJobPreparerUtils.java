@@ -27,13 +27,13 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.Shardi
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemIncrementalTasksProgress;
+import org.apache.shardingsphere.data.pipeline.core.check.datasource.DataSourceCheckerFactory;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.PositionInitializerFactory;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparer;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparerFactory;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetSchemasParameter;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
-import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceCheckerFactory;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
@@ -42,14 +42,30 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSour
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Pipeline job preparer utils.
  */
 @Slf4j
 public final class PipelineJobPreparerUtils {
+    
+    private static final Set<String> INCREMENTAL_SUPPORTED_DATABASES = new HashSet<>(Arrays.asList("MySQL", "PostgreSQL", "openGauss"));
+    
+    /**
+     * Is incremental supported.
+     *
+     * @param databaseType database type
+     * @return true if supported, otherwise false
+     */
+    public static boolean isIncrementalSupported(final String databaseType) {
+        // TODO check by IncrementalDumperCreator SPI
+        return INCREMENTAL_SUPPORTED_DATABASES.contains(databaseType);
+    }
     
     /**
      * Prepare target schema.

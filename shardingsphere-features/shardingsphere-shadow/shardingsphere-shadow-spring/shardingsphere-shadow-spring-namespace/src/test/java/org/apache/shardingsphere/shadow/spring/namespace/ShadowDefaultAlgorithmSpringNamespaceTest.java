@@ -57,7 +57,7 @@ public final class ShadowDefaultAlgorithmSpringNamespaceTest extends AbstractJUn
     
     private void assertShadowDataSources(final Map<String, ShadowDataSourceConfiguration> dataSources) {
         assertThat(dataSources.size(), is(1));
-        assertThat(dataSources.get("shadow-data-source").getSourceDataSourceName(), is("ds"));
+        assertThat(dataSources.get("shadow-data-source").getProductionDataSourceName(), is("ds"));
         assertThat(dataSources.get("shadow-data-source").getShadowDataSourceName(), is("ds-shadow"));
     }
 }

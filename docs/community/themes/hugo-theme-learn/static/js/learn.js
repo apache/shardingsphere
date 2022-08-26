@@ -90,7 +90,7 @@ jQuery(document).ready(function() {
     });
 
     var sidebarStatus = searchStatus = 'open';
-    $('#sidebar .highlightable').perfectScrollbar();
+    $('#sidebar .leftMenu').perfectScrollbar();
     setMenuHeight();
 
     jQuery('#overlay').on('click', function() {

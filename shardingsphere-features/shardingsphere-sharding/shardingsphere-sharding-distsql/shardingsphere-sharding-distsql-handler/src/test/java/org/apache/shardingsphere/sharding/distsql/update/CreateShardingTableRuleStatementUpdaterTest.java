@@ -17,7 +17,11 @@
 
 package org.apache.shardingsphere.sharding.distsql.update;
 
+import lombok.SneakyThrows;
+import org.antlr.v4.runtime.tree.ParseTreeVisitor;
+import org.apache.shardingsphere.distsql.parser.core.featured.FeaturedDistSQLStatementParserFacadeFactory;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
@@ -31,11 +35,15 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.CreateShardingTableRuleStatementUpdater;
+import org.apache.shardingsphere.sharding.distsql.parser.facade.ShardingDistSQLStatementParserFacade;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.KeyGenerateStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
+import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Before;
 import org.junit.Test;
@@ -122,6 +130,28 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
         assertThat(autoTableRule.getKeyGenerateStrategy().getKeyGeneratorName(), is("t_order_item_input_distsql.fixture"));
     }
     
+    @Test
+    public void assertCheckCreateShardingStatement() throws DistSQLException {
+        String sql = "CREATE SHARDING TABLE RULE t_order("
+                + "RESOURCES(ds_0,ds_1),"
+                + "SHARDING_COLUMN=order_id,"
+                + "TYPE(NAME='hash_mod',PROPERTIES('sharding-count'='6')),"
+                + "KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME='snowflake')))";
+        CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
+        updater.checkSQLStatement(database, distSQLStatement, null);
+    }
+    
+    @Test(expected = DistSQLException.class)
+    public void assertCheckCreateShardingStatementThrows() throws DistSQLException {
+        String sql = "CREATE SHARDING TABLE RULE t_order("
+                + "RESOURCES(ds_0,ds_1),"
+                + "SHARDING_COLUMN=order_id,"
+                + "TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_item_${order_id % 4}')),"
+                + "KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME='snowflake')))";
+        CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
+        updater.checkSQLStatement(database, distSQLStatement, null);
+    }
+    
     private AutoTableRuleSegment createCompleteAutoTableRule() {
         AutoTableRuleSegment result = new AutoTableRuleSegment("t_order_item_input", Collections.singletonList("logic_ds"));
         result.setKeyGenerateStrategySegment(new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())));
@@ -172,6 +202,15 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
         result.put("ds_0", new MockedDataSource());
         result.put("ds_1", new MockedDataSource());
         return result;
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    @SuppressWarnings("rawtypes")
+    private DistSQLStatement getDistSQLStatement(final String sql) {
+        ShardingDistSQLStatementParserFacade facade = new ShardingDistSQLStatementParserFacade();
+        ParseASTNode parseASTNode = (ParseASTNode) SQLParserFactory.newInstance(sql, facade.getLexerClass(), facade.getParserClass()).parse();
+        SQLVisitor visitor = FeaturedDistSQLStatementParserFacadeFactory.getInstance(facade.getType()).getVisitorClass().getDeclaredConstructor().newInstance();
+        return (DistSQLStatement) ((ParseTreeVisitor) visitor).visit(parseASTNode.getRootNode());
     }
     
     private static class MockDataSourceContainedRule implements DataSourceContainedRule {

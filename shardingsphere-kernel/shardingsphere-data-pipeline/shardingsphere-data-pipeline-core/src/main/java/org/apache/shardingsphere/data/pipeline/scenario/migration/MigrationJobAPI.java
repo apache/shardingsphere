@@ -64,28 +64,6 @@ public interface MigrationJobAPI extends PipelineJobAPI, MigrationJobPublicAPI, 
     InventoryIncrementalJobItemProgress getJobItemProgress(String jobId, int shardingItem);
     
     /**
-     * Stop cluster writing.
-     *
-     * @param jobConfig job configuration
-     */
-    void stopClusterWriteDB(MigrationJobConfiguration jobConfig);
-    
-    /**
-     * Restore cluster writing.
-     *
-     * @param jobConfig job configuration
-     */
-    void restoreClusterWriteDB(MigrationJobConfiguration jobConfig);
-    
-    /**
-     * Is data consistency check needed.
-     *
-     * @param jobConfig job configuration
-     * @return data consistency check needed or not
-     */
-    boolean isDataConsistencyCheckNeeded(MigrationJobConfiguration jobConfig);
-    
-    /**
      * Do data consistency check.
      *
      * @param jobConfig job configuration
@@ -101,11 +79,4 @@ public interface MigrationJobAPI extends PipelineJobAPI, MigrationJobPublicAPI, 
      * @return check success or not
      */
     boolean aggregateDataConsistencyCheckResults(String jobId, Map<String, DataConsistencyCheckResult> checkResults);
-    
-    /**
-     * Switch cluster configuration.
-     *
-     * @param jobConfig job configuration
-     */
-    void switchClusterConfiguration(MigrationJobConfiguration jobConfig);
 }

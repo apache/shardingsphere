@@ -374,15 +374,17 @@ Below are the relevant statements of DistSQL HINT.
 This blog introduced the two methods and basic principles of HINT in detail. Once you develop a basic understanding of HINT, you’ll be able to better select the most appropriate method.
 
 ## Apache ShardingSphere Project Links:
+
 [ShardingSphere Github](https://github.com/apache/shardingsphere/issues?page=1&q=is%3Aopen+is%3Aissue+label%3A%22project%3A+OpenForce+2022%22)
 
 [ShardingSphere Twitter](https://twitter.com/ShardingSphere)
 
 [ShardingSphere Slack](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg)
 
-[Contributor Guide](https://shardingsphere.apache.org/community/cn/contribute/)
+[Contributor Guide](https://shardingsphere.apache.org/community/cn/involved/)
 
 ## Author
+
 **Chuxin CHEN**
 
 SphereEx Middleware Engineer & Apache ShardingSphere Committer

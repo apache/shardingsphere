@@ -29,7 +29,7 @@ ADD RESOURCE write_ds (
 CREATE READWRITE_SPLITTING RULE group_0 (
 WRITE_RESOURCE=write_ds,
 READ_RESOURCES(read_ds),
-TYPE(NAME=random)
+TYPE(NAME="random")
 );
 ```
 
@@ -39,7 +39,7 @@ TYPE(NAME=random)
 ALTER READWRITE_SPLITTING RULE group_0 (
 WRITE_RESOURCE=write_ds,
 READ_RESOURCES(read_ds),
-TYPE(NAME=random,PROPERTIES(read_weight='2:0'))
+TYPE(NAME="random",PROPERTIES("read_weight"="2:0"))
 );
 ```
 

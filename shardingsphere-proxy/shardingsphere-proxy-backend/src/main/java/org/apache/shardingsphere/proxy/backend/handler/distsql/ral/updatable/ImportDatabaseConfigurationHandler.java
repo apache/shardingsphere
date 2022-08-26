@@ -32,7 +32,6 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCrea
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.sql.SQLWrapperException;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -43,6 +42,7 @@ import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceCo
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.exception.FileIOException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.DatabaseDiscoveryRuleConfigurationImportChecker;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.ReadwriteSplittingRuleConfigurationImportChecker;
@@ -89,7 +89,7 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
         try {
             yamlConfig = YamlEngine.unmarshal(file, YamlProxyDatabaseConfiguration.class);
         } catch (final IOException ex) {
-            throw new ShardingSphereException(ex);
+            throw new FileIOException(ex);
         }
         String databaseName = yamlConfig.getDatabaseName();
         checkDatabase(databaseName, file);
@@ -134,7 +134,7 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
         }
         validator.validate(dataSourcePropsMap, getConnectionSession().getDatabaseType());
         try {
-            ProxyContext.getInstance().getContextManager().updateResources(databaseName, dataSourcePropsMap);
+            ProxyContext.getInstance().getContextManager().addResources(databaseName, dataSourcePropsMap);
         } catch (final SQLException ex) {
             throw new InvalidResourcesException(Collections.singleton(ex.getMessage()));
         }

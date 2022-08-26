@@ -17,18 +17,12 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql;
 
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLWalDumper;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 
 /**
  * PostgreSQL scaling entry.
  */
 public final class PostgreSQLScalingEntry implements ScalingEntry {
-    
-    @Override
-    public Class<PostgreSQLWalDumper> getIncrementalDumperClass() {
-        return PostgreSQLWalDumper.class;
-    }
     
     @Override
     public String getType() {

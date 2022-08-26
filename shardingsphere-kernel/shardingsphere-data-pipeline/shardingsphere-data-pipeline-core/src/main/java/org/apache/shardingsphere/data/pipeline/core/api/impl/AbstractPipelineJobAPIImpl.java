@@ -80,13 +80,26 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     
     @Override
     public void alterProcessConfiguration(final PipelineProcessConfiguration processConfig) {
+        // TODO check rateLimiter type match or not
+        YamlPipelineProcessConfiguration targetYamlProcessConfig = getTargetYamlProcessConfiguration();
+        targetYamlProcessConfig.copyNonNullFields(PROCESS_CONFIG_SWAPPER.swapToYamlConfiguration(processConfig));
+        processConfigPersistService.persist(getJobType(), PROCESS_CONFIG_SWAPPER.swapToObject(targetYamlProcessConfig));
+    }
+    
+    private YamlPipelineProcessConfiguration getTargetYamlProcessConfiguration() {
         PipelineProcessConfiguration existingProcessConfig = processConfigPersistService.load(getJobType());
         if (null == existingProcessConfig) {
-            throw new PipelineMetaDataException("Process configuration does not exists");
+            throw new PipelineMetaDataException("Process configuration does not exist");
         }
-        // TODO check rateLimiter type match or not
-        YamlPipelineProcessConfiguration targetYamlProcessConfig = PROCESS_CONFIG_SWAPPER.swapToYamlConfiguration(existingProcessConfig);
-        targetYamlProcessConfig.copyNonNullFields(PROCESS_CONFIG_SWAPPER.swapToYamlConfiguration(processConfig));
+        return PROCESS_CONFIG_SWAPPER.swapToYamlConfiguration(existingProcessConfig);
+    }
+    
+    @Override
+    public void dropProcessConfiguration(final String confPath) {
+        String finalConfPath = confPath.trim();
+        PipelineProcessConfigurationUtils.verifyConfPath(confPath);
+        YamlPipelineProcessConfiguration targetYamlProcessConfig = getTargetYamlProcessConfiguration();
+        PipelineProcessConfigurationUtils.setFieldsNullByConfPath(targetYamlProcessConfig, finalConfPath);
         processConfigPersistService.persist(getJobType(), PROCESS_CONFIG_SWAPPER.swapToObject(targetYamlProcessConfig));
     }
     
@@ -105,7 +118,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     protected abstract String marshalJobIdLeftPart(PipelineJobId pipelineJobId);
     
     @Override
-    public List<PipelineJobInfo> list() {
+    public List<? extends PipelineJobInfo> list() {
         checkModeConfig();
         return getJobBriefInfos().map(each -> getJobInfo(each.getJobName())).collect(Collectors.toList());
     }
@@ -117,10 +130,18 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     }
     
     private Stream<JobBriefInfo> getJobBriefInfos() {
-        return PipelineAPIFactory.getJobStatisticsAPI().getAllJobsBriefInfo().stream().filter(each -> !each.getJobName().startsWith("_"));
+        return PipelineAPIFactory.getJobStatisticsAPI().getAllJobsBriefInfo().stream().filter(each -> !each.getJobName().startsWith("_"))
+                .filter(each -> PipelineJobIdUtils.parseJobType(each.getJobName()) == getJobType());
     }
     
-    protected abstract PipelineJobInfo getJobInfo(String jobName);
+    protected abstract PipelineJobInfo getJobInfo(String jobId);
+    
+    protected void fillJobInfo(final PipelineJobInfo jobInfo, final JobConfigurationPOJO jobConfigPOJO) {
+        jobInfo.setActive(!jobConfigPOJO.isDisabled());
+        jobInfo.setShardingTotalCount(jobConfigPOJO.getShardingTotalCount());
+        jobInfo.setCreateTime(jobConfigPOJO.getProps().getProperty("create_time"));
+        jobInfo.setStopTime(jobConfigPOJO.getProps().getProperty("stop_time"));
+    }
     
     @Override
     public Optional<String> start(final PipelineJobConfiguration jobConfig) {
@@ -151,6 +172,8 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     }
     
     protected abstract YamlPipelineJobConfiguration swapToYamlJobConfiguration(PipelineJobConfiguration jobConfig);
+    
+    protected abstract PipelineJobConfiguration getJobConfiguration(JobConfigurationPOJO jobConfigPOJO);
     
     @Override
     public void startDisabledJob(final String jobId) {
@@ -210,5 +233,10 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         if (!jobConfigPOJO.isDisabled()) {
             throw new PipelineVerifyFailedException("Job is not stopped. You could run `STOP MIGRATION {jobId}` to stop it.");
         }
+    }
+    
+    @Override
+    public String getType() {
+        return getJobType().getTypeName();
     }
 }

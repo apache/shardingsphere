@@ -22,9 +22,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.sharding.exception.ShardingValueDataTypeException;
 import org.apache.shardingsphere.sharding.route.engine.condition.AlwaysFalseShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
@@ -127,7 +127,7 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
                 }
                 result.getValues().add(shardingConditionValue);
             } catch (final ClassCastException ex) {
-                throw new ShardingSphereException("Found different types for sharding value `%s`.", entry.getKey());
+                throw new ShardingValueDataTypeException(entry.getKey());
             }
         }
         return result;

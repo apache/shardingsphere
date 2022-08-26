@@ -332,4 +332,4 @@ https://shardingsphere.apache.org/document/current/cn/user-manual/common-config/
 https://github.com/apache/shardingsphere/issues
 
 **贡献指南：**
-https://shardingsphere.apache.org/community/cn/contribute/
+https://shardingsphere.apache.org/community/cn/involved/

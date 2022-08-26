@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql;
 
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.MySQLIncrementalDumper;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryFactory;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
@@ -32,6 +30,5 @@ public final class MySQLScalingEntryTest {
     public void assertGetScalingEntryByDatabaseType() {
         ScalingEntry scalingEntry = ScalingEntryFactory.getInstance("MySQL");
         assertThat(scalingEntry, instanceOf(MySQLScalingEntry.class));
-        assertThat(scalingEntry.getIncrementalDumperClass(), equalTo(MySQLIncrementalDumper.class));
     }
 }

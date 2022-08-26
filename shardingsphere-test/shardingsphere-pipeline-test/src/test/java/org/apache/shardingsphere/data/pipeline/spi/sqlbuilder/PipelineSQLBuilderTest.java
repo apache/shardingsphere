@@ -43,33 +43,33 @@ public final class PipelineSQLBuilderTest {
     @Test
     public void assertBuildInsertSQL() {
         String actual = pipelineSQLBuilder.buildInsertSQL(null, mockDataRecord("t2"), shardingColumnsMap);
-        assertThat(actual, is("INSERT INTO `t2`(`id`,`sc`,`c1`,`c2`,`c3`) VALUES(?,?,?,?,?)"));
+        assertThat(actual, is("INSERT INTO t2(id,sc,c1,c2,c3) VALUES(?,?,?,?,?)"));
     }
     
     @Test
     public void assertBuildUpdateSQLWithPrimaryKey() {
         String actual = pipelineSQLBuilder.buildUpdateSQL(null, mockDataRecord("t2"), RecordUtil.extractPrimaryColumns(mockDataRecord("t2")), shardingColumnsMap);
-        assertThat(actual, is("UPDATE `t2` SET `c1` = ?,`c2` = ?,`c3` = ? WHERE `id` = ?"));
+        assertThat(actual, is("UPDATE t2 SET c1 = ?,c2 = ?,c3 = ? WHERE id = ?"));
     }
     
     @Test
     public void assertBuildUpdateSQLWithShardingColumns() {
         DataRecord dataRecord = mockDataRecord("t2");
         String actual = pipelineSQLBuilder.buildUpdateSQL(null, dataRecord, mockConditionColumns(dataRecord), shardingColumnsMap);
-        assertThat(actual, is("UPDATE `t2` SET `c1` = ?,`c2` = ?,`c3` = ? WHERE `id` = ? and `sc` = ?"));
+        assertThat(actual, is("UPDATE t2 SET c1 = ?,c2 = ?,c3 = ? WHERE id = ? and sc = ?"));
     }
     
     @Test
     public void assertBuildDeleteSQLWithPrimaryKey() {
         String actual = pipelineSQLBuilder.buildDeleteSQL(null, mockDataRecord("t3"), RecordUtil.extractPrimaryColumns(mockDataRecord("t3")));
-        assertThat(actual, is("DELETE FROM `t3` WHERE `id` = ?"));
+        assertThat(actual, is("DELETE FROM t3 WHERE id = ?"));
     }
     
     @Test
     public void assertBuildDeleteSQLWithConditionColumns() {
         DataRecord dataRecord = mockDataRecord("t3");
         String actual = pipelineSQLBuilder.buildDeleteSQL(null, dataRecord, mockConditionColumns(dataRecord));
-        assertThat(actual, is("DELETE FROM `t3` WHERE `id` = ? and `sc` = ?"));
+        assertThat(actual, is("DELETE FROM t3 WHERE id = ? and sc = ?"));
     }
     
     private Collection<Column> mockConditionColumns(final DataRecord dataRecord) {

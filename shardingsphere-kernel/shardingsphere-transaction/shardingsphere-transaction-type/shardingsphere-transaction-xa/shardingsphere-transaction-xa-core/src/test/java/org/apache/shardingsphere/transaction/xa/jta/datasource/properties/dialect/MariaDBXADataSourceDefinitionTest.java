@@ -29,6 +29,6 @@ public final class MariaDBXADataSourceDefinitionTest {
     
     @Test
     public void assertGetXADriverClassName() {
-        assertThat(new MariaDBXADataSourceDefinition().getXADriverClassName(), is(Collections.singletonList(MariaDbDataSource.class.getName())));
+        assertThat(new MariaDBXADataSourceDefinition().getXADriverClassNames(), is(Collections.singletonList(MariaDbDataSource.class.getName())));
     }
 }

@@ -31,9 +31,9 @@ public final class YamlPipelineWriteConfiguration implements YamlConfiguration {
     
     private static final Integer DEFAULT_BATCH_SIZE = 1000;
     
-    private Integer workerThread = DEFAULT_WORKER_THREAD;
+    private Integer workerThread;
     
-    private Integer batchSize = DEFAULT_BATCH_SIZE;
+    private Integer batchSize;
     
     private YamlAlgorithmConfiguration rateLimiter;
     
@@ -43,7 +43,10 @@ public final class YamlPipelineWriteConfiguration implements YamlConfiguration {
      * @return write configuration
      */
     public static YamlPipelineWriteConfiguration buildWithDefaultValue() {
-        return new YamlPipelineWriteConfiguration();
+        YamlPipelineWriteConfiguration result = new YamlPipelineWriteConfiguration();
+        result.workerThread = DEFAULT_WORKER_THREAD;
+        result.batchSize = DEFAULT_BATCH_SIZE;
+        return result;
     }
     
     /**
@@ -67,9 +70,6 @@ public final class YamlPipelineWriteConfiguration implements YamlConfiguration {
         if (null == another) {
             return;
         }
-        if (isAllFieldsNull(another)) {
-            setAllFieldsNull(this);
-        }
         if (null != another.workerThread) {
             workerThread = another.workerThread;
         }
@@ -81,13 +81,24 @@ public final class YamlPipelineWriteConfiguration implements YamlConfiguration {
         }
     }
     
-    private boolean isAllFieldsNull(final YamlPipelineWriteConfiguration config) {
-        return null == config.workerThread && null == config.batchSize && null == config.rateLimiter;
-    }
-    
-    private void setAllFieldsNull(final YamlPipelineWriteConfiguration config) {
-        config.workerThread = null;
-        config.batchSize = null;
-        config.rateLimiter = null;
+    /**
+     * Set field to null.
+     *
+     * @param nodeName node name
+     */
+    public void setFieldNull(final String nodeName) {
+        switch (nodeName.toUpperCase()) {
+            case "WORKER_THREAD":
+                workerThread = null;
+                break;
+            case "BATCH_SIZE":
+                batchSize = null;
+                break;
+            case "RATE_LIMITER":
+                rateLimiter = null;
+                break;
+            default:
+                break;
+        }
     }
 }

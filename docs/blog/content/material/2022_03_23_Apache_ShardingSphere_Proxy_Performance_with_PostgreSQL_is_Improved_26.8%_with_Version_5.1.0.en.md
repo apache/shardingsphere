@@ -297,9 +297,10 @@ Apache ShardingSphere Open Source Project Links:
 [ShardingSphere Github](https://github.com/apache/shardingsphere)
 [ShardingSphere Twitter](https://twitter.com/ShardingSphere)
 [ShardingSphere Slack Channel](https://apacheshardingsphere.slack.com/ssb/redirect)
-[Contributor Guide](https://shardingsphere.apache.org/community/cn/contribute/)
+[Contributor Guide](https://shardingsphere.apache.org/community/cn/involved/)
 
 ### Author
+
 Wu Weijie
 
 > SphereEx Infrastructure R&D Engineer & Apache ShardingSphere Committer
@@ -307,4 +308,3 @@ Wu Weijie
 Wu now focuses on the research and development of Apache ShardingSphere and its sub-project ElasticJob.
 
 ![Image description](https://res.cloudinary.com/practicaldev/image/fetch/s--7h5qsKPD--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/07x5hkfrhblf0o8evsza.png)
- 

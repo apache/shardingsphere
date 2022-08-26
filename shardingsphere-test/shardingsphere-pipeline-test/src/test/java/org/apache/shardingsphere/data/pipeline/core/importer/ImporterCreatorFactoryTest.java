@@ -66,6 +66,6 @@ public final class ImporterCreatorFactoryTest {
     private ImporterConfiguration createImporterConfiguration(final String databaseType) {
         Map<LogicTableName, Set<String>> shardingColumnsMap = Collections.singletonMap(new LogicTableName("t_order"), new HashSet<>(Arrays.asList("order_id", "user_id", "status")));
         PipelineDataSourceConfiguration dataSourceConfig = new FixturePipelineDataSourceConfiguration(DatabaseTypeFactory.getInstance(databaseType));
-        return new ImporterConfiguration(dataSourceConfig, shardingColumnsMap, new TableNameSchemaNameMapping(Collections.emptyMap()), 1000, 3, 3);
+        return new ImporterConfiguration(dataSourceConfig, shardingColumnsMap, new TableNameSchemaNameMapping(Collections.emptyMap()), 1000, null, 3, 3);
     }
 }

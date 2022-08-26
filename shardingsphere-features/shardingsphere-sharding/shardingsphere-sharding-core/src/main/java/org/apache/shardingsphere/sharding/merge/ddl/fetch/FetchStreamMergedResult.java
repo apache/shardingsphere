@@ -20,15 +20,15 @@ package org.apache.shardingsphere.sharding.merge.ddl.fetch;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.statement.ddl.FetchStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.context.ConnectionContext;
+import org.apache.shardingsphere.infra.context.cursor.FetchGroup;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.JDBCMemoryQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.stream.StreamMergedResult;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.session.ConnectionContext;
-import org.apache.shardingsphere.infra.session.cursor.FetchGroup;
+import org.apache.shardingsphere.sharding.exception.CursorNameNotFoundException;
 import org.apache.shardingsphere.sharding.merge.dql.orderby.OrderByValue;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.DirectionType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.DirectionSegment;
@@ -61,8 +61,7 @@ public final class FetchStreamMergedResult extends StreamMergedResult {
         directionType = fetchStatementContext.getSqlStatement().getDirection().flatMap(DirectionSegment::getDirectionType).orElse(DirectionType.NEXT);
         fetchCount = fetchStatementContext.getSqlStatement().getDirection().flatMap(DirectionSegment::getCount).orElse(1L);
         SelectStatementContext selectStatementContext = fetchStatementContext.getCursorStatementContext().getSelectStatementContext();
-        String cursorName = fetchStatementContext.getCursorName().map(optional -> optional.getIdentifier().getValue().toLowerCase())
-                .orElseThrow(() -> new ShardingSphereException("Can not get cursorName from fetchStatementContext."));
+        String cursorName = fetchStatementContext.getCursorName().map(optional -> optional.getIdentifier().getValue().toLowerCase()).orElseThrow(CursorNameNotFoundException::new);
         List<FetchOrderByValueGroup> fetchOrderByValueGroups = getFetchOrderByValueGroups(queryResults, selectStatementContext, schema, cursorName, connectionContext);
         addOrderedResultSetsToQueue(fetchOrderByValueGroups, queryResults);
         setMinResultSetRowCount(cursorName, connectionContext);

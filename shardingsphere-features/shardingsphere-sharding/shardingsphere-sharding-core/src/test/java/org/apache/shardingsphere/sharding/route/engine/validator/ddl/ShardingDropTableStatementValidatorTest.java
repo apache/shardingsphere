@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.sharding.exception.ShardingRouteException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingDropTableStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
@@ -126,7 +127,7 @@ public final class ShardingDropTableStatementValidatorTest {
                 Collections.emptyList(), mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), mock(ConfigurationProperties.class), routeContext);
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = ShardingRouteException.class)
     public void assertPostValidateDropTableWithDifferentRouteResultShardingTableForPostgreSQL() {
         PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement(false, false);
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
@@ -153,7 +154,7 @@ public final class ShardingDropTableStatementValidatorTest {
                 Collections.emptyList(), mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), mock(ConfigurationProperties.class), routeContext);
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = ShardingRouteException.class)
     public void assertPostValidateDropTableWithDifferentRouteResultBroadcastTableForPostgreSQL() {
         PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement(false, false);
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_config"))));

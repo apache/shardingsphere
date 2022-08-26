@@ -28,10 +28,10 @@ Class name: org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSou
 
 Attributes:
 
-| *Name*               | *DataType* | *Description*               |
-| -------------------- | ---------- | --------------------------- |
-| sourceDataSourceName | String     | Production data source name |
-| shadowDataSourceName | String     | Shadow data source name     |
+| *Name*                   | *DataType* | *Description*               |
+| ------------------------ | ---------- | --------------------------- |
+| productionDataSourceName | String     | Production data source name |
+| shadowDataSourceName     | String     | Shadow data source name     |
 
 ### Shadow Table Configuration
 

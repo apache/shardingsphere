@@ -3515,94 +3515,6 @@
     <sql-case id="create_by_postgresql_source_test_case441" value="CREATE OR REPLACE PROCEDURE ptest5(a int, b text, c int default 100) LANGUAGE SQL AS $$ INSERT INTO cp_test VALUES(a, b); INSERT INTO cp_test VALUES(c, b); $$;" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case442" value="CREATE OR REPLACE RULE voo_i AS ON INSERT TO voo DO INSTEAD   INSERT INTO foo VALUES(new.*, 57) RETURNING *;" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case443" value="CREATE OR REPLACE RULE voo_i AS ON INSERT TO voo DO INSTEAD   INSERT INTO foo VALUES(new.*, 57) RETURNING f1, f2;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case444" value="CREATE POLICY P ON tbl1 TO regress_rls_eve, regress_rls_frank USING (true);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case445" value="CREATE POLICY blog_1 ON blog USING (id % 2 = 0);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case446" value="CREATE POLICY coll_p ON coll_t USING (c &lt; (&apos;foo&apos;::text COLLATE &quot;C&quot;));" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case447" value="CREATE POLICY comment_1 ON comment USING (blog_id &lt; 4);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case448" value="CREATE POLICY d1 ON dependent FOR ALL     TO PUBLIC     USING (x = (SELECT d.x FROM dependee d WHERE d.y = y));" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case449" value="CREATE POLICY dep_p1 ON dep1 TO regress_rls_bob USING (c1 &gt; (select max(dep2.c1) from dep2));" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case450" value="CREATE POLICY genpol ON addr_nsp.gentable;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case451" value="CREATE POLICY p ON t USING (c % 2 = 1);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case452" value="CREATE POLICY p ON t USING (max(c));" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case453" value="CREATE POLICY p0 ON x1 FOR ALL USING (c = current_user);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case454" value="CREATE POLICY p1 ON b1 USING (a % 2 = 0);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case455" value="CREATE POLICY p1 ON copy_rel_to USING (a % 2 = 0);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case456" value="CREATE POLICY p1 ON copy_t USING (a % 2 = 0);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case457" value="CREATE POLICY p1 ON current_check FOR SELECT USING (currentid % 2 = 0);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case458" value="CREATE POLICY p1 ON dob_t1 TO regress_rls_dob_role1 USING (true);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case459" value="CREATE POLICY p1 ON dob_t1 TO regress_rls_dob_role1,regress_rls_dob_role1 USING (true);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case460" value="CREATE POLICY p1 ON dob_t1 TO regress_rls_dob_role1,regress_rls_dob_role1,regress_rls_dob_role2 USING (true);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case461" value="CREATE POLICY p1 ON dob_t1 TO regress_rls_dob_role1,regress_rls_dob_role2 USING (true);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case462" value="CREATE POLICY p1 ON dob_t2 TO regress_rls_dob_role1,regress_rls_dob_role2 USING (true);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case463" value="CREATE POLICY p1 ON document AS PERMISSIVE     USING (dlevel &lt;= (SELECT seclv FROM uaccount WHERE pguser = current_user));" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case464" value="CREATE POLICY p1 ON document AS UGLY     USING (dlevel &lt;= (SELECT seclv FROM uaccount WHERE pguser = current_user));" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case465" value="CREATE POLICY p1 ON document FOR SELECT USING (true);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case466" value="CREATE POLICY p1 ON event_trigger_test USING (FALSE);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case467" value="CREATE POLICY p1 ON r1 FOR SELECT USING (a &lt; 20);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case468" value="CREATE POLICY p1 ON r1 FOR SELECT USING (false);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case469" value="CREATE POLICY p1 ON r1 USING (false);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case470" value="CREATE POLICY p1 ON r1 USING (false);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case471" value="CREATE POLICY p1 ON r1 USING (true);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case472" value="CREATE POLICY p1 ON r2 FOR SELECT USING (true);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case473" value="CREATE POLICY p1 ON r2 USING (false);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case474" value="CREATE POLICY p1 ON r2 USING (false);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case475" value="CREATE POLICY p1 ON r2 USING (false);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case476" value="CREATE POLICY p1 ON rls_tbl USING (EXISTS (SELECT 1 FROM ref_tbl));" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case477" value="CREATE POLICY p1 ON rls_tbl USING (c1 &gt; 5);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case478" value="CREATE POLICY p1 ON rls_tbl USING (rls_tbl &gt;= ROW(1,1,1));" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case479" value="CREATE POLICY p1 ON rls_tbl_force USING (c1 = 5) WITH CHECK (c1 &lt; 5);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case480" value="CREATE POLICY p1 ON s1 USING (a in (select x from s2 where y like &apos;%2f%&apos;));" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case481" value="CREATE POLICY p1 ON t1 TO regress_rls_bob USING ((a % 2) = 0);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case482" value="CREATE POLICY p1 ON t1 USING (a % 2 = 0);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case483" value="CREATE POLICY p1 ON x1 FOR SELECT USING (a % 2 = 0);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case484" value="CREATE POLICY p1 ON y1 FOR ALL USING (a % 2 = 0);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case485" value="CREATE POLICY p1 ON y1 FOR SELECT USING (a % 2 = 1);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case486" value="CREATE POLICY p1 ON y2 FOR ALL USING (a % 2 = 0);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case487" value="CREATE POLICY p1 ON z1 TO regress_rls_group1 USING (a % 2 = 0);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case488" value="CREATE POLICY p1r ON document AS RESTRICTIVE TO regress_rls_dave     USING (cid &lt;&gt; 44);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case489" value="CREATE POLICY p2 ON category     USING (CASE WHEN current_user = &apos;regress_rls_bob&apos; THEN cid IN (11, 33)            WHEN current_user = &apos;regress_rls_carol&apos; THEN cid IN (22, 44)            ELSE false END);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case490" value="CREATE POLICY p2 ON current_check FOR DELETE USING (currentid = 4 AND rlsuser = current_user);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case491" value="CREATE POLICY p2 ON document FOR INSERT WITH CHECK (dauthor = current_user);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case492" value="CREATE POLICY p2 ON r1 FOR INSERT WITH CHECK (true);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case493" value="CREATE POLICY p2 ON r1 FOR UPDATE USING (a &lt; 20) WITH CHECK (true);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case494" value="CREATE POLICY p2 ON r2 FOR INSERT WITH CHECK (false);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case495" value="CREATE POLICY p2 ON rls_tbl FOR SELECT USING (c1 &lt;= 3);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case496" value="CREATE POLICY p2 ON rls_tbl_force FOR SELECT USING (c1 = 8);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case497" value="CREATE POLICY p2 ON s2 USING (x in (select a from s1 where b like &apos;%22%&apos;));" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case498" value="CREATE POLICY p2 ON t1 TO regress_rls_carol USING ((a % 4) = 0);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case499" value="CREATE POLICY p2 ON t2 FOR ALL TO PUBLIC USING (a % 2 = 1);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case500" value="CREATE POLICY p2 ON x1 FOR INSERT WITH CHECK (a % 2 = 1);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case501" value="CREATE POLICY p2 ON y1 FOR SELECT USING (a &gt; 2);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case502" value="CREATE POLICY p2 ON y2 USING (a % 3 = 0);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case503" value="CREATE POLICY p2 ON z1 TO regress_rls_group2 USING (a % 2 = 1);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case504" value="CREATE POLICY p2r ON document AS RESTRICTIVE TO regress_rls_dave     USING (cid &lt;&gt; 44 AND cid &lt; 50);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case505" value="CREATE POLICY p3 ON current_check FOR UPDATE USING (currentid = 4) WITH CHECK (rlsuser = current_user);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case506" value="CREATE POLICY p3 ON document FOR UPDATE   USING (cid = (SELECT cid from category WHERE cname = &apos;novel&apos;))   WITH CHECK (dauthor = current_user);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case507" value="CREATE POLICY p3 ON r1 FOR INSERT WITH CHECK (true);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case508" value="CREATE POLICY p3 ON r2 FOR UPDATE USING (false);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case509" value="CREATE POLICY p3 ON rls_tbl FOR UPDATE USING (c1 &lt;= 3) WITH CHECK (c1 &gt; 5);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case510" value="CREATE POLICY p3 ON rls_tbl_force FOR UPDATE USING (c1 = 8) WITH CHECK (c1 &gt;= 5);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case511" value="CREATE POLICY p3 ON s1 FOR INSERT WITH CHECK (a = (SELECT a FROM s1));" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case512" value="CREATE POLICY p3 ON x1 FOR UPDATE USING (a % 2 = 0);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case513" value="CREATE POLICY p3 ON y2 USING (a % 4 = 0);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case514" value="CREATE POLICY p3_with_all ON document FOR ALL   USING (cid = (SELECT cid from category WHERE cname = &apos;novel&apos;))   WITH CHECK (dauthor = current_user);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case515" value="CREATE POLICY p3_with_default ON document FOR UPDATE   USING (cid = (SELECT cid from category WHERE cname = &apos;novel&apos;));" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case516" value="CREATE POLICY p4 ON r2 FOR DELETE USING (false);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case517" value="CREATE POLICY p4 ON rls_tbl FOR DELETE USING (c1 &lt;= 3);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case518" value="CREATE POLICY p4 ON rls_tbl_force FOR DELETE USING (c1 = 8);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case519" value="CREATE POLICY p4 ON x1 FOR DELETE USING (a &lt; 8);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case520" value="CREATE POLICY policy_range_parted ON range_parted for UPDATE USING (true) WITH CHECK (c % 2 = 0);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case521" value="CREATE POLICY policy_range_parted_subplan on range_parted     AS RESTRICTIVE for UPDATE USING (true)     WITH CHECK ((SELECT range_parted.c &lt;= c1 FROM mintab));" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case522" value="CREATE POLICY policy_range_parted_wholerow on range_parted AS RESTRICTIVE for UPDATE USING (true)    WITH CHECK (range_parted = row(&apos;b&apos;, 10, 112, 1, NULL)::range_parted);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case523" value="CREATE POLICY pp1 ON part_document AS PERMISSIVE     USING (dlevel &lt;= (SELECT seclv FROM uaccount WHERE pguser = current_user));" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case524" value="CREATE POLICY pp1r ON part_document AS RESTRICTIVE TO regress_rls_dave     USING (cid &lt; 55);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case525" value="CREATE POLICY pp3 ON part_document AS RESTRICTIVE     USING ((SELECT dlevel &lt;= seclv FROM uaccount WHERE pguser = current_user));" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case526" value="CREATE POLICY pp3 ON part_document_satire AS RESTRICTIVE     USING (cid &lt; 55);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case527" value="CREATE POLICY r1 ON rec1 USING (x = (SELECT a FROM rec2v WHERE b = y));" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case528" value="CREATE POLICY r1 ON rec1 USING (x = (SELECT r.x FROM rec1 r WHERE y = r.y));" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case529" value="CREATE POLICY r2 ON rec2 USING (a = (SELECT x FROM rec1 WHERE y = b));" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case530" value="CREATE POLICY r2 ON rec2 USING (a = (SELECT x FROM rec1v WHERE y = b));" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case531" value="CREATE POLICY seeall ON range_parted AS PERMISSIVE FOR SELECT USING (true);" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case532" value="CREATE PROCEDURE addr_nsp.proc(int4) LANGUAGE SQL AS $$ $$;" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case533" value="CREATE PROCEDURE ptest1(x text) LANGUAGE SQL AS $$ INSERT INTO cp_test VALUES (1, x); $$;" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case534" value="CREATE PROCEDURE ptest10(IN a int, IN b int, IN c int) LANGUAGE SQL AS $$ SELECT a + b - c $$;" db-types="PostgreSQL" />
@@ -5751,7 +5663,6 @@
     <sql-case id="low_create_by_postgresql_source_test_case481" value="create or replace trigger my_trig   after insert on parted_trig   for each row execute procedure funcB();" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case482" value="create or replace trigger my_trig   after insert on parted_trig_1   for each row execute procedure funcB() insert into parted_trig (a) values (50);" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case483" value="create or replace trigger my_trig   before insert on my_table   for each row execute procedure funcB() insert into my_table values (2);" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case484" value="create policy p1 on ec1 using (f1 &lt; &apos;5&apos;::int8alias1);" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case485" value="create procedure p1() language plpgsql as $$ begin   create table event_trigger_fire7 (a int); end $$;" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case486" value="create rule insert_tt_rule as on insert to tt do also   insert into tt_log values(new.*);" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case487" value="create rule r1 as on update to rules_src do also   insert into rules_log values(old.*, &apos;old&apos;), (new.*, &apos;new&apos;);" db-types="PostgreSQL" />

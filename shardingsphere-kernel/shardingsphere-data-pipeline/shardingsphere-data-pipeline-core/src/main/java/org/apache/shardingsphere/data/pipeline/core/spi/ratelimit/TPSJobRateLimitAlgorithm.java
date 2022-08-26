@@ -60,11 +60,10 @@ public final class TPSJobRateLimitAlgorithm implements JobRateLimitAlgorithm {
             case INSERT:
             case DELETE:
             case UPDATE:
+                rateLimiter.acquire(null != data ? data.intValue() : 1);
                 break;
             default:
-                return;
         }
-        rateLimiter.acquire(null != data ? data.intValue() : 1);
     }
     
     @Override

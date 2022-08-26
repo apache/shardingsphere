@@ -86,9 +86,9 @@ public class YmlShadowSpringBootStarterTest {
     
     private void assertShadowDataSources(final Map<String, ShadowDataSourceConfiguration> dataSources) {
         assertThat(dataSources.size(), is(2));
-        assertThat(dataSources.get("shadow-data-source-0").getSourceDataSourceName(), is("ds"));
+        assertThat(dataSources.get("shadow-data-source-0").getProductionDataSourceName(), is("ds"));
         assertThat(dataSources.get("shadow-data-source-0").getShadowDataSourceName(), is("ds-shadow"));
-        assertThat(dataSources.get("shadow-data-source-1").getSourceDataSourceName(), is("ds1"));
+        assertThat(dataSources.get("shadow-data-source-1").getProductionDataSourceName(), is("ds1"));
         assertThat(dataSources.get("shadow-data-source-1").getShadowDataSourceName(), is("ds1-shadow"));
     }
 }

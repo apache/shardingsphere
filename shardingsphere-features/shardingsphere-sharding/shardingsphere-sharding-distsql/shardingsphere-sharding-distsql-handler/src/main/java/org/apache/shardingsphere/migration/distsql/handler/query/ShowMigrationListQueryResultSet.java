@@ -45,7 +45,7 @@ public final class ShowMigrationListQueryResultSet implements DatabaseDistSQLRes
                 .map(each -> {
                     Collection<Object> result = new LinkedList<>();
                     result.add(each.getJobId());
-                    result.add(each.getTables());
+                    result.add(each.getTable());
                     result.add(each.getShardingTotalCount());
                     result.add(each.isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
                     result.add(each.getCreateTime());

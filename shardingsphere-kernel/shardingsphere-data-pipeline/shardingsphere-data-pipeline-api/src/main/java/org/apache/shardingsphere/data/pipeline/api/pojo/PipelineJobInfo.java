@@ -33,13 +33,9 @@ public abstract class PipelineJobInfo {
     
     private boolean active;
     
-    private String tables;
-    
     private int shardingTotalCount;
     
     private String createTime;
     
     private String stopTime;
-    
-    private transient String jobParameter;
 }

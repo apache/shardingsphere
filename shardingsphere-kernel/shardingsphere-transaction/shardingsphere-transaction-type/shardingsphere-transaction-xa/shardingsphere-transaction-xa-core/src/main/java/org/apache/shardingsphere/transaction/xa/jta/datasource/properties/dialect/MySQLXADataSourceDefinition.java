@@ -28,7 +28,7 @@ import java.util.Collection;
 public final class MySQLXADataSourceDefinition implements XADataSourceDefinition {
     
     @Override
-    public Collection<String> getXADriverClassName() {
+    public Collection<String> getXADriverClassNames() {
         return Arrays.asList("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource", "com.mysql.cj.jdbc.MysqlXADataSource");
     }
     

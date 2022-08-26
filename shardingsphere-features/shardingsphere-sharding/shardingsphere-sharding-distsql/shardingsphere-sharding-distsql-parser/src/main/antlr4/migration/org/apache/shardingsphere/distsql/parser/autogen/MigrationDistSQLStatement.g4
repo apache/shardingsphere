@@ -17,7 +17,7 @@
 
 grammar MigrationDistSQLStatement;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import Symbol, RALStatement, RQLStatement;
 
 execute
     : (showMigrationList
@@ -29,15 +29,8 @@ execute
     | resetMigration
     | checkMigration
     | showMigrationCheckAlgorithms
-    | stopMigrationSourceWriting
-    | restoreMigrationSourceWriting
-    | applyMigration
-    | showShardingScalingRules
-    | createShardingScalingRule
-    | dropShardingScalingRule
-    | enableShardingScalingRule
-    | disableShardingScalingRule
     | addMigrationSourceResource
     | dropMigrationSourceResource
+    | showMigrationSourceResources
     ) SEMI?
     ;

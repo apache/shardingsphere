@@ -118,15 +118,17 @@ Recently, to celebrate the third anniversary of ShardingSphere entering Apache S
 Since Version 5.0.0, Apache ShardingSphere has embarked on its new journey: with the plugin oriented architect at its core, it evloved from a data sharding application to a comprehensive and enhanced data governance tool applicable to various complex application scenarios. Concurrently, Apache ShardingSphere also has more features, and big data solutions.
 
 ## Conclusion
+
 Digitization motivated Dangdang to achieve high-quality development and fulfill its mission. ShardingSphere is glad to support Dangdang’s WMS with its cutting-edging data services.
 
 Having gone through two years‘ development, Apache ShardingSphere 5.0.0 GA has been released. The pluggable ecosystem marks an evolution from a data sharding middleware tool to a pioneer in the industry following the “Database Plus” concept.
 
 ## Apache ShardingSphere Project Links:
+
 [ShardingSphere Github](https://github.com/apache/shardingsphere/issues?page=1&q=is%3Aopen+is%3Aissue+label%3A%22project%3A+OpenForce+2022%22)
 
 [ShardingSphere Twitter](https://twitter.com/ShardingSphere)
 
 [ShardingSphere Slack](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg)
 
-[Contributor Guide](https://shardingsphere.apache.org/community/cn/contribute/)
+[Contributor Guide](https://shardingsphere.apache.org/community/cn/involved/)

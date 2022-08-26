@@ -41,7 +41,7 @@ rules:
 - !SHADOW
   dataSources:
     shadowDataSource:
-      sourceDataSourceName: db
+      productionDataSourceName: db
       shadowDataSourceName: encrypt_shadow_db
   tables:
     t_shadow:

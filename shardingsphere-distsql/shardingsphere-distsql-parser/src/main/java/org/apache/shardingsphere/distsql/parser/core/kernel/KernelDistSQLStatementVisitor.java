@@ -19,7 +19,9 @@ package org.apache.shardingsphere.distsql.parser.core.kernel;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementBaseVisitor;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AddResourceContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterDefaultSingleTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterInstanceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterMigrationProcessConfigurationContext;
@@ -107,6 +109,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterTra
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ApplyDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.CreateMigrationProcessConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.DiscardDistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.DropMigrationProcessConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.LabelInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.PrepareDistSQLStatement;
@@ -435,6 +438,11 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     }
     
     @Override
+    public ASTNode visitDropMigrationProcessConfiguration(final KernelDistSQLStatementParser.DropMigrationProcessConfigurationContext ctx) {
+        return new DropMigrationProcessConfigurationStatement(getIdentifierValue(ctx.confPath()));
+    }
+    
+    @Override
     public ASTNode visitMigrationProcessConfiguration(final MigrationProcessConfigurationContext ctx) {
         MigrationProcessConfigurationSegment result = new MigrationProcessConfigurationSegment();
         if (null != ctx.readDefinition()) {
@@ -464,6 +472,22 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
             return null;
         }
         return (AlgorithmSegment) visit(ctx);
+    }
+    
+    @Override
+    public ASTNode visitAlgorithmDefinition(final AlgorithmDefinitionContext ctx) {
+        return new AlgorithmSegment(getIdentifierValue(ctx.algorithmTypeName()), buildProperties(ctx.propertiesDefinition()));
+    }
+    
+    private Properties buildProperties(final PropertiesDefinitionContext ctx) {
+        Properties result = new Properties();
+        if (null == ctx) {
+            return result;
+        }
+        for (PropertyContext each : ctx.properties().property()) {
+            result.setProperty(IdentifierValue.getQuotedContent(each.key.getText()), IdentifierValue.getQuotedContent(each.value.getText()));
+        }
+        return result;
     }
     
     private Integer getWorkerThread(final WorkerThreadContext ctx) {

@@ -33,5 +33,5 @@ public interface XADataSourceDefinition extends TypedSPI {
      * 
      * @return XA driver class names
      */
-    Collection<String> getXADriverClassName();
+    Collection<String> getXADriverClassNames();
 }

@@ -21,7 +21,7 @@ spring:
       shadow:
         data-sources:
           shadow-data-source:
-            source-data-source-name: ds
+            production-data-source-name: ds
             shadow-data-source-name: ds-shadow
         default-shadow-algorithm-name: simple-hint-algorithm
         shadow-algorithms:

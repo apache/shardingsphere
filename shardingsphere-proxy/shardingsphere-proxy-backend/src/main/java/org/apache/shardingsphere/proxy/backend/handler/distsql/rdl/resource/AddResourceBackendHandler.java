@@ -64,7 +64,7 @@ public final class AddResourceBackendHandler extends DatabaseRequiredBackendHand
         DatabaseType storeType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResource().getDatabaseType();
         validator.validate(dataSourcePropsMap, storeType);
         try {
-            ProxyContext.getInstance().getContextManager().updateResources(databaseName, dataSourcePropsMap);
+            ProxyContext.getInstance().getContextManager().addResources(databaseName, dataSourcePropsMap);
         } catch (final SQLException | ShardingSphereException ex) {
             log.error("Add resource failed", ex);
             throw new InvalidResourcesException(Collections.singleton(ex.getMessage()));

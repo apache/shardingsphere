@@ -47,13 +47,6 @@ SHOW SHARDING BINDING TABLE RULES [FROM databaseName]
 SHOW SHARDING BROADCAST TABLE RULES [FROM databaseName]
 ```
 
-### Sharding Scaling Rule
-```sql
-SHOW SHARDING SCALING RULES [FROM databaseName]
-```
-
-## 返回值说明
-
 ### Sharding Table Rule
 
 | 列                                | 说明                                |
@@ -142,19 +135,6 @@ SHOW SHARDING SCALING RULES [FROM databaseName]
 | 列                        | 说明      |
 | ------------------------- | -------- |
 | sharding_broadcast_tables | 广播表名称 |
-
-### Sharding Scaling Rule
-
-| 列                        | 说明              |
-|--------------------------|-------------------|
-| name                     | 弹性伸缩配置名称     |
-| input                    | 数据读取配置        |
-| output                   | 数据写入配置        |
-| stream_channel           | 数据通道配置        |
-| completion_detector      | 作业完成检测算法配置  |
-| data_consistency_checker | 数据一致性校验算法配置 |
-
-## 示例
 
 ### Sharding Table Rule
 
@@ -311,16 +291,4 @@ mysql> SHOW SHARDING BROADCAST TABLE RULES;
 | t_2                    |
 +------------------------+
 2 rows in set (0.00 sec)
-```
-
-### Sharding Scaling Rule
-
-```sql
-mysql> SHOW SHARDING SCALING RULES;
-+------------------+----------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------+--------------------------------------------------------+-------------------------------------------------------------------------+-----------------------------------------------------+
-| name             | input                                                                                  | output                                                                                   | stream_channel                                         | completion_detector                                                     | data_consistency_checker                            |
-+------------------+----------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------+--------------------------------------------------------+-------------------------------------------------------------------------+-----------------------------------------------------+
-| sharding_scaling | {"workerThread":40,"batchSize":1000,"rateLimiter":{"type":"QPS","props":{"qps":"50"}}} | {"workerThread":40,"batchSize":1000,"rateLimiter":{"type":"TPS","props":{"tps":"2000"}}} | {"type":"MEMORY","props":{"block-queue-size":"10000"}} | {"type":"IDLE","props":{"incremental-task-idle-seconds-threshold":"1800"}} | {"type":"DATA_MATCH","props":{"chunk-size":"1000"}} |
-+------------------+----------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------+--------------------------------------------------------+-------------------------------------------------------------------------+-----------------------------------------------------+
-1 row in set (0.00 sec)
 ```

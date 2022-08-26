@@ -1164,9 +1164,6 @@
                         <exclude>**/package-lock.json</exclude>
                         <!-- example files -->
                         <exclude>/examples/**</exclude>
-                        <!-- Helm files -->
-                        <exclude>**/.helmignore</exclude>
-                        <exclude>**/_helpers.tpl</exclude>
                     </excludes>
                 </configuration>
                 <executions>

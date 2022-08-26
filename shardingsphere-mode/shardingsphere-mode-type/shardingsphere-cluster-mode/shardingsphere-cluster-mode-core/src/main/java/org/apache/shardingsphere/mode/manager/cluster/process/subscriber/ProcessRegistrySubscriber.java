@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.process.ShowProcessListManager;
+import org.apache.shardingsphere.mode.process.event.KillProcessListIdRequestEvent;
 import org.apache.shardingsphere.mode.process.event.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.mode.process.event.ShowProcessListResponseEvent;
 import org.apache.shardingsphere.mode.process.lock.ShowProcessListSimpleLock;
@@ -59,34 +60,61 @@ public final class ProcessRegistrySubscriber {
      */
     @Subscribe
     public void loadShowProcessListData(final ShowProcessListRequestEvent event) {
-        String showProcessListId = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString();
+        String processListId = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", "");
         boolean triggerIsComplete = false;
-        Collection<String> triggerPaths = getTriggerPaths(showProcessListId);
+        Collection<String> triggerPaths = getTriggerPaths(processListId);
         try {
             triggerPaths.forEach(each -> repository.persist(each, ""));
-            triggerIsComplete = waitUntilShowProcessIsReady(showProcessListId, triggerPaths);
-            sendShowProcessList(showProcessListId);
+            triggerIsComplete = waitAllNodeDataReady(processListId, triggerPaths);
+            sendShowProcessList(processListId);
         } finally {
-            repository.delete(ProcessNode.getShowProcessListIdPath(showProcessListId));
+            repository.delete(ProcessNode.getProcessListIdPath(processListId));
             if (!triggerIsComplete) {
                 triggerPaths.forEach(repository::delete);
             }
         }
     }
     
-    private Collection<String> getTriggerPaths(final String showProcessListId) {
+    /**
+     * Kill process list id.
+     *
+     * @param event get children request event.
+     */
+    @Subscribe
+    public void killProcessListId(final KillProcessListIdRequestEvent event) {
+        String processListId = event.getProcessListId();
+        boolean killProcessListIdIsComplete = false;
+        Collection<String> processKillPaths = getProcessKillPaths(processListId);
+        try {
+            processKillPaths.forEach(each -> repository.persist(each, ""));
+            killProcessListIdIsComplete = waitAllNodeDataReady(processListId, processKillPaths);
+        } finally {
+            if (!killProcessListIdIsComplete) {
+                processKillPaths.forEach(repository::delete);
+            }
+        }
+    }
+    
+    private Collection<String> getProcessKillPaths(final String processListId) {
         return Stream.of(InstanceType.values())
                 .flatMap(each -> repository.getChildrenKeys(ComputeNode.getOnlineNodePath(each)).stream()
-                        .map(onlinePath -> ComputeNode.getProcessTriggerInstanceIdNodePath(onlinePath, showProcessListId)))
+                        .map(onlinePath -> ComputeNode.getProcessKillInstanceIdNodePath(onlinePath, processListId)))
                 .collect(Collectors.toList());
     }
     
-    private boolean waitUntilShowProcessIsReady(final String showProcessListId, final Collection<String> triggerPaths) {
+    private Collection<String> getTriggerPaths(final String processListId) {
+        return Stream.of(InstanceType.values())
+                .flatMap(each -> repository.getChildrenKeys(ComputeNode.getOnlineNodePath(each)).stream()
+                        .map(onlinePath -> ComputeNode.getProcessTriggerInstanceIdNodePath(onlinePath, processListId)))
+                .collect(Collectors.toList());
+    }
+    
+    private boolean waitAllNodeDataReady(final String processListId, final Collection<String> paths) {
         ShowProcessListSimpleLock simpleLock = new ShowProcessListSimpleLock();
-        ShowProcessListManager.getInstance().getLocks().put(showProcessListId, simpleLock);
+        ShowProcessListManager.getInstance().getLocks().put(processListId, simpleLock);
         simpleLock.lock();
         try {
-            while (!isReady(triggerPaths)) {
+            while (!isReady(paths)) {
                 if (!simpleLock.awaitDefaultTime()) {
                     return false;
                 }
@@ -94,19 +122,19 @@ public final class ProcessRegistrySubscriber {
             return true;
         } finally {
             simpleLock.unlock();
-            ShowProcessListManager.getInstance().getLocks().remove(showProcessListId);
+            ShowProcessListManager.getInstance().getLocks().remove(processListId);
         }
     }
     
-    private boolean isReady(final Collection<String> triggerPaths) {
-        return triggerPaths.stream().noneMatch(each -> null != repository.get(each));
+    private boolean isReady(final Collection<String> paths) {
+        return paths.stream().noneMatch(each -> null != repository.get(each));
     }
     
-    private void sendShowProcessList(final String showProcessListId) {
-        List<String> childrenKeys = repository.getChildrenKeys(ProcessNode.getShowProcessListIdPath(showProcessListId));
+    private void sendShowProcessList(final String processListId) {
+        List<String> childrenKeys = repository.getChildrenKeys(ProcessNode.getProcessListIdPath(processListId));
         Collection<String> batchProcessContexts = new LinkedList<>();
         for (String each : childrenKeys) {
-            batchProcessContexts.add(repository.get(ProcessNode.getShowProcessListInstancePath(showProcessListId, each)));
+            batchProcessContexts.add(repository.get(ProcessNode.getProcessListInstancePath(processListId, each)));
         }
         eventBusContext.post(new ShowProcessListResponseEvent(batchProcessContexts));
     }

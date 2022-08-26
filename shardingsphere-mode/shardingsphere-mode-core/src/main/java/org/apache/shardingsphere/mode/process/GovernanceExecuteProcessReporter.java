@@ -23,10 +23,10 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionU
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
-import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
-import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.spi.ExecuteProcessReporter;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+
+import java.util.Optional;
 
 /**
  * Governance execute process reporter.
@@ -37,33 +37,24 @@ public final class GovernanceExecuteProcessReporter implements ExecuteProcessRep
     public void report(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext,
                        final ExecuteProcessConstants constants, final EventBusContext eventBusContext) {
         ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(queryContext.getSql(), executionGroupContext, constants);
-        ShowProcessListManager.getInstance().putProcessContext(executeProcessContext.getExecutionID(), new YamlExecuteProcessContext(executeProcessContext));
+        ShowProcessListManager.getInstance().putProcessContext(executeProcessContext.getExecutionID(), executeProcessContext);
+        ShowProcessListManager.getInstance().putProcessStatement(executeProcessContext.getExecutionID(), executeProcessContext.getProcessStatements());
     }
     
     @Override
     public void report(final String executionID, final SQLExecutionUnit executionUnit, final ExecuteProcessConstants constants, final EventBusContext eventBusContext) {
         ExecuteProcessUnit executeProcessUnit = new ExecuteProcessUnit(executionUnit.getExecutionUnit(), constants);
-        YamlExecuteProcessContext yamlExecuteProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
-        for (YamlExecuteProcessUnit each : yamlExecuteProcessContext.getUnitStatuses()) {
-            if (each.getUnitID().equals(executeProcessUnit.getUnitID())) {
-                each.setStatus(executeProcessUnit.getStatus());
-            }
-        }
+        ExecuteProcessContext executeProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
+        Optional.ofNullable(executeProcessContext.getProcessUnits().get(executeProcessUnit.getUnitID())).ifPresent(optional -> optional.setStatus(executeProcessUnit.getStatus()));
     }
     
     @Override
     public void report(final String executionID, final ExecuteProcessConstants constants, final EventBusContext eventBusContext) {
-        YamlExecuteProcessContext yamlExecuteProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
-        for (YamlExecuteProcessUnit each : yamlExecuteProcessContext.getUnitStatuses()) {
-            if (each.getStatus() != ExecuteProcessConstants.EXECUTE_STATUS_DONE) {
-                return;
-            }
-        }
-        ShowProcessListManager.getInstance().removeProcessContext(executionID);
     }
     
     @Override
     public void reportClean(final String executionID) {
         ShowProcessListManager.getInstance().removeProcessContext(executionID);
+        ShowProcessListManager.getInstance().removeProcessStatement(executionID);
     }
 }

@@ -723,6 +723,10 @@ VARCHAR2
     : V A R C H A R [2]
     ;
 
+STRING
+    : S T R I N G
+    ;
+
 NVARCHAR2
     : N V A R C H A R [2]
     ;
@@ -3034,4 +3038,28 @@ COMPATIBILITY
 
 MATERIALIZE
     : M A T E R I A L I Z E
+    ;
+
+SUBTYPE
+    : S U B T Y P E
+    ;
+
+RECORD
+    : R E C O R D
+    ;
+
+CONSTANT
+    : C O N S T A N T
+    ;
+
+CURSOR
+    : C U R S O R
+    ;
+
+OTHERS
+    : O T H E R S
+    ;
+
+EXCEPTION
+    : E X C E P T I O N
     ;

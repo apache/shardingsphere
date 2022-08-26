@@ -49,7 +49,5 @@
     <distsql-case id="drop-sharding-key-generator-if-exists" value="DROP SHARDING KEY GENERATOR IF EXISTS uuid_key_generator" />
     <distsql-case id="drop-default-sharding-strategy" value="DROP DEFAULT SHARDING TABLE STRATEGY" />
     <distsql-case id="drop-default-sharding-strategy-if-exists" value="DROP DEFAULT SHARDING TABLE STRATEGY IF EXISTS" />
-    <distsql-case id="drop-sharding-scaling-rule" value="DROP SHARDING SCALING RULE default_scaling" />
-    <distsql-case id="drop-sharding-scaling-rule-if-exists" value="DROP SHARDING SCALING RULE IF EXISTS default_scaling" />
     <distsql-case id="drop-sharding-algorithm" value="DROP SHARDING ALGORITHM IF EXISTS t_order_hash_mod" />
 </sql-cases>

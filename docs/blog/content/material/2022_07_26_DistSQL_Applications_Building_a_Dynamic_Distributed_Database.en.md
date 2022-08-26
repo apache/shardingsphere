@@ -471,19 +471,21 @@ DistSQL provides flexible syntax to help simplify operations. In addition to the
 If you have any questions or suggestions about [Apache ShardingSphere](https://shardingsphere.apache.org/), please feel free to post them on the GitHub Issue list.
 
 ## Project Links:
+
 [ShardingSphere Github](https://github.com/apache/shardingsphere/issues?page=1&q=is%3Aopen+is%3Aissue+label%3A%22project%3A+OpenForce+2022%22)
 
 [ShardingSphere Twitter](https://twitter.com/ShardingSphere)
 
 [ShardingSphere Slack
 ](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg)
-[Contributor Guide](https://shardingsphere.apache.org/community/cn/contribute/)
+[Contributor Guide](https://shardingsphere.apache.org/community/cn/involved/)
 
 [GitHub Issues](https://github.com/apache/shardingsphere/issues)
 
-[Contributor Guide](https://shardingsphere.apache.org/community/en/contribute/)
+[Contributor Guide](https://shardingsphere.apache.org/community/en/involved/)
 
 ## References
+
 1. [Concept-DistSQL](https://shardingsphere.apache.org/document/current/en/concepts/distsql/)
 
 2. [Concept-Distributed Primary Key](https://shardingsphere.apache.org/document/current/en/features/sharding/concept/key-generator/)

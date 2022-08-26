@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.migration.distsql.handler.update;
 
+import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
@@ -37,6 +38,8 @@ public final class MigrateTableUpdater implements RALUpdater<MigrateTableStateme
     public void executeUpdate(final String databaseName, final MigrateTableStatement sqlStatement) {
         log.info("start migrate job by {}", sqlStatement);
         String targetDatabaseName = ObjectUtils.defaultIfNull(sqlStatement.getTargetDatabaseName(), databaseName);
+        Preconditions.checkNotNull(targetDatabaseName, "Target database name is null. You could define it in DistSQL or select a database.");
+        Preconditions.checkArgument(sqlStatement.getSourceTableName().equalsIgnoreCase(sqlStatement.getTargetTableName()), "Source table name and target table name must be the same for now.");
         CreateMigrationJobParameter createMigrationJobParameter = new CreateMigrationJobParameter(sqlStatement.getSourceResourceName(), sqlStatement.getSourceSchemaName(),
                 sqlStatement.getSourceTableName(), targetDatabaseName, sqlStatement.getTargetTableName());
         JOB_API.createJobAndStart(createMigrationJobParameter);

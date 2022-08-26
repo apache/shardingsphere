@@ -38,7 +38,6 @@
     <distsql-case id="show-sharding-table-nodes" value="SHOW SHARDING TABLE NODES t_order FROM sharding_db" />
     <distsql-case id="show-sharding-key-generators" value="SHOW SHARDING KEY GENERATORS FROM sharding_db" />
     <distsql-case id="show-default-sharding-strategy" value="SHOW DEFAULT SHARDING STRATEGY FROM sharding_db" />
-    <distsql-case id="show-sharding-scaling-rules" value="SHOW SHARDING SCALING RULES FROM databaseName" />
     <distsql-case id="show-unused-sharding-algorithms" value="SHOW UNUSED SHARDING ALGORITHMS FROM databaseName" />
     <distsql-case id="show-unused-sharding-key-generators" value="SHOW UNUSED SHARDING KEY GENERATORS FROM databaseName" />
     <distsql-case id="count-database-rules" value="COUNT DATABASE RULES FROM databaseName" />

@@ -50,18 +50,21 @@ public final class ShardingSphereLockContextTest {
     @Test
     public void assertTryLock() {
         assertTrue(lockContext.tryLock(lockDefinition));
-        assertTrue(lockContext.isLocked(lockDefinition));
     }
     
     @Test
     public void assertTryLockTimeout() {
         assertTrue(lockContext.tryLock(lockDefinition, 3000));
-        assertTrue(lockContext.isLocked(lockDefinition));
     }
     
     @Test
     public void assertUnlock() {
         lockContext.unlock(lockDefinition);
         verify(lockPersistService).unlock(lockDefinition);
+    }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void assertIsLocked() {
+        assertTrue(lockContext.isLocked(lockDefinition));
     }
 }

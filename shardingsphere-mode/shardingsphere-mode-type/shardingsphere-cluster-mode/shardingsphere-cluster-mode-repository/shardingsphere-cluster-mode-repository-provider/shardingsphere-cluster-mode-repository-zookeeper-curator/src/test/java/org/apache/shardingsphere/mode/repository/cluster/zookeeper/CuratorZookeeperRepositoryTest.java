@@ -38,6 +38,7 @@ import org.apache.curator.framework.recipes.locks.InterProcessLock;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperInternalLock;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperInternalLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperPropertyKey;
 import org.apache.zookeeper.CreateMode;
@@ -147,7 +148,7 @@ public final class CuratorZookeeperRepositoryTest {
         ZookeeperInternalLockHolder holder = new ZookeeperInternalLockHolder(client);
         Field locksFiled = ZookeeperInternalLockHolder.class.getDeclaredField("locks");
         locksFiled.setAccessible(true);
-        locksFiled.set(holder, Collections.singletonMap("/locks/glock", new ZookeeperInternalLockHolder.ZookeeperInternalLock(interProcessLock)));
+        locksFiled.set(holder, Collections.singletonMap("/locks/glock", new ZookeeperInternalLock(interProcessLock)));
         internalLockHolderFiled.set(REPOSITORY, holder);
     }
     

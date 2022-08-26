@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutorCreator;
+import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.KillProcessExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.NoResourceShowExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.ShowConnectionIdExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.ShowCreateDatabaseExecutor;
@@ -44,6 +45,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.UseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLKillStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowFunctionStatusStatement;
@@ -90,6 +92,9 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
         }
         if (sqlStatement instanceof MySQLShowProcessListStatement) {
             return Optional.of(new ShowProcessListExecutor());
+        }
+        if (sqlStatement instanceof MySQLKillStatement) {
+            return Optional.of(new KillProcessExecutor((MySQLKillStatement) sqlStatement));
         }
         if (sqlStatement instanceof MySQLShowCreateDatabaseStatement) {
             return Optional.of(new ShowCreateDatabaseExecutor((MySQLShowCreateDatabaseStatement) sqlStatement));

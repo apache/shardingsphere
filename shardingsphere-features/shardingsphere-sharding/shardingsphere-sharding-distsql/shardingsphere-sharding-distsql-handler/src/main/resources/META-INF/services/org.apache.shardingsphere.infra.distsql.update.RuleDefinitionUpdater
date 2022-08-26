@@ -35,7 +35,3 @@ org.apache.shardingsphere.sharding.distsql.handler.update.CreateShardingAuditorS
 org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingAuditorStatementUpdater
 org.apache.shardingsphere.sharding.distsql.handler.update.AlterDefaultShardingStrategyStatementUpdater
 org.apache.shardingsphere.sharding.distsql.handler.update.DropDefaultStrategyStatementUpdater
-org.apache.shardingsphere.migration.distsql.handler.update.CreateShardingScalingRuleStatementUpdater
-org.apache.shardingsphere.migration.distsql.handler.update.DropShardingScalingRuleStatementUpdater
-org.apache.shardingsphere.migration.distsql.handler.update.EnableShardingScalingRuleStatementUpdater
-org.apache.shardingsphere.migration.distsql.handler.update.DisableShardingScalingRuleStatementUpdater

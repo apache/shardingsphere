@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sharding.route.engine.validator.dml;
 
 import org.apache.shardingsphere.infra.binder.statement.dml.CopyStatementContext;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.sharding.exception.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingCopyStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ShardingCopyStatementValidatorTest {
+public final class ShardingCopyStatementValidatorTest {
     
     @Mock
     private ShardingRule shardingRule;
@@ -62,12 +62,12 @@ public class ShardingCopyStatementValidatorTest {
         new ShardingCopyStatementValidator().preValidate(shardingRule, new CopyStatementContext(sqlStatement), Collections.emptyList(), database);
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = UnsupportedShardingOperationException.class)
     public void assertPreValidateCopyWithShardingTableForPostgreSQL() {
         assertPreValidateCopyTable(new PostgreSQLCopyStatement());
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = UnsupportedShardingOperationException.class)
     public void assertPreValidateCopyWithShardingTableForOpenGauss() {
         assertPreValidateCopyTable(new OpenGaussCopyStatement());
     }

@@ -43,6 +43,13 @@ public interface PipelineJobPublicAPI extends TypedSPI {
     void alterProcessConfiguration(PipelineProcessConfiguration processConfig);
     
     /**
+     * Drop process configuration.
+     *
+     * @param confPath configuration path. e.g. <code>/</code>, <code>/READ</code>, <code>/READ/RATE_LIMITER</code>
+     */
+    void dropProcessConfiguration(String confPath);
+    
+    /**
      * Show process configuration.
      *
      * @return process configuration, non-null
@@ -75,5 +82,5 @@ public interface PipelineJobPublicAPI extends TypedSPI {
      *
      * @return jobInfos
      */
-    List<PipelineJobInfo> list();
+    List<? extends PipelineJobInfo> list();
 }

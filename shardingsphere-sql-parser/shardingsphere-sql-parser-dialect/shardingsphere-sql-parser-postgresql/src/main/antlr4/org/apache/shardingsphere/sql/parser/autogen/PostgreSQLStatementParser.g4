@@ -176,5 +176,6 @@ execute
     | createMaterializedView
     | createOperator
     | alterTextSearchConfiguration
+    | createPolicy
     ) SEMI_? EOF
     ;

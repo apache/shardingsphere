@@ -16,13 +16,11 @@ Now, CITIC Industrial Cloud is exploring how to innovate with existing database 
 
 As one of the most prominent open source middleware projects, with its ever-expanding ecosystem,[Apache ShardingSphere](https://shardingsphere.apache.org/) can meet some of CITIC Industrial Cloud’s technology needs in its development roadmap.
 
-
-
 ## Ensuring Data Consistency in Data Migration
 
 Enterprises are challenged by ever expanding data related issues. Luckily, Scale-out can solve this problem.
 
-Apache ShardingSphere allows online elastic scaling through its [Scaling tool ](https://shardingsphere.apache.org/document/current/en/features/scaling/)and provides multiple built-in data consistency verification algorithms, to ensure the consistency between data source and data on the client-side.
+Apache ShardingSphere allows online elastic scaling through its [Scaling tool ](https://shardingsphere.apache.org/document/current/en/features/migration/)and provides multiple built-in data consistency verification algorithms, to ensure the consistency between data source and data on the client-side.
 
 [CRC32](https://crc32.online/) is used by default to strike a balance between speed and consistency; while the verification algorithm supports user-defined SPI.
 
@@ -33,6 +31,7 @@ Apache ShardingSphere can divide data migration into multiple sessions and execu
 Additionally, SQL execution is suspended during the read-only period since the data is globally consistent when write is disabled. Accordingly, the impact on system usability will be reduced when performing database switches.
 
 ## JDBC and Proxy are Designed for Different Core Users
+
 Apache ShardingSphere now supports access through JDBC and Proxy together with Mesh in the cloud (TODO). Users can choose the product that can best suit their needs to perform operations such as data sharding, read/write splitting, and data migration on original clusters.
 
 [ShardingSphere-JDBC](https://shardingsphere.apache.org/document/current/en/overview/#shardingsphere-jdbc) is designed for Java developers. It’s positioned as a lightweight Java framework, or as an enhanced JDBC driver with higher performance. If the performance loss is between 2% and 7%, and you want to optimize the performance, ShardingSphere-JDBC can help reduce the loss to less than 0.1%. Developers can directly access databases through the JDBC client and the service is provided in `.jar`, which means no extra deployment or dependency is needed.
@@ -50,6 +49,7 @@ While JDBC can boost development efficiency, Proxy can deliver better O&M perfor
 Thanks to the combination of ShardingSphere-JDBC and ShardingSphere-Proxy, while adopting the same sharding strategy in one registry center, ShardingSphere can create an application system suitable for all scenarios. This database gateway-like model allows users to manage all underlying database clusters through Proxy and observe distributed cluster status through SQL, and it can, therefore, enable maintainers and architects to adjust the system architecture to the one that can perfectly meet their business requirements and facilitate business operations.
 
 ## ShardingSphere Federated Queries
+
 SQL Federation queries are a query mode providing cross-database querying capabilities. Users can execute queries without storing the data in the same database.
 
 The SQL Federation engine contains processes such as SQL Parser, SQL Binder, SQL Optimizer, Data Fetcher and Operator Calculator, suitable for dealing with co-related queries and subqueries cross multiple database instances. At the underlying layer, it uses [Calcite](https://calcite.apache.org/) to implement RBO (Rule Based Optimizer) and CBO (Cost Based Optimizer) based on relational algebra, and query the results through the optimal execution plan.
@@ -59,13 +59,14 @@ As concepts such as data warehouse and data lake are gaining popularity, the app
 If the user needs to perform a Federation query in a relational database, it can be easily implemented by ShardingSphere. Although data lake deployment is rather complex, ShardingSphere allows federated computations for data inside and outside the data lake by docking with databases, achieving `LEFT OUTER JOIN`,` RIGHT OUTER JOIN`, complex aggregate queries, etc.
 
 ## Apache ShardingSphere Project Links:
+
 [ShardingSphere Github](https://github.com/apache/shardingsphere/issues?page=1&q=is%3Aopen+is%3Aissue+label%3A%22project%3A+OpenForce+2022%22)
 
 [ShardingSphere Twitter](https://twitter.com/ShardingSphere)
 
 [ShardingSphere Slack](https://apacheshardingsphere.slack.com/ssb/redirect)
 [
-Contributor Guide](https://shardingsphere.apache.org/community/cn/contribute/)
+Contributor Guide](https://shardingsphere.apache.org/community/cn/involved/)
 
 Author
 Yacine Si Tayeb
@@ -73,9 +74,3 @@ Yacine Si Tayeb
 SphereEx Head of International Operations
 Apache ShardingSphere Contributor
 Passionate about technology and innovation, Yacine moved to Beijing to pursue his Ph.D. in Business Administration and fell in awe of the local startup and tech scene. His career path has so far been shaped by opportunities at the intersection of technology and business. Recently he took on a keen interest in the development of the ShardingSphere database middleware ecosystem and Open-Source community building.
-
-
-
-
-
-
