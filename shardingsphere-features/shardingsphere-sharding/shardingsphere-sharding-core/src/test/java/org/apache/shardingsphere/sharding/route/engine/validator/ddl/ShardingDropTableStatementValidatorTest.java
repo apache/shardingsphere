@@ -22,11 +22,11 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.DropTableStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.sharding.exception.DropInUsedTablesException;
 import org.apache.shardingsphere.sharding.exception.ShardingRouteException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingDropTableStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -73,7 +73,7 @@ public final class ShardingDropTableStatementValidatorTest {
         when(shardingRule.getTableRules()).thenReturn(tableRules);
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = DropInUsedTablesException.class)
     public void assertPreValidateDropTableForMySQL() {
         MySQLDropTableStatement sqlStatement = new MySQLDropTableStatement(false);
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
