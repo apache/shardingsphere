@@ -229,7 +229,7 @@ public final class ContextManager implements AutoCloseable {
         SwitchingResource switchingResource = new ResourceSwitchManager().create(metaDataContexts.getMetaData().getDatabase(databaseName).getResource(), toBeUpdatedDataSourcePropsMap);
         metaDataContexts.getMetaData().getDatabases().putAll(createChangedDatabases(databaseName, switchingResource, null));
         metaDataContexts.getMetaData().getGlobalRuleMetaData().findRules(ResourceHeldRule.class).forEach(each -> each.addResource(metaDataContexts.getMetaData().getDatabase(databaseName)));
-        metaDataContexts.getMetaData().putDatabase(newShardingSphereDatabase(metaDataContexts.getMetaData().getDatabase(databaseName)));
+        metaDataContexts.getMetaData().getDatabases().putAll(newShardingSphereDatabase(metaDataContexts.getMetaData().getDatabase(databaseName)));
         metaDataContexts.getPersistService().getDataSourceService().append(metaDataContexts.getMetaData().getActualDatabaseName(databaseName), toBeUpdatedDataSourcePropsMap);
         switchingResource.closeStaleDataSources();
     }
@@ -261,7 +261,7 @@ public final class ContextManager implements AutoCloseable {
             Collection<ResourceHeldRule> staleResourceHeldRules = getStaleResourceHeldRules(databaseName);
             staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResource);
             metaDataContexts = createMetaDataContexts(databaseName, null, ruleConfigs);
-            metaDataContexts.getMetaData().putDatabase(newShardingSphereDatabase(metaDataContexts.getMetaData().getDatabase(databaseName)));
+            metaDataContexts.getMetaData().getDatabases().putAll(newShardingSphereDatabase(metaDataContexts.getMetaData().getDatabase(databaseName)));
         } catch (final SQLException ex) {
             log.error("Alter database: {} rule configurations failed", databaseName, ex);
         }
@@ -280,7 +280,7 @@ public final class ContextManager implements AutoCloseable {
             staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResource);
             SwitchingResource switchingResource = new ResourceSwitchManager().create(metaDataContexts.getMetaData().getDatabase(databaseName).getResource(), dataSourcePropsMap);
             metaDataContexts = createMetaDataContexts(databaseName, switchingResource, null);
-            metaDataContexts.getMetaData().putDatabase(newShardingSphereDatabase(metaDataContexts.getMetaData().getDatabase(databaseName)));
+            metaDataContexts.getMetaData().getDatabases().putAll(newShardingSphereDatabase(metaDataContexts.getMetaData().getDatabase(databaseName)));
             switchingResource.closeStaleDataSources();
         } catch (final SQLException ex) {
             log.error("Alter database: {} data source configuration failed", databaseName, ex);
@@ -302,7 +302,7 @@ public final class ContextManager implements AutoCloseable {
             staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResource);
             SwitchingResource switchingResource = new ResourceSwitchManager().create(metaDataContexts.getMetaData().getDatabase(databaseName).getResource(), dataSourcePropsMap);
             metaDataContexts = createMetaDataContexts(databaseName, switchingResource, ruleConfigs);
-            metaDataContexts.getMetaData().putDatabase(newShardingSphereDatabase(metaDataContexts.getMetaData().getDatabase(databaseName)));
+            metaDataContexts.getMetaData().getDatabases().putAll(newShardingSphereDatabase(metaDataContexts.getMetaData().getDatabase(databaseName)));
             switchingResource.closeStaleDataSources();
         } catch (SQLException ex) {
             log.error("Alter database: {} data source and rule configuration failed", databaseName, ex);
@@ -344,10 +344,12 @@ public final class ContextManager implements AutoCloseable {
         return new MetaDataContexts(metaDataContexts.getPersistService(), metaData);
     }
     
-    private ShardingSphereDatabase newShardingSphereDatabase(final ShardingSphereDatabase originalDatabase) {
-        return new ShardingSphereDatabase(originalDatabase.getName(),
+    private Map<String, ShardingSphereDatabase> newShardingSphereDatabase(final ShardingSphereDatabase originalDatabase) {
+        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
+        result.put(originalDatabase.getName().toLowerCase(), new ShardingSphereDatabase(originalDatabase.getName(),
                 originalDatabase.getProtocolType(), originalDatabase.getResource(), originalDatabase.getRuleMetaData(),
-                metaDataContexts.getPersistService().getDatabaseMetaDataService().load(originalDatabase.getName()));
+                metaDataContexts.getPersistService().getDatabaseMetaDataService().load(originalDatabase.getName())));
+        return result;
     }
     
     /**

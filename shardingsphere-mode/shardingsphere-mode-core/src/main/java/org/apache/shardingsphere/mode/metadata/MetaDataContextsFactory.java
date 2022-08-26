@@ -66,7 +66,7 @@ public final class MetaDataContextsFactory {
         Collection<RuleConfiguration> globalRuleConfigs = persistService.getGlobalRuleService().load();
         ConfigurationProperties props = new ConfigurationProperties(persistService.getPropsService().load());
         Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(effectiveDatabaseConfigs, props, instanceContext);
-        databases = reloadDatabases(databases, persistService);
+        databases.putAll(reloadDatabases(databases, persistService));
         ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases, instanceContext));
         return new MetaDataContexts(persistService, new ShardingSphereMetaData(databases, globalMetaData, props));
     }
