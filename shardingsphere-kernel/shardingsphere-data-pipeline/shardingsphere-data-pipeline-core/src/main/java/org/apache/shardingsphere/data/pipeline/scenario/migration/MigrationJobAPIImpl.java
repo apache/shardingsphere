@@ -48,7 +48,6 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.api.pojo.CreateMigrationJobParameter;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.MigrationJobInfo;
-import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobItemAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.AbstractPipelineJobAPIImpl;
@@ -120,6 +119,12 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         MigrationJobId jobId = (MigrationJobId) pipelineJobId;
         String text = jobId.getDatabaseName() + "|" + jobId.getTableName() + "|" + jobId.getSourceDataSourceName();
         return DigestUtils.md5Hex(text.getBytes(StandardCharsets.UTF_8));
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<MigrationJobInfo> list() {
+        return (List<MigrationJobInfo>) super.list();
     }
     
     @Override
@@ -215,16 +220,16 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         return new MigrationProcessContext(pipelineJobConfig.getJobId(), processConfig);
     }
     
-    protected PipelineJobInfo getJobInfo(final String jobName) {
+    @Override
+    protected MigrationJobInfo getJobInfo(final String jobName) {
         MigrationJobInfo result = new MigrationJobInfo(jobName);
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(result.getJobId());
         MigrationJobConfiguration jobConfig = getJobConfiguration(jobConfigPOJO);
         result.setActive(!jobConfigPOJO.isDisabled());
         result.setShardingTotalCount(jobConfig.getJobShardingCount());
-        result.setTables(jobConfig.getSourceTableName());
+        result.setTable(jobConfig.getSourceTableName());
         result.setCreateTime(jobConfigPOJO.getProps().getProperty("create_time"));
         result.setStopTime(jobConfigPOJO.getProps().getProperty("stop_time"));
-        result.setJobParameter(jobConfigPOJO.getJobParameter());
         return result;
     }
     

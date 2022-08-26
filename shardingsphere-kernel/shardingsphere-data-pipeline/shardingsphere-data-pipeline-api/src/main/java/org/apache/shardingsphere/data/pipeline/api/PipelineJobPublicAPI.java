@@ -82,5 +82,5 @@ public interface PipelineJobPublicAPI extends TypedSPI {
      *
      * @return jobInfos
      */
-    List<PipelineJobInfo> list();
+    List<? extends PipelineJobInfo> list();
 }
