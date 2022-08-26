@@ -193,6 +193,19 @@ CHECK MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8' BY TYPE (NAME='CRC32_MATCH
 +------------+----------------------+----------------------+-----------------------+-------------------------+
 ```
 
+数据一致性校验算法类型来自：
+```sql
+SHOW MIGRATION CHECK ALGORITHMS;
++-------------+--------------------------------------------------------------+----------------------------+
+| type        | supported_database_types                                     | description                |
++-------------+--------------------------------------------------------------+----------------------------+
+| CRC32_MATCH | MySQL                                                        | Match CRC32 of records.    |
+| DATA_MATCH  | SQL92,MySQL,MariaDB,PostgreSQL,openGauss,Oracle,SQLServer,H2 | Match raw data of records. |
++-------------+--------------------------------------------------------------+----------------------------+
+```
+
+目标端开启数据加密的情况下，不能使用`CRC32_MATCH`。
+
 7. 停止作业。
 
 ```sql
@@ -329,6 +342,12 @@ MIGRATE TABLE ds_0.t_order INTO t_order;
 MIGRATE TABLE ds_0.t_order INTO sharding_db.t_order;
 ```
 
+也可以指定源端schema：
+
+```sql
+MIGRATE TABLE ds_0.public.t_order INTO sharding_db.t_order;
+```
+
 4. 查看数据迁移作业列表。
 
 ```sql
@@ -359,7 +378,7 @@ SHOW MIGRATION STATUS 'j015d4ee1b8a5e7f95df19babb2794395e8';
 6. 执行数据一致性校验。
 
 ```sql
-CHECK MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8' BY TYPE (NAME='DATA_MATCH');
+CHECK MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8';
 +------------+----------------------+----------------------+-----------------------+-------------------------+
 | table_name | source_records_count | target_records_count | records_count_matched | records_content_matched |
 +------------+----------------------+----------------------+-----------------------+-------------------------+
@@ -502,6 +521,12 @@ MIGRATE TABLE ds_0.t_order INTO t_order;
 MIGRATE TABLE ds_0.t_order INTO sharding_db.t_order;
 ```
 
+也可以指定源端schema：
+
+```sql
+MIGRATE TABLE ds_0.public.t_order INTO sharding_db.t_order;
+```
+
 4. 查看数据迁移作业列表。
 
 ```sql
@@ -532,7 +557,7 @@ SHOW MIGRATION STATUS 'j015d4ee1b8a5e7f95df19babb2794395e8';
 6. 执行数据一致性校验。
 
 ```sql
-CHECK MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8' BY TYPE (NAME='DATA_MATCH');
+CHECK MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8';
 +------------+----------------------+----------------------+-----------------------+-------------------------+
 | table_name | source_records_count | target_records_count | records_count_matched | records_content_matched |
 +------------+----------------------+----------------------+-----------------------+-------------------------+

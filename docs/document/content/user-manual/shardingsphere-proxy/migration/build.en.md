@@ -176,9 +176,21 @@ ALTER MIGRATION PROCESS CONFIGURATION (
 READ(
   RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='1000')))
 ), WRITE(
-  RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='1000')))
+  RATE_LIMITER (TYPE(NAME='TPS',PROPERTIES('tps'='1000')))
 )
 );
 ```
 
+7.4. Clear configuration.
+
 DistSQL sample: clear the configuration of `READ` and restore it to the default value.
+
+```sql
+DROP MIGRATION PROCESS CONFIGURATION '/READ';
+```
+
+DistSQL sample: clear the configuration of `READ/RATE_LIMITER`.
+
+```sql
+DROP MIGRATION PROCESS CONFIGURATION '/READ/RATE_LIMITER';
+```

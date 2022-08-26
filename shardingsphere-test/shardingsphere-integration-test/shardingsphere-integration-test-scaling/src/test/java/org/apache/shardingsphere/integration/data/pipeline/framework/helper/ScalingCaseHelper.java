@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -70,9 +71,8 @@ public final class ScalingCaseHelper {
             if (databaseType instanceof MySQLDatabaseType) {
                 Object[] addObjs = {keyGenerateAlgorithm.generateKey(), orderId, userId, generateString(6), randomInt, randomInt, randomInt,
                         randomUnsignedInt, randomUnsignedInt, randomUnsignedInt, randomUnsignedInt, generateFloat(), generateDouble(-1000, 100000),
-                        // TODO year should not be always null
-                        BigDecimal.valueOf(generateDouble(1, 100)), now, now, now.toLocalDate(), now.toLocalTime(), null, "1", "t", "e", "s", "t", generateString(2), generateString(1),
-                        generateString(1), "1", "2", generateJsonString(1024)};
+                        BigDecimal.valueOf(generateDouble(1, 100)), now, now, now.toLocalDate(), now.toLocalTime(), Year.now().getValue(), "1", "t", "e", "s", "t", generateString(2),
+                        generateString(1), generateString(1), "1", "2", generateJsonString(1024)};
                 orderData.add(addObjs);
             } else {
                 orderData.add(new Object[]{keyGenerateAlgorithm.generateKey(), orderId, userId, generateString(6), randomInt,

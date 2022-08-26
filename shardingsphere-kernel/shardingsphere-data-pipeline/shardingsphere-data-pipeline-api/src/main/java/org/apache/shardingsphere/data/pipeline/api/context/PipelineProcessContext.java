@@ -46,4 +46,11 @@ public interface PipelineProcessContext {
      * @return job read rate limit algorithm
      */
     JobRateLimitAlgorithm getReadRateLimitAlgorithm();
+    
+    /**
+     * Get job write rate limit algorithm.
+     *
+     * @return job write rate limit algorithm
+     */
+    JobRateLimitAlgorithm getWriteRateLimitAlgorithm();
 }
