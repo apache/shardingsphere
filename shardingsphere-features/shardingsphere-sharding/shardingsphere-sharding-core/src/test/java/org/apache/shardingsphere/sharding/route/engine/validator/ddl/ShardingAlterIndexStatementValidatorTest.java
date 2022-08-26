@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 
 import org.apache.shardingsphere.infra.binder.statement.ddl.AlterIndexStatementContext;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.sharding.exception.DuplicatedIndexException;
+import org.apache.shardingsphere.sharding.exception.IndexNotExistedException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingAlterIndexStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
@@ -65,7 +66,7 @@ public final class ShardingAlterIndexStatementValidatorTest {
         new ShardingAlterIndexStatementValidator().preValidate(shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), database);
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = IndexNotExistedException.class)
     public void assertPreValidateAlterIndexWhenIndexNotExistRenameIndexNotExistForPostgreSQL() {
         PostgreSQLAlterIndexStatement sqlStatement = new PostgreSQLAlterIndexStatement();
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
@@ -79,7 +80,7 @@ public final class ShardingAlterIndexStatementValidatorTest {
         new ShardingAlterIndexStatementValidator().preValidate(shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), database);
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = DuplicatedIndexException.class)
     public void assertPreValidateAlterIndexWhenIndexExistRenameIndexExistForPostgreSQL() {
         PostgreSQLAlterIndexStatement sqlStatement = new PostgreSQLAlterIndexStatement();
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
