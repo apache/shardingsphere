@@ -14,6 +14,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 42000     | 10003       | Unsupported SQL node conversion for SQL statement \`%s\` |
 | HY004     | 10004       | Unsupported conversion data type \`%s\` for value \`%s\` |
 | HY004     | 10100       | Can not register driver, reason is: %s |
+| 34000     | 10200       | Can not get cursor name from fetch statement |
 | 42000     | 11000       | You have an error in your SQL syntax: %s |
 | 42000     | 11001       | configuration error |
 | 42000     | 11002       | Resource does not exist |
