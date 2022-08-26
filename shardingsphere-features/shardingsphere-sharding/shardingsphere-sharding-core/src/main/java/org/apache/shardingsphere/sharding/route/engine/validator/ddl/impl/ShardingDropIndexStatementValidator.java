@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.sharding.exception.IndexNotExistedException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -50,7 +51,7 @@ public final class ShardingDropIndexStatementValidator extends ShardingDDLStatem
             ShardingSphereSchema schema = each.getOwner().map(optional -> optional.getIdentifier().getValue())
                     .map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName));
             if (!isSchemaContainsIndex(schema, each)) {
-                throw new ShardingSphereException("Index '%s' does not exist.", each.getIndexName().getIdentifier().getValue());
+                throw new IndexNotExistedException(each.getIndexName().getIdentifier().getValue());
             }
         }
     }
