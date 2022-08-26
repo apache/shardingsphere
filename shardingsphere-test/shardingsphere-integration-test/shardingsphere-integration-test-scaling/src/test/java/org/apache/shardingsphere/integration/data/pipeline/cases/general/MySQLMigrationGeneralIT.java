@@ -78,6 +78,7 @@ public final class MySQLMigrationGeneralIT extends BaseExtraSQLITCase {
         addSourceResource();
         addTargetResource();
         createTargetOrderTableRule();
+        createTargetOrderTableEncryptRule();
         createTargetOrderItemTableRule();
         SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
         JdbcTemplate jdbcTemplate = new JdbcTemplate(getSourceDataSource());

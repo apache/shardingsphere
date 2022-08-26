@@ -57,6 +57,12 @@
         )
     </add-migration-target-resource-template>
     
+    <create-target-order-table-encrypt-rule>
+        CREATE ENCRYPT RULE t_order (
+        COLUMNS((NAME=status, CIPHER=status,TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc')))),
+        QUERY_WITH_CIPHER_COLUMN=true)
+    </create-target-order-table-encrypt-rule>
+    
     <create-target-order-table-rule>
         CREATE SHARDING TABLE RULE t_order(
         RESOURCES(ds_2,ds_3,ds_4),

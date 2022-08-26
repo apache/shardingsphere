@@ -19,6 +19,7 @@ package org.apache.shardingsphere.integration.data.pipeline.cases.task;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseIncrementTask;
 import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingCaseHelper;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
@@ -61,9 +62,8 @@ public final class MySQLIncrementTask extends BaseIncrementTask {
     
     private Object insertOrder() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        String status = random.nextInt() % 2 == 0 ? null : "NOT-NULL";
         Object[] orderInsertDate = new Object[]{primaryKeyGenerateAlgorithm.generateKey(), ScalingCaseHelper.generateSnowflakeKey(), random.nextInt(0, 6),
-                random.nextInt(1, 99), status};
+                random.nextInt(1, 99), RandomStringUtils.randomAlphabetic(10)};
         jdbcTemplate.update("INSERT INTO t_order (id,order_id,user_id,t_unsigned_int,status) VALUES (?, ?, ?, ?, ?)", orderInsertDate);
         return orderInsertDate[0];
     }
@@ -78,11 +78,11 @@ public final class MySQLIncrementTask extends BaseIncrementTask {
     
     private void updateOrderByPrimaryKey(final Object primaryKey) {
         Object[] updateData = {"updated" + Instant.now().getEpochSecond(), ThreadLocalRandom.current().nextInt(0, 100), primaryKey};
-        jdbcTemplate.update("UPDATE t_order SET status = ?,t_unsigned_int = ? WHERE id = ?", updateData);
-        jdbcTemplate.update("UPDATE t_order SET status = null,t_unsigned_int = 299,t_datetime='0000-00-00 00:00:00' WHERE id = ?", primaryKey);
+        jdbcTemplate.update("UPDATE t_order SET t_char = ?,t_unsigned_int = ? WHERE id = ?", updateData);
+        jdbcTemplate.update("UPDATE t_order SET t_char = null,t_unsigned_int = 299,t_datetime='0000-00-00 00:00:00' WHERE id = ?", primaryKey);
     }
     
     private void setNullToOrderFields(final Object primaryKey) {
-        jdbcTemplate.update("UPDATE t_order SET status = null, t_unsigned_int = null WHERE id = ?", primaryKey);
+        jdbcTemplate.update("UPDATE t_order SET t_char = null, t_unsigned_int = null WHERE id = ?", primaryKey);
     }
 }
