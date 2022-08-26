@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurat
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.infra.datanode.DataNodeUtil;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -34,6 +33,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerate
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
+import org.apache.shardingsphere.sharding.exception.DataNodeGenerateException;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -191,7 +191,7 @@ public final class TableRule {
         for (String each : actualDataNodes) {
             DataNode dataNode = new DataNode(each);
             if (!dataSourceNames.contains(dataNode.getDataSourceName())) {
-                throw new ShardingSphereException("Cannot find data source in sharding rule, invalid actual data node is: '%s'", each);
+                throw new DataNodeGenerateException(each);
             }
             result.add(dataNode);
             dataNodeIndexMap.put(dataNode, index);
