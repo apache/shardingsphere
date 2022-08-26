@@ -18,21 +18,15 @@
 package org.apache.shardingsphere.mode.process;
 
 import org.apache.shardingsphere.infra.binder.QueryContext;
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
-import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
-import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.spi.ExecuteProcessReporter;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 
-import java.sql.Statement;
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Governance execute process reporter.
@@ -43,47 +37,24 @@ public final class GovernanceExecuteProcessReporter implements ExecuteProcessRep
     public void report(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext,
                        final ExecuteProcessConstants constants, final EventBusContext eventBusContext) {
         ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(queryContext.getSql(), executionGroupContext, constants);
-        ShowProcessListManager.getInstance().putProcessContext(executeProcessContext.getExecutionID(), new YamlExecuteProcessContext(executeProcessContext));
-        ShowProcessListManager.getInstance().putProcessStatement(executeProcessContext.getExecutionID(), getProcessStatement(executionGroupContext));
+        ShowProcessListManager.getInstance().putProcessContext(executeProcessContext.getExecutionID(), executeProcessContext);
+        ShowProcessListManager.getInstance().putProcessStatement(executeProcessContext.getExecutionID(), executeProcessContext.getProcessStatements());
     }
     
     @Override
     public void report(final String executionID, final SQLExecutionUnit executionUnit, final ExecuteProcessConstants constants, final EventBusContext eventBusContext) {
         ExecuteProcessUnit executeProcessUnit = new ExecuteProcessUnit(executionUnit.getExecutionUnit(), constants);
-        YamlExecuteProcessContext yamlExecuteProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
-        for (YamlExecuteProcessUnit each : yamlExecuteProcessContext.getUnitStatuses()) {
-            if (each.getUnitID().equals(executeProcessUnit.getUnitID())) {
-                each.setStatus(executeProcessUnit.getStatus());
-            }
-        }
+        ExecuteProcessContext executeProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
+        Optional.ofNullable(executeProcessContext.getProcessUnits().get(executeProcessUnit.getUnitID())).ifPresent(optional -> optional.setStatus(executeProcessUnit.getStatus()));
     }
     
     @Override
     public void report(final String executionID, final ExecuteProcessConstants constants, final EventBusContext eventBusContext) {
-        YamlExecuteProcessContext yamlExecuteProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
-        for (YamlExecuteProcessUnit each : yamlExecuteProcessContext.getUnitStatuses()) {
-            if (each.getStatus() != ExecuteProcessConstants.EXECUTE_STATUS_DONE) {
-                return;
-            }
-        }
-        ShowProcessListManager.getInstance().removeProcessContext(executionID);
-        ShowProcessListManager.getInstance().removeProcessStatement(executionID);
     }
     
     @Override
     public void reportClean(final String executionID) {
         ShowProcessListManager.getInstance().removeProcessContext(executionID);
-    }
-    
-    private Collection<Statement> getProcessStatement(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
-        Collection<Statement> result = new LinkedList<>();
-        for (ExecutionGroup<? extends SQLExecutionUnit> each : executionGroupContext.getInputGroups()) {
-            for (SQLExecutionUnit executionUnit : each.getInputs()) {
-                if (executionUnit instanceof JDBCExecutionUnit) {
-                    result.add(((JDBCExecutionUnit) executionUnit).getStorageResource());
-                }
-            }
-        }
-        return result;
+        ShowProcessListManager.getInstance().removeProcessStatement(executionID);
     }
 }

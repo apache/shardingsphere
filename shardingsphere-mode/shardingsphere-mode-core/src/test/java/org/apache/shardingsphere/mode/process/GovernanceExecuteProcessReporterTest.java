@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupConte
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
-import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,21 +74,11 @@ public final class GovernanceExecuteProcessReporterTest {
         SQLExecutionUnit sqlExecutionUnit = mock(SQLExecutionUnit.class);
         ExecutionUnit executionUnit = mock(ExecutionUnit.class);
         when(sqlExecutionUnit.getExecutionUnit()).thenReturn(executionUnit);
-        YamlExecuteProcessContext yamlExecuteProcessContext = mock(YamlExecuteProcessContext.class);
-        when(yamlExecuteProcessContext.getUnitStatuses()).thenReturn(Collections.emptyList());
-        when(showProcessListManager.getProcessContext("foo_id")).thenReturn(yamlExecuteProcessContext);
+        ExecuteProcessContext executeProcessContext = mock(ExecuteProcessContext.class);
+        when(executeProcessContext.getProcessUnits()).thenReturn(Collections.emptyMap());
+        when(showProcessListManager.getProcessContext("foo_id")).thenReturn(executeProcessContext);
         reporter.report("foo_id", sqlExecutionUnit, ExecuteProcessConstants.EXECUTE_ID, EventBusContextHolderFixture.EVENT_BUS_CONTEXT);
         verify(showProcessListManager, times(1)).getProcessContext(eq("foo_id"));
-    }
-    
-    @Test
-    public void assertReportComplete() {
-        YamlExecuteProcessContext yamlExecuteProcessContext = mock(YamlExecuteProcessContext.class);
-        when(yamlExecuteProcessContext.getUnitStatuses()).thenReturn(Collections.emptyList());
-        when(showProcessListManager.getProcessContext("foo_id")).thenReturn(yamlExecuteProcessContext);
-        reporter.report("foo_id", ExecuteProcessConstants.EXECUTE_STATUS_DONE, EventBusContextHolderFixture.EVENT_BUS_CONTEXT);
-        verify(showProcessListManager, times(1)).getProcessContext(eq("foo_id"));
-        verify(showProcessListManager, times(1)).removeProcessContext(eq("foo_id"));
     }
     
     @Test

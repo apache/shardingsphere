@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.process;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
 import org.apache.shardingsphere.mode.process.lock.ShowProcessListSimpleLock;
 
 import java.sql.Statement;
@@ -38,7 +38,7 @@ public final class ShowProcessListManager {
     private static final ShowProcessListManager INSTANCE = new ShowProcessListManager();
     
     @Getter
-    private final Map<String, YamlExecuteProcessContext> processContexts = new ConcurrentHashMap<>();
+    private final Map<String, ExecuteProcessContext> processContexts = new ConcurrentHashMap<>();
     
     @Getter
     private final Map<String, Collection<Statement>> processStatements = new ConcurrentHashMap<>();
@@ -61,7 +61,7 @@ public final class ShowProcessListManager {
      * @param executionId execution id
      * @param processContext process context
      */
-    public void putProcessContext(final String executionId, final YamlExecuteProcessContext processContext) {
+    public void putProcessContext(final String executionId, final ExecuteProcessContext processContext) {
         processContexts.put(executionId, processContext);
     }
     
@@ -84,7 +84,7 @@ public final class ShowProcessListManager {
      * @param executionId execution id
      * @return execute process context
      */
-    public YamlExecuteProcessContext getProcessContext(final String executionId) {
+    public ExecuteProcessContext getProcessContext(final String executionId) {
         return processContexts.get(executionId);
     }
     
@@ -121,7 +121,7 @@ public final class ShowProcessListManager {
      * 
      * @return collection execute process context
      */
-    public Collection<YamlExecuteProcessContext> getAllProcessContext() {
+    public Collection<ExecuteProcessContext> getAllProcessContext() {
         return processContexts.values();
     }
 }
