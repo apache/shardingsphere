@@ -25,13 +25,12 @@ import org.apache.shardingsphere.test.integration.framework.param.model.Assertio
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
- * Parameterized array factory.
+ * PROXY Parameterized array generator for standalone mode.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ParameterizedArrayFactory {
+public final class ProxyStandaloneParameterizedArrayGenerator {
     
     private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
     
@@ -42,19 +41,8 @@ public final class ParameterizedArrayFactory {
      * @return assertion parameterized array
      */
     public static Collection<AssertionParameterizedArray> getAssertionParameterized(final SQLCommandType sqlCommandType) {
-        Collection<AssertionParameterizedArray> result = new LinkedList<>();
-        for (String each : ENV.getRunModes()) {
-            if ("Standalone".equalsIgnoreCase(each)) {
-                if (SQLCommandType.RDL == sqlCommandType || SQLCommandType.RAL == sqlCommandType || SQLCommandType.RQL == sqlCommandType) {
-                    result.addAll(ProxyStandaloneParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType));
-                    return result;
-                }
-                result.addAll(JdbcStandaloneParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType));
-            } else if ("Cluster".equalsIgnoreCase(each)) {
-                result.addAll(ClusterParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType));
-            }
-        }
-        return result;
+        return new ParameterizedArrayGenerator(ENV.getClusterEnvironment().getAdapters(),
+                ENV.getScenarios(), "Standalone", ENV.getClusterEnvironment().getDatabaseTypes()).getAssertionParameterized(sqlCommandType);
     }
     
     /**
@@ -64,17 +52,7 @@ public final class ParameterizedArrayFactory {
      * @return case parameterized array
      */
     public static Collection<ParameterizedArray> getCaseParameterized(final SQLCommandType sqlCommandType) {
-        Collection<ParameterizedArray> result = new LinkedList<>();
-        for (String each : ENV.getRunModes()) {
-            if ("Standalone".equalsIgnoreCase(each)) {
-                if (SQLCommandType.RDL == sqlCommandType || SQLCommandType.RAL == sqlCommandType || SQLCommandType.RQL == sqlCommandType) {
-                    result.addAll(ProxyStandaloneParameterizedArrayGenerator.getCaseParameterized(sqlCommandType));
-                    return result;
-                }
-            } else if ("Cluster".equalsIgnoreCase(each)) {
-                result.addAll(ClusterParameterizedArrayGenerator.getCaseParameterized(sqlCommandType));
-            }
-        }
-        return result;
+        return new ParameterizedArrayGenerator(ENV.getClusterEnvironment().getAdapters(),
+                ENV.getScenarios(), "Standalone", ENV.getClusterEnvironment().getDatabaseTypes()).getCaseParameterized(sqlCommandType);
     }
 }

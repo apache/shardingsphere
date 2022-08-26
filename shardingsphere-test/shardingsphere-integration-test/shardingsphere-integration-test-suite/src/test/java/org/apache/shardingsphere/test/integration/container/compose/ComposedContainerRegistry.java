@@ -25,6 +25,7 @@ import org.apache.shardingsphere.test.integration.framework.param.model.Paramete
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Composed container registry.
@@ -63,10 +64,11 @@ public final class ComposedContainerRegistry implements AutoCloseable {
     
     @Override
     public void close() {
-        for (ComposedContainer each : composedContainers.values()) {
-            closeTargetDataSource(each.getTargetDataSource());
-            closeActualDataSourceMap(each.getActualDataSourceMap());
-            closeContainer(each);
+        for (Entry<String, ComposedContainer> entry : composedContainers.entrySet()) {
+            closeTargetDataSource(entry.getValue().getTargetDataSource());
+            closeActualDataSourceMap(entry.getValue().getActualDataSourceMap());
+            closeContainer(entry.getValue());
+            composedContainers.remove(entry.getKey());
         }
     }
     
