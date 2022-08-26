@@ -30,8 +30,6 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public final class ShardingSphereStandaloneLock implements ShardingSphereLock {
     
-    private static final long DEFAULT_TRY_LOCK_TIMEOUT_MILLISECONDS = 3 * 60 * 1000;
-    
     private final Map<String, ReentrantLock> locks = new ConcurrentHashMap<>();
     
     @Override
@@ -39,7 +37,7 @@ public final class ShardingSphereStandaloneLock implements ShardingSphereLock {
         Preconditions.checkNotNull(lockName, "Try lock args lockName name can not be null.");
         ReentrantLock lock = locks.get(lockName);
         if (null == lock) {
-            lock = new StandaloneMutexLock();
+            lock = new StandaloneExclusiveLock();
             locks.put(lockName, lock);
         }
         return innerTryLock(lock, timeoutMillis);

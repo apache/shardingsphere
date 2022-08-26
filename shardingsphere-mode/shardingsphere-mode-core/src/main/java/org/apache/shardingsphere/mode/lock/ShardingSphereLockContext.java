@@ -29,8 +29,6 @@ public final class ShardingSphereLockContext implements LockContext {
     
     public static final long MAX_TRY_LOCK = 3 * 60 * 1000L;
     
-    private final LockStateContext lockStateContext = new LockStateContext();
-    
     private final LockPersistService lockPersistService;
     
     @Override
@@ -40,21 +38,16 @@ public final class ShardingSphereLockContext implements LockContext {
     
     @Override
     public boolean tryLock(final LockDefinition lockDefinition, final long timeoutMillis) {
-        if (lockPersistService.tryLock(lockDefinition, timeoutMillis)) {
-            lockStateContext.register(lockDefinition);
-            return true;
-        }
-        return false;
+        return lockPersistService.tryLock(lockDefinition, timeoutMillis);
     }
     
     @Override
     public void unlock(final LockDefinition lockDefinition) {
         lockPersistService.unlock(lockDefinition);
-        lockStateContext.unregister(lockDefinition);
     }
     
     @Override
     public boolean isLocked(final LockDefinition lockDefinition) {
-        return lockStateContext.isLocked(lockDefinition);
+        throw new UnsupportedOperationException();
     }
 }
