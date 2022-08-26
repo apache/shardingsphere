@@ -36,8 +36,8 @@ import java.util.LinkedList;
 @RunWith(Parameterized.class)
 public final class MySQLHAGeneralIT extends BaseITCase {
     
-    public MySQLHAGeneralIT(final HAParameterized HAParameterized) {
-        super(HAParameterized);
+    public MySQLHAGeneralIT(final HAParameterized haParameterized) {
+        super(haParameterized);
     }
     
     @Parameters(name = "{0}")

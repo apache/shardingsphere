@@ -32,14 +32,15 @@ public final class ProxyClusterContainerConfigurationFactory {
     
     /**
      * Create new instance of adaptor container configuration.
-     *
+     * 
+     * @param scenario scenario
      * @return created instance
      */
     public static AdaptorContainerConfiguration newInstance(final String scenario) {
         return new AdaptorContainerConfiguration("", getMountedResources(scenario));
     }
     
-    private static Map<String, String> getMountedResources(String scenario) {
+    private static Map<String, String> getMountedResources(final String scenario) {
         Map<String, String> result = new HashMap<>(2, 1);
         result.put("logback-test.xml", "/opt/shardingsphere-proxy/conf/logback.xml");
         result.put(String.format("env/scenario/%s/proxy/server.yaml", scenario), "/opt/shardingsphere-proxy/conf/server.yaml");

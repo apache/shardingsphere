@@ -62,12 +62,12 @@ public final class DockerComposedContainer extends AbstractComposedContainer {
             DockerStorageContainer storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, dockerImageName, null, each));
             storageContainers.add(storageContainer);
         });
-
-         AdaptorContainerConfiguration containerConfig = ProxyClusterContainerConfigurationFactory.newInstance(scenario);
-         ShardingSphereProxyClusterContainer proxyClusterContainer =
-         (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance("Cluster", "proxy", databaseType, null, "", containerConfig);
-         storageContainers.forEach(each -> proxyClusterContainer.dependsOn(governanceContainer, each));
-         proxyContainer = getContainers().registerContainer(proxyClusterContainer);
+        
+        AdaptorContainerConfiguration containerConfig = ProxyClusterContainerConfigurationFactory.newInstance(scenario);
+        ShardingSphereProxyClusterContainer proxyClusterContainer = (ShardingSphereProxyClusterContainer) AdapterContainerFactory
+                .newInstance("Cluster", "proxy", databaseType, null, "", containerConfig);
+        storageContainers.forEach(each -> proxyClusterContainer.dependsOn(governanceContainer, each));
+        proxyContainer = getContainers().registerContainer(proxyClusterContainer);
     }
     
     /**

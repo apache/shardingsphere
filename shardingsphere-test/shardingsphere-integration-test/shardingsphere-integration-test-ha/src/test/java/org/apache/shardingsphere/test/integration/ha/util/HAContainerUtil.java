@@ -30,6 +30,11 @@ import java.util.Map;
 @NoArgsConstructor
 public class HAContainerUtil {
     
+    /**
+     * Get container names and quantity.
+     * @param scenario scenario
+     * @return container names and quantity
+     */
     public static Map<String, Integer> loadContainerRawNamesAndQuantity(final String scenario) {
         Map<String, Integer> result = new HashMap<>(3, 1);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();

@@ -63,9 +63,9 @@ public abstract class BaseITCase {
     @Setter
     private Thread increaseTaskThread;
     
-    public BaseITCase(final HAParameterized HAParameterized) {
-        databaseType = HAParameterized.getDatabaseType();
-        composedContainer = new DockerComposedContainer(HAParameterized.getScenario(), HAParameterized.getDatabaseType(), HAParameterized.getDockerImageName());
+    public BaseITCase(final HAParameterized haParameterized) {
+        databaseType = haParameterized.getDatabaseType();
+        composedContainer = new DockerComposedContainer(haParameterized.getScenario(), haParameterized.getDatabaseType(), haParameterized.getDockerImageName());
         composedContainer.start();
         initStorageDataSources();
         initProxyDataSource();
