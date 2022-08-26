@@ -43,7 +43,7 @@ public final class ShardingAlterViewStatementValidator extends ShardingDDLStatem
         if (selectStatement.isPresent()) {
             TableExtractor extractor = new TableExtractor();
             extractor.extractTablesFromSelect(selectStatement.get());
-            validateShardingTable(shardingRule, extractor.getRewriteTables());
+            validateShardingTable(shardingRule, "ALTER VIEW", extractor.getRewriteTables());
         }
     }
     

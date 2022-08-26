@@ -49,7 +49,7 @@ public final class ShardingCreateFunctionStatementValidator extends ShardingDDLS
         }
         TableExtractor extractor = new TableExtractor();
         Collection<SimpleTableSegment> existTables = extractor.extractExistTableFromRoutineBody(routineBodySegment.get());
-        validateShardingTable(shardingRule, existTables);
+        validateShardingTable(shardingRule, "CREATE FUNCTION", existTables);
         String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName());
         ShardingSphereSchema schema = sqlStatementContext.getSqlStatement().getFunctionName().flatMap(optional -> optional.getOwner()
                 .map(owner -> database.getSchema(owner.getIdentifier().getValue()))).orElseGet(() -> database.getSchema(defaultSchemaName));

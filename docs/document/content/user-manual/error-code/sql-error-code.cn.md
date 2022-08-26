@@ -41,11 +41,12 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 44000     | 20003       | Can not find table rule with logic tables \`%s\` |
 | 44000     | 20012       | Inline sharding algorithms expression \`%s\` and sharding column \`%s\` are not match |
 | HY004     | 20013       | Found different types for sharding value \`%s\` |
+| HY004     | 20014       | Found different types for sharding value \`%s\` |
 | HY004     | 24000       | Encrypt algorithm \`%s\` initialize failed, reason is: %s |
-| HY004     | 24001       | The SQL clause \`%s\` is unsupported in encrypt rule |
+| 0A000     | 24001       | Can not support operation \`%s\` with sharding table \`%s\` |
 | 44000     | 24002       | Altered column \`%s\` must use same encrypt algorithm with previous column \`%s\` in table \`%s\` |
 | 42000     | 24003       | Insert value of index \`%s\` can not support for encrypt |
 | 44000     | 24004       | Can not find logic encrypt column by \`%s\` |
 | HY004     | 25000       | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type |
-| 42000     | 25003       | Insert value of index `%s` can not support for shadow |
+| 42000     | 25003       | Insert value of index \`%s\` can not support for shadow |
 | 42000     | 30000       | Unknown exception: %s |
