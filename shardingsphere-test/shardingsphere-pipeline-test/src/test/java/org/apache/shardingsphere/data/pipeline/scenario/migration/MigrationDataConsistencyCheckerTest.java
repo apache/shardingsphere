@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.check.consistency;
+package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
@@ -24,7 +24,6 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDa
 import org.apache.shardingsphere.data.pipeline.core.fixture.DataConsistencyCalculateAlgorithmFixture;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobItemContext;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -37,7 +36,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class DataConsistencyCheckerTest {
+public final class MigrationDataConsistencyCheckerTest {
     
     @BeforeClass
     public static void beforeClass() {
@@ -46,7 +45,7 @@ public final class DataConsistencyCheckerTest {
     
     @Test
     public void assertCountAndDataCheck() throws SQLException {
-        Map<String, DataConsistencyCheckResult> actual = new DataConsistencyChecker(createJobConfiguration(), null).check(new DataConsistencyCalculateAlgorithmFixture());
+        Map<String, DataConsistencyCheckResult> actual = new MigrationDataConsistencyChecker(createJobConfiguration(), null).check(new DataConsistencyCalculateAlgorithmFixture());
         assertTrue(actual.get("t_order").getCountCheckResult().isMatched());
         assertThat(actual.get("t_order").getCountCheckResult().getSourceRecordsCount(), is(actual.get("t_order").getCountCheckResult().getTargetRecordsCount()));
         assertTrue(actual.get("t_order").getContentCheckResult().isMatched());

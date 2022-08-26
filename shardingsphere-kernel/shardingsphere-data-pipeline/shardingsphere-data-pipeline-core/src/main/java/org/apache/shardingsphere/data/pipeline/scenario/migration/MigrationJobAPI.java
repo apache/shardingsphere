@@ -64,14 +64,6 @@ public interface MigrationJobAPI extends PipelineJobAPI, MigrationJobPublicAPI, 
     InventoryIncrementalJobItemProgress getJobItemProgress(String jobId, int shardingItem);
     
     /**
-     * Is data consistency check needed.
-     *
-     * @param jobConfig job configuration
-     * @return data consistency check needed or not
-     */
-    boolean isDataConsistencyCheckNeeded(MigrationJobConfiguration jobConfig);
-    
-    /**
      * Do data consistency check.
      *
      * @param jobConfig job configuration

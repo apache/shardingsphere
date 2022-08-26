@@ -140,13 +140,6 @@ public final class MigrationJobAPIImplTest {
     }
     
     @Test
-    public void assertIsDataConsistencyCheckNeeded() {
-        Optional<String> jobId = jobAPI.start(JobConfigurationBuilder.createJobConfiguration());
-        assertTrue(jobId.isPresent());
-        assertTrue(jobAPI.isDataConsistencyCheckNeeded(jobId.get()));
-    }
-    
-    @Test
     public void assertDataConsistencyCheck() {
         Optional<String> jobId = jobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());

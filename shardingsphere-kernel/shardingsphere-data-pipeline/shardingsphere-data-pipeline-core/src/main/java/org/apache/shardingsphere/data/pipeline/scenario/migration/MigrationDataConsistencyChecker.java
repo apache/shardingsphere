@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.check.consistency;
+package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
-import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
@@ -30,7 +29,6 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDat
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 import org.apache.shardingsphere.data.pipeline.api.metadata.PipelineColumnMetaData;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
@@ -40,10 +38,6 @@ import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsist
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -66,12 +60,11 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Data consistency checker.
+ * Data consistency checker for migration job.
  */
 @Slf4j
-public final class DataConsistencyChecker {
+public final class MigrationDataConsistencyChecker {
     
-    // TODO remove jobConfig for common usage
     private final MigrationJobConfiguration jobConfig;
     
     private final String sourceTableName;
@@ -80,7 +73,7 @@ public final class DataConsistencyChecker {
     
     private final JobRateLimitAlgorithm readRateLimitAlgorithm;
     
-    public DataConsistencyChecker(final MigrationJobConfiguration jobConfig, final JobRateLimitAlgorithm readRateLimitAlgorithm) {
+    public MigrationDataConsistencyChecker(final MigrationJobConfiguration jobConfig, final JobRateLimitAlgorithm readRateLimitAlgorithm) {
         this.jobConfig = jobConfig;
         this.sourceTableName = jobConfig.getSourceTableName();
         tableNameSchemaNameMapping = new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(jobConfig.getSourceSchemaName(), Collections.singletonList(jobConfig.getSourceTableName())));
@@ -214,21 +207,6 @@ public final class DataConsistencyChecker {
         if (!supportedDatabaseTypes.contains(databaseType)) {
             throw new PipelineDataConsistencyCheckFailedException("Database type " + databaseType + " is not supported in " + supportedDatabaseTypes);
         }
-    }
-    
-    private ShardingSphereTable getTableMetaData(final String databaseName, final String logicTableName) {
-        ContextManager contextManager = PipelineContext.getContextManager();
-        Preconditions.checkNotNull(contextManager, "ContextManager null");
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName);
-        if (null == database) {
-            throw new RuntimeException("Can not get meta data by database name " + databaseName);
-        }
-        String schemaName = tableNameSchemaNameMapping.getSchemaName(logicTableName);
-        ShardingSphereSchema schema = database.getSchema(schemaName);
-        if (null == schema) {
-            throw new RuntimeException("Can not get schema by schema name " + schemaName + ", logicTableName=" + logicTableName);
-        }
-        return schema.get(logicTableName);
     }
     
     private DataConsistencyCalculateParameter buildParameter(final PipelineDataSourceWrapper sourceDataSource, final TableNameSchemaNameMapping tableNameSchemaNameMapping,

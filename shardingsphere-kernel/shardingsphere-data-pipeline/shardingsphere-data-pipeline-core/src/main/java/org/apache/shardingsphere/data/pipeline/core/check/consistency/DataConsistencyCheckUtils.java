@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.util;
+package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

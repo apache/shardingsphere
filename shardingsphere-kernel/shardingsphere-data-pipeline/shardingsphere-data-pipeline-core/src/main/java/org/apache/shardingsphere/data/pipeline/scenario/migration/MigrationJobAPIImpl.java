@@ -53,12 +53,11 @@ import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobItemAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.AbstractPipelineJobAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.InventoryIncrementalJobItemAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.PipelineDataSourcePersistService;
+import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCalculateAlgorithmChooser;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCalculateAlgorithmFactory;
-import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.AddMigrationSourceResourceException;
 import org.apache.shardingsphere.data.pipeline.core.exception.DropMigrationSourceResourceException;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineVerifyFailedException;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineSchemaTableUtil;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
@@ -68,6 +67,7 @@ import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcess
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
@@ -267,13 +267,6 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         jobItemAPI.updateJobItemStatus(jobId, shardingItem, status);
     }
     
-    private void verifyManualMode(final MigrationJobConfiguration jobConfig) {
-        MigrationProcessContext processContext = buildPipelineProcessContext(jobConfig);
-        if (null != processContext.getCompletionDetectAlgorithm()) {
-            throw new PipelineVerifyFailedException("It's not necessary to do it in auto mode.");
-        }
-    }
-    
     @Override
     public Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms() {
         checkModeConfig();
@@ -287,39 +280,18 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     }
     
     @Override
-    public boolean isDataConsistencyCheckNeeded(final String jobId) {
-        log.info("isDataConsistencyCheckNeeded for job {}", jobId);
-        MigrationJobConfiguration jobConfig = getJobConfiguration(jobId);
-        return isDataConsistencyCheckNeeded(jobConfig);
-    }
-    
-    @Override
-    public boolean isDataConsistencyCheckNeeded(final MigrationJobConfiguration jobConfig) {
-        MigrationProcessContext processContext = buildPipelineProcessContext(jobConfig);
-        return isDataConsistencyCheckNeeded(processContext);
-    }
-    
-    private boolean isDataConsistencyCheckNeeded(final MigrationProcessContext processContext) {
-        return null != processContext.getDataConsistencyCalculateAlgorithm();
-    }
-    
-    @Override
     public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final String jobId) {
         checkModeConfig();
         log.info("Data consistency check for job {}", jobId);
         MigrationJobConfiguration jobConfig = getJobConfiguration(getElasticJobConfigPOJO(jobId));
-        verifyDataConsistencyCheck(jobConfig);
         return dataConsistencyCheck(jobConfig);
     }
     
     @Override
     public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final MigrationJobConfiguration jobConfig) {
-        MigrationProcessContext processContext = buildPipelineProcessContext(jobConfig);
-        if (!isDataConsistencyCheckNeeded(processContext)) {
-            log.info("DataConsistencyCalculatorAlgorithm is not configured, data consistency check is ignored.");
-            return Collections.emptyMap();
-        }
-        return dataConsistencyCheck(jobConfig, processContext.getDataConsistencyCalculateAlgorithm());
+        DataConsistencyCalculateAlgorithm algorithm = DataConsistencyCalculateAlgorithmChooser.choose(
+                DatabaseTypeFactory.getInstance(jobConfig.getSourceDatabaseType()), DatabaseTypeFactory.getInstance(jobConfig.getTargetDatabaseType()));
+        return dataConsistencyCheck(jobConfig, algorithm);
     }
     
     @Override
@@ -327,21 +299,16 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         checkModeConfig();
         log.info("Data consistency check for job {}, algorithmType: {}", jobId, algorithmType);
         MigrationJobConfiguration jobConfig = getJobConfiguration(getElasticJobConfigPOJO(jobId));
-        verifyDataConsistencyCheck(jobConfig);
         return dataConsistencyCheck(jobConfig, DataConsistencyCalculateAlgorithmFactory.newInstance(algorithmType, algorithmProps));
     }
     
     private Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final MigrationJobConfiguration jobConfig, final DataConsistencyCalculateAlgorithm calculator) {
         String jobId = jobConfig.getJobId();
         JobRateLimitAlgorithm readRateLimitAlgorithm = buildPipelineProcessContext(jobConfig).getReadRateLimitAlgorithm();
-        Map<String, DataConsistencyCheckResult> result = new DataConsistencyChecker(jobConfig, readRateLimitAlgorithm).check(calculator);
+        Map<String, DataConsistencyCheckResult> result = new MigrationDataConsistencyChecker(jobConfig, readRateLimitAlgorithm).check(calculator);
         log.info("Scaling job {} with check algorithm '{}' data consistency checker result {}", jobId, calculator.getType(), result);
         PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobCheckResult(jobId, aggregateDataConsistencyCheckResults(jobId, result));
         return result;
-    }
-    
-    private void verifyDataConsistencyCheck(final MigrationJobConfiguration jobConfig) {
-        verifyManualMode(jobConfig);
     }
     
     @Override
@@ -488,10 +455,5 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         result.setType(type);
         result.setParameter(parameter);
         return result;
-    }
-    
-    @Override
-    public String getType() {
-        return getJobType().getTypeName();
     }
 }
