@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.sharding.exception.EmptyShardingRouteResultException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.PrepareStatement;
@@ -44,7 +45,7 @@ public final class ShardingPrepareStatementValidator extends ShardingDDLStatemen
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<PrepareStatement> sqlStatementContext, final List<Object> parameters,
                              final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
         if (routeContext.getRouteUnits().isEmpty()) {
-            throw new ShardingSphereException("Can not get route result, please check your sharding table config.");
+            throw new EmptyShardingRouteResultException();
         }
         if (routeContext.getRouteUnits().stream().collect(Collectors.groupingBy(RouteUnit::getDataSourceMapper)).entrySet().stream().anyMatch(each -> each.getValue().size() > 1)) {
             throw new ShardingSphereException("Prepare ... statement can not support sharding tables route to same data sources.");

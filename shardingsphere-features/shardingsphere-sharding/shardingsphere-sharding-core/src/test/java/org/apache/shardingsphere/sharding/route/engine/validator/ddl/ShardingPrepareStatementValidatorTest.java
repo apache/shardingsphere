@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.sharding.exception.EmptyShardingRouteResultException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingPrepareStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.PrepareStatement;
@@ -53,7 +54,7 @@ public final class ShardingPrepareStatementValidatorTest {
     @Mock
     private RouteContext routeContext;
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = EmptyShardingRouteResultException.class)
     public void assertPostValidatePrepareWithEmptyRouteResultForPostgreSQL() {
         PrepareStatement sqlStatement = new PostgreSQLPrepareStatement();
         when(routeContext.getRouteUnits()).thenReturn(Collections.emptyList());
