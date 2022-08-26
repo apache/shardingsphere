@@ -7,7 +7,7 @@ chapter = true
 
 ShardingSphere 采用 Database Plus 设计哲学，该理念致力于构建数据库上层的标准和生态，在生态中补充数据库所缺失的能力。
 
-![ShardingSphere Architecture](https://shardingsphere.apache.org/document/current/img/overview.cn_v2.png)
+![Design](https://shardingsphere.apache.org/document/current/img/design_cn.png)
 
 ## 连接：打造数据库上层标准
 
@@ -15,9 +15,11 @@ ShardingSphere 采用 Database Plus 设计哲学，该理念致力于构建数�
 
 ## 增强：数据库计算增强引擎
 
-获取数据库的访问流量，并提供流量重定向（数据分片、读写分离、影子库）、流量变形（数据加密、数据脱敏）、流量鉴权（安全、审计、权限）、流量治理（熔断、限流）以及流量分析（服务质量分析、可观察性）等透明化增量功能。
+在原生数据库基础能力之上，提供分布式及流量增强方面的能力。前者可突破底层数据库在计算与存储上的瓶颈，后者通过对流量的变形、重定向、治理、鉴权及分析能力提供更为丰富的数据应用增强能力。
 
 ## 可插拔：构建数据库功能生态
+
+![ShardingSphere Architecture](https://shardingsphere.apache.org/document/current/img/overview_cn.png)
 
 Apache ShardingSphere 的可插拔架构划分为 3 层，它们是：L1 内核层、L2 功能层、L3 生态层。
 
