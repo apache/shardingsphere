@@ -14,4 +14,5 @@ chapter = true
 - Item list is preceded by `;` at the end, the last item is marked with `.` ending;
 - Please end of `;` by item list, and end of `.` for the last item list;
 - Please do not use Chinese characters in English topics;
-- Spaces needed between Chinese and English.
+- Spaces needed between Chinese and English;
+- Pictures' names: cn and en are used at the end to distinguish Chinese and English pictures.
