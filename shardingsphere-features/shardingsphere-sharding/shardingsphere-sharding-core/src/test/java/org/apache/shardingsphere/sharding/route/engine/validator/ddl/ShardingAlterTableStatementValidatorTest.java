@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.sharding.exception.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingAlterTableStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
@@ -59,7 +60,7 @@ public final class ShardingAlterTableStatementValidatorTest {
     @Mock
     private RouteContext routeContext;
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = UnsupportedShardingOperationException.class)
     public void assertPreValidateAlterTableWithRenameTableWithShardingTableForPostgreSQL() {
         PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
@@ -69,7 +70,7 @@ public final class ShardingAlterTableStatementValidatorTest {
         new ShardingAlterTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database);
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = UnsupportedShardingOperationException.class)
     public void assertPreValidateAlterTableWithRenameTableWithBroadcastTableForPostgreSQL() {
         PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
