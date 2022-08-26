@@ -181,13 +181,27 @@ SHOW MIGRATION STATUS 'j015d4ee1b8a5e7f95df19babb2794395e8';
 6. Verify data consistency.
 
 ```sql
-CHECK MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8' BY TYPE (NAME='DATA_MATCH');
+CHECK MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8' BY TYPE (NAME='CRC32_MATCH');
 +------------+----------------------+----------------------+-----------------------+-------------------------+
 | table_name | source_records_count | target_records_count | records_count_matched | records_content_matched |
 +------------+----------------------+----------------------+-----------------------+-------------------------+
 | t_order    | 6                    | 6                    | true                  | true                    |
 +------------+----------------------+----------------------+-----------------------+-------------------------+
 ```
+
+Data consistency check algorithm list:
+
+```sql
+SHOW MIGRATION CHECK ALGORITHMS;
++-------------+--------------------------------------------------------------+----------------------------+
+| type        | supported_database_types                                     | description                |
++-------------+--------------------------------------------------------------+----------------------------+
+| CRC32_MATCH | MySQL                                                        | Match CRC32 of records.    |
+| DATA_MATCH  | SQL92,MySQL,MariaDB,PostgreSQL,openGauss,Oracle,SQLServer,H2 | Match raw data of records. |
++-------------+--------------------------------------------------------------+----------------------------+
+```
+
+If encrypt rule is configured in target proxy, then `CRC32_MATCH` could be not used.
 
 7. Stop the job.
 
@@ -320,6 +334,12 @@ Or you can specify a target logical database.
 
 ```sql
 MIGRATE TABLE ds_0.t_order INTO sharding_db.t_order;
+```
+
+Or you can specify a source schema name.
+
+```sql
+MIGRATE TABLE ds_0.public.t_order INTO sharding_db.t_order;
 ```
 
 4. Check the data migration job list.
@@ -490,6 +510,12 @@ Or you can specify a target logical database.
 
 ```sql
 MIGRATE TABLE ds_0.t_order INTO sharding_db.t_order;
+```
+
+Or you can specify a source schema name.
+
+```sql
+MIGRATE TABLE ds_0.public.t_order INTO sharding_db.t_order;
 ```
 
 4. Check the data migration job list.
