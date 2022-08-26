@@ -17,13 +17,6 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyCollection;
-import static org.mockito.Mockito.when;
-
 import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
@@ -53,35 +46,40 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.Mockito.when;
+
 @RunWith(MockitoJUnitRunner.class)
 public final class WhereClauseShardingConditionEngineTest {
-
+    
     private WhereClauseShardingConditionEngine shardingConditionEngine;
-
+    
     @Mock
     private ShardingRule shardingRule;
-
+    
     @Mock
     private SelectStatementContext sqlStatementContext;
-
+    
     @Mock
     private WhereSegment whereSegment;
-
+    
     @Mock
     private TablesContext tablesContext;
-
+    
     @Before
     public void setUp() throws SQLException {
-        ShardingSphereDatabase database = ShardingSphereDatabase.create("test_db", DatabaseTypeEngine.getDatabaseType("MySQL"));
-        shardingConditionEngine = new WhereClauseShardingConditionEngine(shardingRule, database);
-
-        when(sqlStatementContext.getWhereSegments()).thenReturn(Collections.singletonList(whereSegment));
+        shardingConditionEngine = new WhereClauseShardingConditionEngine(shardingRule, ShardingSphereDatabase.create("test_db", DatabaseTypeEngine.getDatabaseType("MySQL")));
+        when(sqlStatementContext.getWhereSegments()).thenReturn(Collections.singleton(whereSegment));
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         when(tablesContext.findTableNamesByColumnSegment(anyCollection(), any())).thenReturn(Maps.of("foo_sharding_col", "table_1"));
     }
-
+    
     @Test
-    public void assertCreateShardingConditionsSelectRangeStatement() {
+    public void assertCreateShardingConditionsForSelectRangeStatement() {
         int between = 1;
         int and = 100;
         ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("foo_sharding_col"));
@@ -90,13 +88,13 @@ public final class WhereClauseShardingConditionEngineTest {
         BetweenExpression betweenExpression = new BetweenExpression(0, 0, left, betweenSegment, andSegment, false);
         when(whereSegment.getExpr()).thenReturn(betweenExpression);
         when(shardingRule.findShardingColumn(any(), any())).thenReturn(Optional.of("foo_sharding_col"));
-        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(sqlStatementContext, Collections.emptyList());
-        assertThat(shardingConditions.get(0).getStartIndex(), is(0));
-        assertTrue(shardingConditions.get(0).getValues().get(0) instanceof RangeShardingConditionValue);
+        List<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(sqlStatementContext, Collections.emptyList());
+        assertThat(actual.get(0).getStartIndex(), is(0));
+        assertTrue(actual.get(0).getValues().get(0) instanceof RangeShardingConditionValue);
     }
-
+    
     @Test
-    public void assertCreateShardingConditionsSelectInStatement() {
+    public void assertCreateShardingConditionsForSelectInStatement() {
         ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("foo_sharding_col"));
         ListExpression right = new ListExpression(0, 0);
         LiteralExpressionSegment literalExpressionSegment = new LiteralExpressionSegment(0, 0, 5);
@@ -104,9 +102,8 @@ public final class WhereClauseShardingConditionEngineTest {
         InExpression inExpression = new InExpression(0, 0, left, right, false);
         when(whereSegment.getExpr()).thenReturn(inExpression);
         when(shardingRule.findShardingColumn(any(), any())).thenReturn(Optional.of("foo_sharding_col"));
-        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(sqlStatementContext, Collections.emptyList());
-        assertThat(shardingConditions.get(0).getStartIndex(), is(0));
-        assertTrue(shardingConditions.get(0).getValues().get(0) instanceof ListShardingConditionValue);
+        List<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(sqlStatementContext, Collections.emptyList());
+        assertThat(actual.get(0).getStartIndex(), is(0));
+        assertTrue(actual.get(0).getValues().get(0) instanceof ListShardingConditionValue);
     }
-
 }
