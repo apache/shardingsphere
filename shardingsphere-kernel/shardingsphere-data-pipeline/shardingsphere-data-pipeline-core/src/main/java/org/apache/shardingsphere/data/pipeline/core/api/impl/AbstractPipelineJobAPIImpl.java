@@ -133,7 +133,14 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         return PipelineAPIFactory.getJobStatisticsAPI().getAllJobsBriefInfo().stream().filter(each -> !each.getJobName().startsWith("_"));
     }
     
-    protected abstract PipelineJobInfo getJobInfo(String jobName);
+    protected abstract PipelineJobInfo getJobInfo(String jobId);
+    
+    protected void fillJobInfo(final PipelineJobInfo jobInfo, final JobConfigurationPOJO jobConfigPOJO) {
+        jobInfo.setActive(!jobConfigPOJO.isDisabled());
+        jobInfo.setShardingTotalCount(jobConfigPOJO.getShardingTotalCount());
+        jobInfo.setCreateTime(jobConfigPOJO.getProps().getProperty("create_time"));
+        jobInfo.setStopTime(jobConfigPOJO.getProps().getProperty("stop_time"));
+    }
     
     @Override
     public Optional<String> start(final PipelineJobConfiguration jobConfig) {
@@ -164,6 +171,8 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     }
     
     protected abstract YamlPipelineJobConfiguration swapToYamlJobConfiguration(PipelineJobConfiguration jobConfig);
+    
+    protected abstract PipelineJobConfiguration getJobConfiguration(JobConfigurationPOJO jobConfigPOJO);
     
     @Override
     public void startDisabledJob(final String jobId) {

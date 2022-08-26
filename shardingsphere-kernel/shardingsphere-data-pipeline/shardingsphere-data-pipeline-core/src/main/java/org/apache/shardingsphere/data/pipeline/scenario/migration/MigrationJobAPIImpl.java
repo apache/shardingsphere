@@ -128,6 +128,16 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     }
     
     @Override
+    protected MigrationJobInfo getJobInfo(final String jobId) {
+        MigrationJobInfo result = new MigrationJobInfo(jobId);
+        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
+        fillJobInfo(result, jobConfigPOJO);
+        MigrationJobConfiguration jobConfig = getJobConfiguration(jobConfigPOJO);
+        result.setTable(jobConfig.getSourceTableName());
+        return result;
+    }
+    
+    @Override
     public void extendYamlJobConfiguration(final YamlPipelineJobConfiguration yamlJobConfig) {
         YamlMigrationJobConfiguration config = (YamlMigrationJobConfiguration) yamlJobConfig;
         if (null == yamlJobConfig.getJobId()) {
@@ -167,7 +177,8 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         return getJobConfiguration(getElasticJobConfigPOJO(jobId));
     }
     
-    private MigrationJobConfiguration getJobConfiguration(final JobConfigurationPOJO jobConfigPOJO) {
+    @Override
+    protected MigrationJobConfiguration getJobConfiguration(final JobConfigurationPOJO jobConfigPOJO) {
         return YamlMigrationJobConfigurationSwapper.swapToObject(jobConfigPOJO.getJobParameter());
     }
     
@@ -218,19 +229,6 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         // TODO cache process config on local
         PipelineProcessConfiguration processConfig = showProcessConfiguration();
         return new MigrationProcessContext(pipelineJobConfig.getJobId(), processConfig);
-    }
-    
-    @Override
-    protected MigrationJobInfo getJobInfo(final String jobName) {
-        MigrationJobInfo result = new MigrationJobInfo(jobName);
-        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(result.getJobId());
-        MigrationJobConfiguration jobConfig = getJobConfiguration(jobConfigPOJO);
-        result.setActive(!jobConfigPOJO.isDisabled());
-        result.setShardingTotalCount(jobConfig.getJobShardingCount());
-        result.setTable(jobConfig.getSourceTableName());
-        result.setCreateTime(jobConfigPOJO.getProps().getProperty("create_time"));
-        result.setStopTime(jobConfigPOJO.getProps().getProperty("stop_time"));
-        return result;
     }
     
     @Override
