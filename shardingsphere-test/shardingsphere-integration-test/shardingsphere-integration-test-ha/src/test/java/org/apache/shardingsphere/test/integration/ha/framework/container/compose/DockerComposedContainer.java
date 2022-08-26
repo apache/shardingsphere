@@ -51,15 +51,21 @@ public final class DockerComposedContainer extends AbstractComposedContainer {
         this.proxyContainer = null;
         this.storageContainers = null;
         governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
-//        storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, dockerImageName,
-//                "", StorageContainerConfigurationFactory.newInstance(databaseType)));
-//        AdaptorContainerConfiguration containerConfig = ScalingProxyClusterContainerConfigurationFactory.newInstance(databaseType, dockerImageName);
-//        ShardingSphereProxyClusterContainer proxyClusterContainer =
-//                (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance("Cluster", "proxy", databaseType, storageContainer, "", containerConfig);
-//        proxyClusterContainer.dependsOn(governanceContainer, storageContainer);
-//        proxyContainer = getContainers().registerContainer(proxyClusterContainer);
+        // storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, dockerImageName,
+        // "", StorageContainerConfigurationFactory.newInstance(databaseType)));
+        // AdaptorContainerConfiguration containerConfig = ScalingProxyClusterContainerConfigurationFactory.newInstance(databaseType, dockerImageName);
+        // ShardingSphereProxyClusterContainer proxyClusterContainer =
+        // (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance("Cluster", "proxy", databaseType, storageContainer, "", containerConfig);
+        // proxyClusterContainer.dependsOn(governanceContainer, storageContainer);
+        // proxyContainer = getContainers().registerContainer(proxyClusterContainer);
     }
     
+    /**
+     * Get proxy JDBC URL.
+     * 
+     * @param databaseName database name
+     * @return proxy JDBC URL
+     */
     public String getProxyJdbcUrl(final String databaseName) {
         return DataSourceEnvironment.getURL(databaseType, proxyContainer.getHost(), proxyContainer.getFirstMappedPort(), databaseName);
     }

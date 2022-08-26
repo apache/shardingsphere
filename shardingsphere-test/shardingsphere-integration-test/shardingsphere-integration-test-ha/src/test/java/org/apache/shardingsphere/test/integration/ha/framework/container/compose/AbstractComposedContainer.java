@@ -21,11 +21,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.test.integration.env.container.atomic.ITContainers;
 import org.testcontainers.lifecycle.Startable;
 
-import java.io.File;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Abstract composed container.
  */
@@ -47,7 +42,7 @@ public abstract class AbstractComposedContainer implements Startable {
      * @param databaseName database name
      * @return proxy jdbc url
      */
-    public abstract String getProxyJdbcUrl(final String databaseName);
+    public abstract String getProxyJdbcUrl(String databaseName);
     
     @Override
     public void start() {
@@ -57,27 +52,5 @@ public abstract class AbstractComposedContainer implements Startable {
     @Override
     public void stop() {
         getContainers().stop();
-    }
-    
-    private Map<String, Integer> loadContainerRawNamesAndQuantity() {
-        Map<String, Integer> result = new HashMap<>(3, 1);
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        URL resource = classLoader.getResource("env/scenario/" + scenario);
-        if (resource != null) {
-            String[] containerNames = new File(resource.getPath()).list((dir, name) -> new File(dir, name).isDirectory());
-            if (containerNames != null) {
-                result = extractContainerNamesWithQuantity(containerNames);
-            }
-        }
-        return result;
-    }
-    
-    private Map<String, Integer> extractContainerNamesWithQuantity(final String[] rawContainerNames) {
-        Map<String, Integer> result = new HashMap<>(3, 1);
-        for (String each : rawContainerNames) {
-            String databaseTypeName = each.contains("_") ? each.substring(0, each.indexOf("_")) : each;
-            result.merge(databaseTypeName, 1, Integer::sum);
-        }
-        return result;
     }
 }

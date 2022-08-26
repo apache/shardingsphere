@@ -50,7 +50,7 @@ public abstract class BaseITCase {
     
     protected static final JdbcUrlAppender JDBC_URL_APPENDER = new JdbcUrlAppender();
     
-    private final String DEFAULT_SCHEMA = "ha_test";
+    protected static final String DEFAULT_SCHEMA = "ha_test";
     
     private final AbstractComposedContainer composedContainer;
     
@@ -74,7 +74,7 @@ public abstract class BaseITCase {
     private void initProxyDataSource() {
         String databaseName = (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) ? "postgres" : "";
         ShardingSphereProxyClusterContainer proxyContainer = ((DockerComposedContainer) composedContainer).getProxyContainer();
-        this.proxyDataSource = getDataSource(DataSourceEnvironment.getURL(databaseType, proxyContainer.getHost(), proxyContainer.getFirstMappedPort(), 
+        this.proxyDataSource = getDataSource(DataSourceEnvironment.getURL(databaseType, proxyContainer.getHost(), proxyContainer.getFirstMappedPort(),
                 composedContainer.getProxyJdbcUrl(databaseName)), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD);
     }
     
