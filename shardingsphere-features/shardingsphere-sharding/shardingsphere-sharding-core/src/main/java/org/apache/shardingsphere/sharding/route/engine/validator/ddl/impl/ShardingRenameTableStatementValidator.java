@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.sharding.exception.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.RenameTableDefinitionSegment;
@@ -46,7 +47,7 @@ public final class ShardingRenameTableStatementValidator extends ShardingDDLStat
                 : sqlStatementContext.getTablesContext().getTableNames();
         List<SimpleTableSegment> renameTables = sqlStatementContext.getSqlStatement().getRenameTables().stream().map(RenameTableDefinitionSegment::getRenameTable).collect(Collectors.toList());
         if (!renameTables.isEmpty() && containsShardingBroadcastTable(shardingRule, tableNames)) {
-            throw new ShardingSphereException("RENAME TABLE ... TO ... statement can not support sharding tables and broadcast tables.");
+            throw new UnsupportedShardingOperationException("RENAME TABLE", renameTables.get(0).getTableName().getIdentifier().getValue());
         }
     }
     

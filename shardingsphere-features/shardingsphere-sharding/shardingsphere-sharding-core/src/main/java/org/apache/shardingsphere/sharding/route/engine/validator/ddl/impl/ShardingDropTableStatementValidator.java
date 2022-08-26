@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
+import org.apache.shardingsphere.sharding.exception.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -53,7 +54,7 @@ public final class ShardingDropTableStatementValidator extends ShardingDDLStatem
             validateTableExist(schema, sqlStatementContext.getTablesContext().getTables());
         }
         if (DropTableStatementHandler.containsCascade(sqlStatementContext.getSqlStatement())) {
-            throw new ShardingSphereException("DROP TABLE ... CASCADE statement is not supported yet.");
+            throw new UnsupportedShardingOperationException("DROP TABLE ... CASCADE", sqlStatementContext.getTablesContext().getTables().iterator().next().getTableName().getIdentifier().getValue());
         }
     }
     
