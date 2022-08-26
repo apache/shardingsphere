@@ -34,14 +34,14 @@ ShardingSphere-Proxy is a transparent database proxy, providing a database serve
 
 | Feature                 | Definition |
 | ----------------------- | ---------- |
-| Data Sharding           | Data sharding is a distributed database technology. ShardingSphere can split a large database (or table) into multiple small databases (or tables), and create a distributed database solution that can effectively cope with massive data storage and intensive requests. |
-| Distributed Transaction | ShardingSphere provides local transaction interfaces and supports distributed transactions through LOCAL, XA, and BASE modes. |
-| Read/write Splitting    | In a scenario where the read requests greatly outnumber write requests, ShardingSphere's read/write splitting feature can significantly improve the system throughput. The primary database deals with transactional addition, deletion, and modification requests while the secondary database only deals with query requests. |
-| High Availability       | ShardingSphere itself provides compute nodes and serves as the storage node through databases. It leverages the database's HA solutions to achieve high availability of the storage node, and automatically identifies the changes. |
-| Data Migration          | ShardingSphere provides full-scenario data migration capability for users, which can cope with the surge of business data volume. |
-| Federated Query         | ShardingSphere federated query applies to associated queries and sub-queries across databases. |
-| Data Encryption         | Considering the industry's needs for encryption and the pain points of business transformation, ShardingSphere provides a set of integrated data encryption solutions that are complete, secure, transparent, and with low transformation cost. |
-| Shadow Database         | In the full-link stress testing scenario, ShardingSphere shadow DB is used for storing stress testing data and providing data isolation support for complex testing work. The obtained testing result can accurately reflect the system's true capacity and performance. |
+| Data Sharding           | Data sharding is an effective way to deal with massive data storage and computing. ShardingSphere provides distributed database solutions that can scale out computing and storage levels on top of the underlying database. |
+| Distributed Transaction | Transactional capability is key to ensuring database integrity and security and is also one of the databases' core technologies. ShardingSphere provides distributed transaction capability on top of a single database, which can achieve data security across underlying data sources. |
+| Read/write Splitting    | Read/write splitting can be used to cope with business access with high stress. Based on its understanding of SQL semantics and the topological awareness of the underlying database, ShardingSphere provides flexible and secure read/write splitting capabilities and can achieve load balancing for read access. |
+| High Availability       | High availability is a basic requirement for a data storage and computing platform. ShardingSphere provides access to high-availability computing services based on stateless services. At the same time, it can sense and use the underlying database's HA solution to achieve its overall high availability. |
+| Data Migration          | Data migration is the key to connecting data ecosystems. ShardingSphere provides full-scenario data migration capability for users, which can cope with the surge of business data volume. |
+| Federated Query         | Federated queries are effective in utilizing data in a complex data environment. ShardingSphere is capable of querying and analyzing complex data across data sources, simplifying and improving the data usage experience. |
+| Data Encryption         | Data Encryption is a basic way to ensure data security. ShardingSphere provides a set of data encryption solutions that are complete, secure, transparent, and with low transformation costs. |
+| Shadow Database         | In the full-link stress testing scenario, ShardingSphere shadow DB is used for providing data isolation support for complex testing work. The obtained testing result can accurately reflect the system's true capacity and performance. |
 
 ## Advantages
 
