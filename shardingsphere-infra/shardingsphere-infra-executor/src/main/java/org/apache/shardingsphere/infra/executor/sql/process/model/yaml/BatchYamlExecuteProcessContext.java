@@ -20,8 +20,10 @@ package org.apache.shardingsphere.infra.executor.sql.process.model.yaml;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Batch execute process context for YAML.
@@ -33,7 +35,15 @@ public final class BatchYamlExecuteProcessContext {
     
     private Collection<YamlExecuteProcessContext> contexts;
     
-    public BatchYamlExecuteProcessContext(final Collection<YamlExecuteProcessContext> contexts) {
-        this.contexts = contexts;
+    public BatchYamlExecuteProcessContext(final Collection<ExecuteProcessContext> processContexts) {
+        this.contexts = getYamlProcessContexts(processContexts);
+    }
+    
+    private Collection<YamlExecuteProcessContext> getYamlProcessContexts(final Collection<ExecuteProcessContext> processContexts) {
+        Collection<YamlExecuteProcessContext> result = new LinkedList<>();
+        for (ExecuteProcessContext each : processContexts) {
+            result.add(new YamlExecuteProcessContext(each));
+        }
+        return result;
     }
 }
