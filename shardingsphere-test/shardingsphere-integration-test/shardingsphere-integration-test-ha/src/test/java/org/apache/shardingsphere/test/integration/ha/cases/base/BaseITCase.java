@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.integration.ha.cases.base;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -60,9 +59,6 @@ public abstract class BaseITCase {
     
     private DataSource proxyDataSource;
     
-    @Setter
-    private Thread increaseTaskThread;
-    
     public BaseITCase(final HAParameterized haParameterized) {
         databaseType = haParameterized.getDatabaseType();
         composedContainer = new DockerComposedContainer(haParameterized.getScenario(), haParameterized.getDatabaseType(), haParameterized.getDockerImageName());
@@ -82,7 +78,7 @@ public abstract class BaseITCase {
         List<DockerStorageContainer> storageContainers = ((DockerComposedContainer) composedContainer).getStorageContainers();
         this.storageDataSources = storageContainers.stream()
                 .map(storageContainer -> DataSourceEnvironment.getURL(getDatabaseType(), getDatabaseType().getType().toLowerCase() + ".host", storageContainer.getPort(), DEFAULT_SCHEMA))
-                .map(each -> getDataSource(each, StorageContainerConstants.USERNAME, StorageContainerConstants.PASSWORD))
+                .map(jdbcUrl -> getDataSource(jdbcUrl, StorageContainerConstants.USERNAME, StorageContainerConstants.PASSWORD))
                 .collect(Collectors.toList());
     }
     

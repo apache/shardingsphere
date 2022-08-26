@@ -16,4 +16,3 @@
 --
 
 CREATE DATABASE ha_test;
-
