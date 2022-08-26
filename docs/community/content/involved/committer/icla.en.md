@@ -1,9 +1,11 @@
 +++ 
 title = "Sign ICLA Guide" 
-weight = 12
+weight = 3
 chapter = true 
 +++
+
 ### Sign Apache ICLA guide
+
 Apache CLA short for Apache Contributor License Agreement, the purpose of this agreement is to clearly define the terms under which intellectual property has been contributed to the ASF and thereby allow us to defend the project should there be a legal dispute regarding the software at some future time. 
 A signed ICLA is required to be on file before an individual is given commit rights to any ASF project. 
 
@@ -32,5 +34,6 @@ Print the document and sign your name on the paper, or use electric pen.
 ![](https://shardingsphere.apache.org/blog/img/icla%20en4.png)
 
 ## Submission
+
 * If you are a new committer, please scan all pages into a single pdf file, and attach the pdf file to an email to secretary@apache.org.
 * The rest of the case, please send the file to the person who contact you.

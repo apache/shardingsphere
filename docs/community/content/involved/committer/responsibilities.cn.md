@@ -1,15 +1,10 @@
 +++
-title = "提交者指南"
-weight = 4
+title = "责任与工作范围"
+weight = 1
 chapter = true
 +++
 
-## 提交者提名
-
-ShardingSphere 社区遵循 [Apache Community’s process](http://community.apache.org/newcommitter.html) 来接收新的提交者。
-当您积极地参与 ShardingSphere 社区之后，项目管理委员会和项目官方提交者会根据您的表现发起吸纳您成为官方提交者和项目管理委员会成员的流程。
-
-## 提交者责任
+## 责任
 
  - 开发新功能；
  - 代码重构；

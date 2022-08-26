@@ -1,15 +1,10 @@
 +++
-title = "Committer Guide"
-weight = 4
+title = "Responsibilities & Routine"
+weight = 1
 chapter = true
 +++
 
-## Committer Promotion
-
-The ShardingSphere community follows the [Apache Community’s process](http://community.apache.org/newcommitter.html) on accepting a new committer.
-After a contributor participates ShardingSphere community actively, PMC and Committers will make a decision to invite the contributor to join Committers and PMC.
-
-## Committer Responsibilities
+## Responsibilities
 
  - Develop new features;
  - Refactor codes;
@@ -21,8 +16,7 @@ After a contributor participates ShardingSphere community actively, PMC and Comm
  - Check whether [CI Scheduled Workflow]( https://github.com/apache/shardingsphere/actions?query=event%3Aschedule ) works or not periodically;
  - Guide new contributors join community.
 
-
-##  Committer Routine
+## Routine
 
 1. Check the list of pull requests and issues to be processed in the community on a daily basis.
 
