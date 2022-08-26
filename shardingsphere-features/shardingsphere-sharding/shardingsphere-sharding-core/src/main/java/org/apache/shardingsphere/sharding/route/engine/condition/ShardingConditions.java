@@ -37,12 +37,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationU
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Sharding conditions.
@@ -121,7 +121,10 @@ public final class ShardingConditions {
     private boolean isSubqueryContainsShardingCondition(final List<ShardingCondition> conditions, final SQLStatementContext<?> sqlStatementContext) {
         Collection<SelectStatement> selectStatements = getSelectStatements(sqlStatementContext);
         if (selectStatements.size() > 1) {
-            Map<Integer, List<ShardingCondition>> startIndexShardingConditions = conditions.stream().collect(Collectors.groupingBy(ShardingCondition::getStartIndex));
+            Map<Integer, List<ShardingCondition>> startIndexShardingConditions = new HashMap<>();
+            for (ShardingCondition each : conditions) {
+                startIndexShardingConditions.computeIfAbsent(each.getStartIndex(), unused -> new LinkedList<>()).add(each);
+            }
             for (SelectStatement each : selectStatements) {
                 if (each.getFrom() instanceof SubqueryTableSegment) {
                     continue;
