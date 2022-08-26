@@ -24,6 +24,7 @@ import lombok.ToString;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
+import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 
 import java.util.Collection;
@@ -50,6 +51,8 @@ public final class ImporterConfiguration {
     private final TableNameSchemaNameMapping tableNameSchemaNameMapping;
     
     private final int batchSize;
+    
+    private final JobRateLimitAlgorithm rateLimitAlgorithm;
     
     private final int retryTimes;
     

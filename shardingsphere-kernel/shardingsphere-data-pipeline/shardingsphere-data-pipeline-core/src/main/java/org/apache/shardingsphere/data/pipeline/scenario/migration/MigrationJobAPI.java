@@ -24,6 +24,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfig
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
+import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
@@ -45,9 +46,11 @@ public interface MigrationJobAPI extends PipelineJobAPI, MigrationJobPublicAPI, 
      * @param jobConfig job configuration
      * @param jobShardingItem job sharding item
      * @param pipelineProcessConfig pipeline process configuration
+     * @param writeRateLimitAlgorithm write rate limit algorithm
      * @return task configuration
      */
-    TaskConfiguration buildTaskConfiguration(MigrationJobConfiguration jobConfig, int jobShardingItem, PipelineProcessConfiguration pipelineProcessConfig);
+    TaskConfiguration buildTaskConfiguration(MigrationJobConfiguration jobConfig, int jobShardingItem, PipelineProcessConfiguration pipelineProcessConfig,
+                                             JobRateLimitAlgorithm writeRateLimitAlgorithm);
     
     @Override
     MigrationProcessContext buildPipelineProcessContext(PipelineJobConfiguration pipelineJobConfig);
