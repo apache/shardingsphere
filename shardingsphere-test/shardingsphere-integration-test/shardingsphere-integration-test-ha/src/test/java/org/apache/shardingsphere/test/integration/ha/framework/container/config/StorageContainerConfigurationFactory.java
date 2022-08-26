@@ -21,10 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
-import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.h2.H2ContainerConfigurationFactory;
 import org.apache.shardingsphere.test.integration.ha.framework.container.config.mysql.MySQLContainerConfigurationFactory;
-import org.apache.shardingsphere.test.integration.ha.framework.container.config.opengauss.OpenGaussContainerConfigurationFactory;
-import org.apache.shardingsphere.test.integration.ha.framework.container.config.postgresql.PostgreSQLContainerConfigurationFactory;
 
 import java.util.List;
 
@@ -44,12 +41,12 @@ public final class StorageContainerConfigurationFactory {
         switch (databaseType.getType()) {
             case "MySQL":
                 return MySQLContainerConfigurationFactory.newInstance(scenario, databaseType);
-            case "PostgreSQL":
-                return PostgreSQLContainerConfigurationFactory.newInstance();
-            case "openGauss":
-                return OpenGaussContainerConfigurationFactory.newInstance();
-            case "H2":
-                return H2ContainerConfigurationFactory.newInstance();
+//            case "PostgreSQL":
+//                return PostgreSQLContainerConfigurationFactory.newInstance();
+//            case "openGauss":
+//                return OpenGaussContainerConfigurationFactory.newInstance();
+//            case "H2":
+//                return H2ContainerConfigurationFactory.newInstance();
             default:
                 throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
         }

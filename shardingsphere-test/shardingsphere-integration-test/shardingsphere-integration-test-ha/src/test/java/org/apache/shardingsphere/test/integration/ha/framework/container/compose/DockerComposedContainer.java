@@ -20,12 +20,19 @@ package org.apache.shardingsphere.test.integration.ha.framework.container.compos
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.AdapterContainerFactory;
+import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
+import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.ProxyClusterContainerConfigurationFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.governance.GovernanceContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.governance.impl.ZookeeperContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainerFactory;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
+import org.apache.shardingsphere.test.integration.ha.framework.container.config.StorageContainerConfigurationFactory;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -45,19 +52,22 @@ public final class DockerComposedContainer extends AbstractComposedContainer {
     @Getter
     private final GovernanceContainer governanceContainer;
     
-    public DockerComposedContainer(final DatabaseType databaseType, final String dockerImageName) {
+    public DockerComposedContainer(final String scenario, final DatabaseType databaseType, final String dockerImageName) {
         super("");
         this.databaseType = databaseType;
-        this.proxyContainer = null;
-        this.storageContainers = null;
+        this.storageContainers = new LinkedList<>();
         governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
-        // storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, dockerImageName,
-        // "", StorageContainerConfigurationFactory.newInstance(databaseType)));
-        // AdaptorContainerConfiguration containerConfig = ScalingProxyClusterContainerConfigurationFactory.newInstance(databaseType, dockerImageName);
-        // ShardingSphereProxyClusterContainer proxyClusterContainer =
-        // (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance("Cluster", "proxy", databaseType, storageContainer, "", containerConfig);
-        // proxyClusterContainer.dependsOn(governanceContainer, storageContainer);
-        // proxyContainer = getContainers().registerContainer(proxyClusterContainer);
+        List<StorageContainerConfiguration> containerConfigs = StorageContainerConfigurationFactory.newInstance(scenario, databaseType);
+        containerConfigs.forEach(each -> {
+            DockerStorageContainer storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, dockerImageName, scenario, each));
+            storageContainers.add(storageContainer);
+        });
+
+         AdaptorContainerConfiguration containerConfig = ProxyClusterContainerConfigurationFactory.newInstance();
+         ShardingSphereProxyClusterContainer proxyClusterContainer =
+         (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance("Cluster", "proxy", databaseType, null, "", containerConfig);
+         storageContainers.forEach(each -> proxyClusterContainer.dependsOn(governanceContainer, each));
+         proxyContainer = getContainers().registerContainer(proxyClusterContainer);
     }
     
     /**

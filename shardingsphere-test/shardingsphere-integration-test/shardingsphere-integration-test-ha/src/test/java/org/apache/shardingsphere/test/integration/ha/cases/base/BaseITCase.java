@@ -65,7 +65,7 @@ public abstract class BaseITCase {
     
     public BaseITCase(final Parameterized parameterized) {
         databaseType = parameterized.getDatabaseType();
-        composedContainer = new DockerComposedContainer(parameterized.getDatabaseType(), parameterized.getDockerImageName());
+        composedContainer = new DockerComposedContainer(parameterized.getScenario(), parameterized.getDatabaseType(), parameterized.getDockerImageName());
         composedContainer.start();
         initStorageDataSources();
         initProxyDataSource();
