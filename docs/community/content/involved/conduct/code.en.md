@@ -32,7 +32,7 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - Abbreviation composed less than 3 characters should be uppercase, more than 3 characters must use camel case naming rule.
    - Example for abbreviation composed less than 3 characters: DBDiscoveryExampleScenario, SQL92Lexer, XMLTransfer, MySQLAdminExecutorCreator;
    - Example for abbreviation composed more than 3 characters: JdbcUrlAppender, YamlAgentConfigurationSwapper;
-   - A variable composed of abbreviation should be lowercase: dbName, mysqlAuthenticationMethod, sqlStatement, mysqlConfig.
+   - A variable composed of abbreviation should use lower camel case: dbName, mysqlAuthenticationMethod, sqlStatement, mysqlConfig.
  - Return values are named with `result`; Variables in the loop structure are named with `each`; Replace `each` with `entry` in map.
  - Exceptions when catch are named with `ex`; Exceptions when catch but do nothing are named with `ignored`.
  - Name property files with `Spinal Case`(a variant of `Snake Case` which uses hyphens `-` to separate words). 
