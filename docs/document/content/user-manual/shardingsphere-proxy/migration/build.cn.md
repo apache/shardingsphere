@@ -88,7 +88,7 @@ SHOW MIGRATION PROCESS CONFIGURATION;
 +--------------------------------------------------------------+--------------------------------------+------------------------------------------------------+
 | {"workerThread":40,"batchSize":1000,"shardingSize":10000000} | {"workerThread":40,"batchSize":1000} | {"type":"MEMORY","props":{"block-queue-size":10000}} |
 +--------------------------------------------------------------+--------------------------------------+------------------------------------------------------+
-
+```
 
 7.2. 新建配置（可选）。
 
@@ -96,7 +96,7 @@ SHOW MIGRATION PROCESS CONFIGURATION;
 
 完整配置 DistSQL 示例：
 
-```DistSQL
+```sql
 CREATE MIGRATION PROCESS CONFIGURATION (
 READ(
   WORKER_THREAD=40,
@@ -176,7 +176,7 @@ ALTER MIGRATION PROCESS CONFIGURATION (
 READ(
   RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='1000')))
 ), WRITE(
-  RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='1000')))
+  RATE_LIMITER (TYPE(NAME='TPS',PROPERTIES('tps'='1000')))
 )
 );
 ```
