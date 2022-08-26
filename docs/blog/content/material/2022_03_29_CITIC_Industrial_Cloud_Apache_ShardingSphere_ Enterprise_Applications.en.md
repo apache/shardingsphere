@@ -20,7 +20,7 @@ As one of the most prominent open source middleware projects, with its ever-expa
 
 Enterprises are challenged by ever expanding data related issues. Luckily, Scale-out can solve this problem.
 
-Apache ShardingSphere allows online elastic scaling through its [Scaling tool ](https://shardingsphere.apache.org/document/current/en/features/scaling/)and provides multiple built-in data consistency verification algorithms, to ensure the consistency between data source and data on the client-side.
+Apache ShardingSphere allows online elastic scaling through its [Scaling tool ](https://shardingsphere.apache.org/document/current/en/features/migration/)and provides multiple built-in data consistency verification algorithms, to ensure the consistency between data source and data on the client-side.
 
 [CRC32](https://crc32.online/) is used by default to strike a balance between speed and consistency; while the verification algorithm supports user-defined SPI.
 

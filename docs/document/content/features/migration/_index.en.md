@@ -33,5 +33,5 @@ Once the database becomes the bottleneck, it is useless to scale out the applica
 
 ## Related References
 
-- [Configurations of data migration ](/en/user-manual/shardingsphere-proxy/scaling/)
-- [Reference of data migration](/en/reference/scaling/)
+- [Configurations of data migration ](/en/user-manual/shardingsphere-proxy/migration/)
+- [Reference of data migration](/en/reference/migration/)

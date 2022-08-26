@@ -31,5 +31,5 @@ ShardingSphere 提供的数据迁移方案可以助力传统单体数据库平�
 
 ## 相关参考
 
-- [数据迁移的配置](/cn/user-manual/shardingsphere-proxy/scaling/)
-- [数据迁移的实现原理](/cn/reference/scaling/)
+- [数据迁移的配置](/cn/user-manual/shardingsphere-proxy/migration/)
+- [数据迁移的实现原理](/cn/reference/migration/)
