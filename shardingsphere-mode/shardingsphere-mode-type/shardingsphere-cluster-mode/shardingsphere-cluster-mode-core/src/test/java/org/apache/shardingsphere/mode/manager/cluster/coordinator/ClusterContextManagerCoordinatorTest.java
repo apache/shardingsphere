@@ -378,8 +378,8 @@ public final class ClusterContextManagerCoordinatorTest {
         coordinator.killProcessListId(new KillProcessListIdEvent(instanceId, "foo_process_id"));
         ClusterPersistRepository repository = ReflectionUtil.getFieldValue(coordinator, "registryCenter", RegistryCenter.class).getRepository();
         verify(repository).delete("/nodes/compute_nodes/process_kill/" + instanceId + ":foo_process_id");
-        
     }
+    
     private void lockAndAwaitDefaultTime(final ShowProcessListSimpleLock lock) {
         lock.lock();
         try {
