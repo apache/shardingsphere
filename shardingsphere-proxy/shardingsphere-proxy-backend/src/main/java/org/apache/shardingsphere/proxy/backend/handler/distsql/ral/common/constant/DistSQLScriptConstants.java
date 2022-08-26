@@ -46,18 +46,19 @@ public final class DistSQLScriptConstants {
             + System.lineSeparator()
             + "URL=\"%s\","
             + System.lineSeparator()
-            + "USER=%s,"
+            + "USER=\"%s\","
             + System.lineSeparator()
             + "PASSWORD=\"%s\","
             + System.lineSeparator()
             + "PROPERTIES(%s)"
+            + System.lineSeparator()
             + ")";
     
     public static final String RESOURCE_DEFINITION_WITHOUT_PASSWORD = " %s ("
             + System.lineSeparator()
             + "URL=\"%s\","
             + System.lineSeparator()
-            + "USER=%s,"
+            + "USER=\"%s\","
             + System.lineSeparator()
             + "PROPERTIES(%s)"
             + ")";
@@ -68,7 +69,7 @@ public final class DistSQLScriptConstants {
     
     public static final String SHARDING_ALGORITHM = " %s ("
             + System.lineSeparator()
-            + "TYPE(NAME=%s, PROPERTIES(%s))"
+            + "TYPE(NAME=\"%s\", PROPERTIES(%s))"
             + System.lineSeparator()
             + ")";
     
@@ -86,13 +87,13 @@ public final class DistSQLScriptConstants {
     
     public static final String TABLE_STRATEGY = "TABLE_STRATEGY";
     
-    public static final String SHARDING_STRATEGY_STANDARD = "%s(TYPE=%s, SHARDING_COLUMN=%s, SHARDING_ALGORITHM=%s),"
+    public static final String SHARDING_STRATEGY_STANDARD = "%s(TYPE=\"%s\", SHARDING_COLUMN=%s, SHARDING_ALGORITHM=%s),"
             + System.lineSeparator();
     
-    public static final String SHARDING_STRATEGY_COMPLEX = "%s(TYPE=%s, SHARDING_COLUMNS=%s, SHARDING_ALGORITHM=%s),"
+    public static final String SHARDING_STRATEGY_COMPLEX = "%s(TYPE=\"%s\", SHARDING_COLUMNS=%s, SHARDING_ALGORITHM=%s),"
             + System.lineSeparator();
     
-    public static final String SHARDING_STRATEGY_HINT = "%s(TYPE=%s, SHARDING_ALGORITHM=%s),"
+    public static final String SHARDING_STRATEGY_HINT = "%s(TYPE=\"%s\", SHARDING_ALGORITHM=%s),"
             + System.lineSeparator();
     
     public static final String KEY_GENERATOR_STRATEGY = "KEY_GENERATE_STRATEGY(COLUMN=%s, KEY_GENERATOR=%s),"
@@ -102,7 +103,7 @@ public final class DistSQLScriptConstants {
     
     public static final String KEY_GENERATOR = " %s ("
             + System.lineSeparator()
-            + "TYPE(NAME=%s)"
+            + "TYPE(NAME=\"%s\")"
             + System.lineSeparator()
             + ")";
     
