@@ -20,11 +20,11 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.exception.IndexNotExistedException;
+import org.apache.shardingsphere.sharding.exception.ShardingRouteException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -77,7 +77,7 @@ public final class ShardingDropIndexStatementValidator extends ShardingDDLStatem
     private void validateDropIndexRouteUnit(final ShardingRule shardingRule, final RouteContext routeContext, final Collection<IndexSegment> indexSegments, final String logicTableName) {
         if (isRouteUnitDataNodeDifferentSize(shardingRule, routeContext, logicTableName)) {
             Collection<String> indexNames = indexSegments.stream().map(each -> each.getIndexName().getIdentifier().getValue()).collect(Collectors.toList());
-            throw new ShardingSphereException("DROP INDEX ... statement can not route correctly for indexes %s.", indexNames);
+            throw new ShardingRouteException("DROP", "INDEX", indexNames);
         }
     }
 }

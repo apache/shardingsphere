@@ -20,9 +20,9 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.sharding.exception.ShardingRouteException;
 import org.apache.shardingsphere.sharding.exception.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -61,7 +61,7 @@ public final class ShardingRenameTableStatementValidator extends ShardingDDLStat
         for (RenameTableDefinitionSegment each : sqlStatementContext.getSqlStatement().getRenameTables()) {
             String primaryTable = each.getTable().getTableName().getIdentifier().getValue();
             if (isRouteUnitDataNodeDifferentSize(shardingRule, routeContext, primaryTable)) {
-                throw new ShardingSphereException("RENAME TABLE ... TO ... statement can not route correctly for tables %s.", sqlStatementContext.getTablesContext().getTableNames());
+                throw new ShardingRouteException("RENAME", "TABLE", sqlStatementContext.getTablesContext().getTableNames());
             }
         }
     }
