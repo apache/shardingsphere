@@ -638,7 +638,9 @@ public enum SQLVisitorRule {
     
     CREATE_MATERIALIZED_VIEW("CreateMaterializedView", SQLStatementType.DDL),
     
-    CREATE_OPERATOR("CreateOperator", SQLStatementType.DDL);
+    CREATE_OPERATOR("CreateOperator", SQLStatementType.DDL),
+    
+    CREATE_POLICY("CreatePolicy", SQLStatementType.DDL);
     
     private final String name;
     
