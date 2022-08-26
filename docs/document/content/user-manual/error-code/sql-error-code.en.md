@@ -49,6 +49,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 0A000     | 20011       | The CREATE VIEW statement contains unsupported query statement |
 | 44000     | 20012       | Inline sharding algorithms expression \`%s\` and sharding column \`%s\` are not match |
 | HY004     | 20013       | Found different types for sharding value \`%s\` |
+| 44000     | 20014       | Actual tables \`%s\` are in use |
 | HY004     | 24000       | Encrypt algorithm \`%s\` initialize failed, reason is: %s |
 | HY004     | 24001       | The SQL clause \`%s\` is unsupported in encrypt rule |
 | 44000     | 24002       | Altered column \`%s\` must use same encrypt algorithm with previous column \`%s\` in table \`%s\` |
