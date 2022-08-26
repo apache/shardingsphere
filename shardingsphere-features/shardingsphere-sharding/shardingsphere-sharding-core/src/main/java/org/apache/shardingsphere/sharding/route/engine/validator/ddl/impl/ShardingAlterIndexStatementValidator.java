@@ -20,10 +20,11 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.sharding.exception.DuplicatedIndexException;
+import org.apache.shardingsphere.sharding.exception.IndexNotExistedException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -46,11 +47,11 @@ public final class ShardingAlterIndexStatementValidator extends ShardingDDLState
         ShardingSphereSchema schema = index.flatMap(optional -> optional.getOwner()
                 .map(owner -> database.getSchema(owner.getIdentifier().getValue()))).orElseGet(() -> database.getSchema(defaultSchemaName));
         if (index.isPresent() && !isSchemaContainsIndex(schema, index.get())) {
-            throw new ShardingSphereException("Index '%s' does not exist.", index.get().getIndexName().getIdentifier().getValue());
+            throw new IndexNotExistedException(index.get().getIndexName().getIdentifier().getValue());
         }
         Optional<IndexSegment> renameIndex = AlterIndexStatementHandler.getRenameIndexSegment(sqlStatementContext.getSqlStatement());
         if (renameIndex.isPresent() && isSchemaContainsIndex(schema, renameIndex.get())) {
-            throw new ShardingSphereException("Index '%s' already exists.", renameIndex.get().getIndexName().getIdentifier().getValue());
+            throw new DuplicatedIndexException(renameIndex.get().getIndexName().getIdentifier().getValue());
         }
     }
     

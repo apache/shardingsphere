@@ -21,13 +21,13 @@ import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLExcep
 import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
 
 /**
- * Unsupported sharding operation exception.
+ * Duplicated index exception.
  */
-public final class UnsupportedShardingOperationException extends ShardingSphereSQLException {
+public final class DuplicatedIndexException extends ShardingSphereSQLException {
     
-    private static final long serialVersionUID = 1009938372927671322L;
+    private static final long serialVersionUID = 2884666477007627873L;
     
-    public UnsupportedShardingOperationException(final String operation, final String tableName) {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 20004, "Can not support operation `%s` with sharding table `%s`", operation, tableName);
+    public DuplicatedIndexException(final String indexName) {
+        super(XOpenSQLState.DUPLICATE, 20005, "Index `%s` already exists", indexName);
     }
 }
