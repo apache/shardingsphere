@@ -59,12 +59,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metad
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOfflineEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOnlineEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListTriggerEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListUnitCompleteEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.*;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.PrimaryStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.StorageNodeChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.util.ReflectionUtil;
@@ -198,7 +193,7 @@ public final class ClusterContextManagerCoordinatorTest {
         ShardingSphereTable changedTableMetaData = new ShardingSphereTable("t_order", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         SchemaChangedEvent event = new SchemaChangedEvent("db", "db", changedTableMetaData, null);
         coordinator.renew(event);
-        // assertTrue(contextManager.getMetaDataContexts().getMetaData().containsKey("db"));
+        assertTrue(contextManager.getMetaDataContexts().getMetaData().containsDatabase("db"));
         verify(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").getSchema("db")).put("t_order", event.getChangedTableMetaData());
     }
     
@@ -370,6 +365,15 @@ public final class ClusterContextManagerCoordinatorTest {
         verify(repository).delete("/nodes/compute_nodes/process_trigger/" + instanceId + ":foo_process_id");
     }
     
+    @Test
+    public void assertKillProcessListId() throws SQLException, NoSuchFieldException, IllegalAccessException {
+        String instanceId = contextManager.getInstanceContext().getInstance().getMetaData().getId();
+        ShowProcessListManager.getInstance().putProcessContext("foo_execution_id", new YamlExecuteProcessContext(mock(ExecuteProcessContext.class)));
+        coordinator.killProcessListId(new KillProcessListIdEvent(instanceId, "foo_process_id"));
+        ClusterPersistRepository repository = ReflectionUtil.getFieldValue(coordinator, "registryCenter", RegistryCenter.class).getRepository();
+        verify(repository).delete("/nodes/compute_nodes/process_kill/" + instanceId + ":foo_process_id");
+        
+    }
     private void lockAndAwaitDefaultTime(final ShowProcessListSimpleLock lock) {
         lock.lock();
         try {
