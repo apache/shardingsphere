@@ -130,7 +130,8 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     }
     
     private Stream<JobBriefInfo> getJobBriefInfos() {
-        return PipelineAPIFactory.getJobStatisticsAPI().getAllJobsBriefInfo().stream().filter(each -> !each.getJobName().startsWith("_"));
+        return PipelineAPIFactory.getJobStatisticsAPI().getAllJobsBriefInfo().stream().filter(each -> !each.getJobName().startsWith("_"))
+                .filter(each -> PipelineJobIdUtils.parseJobType(each.getJobName()) == getJobType());
     }
     
     protected abstract PipelineJobInfo getJobInfo(String jobId);
