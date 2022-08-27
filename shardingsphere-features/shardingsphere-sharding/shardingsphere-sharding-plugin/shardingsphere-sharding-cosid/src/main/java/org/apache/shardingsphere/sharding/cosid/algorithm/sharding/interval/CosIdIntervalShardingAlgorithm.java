@@ -18,13 +18,21 @@
 package org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval;
 
 import com.google.common.base.Strings;
-import me.ahoo.cosid.util.LocalDateTimeConvert;
-import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstants;
 
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.Year;
+import java.time.YearMonth;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Properties;
+
+import me.ahoo.cosid.util.LocalDateTimeConvert;
+import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstants;
 
 /**
  * Interval range sharding algorithm with CosId.
@@ -56,13 +64,33 @@ public final class CosIdIntervalShardingAlgorithm extends AbstractCosIdIntervalS
         return DateTimeFormatter.ofPattern(props.getProperty(DATE_TIME_PATTERN_KEY, DEFAULT_DATE_TIME_PATTERN));
     }
     
+    @SuppressWarnings("checkstyle:CyclomaticComplexity")
     @Override
     protected LocalDateTime convertShardingValue(final Comparable<?> shardingValue) {
         if (shardingValue instanceof LocalDateTime) {
             return (LocalDateTime) shardingValue;
         }
+        if (shardingValue instanceof ZonedDateTime) {
+            return ((ZonedDateTime) shardingValue).toLocalDateTime();
+        }
+        if (shardingValue instanceof OffsetDateTime) {
+            return ((OffsetDateTime) shardingValue).toLocalDateTime();
+        }
+        if (shardingValue instanceof Instant) {
+            return LocalDateTimeConvert.fromInstant((Instant) shardingValue, getZoneId());
+        }
+        if (shardingValue instanceof LocalDate) {
+            return LocalDateTime.of((LocalDate) shardingValue, LocalTime.MIN);
+        }
         if (shardingValue instanceof Date) {
             return LocalDateTimeConvert.fromDate((Date) shardingValue, getZoneId());
+        }
+        if (shardingValue instanceof YearMonth) {
+            YearMonth yearMonth = (YearMonth) shardingValue;
+            return LocalDateTime.of(yearMonth.getYear(), yearMonth.getMonthValue(), 1, 0, 0);
+        }
+        if (shardingValue instanceof Year) {
+            return LocalDateTime.of(((Year) shardingValue).getValue(), 1, 1, 0, 0);
         }
         if (shardingValue instanceof Long) {
             return isSecondTs ? LocalDateTimeConvert.fromTimestampSecond((Long) shardingValue, getZoneId()) : LocalDateTimeConvert.fromTimestamp((Long) shardingValue, getZoneId());
