@@ -35,10 +35,6 @@ DROP
     : D R O P
     ;
 
-SHARDING
-    : S H A R D I N G
-    ;
-
 SHOW
     : S H O W
     ;
@@ -55,28 +51,8 @@ RESET
     : R E S E T
     ;
 
-RESTORE
-    : R E S T O R E
-    ;
-
 CHECK
     : C H E C K
-    ;
-
-APPLY
-    : A P P L Y
-    ;
-
-SCALING
-    : S C A L I N G
-    ;
-
-RULE
-    :  R U L E
-    ;
-
-RULES
-    :  R U L E S
     ;
 
 FROM
@@ -99,10 +75,6 @@ SOURCE
     : S O U R C E
     ;
 
-WRITING
-    : W R I T I N G
-    ;
-
 BY
     : B Y
     ;
@@ -117,22 +89,6 @@ NAME
 
 PROPERTIES
     : P R O P E R T I E S
-    ;
-
-COMPLETION_DETECTOR
-    : C O M P L E T I O N UL_ D E T E C T O R
-    ;
-
-DATA_CONSISTENCY_CHECKER
-    : D A T A UL_ C O N S I S T E N C Y UL_ C H E C K E R
-    ;
-
-INPUT
-    : I N P U T
-    ;
-
-OUTPUT
-    : O U T P U T
     ;
 
 WORKER_THREAD
@@ -153,14 +109,6 @@ RATE_LIMITER
 
 STREAM_CHANNEL
     : S T R E A M UL_ C H A N N E L
-    ;
-
-ENABLE
-    : E N A B L E
-    ;
-
-DISABLE
-    : D I S A B L E
     ;
 
 IF

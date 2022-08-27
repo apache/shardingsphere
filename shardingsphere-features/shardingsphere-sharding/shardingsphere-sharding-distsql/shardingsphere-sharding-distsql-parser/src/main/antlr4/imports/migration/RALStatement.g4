@@ -55,18 +55,6 @@ showMigrationCheckAlgorithms
     : SHOW MIGRATION CHECK ALGORITHMS
     ;
 
-stopMigrationSourceWriting
-    : STOP MIGRATION SOURCE WRITING jobId
-    ;
-
-restoreMigrationSourceWriting
-    : RESTORE MIGRATION SOURCE WRITING jobId
-    ;
-
-applyMigration
-    : APPLY MIGRATION jobId
-    ;
-
 jobId
     : INT | STRING
     ;
