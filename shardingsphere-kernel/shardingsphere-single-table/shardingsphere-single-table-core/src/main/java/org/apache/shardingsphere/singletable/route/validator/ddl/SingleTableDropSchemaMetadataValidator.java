@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.singletable.exception.SchemaNotFoundException;
 import org.apache.shardingsphere.singletable.route.validator.SingleTableMetadataValidator;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSchemaStatement;
@@ -39,7 +40,7 @@ public final class SingleTableDropSchemaMetadataValidator implements SingleTable
             String schemaName = each.getValue();
             ShardingSphereSchema schema = database.getSchema(schemaName);
             if (null == schema) {
-                throw new ShardingSphereException("Schema %s does not exist.", schemaName);
+                throw new SchemaNotFoundException(schemaName);
             }
             if (!containsCascade && !schema.getAllTableNames().isEmpty()) {
                 throw new ShardingSphereException("Can not drop schema %s because it contains tables.", schemaName);
