@@ -27,12 +27,8 @@ import static org.junit.Assert.assertThat;
 public final class PipelineJobIdUtilsTest {
     
     @Test
-    public void assertCodec() {
-        MigrationJobId pipelineJobId = new MigrationJobId();
-        pipelineJobId.setTypeCode(JobType.MIGRATION.getTypeCode());
-        pipelineJobId.setDatabaseName("sharding_db");
-        pipelineJobId.setSourceDataSourceName("new_0");
-        pipelineJobId.setTableName("t_order");
+    public void assertParseJobType() {
+        MigrationJobId pipelineJobId = new MigrationJobId("ds_0", null, "t_order", "sharding_db", "t_order");
         String jobId = PipelineJobIdUtils.marshalJobIdCommonPrefix(pipelineJobId) + "abcd";
         JobType actualJobType = PipelineJobIdUtils.parseJobType(jobId);
         assertThat(actualJobType, is(JobType.MIGRATION));

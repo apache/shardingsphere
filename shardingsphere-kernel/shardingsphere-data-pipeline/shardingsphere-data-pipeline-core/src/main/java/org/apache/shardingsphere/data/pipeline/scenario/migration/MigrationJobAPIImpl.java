@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
@@ -125,7 +126,8 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     @Override
     protected String marshalJobIdLeftPart(final PipelineJobId pipelineJobId) {
         MigrationJobId jobId = (MigrationJobId) pipelineJobId;
-        String text = jobId.getDatabaseName() + "|" + jobId.getTableName() + "|" + jobId.getSourceDataSourceName();
+        String sourceSchemaName = null != jobId.getSourceSchemaName() ? jobId.getSourceSchemaName() : "";
+        String text = Joiner.on('|').join(jobId.getSourceResourceName(), sourceSchemaName, jobId.getSourceTableName(), jobId.getTargetDatabaseName(), jobId.getTargetTableName());
         return DigestUtils.md5Hex(text.getBytes(StandardCharsets.UTF_8));
     }
     
@@ -167,11 +169,8 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     }
     
     private String generateJobId(final YamlMigrationJobConfiguration config) {
-        MigrationJobId jobId = new MigrationJobId();
-        jobId.setTypeCode(getJobType().getTypeCode());
-        jobId.setSourceDataSourceName(config.getSourceResourceName());
-        jobId.setTableName(config.getSourceTableName());
-        jobId.setDatabaseName(config.getTargetDatabaseName());
+        MigrationJobId jobId = new MigrationJobId(config.getSourceResourceName(), config.getSourceSchemaName(), config.getSourceTableName(),
+                config.getTargetDatabaseName(), config.getTargetTableName());
         return marshalJobId(jobId);
     }
     
@@ -191,7 +190,8 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     }
     
     @Override
-    public TaskConfiguration buildTaskConfiguration(final MigrationJobConfiguration jobConfig, final int jobShardingItem, final PipelineProcessConfiguration pipelineProcessConfig) {
+    public TaskConfiguration buildTaskConfiguration(final PipelineJobConfiguration pipelineJobConfig, final int jobShardingItem, final PipelineProcessConfiguration pipelineProcessConfig) {
+        MigrationJobConfiguration jobConfig = (MigrationJobConfiguration) pipelineJobConfig;
         Map<ActualTableName, LogicTableName> tableNameMap = new LinkedHashMap<>();
         tableNameMap.put(new ActualTableName(jobConfig.getSourceTableName()), new LogicTableName(jobConfig.getSourceTableName()));
         Map<LogicTableName, String> tableNameSchemaMap = TableNameSchemaNameMapping.convert(jobConfig.getSourceSchemaName(), Collections.singletonList(jobConfig.getTargetTableName()));

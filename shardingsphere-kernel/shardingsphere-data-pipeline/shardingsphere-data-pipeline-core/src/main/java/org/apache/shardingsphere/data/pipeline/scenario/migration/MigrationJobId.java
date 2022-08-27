@@ -18,21 +18,37 @@
 package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NonNull;
 import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJobId;
 
 /**
  * Migration job id.
  */
 @Getter
-@Setter
 @ToString(callSuper = true)
 public final class MigrationJobId extends AbstractPipelineJobId {
     
     public static final String CURRENT_VERSION = "01";
     
-    private String tableName;
+    private final String sourceResourceName;
     
-    private String sourceDataSourceName;
+    private final String sourceSchemaName;
+    
+    private final String sourceTableName;
+    
+    private final String targetDatabaseName;
+    
+    private final String targetTableName;
+    
+    public MigrationJobId(@NonNull final String sourceResourceName, final String sourceSchemaName, @NonNull final String sourceTableName,
+                          @NonNull final String targetDatabaseName, @NonNull final String targetTableName) {
+        super(JobType.MIGRATION, CURRENT_VERSION);
+        this.sourceResourceName = sourceResourceName;
+        this.sourceSchemaName = sourceSchemaName;
+        this.sourceTableName = sourceTableName;
+        this.targetDatabaseName = targetDatabaseName;
+        this.targetTableName = targetTableName;
+    }
 }

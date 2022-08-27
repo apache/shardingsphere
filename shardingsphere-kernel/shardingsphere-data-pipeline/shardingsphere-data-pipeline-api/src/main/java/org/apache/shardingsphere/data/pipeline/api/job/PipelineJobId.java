@@ -23,11 +23,11 @@ package org.apache.shardingsphere.data.pipeline.api.job;
 public interface PipelineJobId {
     
     /**
-     * Get type.
+     * Get job type code.
      *
      * @return type
      */
-    String getTypeCode();
+    String getJobTypeCode();
     
     /**
      * Get format version.
@@ -35,11 +35,4 @@ public interface PipelineJobId {
      * @return format version
      */
     String getFormatVersion();
-    
-    /**
-     * Get database name.
-     *
-     * @return database name
-     */
-    String getDatabaseName();
 }
