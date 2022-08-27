@@ -51,12 +51,16 @@ mode:
 
 4. Introduce JDBC driver.
 
-If the backend is connected to the following databases, download the corresponding JDBC driver jar package and put it into the `${shardingsphere-proxy}/lib` directory.
+Proxy has included JDBC driver of PostgreSQL.
+
+If the backend is connected to the following databases, download the corresponding JDBC driver jar package and put it into the `${shardingsphere-proxy}/ext-lib` directory.
 
 | Database              | JDBC Driver                                                                                                                                                        | Reference                                                                                        |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
 | MySQL                 | [mysql-connector-java-5.1.47.jar]( https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar )                              | [Connector/J Versions]( https://dev.mysql.com/doc/connector-j/5.1/en/connector-j-versions.html ) |
-| openGauss             | [opengauss-jdbc-2.0.1-compatibility.jar]( https://repo1.maven.org/maven2/org/opengauss/opengauss-jdbc/2.0.1-compatibility/opengauss-jdbc-2.0.1-compatibility.jar ) |                                                                                                  |
+| openGauss             | [opengauss-jdbc-3.0.0.jar]( https://repo1.maven.org/maven2/org/opengauss/opengauss-jdbc/3.0.0/opengauss-jdbc-3.0.0.jar ) |                                                                                                  |
+
+And also it supports different source database type with target database type, then we could use more types of database, e.g. Oracle. Introduce JDBC driver as above too.
 
 5. Start ShardingSphere-Proxy:
 
