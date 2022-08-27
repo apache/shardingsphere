@@ -30,6 +30,6 @@ public final class ShardingRouteAlgorithmException extends ShardingSphereSQLExce
     private static final long serialVersionUID = -1935526748399934543L;
     
     public ShardingRouteAlgorithmException(final String routedTargetName, final Collection<String> availableTargetNames) {
-        super(XOpenSQLState.GENERAL_ERROR, 20016, "Routed target `%s` does not exist, available targets are `%s`", routedTargetName, availableTargetNames.toString());
+        super(XOpenSQLState.GENERAL_ERROR, 20050, "Routed target `%s` does not exist, available targets are `%s`", routedTargetName, availableTargetNames.toString());
     }
 }

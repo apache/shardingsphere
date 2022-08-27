@@ -28,6 +28,6 @@ public final class NullShardingValueException extends ShardingSphereSQLException
     private static final long serialVersionUID = -6223086772479822057L;
     
     public NullShardingValueException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 20001, "Sharding value can't be null in insert statement");
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 20010, "Sharding value can't be null in insert statement");
     }
 }

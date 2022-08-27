@@ -28,6 +28,6 @@ public final class DMLMultipleDataNodesWithLimitException extends ShardingSphere
     private static final long serialVersionUID = -203240151021113065L;
     
     public DMLMultipleDataNodesWithLimitException(final String operation) {
-        super(XOpenSQLState.SYNTAX_ERROR, 20018, "%s ... LIMIT can not support route to multiple data nodes", operation);
+        super(XOpenSQLState.SYNTAX_ERROR, 20016, "%s ... LIMIT can not support route to multiple data nodes", operation);
     }
 }

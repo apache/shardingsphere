@@ -28,6 +28,6 @@ public final class UnsupportedUpdatingShardingValueException extends ShardingSph
     private static final long serialVersionUID = 2552228890146113383L;
     
     public UnsupportedUpdatingShardingValueException(final String tableName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 20017, "Can not update sharding value for table `%s`", tableName);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 20012, "Can not update sharding value for table `%s`", tableName);
     }
 }

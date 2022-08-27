@@ -28,6 +28,6 @@ public final class EngagedViewException extends ShardingSphereSQLException {
     private static final long serialVersionUID = -8312969473716234951L;
     
     public EngagedViewException(final String shardingType) {
-        super(XOpenSQLState.DUPLICATE, 20009, "View name has to bind to %s tables", shardingType);
+        super(XOpenSQLState.DUPLICATE, 20033, "View name has to bind to %s tables", shardingType);
     }
 }

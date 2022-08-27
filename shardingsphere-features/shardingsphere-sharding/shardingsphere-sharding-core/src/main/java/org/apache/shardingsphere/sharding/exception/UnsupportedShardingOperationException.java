@@ -28,6 +28,6 @@ public final class UnsupportedShardingOperationException extends ShardingSphereS
     private static final long serialVersionUID = 1009938372927671322L;
     
     public UnsupportedShardingOperationException(final String operation, final String tableName) {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 20004, "Can not support operation `%s` with sharding table `%s`", operation, tableName);
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 20013, "Can not support operation `%s` with sharding table `%s`", operation, tableName);
     }
 }
