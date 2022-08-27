@@ -453,7 +453,8 @@ public final class IntervalShardingAlgorithmTest {
     public void assertDateInSqlDate() {
         Collection<String> actualAsLocalDate = shardingAlgorithmByJDBCDate.doSharding(availableTablesForJDBCDateDataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO,
-                        Range.closed(new Date(2021 - 1900, 6 - 1, 15), new Date(2021 - 1900, 7 - 1, 31))));
+                        Range.closed(new Date(LocalDateTime.of(2021, 6, 15, 0, 0, 0).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()),
+                                new Date(LocalDateTime.of(2021, 7, 31, 0, 0, 0).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()))));
         assertThat(actualAsLocalDate.size(), is(24));
     }
 }
