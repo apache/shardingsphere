@@ -70,7 +70,7 @@ public final class ShardingSphereProxyStandaloneContainer extends DockerITContai
         withExposedPorts(3307);
         mountConfigurationFiles();
         setWaitStrategy(new JdbcConnectionWaitStrategy(() -> DriverManager.getConnection(
-                DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), config.getProxyDataSourceName()), "proxy", "Proxy@123")));
+                DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), config.getProxyDataSourceName()), "root", "Root@123")));
     }
     
     private void mountConfigurationFiles() {
