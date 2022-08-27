@@ -36,6 +36,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | HY000     | 16000       | Can not find pipeline job \`%s\` |
 | HY000     | 16001       | Failed to get DDL for table \`%s\` |
 | 42S02     | 17000       | Single table \`%s\` does not exist |
+| 0A000     | 17001       | DROP TABLE ... CASCADE is not supported |
 | HY000     | 20000       | Sharding algorithm class \`%s\` should be implement \`%s\` |
 | 44000     | 20001       | Can not get uniformed table structure for logic table \`%s\`, it has different meta data of actual tables are as follows: %s |
 | 42S02     | 20002       | Can not get route result, please check your sharding rule configuration |
