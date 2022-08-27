@@ -19,9 +19,9 @@ package org.apache.shardingsphere.sharding.route.engine.validator.dml.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.sharding.exception.DMLMultipleDataNodesWithLimitException;
 import org.apache.shardingsphere.sharding.exception.UnsupportedUpdatingShardingValueException;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.type.standard.ShardingStandardRoutingEngine;
@@ -55,7 +55,7 @@ public final class ShardingUpdateStatementValidator extends ShardingDMLStatement
             throw new UnsupportedUpdatingShardingValueException(tableName);
         }
         if (!shardingRule.isBroadcastTable(tableName) && UpdateStatementHandler.getLimitSegment(sqlStatementContext.getSqlStatement()).isPresent() && routeContext.getRouteUnits().size() > 1) {
-            throw new ShardingSphereException("UPDATE ... LIMIT can not support sharding route to multiple data nodes.");
+            throw new DMLMultipleDataNodesWithLimitException("UPDATE");
         }
     }
 }

@@ -19,9 +19,9 @@ package org.apache.shardingsphere.sharding.route.engine.validator.dml.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.sharding.exception.DMLMultipleDataNodesWithLimitException;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.ShardingDMLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
@@ -45,7 +45,7 @@ public final class ShardingDeleteStatementValidator extends ShardingDMLStatement
                              final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
         if (!shardingRule.isBroadcastTable(sqlStatementContext.getTablesContext().getTableNames().iterator().next())
                 && DeleteStatementHandler.getLimitSegment(sqlStatementContext.getSqlStatement()).isPresent() && routeContext.getRouteUnits().size() > 1) {
-            throw new ShardingSphereException("DELETE ... LIMIT can not support sharding route to multiple data nodes.");
+            throw new DMLMultipleDataNodesWithLimitException("DELETE");
         }
     }
 }
