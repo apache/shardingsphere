@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.sharding.exception.ShardingRouteException;
+import org.apache.shardingsphere.sharding.exception.ShardingDDLRouteException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
@@ -53,7 +53,7 @@ public final class ShardingCreateTableStatementValidator extends ShardingDDLStat
                              final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
         String primaryTable = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         if (isRouteUnitDataNodeDifferentSize(shardingRule, routeContext, primaryTable)) {
-            throw new ShardingRouteException("CREATE", "TABLE", sqlStatementContext.getTablesContext().getTableNames());
+            throw new ShardingDDLRouteException("CREATE", "TABLE", sqlStatementContext.getTablesContext().getTableNames());
         }
     }
 }

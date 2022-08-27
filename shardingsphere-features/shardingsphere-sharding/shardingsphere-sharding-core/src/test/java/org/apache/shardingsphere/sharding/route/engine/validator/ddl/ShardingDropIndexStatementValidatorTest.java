@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.exception.IndexNotExistedException;
-import org.apache.shardingsphere.sharding.exception.ShardingRouteException;
+import org.apache.shardingsphere.sharding.exception.ShardingDDLRouteException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingDropIndexStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
@@ -112,7 +112,7 @@ public final class ShardingDropIndexStatementValidatorTest {
                 Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext);
     }
     
-    @Test(expected = ShardingRouteException.class)
+    @Test(expected = ShardingDDLRouteException.class)
     public void assertPostValidateDropIndexWithDifferentRouteResultShardingTableIndexForPostgreSQL() {
         PostgreSQLDropIndexStatement sqlStatement = new PostgreSQLDropIndexStatement(false);
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
@@ -153,7 +153,7 @@ public final class ShardingDropIndexStatementValidatorTest {
                 Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext);
     }
     
-    @Test(expected = ShardingRouteException.class)
+    @Test(expected = ShardingDDLRouteException.class)
     public void assertPostValidateDropIndexWithDifferentRouteResultBroadcastTableIndexForPostgreSQL() {
         PostgreSQLDropIndexStatement sqlStatement = new PostgreSQLDropIndexStatement(false);
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_config_index"))));
