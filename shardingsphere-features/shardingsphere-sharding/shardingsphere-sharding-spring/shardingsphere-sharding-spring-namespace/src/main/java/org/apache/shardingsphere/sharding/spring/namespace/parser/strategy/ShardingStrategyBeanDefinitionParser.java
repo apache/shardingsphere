@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.sharding.spring.namespace.parser.strategy;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.spring.namespace.exception.UnsupportedShardingAlgorithmTypeException;
 import org.apache.shardingsphere.sharding.spring.namespace.tag.strategy.ShardingStrategyBeanDefinitionTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -48,7 +48,7 @@ public final class ShardingStrategyBeanDefinitionParser extends AbstractBeanDefi
             case ShardingStrategyBeanDefinitionTag.NONE_STRATEGY_ROOT_TAG:
                 return getNoneShardingStrategyConfigBeanDefinition();
             default:
-                throw new ShardingSphereException("Cannot support type: %s", type);
+                throw new UnsupportedShardingAlgorithmTypeException(type);
         }
     }
     
