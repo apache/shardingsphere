@@ -50,7 +50,8 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 44000     | 20012       | Inline sharding algorithms expression \`%s\` and sharding column \`%s\` are not match |
 | HY004     | 20013       | Found different types for sharding value \`%s\` |
 | 44000     | 20014       | Actual tables \`%s\` are in use |
-| 42S02     | 20015       | Can not find data source in sharding rule, invalid actual data node `%s` |
+| 42S02     | 20015       | Can not find data source in sharding rule, invalid actual data node \`%s\` |
+| HY000     | 20016       | Routed target \`%s\` does not exist, available targets are \`%s\` |
 | HY004     | 24000       | Encrypt algorithm \`%s\` initialize failed, reason is: %s |
 | HY004     | 24001       | The SQL clause \`%s\` is unsupported in encrypt rule |
 | 44000     | 24002       | Altered column \`%s\` must use same encrypt algorithm with previous column \`%s\` in table \`%s\` |
