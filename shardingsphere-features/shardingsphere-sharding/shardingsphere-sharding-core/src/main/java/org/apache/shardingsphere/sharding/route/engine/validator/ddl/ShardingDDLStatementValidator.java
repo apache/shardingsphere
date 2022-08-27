@@ -82,12 +82,12 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
     }
     
     /**
-     * Judge whether route unit and data node are different size or not.
+     * Judge whether route unit and data node are different size.
      * 
      * @param shardingRule sharding rule
      * @param routeContext route context
      * @param tableName table name
-     * @return whether route unit and data node are different size or not
+     * @return route unit and data node are different size or not
      */
     protected boolean isRouteUnitDataNodeDifferentSize(final ShardingRule shardingRule, final RouteContext routeContext, final String tableName) {
         return (shardingRule.isShardingTable(tableName) || shardingRule.isBroadcastTable(tableName))
