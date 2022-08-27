@@ -18,7 +18,7 @@ RAL (Resource & Rule Administration Language) responsible for hint, circuit brea
 | CLEAR [SHARDING HINT / READWRITE_SPLITTING HINT]     | For current connection, clear hint settings of sharding or readwrite splitting                              | CLEAR READWRITE_SPLITTING HINT                 |
 | SHOW [SHARDING / READWRITE_SPLITTING] HINT STATUS    | For current connection, query hint settings of sharding or readwrite splitting                              | SHOW READWRITE_SPLITTING HINT STATUS           |
 
-## Scaling
+## Migration
 
 | Statement                                                | Function                                       | Example                                          |
 |:---------------------------------------------------------|:-----------------------------------------------|:-------------------------------------------------|

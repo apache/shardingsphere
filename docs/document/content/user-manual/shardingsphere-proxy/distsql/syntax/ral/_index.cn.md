@@ -18,7 +18,7 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 | CLEAR [SHARDING HINT / READWRITE_SPLITTING HINT]     | 针对当前连接，清除 sharding 或 readwrite_splitting 的 hint 设置       | CLEAR READWRITE_SPLITTING HINT                |
 | SHOW [SHARDING / READWRITE_SPLITTING] HINT STATUS    | 针对当前连接，查询 sharding 或 readwrite_splitting 的 hint 设置       | SHOW READWRITE_SPLITTING HINT STATUS          |
 
-## 弹性伸缩
+## 数据迁移
 
 | 语句                                                        | 说明                     | 示例                                              |
 |:----------------------------------------------------------|------------------------|:------------------------------------------------|
