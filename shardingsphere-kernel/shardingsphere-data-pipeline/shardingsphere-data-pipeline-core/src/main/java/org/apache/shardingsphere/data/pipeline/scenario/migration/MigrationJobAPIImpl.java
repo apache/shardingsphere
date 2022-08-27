@@ -126,7 +126,8 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     @Override
     protected String marshalJobIdLeftPart(final PipelineJobId pipelineJobId) {
         MigrationJobId jobId = (MigrationJobId) pipelineJobId;
-        String text = Joiner.on('|').join(jobId.getSourceResourceName(), jobId.getSourceSchemaName(), jobId.getSourceTableName(), jobId.getTargetDatabaseName(), jobId.getTargetTableName());
+        String sourceSchemaName = null != jobId.getSourceSchemaName() ? jobId.getSourceSchemaName() : "";
+        String text = Joiner.on('|').join(jobId.getSourceResourceName(), sourceSchemaName, jobId.getSourceTableName(), jobId.getTargetDatabaseName(), jobId.getTargetTableName());
         return DigestUtils.md5Hex(text.getBytes(StandardCharsets.UTF_8));
     }
     

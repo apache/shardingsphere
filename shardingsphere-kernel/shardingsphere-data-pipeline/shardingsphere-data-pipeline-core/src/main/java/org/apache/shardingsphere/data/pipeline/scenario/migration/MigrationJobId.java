@@ -45,8 +45,8 @@ public final class MigrationJobId extends AbstractPipelineJobId {
     public MigrationJobId(@NonNull final String sourceResourceName, final String sourceSchemaName, @NonNull final String sourceTableName,
                           @NonNull final String targetDatabaseName, @NonNull final String targetTableName) {
         super(JobType.MIGRATION, CURRENT_VERSION);
-        this.sourceSchemaName = sourceSchemaName;
         this.sourceResourceName = sourceResourceName;
+        this.sourceSchemaName = sourceSchemaName;
         this.sourceTableName = sourceTableName;
         this.targetDatabaseName = targetDatabaseName;
         this.targetTableName = targetTableName;

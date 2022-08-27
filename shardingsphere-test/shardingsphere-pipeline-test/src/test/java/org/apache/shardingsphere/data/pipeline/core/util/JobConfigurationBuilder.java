@@ -45,11 +45,11 @@ public final class JobConfigurationBuilder {
      */
     public static MigrationJobConfiguration createJobConfiguration() {
         YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
-        result.setJobId(generateJobId(result));
         result.setTargetDatabaseName("logic_db");
         result.setSourceResourceName("standard_0");
         result.setSourceTableName("t_order");
         result.setTargetTableName("t_order");
+        result.setJobId(generateJobId(result));
         result.setSource(createYamlPipelineDataSourceConfiguration(new StandardPipelineDataSourceConfiguration(ConfigurationFileUtil.readFile("migration_standard_jdbc_source.yaml"))));
         result.setTarget(createYamlPipelineDataSourceConfiguration(new ShardingSpherePipelineDataSourceConfiguration(
                 ConfigurationFileUtil.readFile("migration_sharding_sphere_jdbc_target.yaml"))));
