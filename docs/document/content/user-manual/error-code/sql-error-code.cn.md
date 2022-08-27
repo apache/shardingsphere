@@ -56,6 +56,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 42000     | 20018       | %s ... LIMIT can not support route to multiple data nodes |
 | 44000     | 20019       | PREPARE statement can not support sharding tables route to same data sources |
 | 42000     | 20020       | INSERT INTO ... SELECT can not support applying key generator with absent generate key column |
+| 44000     | 20021       | The table inserted and the table selected must be the same or bind tables |
 | HY004     | 24000       | Encrypt algorithm \`%s\` initialize failed, reason is: %s |
 | 0A000     | 24001       | The SQL clause \`%s\` is unsupported in encrypt rule |
 | 44000     | 24002       | Altered column \`%s\` must use same encrypt algorithm with previous column \`%s\` in table \`%s\` |
