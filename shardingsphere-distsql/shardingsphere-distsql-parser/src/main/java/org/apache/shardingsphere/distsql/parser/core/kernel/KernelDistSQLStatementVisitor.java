@@ -92,7 +92,7 @@ import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegmen
 import org.apache.shardingsphere.distsql.parser.statement.ral.hint.ClearHintStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertYamlConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportDatabaseConfigurationStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowAllVariableStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowAllVariablesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceInfoStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceListStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowMigrationProcessConfigurationStatement;
@@ -306,7 +306,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitShowAllVariables(final ShowAllVariablesContext ctx) {
-        return new ShowAllVariableStatement();
+        return new ShowAllVariablesStatement();
     }
     
     @Override

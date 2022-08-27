@@ -17,25 +17,25 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.queryable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowAllVariableStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowAllVariablesStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowAllVariableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowAllVariablesStatementTestCase;
 
 import static org.junit.Assert.assertNull;
 
 /**
- * Show all variable statement assert.
+ * Show all variables statement assert.
  */
-public final class ShowAllVariableStatementAssert {
+public final class ShowAllVariablesStatementAssert {
     
     /**
-     * Assert show all variable statement is correct with expected parser result.
+     * Assert show all variables statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual show all variable statement
-     * @param expected expected show all variable statement test case
+     * @param actual actual show all variables statement
+     * @param expected expected show all variables statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowAllVariableStatement actual, final ShowAllVariableStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowAllVariablesStatement actual, final ShowAllVariablesStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         }

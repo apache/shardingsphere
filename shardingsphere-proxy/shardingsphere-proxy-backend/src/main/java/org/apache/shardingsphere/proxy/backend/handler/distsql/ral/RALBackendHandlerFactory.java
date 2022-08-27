@@ -25,7 +25,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableGlobalRuleRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertYamlConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportDatabaseConfigurationStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowAllVariableStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowAllVariablesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceInfoStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceListStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowModeInfoStatement;
@@ -56,7 +56,7 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.que
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.update.UpdatableScalingRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ConvertYamlConfigurationHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ExportDatabaseConfigurationHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowAllVariableHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowAllVariablesHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowInstanceInfoHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowInstanceListHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowModeInfoHandler;
@@ -109,7 +109,7 @@ public final class RALBackendHandlerFactory {
         HANDLERS.put(ImportDatabaseConfigurationStatement.class, ImportDatabaseConfigurationHandler.class);
         HANDLERS.put(ShowInstanceListStatement.class, ShowInstanceListHandler.class);
         HANDLERS.put(ShowVariableStatement.class, ShowVariableHandler.class);
-        HANDLERS.put(ShowAllVariableStatement.class, ShowAllVariableHandler.class);
+        HANDLERS.put(ShowAllVariablesStatement.class, ShowAllVariablesHandler.class);
         HANDLERS.put(ShowReadwriteSplittingReadResourcesStatement.class, ShowReadwriteSplittingReadResourcesHandler.class);
         HANDLERS.put(ShowSQLParserRuleStatement.class, ShowSQLParserRuleHandler.class);
         HANDLERS.put(ShowTableMetadataStatement.class, ShowTableMetadataHandler.class);

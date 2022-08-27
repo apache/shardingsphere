@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import io.netty.util.DefaultAttributeMap;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowAllVariableStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowAllVariablesStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -43,7 +43,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowAllVariableHandlerTest extends ProxyContextRestorer {
+public final class ShowAllVariablesHandlerTest extends ProxyContextRestorer {
     
     @Before
     public void setup() {
@@ -65,8 +65,8 @@ public final class ShowAllVariableHandlerTest extends ProxyContextRestorer {
     public void assertExecute() throws SQLException {
         ConnectionSession connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, new DefaultAttributeMap());
         connectionSession.setCurrentDatabase("foo_db");
-        ShowAllVariableHandler handler = new ShowAllVariableHandler();
-        handler.init(new ShowAllVariableStatement(), connectionSession);
+        ShowAllVariablesHandler handler = new ShowAllVariablesHandler();
+        handler.init(new ShowAllVariablesStatement(), connectionSession);
         ResponseHeader actual = handler.execute();
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
         handler.next();

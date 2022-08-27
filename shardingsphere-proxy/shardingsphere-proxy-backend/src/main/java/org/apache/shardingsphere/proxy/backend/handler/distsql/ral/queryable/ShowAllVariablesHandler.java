@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowAllVariableStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowAllVariablesStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -32,9 +32,9 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * Show all variable handler.
+ * Show all variables handler.
  */
-public final class ShowAllVariableHandler extends QueryableRALBackendHandler<ShowAllVariableStatement> {
+public final class ShowAllVariablesHandler extends QueryableRALBackendHandler<ShowAllVariablesStatement> {
     
     private static final String VARIABLE_NAME = "variable_name";
     
