@@ -54,6 +54,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | HY000     | 20016       | Routed target \`%s\` does not exist, available targets are \`%s\` |
 | 44000     | 20017       | Can not update sharding value for table \`%s\` |
 | 42000     | 20018       | %s ... LIMIT can not support route to multiple data nodes |
+| 44000     | 20019       | PREPARE statement can not support sharding tables route to same data sources |
 | HY004     | 24000       | Encrypt algorithm \`%s\` initialize failed, reason is: %s |
 | 0A000     | 24001       | The SQL clause \`%s\` is unsupported in encrypt rule |
 | 44000     | 24002       | Altered column \`%s\` must use same encrypt algorithm with previous column \`%s\` in table \`%s\` |
