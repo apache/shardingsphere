@@ -43,8 +43,8 @@ cleanMigration
     : CLEAN MIGRATION jobId
     ;
 
-resetMigration
-    : RESET MIGRATION jobId
+commitMigration
+    : COMMIT MIGRATION jobId
     ;
 
 checkMigration

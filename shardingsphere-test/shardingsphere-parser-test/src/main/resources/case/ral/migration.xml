@@ -78,9 +78,9 @@
         <job-id>123</job-id>
     </clean-migration>
     
-    <reset-migration sql-case-id="reset-migration">
+    <commit-migration sql-case-id="commit-migration">
         <job-id>123</job-id>
-    </reset-migration>
+    </commit-migration>
     
     <stop-migration sql-case-id="stop-migration">
         <job-id>123</job-id>

@@ -225,7 +225,7 @@ public final class MigrationJobAPIImplTest {
         MigrationJobConfiguration jobConfig = jobAPI.getJobConfiguration(jobId.get());
         initTableData(jobConfig);
         jobAPI.stop(jobId.get());
-        jobAPI.reset(jobId.get());
+        jobAPI.commit(jobId.get());
         Map<String, DataConsistencyCheckResult> checkResultMap = jobAPI.dataConsistencyCheck(jobConfig);
         assertThat(checkResultMap.get("t_order").getCountCheckResult().getTargetRecordsCount(), is(2L));
     }

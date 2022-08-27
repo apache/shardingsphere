@@ -330,11 +330,12 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     }
     
     @Override
-    public void reset(final String jobId) {
+    public void commit(final String jobId) {
         checkModeConfig();
-        log.info("Scaling job {} reset target table", jobId);
+        log.info("Commit {}", jobId);
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         verifyJobStopped(jobConfigPOJO);
+        // TODO now
     }
     
     @Override

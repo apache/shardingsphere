@@ -314,7 +314,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.DropMigrationProcessConfigurationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.DropMigrationSourceResourceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.MigrateTableStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.ResetMigrationStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.CommitMigrationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.ShowMigrationCheckAlgorithmsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.ShowMigrationSourceResourcesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.ShowMigrationStatusStatementTestCase;
@@ -1010,8 +1010,8 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-migration-check-algorithms")
     private final List<ShowMigrationCheckAlgorithmsStatementTestCase> showMigrationCheckAlgorithmsStatementTestCases = new LinkedList<>();
     
-    @XmlElement(name = "reset-migration")
-    private final List<ResetMigrationStatementTestCase> resetMigrationTestCases = new LinkedList<>();
+    @XmlElement(name = "commit-migration")
+    private final List<CommitMigrationStatementTestCase> commitMigrationTestCases = new LinkedList<>();
     
     @XmlElement(name = "clean-migration")
     private final List<CleanMigrationStatementTestCase> cleanMigrationTestCases = new LinkedList<>();

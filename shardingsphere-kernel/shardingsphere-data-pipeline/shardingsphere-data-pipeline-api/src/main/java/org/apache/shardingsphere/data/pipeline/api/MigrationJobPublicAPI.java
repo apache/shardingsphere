@@ -80,11 +80,11 @@ public interface MigrationJobPublicAPI extends PipelineJobPublicAPI, RequiredSPI
     Map<String, DataConsistencyCheckResult> dataConsistencyCheck(String jobId, String algorithmType, Properties algorithmProps);
     
     /**
-     * Reset scaling job.
+     * Commit.
      *
      * @param jobId job id
      */
-    void reset(String jobId);
+    void commit(String jobId);
     
     /**
      * Add migration source resources.

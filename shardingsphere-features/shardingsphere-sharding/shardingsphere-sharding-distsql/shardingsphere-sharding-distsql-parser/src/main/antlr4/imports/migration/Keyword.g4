@@ -174,3 +174,7 @@ RESOURCES
 CLEAN
     : C L E A N
     ;
+
+COMMIT
+    : C O M M I T
+    ;

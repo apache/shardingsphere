@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.migration.update;
 
-import org.apache.shardingsphere.migration.distsql.statement.ResetMigrationStatement;
+import org.apache.shardingsphere.migration.distsql.statement.CommitMigrationStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.ResetMigrationStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.CommitMigrationStatementTestCase;
 
 import java.util.List;
 
@@ -29,18 +29,18 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Reset migration statement assert.
+ * Commit migration statement assert.
  */
-public final class ResetMigrationStatementAssert {
+public final class CommitMigrationStatementAssert {
     
     /**
-     * Assert reset migration statement is correct with expected parser result.
+     * Assert whether parsed commit migration statement is correct or not.
      *
      * @param assertContext assert context
-     * @param actual actual reset migration statement
-     * @param expected expected reset migration statement test case
+     * @param actual actual statement
+     * @param expected expected statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ResetMigrationStatement actual, final ResetMigrationStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final CommitMigrationStatement actual, final CommitMigrationStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {

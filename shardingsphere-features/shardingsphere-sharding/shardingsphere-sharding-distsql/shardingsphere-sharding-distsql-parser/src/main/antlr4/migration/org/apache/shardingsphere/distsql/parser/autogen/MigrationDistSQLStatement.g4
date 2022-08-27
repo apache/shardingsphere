@@ -26,7 +26,7 @@ execute
     | startMigration
     | stopMigration
     | cleanMigration
-    | resetMigration
+    | commitMigration
     | checkMigration
     | showMigrationCheckAlgorithms
     | addMigrationSourceResource

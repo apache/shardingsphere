@@ -22,11 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 
 /**
- * Reset migration statement.
+ * Commit migration statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ResetMigrationStatement extends UpdatableScalingRALStatement {
+public final class CommitMigrationStatement extends UpdatableScalingRALStatement {
     
     private final String jobId;
 }
