@@ -21,13 +21,13 @@ import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLExcep
 import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
 
 /**
- * Unsupported drop cascade table exception.
+ * Schema not found exception.
  */
-public final class UnsupportedDropCascadeTableException extends ShardingSphereSQLException {
+public final class SchemaNotFoundException extends ShardingSphereSQLException {
     
-    private static final long serialVersionUID = -5995575055241171117L;
+    private static final long serialVersionUID = 2722045034640737328L;
     
-    public UnsupportedDropCascadeTableException() {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 17010, "DROP TABLE ... CASCADE is not supported");
+    public SchemaNotFoundException(final String schemaName) {
+        super(XOpenSQLState.NOT_FOUND, 17001, "Schema `%s` does not exist", schemaName);
     }
 }

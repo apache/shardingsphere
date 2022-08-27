@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.singletable.exception.SchemaNotFoundException;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -42,7 +43,7 @@ public final class SingleTableDropSchemaMetadataValidatorTest {
         new SingleTableDropSchemaMetadataValidator().validate(mock(SingleTableRule.class, RETURNS_DEEP_STUBS), createSQLStatementContext("foo_schema", false), mockDatabase());
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = SchemaNotFoundException.class)
     public void assertValidateWithNotExistedSchema() {
         ShardingSphereDatabase database = mockDatabase();
         when(database.getSchema("not_existed_schema")).thenReturn(null);
