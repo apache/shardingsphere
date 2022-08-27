@@ -20,17 +20,16 @@ package org.apache.shardingsphere.example.extension.spibased.sharding.raw.jdbc;
 import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
-import org.apache.shardingsphere.example.extension.spibased.sharding.raw.jdbc.factory.YamlDataSourceFactory;
+import org.apache.shardingsphere.example.extension.spibased.sharding.raw.jdbc.factory.DataSourceFactory;
 import org.apache.shardingsphere.example.type.ShardingType;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.sql.SQLException;
 
-public final class SPIBasedShardingRawYamlConfigurationExample {
+public final class SPIBasedShardingRawJavaConfigurationExample {
     
-    public static void main(final String[] args) throws SQLException, IOException {
-        DataSource dataSource = YamlDataSourceFactory.newInstance(ShardingType.SHARDING_DATABASES);
+    public static void main(final String[] args) throws SQLException {
+        DataSource dataSource = DataSourceFactory.newInstance(ShardingType.SHARDING_DATABASES);
         ExampleExecuteTemplate.run(getExampleService(dataSource));
     }
     

@@ -15,26 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.extension.spibased.sharding.raw.jdbc;
+package org.apache.shardingsphere.example.extension.spibased.sharding.raw.jdbc.factory;
 
-import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
-import org.apache.shardingsphere.example.core.api.service.ExampleService;
-import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
-import org.apache.shardingsphere.example.extension.spibased.sharding.raw.jdbc.factory.YamlDataSourceFactory;
+
+import org.apache.shardingsphere.example.extension.spibased.sharding.raw.jdbc.config.SPIBasedShardingRawJavaConfiguration;
 import org.apache.shardingsphere.example.type.ShardingType;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.sql.SQLException;
 
-public final class SPIBasedShardingRawYamlConfigurationExample {
+public final class DataSourceFactory {
     
-    public static void main(final String[] args) throws SQLException, IOException {
-        DataSource dataSource = YamlDataSourceFactory.newInstance(ShardingType.SHARDING_DATABASES);
-        ExampleExecuteTemplate.run(getExampleService(dataSource));
-    }
-    
-    private static ExampleService getExampleService(final DataSource dataSource) {
-        return new OrderServiceImpl(dataSource);
+    public static DataSource newInstance(final ShardingType shardingType) throws SQLException {
+        switch (shardingType) {
+            case SHARDING_DATABASES:
+                return new SPIBasedShardingRawJavaConfiguration().getDataSource();
+            default:
+                throw new UnsupportedOperationException(shardingType.name());
+        }
     }
 }
