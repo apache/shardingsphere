@@ -210,9 +210,20 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         log.info("Remove pipeline job {}", jobId);
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         verifyJobStopped(jobConfigPOJO);
-        // TODO release lock
+        dropJob(jobId);
+    }
+    
+    private void dropJob(final String jobId) {
         PipelineAPIFactory.getJobOperateAPI().remove(String.valueOf(jobId), null);
         PipelineAPIFactory.getGovernanceRepositoryAPI().deleteJob(jobId);
+    }
+    
+    @Override
+    public void commit(final String jobId) {
+        checkModeConfig();
+        log.info("Commit {}", jobId);
+        stop(jobId);
+        dropJob(jobId);
     }
     
     protected final JobConfigurationPOJO getElasticJobConfigPOJO(final String jobId) {
@@ -221,12 +232,6 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
             throw new PipelineJobNotFoundException(jobId);
         }
         return result;
-    }
-    
-    protected final void verifyJobNotStopped(final JobConfigurationPOJO jobConfigPOJO) {
-        if (jobConfigPOJO.isDisabled()) {
-            throw new PipelineVerifyFailedException("Job is stopped, it's not necessary to do it.");
-        }
     }
     
     protected final void verifyJobStopped(final JobConfigurationPOJO jobConfigPOJO) {

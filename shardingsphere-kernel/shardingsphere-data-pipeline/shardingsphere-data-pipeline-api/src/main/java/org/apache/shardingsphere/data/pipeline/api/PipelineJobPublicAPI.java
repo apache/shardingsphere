@@ -78,6 +78,13 @@ public interface PipelineJobPublicAPI extends TypedSPI {
     void remove(String jobId);
     
     /**
+     * Commit pipeline job.
+     *
+     * @param jobId job id
+     */
+    void commit(String jobId);
+    
+    /**
      * Get pipeline job info.
      *
      * @return jobInfos

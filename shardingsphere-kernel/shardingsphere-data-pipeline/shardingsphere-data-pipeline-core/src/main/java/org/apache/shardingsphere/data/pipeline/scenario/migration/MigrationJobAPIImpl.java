@@ -330,15 +330,6 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     }
     
     @Override
-    public void commit(final String jobId) {
-        checkModeConfig();
-        log.info("Commit {}", jobId);
-        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
-        verifyJobStopped(jobConfigPOJO);
-        // TODO now
-    }
-    
-    @Override
     public void addMigrationSourceResources(final Map<String, DataSourceProperties> dataSourcePropsMap) {
         log.info("Add migration source resources {}", dataSourcePropsMap.keySet());
         Map<String, DataSourceProperties> existDataSources = dataSourcePersistService.load(getJobType());
