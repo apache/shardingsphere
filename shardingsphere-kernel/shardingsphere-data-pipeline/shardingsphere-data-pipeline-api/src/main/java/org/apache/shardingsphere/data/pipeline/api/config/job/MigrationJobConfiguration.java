@@ -42,6 +42,8 @@ public final class MigrationJobConfiguration implements PipelineJobConfiguration
     
     private final String sourceSchemaName;
     
+    // TODO add targetSchemaName
+    
     private final String sourceDatabaseType;
     
     private final String targetDatabaseType;

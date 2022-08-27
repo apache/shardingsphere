@@ -45,6 +45,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineProcessConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.data.pipeline.YamlPipelineProcessConfigurationSwapper;
 
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -198,7 +199,6 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         jobConfigPOJO.setDisabled(true);
         jobConfigPOJO.getProps().setProperty("stop_time", LocalDateTime.now().format(DATE_TIME_FORMATTER));
-        // TODO updateJobConfiguration might doesn't work
         PipelineAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);
         String barrierPath = PipelineMetaDataNode.getJobBarrierDisablePath(jobId);
         pipelineDistributedBarrier.register(barrierPath, jobConfigPOJO.getShardingTotalCount());
@@ -206,12 +206,14 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     }
     
     @Override
-    public void rollback(final String jobId) {
+    public void rollback(final String jobId) throws SQLException {
         log.info("Rollback job {}", jobId);
         stop(jobId);
         dropJob(jobId);
-        // TODO now clean target table
+        cleanTempTableOnRollback(jobId);
     }
+    
+    protected abstract void cleanTempTableOnRollback(String jobId) throws SQLException;
     
     private void dropJob(final String jobId) {
         PipelineAPIFactory.getJobOperateAPI().remove(String.valueOf(jobId), null);
@@ -232,12 +234,6 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
             throw new PipelineJobNotFoundException(jobId);
         }
         return result;
-    }
-    
-    protected final void verifyJobStopped(final JobConfigurationPOJO jobConfigPOJO) {
-        if (!jobConfigPOJO.isDisabled()) {
-            throw new PipelineVerifyFailedException("Job is not stopped. You could run `STOP MIGRATION {jobId}` to stop it.");
-        }
     }
     
     @Override

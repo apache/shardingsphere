@@ -22,6 +22,8 @@ import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
 import org.apache.shardingsphere.migration.distsql.statement.RollbackMigrationStatement;
 
+import java.sql.SQLException;
+
 /**
  * Rollback migration updater.
  */
@@ -31,7 +33,12 @@ public final class RollbackMigrationUpdater implements RALUpdater<RollbackMigrat
     
     @Override
     public void executeUpdate(final String databaseName, final RollbackMigrationStatement sqlStatement) {
-        JOB_API.rollback(sqlStatement.getJobId());
+        // TODO throw SQLException
+        try {
+            JOB_API.rollback(sqlStatement.getJobId());
+        } catch (final SQLException ex) {
+            throw new RuntimeException(ex);
+        }
     }
     
     @Override

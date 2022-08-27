@@ -122,11 +122,10 @@ public final class MigrationJobAPIImplTest {
     }
     
     @Test
-    public void assertRemove() {
+    public void assertRollback() throws SQLException {
         Optional<String> jobId = jobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
         assertTrue(getJobInfo(jobId.get()).isPresent());
-        jobAPI.stop(jobId.get());
         jobAPI.rollback(jobId.get());
         assertFalse(getJobInfo(jobId.get()).isPresent());
     }
@@ -216,18 +215,6 @@ public final class MigrationJobAPIImplTest {
         for (Entry<Integer, InventoryIncrementalJobItemProgress> entry : progress.entrySet()) {
             assertSame(entry.getValue().getStatus(), JobStatus.EXECUTE_INVENTORY_TASK);
         }
-    }
-    
-    @Test
-    public void assertResetTargetTable() {
-        Optional<String> jobId = jobAPI.start(JobConfigurationBuilder.createJobConfiguration());
-        assertTrue(jobId.isPresent());
-        MigrationJobConfiguration jobConfig = jobAPI.getJobConfiguration(jobId.get());
-        initTableData(jobConfig);
-        jobAPI.stop(jobId.get());
-        jobAPI.commit(jobId.get());
-        Map<String, DataConsistencyCheckResult> checkResultMap = jobAPI.dataConsistencyCheck(jobConfig);
-        assertThat(checkResultMap.get("t_order").getCountCheckResult().getTargetRecordsCount(), is(2L));
     }
     
     @SneakyThrows(SQLException.class)
