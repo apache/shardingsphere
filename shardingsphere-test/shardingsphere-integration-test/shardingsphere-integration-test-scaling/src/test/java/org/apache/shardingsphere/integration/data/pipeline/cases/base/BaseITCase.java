@@ -341,8 +341,8 @@ public abstract class BaseITCase {
         proxyExecuteWithLog(String.format("START MIGRATION '%s'", jobId), 10);
     }
     
-    protected void cleanMigrationByJobId(final String jobId) throws SQLException {
-        proxyExecuteWithLog(String.format("CLEAN MIGRATION '%s'", jobId), 1);
+    protected void commitMigrationByJobId(final String jobId) throws SQLException {
+        proxyExecuteWithLog(String.format("COMMIT MIGRATION '%s'", jobId), 1);
     }
     
     protected List<String> listJobId() {

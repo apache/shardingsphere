@@ -95,7 +95,7 @@ public final class MySQLMigrationGeneralIT extends BaseExtraSQLITCase {
         assertMigrationSuccessById(orderJobId);
         assertMigrationSuccessById(orderItemJobId);
         for (String each : listJobId()) {
-            cleanMigrationByJobId(each);
+            commitMigrationByJobId(each);
         }
         List<String> lastJobIds = listJobId();
         assertThat(lastJobIds.size(), is(0));

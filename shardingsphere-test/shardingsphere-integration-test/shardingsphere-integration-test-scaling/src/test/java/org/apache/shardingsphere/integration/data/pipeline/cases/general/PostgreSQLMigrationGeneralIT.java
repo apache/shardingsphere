@@ -94,7 +94,7 @@ public final class PostgreSQLMigrationGeneralIT extends BaseExtraSQLITCase {
         checkOrderMigration(jdbcTemplate);
         checkOrderItemMigration();
         for (String each : listJobId()) {
-            cleanMigrationByJobId(each);
+            commitMigrationByJobId(each);
         }
         List<String> lastJobIds = listJobId();
         assertThat(lastJobIds.size(), is(0));
