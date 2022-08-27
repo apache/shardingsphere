@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.exception.DMLWithMultipleShardingTablesException;
+import org.apache.shardingsphere.sharding.exception.UnsupportedUpdatingShardingValueException;
 import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingInsertStatementValidator;
@@ -198,7 +199,7 @@ public final class ShardingInsertStatementValidatorTest {
                 insertStatementContext, parameters, mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), mock(ConfigurationProperties.class), createSingleRouteContext());
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = UnsupportedUpdatingShardingValueException.class)
     public void assertPostValidateWhenOnDuplicateKeyUpdateShardingColumnWithDifferentRouteContext() {
         mockShardingRuleForUpdateShardingColumn();
         List<Object> parameters = Collections.singletonList(1);
