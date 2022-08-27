@@ -28,10 +28,8 @@ import java.sql.SQLException;
 
 public final class SPIBasedShardingRawJavaConfigurationExample {
     
-    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES;
-    
     public static void main(final String[] args) throws SQLException {
-        DataSource dataSource = DataSourceFactory.newInstance(shardingType);
+        DataSource dataSource = DataSourceFactory.newInstance(ShardingType.SHARDING_DATABASES);
         ExampleExecuteTemplate.run(getExampleService(dataSource));
     }
     
