@@ -8,8 +8,6 @@ weight = 6
 
 The current data migration solution uses a completely new database cluster as the migration target.
 
-![Migration Overview](https://shardingsphere.apache.org/document/current/img/migration/overview_v2.png)
-
 This implementation has the following advantages:
 
 1. No impact on the original data during migration.
@@ -28,7 +26,7 @@ A single data migration mainly consists of the following phases:
 3. The synchronization of incremental data.
 4. Traffic switching .
 
-![Illustration](https://shardingsphere.apache.org/document/current/img/migration/principle_v2.png)
+![Illustration](https://shardingsphere.apache.org/document/current/img/migration/principle.png)
 
 ## Execution Stage Explained
 

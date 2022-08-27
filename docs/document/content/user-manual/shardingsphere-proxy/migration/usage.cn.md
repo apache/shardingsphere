@@ -3,11 +3,11 @@ title = "使用手册"
 weight = 2
 +++
 
-## MySQL使用手册
+## MySQL 使用手册
 
 ### 环境要求
 
-支持的MySQL版本：5.1.15 ~ 5.7.x。
+支持的 MySQL 版本：5.1.15 ~ 5.7.x。
 
 ### 权限要求
 
@@ -204,31 +204,29 @@ SHOW MIGRATION CHECK ALGORITHMS;
 +-------------+--------------------------------------------------------------+----------------------------+
 ```
 
-目标端开启数据加密的情况下，不能使用`CRC32_MATCH`。
+目标端开启数据加密的情况需要使用`DATA_MATCH`。
 
-7. 停止作业。
+异构迁移需要使用`DATA_MATCH`。
 
-```sql
-STOP MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8';
-```
-
-8. 清理作业。
+7. 完成作业。
 
 ```sql
-CLEAN MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8';
+COMMIT MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8';
 ```
 
-9. 刷新元数据。
+8. 刷新元数据。
 
 ```sql
 REFRESH TABLE METADATA;
 ```
 
-## PostgreSQL使用手册
+更多 DistSQL 请参见 [RAL #数据迁移](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/#%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB)。
+
+## PostgreSQL 使用手册
 
 ### 环境要求
 
-支持的PostgreSQL版本：9.4 或以上版本。
+支持的 PostgreSQL 版本：9.4 或以上版本。
 
 ### 权限要求
 
@@ -248,8 +246,10 @@ max_connections = 600
 
 3. 配置 PostgreSQL 允许 Proxy 拥有 replication 权限。
 
-pg_hba.conf实例配置：
+`pg_hba.conf` 示例配置：
+```
 host replication repl_acct 0.0.0.0/0 md5
+```
 
 详情请参见 [The pg_hba.conf File](https://www.postgresql.org/docs/9.6/auth-pg-hba-conf.html)。
 
@@ -386,29 +386,25 @@ CHECK MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8';
 +------------+----------------------+----------------------+-----------------------+-------------------------+
 ```
 
-7. 停止作业。
+7. 完成作业。
 
 ```sql
-STOP MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8';
+COMMIT MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8';
 ```
 
-8. 清理作业。
-
-```sql
-CLEAN MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8';
-```
-
-9. 刷新元数据。
+8. 刷新元数据。
 
 ```sql
 REFRESH TABLE METADATA;
 ```
 
-## openGauss使用手册
+更多 DistSQL 请参见 [RAL #数据迁移](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/#%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB)。
+
+## openGauss 使用手册
 
 ### 环境要求
 
-支持的openGauss版本：2.0.1 ~ 3.0.0。
+支持的 openGauss 版本：2.0.1 ~ 3.0.0。
 
 ### 权限要求
 
@@ -425,10 +421,12 @@ max_connections = 600
 
 详情请参见 [Write Ahead Log](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/settings.html) 和 [Replication](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/sending-server.html)。
 
-2. 配置 PostgreSQL 允许 Proxy 拥有 replication 权限。
+2. 配置 openGauss 允许 Proxy 拥有 replication 权限。
 
-pg_hba.conf实例配置：
+`pg_hba.conf` 示例配置：
+```
 host replication repl_acct 0.0.0.0/0 md5
+```
 
 详情请参见 [Configuring Client Access Authentication](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/configuring-client-access-authentication.html) 和 [Example: Logic Replication Code](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/example-logic-replication-code.html)。
 
@@ -565,20 +563,16 @@ CHECK MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8';
 +------------+----------------------+----------------------+-----------------------+-------------------------+
 ```
 
-7. 停止作业。
+7. 完成作业。
 
 ```sql
-STOP MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8';
+COMMIT MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8';
 ```
 
-8. 清理作业。
-
-```sql
-CLEAN MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8';
-```
-
-9. 刷新元数据。
+8. 刷新元数据。
 
 ```sql
 REFRESH TABLE METADATA;
 ```
+
+更多 DistSQL 请参见 [RAL #数据迁移](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/#%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB)。

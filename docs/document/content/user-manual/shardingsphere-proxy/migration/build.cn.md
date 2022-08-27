@@ -51,12 +51,16 @@ mode:
 
 4. 引入 JDBC 驱动。
 
-如果后端连接以下数据库，请下载相应 JDBC 驱动 jar 包，并将其放入 `${shardingsphere-proxy}/lib` 目录。
+proxy 已包含 PostgreSQL JDBC 驱动。
+
+如果后端连接以下数据库，请下载相应 JDBC 驱动 jar 包，并将其放入 `${shardingsphere-proxy}/ext-lib` 目录。
 
 | 数据库                 | JDBC 驱动                                                                                                                                                          | 参考                                                                                             |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
 | MySQL                 | [mysql-connector-java-5.1.47.jar]( https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar )                              | [Connector/J Versions]( https://dev.mysql.com/doc/connector-j/5.1/en/connector-j-versions.html ) |
-| openGauss             | [opengauss-jdbc-2.0.1-compatibility.jar]( https://repo1.maven.org/maven2/org/opengauss/opengauss-jdbc/2.0.1-compatibility/opengauss-jdbc-2.0.1-compatibility.jar ) |                                                                                                  |
+| openGauss             | [opengauss-jdbc-3.0.0.jar]( https://repo1.maven.org/maven2/org/opengauss/opengauss-jdbc/3.0.0/opengauss-jdbc-3.0.0.jar ) |                                                                                                  |
+
+如果是异构迁移，源端支持范围更广的数据库，比如：Oracle。JDBC 驱动处理方式同上。
 
 5. 启动 ShardingSphere-Proxy：
 
@@ -82,7 +86,7 @@ SHOW MIGRATION PROCESS CONFIGURATION;
 
 默认配置如下：
 
-```sql
+```
 +--------------------------------------------------------------+--------------------------------------+------------------------------------------------------+
 | read                                                         | write                                | stream_channel                                       |
 +--------------------------------------------------------------+--------------------------------------+------------------------------------------------------+

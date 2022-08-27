@@ -159,7 +159,7 @@ SHOW MIGRATION LIST;
 
 Result example:
 
-```sql
+```
 +-------------------------------------+---------+----------------------+--------+---------------------+-----------+
 | id                                  | tables  | sharding_total_count | active | create_time         | stop_time |
 +-------------------------------------+---------+----------------------+--------+---------------------+-----------+
@@ -169,7 +169,7 @@ Result example:
 
 5. View the data migration details.
 
-```sql
+```
 SHOW MIGRATION STATUS 'j015d4ee1b8a5e7f95df19babb2794395e8';
 +------+-------------+--------------------------+--------+-------------------------------+--------------------------+
 | item | data_source | status                   | active | inventory_finished_percentage | incremental_idle_seconds |
@@ -180,7 +180,7 @@ SHOW MIGRATION STATUS 'j015d4ee1b8a5e7f95df19babb2794395e8';
 
 6. Verify data consistency.
 
-```sql
+```
 CHECK MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8' BY TYPE (NAME='CRC32_MATCH');
 +------------+----------------------+----------------------+-----------------------+-------------------------+
 | table_name | source_records_count | target_records_count | records_count_matched | records_content_matched |
@@ -191,7 +191,7 @@ CHECK MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8' BY TYPE (NAME='CRC32_MATCH
 
 Data consistency check algorithm list:
 
-```sql
+```
 SHOW MIGRATION CHECK ALGORITHMS;
 +-------------+--------------------------------------------------------------+----------------------------+
 | type        | supported_database_types                                     | description                |
@@ -201,19 +201,23 @@ SHOW MIGRATION CHECK ALGORITHMS;
 +-------------+--------------------------------------------------------------+----------------------------+
 ```
 
-If encrypt rule is configured in target proxy, then `CRC32_MATCH` could be not used.
+If encrypt rule is configured in target proxy, then `DATA_MATCH` could be used.
 
-7. Stop the job.
+If you are migrating to a heterogeneous database, then `DATA_MATCH` could be used.
 
-```sql
-STOP MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8';
-```
-
-8. Clear the job.
+7. Commit the job.
 
 ```sql
-CLEAN MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8';
+COMMIT MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8';
 ```
+
+8. Refresh table metadata.
+
+```sql
+REFRESH TABLE METADATA;
+```
+
+Please refer to [RAL#Migration](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/#migration) for more details.
 
 ## PostgreSQL user guide
 
@@ -239,9 +243,8 @@ Please refer to [Write Ahead Log](https://www.postgresql.org/docs/9.6/runtime-co
 
 3. Configure PostgreSQL and grant Proxy the replication permission.
 
-`pg_hba.conf` instance configuration: 
-
-```sql
+`pg_hba.conf` instance configuration:
+```
 host replication repl_acct 0.0.0.0/0 md5
 ```
 
@@ -350,7 +353,7 @@ SHOW MIGRATION LIST;
 
 Result sample: 
 
-```sql
+```
 +-------------------------------------+---------+----------------------+--------+---------------------+-----------+
 | id                                  | tables  | sharding_total_count | active | create_time         | stop_time |
 +-------------------------------------+---------+----------------------+--------+---------------------+-----------+
@@ -360,7 +363,7 @@ Result sample:
 
 5. View the data migration details.
 
-```sql
+```
 SHOW MIGRATION STATUS 'j015d4ee1b8a5e7f95df19babb2794395e8';
 +------+-------------+--------------------------+--------+-------------------------------+--------------------------+
 | item | data_source | status                   | active | inventory_finished_percentage | incremental_idle_seconds |
@@ -371,8 +374,8 @@ SHOW MIGRATION STATUS 'j015d4ee1b8a5e7f95df19babb2794395e8';
 
 6. Verify data consistency.
 
-```sql
-CHECK MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8' BY TYPE (NAME='DATA_MATCH');
+```
+CHECK MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8';
 +------------+----------------------+----------------------+-----------------------+-------------------------+
 | table_name | source_records_count | target_records_count | records_count_matched | records_content_matched |
 +------------+----------------------+----------------------+-----------------------+-------------------------+
@@ -380,17 +383,19 @@ CHECK MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8' BY TYPE (NAME='DATA_MATCH'
 +------------+----------------------+----------------------+-----------------------+-------------------------+
 ```
 
-7. Stop the job.
+7. Commit the job.
 
 ```sql
-STOP MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8';
+COMMIT MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8';
 ```
 
-8. Clear the job.
+8. Refresh table metadata.
 
 ```sql
-CLEAN MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8';
+REFRESH TABLE METADATA;
 ```
+
+Please refer to [RAL#Migration](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/#migration) for more details.
 
 ## openGauss user guide
 
@@ -413,11 +418,10 @@ max_connections = 600
 
 Please refer to [Write Ahead Log](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/settings.html) and [Replication](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/sending-server.html) for details.
 
-2. Configure PostgreSQL and grant Proxy the replication permission.
+2. Configure openGauss and grant Proxy the replication permission.
 
-`pg_hba.conf` instance configuration: 
-
-```sql
+`pg_hba.conf` instance configuration:
+```
 host replication repl_acct 0.0.0.0/0 md5
 ```
 
@@ -526,7 +530,7 @@ SHOW MIGRATION LIST;
 
 Result example: 
 
-```sql
+```
 +-------------------------------------+---------+----------------------+--------+---------------------+-----------+
 | id                                  | tables  | sharding_total_count | active | create_time         | stop_time |
 +-------------------------------------+---------+----------------------+--------+---------------------+-----------+
@@ -536,7 +540,7 @@ Result example:
 
 5. View the data migration details.
 
-```sql
+```
 SHOW MIGRATION STATUS 'j015d4ee1b8a5e7f95df19babb2794395e8';
 +------+-------------+--------------------------+--------+-------------------------------+--------------------------+
 | item | data_source | status                   | active | inventory_finished_percentage | incremental_idle_seconds |
@@ -547,8 +551,8 @@ SHOW MIGRATION STATUS 'j015d4ee1b8a5e7f95df19babb2794395e8';
 
 6. Verify data consistency.
 
-```sql
-CHECK MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8' BY TYPE (NAME='DATA_MATCH');
+```
+CHECK MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8';
 +------------+----------------------+----------------------+-----------------------+-------------------------+
 | table_name | source_records_count | target_records_count | records_count_matched | records_content_matched |
 +------------+----------------------+----------------------+-----------------------+-------------------------+
@@ -556,14 +560,16 @@ CHECK MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8' BY TYPE (NAME='DATA_MATCH'
 +------------+----------------------+----------------------+-----------------------+-------------------------+
 ```
 
-7. Stop the job.
+7. Commit the job.
 
 ```sql
-STOP MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8';
+COMMIT MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8';
 ```
 
-8. Clear the job.
+8. Refresh table metadata.
 
+```sql
+REFRESH TABLE METADATA;
 ```
-CLEAN MIGRATION 'j015d4ee1b8a5e7f95df19babb2794395e8';
-```
+
+Please refer to [RAL#Migration](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/#migration) for more details.
