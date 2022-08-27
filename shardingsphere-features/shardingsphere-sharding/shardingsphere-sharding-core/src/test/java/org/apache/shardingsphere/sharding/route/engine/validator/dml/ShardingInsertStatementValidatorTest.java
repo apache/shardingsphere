@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -33,6 +32,7 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.exception.DMLWithMultipleShardingTablesException;
+import org.apache.shardingsphere.sharding.exception.InsertSelectTableViolationException;
 import org.apache.shardingsphere.sharding.exception.MissingGenerateKeyColumnWithInsertSelectException;
 import org.apache.shardingsphere.sharding.exception.UnsupportedUpdatingShardingValueException;
 import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
@@ -116,11 +116,10 @@ public final class ShardingInsertStatementValidatorTest {
         when(shardingRule.isGenerateKeyColumn("id", "user")).thenReturn(true);
         SQLStatementContext<InsertStatement> sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertSelectStatement());
         sqlStatementContext.getTablesContext().getTableNames().addAll(createSingleTablesContext().getTableNames());
-        new ShardingInsertStatementValidator(shardingConditions).preValidate(shardingRule,
-                sqlStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
+        new ShardingInsertStatementValidator(shardingConditions).preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = InsertSelectTableViolationException.class)
     public void assertPreValidateWhenInsertSelectWithoutBindingTables() {
         when(shardingRule.findGenerateKeyColumnName("user")).thenReturn(Optional.of("id"));
         when(shardingRule.isGenerateKeyColumn("id", "user")).thenReturn(true);
@@ -129,8 +128,7 @@ public final class ShardingInsertStatementValidatorTest {
         when(shardingRule.tableRuleExists(multiTablesContext.getTableNames())).thenReturn(true);
         SQLStatementContext<InsertStatement> sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertSelectStatement());
         sqlStatementContext.getTablesContext().getTableNames().addAll(multiTablesContext.getTableNames());
-        new ShardingInsertStatementValidator(shardingConditions).preValidate(shardingRule,
-                sqlStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
+        new ShardingInsertStatementValidator(shardingConditions).preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
     }
     
     @Test

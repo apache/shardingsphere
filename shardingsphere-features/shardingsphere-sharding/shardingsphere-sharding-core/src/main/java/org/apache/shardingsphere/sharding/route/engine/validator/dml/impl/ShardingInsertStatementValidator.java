@@ -23,9 +23,9 @@ import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.sharding.exception.InsertSelectTableViolationException;
 import org.apache.shardingsphere.sharding.exception.MissingGenerateKeyColumnWithInsertSelectException;
 import org.apache.shardingsphere.sharding.exception.UnsupportedUpdatingShardingValueException;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
@@ -67,7 +67,7 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
         TablesContext tablesContext = sqlStatementContext.getTablesContext();
         if (insertSelectSegment.isPresent() && shardingRule.tableRuleExists(tablesContext.getTableNames())
                 && !isAllSameTables(tablesContext.getTableNames()) && !shardingRule.isAllBindingTables(tablesContext.getTableNames())) {
-            throw new ShardingSphereException("The table inserted and the table selected must be the same or bind tables.");
+            throw new InsertSelectTableViolationException();
         }
     }
     
