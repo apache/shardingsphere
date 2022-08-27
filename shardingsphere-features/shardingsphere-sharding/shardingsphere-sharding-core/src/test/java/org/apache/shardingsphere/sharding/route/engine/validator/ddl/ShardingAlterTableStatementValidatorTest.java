@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.sharding.exception.ShardingRouteException;
+import org.apache.shardingsphere.sharding.exception.ShardingDDLRouteException;
 import org.apache.shardingsphere.sharding.exception.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingAlterTableStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -95,7 +95,7 @@ public final class ShardingAlterTableStatementValidatorTest {
                 Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext);
     }
     
-    @Test(expected = ShardingRouteException.class)
+    @Test(expected = ShardingDDLRouteException.class)
     public void assertPostValidateAlterTableWithDifferentRouteResultShardingTableForPostgreSQL() {
         PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
@@ -122,7 +122,7 @@ public final class ShardingAlterTableStatementValidatorTest {
                 Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext);
     }
     
-    @Test(expected = ShardingRouteException.class)
+    @Test(expected = ShardingDDLRouteException.class)
     public void assertPostValidateAlterTableWithDifferentRouteResultBroadcastTableForPostgreSQL() {
         PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_config"))));

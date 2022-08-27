@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.sharding.exception.ShardingRouteException;
+import org.apache.shardingsphere.sharding.exception.ShardingDDLRouteException;
 import org.apache.shardingsphere.sharding.exception.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -60,7 +60,7 @@ public final class ShardingAlterTableStatementValidator extends ShardingDDLState
                              final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
         String primaryTable = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         if (isRouteUnitDataNodeDifferentSize(shardingRule, routeContext, primaryTable)) {
-            throw new ShardingRouteException("ALTER", "TABLE", sqlStatementContext.getTablesContext().getTableNames());
+            throw new ShardingDDLRouteException("ALTER", "TABLE", sqlStatementContext.getTablesContext().getTableNames());
         }
     }
 }
