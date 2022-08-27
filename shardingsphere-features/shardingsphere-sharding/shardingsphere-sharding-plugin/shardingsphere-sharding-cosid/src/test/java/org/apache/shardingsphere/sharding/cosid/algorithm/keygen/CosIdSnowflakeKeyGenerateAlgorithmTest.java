@@ -83,7 +83,7 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
         int divisor = 4;
         int total = 99999;
         int avg = total / divisor;
-        double tolerance = avg * .001;
+        double tolerance = avg * .0015;
         
         int mod0Counter = 0;
         int mod1Counter = 0;
