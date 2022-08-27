@@ -37,6 +37,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | HY000     | 16001       | Failed to get DDL for table \`%s\` |
 | 42S02     | 17000       | Single table \`%s\` does not exist |
 | 42S02     | 17001       | Schema \`%s\` does not exist |
+| 0A000     | 17002       | Can not drop schema \`%s\` because of contains tables |
 | 0A000     | 17010       | DROP TABLE ... CASCADE is not supported |
 | HY000     | 20000       | Sharding algorithm class \`%s\` should be implement \`%s\` |
 | 44000     | 20001       | Can not get uniformed table structure for logic table \`%s\`, it has different meta data of actual tables are as follows: %s |
