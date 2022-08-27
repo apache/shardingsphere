@@ -28,6 +28,6 @@ public final class EmptyShardingRouteResultException extends ShardingSphereSQLEx
     private static final long serialVersionUID = -6548076668933945656L;
     
     public EmptyShardingRouteResultException() {
-        super(XOpenSQLState.NOT_FOUND, 20008, "Can not get route result, please check your sharding rule configuration");
+        super(XOpenSQLState.NOT_FOUND, 20002, "Can not get route result, please check your sharding rule configuration");
     }
 }

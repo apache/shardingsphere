@@ -29,6 +29,6 @@ public final class ShardingValueDataTypeException extends ShardingSphereSQLExcep
     private static final long serialVersionUID = -4833106947304679015L;
     
     public ShardingValueDataTypeException(final Column column) {
-        super(XOpenSQLState.INVALID_DATA_TYPE, 20013, "Found different types for sharding value `%s`", column.toString());
+        super(XOpenSQLState.INVALID_DATA_TYPE, 20011, "Found different types for sharding value `%s`", column.toString());
     }
 }

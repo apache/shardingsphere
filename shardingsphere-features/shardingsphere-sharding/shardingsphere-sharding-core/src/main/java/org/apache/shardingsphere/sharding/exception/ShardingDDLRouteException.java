@@ -30,6 +30,6 @@ public final class ShardingDDLRouteException extends ShardingSphereSQLException 
     private static final long serialVersionUID = 1611718269096645289L;
     
     public ShardingDDLRouteException(final String operation, final String objectType, final Collection<String> objectNames) {
-        super(XOpenSQLState.GENERAL_ERROR, 20007, "`%s %s` can not route correctly for %s `%s`", operation, objectType, objectType, objectNames.toString());
+        super(XOpenSQLState.GENERAL_ERROR, 20051, "`%s %s` can not route correctly for %s `%s`", operation, objectType, objectType, objectNames.toString());
     }
 }

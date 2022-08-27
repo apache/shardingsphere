@@ -28,6 +28,6 @@ public final class DataNodeGenerateException extends ShardingSphereSQLException 
     private static final long serialVersionUID = -1000865538051567910L;
     
     public DataNodeGenerateException(final String dataNode) {
-        super(XOpenSQLState.NOT_FOUND, 20015, "Can not find data source in sharding rule, invalid actual data node `%s`", dataNode);
+        super(XOpenSQLState.NOT_FOUND, 20052, "Can not find data source in sharding rule, invalid actual data node `%s`", dataNode);
     }
 }
