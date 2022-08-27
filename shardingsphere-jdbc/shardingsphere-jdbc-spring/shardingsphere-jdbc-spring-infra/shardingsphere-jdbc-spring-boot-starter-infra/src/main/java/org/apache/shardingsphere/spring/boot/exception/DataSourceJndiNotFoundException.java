@@ -26,7 +26,7 @@ public final class DataSourceJndiNotFoundException extends ShardingSphereExcepti
     
     private static final long serialVersionUID = -7793679063807601394L;
     
-    private static final String ERROR_CATEGORY = "SPRING-DS";
+    private static final String ERROR_CATEGORY = "SPRING";
     
     private static final int ERROR_CODE = 2;
     

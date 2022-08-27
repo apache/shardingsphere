@@ -26,7 +26,7 @@ public final class UnsupportedDataSourceTypeException extends ShardingSphereExce
     
     private static final long serialVersionUID = 8264305279431450585L;
     
-    private static final String ERROR_CATEGORY = "SPRING-DS";
+    private static final String ERROR_CATEGORY = "SPRING";
     
     private static final int ERROR_CODE = 1;
     
