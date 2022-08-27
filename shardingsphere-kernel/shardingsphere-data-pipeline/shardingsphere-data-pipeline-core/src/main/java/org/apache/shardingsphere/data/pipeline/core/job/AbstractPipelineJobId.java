@@ -17,26 +17,34 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
 
 /**
  * Abstract pipeline job id.
  */
 @Getter
-@Setter
 @ToString
 public abstract class AbstractPipelineJobId implements PipelineJobId {
     
     @NonNull
-    private String typeCode;
+    private final JobType jobType;
     
     @NonNull
-    private String formatVersion;
+    private final String formatVersion;
     
-    @NonNull
-    private String databaseName;
+    public AbstractPipelineJobId(@NonNull final JobType jobType, @NonNull final String formatVersion) {
+        this.jobType = jobType;
+        Preconditions.checkArgument(2 == formatVersion.length(), "formatVersion length is not 2");
+        this.formatVersion = formatVersion;
+    }
+    
+    @Override
+    public final String getJobTypeCode() {
+        return jobType.getTypeCode();
+    }
 }
