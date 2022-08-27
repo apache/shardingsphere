@@ -57,7 +57,6 @@ public final class YamlShardingRuleAlgorithmProviderConfigurationSwapper impleme
         setYamlStrategies(data, result);
         setYamlAlgorithms(data, result);
         result.setDefaultShardingColumn(data.getDefaultShardingColumn());
-        result.setScalingName(data.getScalingName());
         return result;
     }
     

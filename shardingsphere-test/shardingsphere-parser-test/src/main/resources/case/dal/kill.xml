@@ -17,5 +17,5 @@
   -->
 
 <sql-parser-test-cases>
-    <kill sql-case-id="kill_processlist_id" processlist-id="2" />
+    <kill sql-case-id="kill_processlist_id" processlist-id="abc" />
 </sql-parser-test-cases>

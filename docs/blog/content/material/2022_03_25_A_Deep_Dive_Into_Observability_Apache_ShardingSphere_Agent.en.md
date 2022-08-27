@@ -175,6 +175,7 @@ Through a careful search of Span, we can check the tracing status of SQL stateme
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/yylhudeamm4ryx3dml14.png)
 
 ## Topology Mapping
+
 We cannot find topology mappings when we check dependencies through Zipkin Web.
 
 So, we need to configure them:
@@ -195,9 +196,9 @@ After performing the same access test as before, we can view dependencies throug
 
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/31f0qu5j1c5wh8vb5itw.png)
- 
 
 ## Sampling Rate
+
 The Observability plugin also enables users to set differnt sampling rate configured to suit different scenarios. Zipkin plugins support various sampling rate type configurations including const, counting, rate limiting, and boundary.
 
 For scenarios with a high volume of requests, we suggest you to choose the boundary type and configure it with the appropriate sampling rate to reduce the collect volume of tracing data.
@@ -214,20 +215,23 @@ Zipkin:
 ```
 
 ## Summary
+
 With the Observability plugin compatible with many common monitoring frameworks and systems by default, users can easily monitor and manage Apache ShardingSphere.
 
 In the future, we will continue to enhance the monitoring capability.
 
 ## Apache ShardingSphere Open Source Project Links:
+
 [ShardingSphere Github](https://github.com/apache/shardingsphere/issues?page=1&q=is%3Aopen+is%3Aissue+label%3A%22project%3A+OpenForce+2022%22)
 
 [ShardingSphere Twitter](https://twitter.com/ShardingSphere)
 
 [ShardingSphere Slack](https://twitter.com/ShardingSphere)
 
-[Contributor Guideline](https://shardingsphere.apache.org/community/cn/contribute/)
+[Contributor Guideline](https://shardingsphere.apache.org/community/cn/involved/)
 
 ## Co-Authors
+
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/jiw16l3jlu5g371hiny5.png)
 
 Pingchuan JIANG

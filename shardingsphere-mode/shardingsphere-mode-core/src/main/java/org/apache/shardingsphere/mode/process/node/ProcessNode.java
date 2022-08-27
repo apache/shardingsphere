@@ -29,23 +29,23 @@ public final class ProcessNode {
     private static final String EXECUTION_NODES = "execution_nodes";
     
     /**
-     * Get show process list id path.
+     * Get process list id path.
      *
-     * @param showProcessListId show process list id
+     * @param processListId process list id
      * @return execution path
      */
-    public static String getShowProcessListIdPath(final String showProcessListId) {
-        return String.join("/", "", EXECUTION_NODES, showProcessListId);
+    public static String getProcessListIdPath(final String processListId) {
+        return String.join("/", "", EXECUTION_NODES, processListId);
     }
     
     /**
-     * Get show process list instance path.
+     * Get process list instance path.
      *
-     * @param showProcessListId show process list id
+     * @param processListId process list id
      * @param instancePath instance path
      * @return execution path
      */
-    public static String getShowProcessListInstancePath(final String showProcessListId, final String instancePath) {
-        return String.join("/", "", EXECUTION_NODES, showProcessListId, instancePath);
+    public static String getProcessListInstancePath(final String processListId, final String instancePath) {
+        return String.join("/", "", EXECUTION_NODES, processListId, instancePath);
     }
 }

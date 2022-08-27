@@ -23,7 +23,7 @@ import org.apache.shardingsphere.driver.jdbc.context.JDBCContext;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
-import org.apache.shardingsphere.infra.session.ConnectionContext;
+import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.Array;
@@ -110,7 +110,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     @Override
     public PreparedStatement prepareStatement(final String sql, final String[] columnNames) throws SQLException {
-        return new ShardingSpherePreparedStatement(this, sql, Statement.RETURN_GENERATED_KEYS);
+        return new ShardingSpherePreparedStatement(this, sql, columnNames);
     }
     
     @Override

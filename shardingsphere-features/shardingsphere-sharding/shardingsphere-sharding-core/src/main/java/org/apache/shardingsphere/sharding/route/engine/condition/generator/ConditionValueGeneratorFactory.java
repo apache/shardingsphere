@@ -38,6 +38,12 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ConditionValueGeneratorFactory {
     
+    private static final ConditionValueCompareOperatorGenerator COMPARE_OPERATOR_GENERATOR = new ConditionValueCompareOperatorGenerator();
+    
+    private static final ConditionValueInOperatorGenerator IN_OPERATOR_GENERATOR = new ConditionValueInOperatorGenerator();
+    
+    private static final ConditionValueBetweenOperatorGenerator BETWEEN_OPERATOR_GENERATOR = new ConditionValueBetweenOperatorGenerator();
+    
     /**
      * Generate condition value.
      *
@@ -48,13 +54,13 @@ public final class ConditionValueGeneratorFactory {
      */
     public static Optional<ShardingConditionValue> generate(final ExpressionSegment predicate, final Column column, final List<Object> parameters) {
         if (predicate instanceof BinaryOperationExpression) {
-            return new ConditionValueCompareOperatorGenerator().generate((BinaryOperationExpression) predicate, column, parameters);
+            return COMPARE_OPERATOR_GENERATOR.generate((BinaryOperationExpression) predicate, column, parameters);
         }
         if (predicate instanceof InExpression) {
-            return new ConditionValueInOperatorGenerator().generate((InExpression) predicate, column, parameters);
+            return IN_OPERATOR_GENERATOR.generate((InExpression) predicate, column, parameters);
         }
         if (predicate instanceof BetweenExpression) {
-            return new ConditionValueBetweenOperatorGenerator().generate((BetweenExpression) predicate, column, parameters);
+            return BETWEEN_OPERATOR_GENERATOR.generate((BetweenExpression) predicate, column, parameters);
         }
         return Optional.empty();
     }

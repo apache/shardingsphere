@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.api;
 
 import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.database.visitor.SQLVisitorFactory;
@@ -25,9 +26,7 @@ import org.apache.shardingsphere.sql.parser.core.database.visitor.SQLVisitorRule
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
-import java.util.Collection;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 /**
  * SQL visitor engine.
@@ -61,9 +60,9 @@ public final class SQLVisitorEngine {
     
     private <T> void appendSQLComments(final ParseASTNode parseASTNode, final T visitResult) {
         if (visitResult instanceof AbstractSQLStatement) {
-            Collection<CommentSegment> commentSegments = parseASTNode.getHiddenTokens().stream()
-                    .map(each -> new CommentSegment(each.getText(), each.getStartIndex(), each.getStopIndex())).collect(Collectors.toList());
-            ((AbstractSQLStatement) visitResult).getCommentSegments().addAll(commentSegments);
+            for (Token each : parseASTNode.getHiddenTokens()) {
+                ((AbstractSQLStatement) visitResult).getCommentSegments().add(new CommentSegment(each.getText(), each.getStartIndex(), each.getStopIndex()));
+            }
         }
     }
 }

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sharding.route.engine.validator.dml;
 
 import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementContext;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.sharding.exception.DMLWithMultipleShardingTablesException;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingDeleteStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.DeleteMultiTableSegment;
@@ -51,27 +51,27 @@ public final class ShardingDeleteStatementValidatorTest {
     @Mock
     private ShardingRule shardingRule;
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = DMLWithMultipleShardingTablesException.class)
     public void assertPreValidateWhenDeleteMultiTablesForMySQL() {
         assertPreValidateWhenDeleteMultiTables(new MySQLDeleteStatement());
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = DMLWithMultipleShardingTablesException.class)
     public void assertPreValidateWhenDeleteMultiTablesForOracle() {
         assertPreValidateWhenDeleteMultiTables(new OracleDeleteStatement());
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = DMLWithMultipleShardingTablesException.class)
     public void assertPreValidateWhenDeleteMultiTablesForPostgreSQL() {
         assertPreValidateWhenDeleteMultiTables(new PostgreSQLDeleteStatement());
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = DMLWithMultipleShardingTablesException.class)
     public void assertPreValidateWhenDeleteMultiTablesForSQL92() {
         assertPreValidateWhenDeleteMultiTables(new SQL92DeleteStatement());
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = DMLWithMultipleShardingTablesException.class)
     public void assertPreValidateWhenDeleteMultiTablesForSQLServer() {
         assertPreValidateWhenDeleteMultiTables(new SQLServerDeleteStatement());
     }

@@ -118,9 +118,6 @@ public final class ExportDatabaseConfigurationHandlerTest extends ProxyContextRe
         result.setDefaultTableShardingStrategy(new NoneShardingStrategyConfiguration());
         result.getKeyGenerators().put("snowflake", new AlgorithmConfiguration("SNOWFLAKE", new Properties()));
         result.getShardingAlgorithms().put("ds_inline", new AlgorithmConfiguration("INLINE", createProperties()));
-        String scalingName = "default_scaling";
-        result.setScalingName(scalingName);
-        result.getScaling().put(scalingName, null);
         return result;
     }
     

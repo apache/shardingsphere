@@ -113,7 +113,7 @@ public final class DatabaseMetaDataNode {
      * @param databaseName database name
      * @return schemas path
      */
-    private static String getMetaDataSchemasPath(final String databaseName) {
+    public static String getMetaDataSchemasPath(final String databaseName) {
         return String.join("/", getDatabaseNamePath(databaseName), SCHEMAS_NODE);
     }
     

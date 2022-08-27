@@ -24,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Migration job configuration.
@@ -32,14 +31,16 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Getter
 @Slf4j
-@ToString(exclude = {"source", "target", "schemaTablesMap"})
+@ToString(exclude = {"source", "target"})
 public final class MigrationJobConfiguration implements PipelineJobConfiguration {
     
     private final String jobId;
     
     private final String targetDatabaseName;
     
-    private final String sourceDataSourceName;
+    private final String sourceResourceName;
+    
+    private final String sourceSchemaName;
     
     private final String sourceDatabaseType;
     
@@ -48,11 +49,6 @@ public final class MigrationJobConfiguration implements PipelineJobConfiguration
     private final PipelineDataSourceConfiguration source;
     
     private final PipelineDataSourceConfiguration target;
-    
-    /**
-     * Map{schema name, logic table names}.
-     */
-    private final Map<String, List<String>> schemaTablesMap;
     
     private final String sourceTableName;
     

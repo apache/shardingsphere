@@ -22,7 +22,10 @@ import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
+/**
+ * Oracle create procedure statement.
+ */
 @Setter
 @ToString(callSuper = true)
-public class OracleCreateProcedureStatement extends CreateProcedureStatement implements OracleStatement {
+public final class OracleCreateProcedureStatement extends CreateProcedureStatement implements OracleStatement {
 }

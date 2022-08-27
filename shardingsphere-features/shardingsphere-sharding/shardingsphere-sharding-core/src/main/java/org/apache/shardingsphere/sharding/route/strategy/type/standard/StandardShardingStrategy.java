@@ -20,11 +20,11 @@ package org.apache.shardingsphere.sharding.route.strategy.type.standard;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
+import org.apache.shardingsphere.sharding.exception.ShardingRouteAlgorithmException;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
@@ -76,7 +76,7 @@ public final class StandardShardingStrategy implements ShardingStrategy {
             if (null != target && availableTargetNames.contains(target)) {
                 result.add(target);
             } else if (null != target && !availableTargetNames.contains(target)) {
-                throw new ShardingSphereException(String.format("Route table %s does not exist, available actual table: %s", target, availableTargetNames));
+                throw new ShardingRouteAlgorithmException(target, availableTargetNames);
             }
         }
         return result;

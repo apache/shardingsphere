@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.cases.general;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
@@ -33,6 +34,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,6 +48,8 @@ import static org.junit.Assert.assertThat;
 @Slf4j
 @RunWith(Parameterized.class)
 public final class PostgreSQLMigrationGeneralIT extends BaseExtraSQLITCase {
+    
+    private static final SnowflakeKeyGenerateAlgorithm KEY_GENERATE_ALGORITHM = new SnowflakeKeyGenerateAlgorithm();
     
     private final ScalingParameterized parameterized;
     
@@ -71,19 +75,19 @@ public final class PostgreSQLMigrationGeneralIT extends BaseExtraSQLITCase {
     }
     
     @Test
+    @SneakyThrows
     public void assertMigrationSuccess() {
-        createScalingRule();
-        createSourceSchema("test");
+        addMigrationProcessConfig();
+        createSourceSchema(SCHEMA_NAME);
         createSourceOrderTable();
         createSourceOrderItemTable();
-        createSourceTableIndexList("test");
-        createSourceCommentOnList("test");
+        createSourceTableIndexList(SCHEMA_NAME);
+        createSourceCommentOnList(SCHEMA_NAME);
         addSourceResource();
         addTargetResource();
         createTargetOrderTableRule();
         createTargetOrderItemTableRule();
-        SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
-        Pair<List<Object[]>, List<Object[]>> dataPair = ScalingCaseHelper.generateFullInsertData(keyGenerateAlgorithm, parameterized.getDatabaseType(), TABLE_INIT_ROW_COUNT);
+        Pair<List<Object[]>, List<Object[]>> dataPair = ScalingCaseHelper.generateFullInsertData(KEY_GENERATE_ALGORITHM, parameterized.getDatabaseType(), TABLE_INIT_ROW_COUNT);
         JdbcTemplate jdbcTemplate = new JdbcTemplate(getSourceDataSource());
         jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrder(), dataPair.getLeft());
         jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
@@ -94,23 +98,27 @@ public final class PostgreSQLMigrationGeneralIT extends BaseExtraSQLITCase {
         }
         List<String> lastJobIds = listJobId();
         assertThat(lastJobIds.size(), is(0));
-        assertGreaterThanOrderTableInitRows(TABLE_INIT_ROW_COUNT, "test");
+        assertGreaterThanOrderTableInitRows(TABLE_INIT_ROW_COUNT, SCHEMA_NAME);
     }
     
-    private void checkOrderMigration(final JdbcTemplate jdbcTemplate) {
-        startMigrationOrder();
-        startIncrementTask(new PostgreSQLIncrementTask(jdbcTemplate, "test", false, 20));
+    private void checkOrderMigration(final JdbcTemplate jdbcTemplate) throws SQLException {
+        startMigrationOrder(true);
+        startIncrementTask(new PostgreSQLIncrementTask(jdbcTemplate, SCHEMA_NAME, false, 20));
         String jobId = getJobIdByTableName("t_order");
         waitMigrationFinished(jobId);
-        assertCheckScalingSuccess(jobId);
+        stopMigrationByJobId(jobId);
+        sourceExecuteWithLog(String.format("INSERT INTO %s.t_order (id,order_id,user_id,status) VALUES (%s, %s, %s, '%s')", SCHEMA_NAME, KEY_GENERATE_ALGORITHM.generateKey(),
+                System.currentTimeMillis(), 1, "afterStop"));
+        startMigrationByJobId(jobId);
+        assertCheckMigrationSuccess(jobId);
         stopMigrationByJobId(jobId);
     }
     
-    private void checkOrderItemMigration() {
-        startMigrationOrderItem();
+    private void checkOrderItemMigration() throws SQLException {
+        startMigrationOrderItem(true);
         String jobId = getJobIdByTableName("t_order_item");
         waitMigrationFinished(jobId);
-        assertCheckScalingSuccess(jobId);
+        assertCheckMigrationSuccess(jobId);
         stopMigrationByJobId(jobId);
     }
 }

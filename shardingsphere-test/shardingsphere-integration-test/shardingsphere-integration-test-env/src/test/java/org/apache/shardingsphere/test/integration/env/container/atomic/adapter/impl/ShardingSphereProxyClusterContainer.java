@@ -46,7 +46,7 @@ public final class ShardingSphereProxyClusterContainer extends DockerITContainer
     private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
     
     public ShardingSphereProxyClusterContainer(final DatabaseType databaseType, final AdaptorContainerConfiguration config) {
-        super("ShardingSphere-Proxy", "apache/shardingsphere-proxy-test");
+        super(ProxyContainerConstants.PROXY_CONTAINER_NAME_PREFIX, ProxyContainerConstants.PROXY_CONTAINER_IMAGE);
         this.databaseType = databaseType;
         this.config = config;
     }
@@ -65,7 +65,7 @@ public final class ShardingSphereProxyClusterContainer extends DockerITContainer
     
     @Override
     protected void configure() {
-        withExposedPorts(3307);
+        withExposedPorts(3307, 3308);
         mountConfigurationFiles();
         setWaitStrategy(new JdbcConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType,
                 getHost(), getMappedPort(3307), config.getProxyDataSourceName()), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD)));
@@ -97,6 +97,6 @@ public final class ShardingSphereProxyClusterContainer extends DockerITContainer
     
     @Override
     public String getAbbreviation() {
-        return "proxy";
+        return ProxyContainerConstants.PROXY_CONTAINER_ABBREVIATION;
     }
 }

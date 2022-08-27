@@ -28,7 +28,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.CreateMigrationJobParameter;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
-import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
+import org.apache.shardingsphere.data.pipeline.api.pojo.MigrationJobInfo;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationProcessContext;
 import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
@@ -60,6 +60,10 @@ public final class MigrationJobAPIFixture implements MigrationJobAPI {
     }
     
     @Override
+    public void dropProcessConfiguration(final String confPath) {
+    }
+    
+    @Override
     public PipelineProcessConfiguration showProcessConfiguration() {
         return null;
     }
@@ -77,7 +81,7 @@ public final class MigrationJobAPIFixture implements MigrationJobAPI {
     }
     
     @Override
-    public List<PipelineJobInfo> list() {
+    public List<MigrationJobInfo> list() {
         return null;
     }
     
@@ -97,34 +101,8 @@ public final class MigrationJobAPIFixture implements MigrationJobAPI {
     }
     
     @Override
-    public void stopClusterWriteDB(final String jobId) {
-    }
-    
-    @Override
-    public void stopClusterWriteDB(final MigrationJobConfiguration jobConfig) {
-    }
-    
-    @Override
-    public void restoreClusterWriteDB(final String jobId) {
-    }
-    
-    @Override
-    public void restoreClusterWriteDB(final MigrationJobConfiguration jobConfig) {
-    }
-    
-    @Override
     public Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms() {
         return null;
-    }
-    
-    @Override
-    public boolean isDataConsistencyCheckNeeded(final String jobId) {
-        return false;
-    }
-    
-    @Override
-    public boolean isDataConsistencyCheckNeeded(final MigrationJobConfiguration jobConfig) {
-        return false;
     }
     
     @Override
@@ -148,14 +126,6 @@ public final class MigrationJobAPIFixture implements MigrationJobAPI {
     }
     
     @Override
-    public void switchClusterConfiguration(final String jobId) {
-    }
-    
-    @Override
-    public void switchClusterConfiguration(final MigrationJobConfiguration jobConfig) {
-    }
-    
-    @Override
     public void reset(final String jobId) {
     }
     
@@ -168,7 +138,13 @@ public final class MigrationJobAPIFixture implements MigrationJobAPI {
     }
     
     @Override
-    public void createJobAndStart(final CreateMigrationJobParameter parameter) {
+    public Collection<Collection<Object>> listMigrationSourceResources() {
+        return null;
+    }
+    
+    @Override
+    public String createJobAndStart(final CreateMigrationJobParameter parameter) {
+        return null;
     }
     
     @Override

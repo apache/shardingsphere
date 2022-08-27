@@ -7,6 +7,7 @@ chapter = true
 The [Apache ShardingSphere v5.1.2](https://shardingsphere.apache.org/document/5.1.2/en/overview/) update introduces three new features, one of which allows using the [ShardingSphere-Proxy](https://shardingsphere.apache.org/document/current/en/quick-start/shardingsphere-proxy-quick-start/) chart to rapidly deploy a set of ShardingSphere-Proxy clusters in a cloud environment. This post takes a closer look at this feature.
 
 ## Background and Pain Points
+
 In a cloud-native environment, an application can be deployed in batches in multiple different environments. It is difficult to deploy it into a new environment by reusing the original `YAML`.
 
 When deploying [Kubernetes](https://kubernetes.io/) software, you may encounter the following problems:
@@ -21,11 +22,13 @@ Due to the flexibility of Apache ShardingSphere-Proxy, a cluster may require mul
 Today, there usually is more than one cluster for enterprises. It is a challenge for the traditional deployment model without version control to reuse configuration across multiple clusters while ensuring configuration consistency when producing and testing clusters as well as guaranteeing the correctness of the test.
 
 ## Design objective
+
 As Apache ShardingSphere-Proxy officially supports standardized deployment on the cloud for the first time, choosing the deployment mode is crucial. We need to consider the ease of use, reuse, and compatibility with subsequent versions.
 
 After investigating several existing Kubernetes deployment modes, we finally chose to use [Helm](https://helm.sh/) to make a chart for Apache ShardingSphere-Proxy and provide it to users. We aim to manage the deployment of Apache ShardingSphere-Proxy so that it can be versioned and reusable.
 
 ## Design content
+
 [Helm](https://helm.sh/) manages the tool of the Kubernetes package called `chart`. Helm can do the following things:
 
 Create a new `chart`
@@ -40,6 +43,7 @@ Currently, the deployment of Apache ShardingSphere-Proxy depends on the registry
 This provides users with a one-stop and out-of-the-box experience. An Apache ShardingSphere-Proxy cluster with governance nodes can be deployed in Kubernetes with only one command, and the governance node data can be persisted by relying on the functions of Kubernetes.
 
 ## Quick start guide
+
 A [quick start manual](https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-proxy/startup/helm/) is provided in the V5.1.2 documentation, detailing how to deploy an Apache ShardingSphere cluster with default configuration files.
 
 Below we will use the source code for installation and make a detailed description of the deployment of an Apache ShardingSphere-Proxy cluster in the Kubernetes cluster.
@@ -111,6 +115,7 @@ governance:
 For the resmaining configurations, see the [configuration items in the document](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/startup/helm/#%E9%85%8D%E7%BD%AE%E9%A1%B9).
 
 ## Install Apache ShardingSphere-Proxy & ZooKeeper cluster
+
 Now, the folder level is:
 
 ```
@@ -156,10 +161,9 @@ Create rule:
 Write data and query result:
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/mei7d27czrq0z3xv81sh.png)
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/14j4psiw13q39wcpd9ih.png)
-  
-
 
 ## Upgrade
+
 Apache ShardingSphere-Proxy can be quickly upgraded with Helm.
 
 `helm upgrade shardingsphere-proxy apache-shardingsphere-proxy`
@@ -167,6 +171,7 @@ Apache ShardingSphere-Proxy can be quickly upgraded with Helm.
  
 
 ## Rollback
+
 If an error occurs during the upgrade, you can use the `helm rollback` command to quickly roll back the upgraded `release`.
 
 `helm rollback shardingsphere-proxy`
@@ -174,17 +179,17 @@ If an error occurs during the upgrade, you can use the `helm rollback` command t
  
 
 ## Clean Up
+
 After the experience, the `release` can be cleaned up quickly using the helm `uninstall` command:
 
 `helm uninstall shardingsphere-proxy`
 
 All resources installed for Helm will be deleted.
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/vsg3omz4jb2jfkx0olsv.png)
- ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/xgunqw1hmaaq8n17ddix.png)
- 
-
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/xgunqw1hmaaq8n17ddix.png)
 
 ## Conclusion
+
 Apache ShardingSphere-Proxy Charts can be used to quickly deploy a set of Apache ShardingSphere-Proxy clusters in the Kubernetes cluster.
 
 This simplifies the configuration of `YAML` for ops & maintenance teams during the migration of Apache ShardingSphere-Proxy to the Kubernetes environment.
@@ -194,10 +199,11 @@ With version control, the Apache ShardingSphere-Proxy cluster can be easily depl
 In the future, our community will continue to iterate and improve the Apache ShardingSphere-Proxy chart.
 
 ## Project Links:
+
 [ShardingSphere Github
 ](https://github.com/apache/shardingsphere/issues?page=1&q=is%3Aopen+is%3Aissue+label%3A%22project%3A+OpenForce+2022%22)
 [ShardingSphere Twitter](https://twitter.com/ShardingSphere)
 
 [ShardingSphere Slack](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg)
 
-[Contributor Guide](https://shardingsphere.apache.org/community/cn/contribute/)
+[Contributor Guide](https://shardingsphere.apache.org/community/cn/involved/)

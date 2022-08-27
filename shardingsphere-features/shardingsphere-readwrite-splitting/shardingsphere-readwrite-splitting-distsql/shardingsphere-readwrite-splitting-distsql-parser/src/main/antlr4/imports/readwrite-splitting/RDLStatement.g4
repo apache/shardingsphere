@@ -60,7 +60,7 @@ algorithmDefinition
     ;
 
 algorithmName
-    : IDENTIFIER
+    : STRING
     ;
 
 algorithmProperties
@@ -68,7 +68,7 @@ algorithmProperties
     ;
 
 algorithmProperty
-    : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | STRING)
+    : key=STRING EQ value=(NUMBER | INT | STRING)
     ;
 
 ifExists

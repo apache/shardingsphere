@@ -27,7 +27,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
-import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.command.MigrationDistSQLCommand;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
@@ -43,7 +42,6 @@ import org.apache.shardingsphere.test.integration.env.container.atomic.util.Data
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.junit.Rule;
 import org.opengauss.util.PSQLException;
-import org.springframework.jdbc.BadSqlGrammarException;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXB;
@@ -76,7 +74,7 @@ public abstract class BaseITCase {
     
     protected static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
     
-    protected static final JdbcUrlAppender JDBC_URL_APPENDER = new JdbcUrlAppender();
+    protected static final String SCHEMA_NAME = "test";
     
     protected static final String DS_0 = "scaling_it_0";
     
@@ -196,8 +194,7 @@ public abstract class BaseITCase {
         connectionExecuteWithLog(connection, addSourceResource);
     }
     
-    @SneakyThrows
-    protected void addTargetResource() {
+    protected void addTargetResource() throws SQLException {
         String addTargetResource = migrationDistSQLCommand.getAddMigrationTargetResourceTemplate().replace("${user}", username)
                 .replace("${password}", password)
                 .replace("${ds2}", getActualJdbcUrlTemplate(DS_2, true))
@@ -220,27 +217,47 @@ public abstract class BaseITCase {
         return DataSourceEnvironment.getURL(getDatabaseType(), "127.0.0.1", ENV.getActualDataSourceDefaultPort(databaseType), databaseName);
     }
     
-    protected void createTargetOrderTableRule() {
-        proxyExecuteWithLog(migrationDistSQLCommand.getCreateTargetOrderTableRule(), 3);
+    protected void createTargetOrderTableRule() throws SQLException {
+        proxyExecuteWithLog(migrationDistSQLCommand.getCreateTargetOrderTableRule(), 2);
     }
     
-    protected void createTargetOrderItemTableRule() {
-        proxyExecuteWithLog(migrationDistSQLCommand.getCreateTargetOrderItemTableRule(), 3);
+    protected void createTargetOrderTableEncryptRule() throws SQLException {
+        proxyExecuteWithLog(migrationDistSQLCommand.getCreateTargetOrderTableEncryptRule(), 2);
     }
     
-    protected void startMigrationOrder() {
-        proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderSingleTable(), 5);
+    protected void createTargetOrderItemTableRule() throws SQLException {
+        proxyExecuteWithLog(migrationDistSQLCommand.getCreateTargetOrderItemTableRule(), 2);
     }
     
-    protected void startMigrationOrderItem() {
-        proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderItemSingleTable(), 5);
+    protected void startMigrationOrder(final boolean withSchema) throws SQLException {
+        if (withSchema) {
+            proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderSingleTableWithSchema(), 5);
+        } else {
+            proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderSingleTable(), 5);
+        }
     }
     
-    // TODO use new DistSQL
-    protected void createScalingRule() {
+    protected void startMigrationOrderItem(final boolean withSchema) throws SQLException {
+        if (withSchema) {
+            proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderItemSingleTableWithSchema(), 5);
+        } else {
+            proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderItemSingleTable(), 5);
+        }
     }
     
-    protected void createSourceSchema(final String schemaName) {
+    protected void addMigrationProcessConfig() throws SQLException {
+        try {
+            proxyExecuteWithLog(migrationDistSQLCommand.getAddMigrationProcessConfig(), 0);
+        } catch (final SQLException ex) {
+            if ("58000".equals(ex.getSQLState()) || "42000".equals(ex.getSQLState())) {
+                log.warn(ex.getMessage());
+                return;
+            }
+            throw ex;
+        }
+    }
+    
+    protected void createSourceSchema(final String schemaName) throws SQLException {
         if (DatabaseTypeUtil.isPostgreSQL(databaseType)) {
             sourceExecuteWithLog(String.format("CREATE SCHEMA IF NOT EXISTS %s", schemaName));
             return;
@@ -248,9 +265,9 @@ public abstract class BaseITCase {
         if (DatabaseTypeUtil.isOpenGauss(databaseType)) {
             try {
                 sourceExecuteWithLog(String.format("CREATE SCHEMA %s", schemaName));
-            } catch (final BadSqlGrammarException ex) {
+            } catch (final SQLException ex) {
                 // only used for native mode.
-                if (ex.getCause() instanceof PSQLException && "42P06".equals(((PSQLException) ex.getCause()).getSQLState())) {
+                if (ex instanceof PSQLException && "42P06".equals(ex.getSQLState())) {
                     log.info("Schema {} already exists.", schemaName);
                 } else {
                     throw ex;
@@ -259,16 +276,14 @@ public abstract class BaseITCase {
         }
     }
     
-    @SneakyThrows(SQLException.class)
-    protected void sourceExecuteWithLog(final String sql) {
+    protected void sourceExecuteWithLog(final String sql) throws SQLException {
         log.info("source execute :{}", sql);
         try (Connection connection = sourceDataSource.getConnection()) {
             connection.createStatement().execute(sql);
         }
     }
     
-    @SneakyThrows(SQLException.class)
-    protected void proxyExecuteWithLog(final String sql, final int sleepSeconds) {
+    protected void proxyExecuteWithLog(final String sql, final int sleepSeconds) throws SQLException {
         log.info("proxy execute :{}", sql);
         try (Connection connection = proxyDataSource.getConnection()) {
             connection.createStatement().execute(sql);
@@ -317,16 +332,16 @@ public abstract class BaseITCase {
         getIncreaseTaskThread().start();
     }
     
-    protected void stopMigrationByJobId(final String jobId) {
+    protected void stopMigrationByJobId(final String jobId) throws SQLException {
         proxyExecuteWithLog(String.format("STOP MIGRATION '%s'", jobId), 5);
     }
     
     // TODO reopen later
-    protected void startMigrationByJobId(final String jobId) {
+    protected void startMigrationByJobId(final String jobId) throws SQLException {
         proxyExecuteWithLog(String.format("START MIGRATION '%s'", jobId), 10);
     }
     
-    protected void cleanMigrationByJobId(final String jobId) {
+    protected void cleanMigrationByJobId(final String jobId) throws SQLException {
         proxyExecuteWithLog(String.format("CLEAN MIGRATION '%s'", jobId), 1);
     }
     
@@ -362,7 +377,7 @@ public abstract class BaseITCase {
         }
     }
     
-    protected void assertGreaterThanOrderTableInitRows(final int tableInitRows, final String schema) {
+    protected void assertGreaterThanOrderTableInitRows(final int tableInitRows, final String schema) throws SQLException {
         proxyExecuteWithLog("REFRESH TABLE METADATA", 2);
         String countSQL = StringUtils.isBlank(schema) ? "SELECT COUNT(*) as count FROM t_order" : String.format("SELECT COUNT(*) as count FROM %s.t_order", schema);
         Map<String, Object> actual = queryForListWithLog(countSQL).get(0);
@@ -373,7 +388,7 @@ public abstract class BaseITCase {
         return queryForListWithLog(String.format("SHOW MIGRATION STATUS '%s'", jobId));
     }
     
-    protected void assertCheckScalingSuccess(final String jobId) {
+    protected void assertCheckMigrationSuccess(final String jobId) {
         for (int i = 0; i < 10; i++) {
             if (checkJobIncrementTaskFinished(jobId)) {
                 break;
@@ -397,7 +412,7 @@ public abstract class BaseITCase {
                 return false;
             }
             int incrementalIdleSeconds = Integer.parseInt(entry.get("incremental_idle_seconds").toString());
-            if (incrementalIdleSeconds < 10) {
+            if (incrementalIdleSeconds < 3) {
                 return false;
             }
         }

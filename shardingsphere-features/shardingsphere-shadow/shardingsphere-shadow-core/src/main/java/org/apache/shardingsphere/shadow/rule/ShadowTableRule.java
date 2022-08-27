@@ -42,7 +42,7 @@ public final class ShadowTableRule {
     
     private final Collection<String> hintShadowAlgorithmNames;
     
-    private final Map<ShadowOperationType, Collection<String>> columnShadowAlgorithmNames;
+    private final Map<ShadowOperationType, Collection<ShadowAlgorithmNameRule>> columnShadowAlgorithmNames;
     
     public ShadowTableRule(final String tableName, final Collection<String> shadowDataSources, final Collection<String> shadowAlgorithmNames, final Map<String, ShadowAlgorithm> shadowAlgorithms) {
         this.tableName = tableName;
@@ -55,20 +55,24 @@ public final class ShadowTableRule {
         return shadowAlgorithmNames.stream().filter(each -> shadowAlgorithms.get(each) instanceof HintShadowAlgorithm).collect(Collectors.toList());
     }
     
-    private Map<ShadowOperationType, Collection<String>> initColumnShadowAlgorithmNames(final Collection<String> shadowAlgorithmNames, final Map<String, ShadowAlgorithm> shadowAlgorithms) {
-        Map<ShadowOperationType, Collection<String>> result = new EnumMap<>(ShadowOperationType.class);
+    private Map<ShadowOperationType, Collection<ShadowAlgorithmNameRule>> initColumnShadowAlgorithmNames(final Collection<String> shadowAlgorithmNames,
+                                                                                                         final Map<String, ShadowAlgorithm> shadowAlgorithms) {
+        Map<ShadowOperationType, Collection<ShadowAlgorithmNameRule>> result = new EnumMap<>(ShadowOperationType.class);
         shadowAlgorithmNames.forEach(each -> {
             ShadowAlgorithm shadowAlgorithm = shadowAlgorithms.get(each);
             if (shadowAlgorithm instanceof ColumnShadowAlgorithm) {
-                ShadowOperationType.contains(shadowAlgorithm.getProps().getProperty("operation")).ifPresent(optional -> initShadowAlgorithmNames(result, each, optional));
+                String operation = shadowAlgorithm.getProps().getProperty("operation");
+                String shadowColumnName = shadowAlgorithm.getProps().getProperty("column");
+                ShadowOperationType.contains(operation).ifPresent(optional -> initShadowAlgorithmNames(optional, each, shadowColumnName, result));
             }
         });
         return result;
     }
     
-    private void initShadowAlgorithmNames(final Map<ShadowOperationType, Collection<String>> columnShadowAlgorithmNames, final String algorithmName, final ShadowOperationType operationType) {
-        Collection<String> names = columnShadowAlgorithmNames.get(operationType);
-        Preconditions.checkState(null == names, "Column shadow algorithm `%s` operation only supports one column mapping in shadow table `%s`.", operationType.name(), tableName);
-        columnShadowAlgorithmNames.put(operationType, Collections.singletonList(algorithmName));
+    private void initShadowAlgorithmNames(final ShadowOperationType operationType, final String algorithmName, final String shadowColumnName,
+                                          final Map<ShadowOperationType, Collection<ShadowAlgorithmNameRule>> columnShadowAlgorithmNames) {
+        Collection<ShadowAlgorithmNameRule> shadowAlgorithmNameRules = columnShadowAlgorithmNames.get(operationType);
+        Preconditions.checkState(null == shadowAlgorithmNameRules, "Column shadow algorithm `%s` operation only supports one column mapping in shadow table `%s`.", operationType.name(), tableName);
+        columnShadowAlgorithmNames.put(operationType, Collections.singletonList(new ShadowAlgorithmNameRule(shadowColumnName, algorithmName)));
     }
 }

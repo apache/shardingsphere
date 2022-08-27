@@ -254,6 +254,7 @@ mysql> select * from account;
 ```
 
 ## Future plan
+
 Currently, ShardingSphere’s distributed transaction integrates the 2PC implementation scheme of the 3rd party to guarantee atomicity. Isolation depends on the isolation guarantee of the storage DB, providing available transaction functions.
 
 The future implementation of MVCC based on global Timestamp and combined with 2PC, will provide better support for transaction isolation semantics.
@@ -265,7 +266,7 @@ The future implementation of MVCC based on global Timestamp and combined with 2P
 
 [ShardingSphere Slack](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg)
 
-[Contributor Guide](https://shardingsphere.apache.org/community/cn/contribute/)
+[Contributor Guide](https://shardingsphere.apache.org/community/cn/involved/)
 
 ## Author
 
@@ -274,4 +275,3 @@ Lu Jingshang
 > [Apache ShardingSphere](https://shardingsphere.apache.org/) Committer & Infrastructure R&D Engineer at [SphereEx](https://www.sphere-ex.com/).
 > Enthusiastic about open source and database technology.
 > Focus on developing Apache ShardingSphere transaction module.
-

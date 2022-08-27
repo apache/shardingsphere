@@ -21,10 +21,14 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+
+import java.sql.Statement;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Execute process context.
@@ -42,7 +46,9 @@ public final class ExecuteProcessContext {
     
     private final String sql;
     
-    private final Collection<ExecuteProcessUnit> unitStatuses;
+    private final Map<String, ExecuteProcessUnit> processUnits = new HashMap<>();
+    
+    private final Collection<Statement> processStatements = new LinkedList<>();
     
     private final long startTimeMillis = System.currentTimeMillis();
     
@@ -53,16 +59,18 @@ public final class ExecuteProcessContext {
         Grantee grantee = executionGroupContext.getGrantee();
         this.username = null != grantee ? grantee.getUsername() : null;
         this.hostname = null != grantee ? grantee.getHostname() : null;
-        unitStatuses = createExecutionUnitStatuses(executionGroupContext, constants);
+        addProcessUnitsAndStatements(executionGroupContext, constants);
     }
     
-    private Collection<ExecuteProcessUnit> createExecutionUnitStatuses(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessConstants constants) {
-        Collection<ExecuteProcessUnit> result = new LinkedList<>();
-        for (ExecutionGroup<? extends SQLExecutionUnit> group : executionGroupContext.getInputGroups()) {
-            for (SQLExecutionUnit each : group.getInputs()) {
-                result.add(new ExecuteProcessUnit(each.getExecutionUnit(), constants));
+    private void addProcessUnitsAndStatements(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessConstants constants) {
+        for (ExecutionGroup<? extends SQLExecutionUnit> each : executionGroupContext.getInputGroups()) {
+            for (SQLExecutionUnit executionUnit : each.getInputs()) {
+                ExecuteProcessUnit processUnit = new ExecuteProcessUnit(executionUnit.getExecutionUnit(), constants);
+                processUnits.put(processUnit.getUnitID(), processUnit);
+                if (executionUnit instanceof JDBCExecutionUnit) {
+                    processStatements.add(((JDBCExecutionUnit) executionUnit).getStorageResource());
+                }
             }
         }
-        return result;
     }
 }

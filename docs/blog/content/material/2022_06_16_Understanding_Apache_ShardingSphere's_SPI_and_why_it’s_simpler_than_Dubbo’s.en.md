@@ -250,11 +250,13 @@ public static <T> Collection<T> newServiceInstances(final Class<T> service) {
         return result;
     }
 ```
+
 You can see that it is also very simple to find all implementations class returns of the interface directly in `SERVICES` registered through the static code block.
 
 Although short, this short walkthrough basically introduced ShardingSphere’s SPI source code. We’re sure that you have already noticed it’s much easier and simpler to work with ShardingSphere’s SPI than Dubbo's SPI mechanism.
 
 ## Summary
+
 Both ShardingSphere and Dubbo’s SPIs meet the requirement of finding the specified implementation class by key, without having to reload all the implementation classes every time you use it, solving the concurrent loading problem. However, compared to Dubbo, the ShardingSphere SPI is more streamlined and easier to use.
 
 You can refer to the ShardingSphere implementation later on when writing your own SPI extensions, as it is simpler to implement, and elegant to work with. You can write an expandable configuration file parser based on SPI so that we can understand what SPI is capable of as well as its application scenarios.
@@ -267,4 +269,4 @@ You can refer to the ShardingSphere implementation later on when writing your ow
 
 [ShardingSphere Slack](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg)
 
-[Contributor Guide](https://shardingsphere.apache.org/community/cn/contribute/)
+[Contributor Guide](https://shardingsphere.apache.org/community/cn/involved/)

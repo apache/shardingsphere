@@ -47,7 +47,6 @@ public final class YamlShardingRuleAlgorithmProviderConfigurationSwapperTest {
         assertFalse(actual.getBindingTables().isEmpty());
         assertFalse(actual.getBroadcastTables().isEmpty());
         assertThat(actual.getDefaultShardingColumn(), is("foo_column"));
-        assertThat(actual.getScalingName(), is("foo_scale_name"));
     }
     
     private AlgorithmProvidedShardingRuleConfiguration createAlgorithmProvidedShardingRuleConfiguration() {
@@ -61,7 +60,6 @@ public final class YamlShardingRuleAlgorithmProviderConfigurationSwapperTest {
         result.setDefaultKeyGenerateStrategy(mock(KeyGenerateStrategyConfiguration.class));
         result.setDefaultAuditStrategy(mock(ShardingAuditStrategyConfiguration.class));
         result.setDefaultShardingColumn("foo_column");
-        result.setScalingName("foo_scale_name");
         return result;
     }
     

@@ -393,13 +393,14 @@ Thanks to the efforts made by the 54 ShardingSphere contributors, who submitted 
 
 [ShardingSphere Slack](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg)
 
-[Contributor Guide](https://shardingsphere.apache.org/community/cn/contribute/)
+[Contributor Guide](https://shardingsphere.apache.org/community/cn/involved/)
 
 [Download Link](https://shardingsphere.apache.org/document/current/cn/downloads/)
 
 [Release Notes](https://github.com/apache/shardingsphere/blob/master/RELEASE-NOTES.md)
 
 ## Author
+
 **Weijie Wu**
 
 **SphereEx Infrastructure R&D Engineer, Apache ShardingSphere PMC**

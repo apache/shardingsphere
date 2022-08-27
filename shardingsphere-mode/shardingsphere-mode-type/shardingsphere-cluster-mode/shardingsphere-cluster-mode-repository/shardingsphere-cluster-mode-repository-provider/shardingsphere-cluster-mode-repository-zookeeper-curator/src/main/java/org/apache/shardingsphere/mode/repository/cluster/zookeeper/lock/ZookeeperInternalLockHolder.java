@@ -19,16 +19,13 @@ package org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.recipes.locks.InterProcessLock;
 import org.apache.curator.framework.recipes.locks.InterProcessSemaphoreMutex;
 import org.apache.shardingsphere.mode.repository.cluster.lock.InternalLock;
 import org.apache.shardingsphere.mode.repository.cluster.lock.InternalLockHolder;
-import org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler.CuratorZookeeperExceptionHandler;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Zookeeper internal lock holder.
@@ -41,44 +38,12 @@ public final class ZookeeperInternalLockHolder implements InternalLockHolder {
     private final CuratorFramework client;
     
     @Override
-    public InternalLock getInternalLock(final String lockKey) {
+    public synchronized InternalLock getInternalLock(final String lockKey) {
         ZookeeperInternalLock result = locks.get(lockKey);
         if (Objects.isNull(result)) {
             result = new ZookeeperInternalLock(new InterProcessSemaphoreMutex(client, lockKey));
             locks.put(lockKey, result);
         }
         return result;
-    }
-    
-    /**
-     * Zookeeper internal lock.
-     */
-    @RequiredArgsConstructor
-    public static class ZookeeperInternalLock implements InternalLock {
-        
-        private final InterProcessLock lock;
-        
-        @Override
-        public boolean tryLock(final long timeout) {
-            try {
-                return lock.acquire(timeout, TimeUnit.MILLISECONDS);
-                // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
-                // CHECKSTYLE:ON
-                CuratorZookeeperExceptionHandler.handleException(ex);
-            }
-            return false;
-        }
-        
-        @Override
-        public void unlock() {
-            try {
-                lock.release();
-                // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
-                // CHECKSTYLE:ON
-                CuratorZookeeperExceptionHandler.handleException(ex);
-            }
-        }
     }
 }

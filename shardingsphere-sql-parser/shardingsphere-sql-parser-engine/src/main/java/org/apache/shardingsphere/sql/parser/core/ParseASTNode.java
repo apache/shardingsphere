@@ -24,7 +24,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.LinkedList;
 
 /**
  * Parse AST node.
@@ -51,6 +51,12 @@ public final class ParseASTNode implements ASTNode {
      * @return hidden tokens
      */
     public Collection<Token> getHiddenTokens() {
-        return tokenStream.getTokens().stream().filter(each -> Token.HIDDEN_CHANNEL == each.getChannel()).collect(Collectors.toList());
+        Collection<Token> result = new LinkedList<>();
+        for (Token each : tokenStream.getTokens()) {
+            if (Token.HIDDEN_CHANNEL == each.getChannel()) {
+                result.add(each);
+            }
+        }
+        return result;
     }
 }

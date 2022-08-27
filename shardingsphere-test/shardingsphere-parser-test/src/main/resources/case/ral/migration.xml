@@ -17,6 +17,7 @@
   -->
 
 <sql-parser-test-cases>
+    <show-migration-source-resources sql-case-id="show-migration-source-resources" />
     <show-migration-list sql-case-id="show-migration-list" />
     <show-migration-check-algorithms sql-case-id="show-migration-check-algorithms" />
     
@@ -36,6 +37,14 @@
     <show-migration-status sql-case-id="show-migration-status">
         <job-id>123</job-id>
     </show-migration-status>
+    
+    <drop-migration-process-configuration sql-case-id="drop-migration-process-configuration-read">
+        <conf-path>/READ</conf-path>
+    </drop-migration-process-configuration>
+    
+    <drop-migration-process-configuration sql-case-id="drop-migration-process-configuration-read-rate-limiter">
+        <conf-path>/READ/RATE_LIMITER</conf-path>
+    </drop-migration-process-configuration>
     
     <migrate-table sql-case-id="migrate-table-without-schema-target-db">
         <source-resource-name>ds_0</source-resource-name>
@@ -64,18 +73,6 @@
         <target-database-name>sharding_db</target-database-name>
         <target-table-name>t_order</target-table-name>
     </migrate-table>
-    
-    <stop-migration-source-writing sql-case-id="stop-migration-source-writing">
-        <job-id>123</job-id>
-    </stop-migration-source-writing>
-    
-    <restore-migration-source-writing sql-case-id="restore-migration-source-writing">
-        <job-id>123</job-id>
-    </restore-migration-source-writing>
-    
-    <apply-migration sql-case-id="apply-migration">
-        <job-id>123</job-id>
-    </apply-migration>
     
     <clean-migration sql-case-id="clean-migration">
         <job-id>123</job-id>

@@ -35,7 +35,11 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
 @Slf4j
@@ -68,15 +72,18 @@ public class TextPrimaryKeyMigrationIT extends BaseExtraSQLITCase {
     public void assertTextPrimaryMigrationSuccess() throws SQLException {
         createSourceOrderTable();
         batchInsertOrder();
-        createScalingRule();
+        addMigrationProcessConfig();
         addSourceResource();
         addTargetResource();
         createTargetOrderTableRule();
-        startMigrationOrder();
+        startMigrationOrder(false);
         String jobId = listJobId().get(0);
         waitMigrationFinished(jobId);
         stopMigrationByJobId(jobId);
-        assertCheckScalingSuccess(jobId);
+        assertCheckMigrationSuccess(jobId);
+        cleanMigrationByJobId(jobId);
+        List<String> lastJobIds = listJobId();
+        assertThat(lastJobIds.size(), is(0));
     }
     
     private void batchInsertOrder() throws SQLException {

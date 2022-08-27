@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.dialect.exception.syntax.table.NoSuchTableException;
 import org.apache.shardingsphere.dialect.exception.syntax.table.TableExistsException;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.sharding.exception.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -39,13 +39,14 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
      * Validate sharding table.
      *
      * @param shardingRule sharding rule
+     * @param operation operation
      * @param tables tables
      */
-    protected void validateShardingTable(final ShardingRule shardingRule, final Collection<SimpleTableSegment> tables) {
+    protected void validateShardingTable(final ShardingRule shardingRule, final String operation, final Collection<SimpleTableSegment> tables) {
         for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
             if (shardingRule.isShardingTable(tableName)) {
-                throw new ShardingSphereException("Can not support sharding table '%s'.", tableName);
+                throw new UnsupportedShardingOperationException(operation, tableName);
             }
         }
     }
@@ -81,12 +82,12 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
     }
     
     /**
-     * Judge whether route unit and data node are different size or not.
+     * Judge whether route unit and data node are different size.
      * 
      * @param shardingRule sharding rule
      * @param routeContext route context
      * @param tableName table name
-     * @return whether route unit and data node are different size or not
+     * @return route unit and data node are different size or not
      */
     protected boolean isRouteUnitDataNodeDifferentSize(final ShardingRule shardingRule, final RouteContext routeContext, final String tableName) {
         return (shardingRule.isShardingTable(tableName) || shardingRule.isBroadcastTable(tableName))

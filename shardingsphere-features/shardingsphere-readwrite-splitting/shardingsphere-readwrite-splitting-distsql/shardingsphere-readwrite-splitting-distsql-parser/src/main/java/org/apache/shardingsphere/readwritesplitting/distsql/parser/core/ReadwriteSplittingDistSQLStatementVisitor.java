@@ -99,9 +99,7 @@ public final class ReadwriteSplittingDistSQLStatementVisitor extends ReadwriteSp
         String algorithmName = null;
         if (null != ctx.algorithmDefinition()) {
             algorithmName = getIdentifierValue(ctx.algorithmDefinition().algorithmName());
-        }
-        if (null != ctx.algorithmDefinition() && null != ctx.algorithmDefinition().algorithmProperties()) {
-            ctx.algorithmDefinition().algorithmProperties().algorithmProperty().forEach(each -> props.setProperty(each.key.getText(), each.value.getText()));
+            props = getAlgorithmProperties(ctx.algorithmDefinition());
         }
         if (null == ctx.staticReadwriteSplittingRuleDefinition()) {
             return new ReadwriteSplittingRuleSegment(getIdentifierValue(ctx.ruleName()), getIdentifierValue(ctx.dynamicReadwriteSplittingRuleDefinition().resourceName()),

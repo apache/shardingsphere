@@ -44,6 +44,7 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTabl
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueReader;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.InventoryDumper;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
@@ -69,6 +70,8 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     
     private final PipelineSQLBuilder pipelineSQLBuilder;
     
+    private final ColumnValueReader columnValueReader;
+    
     private final DataSource dataSource;
     
     private final int batchSize;
@@ -85,6 +88,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         this.dumperConfig = inventoryDumperConfig;
         this.channel = channel;
         pipelineSQLBuilder = PipelineSQLBuilderFactory.getInstance(inventoryDumperConfig.getDataSourceConfig().getDatabaseType().getType());
+        columnValueReader = ColumnValueReaderFactory.getInstance(inventoryDumperConfig.getDataSourceConfig().getDatabaseType().getType());
         this.dataSource = dataSource;
         batchSize = inventoryDumperConfig.getBatchSize();
         rateLimitAlgorithm = inventoryDumperConfig.getRateLimitAlgorithm();
@@ -159,18 +163,18 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
                 throw new IllegalArgumentException("Unsupported uniqueKeyDataType: " + uniqueKeyDataType);
             }
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                ResultSetMetaData metaData = resultSet.getMetaData();
+                ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
                 int rowCount = 0;
                 Object maxUniqueKeyValue = null;
                 String logicTableName = dumperConfig.getLogicTableName();
                 while (resultSet.next()) {
-                    DataRecord record = new DataRecord(newPosition(resultSet), metaData.getColumnCount());
+                    DataRecord record = new DataRecord(newPosition(resultSet), resultSetMetaData.getColumnCount());
                     record.setType(IngestDataChangeType.INSERT);
                     record.setTableName(logicTableName);
-                    maxUniqueKeyValue = readValue(resultSet, tableMetaData.getColumnMetaData(uniqueKey).getOrdinalPosition());
-                    for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                    maxUniqueKeyValue = columnValueReader.readValue(resultSet, resultSetMetaData, tableMetaData.getColumnMetaData(uniqueKey).getOrdinalPosition());
+                    for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
                         boolean isUniqueKey = tableMetaData.isUniqueKey(i - 1);
-                        record.addColumn(new Column(metaData.getColumnName(i), readValue(resultSet, i), true, isUniqueKey));
+                        record.addColumn(new Column(resultSetMetaData.getColumnName(i), columnValueReader.readValue(resultSet, resultSetMetaData, i), true, isUniqueKey));
                     }
                     pushRecord(record);
                     rowCount++;
@@ -201,10 +205,6 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     }
     
     protected abstract PreparedStatement createPreparedStatement(Connection connection, String sql) throws SQLException;
-    
-    protected Object readValue(final ResultSet resultSet, final int index) throws SQLException {
-        return resultSet.getObject(index);
-    }
     
     private void pushRecord(final Record record) {
         channel.pushRecord(record);

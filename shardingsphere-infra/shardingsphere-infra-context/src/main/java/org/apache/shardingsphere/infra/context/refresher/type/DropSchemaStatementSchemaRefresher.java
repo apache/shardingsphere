@@ -60,7 +60,7 @@ public final class DropSchemaStatementSchemaRefresher implements MetaDataRefresh
     private Collection<String> getSchemaNames(final DropSchemaStatement sqlStatement) {
         Collection<String> result = new LinkedList<>();
         for (IdentifierValue each : sqlStatement.getSchemaNames()) {
-            result.add(each.getValue());
+            result.add(each.getValue().toLowerCase());
         }
         return result;
     }

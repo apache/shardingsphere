@@ -103,10 +103,6 @@
         <database name="sharding_db" start-index="36" stop-index="46"/>
     </show-default-sharding-strategy>
 
-    <show-sharding-scaling-rules sql-case-id="show-sharding-scaling-rules">
-        <database name="databaseName" start-index="33" stop-index="44"/>
-    </show-sharding-scaling-rules>
-
     <show-unused-sharding-algorithms sql-case-id="show-unused-sharding-algorithms">
         <database name="databaseName" start-index="37" stop-index="48"/>
     </show-unused-sharding-algorithms>

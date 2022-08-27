@@ -19,4 +19,5 @@
 <sql-cases>
     <sql-case id="drop_procedure" value="DROP PROCEDURE do_db_maintenance()" db-types="PostgreSQL,openGauss" />
     <sql-case id="drop_multiple_procedure" value="DROP PROCEDURE dbo.uspGetSalesbyMonth, dbo.uspUpdateSalesQuotes, dbo.uspGetSalesByYear;" db-types="SQLServer" />
+    <sql-case id="drop_procedure_for_oracle" value="DROP PROCEDURE hr.remove_emp" db-types="Oracle" />
 </sql-cases>

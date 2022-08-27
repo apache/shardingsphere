@@ -42,20 +42,20 @@ public final class MySQLPipelineSQLBuilderTest {
     @Test
     public void assertBuildInsertSQL() {
         String actual = sqlBuilder.buildInsertSQL(null, mockDataRecord("t1"), shardingColumnsMap);
-        assertThat(actual, is("INSERT INTO `t1`(`id`,`sc`,`c1`,`c2`,`c3`) VALUES(?,?,?,?,?) ON DUPLICATE KEY UPDATE `sc`=VALUES(`sc`),`c1`=VALUES(`c1`),`c2`=VALUES(`c2`),`c3`=VALUES(`c3`)"));
+        assertThat(actual, is("INSERT INTO t1(id,sc,c1,c2,c3) VALUES(?,?,?,?,?) ON DUPLICATE KEY UPDATE sc=VALUES(sc),c1=VALUES(c1),c2=VALUES(c2),c3=VALUES(c3)"));
     }
     
     @Test
     public void assertBuildInsertSQLHasShardingColumn() {
         String actual = sqlBuilder.buildInsertSQL(null, mockDataRecord("t2"), shardingColumnsMap);
-        assertThat(actual, is("INSERT INTO `t2`(`id`,`sc`,`c1`,`c2`,`c3`) VALUES(?,?,?,?,?) ON DUPLICATE KEY UPDATE `c1`=VALUES(`c1`),`c2`=VALUES(`c2`),`c3`=VALUES(`c3`)"));
+        assertThat(actual, is("INSERT INTO t2(id,sc,c1,c2,c3) VALUES(?,?,?,?,?) ON DUPLICATE KEY UPDATE c1=VALUES(c1),c2=VALUES(c2),c3=VALUES(c3)"));
     }
     
     @Test
     public void assertBuildSumCrc32SQL() {
         Optional<String> actual = sqlBuilder.buildCRC32SQL(null, "t2", "id");
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("SELECT BIT_XOR(CAST(CRC32(`id`) AS UNSIGNED)) AS checksum FROM `t2`"));
+        assertThat(actual.get(), is("SELECT BIT_XOR(CAST(CRC32(id) AS UNSIGNED)) AS checksum FROM t2"));
     }
     
     private DataRecord mockDataRecord(final String tableName) {

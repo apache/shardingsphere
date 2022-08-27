@@ -18,7 +18,7 @@
 
 <sql-parser-test-cases>
     <show-variable sql-case-id="show-variable" name="CACHED_CONNECTIONS" />
-    <show-all-variable sql-case-id="show-all-variables" />
+    <show-all-variables sql-case-id="show-all-variables" />
     
     <show-readwrite-splitting-read-resources sql-case-id="show-readwrite-splitting-read-resources" />
     
@@ -40,4 +40,7 @@
     <export-database-config sql-case-id="export-database-config">
         <database name="database_name" start-index="28" stop-index="40" />
     </export-database-config>
+    <convert-yaml-config sql-case-id="convert-yaml-config">
+        <filePath>/yaml/config-resource.yaml</filePath>
+    </convert-yaml-config>
 </sql-parser-test-cases>

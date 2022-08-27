@@ -102,6 +102,7 @@ If you think of ShardingSphere as a high-performance distributed database, gover
 So while it can be governed, ShardingSphere itself does not necessarily require support as its design concept, Database Plus, is to enhance those capabilities that MySQL itself does not inherently possess through connectivity, enhancement, and pluggability. Through ShardingSphere, a native database can be combined with the underlying database to deploy more computing power on the application side, turning it into a high-performance distributed database that avoids wasting resources and provides a more cost-effective solution than other distributed databases.
 
 ## Opportunities in cloud-native scenarios
+
 Next, let’s take a look at the industry. As we all know, the cloud represents the future, the irreversible direction. Therefore, whether a project, a product, or an idea can serve this cause will directly affect its lifecycle and impact. This is why ShardingSphere is so committed to its cloud-based initiatives.
 
 Guided by the Database Plus concept, Apache ShardingSphere can extend existing features to provide enterprises and cloud computing platforms with more powerful capabilities across different database products. The underlying compatibility with multiple databases and with all kinds of database products in the cloud makes R&D tasks seamless.
@@ -119,7 +120,7 @@ Both can provide solutions based on the existing fragmented ecosystem of databas
 
 [ShardingSphere Slack](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg)
 
-[Contributor Guide](https://shardingsphere.apache.org/community/cn/contribute/)
+[Contributor Guide](https://shardingsphere.apache.org/community/cn/involved/)
 
 [Download Link](https://shardingsphere.apache.org/document/current/cn/downloads/)
 

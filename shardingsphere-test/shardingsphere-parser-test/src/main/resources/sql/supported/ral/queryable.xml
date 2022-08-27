@@ -35,4 +35,5 @@
     <distsql-case id="show-mode-info" value="SHOW MODE INFO" />
     
     <distsql-case id="export-database-config" value="EXPORT DATABASE CONFIG FROM database_name" />
+    <distsql-case id="convert-yaml-config" value="CONVERT YAML CONFIG FILE='/yaml/config-resource.yaml'" />
 </sql-cases>

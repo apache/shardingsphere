@@ -85,24 +85,3 @@ rules:
       snowflake:
         type: SNOWFLAKE
 
-    scalingName: default_scaling
-    scaling:
-      default_scaling:
-        input:
-          workerThread: 40
-          batchSize: 1000
-        output:
-          workerThread: 40
-          batchSize: 1000
-        streamChannel:
-          type: MEMORY
-          props:
-            block-queue-size: 10000
-        completionDetector:
-          type: IDLE
-          props:
-            incremental-task-idle-seconds-threshold: 1800
-        dataConsistencyChecker:
-          type: DATA_MATCH
-          props:
-            chunk-size: 1000

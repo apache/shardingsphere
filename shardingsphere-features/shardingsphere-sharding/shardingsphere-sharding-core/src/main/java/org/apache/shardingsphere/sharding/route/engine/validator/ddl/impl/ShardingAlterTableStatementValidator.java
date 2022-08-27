@@ -20,9 +20,10 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.sharding.exception.ShardingDDLRouteException;
+import org.apache.shardingsphere.sharding.exception.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -46,7 +47,7 @@ public final class ShardingAlterTableStatementValidator extends ShardingDDLState
                 : sqlStatementContext.getTablesContext().getTableNames();
         Optional<SimpleTableSegment> renameTable = sqlStatementContext.getSqlStatement().getRenameTable();
         if (renameTable.isPresent() && containsShardingBroadcastTable(shardingRule, tableNames)) {
-            throw new ShardingSphereException("ALTER TABLE ... RENAME TO ... statement can not support sharding tables and broadcast tables.");
+            throw new UnsupportedShardingOperationException("ALTER TABLE ... RENAME TO ...", renameTable.get().getTableName().getIdentifier().getValue());
         }
     }
     
@@ -59,7 +60,7 @@ public final class ShardingAlterTableStatementValidator extends ShardingDDLState
                              final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
         String primaryTable = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         if (isRouteUnitDataNodeDifferentSize(shardingRule, routeContext, primaryTable)) {
-            throw new ShardingSphereException("ALTER TABLE ... statement can not route correctly for tables %s.", sqlStatementContext.getTablesContext().getTableNames());
+            throw new ShardingDDLRouteException("ALTER", "TABLE", sqlStatementContext.getTablesContext().getTableNames());
         }
     }
 }

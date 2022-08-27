@@ -36,7 +36,7 @@ Getting Started
     https://shardingsphere.apache.org/document/current/en/quick-start/shardingsphere-proxy-quick-start/
 
 We welcome contributions of all kinds, for details of how you can help
-    https://shardingsphere.apache.org/community/en/contribute/
+    https://shardingsphere.apache.org/community/en/involved/
 
 Find the issue tracker from here
     https://github.com/apache/shardingsphere/issues

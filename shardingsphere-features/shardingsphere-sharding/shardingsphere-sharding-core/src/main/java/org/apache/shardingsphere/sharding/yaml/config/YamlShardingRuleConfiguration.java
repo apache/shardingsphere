@@ -19,9 +19,8 @@ package org.apache.shardingsphere.sharding.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlOnRuleAlteredActionConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
@@ -64,10 +63,6 @@ public final class YamlShardingRuleConfiguration implements YamlRuleConfiguratio
     private Map<String, YamlAlgorithmConfiguration> auditors = new LinkedHashMap<>();
     
     private String defaultShardingColumn;
-    
-    private String scalingName;
-    
-    private Map<String, YamlOnRuleAlteredActionConfiguration> scaling = new LinkedHashMap<>();
     
     @Override
     public Class<ShardingRuleConfiguration> getRuleConfigurationType() {

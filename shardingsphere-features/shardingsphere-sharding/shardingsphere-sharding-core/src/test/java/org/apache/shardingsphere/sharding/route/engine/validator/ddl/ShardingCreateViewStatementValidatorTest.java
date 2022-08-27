@@ -19,9 +19,10 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateViewStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.sharding.exception.EngagedViewException;
+import org.apache.shardingsphere.sharding.exception.UnsupportedCreateViewException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingCreateViewStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
@@ -78,7 +79,7 @@ public final class ShardingCreateViewStatementValidatorTest {
         new ShardingCreateViewStatementValidator().preValidate(shardingRule, createViewStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class));
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = EngagedViewException.class)
     public void assertPreValidateCreateViewWithException() {
         when(shardingRule.isShardingTable(any())).thenReturn(true);
         when(shardingRule.isAllBindingTables(any())).thenReturn(false);
@@ -93,16 +94,16 @@ public final class ShardingCreateViewStatementValidatorTest {
                 mock(ConfigurationProperties.class), routeContext);
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = UnsupportedCreateViewException.class)
     public void assertPostValidateCreateViewWithException() {
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         when(projectionsSegment.isDistinctRow()).thenReturn(true);
         when(selectStatement.getProjections()).thenReturn(projectionsSegment);
-        new ShardingCreateViewStatementValidator().postValidate(shardingRule, createViewStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class),
-                mock(ConfigurationProperties.class), routeContext);
+        new ShardingCreateViewStatementValidator().postValidate(
+                shardingRule, createViewStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class), routeContext);
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = EngagedViewException.class)
     public void assertPreValidateCreateViewWithBroadcastTable() {
         when(shardingRule.isAllBroadcastTables(any())).thenReturn(true);
         when(shardingRule.isBroadcastTable("order_view")).thenReturn(false);

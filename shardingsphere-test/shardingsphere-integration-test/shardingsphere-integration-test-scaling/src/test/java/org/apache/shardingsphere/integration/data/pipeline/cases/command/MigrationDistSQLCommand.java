@@ -29,6 +29,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class MigrationDistSQLCommand {
     
+    @XmlElement(name = "add-migration-process-config")
+    private String addMigrationProcessConfig;
+    
+    @XmlElement(name = "create-target-order-table-encrypt-rule")
+    private String createTargetOrderTableEncryptRule;
+    
     @XmlElement(name = "create-target-order-table-rule")
     private String createTargetOrderTableRule;
     
@@ -46,4 +52,10 @@ public final class MigrationDistSQLCommand {
     
     @XmlElement(name = "migration-order-item-single-table")
     private String migrationOrderItemSingleTable;
+    
+    @XmlElement(name = "migration-order-single-table-with-schema")
+    private String migrationOrderSingleTableWithSchema;
+    
+    @XmlElement(name = "migration-order-item-single-table-with-schema")
+    private String migrationOrderItemSingleTableWithSchema;
 }

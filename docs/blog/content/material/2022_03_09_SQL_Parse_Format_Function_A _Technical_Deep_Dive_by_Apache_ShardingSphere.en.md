@@ -263,22 +263,24 @@ mysql> parse SELECT id, name FROM t_user WHERE status = 'ACTIVE' AND age > 18;
 For more [DistSQL](https://opensource.com/article/21/9/distsql) functions, please refer to the documentation: [https://shardingsphere.apache.org/document/current/cn/concepts/distsql/](https://shardingsphere.apache.org/document/current/cn/concepts/distsql/)
 
 ## Conclusion
+
 Currently, Apache ShardingSphere’s Format function only supports [MySQL](https://www.mysql.com/). After understanding its concept and how to use it, if you’re interested, you are welcome to contribute to developing the SQL Parse Format function.
 
 ### Apache ShardingSphere Open Source Project Links:
+
 [ShardingSphere Github
 ](https://github.com/apache/shardingsphere/issues?page=1&q=is%3Aopen+is%3Aissue+label%3A%22project%3A+OpenForce+2022%22)
 [ShardingSphere Twitter](https://twitter.com/ShardingSphere)
 
 [ShardingSphere Slack](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg)
 
-[Contributor Guide](https://shardingsphere.apache.org/community/cn/contribute/)
+[Contributor Guide](https://shardingsphere.apache.org/community/cn/involved/)
 
 ## Author
+
 **Chen Chuxin**
 ![Image description](https://miro.medium.com/max/634/1*smrIU5STVJsJRais0_Tghg.png)
 
 > SphereEx Middleware Engineer & Apache ShardingSphere Committer
 
 > Currently, he devotes himself to developing the kernel module of Apache ShardingSphere.
-

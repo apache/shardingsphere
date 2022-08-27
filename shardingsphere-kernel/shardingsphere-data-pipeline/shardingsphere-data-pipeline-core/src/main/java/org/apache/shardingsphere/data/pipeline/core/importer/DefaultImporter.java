@@ -30,6 +30,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.GroupedDataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecutionException;
@@ -37,6 +38,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
+import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 
 import javax.sql.DataSource;
@@ -66,9 +68,12 @@ public final class DefaultImporter extends AbstractLifecycleExecutor implements 
     
     private final PipelineJobProgressListener jobProgressListener;
     
+    private final JobRateLimitAlgorithm rateLimitAlgorithm;
+    
     public DefaultImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel,
                            final PipelineJobProgressListener jobProgressListener) {
         this.importerConfig = importerConfig;
+        rateLimitAlgorithm = importerConfig.getRateLimitAlgorithm();
         this.dataSourceManager = dataSourceManager;
         this.channel = channel;
         pipelineSqlBuilder = PipelineSQLBuilderFactory.getInstance(importerConfig.getDataSourceConfig().getDatabaseType().getType());
@@ -144,12 +149,21 @@ public final class DefaultImporter extends AbstractLifecycleExecutor implements 
             connection.setAutoCommit(false);
             switch (buffer.get(0).getType()) {
                 case IngestDataChangeType.INSERT:
+                    if (null != rateLimitAlgorithm) {
+                        rateLimitAlgorithm.intercept(JobOperationType.INSERT, 1);
+                    }
                     executeBatchInsert(connection, buffer);
                     break;
                 case IngestDataChangeType.UPDATE:
+                    if (null != rateLimitAlgorithm) {
+                        rateLimitAlgorithm.intercept(JobOperationType.UPDATE, 1);
+                    }
                     executeUpdate(connection, buffer);
                     break;
                 case IngestDataChangeType.DELETE:
+                    if (null != rateLimitAlgorithm) {
+                        rateLimitAlgorithm.intercept(JobOperationType.DELETE, 1);
+                    }
                     executeBatchDelete(connection, buffer);
                     break;
                 default:

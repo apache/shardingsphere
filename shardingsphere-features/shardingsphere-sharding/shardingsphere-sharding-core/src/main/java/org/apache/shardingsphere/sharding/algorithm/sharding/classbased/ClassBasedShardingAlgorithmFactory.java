@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.classbased;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.sharding.exception.ShardingAlgorithmClassImplementationException;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 
 import java.util.Properties;
@@ -45,7 +45,7 @@ public final class ClassBasedShardingAlgorithmFactory {
     public static <T extends ShardingAlgorithm> T newInstance(final String shardingAlgorithmClassName, final Class<T> superShardingAlgorithmClass, final Properties props) {
         Class<?> algorithmClass = Class.forName(shardingAlgorithmClassName);
         if (!superShardingAlgorithmClass.isAssignableFrom(algorithmClass)) {
-            throw new ShardingSphereException("Class %s should be implement %s", shardingAlgorithmClassName, superShardingAlgorithmClass.getName());
+            throw new ShardingAlgorithmClassImplementationException(shardingAlgorithmClassName, superShardingAlgorithmClass);
         }
         T result = (T) algorithmClass.getDeclaredConstructor().newInstance();
         result.init(convertToStringTypedProperties(props));

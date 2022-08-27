@@ -11,7 +11,7 @@ weight = 2
 
 ```sql
 CreateDefaultSingleTableRule ::=
-  'CREATE' 'DEFAULT' 'SINGLE` `TABLE` `RULE' singleTableDefinition
+  'CREATE' 'DEFAULT' 'SINGLE' 'TABLE' 'RULE' singleTableDefinition
 
 singleTableDefinition ::=
   'RESOURCE' '=' resourceName

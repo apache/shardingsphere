@@ -20,16 +20,17 @@ package org.apache.shardingsphere.infra.executor.sql.process;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.QueryContext;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
 import org.apache.shardingsphere.infra.executor.sql.process.spi.ExecuteProcessReporter;
 import org.apache.shardingsphere.infra.executor.sql.process.spi.ExecuteProcessReporterFactory;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 import java.util.Optional;
 
@@ -47,11 +48,37 @@ public final class ExecuteProcessEngine {
      * @param eventBusContext event bus context             
      */
     public static void initialize(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final EventBusContext eventBusContext) {
-        SQLStatementContext<?> context = queryContext.getSqlStatementContext();
         Optional<ExecuteProcessReporter> reporter = ExecuteProcessReporterFactory.getInstance();
-        if (reporter.isPresent() && (context.getSqlStatement() instanceof DDLStatement || context.getSqlStatement() instanceof DMLStatement)) {
+        if (reporter.isPresent() && isMySQLDDLOrDMLStatement(queryContext.getSqlStatementContext().getSqlStatement())) {
             ExecutorDataMap.getValue().put(ExecuteProcessConstants.EXECUTE_ID.name(), executionGroupContext.getExecutionID());
             reporter.get().report(queryContext, executionGroupContext, ExecuteProcessConstants.EXECUTE_STATUS_START, eventBusContext);
+        }
+    }
+    
+    /**
+     * Finish.
+     *
+     * @param executionID execution ID
+     * @param executionUnit execution unit
+     * @param eventBusContext event bus context                      
+     */
+    public static void finish(final String executionID, final SQLExecutionUnit executionUnit, final EventBusContext eventBusContext) {
+        Optional<ExecuteProcessReporter> reporter = ExecuteProcessReporterFactory.getInstance();
+        if (reporter.isPresent() && ExecutorDataMap.getValue().containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
+            reporter.get().report(executionID, executionUnit, ExecuteProcessConstants.EXECUTE_STATUS_DONE, eventBusContext);
+        }
+    }
+    
+    /**
+     * Finish.
+     *
+     * @param executionID execution ID
+     * @param eventBusContext event bus context                    
+     */
+    public static void finish(final String executionID, final EventBusContext eventBusContext) {
+        Optional<ExecuteProcessReporter> reporter = ExecuteProcessReporterFactory.getInstance();
+        if (reporter.isPresent() && ExecutorDataMap.getValue().containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
+            reporter.get().report(executionID, ExecuteProcessConstants.EXECUTE_STATUS_DONE, eventBusContext);
         }
     }
     
@@ -66,28 +93,7 @@ public final class ExecuteProcessEngine {
         ExecutorDataMap.getValue().remove(ExecuteProcessConstants.EXECUTE_ID.name());
     }
     
-    /**
-     * Finish.
-     *
-     * @param executionID execution ID
-     * @param executionUnit execution unit
-     * @param eventBusContext event bus context                      
-     */
-    public static void finish(final String executionID, final SQLExecutionUnit executionUnit, final EventBusContext eventBusContext) {
-        Optional<ExecuteProcessReporter> reporter = ExecuteProcessReporterFactory.getInstance();
-        reporter.ifPresent(optional -> optional.report(executionID, executionUnit, ExecuteProcessConstants.EXECUTE_STATUS_DONE, eventBusContext));
-    }
-    
-    /**
-     * Finish.
-     *
-     * @param executionID execution ID
-     * @param eventBusContext event bus context                    
-     */
-    public static void finish(final String executionID, final EventBusContext eventBusContext) {
-        Optional<ExecuteProcessReporter> reporter = ExecuteProcessReporterFactory.getInstance();
-        if (reporter.isPresent() && ExecutorDataMap.getValue().containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
-            reporter.get().report(executionID, ExecuteProcessConstants.EXECUTE_STATUS_DONE, eventBusContext);
-        }
+    private static boolean isMySQLDDLOrDMLStatement(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof MySQLStatement && (sqlStatement instanceof DDLStatement || sqlStatement instanceof DMLStatement);
     }
 }

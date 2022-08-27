@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsist
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.CreateMigrationJobParameter;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
-import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
+import org.apache.shardingsphere.data.pipeline.api.pojo.MigrationJobInfo;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
@@ -42,7 +42,8 @@ public interface MigrationJobPublicAPI extends PipelineJobPublicAPI, RequiredSPI
      *
      * @return job infos
      */
-    List<PipelineJobInfo> list();
+    @Override
+    List<MigrationJobInfo> list();
     
     /**
      * Get job progress.
@@ -54,33 +55,11 @@ public interface MigrationJobPublicAPI extends PipelineJobPublicAPI, RequiredSPI
     Map<Integer, InventoryIncrementalJobItemProgress> getJobProgress(String jobId);
     
     /**
-     * Stop cluster writing.
-     *
-     * @param jobId job id
-     */
-    void stopClusterWriteDB(String jobId);
-    
-    /**
-     * Restore cluster writing.
-     *
-     * @param jobId job id
-     */
-    void restoreClusterWriteDB(String jobId);
-    
-    /**
      * List all data consistency check algorithms from SPI.
      *
      * @return data consistency check algorithms
      */
     Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms();
-    
-    /**
-     * Is data consistency check needed.
-     *
-     * @param jobId job id
-     * @return data consistency check needed or not
-     */
-    boolean isDataConsistencyCheckNeeded(String jobId);
     
     /**
      * Do data consistency check.
@@ -99,13 +78,6 @@ public interface MigrationJobPublicAPI extends PipelineJobPublicAPI, RequiredSPI
      * @return each logic table check result
      */
     Map<String, DataConsistencyCheckResult> dataConsistencyCheck(String jobId, String algorithmType, Properties algorithmProps);
-    
-    /**
-     * Switch cluster configuration.
-     *
-     * @param jobId job id
-     */
-    void switchClusterConfiguration(String jobId);
     
     /**
      * Reset scaling job.
@@ -129,9 +101,17 @@ public interface MigrationJobPublicAPI extends PipelineJobPublicAPI, RequiredSPI
     void dropMigrationSourceResources(Collection<String> resourceNames);
     
     /**
+     * Query migration source resources list.
+     *
+     * @return migration source resources
+     */
+    Collection<Collection<Object>> listMigrationSourceResources();
+    
+    /**
      * Create job migration config and start.
      *
      * @param parameter create migration job parameter
+     * @return job id
      */
-    void createJobAndStart(CreateMigrationJobParameter parameter);
+    String createJobAndStart(CreateMigrationJobParameter parameter);
 }
