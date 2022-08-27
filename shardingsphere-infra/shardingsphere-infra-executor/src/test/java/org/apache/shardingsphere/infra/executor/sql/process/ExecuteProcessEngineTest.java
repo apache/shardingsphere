@@ -19,13 +19,13 @@ package org.apache.shardingsphere.infra.executor.sql.process;
 
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawSQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.fixture.ExecuteProcessReporterFixture;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateTableStatement;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -67,7 +67,7 @@ public final class ExecuteProcessEngineTest {
     
     private QueryContext createQueryContext() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DDLStatement.class));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(MySQLCreateTableStatement.class));
         QueryContext result = mock(QueryContext.class);
         when(result.getSqlStatementContext()).thenReturn(sqlStatementContext);
         return result;
