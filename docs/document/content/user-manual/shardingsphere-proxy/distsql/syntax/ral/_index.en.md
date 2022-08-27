@@ -20,20 +20,18 @@ RAL (Resource & Rule Administration Language) responsible for hint, circuit brea
 
 ## Scaling
 
-| Statement                                             | Function                                                          | Example                                    |
-|:------------------------------------------------------|:------------------------------------------------------------------|:-------------------------------------------|
-| SHOW MIGRATION LIST                                     | Query running list                                                | SHOW MIGRATION LIST                          |
-| SHOW MIGRATION STATUS jobId                             | Query migration status, xx: jobId                                   | SHOW MIGRATION STATUS 1234                   |
-| START MIGRATION jobId                                   | Start migration, xx: jobId                                          | START MIGRATION 1234                         |
-| STOP MIGRATION jobId                                    | Stop migration, xx: jobId                                           | STOP MIGRATION 1234                          |
-| CLEAN MIGRATION jobId                                   | Clean migration, xx: jobId                                          | CLEAN MIGRATION 1234                         |
-| RESET MIGRATION jobId                                   | reset progress, xx: jobId                                         | RESET MIGRATION 1234                         |
-| CHECK MIGRATION jobId                                   | Data consistency check with algorithm in `server.yaml`, xx: jobId | CHECK MIGRATION 1234                         |
-| SHOW MIGRATION CHECK ALGORITHMS                         | Show available consistency check algorithms                       | SHOW MIGRATION CHECK ALGORITHMS              |
-| CHECK MIGRATION jobId (by type(name=algorithmTypeName)? | Data consistency check with defined algorithm                     | CHECK MIGRATION 1234 by type(name="DEFAULT") |
-| STOP MIGRATION SOURCE WRITING jobId                     | The source ShardingSphere data source is discontinued, xx: jobId  | STOP MIGRATION SOURCE WRITING 1234           |
-| RESTORE MIGRATION SOURCE WRITING jobId                  | Restore source data source writing, xx: jobId                     | RESTORE MIGRATION SOURCE WRITING 1234        |
-| APPLY MIGRATION jobId                                   | Switch to target ShardingSphere metadata, xx: jobId               | APPLY MIGRATION 1234                         |
+| Statement                                                | Function                                       | Example                                          |
+|:---------------------------------------------------------|:-----------------------------------------------|:-------------------------------------------------|
+| MIGRATE TABLE ds.schema.table INTO table                 | Migrate table from source to target            | MIGRATE TABLE ds_0.public.t_order INTO t_order   |
+| SHOW MIGRATION LIST                                      | Query running list                             | SHOW MIGRATION LIST                              |
+| SHOW MIGRATION STATUS jobId                              | Query migration status                         | SHOW MIGRATION STATUS 1234                       |
+| STOP MIGRATION jobId                                     | Stop migration                                 | STOP MIGRATION 1234                              |
+| START MIGRATION jobId                                    | Start stopped migration                        | START MIGRATION 1234                             |
+| ROLLBACK MIGRATION jobId                                 | Rollback migration                             | ROLLBACK MIGRATION 1234                          |
+| COMMIT MIGRATION jobId                                   | Commit migration                               | COMMIT MIGRATION 1234                            |
+| CHECK MIGRATION jobId                                    | Data consistency check                         | CHECK MIGRATION 1234                             |
+| SHOW MIGRATION CHECK ALGORITHMS                          | Show available consistency check algorithms    | SHOW MIGRATION CHECK ALGORITHMS                  |
+| CHECK MIGRATION jobId (by type(name=algorithmTypeName)?  | Data consistency check with defined algorithm  | CHECK MIGRATION 1234 by type(name="DATA_MATCH")  |
 
 ## Circuit Breaker
 
