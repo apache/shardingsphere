@@ -209,8 +209,8 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     public void rollback(final String jobId) throws SQLException {
         log.info("Rollback job {}", jobId);
         stop(jobId);
-        dropJob(jobId);
         cleanTempTableOnRollback(jobId);
+        dropJob(jobId);
     }
     
     protected abstract void cleanTempTableOnRollback(String jobId) throws SQLException;
