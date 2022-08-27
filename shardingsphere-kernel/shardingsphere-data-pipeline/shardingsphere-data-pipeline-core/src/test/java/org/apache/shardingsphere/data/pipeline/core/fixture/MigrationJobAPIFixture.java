@@ -77,7 +77,7 @@ public final class MigrationJobAPIFixture implements MigrationJobAPI {
     }
     
     @Override
-    public void remove(final String jobId) {
+    public void rollback(final String jobId) {
     }
     
     @Override

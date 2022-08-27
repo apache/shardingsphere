@@ -310,7 +310,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.UnlabelInstanceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.AddMigrationSourceResourceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.CheckMigrationStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.CleanMigrationStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.RollbackMigrationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.DropMigrationProcessConfigurationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.DropMigrationSourceResourceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.MigrateTableStatementTestCase;
@@ -1013,8 +1013,8 @@ public final class SQLParserTestCases {
     @XmlElement(name = "commit-migration")
     private final List<CommitMigrationStatementTestCase> commitMigrationTestCases = new LinkedList<>();
     
-    @XmlElement(name = "clean-migration")
-    private final List<CleanMigrationStatementTestCase> cleanMigrationTestCases = new LinkedList<>();
+    @XmlElement(name = "rollback-migration")
+    private final List<RollbackMigrationStatementTestCase> rollbackMigrationTestCases = new LinkedList<>();
     
     @XmlElement(name = "stop-migration")
     private final List<StopMigrationStatementTestCase> stopMigrationTestCases = new LinkedList<>();

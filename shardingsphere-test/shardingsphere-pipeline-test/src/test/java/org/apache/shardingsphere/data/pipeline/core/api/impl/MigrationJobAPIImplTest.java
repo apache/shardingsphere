@@ -127,7 +127,7 @@ public final class MigrationJobAPIImplTest {
         assertTrue(jobId.isPresent());
         assertTrue(getJobInfo(jobId.get()).isPresent());
         jobAPI.stop(jobId.get());
-        jobAPI.remove(jobId.get());
+        jobAPI.rollback(jobId.get());
         assertFalse(getJobInfo(jobId.get()).isPresent());
     }
     

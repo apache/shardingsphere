@@ -47,12 +47,16 @@ STOP
     : S T O P
     ;
 
-RESET
-    : R E S E T
-    ;
-
 CHECK
     : C H E C K
+    ;
+
+ROLLBACK
+    : R O L L B A C K
+    ;
+
+COMMIT
+    : C O M M I T
     ;
 
 FROM
@@ -169,12 +173,4 @@ RESOURCE
     
 RESOURCES
     : R E S O U R C E S
-    ;
-
-CLEAN
-    : C L E A N
-    ;
-
-COMMIT
-    : C O M M I T
     ;

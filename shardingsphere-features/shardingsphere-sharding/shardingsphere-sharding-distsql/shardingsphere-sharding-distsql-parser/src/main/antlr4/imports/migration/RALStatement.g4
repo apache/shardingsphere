@@ -39,8 +39,8 @@ stopMigration
     : STOP MIGRATION jobId
     ;
 
-cleanMigration
-    : CLEAN MIGRATION jobId
+rollbackMigration
+    : ROLLBACK MIGRATION jobId
     ;
 
 commitMigration

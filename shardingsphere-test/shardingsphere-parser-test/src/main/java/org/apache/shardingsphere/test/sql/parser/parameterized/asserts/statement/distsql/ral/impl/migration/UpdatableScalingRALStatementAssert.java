@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.DropMigrationProcessConfigurationStatement;
 import org.apache.shardingsphere.migration.distsql.statement.AddMigrationSourceResourceStatement;
-import org.apache.shardingsphere.migration.distsql.statement.CleanMigrationStatement;
+import org.apache.shardingsphere.migration.distsql.statement.RollbackMigrationStatement;
 import org.apache.shardingsphere.migration.distsql.statement.DropMigrationSourceResourceStatement;
 import org.apache.shardingsphere.migration.distsql.statement.MigrateTableStatement;
 import org.apache.shardingsphere.migration.distsql.statement.CommitMigrationStatement;
@@ -30,7 +30,7 @@ import org.apache.shardingsphere.migration.distsql.statement.StartMigrationState
 import org.apache.shardingsphere.migration.distsql.statement.StopMigrationStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.migration.update.AddMigrationSourceResourceStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.migration.update.CleanMigrationStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.migration.update.RollbackMigrationStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.migration.update.DropMigrationProcessConfigurationStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.migration.update.DropMigrationSourceResourceStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.migration.update.MigrateTableStatementAssert;
@@ -39,7 +39,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.migration.update.StopMigrationStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.AddMigrationSourceResourceStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.CleanMigrationStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.RollbackMigrationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.DropMigrationProcessConfigurationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.DropMigrationSourceResourceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.MigrateTableStatementTestCase;
@@ -71,8 +71,8 @@ public final class UpdatableScalingRALStatementAssert {
             StopMigrationStatementAssert.assertIs(assertContext, (StopMigrationStatement) actual, (StopMigrationStatementTestCase) expected);
         } else if (actual instanceof CommitMigrationStatement) {
             CommitMigrationStatementAssert.assertIs(assertContext, (CommitMigrationStatement) actual, (CommitMigrationStatementTestCase) expected);
-        } else if (actual instanceof CleanMigrationStatement) {
-            CleanMigrationStatementAssert.assertIs(assertContext, (CleanMigrationStatement) actual, (CleanMigrationStatementTestCase) expected);
+        } else if (actual instanceof RollbackMigrationStatement) {
+            RollbackMigrationStatementAssert.assertIs(assertContext, (RollbackMigrationStatement) actual, (RollbackMigrationStatementTestCase) expected);
         } else if (actual instanceof StartMigrationStatement) {
             StartMigrationStatementAssert.assertIs(assertContext, (StartMigrationStatement) actual, (StartMigrationStatementTestCase) expected);
         } else if (actual instanceof AddMigrationSourceResourceStatement) {

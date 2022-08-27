@@ -206,11 +206,11 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     }
     
     @Override
-    public void remove(final String jobId) {
-        log.info("Remove pipeline job {}", jobId);
-        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
-        verifyJobStopped(jobConfigPOJO);
+    public void rollback(final String jobId) {
+        log.info("Rollback job {}", jobId);
+        stop(jobId);
         dropJob(jobId);
+        // TODO now clean target table
     }
     
     private void dropJob(final String jobId) {
@@ -221,7 +221,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     @Override
     public void commit(final String jobId) {
         checkModeConfig();
-        log.info("Commit {}", jobId);
+        log.info("Commit job {}", jobId);
         stop(jobId);
         dropJob(jobId);
     }

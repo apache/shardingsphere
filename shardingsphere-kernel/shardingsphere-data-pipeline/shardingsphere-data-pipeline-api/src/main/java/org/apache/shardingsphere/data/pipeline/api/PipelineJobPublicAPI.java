@@ -71,11 +71,11 @@ public interface PipelineJobPublicAPI extends TypedSPI {
     void stop(String jobId);
     
     /**
-     * Remove pipeline job.
+     * Rollback pipeline job.
      *
      * @param jobId job id
      */
-    void remove(String jobId);
+    void rollback(String jobId);
     
     /**
      * Commit pipeline job.
