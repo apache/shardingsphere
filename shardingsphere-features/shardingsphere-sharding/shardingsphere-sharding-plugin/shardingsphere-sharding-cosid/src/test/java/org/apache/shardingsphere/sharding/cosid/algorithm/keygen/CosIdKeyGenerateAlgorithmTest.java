@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.cosid.algorithm.keygen;
 
 import me.ahoo.cosid.IdGenerator;
-import me.ahoo.cosid.StringIdGeneratorDecorator;
+import me.ahoo.cosid.StringIdGenerator;
 import me.ahoo.cosid.converter.PrefixIdConverter;
 import me.ahoo.cosid.converter.Radix62IdConverter;
 import me.ahoo.cosid.provider.DefaultIdGeneratorProvider;
@@ -77,7 +77,7 @@ public final class CosIdKeyGenerateAlgorithmTest {
     public void assertGenerateKeyAsString() {
         String idName = "test-cosid-as-string";
         String prefix = "test_";
-        IdGenerator stringIdGen = new StringIdGeneratorDecorator(new MillisecondSnowflakeId(1, 0), new PrefixIdConverter(prefix, Radix62IdConverter.INSTANCE));
+        IdGenerator stringIdGen = new StringIdGenerator(new MillisecondSnowflakeId(1, 0), new PrefixIdConverter(prefix, Radix62IdConverter.INSTANCE));
         DefaultIdGeneratorProvider.INSTANCE.set(idName, stringIdGen);
         KeyGenerateAlgorithm algorithm = KeyGenerateAlgorithmFactory.newInstance(new AlgorithmConfiguration("COSID", createAsStringProperties(idName)));
         Comparable<?> actual = algorithm.generateKey();
