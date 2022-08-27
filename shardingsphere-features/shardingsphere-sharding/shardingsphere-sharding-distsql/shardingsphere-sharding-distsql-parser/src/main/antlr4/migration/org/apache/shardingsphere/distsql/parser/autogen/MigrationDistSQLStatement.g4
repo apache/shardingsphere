@@ -25,8 +25,8 @@ execute
     | migrateTable
     | startMigration
     | stopMigration
-    | cleanMigration
-    | resetMigration
+    | rollbackMigration
+    | commitMigration
     | checkMigration
     | showMigrationCheckAlgorithms
     | addMigrationSourceResource

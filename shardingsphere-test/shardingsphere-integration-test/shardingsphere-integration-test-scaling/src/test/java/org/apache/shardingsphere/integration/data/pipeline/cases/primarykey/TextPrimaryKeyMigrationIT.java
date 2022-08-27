@@ -81,9 +81,11 @@ public class TextPrimaryKeyMigrationIT extends BaseExtraSQLITCase {
         waitMigrationFinished(jobId);
         stopMigrationByJobId(jobId);
         assertCheckMigrationSuccess(jobId);
-        cleanMigrationByJobId(jobId);
-        List<String> lastJobIds = listJobId();
-        assertThat(lastJobIds.size(), is(0));
+        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER) {
+            commitMigrationByJobId(jobId);
+            List<String> lastJobIds = listJobId();
+            assertThat(lastJobIds.size(), is(0));
+        }
     }
     
     private void batchInsertOrder() throws SQLException {

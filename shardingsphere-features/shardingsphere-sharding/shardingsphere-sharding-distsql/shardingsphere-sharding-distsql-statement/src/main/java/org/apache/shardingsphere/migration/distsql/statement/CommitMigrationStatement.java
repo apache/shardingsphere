@@ -15,21 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration;
+package org.apache.shardingsphere.migration.distsql.statement;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 
 /**
- * Reset migration statement test case.
+ * Commit migration statement.
  */
+@RequiredArgsConstructor
 @Getter
-public final class ResetMigrationStatementTestCase extends SQLParserTestCase {
+public final class CommitMigrationStatement extends UpdatableScalingRALStatement {
     
-    @XmlElement(name = "job-id")
-    private final List<String> jobIds = new LinkedList<>();
+    private final String jobId;
 }

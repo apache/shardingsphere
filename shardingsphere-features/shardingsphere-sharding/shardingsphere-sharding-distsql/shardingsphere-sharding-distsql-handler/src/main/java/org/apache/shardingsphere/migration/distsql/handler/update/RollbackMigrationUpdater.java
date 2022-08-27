@@ -20,22 +20,29 @@ package org.apache.shardingsphere.migration.distsql.handler.update;
 import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
-import org.apache.shardingsphere.migration.distsql.statement.ResetMigrationStatement;
+import org.apache.shardingsphere.migration.distsql.statement.RollbackMigrationStatement;
+
+import java.sql.SQLException;
 
 /**
- * Reset migration updater.
+ * Rollback migration updater.
  */
-public final class ResetMigrationUpdater implements RALUpdater<ResetMigrationStatement> {
+public final class RollbackMigrationUpdater implements RALUpdater<RollbackMigrationStatement> {
     
     private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
     
     @Override
-    public void executeUpdate(final String databaseName, final ResetMigrationStatement sqlStatement) {
-        JOB_API.reset(sqlStatement.getJobId());
+    public void executeUpdate(final String databaseName, final RollbackMigrationStatement sqlStatement) {
+        // TODO throw SQLException
+        try {
+            JOB_API.rollback(sqlStatement.getJobId());
+        } catch (final SQLException ex) {
+            throw new RuntimeException(ex);
+        }
     }
     
     @Override
     public String getType() {
-        return ResetMigrationStatement.class.getName();
+        return RollbackMigrationStatement.class.getName();
     }
 }

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlMigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlMigrationJobConfigurationSwapper;
@@ -28,6 +29,8 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.Standa
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobId;
 
 /**
  * Job configuration builder.
@@ -42,9 +45,9 @@ public final class JobConfigurationBuilder {
      */
     public static MigrationJobConfiguration createJobConfiguration() {
         YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
+        result.setJobId(generateJobId());
         result.setTargetDatabaseName("logic_db");
         result.setSourceResourceName("standard_0");
-        // TODO add autoTables in config file
         result.setSource(createYamlPipelineDataSourceConfiguration(new StandardPipelineDataSourceConfiguration(ConfigurationFileUtil.readFile("migration_standard_jdbc_source.yaml"))));
         result.setTarget(createYamlPipelineDataSourceConfiguration(new ShardingSpherePipelineDataSourceConfiguration(
                 ConfigurationFileUtil.readFile("migration_sharding_sphere_jdbc_target.yaml"))));
@@ -52,6 +55,14 @@ public final class JobConfigurationBuilder {
         result.setTargetTableName("t_order");
         PipelineAPIFactory.getPipelineJobAPI(JobType.MIGRATION).extendYamlJobConfiguration(result);
         return new YamlMigrationJobConfigurationSwapper().swapToObject(result);
+    }
+    
+    private static String generateJobId() {
+        MigrationJobId migrationJobId = new MigrationJobId();
+        migrationJobId.setTypeCode(JobType.MIGRATION.getTypeCode());
+        migrationJobId.setSourceDataSourceName("ds_0");
+        migrationJobId.setTableName(RandomStringUtils.randomAlphabetic(32));
+        return MigrationJobAPIFactory.getInstance().marshalJobId(migrationJobId);
     }
     
     private static YamlPipelineDataSourceConfiguration createYamlPipelineDataSourceConfiguration(final PipelineDataSourceConfiguration config) {

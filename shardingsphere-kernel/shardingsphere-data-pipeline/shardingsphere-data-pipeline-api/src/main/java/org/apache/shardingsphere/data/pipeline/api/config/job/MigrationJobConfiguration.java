@@ -36,23 +36,25 @@ public final class MigrationJobConfiguration implements PipelineJobConfiguration
     
     private final String jobId;
     
-    private final String targetDatabaseName;
-    
     private final String sourceResourceName;
     
+    private final String targetDatabaseName;
+    
     private final String sourceSchemaName;
+    
+    // TODO add targetSchemaName
     
     private final String sourceDatabaseType;
     
     private final String targetDatabaseType;
     
-    private final PipelineDataSourceConfiguration source;
-    
-    private final PipelineDataSourceConfiguration target;
-    
     private final String sourceTableName;
     
     private final String targetTableName;
+    
+    private final PipelineDataSourceConfiguration source;
+    
+    private final PipelineDataSourceConfiguration target;
     
     /**
      * Collection of each logic table's first data node.

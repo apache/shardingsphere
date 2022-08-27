@@ -39,12 +39,12 @@ stopMigration
     : STOP MIGRATION jobId
     ;
 
-cleanMigration
-    : CLEAN MIGRATION jobId
+rollbackMigration
+    : ROLLBACK MIGRATION jobId
     ;
 
-resetMigration
-    : RESET MIGRATION jobId
+commitMigration
+    : COMMIT MIGRATION jobId
     ;
 
 checkMigration
@@ -53,18 +53,6 @@ checkMigration
 
 showMigrationCheckAlgorithms
     : SHOW MIGRATION CHECK ALGORITHMS
-    ;
-
-stopMigrationSourceWriting
-    : STOP MIGRATION SOURCE WRITING jobId
-    ;
-
-restoreMigrationSourceWriting
-    : RESTORE MIGRATION SOURCE WRITING jobId
-    ;
-
-applyMigration
-    : APPLY MIGRATION jobId
     ;
 
 jobId

@@ -37,9 +37,9 @@ public final class YamlMigrationJobConfiguration implements YamlPipelineJobConfi
     
     private String jobId;
     
-    private String targetDatabaseName;
-    
     private String sourceResourceName;
+    
+    private String targetDatabaseName;
     
     private String sourceSchemaName;
     
@@ -47,13 +47,13 @@ public final class YamlMigrationJobConfiguration implements YamlPipelineJobConfi
     
     private String targetDatabaseType;
     
-    private YamlPipelineDataSourceConfiguration source;
-    
-    private YamlPipelineDataSourceConfiguration target;
-    
     private String sourceTableName;
     
     private String targetTableName;
+    
+    private YamlPipelineDataSourceConfiguration source;
+    
+    private YamlPipelineDataSourceConfiguration target;
     
     /**
      * Collection of each logic table's first data node.
