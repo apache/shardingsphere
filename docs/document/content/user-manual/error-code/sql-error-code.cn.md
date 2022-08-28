@@ -6,6 +6,8 @@ chapter = true
 
 SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，在 SQL 执行错误时返回给客户端。
 
+**目前内容为草稿，错误码仍可能调整。**
+
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
 | 01000     | 10000       | Circuit break open, the request has been ignored |
