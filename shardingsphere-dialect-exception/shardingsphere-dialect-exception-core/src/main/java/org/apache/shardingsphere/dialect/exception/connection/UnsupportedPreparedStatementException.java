@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.exception;
+package org.apache.shardingsphere.dialect.exception.connection;
+
+import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 
 /**
  * Unsupported prepared statement exception.
  */
-public final class UnsupportedPreparedStatementException extends FrontendException {
+public final class UnsupportedPreparedStatementException extends SQLDialectException {
     
     private static final long serialVersionUID = 2185290474191327830L;
 }

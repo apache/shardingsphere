@@ -27,6 +27,6 @@ public final class UnknownSQLException extends ShardingSphereSQLException {
     private static final long serialVersionUID = -7357918573504734977L;
     
     public UnknownSQLException(final Exception cause) {
-        super(XOpenSQLState.SYNTAX_ERROR, 30000, "Unknown exception: %s", cause.getMessage());
+        super(XOpenSQLState.GENERAL_ERROR, 30000, "Unknown exception: %s", cause.getMessage());
     }
 }
