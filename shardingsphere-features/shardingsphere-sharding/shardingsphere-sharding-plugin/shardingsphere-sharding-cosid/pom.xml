@@ -28,7 +28,7 @@
     <name>${project.artifactId}</name>
     
     <properties>
-        <cosid.version>1.10.0</cosid.version>
+        <cosid.version>1.14.4</cosid.version>
     </properties>
     
     <dependencies>

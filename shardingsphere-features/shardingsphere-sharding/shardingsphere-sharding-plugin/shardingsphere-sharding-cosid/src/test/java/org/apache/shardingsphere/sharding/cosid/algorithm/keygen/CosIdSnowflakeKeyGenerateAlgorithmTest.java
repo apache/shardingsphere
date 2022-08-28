@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.sharding.cosid.algorithm.keygen;
 
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.locks.LockSupport;
+
 import me.ahoo.cosid.converter.Radix62IdConverter;
 import me.ahoo.cosid.snowflake.MillisecondSnowflakeId;
 import me.ahoo.cosid.snowflake.MillisecondSnowflakeIdStateParser;
@@ -31,12 +34,14 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.sharding.cosid.algorithm.keygen.fixture.WorkerIdGeneratorFixture;
 import org.apache.shardingsphere.sharding.factory.KeyGenerateAlgorithmFactory;
+import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.closeTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -63,10 +68,53 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
         SnowflakeIdState firstActualState = snowflakeIdStateParser.parse(firstActualKey);
         SnowflakeIdState secondActualState = snowflakeIdStateParser.parse(secondActualKey);
         assertThat(firstActualState.getMachineId(), is(FIXTURE_WORKER_ID));
-        assertThat(firstActualState.getSequence(), is(0L));
+        assertThat(firstActualState.getSequence(), is(1L));
         assertThat(secondActualState.getMachineId(), is(FIXTURE_WORKER_ID));
-        long expectedSecondSequence = secondActualState.getTimestamp().isAfter(firstActualState.getTimestamp()) ? 0L : 1L;
+        long expectedSecondSequence = 2L;
         assertThat(secondActualState.getSequence(), is(expectedSecondSequence));
+    }
+    
+    @Test
+    public void assertGenerateKeyModUniformity() {
+        CosIdSnowflakeKeyGenerateAlgorithm algorithm = (CosIdSnowflakeKeyGenerateAlgorithm) KeyGenerateAlgorithmFactory.newInstance(
+                new AlgorithmConfiguration("COSID_SNOWFLAKE", new Properties()));
+        algorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(FIXTURE_WORKER_ID),
+                new ModeConfiguration("Standalone", null, false), mock(LockContext.class), eventBusContext));
+        int divisor = 4;
+        int total = 99999;
+        int avg = total / divisor;
+        double tolerance = avg * .0015;
+        
+        int mod0Counter = 0;
+        int mod1Counter = 0;
+        int mod2Counter = 0;
+        int mod3Counter = 0;
+        for (int i = 0; i < total; i++) {
+            long id = (Long) algorithm.generateKey();
+            int mod = (int) (id % divisor);
+            switch (mod) {
+                case 0:
+                    mod0Counter++;
+                    break;
+                case 1:
+                    mod1Counter++;
+                    break;
+                case 2:
+                    mod2Counter++;
+                    break;
+                case 3:
+                    mod3Counter++;
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + mod);
+            }
+            int wait = ThreadLocalRandom.current().nextInt(10, 1000);
+            LockSupport.parkNanos(wait);
+        }
+        MatcherAssert.assertThat((double) mod0Counter, closeTo(avg, tolerance));
+        MatcherAssert.assertThat((double) mod1Counter, closeTo(avg, tolerance));
+        MatcherAssert.assertThat((double) mod2Counter, closeTo(avg, tolerance));
+        MatcherAssert.assertThat((double) mod3Counter, closeTo(avg, tolerance));
     }
     
     @Test
@@ -84,7 +132,7 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
         long actualLongKey = Radix62IdConverter.PAD_START.asLong(actualStringKey);
         SnowflakeIdState actualState = snowflakeIdStateParser.parse(actualLongKey);
         assertThat(actualState.getMachineId(), is(FIXTURE_WORKER_ID));
-        assertThat(actualState.getSequence(), is(0L));
+        assertThat(actualState.getSequence(), is(1L));
     }
     
     @Test(expected = NullPointerException.class)
