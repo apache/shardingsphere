@@ -24,10 +24,8 @@ import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
-import org.apache.shardingsphere.sharding.exception.ShardingAlgorithmClassImplementationException;
 import org.apache.shardingsphere.sharding.exception.ShardingAlgorithmLogicAbnormalException;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
@@ -63,9 +61,9 @@ public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
         }
         ShardingRouteEngine shardingRouteEngine = ShardingRouteEngineFactory.newInstance(rule, database, queryContext.getSqlStatementContext(), shardingConditions, props);
         RouteContext result;
-        try{
+        try {
             result = shardingRouteEngine.route(rule);
-        } catch (ShardingSphereInsideException e){
+        } catch (ShardingSphereInsideException e) {
             throw new ShardingAlgorithmLogicAbnormalException(e);
         }
         validator.ifPresent(optional -> optional.postValidate(rule, queryContext.getSqlStatementContext(), queryContext.getParameters(), database, props, result));

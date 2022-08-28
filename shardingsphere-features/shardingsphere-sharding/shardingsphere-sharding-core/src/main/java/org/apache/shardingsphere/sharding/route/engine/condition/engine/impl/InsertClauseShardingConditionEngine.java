@@ -115,7 +115,7 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
                 result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(datetimeService.getDatetime())));
             } else if (ExpressionConditionUtils.isNullExpression(each)) {
                 throw new NullShardingValueException();
-            } else if (each instanceof BinaryOperationExpression){
+            } else if (each instanceof BinaryOperationExpression) {
                 throw new ShardingKeyNotLiteralException();
             }
         }
