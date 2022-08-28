@@ -6,6 +6,8 @@ chapter = true
 
 SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, which return to client when SQL execute error.
 
+**the error codes are draft, still need to be adjusted.**
+
 | SQL State | Vendor Code | Reason |
 | --------- | ----------- | ------ |
 | 01000     | 10000       | Circuit break open, the request has been ignored |
