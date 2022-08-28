@@ -19,6 +19,8 @@ package org.apache.shardingsphere.dialect.mysql.mapper;
 
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 import org.apache.shardingsphere.dialect.exception.connection.TooManyConnectionsException;
+import org.apache.shardingsphere.dialect.exception.connection.UnknownCollationException;
+import org.apache.shardingsphere.dialect.exception.connection.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.dialect.exception.data.InsertColumnsAndValuesMismatchedException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.DatabaseDropNotExistsException;
@@ -50,6 +52,8 @@ public final class MySQLDialectExceptionMapperTest {
                 {InsertColumnsAndValuesMismatchedException.class, MySQLVendorError.ER_WRONG_VALUE_COUNT_ON_ROW},
                 {TableModifyInTransactionException.class, MySQLVendorError.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE},
                 {TooManyConnectionsException.class, MySQLVendorError.ER_CON_COUNT_ERROR},
+                {UnsupportedPreparedStatementException.class, MySQLVendorError.ER_UNSUPPORTED_PS},
+                {UnknownCollationException.class, MySQLVendorError.ER_UNKNOWN_COLLATION},
         });
     }
     
