@@ -3284,55 +3284,6 @@
     <sql-case id="alter_by_postgresql_source_test_case387" value="ALTER TABLE reloptions_test RESET (toast.autovacuum_vacuum_cost_delay);" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case388" value="ALTER TABLE reloptions_test SET (autovacuum_enabled, fillfactor=32);" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case389" value="ALTER TABLE reloptions_test SET (toast.autovacuum_vacuum_cost_delay = 24);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case412" value="ALTER TYPE bogon ADD VALUE &apos;bad&apos;;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case413" value="ALTER TYPE bogon ADD VALUE &apos;bad&apos;;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case414" value="ALTER TYPE bogon ADD VALUE &apos;ugly&apos;;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case415" value="ALTER TYPE bogus ADD VALUE &apos;new&apos;;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case416" value="ALTER TYPE bogus RENAME TO bogon;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case417" value="ALTER TYPE bogus RENAME TO bogon;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case418" value="ALTER TYPE bogus RENAME TO bogon;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case419" value="ALTER TYPE bogus RENAME VALUE &apos;good&apos; to &apos;bad&apos;;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case420" value="ALTER TYPE myvarchar SET (     send = myvarcharsend,     receive = myvarcharrecv,     typmod_in = varchartypmodin,     typmod_out = varchartypmodout,     analyze = ts_typanalyze,     subscript = raw_array_subscript_handler );" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case421" value="ALTER TYPE myvarchar SET (storage = extended);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case422" value="ALTER TYPE myvarchar SET (storage = extended);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case423" value="ALTER TYPE myvarchar SET (storage = plain);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case424" value="ALTER TYPE nosuchtype ADD ATTRIBUTE b text;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case425" value="ALTER TYPE planets ADD VALUE   &apos;plutoplutoplutoplutoplutoplutoplutoplutoplutoplutoplutoplutoplutopluto&apos;;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case426" value="ALTER TYPE planets ADD VALUE &apos;jupiter&apos; AFTER &apos;mars&apos;;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case427" value="ALTER TYPE planets ADD VALUE &apos;mercury&apos; BEFORE &apos;venus&apos;;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case428" value="ALTER TYPE planets ADD VALUE &apos;mercury&apos;;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case429" value="ALTER TYPE planets ADD VALUE &apos;neptune&apos; AFTER &apos;uranus&apos;;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case430" value="ALTER TYPE planets ADD VALUE &apos;pluto&apos; AFTER &apos;zeus&apos;;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case431" value="ALTER TYPE planets ADD VALUE &apos;saturn&apos; BEFORE &apos;uranus&apos;;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case432" value="ALTER TYPE planets ADD VALUE &apos;uranus&apos;;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case433" value="ALTER TYPE planets ADD VALUE IF NOT EXISTS &apos;mercury&apos;;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case434" value="ALTER TYPE planets ADD VALUE IF NOT EXISTS &apos;pluto&apos;;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case435" value="ALTER TYPE rainbow RENAME VALUE &apos;blue&apos; TO &apos;green&apos;;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case436" value="ALTER TYPE rainbow RENAME VALUE &apos;red&apos; TO &apos;crimson&apos;;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case437" value="ALTER TYPE rainbow RENAME VALUE &apos;red&apos; TO &apos;crimson&apos;;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case438" value="ALTER TYPE test_type ADD ATTRIBUTE b text;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case439" value="ALTER TYPE test_type ADD ATTRIBUTE b text;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case440" value="ALTER TYPE test_type ALTER ATTRIBUTE b SET DATA TYPE integer;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case441" value="ALTER TYPE test_type ALTER ATTRIBUTE b SET DATA TYPE varchar;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case442" value="ALTER TYPE test_type DROP ATTRIBUTE IF EXISTS c;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case443" value="ALTER TYPE test_type DROP ATTRIBUTE a, ADD ATTRIBUTE d boolean;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case444" value="ALTER TYPE test_type DROP ATTRIBUTE b;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case445" value="ALTER TYPE test_type DROP ATTRIBUTE c;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case446" value="ALTER TYPE test_type RENAME ATTRIBUTE a TO aa;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case447" value="ALTER TYPE test_type RENAME ATTRIBUTE d TO dd;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case448" value="ALTER TYPE test_type1 ALTER ATTRIBUTE b TYPE varchar;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case449" value="ALTER TYPE test_type2 ADD ATTRIBUTE c text CASCADE;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case450" value="ALTER TYPE test_type2 ADD ATTRIBUTE c text;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case451" value="ALTER TYPE test_type2 ALTER ATTRIBUTE b TYPE varchar CASCADE;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case452" value="ALTER TYPE test_type2 ALTER ATTRIBUTE b TYPE varchar;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case453" value="ALTER TYPE test_type2 DROP ATTRIBUTE b CASCADE;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case454" value="ALTER TYPE test_type2 DROP ATTRIBUTE b;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case455" value="ALTER TYPE test_type2 RENAME ATTRIBUTE a TO aa CASCADE;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case456" value="ALTER TYPE test_type2 RENAME ATTRIBUTE a TO aa;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case457" value="ALTER TYPE test_type3 DROP ATTRIBUTE a, ADD ATTRIBUTE b int;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case458" value="ALTER TYPE test_typex DROP ATTRIBUTE a CASCADE;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case459" value="ALTER TYPE test_typex DROP ATTRIBUTE a;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case460" value="ALTER TYPE tt_t0 DROP ATTRIBUTE z;" db-types="PostgreSQL" />
     <sql-case id="analyze_by_postgresql_source_test_case1" value="ANALYZE (nonexistent-arg) does_not_exist;" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case124" value="CREATE CONSTRAINT TRIGGER trigtest_constraint AFTER INSERT OR UPDATE OR DELETE ON foreign_schema.foreign_table_1 FOR EACH ROW EXECUTE PROCEDURE dummy_trigger();" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case183" value="CREATE FUNCTION addr_nsp.trig() RETURNS TRIGGER LANGUAGE plpgsql AS $$ BEGIN END; $$;" db-types="PostgreSQL" />
@@ -5208,46 +5159,6 @@
     <sql-case id="low_alter_by_postgresql_source_test_case61" value="alter table anothertab alter column atcol1 type boolean         using case when atcol1 % 2 = 0 then true else fa alter table anothertab drop constraint anothertab_chk;" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case62" value="alter table check_con_tbl add check (check_con_function(check_con_tbl.*));" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case63" value="alter table rename;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case68" value="alter type alter1.ctype set schema alter1;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case69" value="alter type alter1.ctype set schema alter2;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case70" value="alter type comptype alter attribute r type bigint;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case71" value="alter type comptype alter attribute r type varchar;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case72" value="alter type comptype drop attribute i;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case73" value="alter type comptype drop attribute r;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case74" value="alter type insenum add value &apos;i1&apos; before &apos;L2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case75" value="alter type insenum add value &apos;i10&apos; before &apos;L2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case76" value="alter type insenum add value &apos;i11&apos; before &apos;L2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case77" value="alter type insenum add value &apos;i12&apos; before &apos;L2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case78" value="alter type insenum add value &apos;i13&apos; before &apos;L2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case79" value="alter type insenum add value &apos;i14&apos; before &apos;L2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case80" value="alter type insenum add value &apos;i15&apos; before &apos;L2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case81" value="alter type insenum add value &apos;i16&apos; before &apos;L2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case82" value="alter type insenum add value &apos;i17&apos; before &apos;L2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case83" value="alter type insenum add value &apos;i18&apos; before &apos;L2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case84" value="alter type insenum add value &apos;i19&apos; before &apos;L2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case85" value="alter type insenum add value &apos;i2&apos; before &apos;L2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case86" value="alter type insenum add value &apos;i20&apos; before &apos;L2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case87" value="alter type insenum add value &apos;i21&apos; before &apos;L2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case88" value="alter type insenum add value &apos;i22&apos; before &apos;L2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case89" value="alter type insenum add value &apos;i23&apos; before &apos;L2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case90" value="alter type insenum add value &apos;i24&apos; before &apos;L2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case91" value="alter type insenum add value &apos;i25&apos; before &apos;L2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case92" value="alter type insenum add value &apos;i26&apos; before &apos;L2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case93" value="alter type insenum add value &apos;i27&apos; before &apos;L2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case94" value="alter type insenum add value &apos;i28&apos; before &apos;L2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case95" value="alter type insenum add value &apos;i29&apos; before &apos;L2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case96" value="alter type insenum add value &apos;i3&apos; before &apos;L2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case97" value="alter type insenum add value &apos;i30&apos; before &apos;L2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case98" value="alter type insenum add value &apos;i4&apos; before &apos;L2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case99" value="alter type insenum add value &apos;i5&apos; before &apos;L2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case100" value="alter type insenum add value &apos;i6&apos; before &apos;L2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case101" value="alter type insenum add value &apos;i7&apos; before &apos;L2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case102" value="alter type insenum add value &apos;i8&apos; before &apos;L2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case103" value="alter type insenum add value &apos;i9&apos; before &apos;L2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case104" value="alter type rewritetype alter attribute a type text cascade;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case105" value="alter type rewritetype alter attribute a type varchar cascade;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case106" value="alter type testdomain2 rename to testdomain3;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case107" value="alter type two_ints add attribute c two_ints_range;" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case40" value="create constraint trigger parted_trig after insert on parted_constr_ancestor   deferrable   for each row execute procedure trigger_notice_ab();" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case41" value="create constraint trigger parted_trig_two after insert on parted_constr   deferrable initially deferred   for each row when (bark(new.b) AND new.a % 2 = 1)   execute procedure trigger_notice_ab();" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case42" value="create constraint trigger parted_trigger after update on parted_trigger   from parted_referenced   for each row execute procedure trigger_notice_ab();" db-types="PostgreSQL" />

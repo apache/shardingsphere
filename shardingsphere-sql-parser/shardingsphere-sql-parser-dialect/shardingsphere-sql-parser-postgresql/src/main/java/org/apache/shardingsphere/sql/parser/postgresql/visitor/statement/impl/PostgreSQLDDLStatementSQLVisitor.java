@@ -52,6 +52,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Al
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterStatisticsContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterSubscriptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterTriggerContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterTableActionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterTablespaceContext;
@@ -229,6 +230,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterSubscriptionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterTriggerStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterTypeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterTextSearchStatement;
@@ -514,6 +516,11 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     @Override
     public ASTNode visitAlterTrigger(final AlterTriggerContext ctx) {
         return new PostgreSQLAlterTriggerStatement();
+    }
+    
+    @Override
+    public ASTNode visitAlterType(final AlterTypeContext ctx) {
+        return new PostgreSQLAlterTypeStatement();
     }
     
     @Override
