@@ -177,5 +177,6 @@ execute
     | createOperator
     | alterTextSearchConfiguration
     | createPolicy
+    | alterTrigger
     ) SEMI_? EOF
     ;
