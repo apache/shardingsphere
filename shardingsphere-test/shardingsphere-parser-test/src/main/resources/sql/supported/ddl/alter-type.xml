@@ -17,10 +17,10 @@
   -->
 
 <sql-cases>
-    <sql-case id="alter_type_owner" value="ALTER TYPE compfoo1 OWNER TO usr1" db-types="openGauss" />
-    <sql-case id="alter_type_rename" value="ALTER TYPE compfoo RENAME TO compfoo1;" db-types="openGauss" />
-    <sql-case id="alter_type_set_schema" value="ALTER TYPE compfoo1 SET SCHEMA usr1;" db-types="openGauss" />
-    <sql-case id="alter_type_add_attribute" value="ALTER TYPE usr1.compfoo1 ADD ATTRIBUTE f3 int;" db-types="openGauss" />
-    <sql-case id="alter_type_add_value" value="ALTER TYPE bugstatus ADD VALUE IF NOT EXISTS 'regress' BEFORE 'closed';" db-types="openGauss" />
-    <sql-case id="alter_type_rename_value" value="ALTER TYPE bugstatus RENAME VALUE 'create' TO 'new';" db-types="openGauss" />
+    <sql-case id="alter_type_owner" value="ALTER TYPE compfoo1 OWNER TO usr1" db-types="openGauss,PostgreSQL" />
+    <sql-case id="alter_type_rename" value="ALTER TYPE compfoo RENAME TO compfoo1;" db-types="openGauss,PostgreSQL" />
+    <sql-case id="alter_type_set_schema" value="ALTER TYPE compfoo1 SET SCHEMA usr1;" db-types="openGauss,PostgreSQL" />
+    <sql-case id="alter_type_add_attribute" value="ALTER TYPE usr1.compfoo1 ADD ATTRIBUTE f3 int;" db-types="openGauss,PostgreSQL" />
+    <sql-case id="alter_type_add_value" value="ALTER TYPE bugstatus ADD VALUE IF NOT EXISTS 'regress' BEFORE 'closed';" db-types="openGauss,PostgreSQL" />
+    <sql-case id="alter_type_rename_value" value="ALTER TYPE bugstatus RENAME VALUE 'create' TO 'new';" db-types="openGauss,PostgreSQL" />
 </sql-cases>
