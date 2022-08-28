@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.exception;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.DistSQLException;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.integration.transaction.engine.base;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.integration.transaction.framework.param.TransactionParameterized;
@@ -211,7 +210,7 @@ public abstract class BaseTransactionITCase extends BaseITCase {
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
                 log.error(String.format("Transaction IT %s -> %s test failed", parameterized, each.getSimpleName()), ex);
-                throw new ShardingSphereException(ex);
+                throw new RuntimeException(ex);
             }
             log.info("Transaction IT {} -> {} test end.", parameterized, each.getSimpleName());
             try {
