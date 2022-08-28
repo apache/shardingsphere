@@ -234,7 +234,7 @@ The text of each license is the standard Apache 2.0 license.
     curator-client 5.1.0:  https://github.com/apache/curator, Apache 2.0
     curator-framework 5.1.0:  https://github.com/apache/curator, Apache 2.0
     curator-recipes 5.1.0:  https://github.com/apache/curator, Apache 2.0
-    cosid-core 1.10.0: https://github.com/Ahoo-Wang/CosId, Apache 2.0
+    cosid-core 1.14.4: https://github.com/Ahoo-Wang/CosId, Apache 2.0
     error_prone_annotations 2.3.4: https://github.com/google/error-prone, Apache 2.0
     esri-geometry-api 2.2.0: https://github.com/Esri/geometry-api-java, Apache 2.0
     failsafe 2.3.3: https://github.com/jhalterman/failsafe, Apache 2.0
