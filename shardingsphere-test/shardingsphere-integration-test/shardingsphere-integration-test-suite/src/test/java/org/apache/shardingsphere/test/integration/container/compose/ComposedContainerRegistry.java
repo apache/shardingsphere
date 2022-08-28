@@ -68,6 +68,7 @@ public final class ComposedContainerRegistry implements AutoCloseable {
             closeActualDataSourceMap(each.getActualDataSourceMap());
             closeContainer(each);
         }
+        composedContainers.clear();
     }
     
     @SneakyThrows
