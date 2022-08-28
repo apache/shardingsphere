@@ -48,16 +48,13 @@ public final class MySQLErrPacketFactory {
     public static MySQLErrPacket newInstance(final Exception cause) {
         if (cause instanceof SQLException) {
             SQLException sqlException = (SQLException) cause;
-            return null == sqlException.getSQLState() ? new MySQLErrPacket(1, MySQLVendorError.ER_INTERNAL_ERROR, getErrorMessage(sqlException))
-                    : new MySQLErrPacket(1, sqlException.getErrorCode(), sqlException.getSQLState(), sqlException.getMessage());
-        }
-        if (cause instanceof SQLDialectException) {
-            SQLException sqlException = SQLDialectExceptionMapperFactory.getInstance("MySQL").convert((SQLDialectException) cause);
-            return new MySQLErrPacket(1, sqlException.getErrorCode(), sqlException.getSQLState(), sqlException.getMessage());
+            return null == sqlException.getSQLState() ? new MySQLErrPacket(1, MySQLVendorError.ER_INTERNAL_ERROR, getErrorMessage(sqlException)) : createErrPacket(sqlException);
         }
         if (cause instanceof ShardingSphereSQLException) {
-            SQLException sqlException = ((ShardingSphereSQLException) cause).toSQLException();
-            return new MySQLErrPacket(1, sqlException.getErrorCode(), sqlException.getSQLState(), sqlException.getMessage());
+            return createErrPacket(((ShardingSphereSQLException) cause).toSQLException());
+        }
+        if (cause instanceof SQLDialectException) {
+            return createErrPacket(SQLDialectExceptionMapperFactory.getInstance("MySQL").convert((SQLDialectException) cause));
         }
         if (cause instanceof DistSQLException) {
             DistSQLException distSQLException = (DistSQLException) cause;
@@ -69,11 +66,14 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof UnsupportedCharsetException) {
             return new MySQLErrPacket(1, MySQLVendorError.ER_UNKNOWN_CHARACTER_SET, cause.getMessage());
         }
-        SQLException unknownSQLException = new UnknownSQLException(cause).toSQLException();
-        return new MySQLErrPacket(1, unknownSQLException.getErrorCode(), unknownSQLException.getSQLState(), unknownSQLException.getMessage());
+        return createErrPacket(new UnknownSQLException(cause).toSQLException());
     }
     
     private static String getErrorMessage(final SQLException cause) {
         return null == cause.getNextException() || !Strings.isNullOrEmpty(cause.getMessage()) ? cause.getMessage() : cause.getNextException().getMessage();
+    }
+    
+    private static MySQLErrPacket createErrPacket(final SQLException cause) {
+        return new MySQLErrPacket(1, cause.getErrorCode(), cause.getSQLState(), cause.getMessage());
     }
 }
