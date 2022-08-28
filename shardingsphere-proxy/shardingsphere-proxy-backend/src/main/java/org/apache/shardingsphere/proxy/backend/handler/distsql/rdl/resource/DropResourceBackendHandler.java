@@ -19,14 +19,17 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource;
 
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.ResourceInUsedException;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereException;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -35,7 +38,9 @@ import org.apache.shardingsphere.proxy.backend.handler.DatabaseRequiredBackendHa
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -43,6 +48,7 @@ import java.util.stream.Collectors;
 /**
  * Drop resource backend handler.
  */
+@Slf4j
 public final class DropResourceBackendHandler extends DatabaseRequiredBackendHandler<DropResourceStatement> {
     
     public DropResourceBackendHandler(final DropResourceStatement sqlStatement, final ConnectionSession connectionSession) {
@@ -53,7 +59,12 @@ public final class DropResourceBackendHandler extends DatabaseRequiredBackendHan
     public ResponseHeader execute(final String databaseName, final DropResourceStatement sqlStatement) throws DistSQLException {
         Collection<String> toBeDroppedResourceNames = sqlStatement.getNames();
         check(databaseName, toBeDroppedResourceNames, sqlStatement.isIgnoreSingleTables(), sqlStatement.isIfExists());
-        ProxyContext.getInstance().getContextManager().dropResources(databaseName, toBeDroppedResourceNames);
+        try {
+            ProxyContext.getInstance().getContextManager().dropResources(databaseName, toBeDroppedResourceNames);
+        } catch (final SQLException | ShardingSphereException ex) {
+            log.error("Drop resource failed", ex);
+            throw new InvalidResourcesException(Collections.singleton(ex.getMessage()));
+        }
         return new UpdateResponseHeader(sqlStatement);
     }
     
