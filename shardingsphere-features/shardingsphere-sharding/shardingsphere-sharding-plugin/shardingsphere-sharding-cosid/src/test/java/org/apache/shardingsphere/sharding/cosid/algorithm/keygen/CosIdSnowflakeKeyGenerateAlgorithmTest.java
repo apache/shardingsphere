@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.sharding.cosid.algorithm.keygen;
 
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.locks.LockSupport;
-
 import me.ahoo.cosid.converter.Radix62IdConverter;
 import me.ahoo.cosid.snowflake.MillisecondSnowflakeId;
 import me.ahoo.cosid.snowflake.MillisecondSnowflakeIdStateParser;
@@ -27,17 +24,18 @@ import me.ahoo.cosid.snowflake.SnowflakeIdState;
 import me.ahoo.cosid.snowflake.SnowflakeIdStateParser;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.sharding.cosid.algorithm.keygen.fixture.WorkerIdGeneratorFixture;
 import org.apache.shardingsphere.sharding.factory.KeyGenerateAlgorithmFactory;
-import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 
 import java.util.Properties;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.locks.LockSupport;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -76,15 +74,13 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
     
     @Test
     public void assertGenerateKeyModUniformity() {
-        CosIdSnowflakeKeyGenerateAlgorithm algorithm = (CosIdSnowflakeKeyGenerateAlgorithm) KeyGenerateAlgorithmFactory.newInstance(
-                new AlgorithmConfiguration("COSID_SNOWFLAKE", new Properties()));
+        CosIdSnowflakeKeyGenerateAlgorithm algorithm = (CosIdSnowflakeKeyGenerateAlgorithm) KeyGenerateAlgorithmFactory.newInstance(new AlgorithmConfiguration("COSID_SNOWFLAKE", new Properties()));
         algorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(FIXTURE_WORKER_ID),
                 new ModeConfiguration("Standalone", null, false), mock(LockContext.class), eventBusContext));
         int divisor = 4;
         int total = 99999;
         int avg = total / divisor;
         double tolerance = avg * .0015;
-        
         int mod0Counter = 0;
         int mod1Counter = 0;
         int mod2Counter = 0;
@@ -111,10 +107,10 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
             int wait = ThreadLocalRandom.current().nextInt(10, 1000);
             LockSupport.parkNanos(wait);
         }
-        MatcherAssert.assertThat((double) mod0Counter, closeTo(avg, tolerance));
-        MatcherAssert.assertThat((double) mod1Counter, closeTo(avg, tolerance));
-        MatcherAssert.assertThat((double) mod2Counter, closeTo(avg, tolerance));
-        MatcherAssert.assertThat((double) mod3Counter, closeTo(avg, tolerance));
+        assertThat((double) mod0Counter, closeTo(avg, tolerance));
+        assertThat((double) mod1Counter, closeTo(avg, tolerance));
+        assertThat((double) mod2Counter, closeTo(avg, tolerance));
+        assertThat((double) mod3Counter, closeTo(avg, tolerance));
     }
     
     @Test

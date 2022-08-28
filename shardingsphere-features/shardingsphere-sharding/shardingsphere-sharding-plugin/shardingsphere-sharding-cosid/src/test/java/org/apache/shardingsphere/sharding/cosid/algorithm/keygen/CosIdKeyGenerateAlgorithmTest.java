@@ -77,8 +77,8 @@ public final class CosIdKeyGenerateAlgorithmTest {
     public void assertGenerateKeyAsString() {
         String idName = "test-cosid-as-string";
         String prefix = "test_";
-        IdGenerator stringIdGen = new StringIdGeneratorDecorator(new MillisecondSnowflakeId(1, 0), new PrefixIdConverter(prefix, Radix62IdConverter.INSTANCE));
-        DefaultIdGeneratorProvider.INSTANCE.set(idName, stringIdGen);
+        IdGenerator idGeneratorDecorator = new StringIdGeneratorDecorator(new MillisecondSnowflakeId(1, 0), new PrefixIdConverter(prefix, Radix62IdConverter.INSTANCE));
+        DefaultIdGeneratorProvider.INSTANCE.set(idName, idGeneratorDecorator);
         KeyGenerateAlgorithm algorithm = KeyGenerateAlgorithmFactory.newInstance(new AlgorithmConfiguration("COSID", createAsStringProperties(idName)));
         Comparable<?> actual = algorithm.generateKey();
         assertThat(actual, instanceOf(String.class));

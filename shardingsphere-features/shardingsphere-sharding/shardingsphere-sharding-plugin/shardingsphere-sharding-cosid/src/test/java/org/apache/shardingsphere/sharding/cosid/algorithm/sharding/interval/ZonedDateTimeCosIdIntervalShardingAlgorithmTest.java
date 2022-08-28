@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval;
 
 import com.google.common.collect.Range;
-import java.time.ZonedDateTime;
-import java.util.Collection;
 import org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval.fixture.IntervalShardingAlgorithmDataFixture;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+
+import java.time.ZonedDateTime;
+import java.util.Collection;
 
 public final class ZonedDateTimeCosIdIntervalShardingAlgorithmTest {
     
@@ -42,7 +44,7 @@ public final class ZonedDateTimeCosIdIntervalShardingAlgorithmTest {
             super(input, expected);
         }
         
-        @Parameterized.Parameters(name = "{index}: doSharding({0})={1}")
+        @Parameters(name = "{index}: doSharding({0})={1}")
         public static Iterable<Object[]> argsProvider() {
             return preciseArgsProviderAsZonedDateTime();
         }
@@ -60,7 +62,7 @@ public final class ZonedDateTimeCosIdIntervalShardingAlgorithmTest {
             super(input, expected);
         }
         
-        @Parameterized.Parameters(name = "{index}: doSharding({0})={1}")
+        @Parameters(name = "{index}: doSharding({0})={1}")
         public static Iterable<Object[]> argsProvider() {
             return rangeArgsProviderAsZonedDateTime();
         }
