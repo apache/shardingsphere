@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.db.protocol.mysql.constant;
 
 import lombok.Getter;
+import org.apache.shardingsphere.dialect.exception.connection.UnknownCollationException;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -334,10 +335,10 @@ public enum MySQLCharacterSet {
     public static MySQLCharacterSet findById(final int id) {
         MySQLCharacterSet result = CHARACTER_SET_MAP.get(id);
         if (null == result) {
-            throw new UnsupportedCharsetException(String.format("Character set corresponding to id %d not found", id));
+            throw new UnknownCollationException(id);
         }
         if (null == result.getCharset()) {
-            throw new UnsupportedCharsetException(String.format("Character set %s unsupported", result.name().toLowerCase()));
+            throw new UnknownCollationException(id);
         }
         return result;
     }

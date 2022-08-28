@@ -91,9 +91,9 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         MySQLHandshakeResponse41Packet packet = new MySQLHandshakeResponse41Packet((MySQLPacketPayload) payload);
         authResponse = packet.getAuthResponse();
         sequenceId = packet.getSequenceId();
-        MySQLCharacterSet mySQLCharacterSet = MySQLCharacterSet.findById(packet.getCharacterSet());
-        context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(mySQLCharacterSet.getCharset());
-        context.channel().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).set(mySQLCharacterSet);
+        MySQLCharacterSet characterSet = MySQLCharacterSet.findById(packet.getCharacterSet());
+        context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(characterSet.getCharset());
+        context.channel().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).set(characterSet);
         if (!Strings.isNullOrEmpty(packet.getDatabase()) && !ProxyContext.getInstance().databaseExists(packet.getDatabase())) {
             context.writeAndFlush(new MySQLErrPacket(++sequenceId, MySQLVendorError.ER_BAD_DB_ERROR, packet.getDatabase()));
             return AuthenticationResultBuilder.continued();

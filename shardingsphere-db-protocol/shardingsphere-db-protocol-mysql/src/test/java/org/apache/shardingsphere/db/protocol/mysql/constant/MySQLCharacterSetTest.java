@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.constant;
 
+import org.apache.shardingsphere.dialect.exception.connection.UnknownCollationException;
 import org.junit.Test;
-
-import java.nio.charset.UnsupportedCharsetException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -32,12 +31,12 @@ public final class MySQLCharacterSetTest {
         assertThat(actual, is(MySQLCharacterSet.UTF8MB4_GENERAL_CI));
     }
     
-    @Test(expected = UnsupportedCharsetException.class)
+    @Test(expected = UnknownCollationException.class)
     public void assertCharacterSetNotFoundById() {
         MySQLCharacterSet.findById(-1);
     }
     
-    @Test(expected = UnsupportedCharsetException.class)
+    @Test(expected = UnknownCollationException.class)
     public void assertFoundUnsupportedCharacterSetById() {
         MySQLCharacterSet.findById(63);
     }

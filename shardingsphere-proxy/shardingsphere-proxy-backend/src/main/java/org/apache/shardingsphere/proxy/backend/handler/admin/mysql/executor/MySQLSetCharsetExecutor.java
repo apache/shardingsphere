@@ -19,17 +19,13 @@ package org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor;
 
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.MySQLSessionVariableHandler;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
@@ -41,8 +37,6 @@ public final class MySQLSetCharsetExecutor implements MySQLSessionVariableHandle
     
     private static final Set<String> TYPE_ALIASES = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
     
-    private static final Set<String> CHARSET_VARIABLE_NAMES = new HashSet<>(Arrays.asList("charset", "character_set_client"));
-    
     static {
         TYPE_ALIASES.add("character_set_client");
     }
@@ -51,11 +45,6 @@ public final class MySQLSetCharsetExecutor implements MySQLSessionVariableHandle
     public void handle(final ConnectionSession connectionSession, final String variableName, final String assignValue) {
         String value = formatValue(assignValue);
         connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(parseCharset(value));
-    }
-    
-    private String getCharacterSetValue(final SetStatement setStatement) {
-        return setStatement.getVariableAssigns().stream().filter(each -> CHARSET_VARIABLE_NAMES.contains(each.getVariable().getVariable().toLowerCase(Locale.ROOT)))
-                .map(VariableAssignSegment::getAssignValue).findFirst().orElse("");
     }
     
     private String formatValue(final String value) {
