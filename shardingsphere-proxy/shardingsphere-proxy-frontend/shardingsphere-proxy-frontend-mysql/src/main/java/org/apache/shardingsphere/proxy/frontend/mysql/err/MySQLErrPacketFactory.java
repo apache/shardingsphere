@@ -26,8 +26,6 @@ import org.apache.shardingsphere.dialect.mapper.SQLDialectExceptionMapperFactory
 import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
 import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.sql.UnknownSQLException;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.DistSQLException;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.DistSQLVendorError;
 
 import java.sql.SQLException;
 
@@ -53,10 +51,6 @@ public final class MySQLErrPacketFactory {
         }
         if (cause instanceof SQLDialectException) {
             return createErrPacket(SQLDialectExceptionMapperFactory.getInstance("MySQL").convert((SQLDialectException) cause));
-        }
-        if (cause instanceof DistSQLException) {
-            DistSQLException distSQLException = (DistSQLException) cause;
-            return new MySQLErrPacket(1, DistSQLVendorError.valueOf(distSQLException), distSQLException.getVariable());
         }
         return createErrPacket(new UnknownSQLException(cause).toSQLException());
     }

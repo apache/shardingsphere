@@ -15,16 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception;
+package org.apache.shardingsphere.proxy.backend.exception;
+
+import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
 
 /**
- * Unsupported variable exception.
+ * Invalid value exception.
  */
-public final class UnsupportedVariableException extends DistSQLException {
+public final class InvalidValueException extends ShardingSphereSQLException {
     
-    private static final long serialVersionUID = 1955281568807066737L;
+    private static final long serialVersionUID = 1840341880422454371L;
     
-    public UnsupportedVariableException(final String variable) {
-        super(variable);
+    public InvalidValueException(final String value) {
+        super(XOpenSQLState.INVALID_DATA_TYPE, 10301, "Invalid value `%s`", value);
     }
 }
