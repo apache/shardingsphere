@@ -31,6 +31,7 @@ import org.apache.calcite.rel.RelCollationTraitDef;
 import org.apache.calcite.rel.rules.AggregateExpandDistinctAggregatesRule;
 import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.rules.ProjectRemoveRule;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.translatable.TranslatableFilterRule;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.translatable.TranslatableProjectFilterRule;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.translatable.TranslatableProjectRule;
 
@@ -159,7 +160,7 @@ public final class QueryOptimizePlannerFactory {
         result.add(CoreRules.FILTER_REDUCE_EXPRESSIONS);
         result.add(CoreRules.JOIN_PUSH_EXPRESSIONS);
         result.add(CoreRules.JOIN_PUSH_TRANSITIVE_PREDICATES);
-        result.add(TranslatableProjectRule.INSTANCE);
+        result.add(TranslatableFilterRule.INSTANCE);
         result.add(TranslatableProjectFilterRule.INSTANCE);
         return result;
     }

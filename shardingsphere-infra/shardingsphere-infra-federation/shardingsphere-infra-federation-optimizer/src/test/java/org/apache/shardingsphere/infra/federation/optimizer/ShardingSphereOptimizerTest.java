@@ -217,8 +217,8 @@ public final class ShardingSphereOptimizerTest {
                 + "  EnumerableCorrelate(correlation=[$cor1], joinType=[left], requiredColumns=[{1}])" + LINE_SEPARATOR
                 + "    TranslatableTableScan(table=[[federate_jdbc, t_order_federate]], fields=[[0, 1]])" + LINE_SEPARATOR
                 + "    EnumerableAggregate(group=[{}], agg#0=[MIN($0)])" + LINE_SEPARATOR
-                + "      EnumerableCalc(expr#0=[{inputs}], expr#1=[true], $f0=[$t1])" + LINE_SEPARATOR
-                + "        TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0]], filters=[[null]])" + LINE_SEPARATOR;
+                + "      EnumerableCalc(expr#0..1=[{inputs}], expr#2=[true], $f0=[$t2])" + LINE_SEPARATOR
+                + "        TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0, 1]], filters=[[null, null]])" + LINE_SEPARATOR;
         assertThat(actual, is(expected));
     }
     
