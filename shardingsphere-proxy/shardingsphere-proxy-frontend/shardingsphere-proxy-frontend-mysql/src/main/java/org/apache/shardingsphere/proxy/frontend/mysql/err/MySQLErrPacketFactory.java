@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLExcep
 import org.apache.shardingsphere.infra.util.exception.sql.UnknownSQLException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.DistSQLException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.DistSQLVendorError;
-import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
 
 import java.nio.charset.UnsupportedCharsetException;
 import java.sql.SQLException;
@@ -59,9 +58,6 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof DistSQLException) {
             DistSQLException distSQLException = (DistSQLException) cause;
             return new MySQLErrPacket(1, DistSQLVendorError.valueOf(distSQLException), distSQLException.getVariable());
-        }
-        if (cause instanceof UnsupportedPreparedStatementException) {
-            return new MySQLErrPacket(1, MySQLVendorError.ER_UNSUPPORTED_PS);
         }
         if (cause instanceof UnsupportedCharsetException) {
             return new MySQLErrPacket(1, MySQLVendorError.ER_UNKNOWN_CHARACTER_SET, cause.getMessage());

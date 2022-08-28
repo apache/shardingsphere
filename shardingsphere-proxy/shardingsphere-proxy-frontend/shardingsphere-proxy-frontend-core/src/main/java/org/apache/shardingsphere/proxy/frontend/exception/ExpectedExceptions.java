@@ -42,7 +42,6 @@ public final class ExpectedExceptions {
         EXCEPTIONS.add(ShardingSphereConfigurationException.class);
         EXCEPTIONS.add(SQLParsingException.class);
         EXCEPTIONS.add(DistSQLException.class);
-        EXCEPTIONS.add(UnsupportedPreparedStatementException.class);
     }
     
     /**
