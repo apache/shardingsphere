@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.frontend.mysql.err;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.UnsupportedVariableException;
 import org.apache.shardingsphere.proxy.frontend.exception.CircuitBreakException;
 import org.junit.Test;
 
@@ -66,15 +65,6 @@ public final class MySQLErrPacketFactoryTest {
         assertThat(actual.getErrorCode(), is(1049));
         assertThat(actual.getSqlState(), is(XOpenSQLState.SYNTAX_ERROR.getValue()));
         assertThat(actual.getErrorMessage(), is("Unknown database 'foo_db'"));
-    }
-    
-    @Test
-    public void assertNewInstanceWithDistException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new UnsupportedVariableException("test"));
-        assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getErrorCode(), is(11001));
-        assertThat(actual.getSqlState(), is(XOpenSQLState.GENERAL_ERROR.getValue()));
-        assertThat(actual.getErrorMessage(), is("Could not support variable `test`"));
     }
     
     @Test
