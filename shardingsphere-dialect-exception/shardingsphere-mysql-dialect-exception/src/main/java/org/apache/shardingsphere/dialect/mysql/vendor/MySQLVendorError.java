@@ -58,6 +58,8 @@ public enum MySQLVendorError implements VendorError {
     
     ER_WRONG_VALUE_COUNT_ON_ROW(XOpenSQLState.MISMATCH_INSERT_VALUES_AND_COLUMNS, 1136, "Column count doesn't match value count at row %d"),
     
+    ER_UNKNOWN_COLLATION(XOpenSQLState.GENERAL_ERROR, 1273, "Unknown collation: '%s'"),
+    
     ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE(XOpenSQLState.GENERAL_ERROR, 3176,
             "Please do not modify the %s table with an XA transaction. This is an internal system table used to store GTIDs for committed transactions. "
                     + "Although modifying it can lead to an inconsistent GTID state, if necessary you can modify it with a non-XA transaction.");

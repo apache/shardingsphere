@@ -15,18 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.exception.sql;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTriggerStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Unknown SQL exception.
+ * PostgreSQL alter trigger statement.
  */
-public final class UnknownSQLException extends ShardingSphereSQLException {
-    
-    private static final long serialVersionUID = -7357918573504734977L;
-    
-    public UnknownSQLException(final Exception cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 30000, "Unknown exception: %s", cause.getMessage());
-    }
+@ToString(callSuper = true)
+public final class PostgreSQLAlterTriggerStatement extends AlterTriggerStatement implements PostgreSQLStatement {
 }

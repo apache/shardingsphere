@@ -18,6 +18,8 @@
 
 <sql-parser-test-cases>
     <alter-trigger sql-case-id="alter_trigger" />
+    <alter-trigger sql-case-id="alter_trigger_rename" />
+    <alter-trigger sql-case-id="alter_trigger_extension" />
     <alter-trigger sql-case-id="alter_trigger_disable" />
     <alter-trigger sql-case-id="alter_trigger_enable" />
 </sql-parser-test-cases>

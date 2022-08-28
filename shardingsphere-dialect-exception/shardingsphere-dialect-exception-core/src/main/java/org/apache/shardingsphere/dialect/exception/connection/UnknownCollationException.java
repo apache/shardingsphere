@@ -15,12 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.exception;
+package org.apache.shardingsphere.dialect.exception.connection;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 
 /**
- * Unsupported prepared statement exception.
+ * Unknown collation exception.
  */
-public final class UnsupportedPreparedStatementException extends FrontendException {
+@RequiredArgsConstructor
+@Getter
+public final class UnknownCollationException extends SQLDialectException {
     
-    private static final long serialVersionUID = 2185290474191327830L;
+    private static final long serialVersionUID = 6920150607711135228L;
+    
+    private final int collationId;
 }

@@ -70,4 +70,4 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 44000     | 24004       | Can not find logic encrypt column by \`%s\` |
 | HY004     | 25000       | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type |
 | 42000     | 25003       | Insert value of index \`%s\` can not support for shadow |
-| 42000     | 30000       | Unknown exception: %s |
+| HY004     | 30000       | Unknown exception: %s |

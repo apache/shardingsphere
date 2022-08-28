@@ -3284,7 +3284,6 @@
     <sql-case id="alter_by_postgresql_source_test_case387" value="ALTER TABLE reloptions_test RESET (toast.autovacuum_vacuum_cost_delay);" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case388" value="ALTER TABLE reloptions_test SET (autovacuum_enabled, fillfactor=32);" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case389" value="ALTER TABLE reloptions_test SET (toast.autovacuum_vacuum_cost_delay = 24);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case411" value="ALTER TRIGGER modified_a ON main_table RENAME TO modified_modified_a;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case412" value="ALTER TYPE bogon ADD VALUE &apos;bad&apos;;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case413" value="ALTER TYPE bogon ADD VALUE &apos;bad&apos;;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case414" value="ALTER TYPE bogon ADD VALUE &apos;ugly&apos;;" db-types="PostgreSQL" />
@@ -5209,7 +5208,6 @@
     <sql-case id="low_alter_by_postgresql_source_test_case61" value="alter table anothertab alter column atcol1 type boolean         using case when atcol1 % 2 = 0 then true else fa alter table anothertab drop constraint anothertab_chk;" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case62" value="alter table check_con_tbl add check (check_con_function(check_con_tbl.*));" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case63" value="alter table rename;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case67" value="alter trigger a on grandparent rename to b;" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case68" value="alter type alter1.ctype set schema alter1;" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case69" value="alter type alter1.ctype set schema alter2;" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case70" value="alter type comptype alter attribute r type bigint;" db-types="PostgreSQL" />

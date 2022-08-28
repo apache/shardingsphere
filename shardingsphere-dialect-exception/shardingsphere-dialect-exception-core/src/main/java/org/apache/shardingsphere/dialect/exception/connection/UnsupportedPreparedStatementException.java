@@ -15,18 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.exception.sql;
+package org.apache.shardingsphere.dialect.exception.connection;
 
-import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 
 /**
- * Unknown SQL exception.
+ * Unsupported prepared statement exception.
  */
-public final class UnknownSQLException extends ShardingSphereSQLException {
+public final class UnsupportedPreparedStatementException extends SQLDialectException {
     
-    private static final long serialVersionUID = -7357918573504734977L;
-    
-    public UnknownSQLException(final Exception cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 30000, "Unknown exception: %s", cause.getMessage());
-    }
+    private static final long serialVersionUID = 2185290474191327830L;
 }

@@ -19,6 +19,8 @@ package org.apache.shardingsphere.dialect.mysql.mapper;
 
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 import org.apache.shardingsphere.dialect.exception.connection.TooManyConnectionsException;
+import org.apache.shardingsphere.dialect.exception.connection.UnknownCollationException;
+import org.apache.shardingsphere.dialect.exception.connection.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.dialect.exception.data.InsertColumnsAndValuesMismatchedException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.DatabaseDropNotExistsException;
@@ -69,6 +71,12 @@ public final class MySQLDialectExceptionMapper implements SQLDialectExceptionMap
         }
         if (sqlDialectException instanceof TooManyConnectionsException) {
             return toSQLException(MySQLVendorError.ER_CON_COUNT_ERROR);
+        }
+        if (sqlDialectException instanceof UnsupportedPreparedStatementException) {
+            return toSQLException(MySQLVendorError.ER_UNSUPPORTED_PS);
+        }
+        if (sqlDialectException instanceof UnknownCollationException) {
+            return toSQLException(MySQLVendorError.ER_UNKNOWN_COLLATION, ((UnknownCollationException) sqlDialectException).getCollationId());
         }
         return new UnknownSQLException(sqlDialectException).toSQLException();
     }
