@@ -239,14 +239,23 @@ public final class ContextManager implements AutoCloseable {
      *
      * @param databaseName database name
      * @param toBeDroppedResourceNames to be dropped resource names
+     * @throws SQLException SQL exception
      */
-    public synchronized void dropResources(final String databaseName, final Collection<String> toBeDroppedResourceNames) {
-        Map<String, DataSource> dataSourceMap = metaDataContexts.getMetaData().getDatabase(databaseName).getResource().getDataSources();
+    public synchronized void dropResources(final String databaseName, final Collection<String> toBeDroppedResourceNames) throws SQLException {
         // TODO should check to be dropped resources are unused here. ContextManager is atomic domain to maintain metadata, not Dist SQL handler
-        for (String each : toBeDroppedResourceNames) {
-            dataSourceMap.remove(each);
-        }
-        metaDataContexts.getPersistService().getDataSourceService().drop(metaDataContexts.getMetaData().getActualDatabaseName(databaseName), toBeDroppedResourceNames);
+        Map<String, DataSourceProperties> toBeReservedDataSourcePropsMap = getToBeReservedDataSourcePropsMap(databaseName, toBeDroppedResourceNames);
+        SwitchingResource switchingResource = new ResourceSwitchManager().create(metaDataContexts.getMetaData().getDatabase(databaseName).getResource(), toBeReservedDataSourcePropsMap);
+        Map<String, ShardingSphereDatabase> reloadDatabases = createChangedDatabases(databaseName, switchingResource, null);
+        deleteTableMetaData(metaDataContexts.getMetaData().getDatabase(databaseName), reloadDatabases.get(databaseName.toLowerCase()));
+        metaDataContexts.getMetaData().getDatabases().putAll(reloadDatabases);
+        metaDataContexts.getPersistService().getDataSourceService().persist(metaDataContexts.getMetaData().getActualDatabaseName(databaseName), toBeReservedDataSourcePropsMap);
+        toBeDroppedResourceNames.forEach(each -> metaDataContexts.getMetaData().getDatabase(databaseName).getResource().getDataSources().remove(each));
+        switchingResource.closeStaleDataSources();
+    }
+    
+    private Map<String, DataSourceProperties> getToBeReservedDataSourcePropsMap(final String databaseName, final Collection<String> toBeDroppedResourceNames) {
+        Map<String, DataSourceProperties> dataSourcePropsMap = metaDataContexts.getPersistService().getDataSourceService().load(metaDataContexts.getMetaData().getActualDatabaseName(databaseName));
+        return dataSourcePropsMap.entrySet().stream().filter(entry -> !toBeDroppedResourceNames.contains(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
     
     /**
@@ -399,6 +408,25 @@ public final class ContextManager implements AutoCloseable {
         } catch (final SQLException ex) {
             log.error("Reload database: {} failed", databaseName, ex);
         }
+    }
+    
+    private void deleteTableMetaData(final ShardingSphereDatabase currentDatabase, final ShardingSphereDatabase reloadDatabase) {
+        Map<String, ShardingSphereSchema> toBeDeletedTables = getToBeDeletedTables(currentDatabase.getSchemas(), reloadDatabase.getSchemas());
+        toBeDeletedTables.forEach(
+                (key, value) -> value.getTables().keySet().forEach(each -> metaDataContexts.getPersistService().getDatabaseMetaDataService().deleteTable(currentDatabase.getName(), key, each)));
+        Map<String, ShardingSphereSchema> toBeDeletedSchemas = getToBeDeletedSchemas(reloadDatabase);
+        toBeDeletedSchemas.keySet().forEach(each -> metaDataContexts.getPersistService().getDatabaseMetaDataService().deleteSchema(currentDatabase.getName(), each));
+    }
+    
+    private Map<String, ShardingSphereSchema> getToBeDeletedTables(final Map<String, ShardingSphereSchema> currentSchemas, final Map<String, ShardingSphereSchema> reloadedSchemas) {
+        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(currentSchemas.size(), 1);
+        currentSchemas.entrySet().stream().filter(entry -> reloadedSchemas.containsKey(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue))
+                .forEach((key, value) -> result.put(key, new ShardingSphereSchema(getToBeDeletedTables(value, reloadedSchemas.get(key)))));
+        return result;
+    }
+    
+    private Map<String, ShardingSphereTable> getToBeDeletedTables(final ShardingSphereSchema currentSchema, final ShardingSphereSchema reloadedSchema) {
+        return currentSchema.getTables().entrySet().stream().filter(entry -> !reloadedSchema.getTables().containsKey(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
     
     private Map<String, ShardingSphereSchema> getToBeDeletedSchemas(final ShardingSphereDatabase reloadedDatabase) {

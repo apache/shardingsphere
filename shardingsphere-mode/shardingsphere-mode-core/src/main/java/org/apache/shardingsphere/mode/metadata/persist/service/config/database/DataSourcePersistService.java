@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -106,20 +105,6 @@ public final class DataSourcePersistService implements DatabaseBasedPersistServi
         Map<String, DataSourceProperties> dataSourceConfigs = load(databaseName);
         dataSourceConfigs.putAll(toBeAppendedDataSourcePropsMap);
         persist(databaseName, dataSourceConfigs);
-    }
-    
-    /**
-     * Drop data sources.
-     * 
-     * @param databaseName database name
-     * @param toBeDroppedDataSourceNames data sources to be dropped
-     */
-    public void drop(final String databaseName, final Collection<String> toBeDroppedDataSourceNames) {
-        Map<String, DataSourceProperties> dataSourcePropsMap = load(databaseName);
-        for (String each : toBeDroppedDataSourceNames) {
-            dataSourcePropsMap.remove(each);
-        }
-        persist(databaseName, dataSourcePropsMap);
     }
     
     private String getDatabaseActiveVersion(final String databaseName) {

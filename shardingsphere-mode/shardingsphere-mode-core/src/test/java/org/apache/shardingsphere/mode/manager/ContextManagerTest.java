@@ -204,8 +204,11 @@ public final class ContextManagerTest {
     }
     
     @Test
-    public void assertDropResources() {
+    public void assertDropResources() throws SQLException {
+        when(metaDataContexts.getMetaData().getActualDatabaseName("foo_db")).thenReturn("foo_db");
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getResource().getDataSources()).thenReturn(new HashMap<>(Collections.singletonMap("foo_ds", new MockedDataSource())));
+        when(metaDataContexts.getPersistService()).thenReturn(mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS));
+        when(metaDataContexts.getPersistService().getDataSourceService().load("foo_db")).thenReturn(Collections.singletonMap("foo_ds", mock(DataSourceProperties.class)));
         contextManager.dropResources("foo_db", Collections.singleton("foo_ds"));
         assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResource().getDataSources().isEmpty());
     }

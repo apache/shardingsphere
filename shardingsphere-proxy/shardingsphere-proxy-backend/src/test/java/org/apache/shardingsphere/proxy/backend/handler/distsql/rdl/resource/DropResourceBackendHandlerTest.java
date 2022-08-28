@@ -96,7 +96,7 @@ public final class DropResourceBackendHandlerTest extends ProxyContextRestorer {
     }
     
     @Test
-    public void assertExecute() throws DistSQLException {
+    public void assertExecute() throws SQLException {
         when(ruleMetaData.getRules()).thenReturn(Collections.emptyList());
         when(resource.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         when(database.getResource()).thenReturn(resource);
@@ -148,7 +148,7 @@ public final class DropResourceBackendHandlerTest extends ProxyContextRestorer {
     }
     
     @Test
-    public void assertResourceNameInUseIgnoreSingleTables() throws DistSQLException {
+    public void assertResourceNameInUseIgnoreSingleTables() throws SQLException {
         when(ruleMetaData.getRules()).thenReturn(Collections.singleton(singleTableRule));
         when(singleTableRule.getType()).thenReturn("SingleTableRule");
         DataNode dataNode = mock(DataNode.class);
@@ -163,7 +163,7 @@ public final class DropResourceBackendHandlerTest extends ProxyContextRestorer {
     }
     
     @Test
-    public void assertExecuteWithIfExists() throws DistSQLException {
+    public void assertExecuteWithIfExists() throws SQLException {
         DropResourceStatement dropResourceStatement = new DropResourceStatement(true, Collections.singleton("foo_ds"), true);
         assertThat(dropResourceBackendHandler.execute("test", dropResourceStatement), instanceOf(UpdateResponseHeader.class));
         verify(contextManager).dropResources("test", dropResourceStatement.getNames());

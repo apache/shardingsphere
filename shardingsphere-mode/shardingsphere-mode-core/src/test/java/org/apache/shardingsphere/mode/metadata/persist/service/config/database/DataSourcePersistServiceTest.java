@@ -88,15 +88,6 @@ public final class DataSourcePersistServiceTest {
         verify(repository).persist("/metadata/foo_db/versions/0/dataSources", expected);
     }
     
-    @Test
-    public void assertDrop() {
-        when(repository.get("/metadata/foo_db/active_version")).thenReturn("0");
-        String actual = readDataSourceYaml("yaml/persist/data-source-foo.yaml");
-        when(repository.get("/metadata/foo_db/versions/0/dataSources")).thenReturn(actual);
-        new DataSourcePersistService(repository).drop("foo_db", Collections.singleton("foo_ds"));
-        verify(repository).persist("/metadata/foo_db/versions/0/dataSources", "{}" + System.lineSeparator());
-    }
-    
     private DataSource createDataSource(final String name) {
         MockedDataSource result = new MockedDataSource();
         result.setUrl("jdbc:mysql://localhost:3306/" + name);
