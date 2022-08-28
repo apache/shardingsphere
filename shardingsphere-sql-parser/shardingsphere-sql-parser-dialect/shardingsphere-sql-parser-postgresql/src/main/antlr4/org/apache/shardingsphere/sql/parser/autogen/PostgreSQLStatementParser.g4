@@ -175,6 +175,7 @@ execute
     | alterSubscription
     | createMaterializedView
     | createOperator
+    | alterType
     | alterTextSearchConfiguration
     | createPolicy
     ) SEMI_? EOF

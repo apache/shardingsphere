@@ -1152,8 +1152,7 @@ alterTypeCmds
 
 alterTypeCmd
     : ADD ATTRIBUTE tableFuncElement dropBehavior?
-    | DROP ATTRIBUTE ifExists colId dropBehavior?
-    | DROP ATTRIBUTE colId dropBehavior?
+    | DROP ATTRIBUTE ifExists? colId dropBehavior?
     | ALTER ATTRIBUTE colId setData? TYPE typeName collateClause? dropBehavior?
     ;
 
