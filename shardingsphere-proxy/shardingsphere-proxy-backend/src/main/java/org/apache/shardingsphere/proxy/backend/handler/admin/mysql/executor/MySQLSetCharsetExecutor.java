@@ -19,12 +19,12 @@ package org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor;
 
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
+import org.apache.shardingsphere.dialect.exception.connection.UnknownCharsetException;
 import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.MySQLSessionVariableHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.charset.UnsupportedCharsetException;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Set;
@@ -63,7 +63,7 @@ public final class MySQLSetCharsetExecutor implements MySQLSessionVariableHandle
                     // CHECKSTYLE:OFF
                 } catch (Exception ex) {
                     // CHECKSTYLE:ON
-                    throw new UnsupportedCharsetException(value.toLowerCase());
+                    throw new UnknownCharsetException(value.toLowerCase());
                 }
         }
     }
