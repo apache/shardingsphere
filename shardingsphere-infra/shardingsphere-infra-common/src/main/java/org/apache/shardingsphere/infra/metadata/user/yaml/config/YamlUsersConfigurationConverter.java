@@ -79,13 +79,30 @@ public final class YamlUsersConfigurationConverter {
                 "user configuration `%s` is invalid, the configuration format should be like `username@hostname:password`", yamlUser);
         Preconditions.checkArgument(yamlUser.indexOf("@") < yamlUser.indexOf(":"),
                 "user configuration `%s` is invalid, the configuration format should be like `username@hostname:password`", yamlUser);
-        String username = yamlUser.substring(0, yamlUser.indexOf("@"));
-        String hostname = yamlUser.substring(yamlUser.indexOf("@") + 1, yamlUser.indexOf(":"));
-        String password = yamlUser.substring(yamlUser.indexOf(":") + 1);
+        // Match for user@host:pwd:authType, but authType is optional.
+        String[] splitOrders = {"@", ":", ":" };
+        String[] splitValues = {null, null, null, null};
+        int previousPosition = 0;
+        int postPosition = 0;
+        
+        for (int i = 0; i < splitOrders.length; i++) {
+            postPosition = yamlUser.indexOf(splitOrders[i], previousPosition);
+            if (postPosition == -1) {
+                splitValues[i] = yamlUser.substring(previousPosition);
+                postPosition = yamlUser.length();
+                break;
+            }
+            splitValues[i] = yamlUser.substring(previousPosition, postPosition);
+            previousPosition = postPosition + 1;
+        }
+        if (postPosition < yamlUser.length()) {
+            splitValues[splitOrders.length] = yamlUser.substring(previousPosition);
+        }
         YamlUserConfiguration result = new YamlUserConfiguration();
-        result.setUsername(username);
-        result.setHostname(hostname);
-        result.setPassword(password);
+        result.setUsername(splitValues[0]);
+        result.setHostname(splitValues[1]);
+        result.setPassword(splitValues[2]);
+        result.setAuthorityType(splitValues[3]);
         return result;
     }
 }

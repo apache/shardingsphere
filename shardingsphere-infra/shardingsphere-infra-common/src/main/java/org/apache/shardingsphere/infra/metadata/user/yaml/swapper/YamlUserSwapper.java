@@ -37,6 +37,9 @@ public final class YamlUserSwapper implements YamlConfigurationSwapper<YamlUserC
         result.setUsername(data.getGrantee().getUsername());
         result.setHostname(data.getGrantee().getHostname());
         result.setPassword(data.getPassword());
+        if (null != data.getAuthType()) {
+            result.setAuthorityType(data.getAuthType());
+        }
         return result;
     }
     
@@ -45,6 +48,8 @@ public final class YamlUserSwapper implements YamlConfigurationSwapper<YamlUserC
         if (Objects.isNull(yamlConfig)) {
             return null;
         }
-        return new ShardingSphereUser(yamlConfig.getUsername(), yamlConfig.getPassword(), null == yamlConfig.getHostname() ? "%" : yamlConfig.getHostname());
+        return new ShardingSphereUser(yamlConfig.getUsername(), yamlConfig.getPassword(),
+                null == yamlConfig.getHostname() ? "%" : yamlConfig.getHostname(),
+                yamlConfig.getAuthorityType());
     }
 }

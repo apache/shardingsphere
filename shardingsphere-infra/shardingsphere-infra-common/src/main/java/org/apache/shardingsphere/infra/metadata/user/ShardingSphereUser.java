@@ -31,8 +31,15 @@ public final class ShardingSphereUser {
     
     private final String password;
     
+    private final String authType;
+    
     public ShardingSphereUser(final String username, final String password, final String hostname) {
+        this(username, password, hostname, null);
+    }
+    
+    public ShardingSphereUser(final String username, final String password, final String hostname, final String authType) {
         grantee = new Grantee(username, hostname);
         this.password = password;
+        this.authType = authType;
     }
 }

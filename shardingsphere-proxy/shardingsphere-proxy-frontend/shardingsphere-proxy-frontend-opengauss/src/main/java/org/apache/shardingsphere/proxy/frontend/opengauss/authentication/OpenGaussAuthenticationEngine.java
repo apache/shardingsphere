@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.frontend.opengauss.authentication;
 import com.google.common.base.Strings;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
-import org.apache.shardingsphere.db.protocol.opengauss.packet.authentication.OpenGaussAuthenticationSCRAMSha256Packet;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.proxy.backend.handler.admin.postgresql.PostgreSQLCharacterSets;
 import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
@@ -42,8 +41,6 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.except
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLAuthenticationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLProtocolViolationException;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 /**
  * Authentication engine for openGauss.
  */
@@ -57,28 +54,9 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
     
     private String clientEncoding;
     
-    private final String saltHexString;
-    
-    private final String nonceHexString;
-    
-    private final int serverIteration;
-    
     private AuthenticationResult currentAuthResult;
     
-    public OpenGaussAuthenticationEngine() {
-        saltHexString = generateRandomHexString(64);
-        nonceHexString = generateRandomHexString(8);
-        serverIteration = 10000;
-    }
-    
-    private String generateRandomHexString(final int length) {
-        ThreadLocalRandom random = ThreadLocalRandom.current();
-        StringBuilder result = new StringBuilder(length);
-        for (int i = 0; i < result.capacity(); i++) {
-            result.append(Integer.toString(random.nextInt(0x10), 0x10));
-        }
-        return result.toString();
-    }
+    private OpenGaussAuthenticationHelper authenticationHelper;
     
     @Override
     public int handshake(final ChannelHandlerContext context) {
@@ -104,7 +82,8 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
         if (Strings.isNullOrEmpty(user)) {
             throw new InvalidAuthorizationSpecificationException("no PostgreSQL user name specified in startup packet");
         }
-        context.writeAndFlush(new OpenGaussAuthenticationSCRAMSha256Packet(saltHexString.getBytes(), nonceHexString.getBytes(), serverIteration));
+        authenticationHelper = new OpenGaussAuthenticationHelper(user);
+        context.writeAndFlush(authenticationHelper.createIdentifierPacket());
         currentAuthResult = AuthenticationResultBuilder.continued(user, "", comStartupPacket.getDatabase());
         return currentAuthResult;
     }
@@ -115,8 +94,8 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
             throw new PostgreSQLProtocolViolationException("password", Character.toString(messageType));
         }
         PostgreSQLPasswordMessagePacket passwordMessagePacket = new PostgreSQLPasswordMessagePacket(payload);
-        PostgreSQLLoginResult loginResult = OpenGaussAuthenticationHandler.loginWithSCRAMSha256Password(currentAuthResult.getUsername(), currentAuthResult.getDatabase(),
-                saltHexString, nonceHexString, serverIteration, passwordMessagePacket);
+        PostgreSQLLoginResult loginResult = authenticationHelper.processPassword(currentAuthResult.getUsername(), currentAuthResult.getDatabase(),
+                passwordMessagePacket);
         if (PostgreSQLVendorError.SUCCESSFUL_COMPLETION != loginResult.getVendorError()) {
             throw new PostgreSQLAuthenticationException(loginResult.getVendorError(), loginResult.getErrorMessage());
         }
