@@ -37,10 +37,10 @@ public abstract class BaseComposedContainer implements Startable {
     }
     
     /**
-     * Get proxy jdbc url.
+     * Get proxy JDBC URL.
      *
      * @param databaseName database name
-     * @return proxy jdbc url
+     * @return proxy JDBC URL
      */
     public abstract String getProxyJdbcUrl(String databaseName);
     

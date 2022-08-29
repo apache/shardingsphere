@@ -42,12 +42,7 @@ public final class StorageContainerConfigurationFactory {
         switch (databaseType.getType()) {
             case "MySQL":
                 return MySQLContainerConfigurationFactory.newInstance(scenario, databaseType);
-            // case "PostgreSQL":
-            // return PostgreSQLContainerConfigurationFactory.newInstance();
-            // case "openGauss":
-            // return OpenGaussContainerConfigurationFactory.newInstance();
-            // case "H2":
-            // return H2ContainerConfigurationFactory.newInstance();
+            // TODO please add other configuration factory for PG or OG if there is HA solution for these database types.    
             default:
                 throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
         }

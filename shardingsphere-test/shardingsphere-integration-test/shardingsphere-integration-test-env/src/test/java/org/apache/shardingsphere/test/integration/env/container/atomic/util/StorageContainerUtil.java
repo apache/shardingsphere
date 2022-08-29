@@ -31,9 +31,9 @@ public final class StorageContainerUtil {
     private static final AtomicInteger ATOMIC_STORAGE_CONTAINER_ID = new AtomicInteger(1);
     
     /**
-     * Generate a unique proxy container id.
+     * Generate a unique storage container id.
      *
-     * @return unique proxy container id
+     * @return unique storage container id
      */
     public static int generateContainerId() {
         return ATOMIC_STORAGE_CONTAINER_ID.getAndIncrement();
