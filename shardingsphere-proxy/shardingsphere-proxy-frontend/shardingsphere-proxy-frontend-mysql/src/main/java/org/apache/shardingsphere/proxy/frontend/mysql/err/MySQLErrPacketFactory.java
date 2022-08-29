@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
-import org.apache.shardingsphere.dialect.ExceptionTransformEngine;
+import org.apache.shardingsphere.dialect.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
 
 import java.sql.SQLException;
@@ -39,7 +39,7 @@ public final class MySQLErrPacketFactory {
      * @return created instance
      */
     public static MySQLErrPacket newInstance(final Exception cause) {
-        SQLException sqlException = ExceptionTransformEngine.toSQLException(cause, "MySQL");
+        SQLException sqlException = SQLExceptionTransformEngine.toSQLException(cause, "MySQL");
         return null == sqlException.getSQLState() ? new MySQLErrPacket(1, MySQLVendorError.ER_INTERNAL_ERROR, getErrorMessage(sqlException)) : createErrPacket(sqlException);
     }
     

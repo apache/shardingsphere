@@ -27,10 +27,10 @@ import org.apache.shardingsphere.infra.util.exception.sql.UnknownSQLException;
 import java.sql.SQLException;
 
 /**
- * Exception transform engine.
+ * SQL Exception transform engine.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ExceptionTransformEngine {
+public final class SQLExceptionTransformEngine {
     
     /**
      * To SQL exception.
