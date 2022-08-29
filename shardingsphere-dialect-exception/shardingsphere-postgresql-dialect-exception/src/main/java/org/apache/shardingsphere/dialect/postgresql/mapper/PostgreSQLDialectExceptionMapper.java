@@ -27,7 +27,7 @@ import org.apache.shardingsphere.dialect.mapper.SQLDialectExceptionMapper;
 import org.apache.shardingsphere.dialect.postgresql.exception.InvalidAuthorizationSpecificationException;
 import org.apache.shardingsphere.dialect.postgresql.exception.PostgreSQLAuthenticationException;
 import org.apache.shardingsphere.dialect.postgresql.exception.PostgreSQLProtocolViolationException;
-import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLServerErrorMessage;
+import org.apache.shardingsphere.dialect.postgresql.message.ServerErrorMessageBuilder;
 import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 import org.postgresql.util.PSQLException;
 import org.postgresql.util.PSQLState;
@@ -59,14 +59,13 @@ public final class PostgreSQLDialectExceptionMapper implements SQLDialectExcepti
             return new PSQLException(PostgreSQLVendorError.DATA_SOURCE_REJECTED_CONNECTION_ATTEMPT.getReason(), null);
         }
         if (sqlDialectException instanceof InvalidAuthorizationSpecificationException) {
-            return new PSQLException(new PostgreSQLServerErrorMessage(
-                    "FATAL", PostgreSQLVendorError.INVALID_AUTHORIZATION_SPECIFICATION, "no PostgreSQL user name specified in startup packet").toServerErrorMessage());
+            return new PSQLException(ServerErrorMessageBuilder.build("FATAL", PostgreSQLVendorError.INVALID_AUTHORIZATION_SPECIFICATION, "no PostgreSQL user name specified in startup packet"));
         }
         if (sqlDialectException instanceof PostgreSQLProtocolViolationException) {
-            return new PSQLException(new PostgreSQLServerErrorMessage("FATAL", PostgreSQLVendorError.PROTOCOL_VIOLATION, sqlDialectException.getMessage()).toServerErrorMessage());
+            return new PSQLException(ServerErrorMessageBuilder.build("FATAL", PostgreSQLVendorError.PROTOCOL_VIOLATION, sqlDialectException.getMessage()));
         }
         if (sqlDialectException instanceof PostgreSQLAuthenticationException) {
-            return new PSQLException(new PostgreSQLServerErrorMessage("FATAL", PostgreSQLVendorError.PROTOCOL_VIOLATION, sqlDialectException.getMessage()).toServerErrorMessage());
+            return new PSQLException(ServerErrorMessageBuilder.build("FATAL", PostgreSQLVendorError.PROTOCOL_VIOLATION, sqlDialectException.getMessage()));
         }
         return new PSQLException(sqlDialectException.getMessage(), PSQLState.UNEXPECTED_ERROR);
     }
