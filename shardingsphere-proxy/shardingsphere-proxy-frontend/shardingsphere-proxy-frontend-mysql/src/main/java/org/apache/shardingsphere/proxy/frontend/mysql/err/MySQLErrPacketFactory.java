@@ -21,11 +21,8 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
-import org.apache.shardingsphere.dialect.exception.SQLDialectException;
-import org.apache.shardingsphere.dialect.mapper.SQLDialectExceptionMapperFactory;
+import org.apache.shardingsphere.dialect.ExceptionTransformEngine;
 import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
-import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
-import org.apache.shardingsphere.infra.util.exception.sql.UnknownSQLException;
 
 import java.sql.SQLException;
 
@@ -42,17 +39,8 @@ public final class MySQLErrPacketFactory {
      * @return created instance
      */
     public static MySQLErrPacket newInstance(final Exception cause) {
-        if (cause instanceof SQLException) {
-            SQLException sqlException = (SQLException) cause;
-            return null == sqlException.getSQLState() ? new MySQLErrPacket(1, MySQLVendorError.ER_INTERNAL_ERROR, getErrorMessage(sqlException)) : createErrPacket(sqlException);
-        }
-        if (cause instanceof ShardingSphereSQLException) {
-            return createErrPacket(((ShardingSphereSQLException) cause).toSQLException());
-        }
-        if (cause instanceof SQLDialectException) {
-            return createErrPacket(SQLDialectExceptionMapperFactory.getInstance("MySQL").convert((SQLDialectException) cause));
-        }
-        return createErrPacket(new UnknownSQLException(cause).toSQLException());
+        SQLException sqlException = ExceptionTransformEngine.toSQLException(cause, "MySQL");
+        return null == sqlException.getSQLState() ? new MySQLErrPacket(1, MySQLVendorError.ER_INTERNAL_ERROR, getErrorMessage(sqlException)) : createErrPacket(sqlException);
     }
     
     private static String getErrorMessage(final SQLException cause) {
