@@ -40,6 +40,18 @@ BIT_NUM_
     : '0b' ('0' | '1')+ | B SQ_ ('0' | '1')+ SQ_
     ;
 
+FILESIZE_LITERAL
+    : INT_NUM_ ('K'|'M'|'G'|'T')
+    ;
+
+INT_NUM_
+    : DIGIT+
+    ;
+
+fragment DIGIT
+    : [0-9]
+    ;
+
 fragment INT_
     : [0-9]+
     ;
