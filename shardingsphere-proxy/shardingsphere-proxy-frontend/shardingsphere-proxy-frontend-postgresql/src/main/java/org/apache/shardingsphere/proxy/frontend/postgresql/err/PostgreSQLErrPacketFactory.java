@@ -26,7 +26,6 @@ import org.apache.shardingsphere.dialect.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
-import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.InvalidAuthorizationSpecificationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLAuthenticationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLProtocolViolationException;
 import org.postgresql.util.PSQLException;
@@ -50,14 +49,10 @@ public final class PostgreSQLErrPacketFactory {
         if (cause instanceof PSQLException && null != ((PSQLException) cause).getServerErrorMessage()) {
             return createErrorResponsePacket(((PSQLException) cause).getServerErrorMessage());
         }
-        if (cause instanceof InvalidAuthorizationSpecificationException) {
-            return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLVendorError.INVALID_AUTHORIZATION_SPECIFICATION, cause.getMessage()).build();
-        }
         if (cause instanceof PostgreSQLProtocolViolationException) {
             return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLVendorError.PROTOCOL_VIOLATION,
                     String.format("expected %s response, got message type %s", ((PostgreSQLProtocolViolationException) cause).getExpectedMessageType(),
-                            ((PostgreSQLProtocolViolationException) cause).getActualMessageType()))
-                    .build();
+                            ((PostgreSQLProtocolViolationException) cause).getActualMessageType())).build();
         }
         if (cause instanceof PostgreSQLAuthenticationException) {
             return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL, ((PostgreSQLAuthenticationException) cause).getVendorError(), cause.getMessage()).build();
@@ -78,7 +73,9 @@ public final class PostgreSQLErrPacketFactory {
     }
     
     private static PostgreSQLErrorResponsePacket createErrorResponsePacket(final SQLException cause) {
-        // TODO consider what severity to use
+        if (cause instanceof PSQLException && null != ((PSQLException) cause).getServerErrorMessage()) {
+            return createErrorResponsePacket(((PSQLException) cause).getServerErrorMessage());
+        }
         String sqlState = Strings.isNullOrEmpty(cause.getSQLState()) ? PostgreSQLVendorError.SYSTEM_ERROR.getSqlState().getValue() : cause.getSQLState();
         String message = Strings.isNullOrEmpty(cause.getMessage()) ? cause.toString() : cause.getMessage();
         return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, sqlState, message).build();

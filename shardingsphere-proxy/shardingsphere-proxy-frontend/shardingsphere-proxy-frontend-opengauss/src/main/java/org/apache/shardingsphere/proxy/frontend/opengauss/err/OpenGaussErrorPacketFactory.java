@@ -27,7 +27,6 @@ import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 import org.apache.shardingsphere.dialect.mapper.SQLDialectExceptionMapperFactory;
 import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
-import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.InvalidAuthorizationSpecificationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLAuthenticationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLProtocolViolationException;
 
@@ -81,9 +80,6 @@ public final class OpenGaussErrorPacketFactory {
         }
         if (cause instanceof ShardingSphereSQLException) {
             return createErrorResponsePacket(((ShardingSphereSQLException) cause).toSQLException());
-        }
-        if (cause instanceof InvalidAuthorizationSpecificationException) {
-            return new OpenGaussErrorResponsePacket(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLVendorError.INVALID_AUTHORIZATION_SPECIFICATION.getSqlState().getValue(), cause.getMessage());
         }
         if (cause instanceof PostgreSQLProtocolViolationException) {
             return new OpenGaussErrorResponsePacket(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLVendorError.PROTOCOL_VIOLATION.getSqlState().getValue(),

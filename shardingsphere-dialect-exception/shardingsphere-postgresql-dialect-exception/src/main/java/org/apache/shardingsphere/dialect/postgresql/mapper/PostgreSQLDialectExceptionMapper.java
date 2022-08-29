@@ -17,14 +17,16 @@
 
 package org.apache.shardingsphere.dialect.postgresql.mapper;
 
-import org.apache.shardingsphere.dialect.mapper.SQLDialectExceptionMapper;
-import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
-import org.apache.shardingsphere.dialect.exception.transaction.InTransactionException;
+import org.apache.shardingsphere.dialect.exception.SQLDialectException;
+import org.apache.shardingsphere.dialect.exception.connection.TooManyConnectionsException;
 import org.apache.shardingsphere.dialect.exception.data.InsertColumnsAndValuesMismatchedException;
 import org.apache.shardingsphere.dialect.exception.data.InvalidParameterValueException;
-import org.apache.shardingsphere.dialect.exception.connection.TooManyConnectionsException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.DatabaseCreateExistsException;
-import org.apache.shardingsphere.dialect.exception.SQLDialectException;
+import org.apache.shardingsphere.dialect.exception.transaction.InTransactionException;
+import org.apache.shardingsphere.dialect.mapper.SQLDialectExceptionMapper;
+import org.apache.shardingsphere.dialect.postgresql.exception.InvalidAuthorizationSpecificationException;
+import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLServerErrorMessage;
+import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 import org.postgresql.util.PSQLException;
 import org.postgresql.util.PSQLState;
 
@@ -53,6 +55,9 @@ public final class PostgreSQLDialectExceptionMapper implements SQLDialectExcepti
         }
         if (sqlDialectException instanceof TooManyConnectionsException) {
             return new PSQLException(PostgreSQLVendorError.DATA_SOURCE_REJECTED_CONNECTION_ATTEMPT.getReason(), null);
+        }
+        if (sqlDialectException instanceof InvalidAuthorizationSpecificationException) {
+            return new PSQLException(new PostgreSQLServerErrorMessage("FATAL", PostgreSQLVendorError.INVALID_AUTHORIZATION_SPECIFICATION, sqlDialectException.getMessage()).toServerErrorMessage());
         }
         return new PSQLException(sqlDialectException.getMessage(), PSQLState.UNEXPECTED_ERROR);
     }
