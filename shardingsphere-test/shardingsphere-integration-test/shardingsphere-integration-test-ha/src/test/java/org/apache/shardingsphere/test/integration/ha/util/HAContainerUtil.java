@@ -28,7 +28,7 @@ import java.util.Map;
  * HA container utility.
  */
 @NoArgsConstructor
-public class HAContainerUtil {
+public final class HAContainerUtil {
     
     /**
      * Get container names and quantity.

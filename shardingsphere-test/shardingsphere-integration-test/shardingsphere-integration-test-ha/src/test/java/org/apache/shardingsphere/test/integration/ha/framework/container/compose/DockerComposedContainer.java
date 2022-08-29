@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Composed container, include governance container and database container.
+ * Composed container, include governance container and storage container.
  */
 @Slf4j
 @Getter
