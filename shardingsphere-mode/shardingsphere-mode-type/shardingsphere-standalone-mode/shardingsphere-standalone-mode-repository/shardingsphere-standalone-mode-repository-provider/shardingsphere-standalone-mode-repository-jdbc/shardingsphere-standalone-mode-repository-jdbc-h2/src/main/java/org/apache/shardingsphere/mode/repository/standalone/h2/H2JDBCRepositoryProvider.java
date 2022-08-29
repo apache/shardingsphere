@@ -31,7 +31,7 @@ public final class H2JDBCRepositoryProvider implements JDBCRepositoryProvider {
     
     @Override
     public String createTableSQL() {
-        return "CREATE TABLE `repository`(id varchar(36) PRIMARY KEY, `key` TEXT, `value` TEXT, parent TEXT)";
+        return "CREATE TABLE IF NOT EXISTS `repository`(id varchar(36) PRIMARY KEY, `key` TEXT, `value` TEXT, parent TEXT)";
     }
     
     @Override
