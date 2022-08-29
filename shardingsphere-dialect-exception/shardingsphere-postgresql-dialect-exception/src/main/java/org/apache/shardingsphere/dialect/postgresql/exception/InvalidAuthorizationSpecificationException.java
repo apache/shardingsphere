@@ -17,18 +17,12 @@
 
 package org.apache.shardingsphere.dialect.postgresql.exception;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 
 /**
  * Invalid authorization specification exception.
  */
-@RequiredArgsConstructor
-@Getter
 public final class InvalidAuthorizationSpecificationException extends SQLDialectException {
     
     private static final long serialVersionUID = -7169979989631579431L;
-    
-    private final String message;
 }

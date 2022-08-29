@@ -44,7 +44,7 @@ import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.PostgreSQLAuthenticator;
 import org.apache.shardingsphere.dialect.postgresql.exception.InvalidAuthorizationSpecificationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLAuthenticationException;
-import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLProtocolViolationException;
+import org.apache.shardingsphere.dialect.postgresql.exception.PostgreSQLProtocolViolationException;
 
 /**
  * Authentication engine for PostgreSQL.
@@ -87,7 +87,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
         context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(PostgreSQLCharacterSets.findCharacterSet(clientEncoding));
         String user = comStartupPacket.getUser();
         if (Strings.isNullOrEmpty(user)) {
-            throw new InvalidAuthorizationSpecificationException("no PostgreSQL user name specified in startup packet");
+            throw new InvalidAuthorizationSpecificationException();
         }
         context.writeAndFlush(getIdentifierPacket(user));
         currentAuthResult = AuthenticationResultBuilder.continued(user, "", comStartupPacket.getDatabase());
