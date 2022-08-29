@@ -179,5 +179,6 @@ execute
     | createPolicy
     | alterType
     | alterTrigger
+    | createPublication
     ) SEMI_? EOF
     ;
