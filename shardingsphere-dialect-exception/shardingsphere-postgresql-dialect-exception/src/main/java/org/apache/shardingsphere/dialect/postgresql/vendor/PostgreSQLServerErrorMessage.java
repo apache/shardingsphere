@@ -15,20 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception;
+package org.apache.shardingsphere.dialect.postgresql.vendor;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.frontend.exception.FrontendException;
+import org.apache.shardingsphere.infra.util.exception.sql.vendor.VendorError;
+import org.postgresql.util.ServerErrorMessage;
 
 /**
- * Invalid authorization specification exception.
+ * PostgreSQL server error message.
  */
 @RequiredArgsConstructor
-@Getter
-public final class InvalidAuthorizationSpecificationException extends FrontendException {
+public final class PostgreSQLServerErrorMessage {
     
-    private static final long serialVersionUID = -7169979989631579431L;
+    private final String severity;
     
-    private final String message;
+    private final VendorError vendorError;
+    
+    private final String reason;
+    
+    /**
+     * To server error message.
+     * 
+     * @return server error message
+     */
+    public ServerErrorMessage toServerErrorMessage() {
+        return new ServerErrorMessage("S" + severity + "\0" + "V" + severity + "\0" + "C" + vendorError.getSqlState().getValue() + "\0" + "M" + reason);
+    }
 }

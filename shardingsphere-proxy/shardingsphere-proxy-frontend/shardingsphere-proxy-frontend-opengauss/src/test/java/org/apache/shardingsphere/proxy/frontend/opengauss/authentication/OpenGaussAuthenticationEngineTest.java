@@ -43,7 +43,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
 import org.apache.shardingsphere.proxy.frontend.opengauss.ProxyContextRestorer;
 import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.fixture.OpenGaussAuthenticationAlgorithm;
-import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.InvalidAuthorizationSpecificationException;
+import org.apache.shardingsphere.dialect.postgresql.exception.InvalidAuthorizationSpecificationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLAuthenticationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLProtocolViolationException;
 import org.junit.Before;
