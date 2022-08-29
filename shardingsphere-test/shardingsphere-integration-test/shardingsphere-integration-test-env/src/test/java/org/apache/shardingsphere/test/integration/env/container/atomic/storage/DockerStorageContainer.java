@@ -110,7 +110,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     /**
      * Create access data source.
-     * 
+     *
      * @param dataSourceName data source name
      * @return access data source
      */
@@ -127,7 +127,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     /**
      * Get JDBC URL.
-     * 
+     *
      * @param dataSourceName datasource name
      * @return JDBC URL
      */
@@ -137,7 +137,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     /**
      * Get username.
-     * 
+     *
      * @return username
      */
     public final String getUsername() {
