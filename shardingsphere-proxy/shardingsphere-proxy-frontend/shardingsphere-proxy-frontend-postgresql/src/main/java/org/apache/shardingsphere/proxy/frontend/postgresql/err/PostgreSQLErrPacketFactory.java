@@ -26,7 +26,6 @@ import org.apache.shardingsphere.dialect.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
-import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLAuthenticationException;
 import org.postgresql.util.PSQLException;
 import org.postgresql.util.ServerErrorMessage;
 
@@ -44,12 +43,10 @@ public final class PostgreSQLErrPacketFactory {
      * @param cause cause
      * @return created instance
      */
+    @SuppressWarnings("ConstantConditions")
     public static PostgreSQLErrorResponsePacket newInstance(final Exception cause) {
         if (cause instanceof PSQLException && null != ((PSQLException) cause).getServerErrorMessage()) {
             return createErrorResponsePacket(((PSQLException) cause).getServerErrorMessage());
-        }
-        if (cause instanceof PostgreSQLAuthenticationException) {
-            return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL, ((PostgreSQLAuthenticationException) cause).getVendorError(), cause.getMessage()).build();
         }
         if (cause instanceof SQLException || cause instanceof ShardingSphereSQLException || cause instanceof SQLDialectException) {
             return createErrorResponsePacket(SQLExceptionTransformEngine.toSQLException(cause, "PostgreSQL"));
@@ -66,6 +63,7 @@ public final class PostgreSQLErrPacketFactory {
                 .constraintName(serverErrorMessage.getConstraint()).file(serverErrorMessage.getFile()).line(serverErrorMessage.getLine()).routine(serverErrorMessage.getRoutine()).build();
     }
     
+    @SuppressWarnings("ConstantConditions")
     private static PostgreSQLErrorResponsePacket createErrorResponsePacket(final SQLException cause) {
         if (cause instanceof PSQLException && null != ((PSQLException) cause).getServerErrorMessage()) {
             return createErrorResponsePacket(((PSQLException) cause).getServerErrorMessage());

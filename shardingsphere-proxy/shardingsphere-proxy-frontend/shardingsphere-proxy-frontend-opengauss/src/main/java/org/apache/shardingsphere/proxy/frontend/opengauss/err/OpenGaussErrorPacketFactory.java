@@ -27,7 +27,6 @@ import org.apache.shardingsphere.dialect.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
-import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLAuthenticationException;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -73,9 +72,6 @@ public final class OpenGaussErrorPacketFactory {
         }
         if (cause instanceof SQLException || cause instanceof ShardingSphereSQLException || cause instanceof SQLDialectException) {
             return createErrorResponsePacket(SQLExceptionTransformEngine.toSQLException(cause, "PostgreSQL"));
-        }
-        if (cause instanceof PostgreSQLAuthenticationException) {
-            return new OpenGaussErrorResponsePacket(PostgreSQLMessageSeverityLevel.FATAL, ((PostgreSQLAuthenticationException) cause).getVendorError().getSqlState().getValue(), cause.getMessage());
         }
         // TODO OpenGauss need consider FrontendConnectionLimitException
         return createErrorResponsePacketForUnknownException(cause);
