@@ -10,7 +10,7 @@ Apache ShardingSphere provides different metadata persistence methods for differ
 ## Parameters
 ### File Repository
 
-Type: File
+Type: JDBC
 
 Mode: Standalone
 
@@ -18,7 +18,11 @@ Attributes:
 
 | *Name*                       | *Type* | *Description*                     | *Default Value*                                                         |
 | ---------------------------- | ------ | --------------------------------- | ----------------------------------------------------------------------- |
-|path|	String|	Path for metadata persist	|.shardingsphere|
+| provider                    | String      | Type for metadata persist     | H2              |
+| jdbc_url                    | String      | JDBC URL              | jdbc:h2:mem:config;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL              |
+| username                    | String      | username              | sa              |
+| password                    | String      | password              |                 |
+
 
 ### ZooKeeper Repository
 
@@ -62,9 +66,12 @@ Attributes:
 mode:
   type: Standalone
   repository:
-    type: File
+    type: JDBC
     props:
-       path: ~/user/.shardingsphere
+      provider: H2
+      jdbc_url: jdbc:h2:mem:config;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+      username: test
+      password: Test@123
   overwrite: false
 ```
 

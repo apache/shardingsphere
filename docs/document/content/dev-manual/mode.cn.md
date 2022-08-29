@@ -17,9 +17,9 @@ chapter = true
 
 ### 已知实现
 
-| *配置标识*             | *详细说明*             | *全限定类名*                   |
+| *配置标识*            | *详细说明*             | *全限定类名*                   |
 | -------------------- | -------------------- | ---------------------------- |
-| H2                   | H2-based persistence | [`org.apache.shardingsphere.mode.repository.standalone.h2.H2Repository`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-mode/shardingsphere-mode-type/shardingsphere-standalone-mode/shardingsphere-standalone-mode-repository/shardingsphere-standalone-mode-repository-provider/shardingsphere-standalone-mode-repository-jdbc-h2/src/main/java/org/apache/shardingsphere/mode/repository/standalone/h2/H2Repository.java) |
+| H2                   | 基于 H2 的持久化      | [`org.apache.shardingsphere.mode.repository.standalone.h2.H2Repository`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-mode/shardingsphere-mode-type/shardingsphere-standalone-mode/shardingsphere-standalone-mode-repository/shardingsphere-standalone-mode-repository-provider/shardingsphere-standalone-mode-repository-jdbc-h2/src/main/java/org/apache/shardingsphere/mode/repository/standalone/h2/H2Repository.java) |
 
 ## ClusterPersistRepository
 
