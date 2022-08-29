@@ -31,7 +31,7 @@ import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 /**
- * Query result set fpr show migration list.
+ * Query result set for show migration list.
  */
 public final class ShowMigrationListQueryResultSet implements DatabaseDistSQLResultSet {
     

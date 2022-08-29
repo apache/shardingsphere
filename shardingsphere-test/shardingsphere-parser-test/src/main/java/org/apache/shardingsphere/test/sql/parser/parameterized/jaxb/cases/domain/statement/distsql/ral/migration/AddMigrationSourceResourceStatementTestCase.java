@@ -26,7 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Add migration statement test case.
+ * Add migration source resource statement test case.
  */
 @Getter
 public final class AddMigrationSourceResourceStatementTestCase extends SQLParserTestCase {

@@ -35,7 +35,7 @@ import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * Query result set for traffic rule..
+ * Query result set for traffic rule.
  */
 public final class TrafficRulesQueryResultSet implements GlobalRuleDistSQLResultSet {
     
