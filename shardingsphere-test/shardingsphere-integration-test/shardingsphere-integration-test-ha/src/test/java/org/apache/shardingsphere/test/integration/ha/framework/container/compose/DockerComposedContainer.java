@@ -28,7 +28,7 @@ import org.apache.shardingsphere.test.integration.env.container.atomic.governanc
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
-import org.apache.shardingsphere.test.integration.env.container.atomic.util.StorageContainerUtil;
+import org.apache.shardingsphere.test.integration.env.container.atomic.util.ContainerUtil;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.ha.framework.container.config.ProxyClusterContainerConfigurationFactory;
 import org.apache.shardingsphere.test.integration.ha.framework.container.config.StorageContainerConfigurationFactory;
@@ -63,7 +63,7 @@ public final class DockerComposedContainer extends BaseComposedContainer {
         List<StorageContainerConfiguration> containerConfigs = StorageContainerConfigurationFactory.newInstance(scenario, databaseType);
         containerConfigs.forEach(each -> {
             DockerStorageContainer storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, dockerImageName, null, each));
-            storageContainer.setNetworkAliases(Collections.singletonList(databaseType.getType().toLowerCase() + "_" + StorageContainerUtil.generateContainerId()));
+            storageContainer.setNetworkAliases(Collections.singletonList(databaseType.getType().toLowerCase() + "_" + ContainerUtil.generateStorageContainerId()));
             storageContainers.add(storageContainer);
         });
         

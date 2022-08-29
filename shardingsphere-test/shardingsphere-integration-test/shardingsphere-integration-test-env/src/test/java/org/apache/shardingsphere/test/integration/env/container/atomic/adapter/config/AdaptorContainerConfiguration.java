@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.integration.env.container.atomic.adapter.
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.integration.env.container.atomic.util.ProxyContainerUtil;
+import org.apache.shardingsphere.test.integration.env.container.atomic.util.ContainerUtil;
 
 import java.util.Map;
 
@@ -34,5 +34,5 @@ public final class AdaptorContainerConfiguration {
     
     private final Map<String, String> mountedResources;
     
-    private final int containerId = ProxyContainerUtil.generateContainerId();
+    private final int containerId = ContainerUtil.generateAdaptorContainerId();
 }
