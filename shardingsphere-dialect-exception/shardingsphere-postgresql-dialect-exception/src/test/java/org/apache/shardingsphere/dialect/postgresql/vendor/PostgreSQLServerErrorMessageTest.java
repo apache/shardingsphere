@@ -17,28 +17,19 @@
 
 package org.apache.shardingsphere.dialect.postgresql.vendor;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.sql.vendor.VendorError;
+import org.junit.Assert;
+import org.junit.Test;
 import org.postgresql.util.ServerErrorMessage;
 
-/**
- * PostgreSQL server error message.
- */
-@RequiredArgsConstructor
-public final class PostgreSQLServerErrorMessage {
+import static org.hamcrest.CoreMatchers.is;
+
+public final class PostgreSQLServerErrorMessageTest {
     
-    private final String severity;
-    
-    private final VendorError vendorError;
-    
-    private final String reason;
-    
-    /**
-     * To server error message.
-     * 
-     * @return server error message
-     */
-    public ServerErrorMessage toServerErrorMessage() {
-        return new ServerErrorMessage(String.join("\0", "S" + severity, "V" + severity, "C" + vendorError.getSqlState().getValue(), "M" + reason));
+    @Test
+    public void assertToServerErrorMessage() {
+        ServerErrorMessage actual = new PostgreSQLServerErrorMessage("FATAL", PostgreSQLVendorError.SYSTEM_ERROR, "foo_reason").toServerErrorMessage();
+        Assert.assertThat(actual.getSeverity(), is("FATAL"));
+        Assert.assertThat(actual.getSQLState(), is(PostgreSQLVendorError.SYSTEM_ERROR.getSqlState().getValue()));
+        Assert.assertThat(actual.getMessage(), is("foo_reason"));
     }
 }
