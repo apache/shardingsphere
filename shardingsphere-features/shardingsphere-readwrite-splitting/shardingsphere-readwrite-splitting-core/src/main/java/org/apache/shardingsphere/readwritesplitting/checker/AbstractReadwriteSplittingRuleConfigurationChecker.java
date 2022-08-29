@@ -89,7 +89,7 @@ public abstract class AbstractReadwriteSplittingRuleConfigurationChecker<T exten
                                            final Map<String, DataSource> dataSourceMap, final Collection<String> addedReadDataSourceNames, final String readDataSourceName) {
         for (String each : new InlineExpressionParser(readDataSourceName).splitAndEvaluate()) {
             Preconditions.checkState(dataSourceMap.containsKey(each), "Read data source name `%s` not in database `%s`.", each, databaseName);
-            Preconditions.checkState(addedReadDataSourceNames.add(each), "Can not config duplicate write data source `%s` in database `%s`.", each, databaseName);
+            Preconditions.checkState(addedReadDataSourceNames.add(each), "Can not config duplicate read data source `%s` in database `%s`.", each, databaseName);
         }
     }
     

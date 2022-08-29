@@ -34,11 +34,11 @@ import static org.junit.Assert.assertThat;
 public final class ShowMigrationStatusStatementAssert {
     
     /**
-     * Assert show migration status is correct with expected parser result.
+     * Assert show migration status statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual check migration statement
-     * @param expected expected check migration statement test case
+     * @param actual actual show migration status statement
+     * @param expected expected show migration status statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowMigrationStatusStatement actual, final ShowMigrationStatusStatementTestCase expected) {
         if (null == expected) {

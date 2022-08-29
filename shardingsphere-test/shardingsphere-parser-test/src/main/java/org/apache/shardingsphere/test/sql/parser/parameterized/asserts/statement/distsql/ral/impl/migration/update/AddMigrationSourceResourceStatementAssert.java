@@ -35,17 +35,17 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Add Resource statement assert.
+ * Add migration source resource statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AddMigrationSourceResourceStatementAssert {
     
     /**
-     * Assert add resource statement is correct with expected parser result.
+     * Assert add migration source resource statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual add resource statement
-     * @param expected expected add resource statement test case
+     * @param actual actual add migration source resource statement
+     * @param expected expected add migration source resource statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AddMigrationSourceResourceStatement actual, final AddMigrationSourceResourceStatementTestCase expected) {
         if (null == expected) {
