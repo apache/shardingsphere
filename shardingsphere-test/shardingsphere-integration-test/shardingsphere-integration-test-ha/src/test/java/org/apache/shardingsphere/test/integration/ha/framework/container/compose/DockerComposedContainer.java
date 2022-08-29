@@ -40,7 +40,7 @@ import java.util.List;
  */
 @Slf4j
 @Getter
-public final class DockerComposedContainer extends AbstractComposedContainer {
+public final class DockerComposedContainer extends BaseComposedContainer {
     
     private final DatabaseType databaseType;
     

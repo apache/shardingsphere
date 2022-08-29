@@ -24,14 +24,14 @@ import org.testcontainers.lifecycle.Startable;
 /**
  * Abstract composed container.
  */
-public abstract class AbstractComposedContainer implements Startable {
+public abstract class BaseComposedContainer implements Startable {
     
     @Getter
     private final ITContainers containers;
     
     private final String scenario;
     
-    public AbstractComposedContainer(final String scenario) {
+    public BaseComposedContainer(final String scenario) {
         this.scenario = scenario;
         this.containers = new ITContainers(scenario);
     }

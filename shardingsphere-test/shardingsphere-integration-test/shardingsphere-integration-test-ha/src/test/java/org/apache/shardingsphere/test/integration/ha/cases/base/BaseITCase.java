@@ -30,7 +30,7 @@ import org.apache.shardingsphere.test.integration.env.container.atomic.storage.D
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.ha.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.test.integration.ha.framework.container.compose.AbstractComposedContainer;
+import org.apache.shardingsphere.test.integration.ha.framework.container.compose.BaseComposedContainer;
 import org.apache.shardingsphere.test.integration.ha.framework.container.compose.DockerComposedContainer;
 import org.apache.shardingsphere.test.integration.ha.framework.parameter.HAParameterized;
 
@@ -51,7 +51,7 @@ public abstract class BaseITCase {
     
     protected static final String DEFAULT_SCHEMA = "ha_test";
     
-    private final AbstractComposedContainer composedContainer;
+    private final BaseComposedContainer composedContainer;
     
     private final DatabaseType databaseType;
     
