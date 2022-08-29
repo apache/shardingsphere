@@ -27,14 +27,14 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class OpenGaussPipelineSQLBuilderTest {
+public final class OpenGaussPipelineSQLBuilderTest {
     
     private final OpenGaussPipelineSQLBuilder sqlBuilder = new OpenGaussPipelineSQLBuilder();
     
     @Test
     public void assertBuildInsertSQL() {
         String actual = sqlBuilder.buildInsertSQL(null, mockDataRecord("t1"), Collections.emptyMap());
-        assertThat(actual, is("INSERT INTO t1(id,c0,c1,c2,c3) VALUES(?,?,?,?,?) ON DUPLICATE KEY UPDATE c0=VALUES(c0),c1=VALUES(c1),c2=VALUES(c2),c3=VALUES(c3)"));
+        assertThat(actual, is("INSERT INTO t1(id,c0,c1,c2,c3) VALUES(?,?,?,?,?) ON DUPLICATE KEY UPDATE c0=EXCLUDED.c0,c1=EXCLUDED.c1,c2=EXCLUDED.c2,c3=EXCLUDED.c3"));
     }
     
     private DataRecord mockDataRecord(final String tableName) {
