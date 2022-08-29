@@ -23,12 +23,11 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.opengauss.packet.command.generic.OpenGaussErrorResponsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
+import org.apache.shardingsphere.dialect.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
-import org.apache.shardingsphere.dialect.mapper.SQLDialectExceptionMapperFactory;
 import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLAuthenticationException;
-import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLProtocolViolationException;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -72,19 +71,8 @@ public final class OpenGaussErrorPacketFactory {
         if (existsServerErrorMessage(cause)) {
             return createErrorResponsePacket(getServerErrorMessageMap(cause));
         }
-        if (cause instanceof SQLException) {
-            return createErrorResponsePacket((SQLException) cause);
-        }
-        if (cause instanceof SQLDialectException) {
-            return createErrorResponsePacket(SQLDialectExceptionMapperFactory.getInstance("PostgreSQL").convert((SQLDialectException) cause));
-        }
-        if (cause instanceof ShardingSphereSQLException) {
-            return createErrorResponsePacket(((ShardingSphereSQLException) cause).toSQLException());
-        }
-        if (cause instanceof PostgreSQLProtocolViolationException) {
-            return new OpenGaussErrorResponsePacket(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLVendorError.PROTOCOL_VIOLATION.getSqlState().getValue(),
-                    String.format("expected %s response, got message type %s", ((PostgreSQLProtocolViolationException) cause).getExpectedMessageType(),
-                            ((PostgreSQLProtocolViolationException) cause).getActualMessageType()));
+        if (cause instanceof SQLException || cause instanceof ShardingSphereSQLException || cause instanceof SQLDialectException) {
+            return createErrorResponsePacket(SQLExceptionTransformEngine.toSQLException(cause, "PostgreSQL"));
         }
         if (cause instanceof PostgreSQLAuthenticationException) {
             return new OpenGaussErrorResponsePacket(PostgreSQLMessageSeverityLevel.FATAL, ((PostgreSQLAuthenticationException) cause).getVendorError().getSqlState().getValue(), cause.getMessage());

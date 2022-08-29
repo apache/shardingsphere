@@ -46,7 +46,7 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.ProxyContextRestorer;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.PostgreSQLMD5PasswordAuthenticator;
 import org.apache.shardingsphere.dialect.postgresql.exception.InvalidAuthorizationSpecificationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLAuthenticationException;
-import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLProtocolViolationException;
+import org.apache.shardingsphere.dialect.postgresql.exception.PostgreSQLProtocolViolationException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

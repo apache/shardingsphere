@@ -17,12 +17,18 @@
 
 package org.apache.shardingsphere.dialect.exception;
 
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 
 /**
  * SQL dialect exception.
  */
+@NoArgsConstructor
 public abstract class SQLDialectException extends ShardingSphereInsideException {
     
     private static final long serialVersionUID = -5090068160364259336L;
+    
+    public SQLDialectException(final String errorMessage, final Object... args) {
+        super(errorMessage, args);
+    }
 }
