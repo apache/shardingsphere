@@ -35,9 +35,9 @@ public final class ContainerUtil {
     private static final AtomicInteger ATOMIC_STORAGE_CONTAINER_ID = new AtomicInteger(1);
     
     /**
-     * Generate a unique mysql server id.
+     * Generate a unique MySQL server id.
      * 
-     * @return unique mysql server id
+     * @return unique MySQL server id
      */
     public static int generateMySQLServerId() {
         return ATOMIC_MYSQL_SERVER_ID.getAndIncrement();
