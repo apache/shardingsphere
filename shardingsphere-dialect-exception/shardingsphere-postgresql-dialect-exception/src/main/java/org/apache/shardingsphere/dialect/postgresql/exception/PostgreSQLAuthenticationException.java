@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception;
+package org.apache.shardingsphere.dialect.postgresql.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
-import org.apache.shardingsphere.proxy.frontend.exception.FrontendException;
 
 /**
  * PostgreSQL authentication exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class PostgreSQLAuthenticationException extends FrontendException {
+public final class PostgreSQLAuthenticationException extends SQLDialectException {
     
     private static final long serialVersionUID = 1331782847269278560L;
     

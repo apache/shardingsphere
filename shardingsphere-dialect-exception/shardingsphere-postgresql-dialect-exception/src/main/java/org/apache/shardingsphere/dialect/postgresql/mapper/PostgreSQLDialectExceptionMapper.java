@@ -25,6 +25,7 @@ import org.apache.shardingsphere.dialect.exception.syntax.database.DatabaseCreat
 import org.apache.shardingsphere.dialect.exception.transaction.InTransactionException;
 import org.apache.shardingsphere.dialect.mapper.SQLDialectExceptionMapper;
 import org.apache.shardingsphere.dialect.postgresql.exception.InvalidAuthorizationSpecificationException;
+import org.apache.shardingsphere.dialect.postgresql.exception.PostgreSQLAuthenticationException;
 import org.apache.shardingsphere.dialect.postgresql.exception.PostgreSQLProtocolViolationException;
 import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLServerErrorMessage;
 import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
@@ -62,6 +63,9 @@ public final class PostgreSQLDialectExceptionMapper implements SQLDialectExcepti
                     "FATAL", PostgreSQLVendorError.INVALID_AUTHORIZATION_SPECIFICATION, "no PostgreSQL user name specified in startup packet").toServerErrorMessage());
         }
         if (sqlDialectException instanceof PostgreSQLProtocolViolationException) {
+            return new PSQLException(new PostgreSQLServerErrorMessage("FATAL", PostgreSQLVendorError.PROTOCOL_VIOLATION, sqlDialectException.getMessage()).toServerErrorMessage());
+        }
+        if (sqlDialectException instanceof PostgreSQLAuthenticationException) {
             return new PSQLException(new PostgreSQLServerErrorMessage("FATAL", PostgreSQLVendorError.PROTOCOL_VIOLATION, sqlDialectException.getMessage()).toServerErrorMessage());
         }
         return new PSQLException(sqlDialectException.getMessage(), PSQLState.UNEXPECTED_ERROR);
