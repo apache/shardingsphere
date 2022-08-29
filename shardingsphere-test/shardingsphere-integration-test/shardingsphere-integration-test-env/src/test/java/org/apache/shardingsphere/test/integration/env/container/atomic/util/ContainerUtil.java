@@ -23,19 +23,41 @@ import lombok.NoArgsConstructor;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Storage container util.
+ * Container util.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class StorageContainerUtil {
+public final class ContainerUtil {
+    
+    private static final AtomicInteger ATOMIC_MYSQL_SERVER_ID = new AtomicInteger(1);
+    
+    private static final AtomicInteger ATOMIC_ADAPTOR_CONTAINER_ID = new AtomicInteger(1);
     
     private static final AtomicInteger ATOMIC_STORAGE_CONTAINER_ID = new AtomicInteger(1);
+    
+    /**
+     * Generate a unique MySQL server id.
+     * 
+     * @return unique MySQL server id
+     */
+    public static int generateMySQLServerId() {
+        return ATOMIC_MYSQL_SERVER_ID.getAndIncrement();
+    }
+    
+    /**
+     * Generate a unique adapter container id.
+     *
+     * @return unique adapter container id
+     */
+    public static int generateAdaptorContainerId() {
+        return ATOMIC_ADAPTOR_CONTAINER_ID.getAndIncrement();
+    }
     
     /**
      * Generate a unique storage container id.
      *
      * @return unique storage container id
      */
-    public static int generateContainerId() {
+    public static int generateStorageContainerId() {
         return ATOMIC_STORAGE_CONTAINER_ID.getAndIncrement();
     }
 }

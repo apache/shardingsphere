@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
-import org.apache.shardingsphere.test.integration.env.container.atomic.util.MySQLContainerUtil;
+import org.apache.shardingsphere.test.integration.env.container.atomic.util.ContainerUtil;
 import org.apache.shardingsphere.test.integration.ha.util.HAContainerUtil;
 
 import java.util.Collections;
@@ -60,7 +60,7 @@ public final class MySQLContainerConfigurationFactory {
     }
     
     private static String getCommand() {
-        return "--server-id=" + MySQLContainerUtil.generateServerId();
+        return "--server-id=" + ContainerUtil.generateMySQLServerId();
     }
     
     private static Map<String, String> getContainerEnvironments() {
