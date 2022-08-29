@@ -27,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.StorageContainerConstants;
+import org.apache.shardingsphere.test.integration.env.container.atomic.util.StorageContainerUtil;
 import org.apache.shardingsphere.test.integration.env.container.wait.JdbcConnectionWaitStrategy;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.env.runtime.scenario.database.DatabaseEnvironmentManager;
@@ -52,6 +53,9 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     @Getter
     private final DatabaseType databaseType;
     
+    @Getter
+    private final String abbreviation;
+    
     @Getter(AccessLevel.NONE)
     private final String scenario;
     
@@ -63,6 +67,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
         super(databaseType.getType().toLowerCase(), dockerImageName);
         this.databaseType = databaseType;
         this.scenario = scenario;
+        abbreviation = databaseType.getType().toLowerCase() + "_" + StorageContainerUtil.generateContainerId();
         actualDataSourceMap = new LinkedHashMap<>();
         expectedDataSourceMap = new LinkedHashMap<>();
     }
@@ -161,9 +166,4 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     }
     
     protected abstract Optional<String> getDefaultDatabaseName();
-    
-    @Override
-    public final String getAbbreviation() {
-        return databaseType.getType().toLowerCase();
-    }
 }

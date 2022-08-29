@@ -34,6 +34,7 @@ import org.apache.shardingsphere.test.integration.ha.framework.container.config.
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Composed container, include governance container and database container.
@@ -78,5 +79,15 @@ public final class DockerComposedContainer extends BaseComposedContainer {
      */
     public String getProxyJdbcUrl(final String databaseName) {
         return DataSourceEnvironment.getURL(databaseType, proxyContainer.getHost(), proxyContainer.getFirstMappedPort(), databaseName);
+    }
+    
+    /**
+     * Get storage containers JDBC URL.
+     * 
+     * @param databaseName database name
+     * @return storage containers JDBC URL
+     */
+    public List<String> getJdbcUrls(final String databaseName) {
+        return storageContainers.stream().map(each -> each.getJdbcUrl(databaseName)).collect(Collectors.toList());
     }
 }

@@ -26,8 +26,10 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * MySQL High Availability Integration Test.
@@ -36,8 +38,11 @@ import java.util.LinkedList;
 @RunWith(Parameterized.class)
 public final class MySQLHAGeneralIT extends BaseITCase {
     
+    private final HAParameterized haParameterized;
+    
     public MySQLHAGeneralIT(final HAParameterized haParameterized) {
         super(haParameterized);
+        this.haParameterized = haParameterized;
     }
     
     @Parameters(name = "{0}")
@@ -52,6 +57,8 @@ public final class MySQLHAGeneralIT extends BaseITCase {
     
     @Test
     public void assertProxyJdbcConnection() {
-        
+        List<DataSource> dataSourceList = getStorageDataSources();
+        // TODO add the MySQL HA logic here.
+        dataSourceList.forEach(each -> log.info(each.toString()));
     }
 }
