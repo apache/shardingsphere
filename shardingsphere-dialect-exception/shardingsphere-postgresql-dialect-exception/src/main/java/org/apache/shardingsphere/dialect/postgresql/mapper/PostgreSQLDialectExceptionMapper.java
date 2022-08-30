@@ -22,11 +22,14 @@ import org.apache.shardingsphere.dialect.exception.connection.TooManyConnections
 import org.apache.shardingsphere.dialect.exception.data.InsertColumnsAndValuesMismatchedException;
 import org.apache.shardingsphere.dialect.exception.data.InvalidParameterValueException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.DatabaseCreateExistsException;
+import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.dialect.exception.transaction.InTransactionException;
 import org.apache.shardingsphere.dialect.mapper.SQLDialectExceptionMapper;
 import org.apache.shardingsphere.dialect.postgresql.exception.InvalidAuthorizationSpecificationException;
-import org.apache.shardingsphere.dialect.postgresql.exception.PostgreSQLAuthenticationException;
+import org.apache.shardingsphere.dialect.postgresql.exception.InvalidPasswordException;
 import org.apache.shardingsphere.dialect.postgresql.exception.PostgreSQLProtocolViolationException;
+import org.apache.shardingsphere.dialect.postgresql.exception.PrivilegeNotGrantedException;
+import org.apache.shardingsphere.dialect.postgresql.exception.UnknownUsernameException;
 import org.apache.shardingsphere.dialect.postgresql.message.ServerErrorMessageBuilder;
 import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 import org.postgresql.util.PSQLException;
@@ -41,6 +44,19 @@ public final class PostgreSQLDialectExceptionMapper implements SQLDialectExcepti
     
     @Override
     public SQLException convert(final SQLDialectException sqlDialectException) {
+        if (sqlDialectException instanceof UnknownDatabaseException) {
+            return new PSQLException(ServerErrorMessageBuilder.build("FATAL", PostgreSQLVendorError.INVALID_CATALOG_NAME,
+                    String.format(PostgreSQLVendorError.INVALID_CATALOG_NAME.getReason(), ((UnknownDatabaseException) sqlDialectException).getDatabaseName())));
+        }
+        if (sqlDialectException instanceof UnknownUsernameException) {
+            return new PSQLException(ServerErrorMessageBuilder.build("FATAL", PostgreSQLVendorError.INVALID_AUTHORIZATION_SPECIFICATION, sqlDialectException.getMessage()));
+        }
+        if (sqlDialectException instanceof InvalidPasswordException) {
+            return new PSQLException(ServerErrorMessageBuilder.build("FATAL", PostgreSQLVendorError.INVALID_PASSWORD, sqlDialectException.getMessage()));
+        }
+        if (sqlDialectException instanceof PrivilegeNotGrantedException) {
+            return new PSQLException(ServerErrorMessageBuilder.build("FATAL", PostgreSQLVendorError.PRIVILEGE_NOT_GRANTED, sqlDialectException.getMessage()));
+        }
         if (sqlDialectException instanceof DatabaseCreateExistsException) {
             return new PSQLException(PostgreSQLVendorError.DUPLICATE_DATABASE.getReason(), null);
         }
@@ -62,9 +78,6 @@ public final class PostgreSQLDialectExceptionMapper implements SQLDialectExcepti
             return new PSQLException(ServerErrorMessageBuilder.build("FATAL", PostgreSQLVendorError.INVALID_AUTHORIZATION_SPECIFICATION, sqlDialectException.getMessage()));
         }
         if (sqlDialectException instanceof PostgreSQLProtocolViolationException) {
-            return new PSQLException(ServerErrorMessageBuilder.build("FATAL", PostgreSQLVendorError.PROTOCOL_VIOLATION, sqlDialectException.getMessage()));
-        }
-        if (sqlDialectException instanceof PostgreSQLAuthenticationException) {
             return new PSQLException(ServerErrorMessageBuilder.build("FATAL", PostgreSQLVendorError.PROTOCOL_VIOLATION, sqlDialectException.getMessage()));
         }
         return new PSQLException(sqlDialectException.getMessage(), PSQLState.UNEXPECTED_ERROR);
