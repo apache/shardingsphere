@@ -81,7 +81,7 @@
         
         <zookeeper.version>3.6.0</zookeeper.version>
         <curator.version>5.1.0</curator.version>
-        <jetcd.version>0.5.0</jetcd.version>
+        <jetcd.version>0.5.10</jetcd.version>
         
         <elasticjob.version>3.0.1</elasticjob.version>
         
