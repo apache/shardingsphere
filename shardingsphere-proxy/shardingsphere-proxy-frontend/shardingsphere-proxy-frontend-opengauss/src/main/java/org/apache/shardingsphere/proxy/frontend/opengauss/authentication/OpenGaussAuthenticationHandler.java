@@ -22,15 +22,15 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
+import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.dialect.postgresql.exception.InvalidPasswordException;
+import org.apache.shardingsphere.dialect.postgresql.exception.PrivilegeNotGrantedException;
 import org.apache.shardingsphere.dialect.postgresql.exception.UnknownUsernameException;
-import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.PostgreSQLLoginResult;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKeyFactory;
@@ -70,14 +70,13 @@ public final class OpenGaussAuthenticationHandler {
      * @param nonce nonce in hex string
      * @param serverIteration server iteration
      * @param passwordMessagePacket password message packet
-     * @return openGauss(PostgreSQL) login result
      */
-    public static PostgreSQLLoginResult loginWithSCRAMSha256Password(final String username, final String databaseName, final String salt, final String nonce, final int serverIteration,
+    public static void loginWithSCRAMSha256Password(final String username, final String databaseName, final String salt, final String nonce, final int serverIteration,
                                                                      final PostgreSQLPasswordMessagePacket passwordMessagePacket) {
         String clientDigest = passwordMessagePacket.getDigest();
         Grantee grantee = new Grantee(username, "%");
         if (!Strings.isNullOrEmpty(databaseName) && !ProxyContext.getInstance().databaseExists(databaseName)) {
-            return new PostgreSQLLoginResult(PostgreSQLVendorError.INVALID_CATALOG_NAME, String.format("database \"%s\" does not exist", databaseName));
+            throw new UnknownDatabaseException(databaseName);
         }
         if (!SQLCheckEngine.check(grantee, getRules(databaseName))) {
             throw new UnknownUsernameException(username);
@@ -85,9 +84,9 @@ public final class OpenGaussAuthenticationHandler {
         if (!SQLCheckEngine.check(grantee, (a, b) -> isPasswordRight((ShardingSphereUser) a, (Object[]) b), new Object[]{clientDigest, salt, nonce, serverIteration}, getRules(databaseName))) {
             throw new InvalidPasswordException(username);
         }
-        return null == databaseName || SQLCheckEngine.check(databaseName, getRules(databaseName), grantee)
-                ? new PostgreSQLLoginResult(PostgreSQLVendorError.SUCCESSFUL_COMPLETION, null)
-                : new PostgreSQLLoginResult(PostgreSQLVendorError.PRIVILEGE_NOT_GRANTED, String.format("Access denied for user '%s' to database '%s'", username, databaseName));
+        if (null != databaseName && !SQLCheckEngine.check(databaseName, getRules(databaseName), grantee)) {
+            throw new PrivilegeNotGrantedException(username, databaseName);
+        }
     }
     
     private static Collection<ShardingSphereRule> getRules(final String databaseName) {

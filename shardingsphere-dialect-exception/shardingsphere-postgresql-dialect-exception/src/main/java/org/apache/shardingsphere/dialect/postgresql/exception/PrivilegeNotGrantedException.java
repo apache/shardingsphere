@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.postgresql.authentication;
+package org.apache.shardingsphere.dialect.postgresql.exception;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
+import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 
 /**
- * PostgreSQL login result.
+ * Privilege not granted exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class PostgreSQLLoginResult {
+public final class PrivilegeNotGrantedException extends SQLDialectException {
     
-    private final PostgreSQLVendorError vendorError;
+    private static final long serialVersionUID = 8410672833723209253L;
     
-    private final String errorMessage;
+    public PrivilegeNotGrantedException(final String username, final String databaseName) {
+        super("Access denied for user '%s' to database '%s'", username, databaseName);
+    }
 }
