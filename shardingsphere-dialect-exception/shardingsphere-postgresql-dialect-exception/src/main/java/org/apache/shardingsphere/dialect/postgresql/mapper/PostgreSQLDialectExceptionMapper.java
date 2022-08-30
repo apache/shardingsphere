@@ -55,7 +55,7 @@ public final class PostgreSQLDialectExceptionMapper implements SQLDialectExcepti
             return new PSQLException(ServerErrorMessageBuilder.build("FATAL", PostgreSQLVendorError.INVALID_PASSWORD, ((InvalidPasswordException) sqlDialectException).getUsername()));
         }
         if (sqlDialectException instanceof PrivilegeNotGrantedException) {
-            PrivilegeNotGrantedException cause = ((PrivilegeNotGrantedException) sqlDialectException);
+            PrivilegeNotGrantedException cause = (PrivilegeNotGrantedException) sqlDialectException;
             return new PSQLException(ServerErrorMessageBuilder.build("FATAL", PostgreSQLVendorError.PRIVILEGE_NOT_GRANTED, cause.getUsername(), cause.getDatabaseName()));
         }
         if (sqlDialectException instanceof DatabaseCreateExistsException) {
