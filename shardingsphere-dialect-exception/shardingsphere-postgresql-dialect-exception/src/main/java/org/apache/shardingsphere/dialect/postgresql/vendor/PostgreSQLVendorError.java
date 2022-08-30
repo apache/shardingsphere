@@ -59,6 +59,8 @@ public enum PostgreSQLVendorError implements VendorError {
     
     WRONG_VALUE_COUNT_ON_ROW(PostgreSQLState.SYNTAX_ERROR, "Column count doesn't match value count at row %d"),
     
+    INVALID_PARAMETER_VALUE(XOpenSQLState.INVALID_PARAMETER_VALUE, "invalid value for parameter \"%s\": \"%s\""),
+    
     SYSTEM_ERROR(PostgreSQLState.SYSTEM_ERROR, "system_error");
     
     private final SQLState sqlState;

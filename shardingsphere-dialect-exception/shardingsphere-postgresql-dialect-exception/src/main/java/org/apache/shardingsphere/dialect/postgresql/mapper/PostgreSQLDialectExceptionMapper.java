@@ -70,8 +70,7 @@ public final class PostgreSQLDialectExceptionMapper implements SQLDialectExcepti
         }
         if (sqlDialectException instanceof InvalidParameterValueException) {
             InvalidParameterValueException cause = (InvalidParameterValueException) sqlDialectException;
-            String message = String.format("invalid value for parameter \"%s\": \"%s\"", cause.getParameterName(), cause.getParameterValue());
-            return new PSQLException(message, PSQLState.INVALID_PARAMETER_VALUE);
+            return new PSQLException(ServerErrorMessageBuilder.build("ERROR", PostgreSQLVendorError.INVALID_PARAMETER_VALUE, cause.getParameterName(), cause.getParameterValue()));
         }
         if (sqlDialectException instanceof TooManyConnectionsException) {
             return new PSQLException(ServerErrorMessageBuilder.build("ERROR", PostgreSQLVendorError.DATA_SOURCE_REJECTED_CONNECTION_ATTEMPT));
