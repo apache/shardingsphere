@@ -89,13 +89,13 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         String databaseType = yamlConfig.getDatabaseName();
         switch (databaseType) {
             case DistSQLScriptConstants.RESOURCE_DB:
-                result.append(addResourceDistSQL(yamlConfig));
+                addResourceDistSQL(yamlConfig, result);
                 break;
             case DistSQLScriptConstants.SHARDING_DB:
-                result.append(addShardingDistSQL(yamlConfig));
+                addShardingDistSQL(yamlConfig, result);
                 break;
             case DistSQLScriptConstants.READWRITE_SPLITTING_DB:
-                result.append(addReadWriteSplittingDistSQL(yamlConfig));
+                addReadWriteSplittingDistSQL(yamlConfig, result);
                 break;
             default:
                 break;
@@ -103,61 +103,55 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         return result.toString();
     }
     
-    private String addResourceDistSQL(final YamlProxyDatabaseConfiguration yamlConfig) {
-        StringBuilder result = new StringBuilder();
+    private void addResourceDistSQL(final YamlProxyDatabaseConfiguration yamlConfig, final StringBuilder result) {
         appendDatabase(yamlConfig.getDatabaseName(), result);
         appendResources(yamlConfig.getDataSources(), result);
-        return result.toString();
     }
     
-    private String addShardingDistSQL(final YamlProxyDatabaseConfiguration yamlConfig) {
-        StringBuilder result = new StringBuilder();
+    private void addShardingDistSQL(final YamlProxyDatabaseConfiguration yamlConfig, final StringBuilder result) {
         appendDatabase(yamlConfig.getDatabaseName(), result);
         appendResources(yamlConfig.getDataSources(), result);
         appendShardingRules(yamlConfig.getRules(), result);
-        return result.toString();
     }
     
-    private String addReadWriteSplittingDistSQL(final YamlProxyDatabaseConfiguration yamlConfig) {
-        StringBuilder result = new StringBuilder();
+    private void addReadWriteSplittingDistSQL(final YamlProxyDatabaseConfiguration yamlConfig, final StringBuilder result) {
         appendDatabase(yamlConfig.getDatabaseName(), result);
         appendResources(yamlConfig.getDataSources(), result);
         appendReadWriteSplittingRules(yamlConfig.getRules(), result);
-        return result.toString();
     }
     
-    private void appendDatabase(final String databaseName, final StringBuilder stringBuilder) {
-        stringBuilder.append(String.format(DistSQLScriptConstants.CREATE_DATABASE, databaseName)).append(System.lineSeparator());
-        stringBuilder.append(String.format(DistSQLScriptConstants.USE_DATABASE, databaseName)).append(System.lineSeparator());
+    private void appendDatabase(final String databaseName, final StringBuilder result) {
+        result.append(String.format(DistSQLScriptConstants.CREATE_DATABASE, databaseName)).append(System.lineSeparator());
+        result.append(String.format(DistSQLScriptConstants.USE_DATABASE, databaseName)).append(System.lineSeparator());
     }
     
-    private void appendResources(final Map<String, YamlProxyDataSourceConfiguration> dataSources, final StringBuilder stringBuilder) {
+    private void appendResources(final Map<String, YamlProxyDataSourceConfiguration> dataSources, final StringBuilder result) {
         if (dataSources.isEmpty()) {
             return;
         }
-        stringBuilder.append(DistSQLScriptConstants.ADD_RESOURCE);
+        result.append(DistSQLScriptConstants.ADD_RESOURCE);
         Iterator<Entry<String, YamlProxyDataSourceConfiguration>> iterator = dataSources.entrySet().iterator();
         while (iterator.hasNext()) {
             Entry<String, YamlProxyDataSourceConfiguration> entry = iterator.next();
             DataSourceProperties dataSourceProperties = DataSourcePropertiesCreator.create(HikariDataSource.class.getName(), dataSourceConfigSwapper.swap(entry.getValue()));
-            appendResource(entry.getKey(), dataSourceProperties, stringBuilder);
+            appendResource(entry.getKey(), dataSourceProperties, result);
             if (iterator.hasNext()) {
-                stringBuilder.append(DistSQLScriptConstants.COMMA);
+                result.append(DistSQLScriptConstants.COMMA);
             }
         }
-        stringBuilder.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator());
+        result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator());
     }
     
-    private void appendResource(final String resourceName, final DataSourceProperties dataSourceProperties, final StringBuilder stringBuilder) {
+    private void appendResource(final String resourceName, final DataSourceProperties dataSourceProperties, final StringBuilder result) {
         Map<String, Object> connectionProperties = dataSourceProperties.getConnectionPropertySynonyms().getStandardProperties();
         String url = (String) connectionProperties.get(DistSQLScriptConstants.KEY_URL);
         String username = (String) connectionProperties.get(DistSQLScriptConstants.KEY_USERNAME);
         String password = (String) connectionProperties.get(DistSQLScriptConstants.KEY_PASSWORD);
         String props = getResourceProperties(dataSourceProperties.getPoolPropertySynonyms(), dataSourceProperties.getCustomDataSourceProperties());
         if (StringUtils.isNotEmpty(password)) {
-            stringBuilder.append(String.format(DistSQLScriptConstants.RESOURCE_DEFINITION, resourceName, url, username, password, props));
+            result.append(String.format(DistSQLScriptConstants.RESOURCE_DEFINITION, resourceName, url, username, password, props));
         } else {
-            stringBuilder.append(String.format(DistSQLScriptConstants.RESOURCE_DEFINITION_WITHOUT_PASSWORD, resourceName, url, username, props));
+            result.append(String.format(DistSQLScriptConstants.RESOURCE_DEFINITION_WITHOUT_PASSWORD, resourceName, url, username, props));
         }
     }
     
@@ -185,34 +179,34 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         }
     }
     
-    private void appendShardingRules(final Collection<YamlRuleConfiguration> rules, final StringBuilder stringBuilder) {
+    private void appendShardingRules(final Collection<YamlRuleConfiguration> rules, final StringBuilder result) {
         if (rules.isEmpty()) {
             return;
         }
         for (YamlRuleConfiguration rule : rules) {
             ShardingRuleConfiguration shardingRuleConfig = new YamlShardingRuleConfigurationSwapper().swapToObject((YamlShardingRuleConfiguration) rule);
-            appendShardingAlgorithms(shardingRuleConfig, stringBuilder);
-            appendKeyGenerators(shardingRuleConfig, stringBuilder);
-            appendShardingTableRules(shardingRuleConfig, stringBuilder);
+            appendShardingAlgorithms(shardingRuleConfig, result);
+            appendKeyGenerators(shardingRuleConfig, result);
+            appendShardingTableRules(shardingRuleConfig, result);
             // TODO append autoTables
-            appendShardingBindingTableRules(shardingRuleConfig, stringBuilder);
+            appendShardingBindingTableRules(shardingRuleConfig, result);
         }
     }
     
-    private void appendShardingAlgorithms(final ShardingRuleConfiguration shardingRuleConfig, final StringBuilder stringBuilder) {
-        stringBuilder.append(DistSQLScriptConstants.CREATE_SHARDING_ALGORITHM);
+    private void appendShardingAlgorithms(final ShardingRuleConfiguration shardingRuleConfig, final StringBuilder result) {
+        result.append(DistSQLScriptConstants.CREATE_SHARDING_ALGORITHM);
         Iterator<Entry<String, AlgorithmConfiguration>> iterator = shardingRuleConfig.getShardingAlgorithms().entrySet().iterator();
         while (iterator.hasNext()) {
             Entry<String, AlgorithmConfiguration> entry = iterator.next();
             String shardingAlgorithmName = entry.getKey();
             String algorithmType = entry.getValue().getType().toLowerCase();
             String property = appendShardingAlgorithmProperties(entry.getValue().getProps());
-            stringBuilder.append(String.format(DistSQLScriptConstants.SHARDING_ALGORITHM, shardingAlgorithmName, algorithmType, property));
+            result.append(String.format(DistSQLScriptConstants.SHARDING_ALGORITHM, shardingAlgorithmName, algorithmType, property));
             if (iterator.hasNext()) {
-                stringBuilder.append(DistSQLScriptConstants.COMMA);
+                result.append(DistSQLScriptConstants.COMMA);
             }
         }
-        stringBuilder.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator());
+        result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator());
     }
     
     private String appendShardingAlgorithmProperties(final Properties property) {
@@ -228,35 +222,35 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         return result.toString();
     }
     
-    private void appendKeyGenerators(final ShardingRuleConfiguration shardingRuleConfig, final StringBuilder stringBuilder) {
-        stringBuilder.append(DistSQLScriptConstants.CREATE_KEY_GENERATOR);
+    private void appendKeyGenerators(final ShardingRuleConfiguration shardingRuleConfig, final StringBuilder result) {
+        result.append(DistSQLScriptConstants.CREATE_KEY_GENERATOR);
         Iterator<Entry<String, AlgorithmConfiguration>> iterator = shardingRuleConfig.getKeyGenerators().entrySet().iterator();
         while (iterator.hasNext()) {
             Entry<String, AlgorithmConfiguration> entry = iterator.next();
             String generatorName = entry.getKey();
             String type = entry.getValue().getType();
-            stringBuilder.append(String.format(DistSQLScriptConstants.KEY_GENERATOR, generatorName, type));
+            result.append(String.format(DistSQLScriptConstants.KEY_GENERATOR, generatorName, type));
             if (iterator.hasNext()) {
-                stringBuilder.append(DistSQLScriptConstants.COMMA);
+                result.append(DistSQLScriptConstants.COMMA);
             }
         }
-        stringBuilder.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator());
+        result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator());
     }
     
-    private void appendShardingTableRules(final ShardingRuleConfiguration shardingRuleConfig, final StringBuilder stringBuilder) {
-        stringBuilder.append(DistSQLScriptConstants.CREATE_SHARDING_TABLE);
+    private void appendShardingTableRules(final ShardingRuleConfiguration shardingRuleConfig, final StringBuilder result) {
+        result.append(DistSQLScriptConstants.CREATE_SHARDING_TABLE);
         Iterator<ShardingTableRuleConfiguration> iterator = shardingRuleConfig.getTables().iterator();
         while (iterator.hasNext()) {
             ShardingTableRuleConfiguration entry = iterator.next();
             String tableName = entry.getLogicTable();
             String dataNodes = entry.getActualDataNodes();
             String strategy = appendTableStrategy(entry);
-            stringBuilder.append(String.format(DistSQLScriptConstants.SHARDING_TABLE, tableName, dataNodes, strategy));
+            result.append(String.format(DistSQLScriptConstants.SHARDING_TABLE, tableName, dataNodes, strategy));
             if (iterator.hasNext()) {
-                stringBuilder.append(DistSQLScriptConstants.COMMA);
+                result.append(DistSQLScriptConstants.COMMA);
             }
         }
-        stringBuilder.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator());
+        result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator());
     }
     
     private String appendTableStrategy(final ShardingTableRuleConfiguration shardingTableRuleConfig) {
@@ -299,9 +293,9 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         return result;
     }
     
-    private void appendShardingBindingTableRules(final ShardingRuleConfiguration shardingRuleConfig, final StringBuilder stringBuilder) {
+    private void appendShardingBindingTableRules(final ShardingRuleConfiguration shardingRuleConfig, final StringBuilder result) {
         String bindings = getBindings(shardingRuleConfig.getBindingTableGroups().iterator());
-        stringBuilder.append(String.format(DistSQLScriptConstants.SHARDING_BINDING_TABLE_RULES, bindings));
+        result.append(String.format(DistSQLScriptConstants.SHARDING_BINDING_TABLE_RULES, bindings));
     }
     
     private String getBindings(final Iterator<String> iterator) {
@@ -317,18 +311,18 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         return result.toString();
     }
     
-    private void appendReadWriteSplittingRules(final Collection<YamlRuleConfiguration> rules, final StringBuilder stringBuilder) {
+    private void appendReadWriteSplittingRules(final Collection<YamlRuleConfiguration> rules, final StringBuilder result) {
         if (rules.isEmpty()) {
             return;
         }
-        stringBuilder.append(DistSQLScriptConstants.CREATE_READWRITE_SPLITTING_RULE);
+        result.append(DistSQLScriptConstants.CREATE_READWRITE_SPLITTING_RULE);
         for (YamlRuleConfiguration rule : rules) {
-            appendStaticReadWriteSplittingRule(rule, stringBuilder);
+            appendStaticReadWriteSplittingRule(rule, result);
             // TODO Dynamic READ-WRITE-SPLITTING RULES
         }
     }
     
-    private void appendStaticReadWriteSplittingRule(final YamlRuleConfiguration rule, final StringBuilder stringBuilder) {
+    private void appendStaticReadWriteSplittingRule(final YamlRuleConfiguration rule, final StringBuilder result) {
         Iterator<Entry<String, YamlReadwriteSplittingDataSourceRuleConfiguration>> dataSources = ((YamlReadwriteSplittingRuleConfiguration) rule).getDataSources().entrySet().iterator();
         Iterator<Entry<String, YamlAlgorithmConfiguration>> loadBalancers = ((YamlReadwriteSplittingRuleConfiguration) rule).getLoadBalancers().entrySet().iterator();
         while (dataSources.hasNext()) {
@@ -337,14 +331,14 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
             YamlStaticReadwriteSplittingStrategyConfiguration staticStrategy = entryDataSources.getValue().getStaticStrategy();
             String dataSourceName = entryDataSources.getKey();
             String writeDataSourceName = staticStrategy.getWriteDataSourceName();
-            String readDataSourceNames = appendReadDataSourceNames((staticStrategy.getReadDataSourceNames()));
+            String readDataSourceNames = appendReadDataSourceNames(staticStrategy.getReadDataSourceNames());
             String loadBalancerType = appendLoadBalancer(entryDataSources.getValue().getLoadBalancerName(), entryLoadBalances);
-            stringBuilder.append(String.format(DistSQLScriptConstants.STATIC_READWRITE_SPLITTING, dataSourceName, writeDataSourceName, readDataSourceNames, loadBalancerType));
+            result.append(String.format(DistSQLScriptConstants.STATIC_READWRITE_SPLITTING, dataSourceName, writeDataSourceName, readDataSourceNames, loadBalancerType));
             if (dataSources.hasNext()) {
-                stringBuilder.append(DistSQLScriptConstants.COMMA);
+                result.append(DistSQLScriptConstants.COMMA);
             }
         }
-        stringBuilder.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator());
+        result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator());
     }
     
     private String appendReadDataSourceNames(final Collection<String> readDataSourceNames) {
