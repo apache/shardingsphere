@@ -55,6 +55,8 @@ public enum PostgreSQLVendorError implements VendorError {
     
     DATA_SOURCE_REJECTED_CONNECTION_ATTEMPT(XOpenSQLState.DATA_SOURCE_REJECTED_CONNECTION_ATTEMPT, "sqlserver_rejected_establishment_of_sqlconnection"),
     
+    TRANSACTION_STATE_INVALID(XOpenSQLState.INVALID_TRANSACTION_STATE, "There is already a transaction in progress"),
+    
     SYSTEM_ERROR(PostgreSQLState.SYSTEM_ERROR, "system_error");
     
     private final SQLState sqlState;

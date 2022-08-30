@@ -62,7 +62,7 @@ public final class PostgreSQLDialectExceptionMapper implements SQLDialectExcepti
             return new PSQLException(ServerErrorMessageBuilder.build("FATAL", PostgreSQLVendorError.DUPLICATE_DATABASE, ((DatabaseCreateExistsException) sqlDialectException).getDatabaseName()));
         }
         if (sqlDialectException instanceof InTransactionException) {
-            return new PSQLException(sqlDialectException.getMessage(), PSQLState.TRANSACTION_STATE_INVALID);
+            return new PSQLException(ServerErrorMessageBuilder.build("ERROR", PostgreSQLVendorError.TRANSACTION_STATE_INVALID));
         }
         if (sqlDialectException instanceof InsertColumnsAndValuesMismatchedException) {
             return new PSQLException(sqlDialectException.getMessage(), PSQLState.SYNTAX_ERROR);
