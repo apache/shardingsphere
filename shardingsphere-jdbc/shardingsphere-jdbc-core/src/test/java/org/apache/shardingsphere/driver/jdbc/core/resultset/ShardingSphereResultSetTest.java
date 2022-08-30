@@ -594,7 +594,7 @@ public final class ShardingSphereResultSetTest {
         when(mergeResultSet.getValue(1, Timestamp.class)).thenReturn(Timestamp.valueOf(result));
         assertThat(shardingSphereResultSet.getObject(1, LocalDateTime.class), is(result));
     }
-
+    
     @Test
     public void assertGetObjectWithOffsetDateTime() throws SQLException {
         OffsetDateTime result = OffsetDateTime.now();
