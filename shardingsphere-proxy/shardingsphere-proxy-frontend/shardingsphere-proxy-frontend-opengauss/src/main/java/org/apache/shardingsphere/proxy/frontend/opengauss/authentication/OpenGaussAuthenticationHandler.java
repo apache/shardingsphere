@@ -21,8 +21,10 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
+import org.apache.shardingsphere.dialect.postgresql.exception.InvalidPasswordException;
+import org.apache.shardingsphere.dialect.postgresql.exception.UnknownUsernameException;
+import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -78,10 +80,10 @@ public final class OpenGaussAuthenticationHandler {
             return new PostgreSQLLoginResult(PostgreSQLVendorError.INVALID_CATALOG_NAME, String.format("database \"%s\" does not exist", databaseName));
         }
         if (!SQLCheckEngine.check(grantee, getRules(databaseName))) {
-            return new PostgreSQLLoginResult(PostgreSQLVendorError.INVALID_AUTHORIZATION_SPECIFICATION, String.format("unknown username: %s", username));
+            throw new UnknownUsernameException(username);
         }
         if (!SQLCheckEngine.check(grantee, (a, b) -> isPasswordRight((ShardingSphereUser) a, (Object[]) b), new Object[]{clientDigest, salt, nonce, serverIteration}, getRules(databaseName))) {
-            return new PostgreSQLLoginResult(PostgreSQLVendorError.INVALID_PASSWORD, String.format("password authentication failed for user \"%s\"", username));
+            throw new InvalidPasswordException(username);
         }
         return null == databaseName || SQLCheckEngine.check(databaseName, getRules(databaseName), grantee)
                 ? new PostgreSQLLoginResult(PostgreSQLVendorError.SUCCESSFUL_COMPLETION, null)
