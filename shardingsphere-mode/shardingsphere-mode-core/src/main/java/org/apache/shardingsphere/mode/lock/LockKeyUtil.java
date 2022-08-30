@@ -37,11 +37,7 @@ public final class LockKeyUtil {
      * @return locks name
      */
     public static String generateExclusiveLockKey(final String lockName) {
-        return generateLocksNodePath(LOCKS_NODE_EXCLUSIVE) + "/" + lockName;
-    }
-    
-    private static String generateLocksNodePath(final String lockPath) {
-        return PATH_DELIMITER + LOCK_ROOT + PATH_DELIMITER + lockPath + PATH_DELIMITER + LOCKS_NODE;
+        return PATH_DELIMITER + LOCK_ROOT + PATH_DELIMITER + LOCKS_NODE_EXCLUSIVE + PATH_DELIMITER + LOCKS_NODE + PATH_DELIMITER + lockName;
     }
     
     /**
