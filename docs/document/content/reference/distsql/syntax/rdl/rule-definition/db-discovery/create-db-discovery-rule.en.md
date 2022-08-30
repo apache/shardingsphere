@@ -35,9 +35,7 @@ discoveryHeartbeatName ::=
 ### Supplement
 
 - `discoveryType` specifies the database discovery service type, `ShardingSphere` has built-in support for `MySQL.MGR`;
-- Duplicate `ruleName` will not be created;
-- The `discoveryType` and `discoveryHeartbeat` being used cannot be deleted;
-- Names with `-` need to use `" "` when changing。
+- Duplicate `ruleName` will not be created.
 
 ### Example
 
