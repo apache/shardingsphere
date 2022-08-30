@@ -41,11 +41,11 @@ public final class ServerErrorMessageBuilder {
     }
     
     private static String buildSeverity(final String severity) {
-        return'S' + severity;
+        return 'S' + severity;
     }
     
     private static String buildNewSeverity(final String severity) {
-        return'V' + severity;
+        return 'V' + severity;
     }
     
     private static String buildSQLState(final VendorError vendorError) {
