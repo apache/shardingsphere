@@ -102,7 +102,7 @@ public final class QueryableRALStatementAssert {
             ExportDatabaseConfigurationStatementAssert.assertIs(assertContext, (ExportDatabaseConfigurationStatement) actual, (ExportDatabaseConfigurationStatementTestCase) expected);
         } else if (actual instanceof ShowSQLTranslatorRuleStatement) {
             ShowSQLTranslatorRuleStatementAssert.assertIs(assertContext, (ShowSQLTranslatorRuleStatement) actual, (ShowSQLTranslatorRuleStatementTestCase) expected);
-        } else if (actual instanceof ShowInstanceInfoStatement) ConvertYamlConfigurationStatementAssert{
+        } else if (actual instanceof ShowInstanceInfoStatement) {
             ShowInstanceInfoStatementAssert.assertIs(assertContext, (ShowInstanceInfoStatement) actual, (ShowInstanceInfoStatementTestCase) expected);
         } else if (actual instanceof ShowModeInfoStatement) {
             ShowModeInfoStatementAssert.assertIs(assertContext, (ShowModeInfoStatement) actual, (ShowModeInfoStatementTestCase) expected);
