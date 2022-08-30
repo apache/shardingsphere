@@ -36,8 +36,7 @@ public final class ServerErrorMessageBuilder {
      * @param reasonArguments reason arguments
      * @return server error message
      */
-    @SuppressWarnings("ConfusingArgumentToVarargsMethod")
-    public static ServerErrorMessage build(final String severity, final VendorError vendorError, final String... reasonArguments) {
+    public static ServerErrorMessage build(final String severity, final VendorError vendorError, final Object... reasonArguments) {
         return new ServerErrorMessage(
                 String.join("\0", buildSeverity(severity), buildNewSeverity(severity), buildSQLState(vendorError), buildReason(String.format(vendorError.getReason(), reasonArguments))));
     }

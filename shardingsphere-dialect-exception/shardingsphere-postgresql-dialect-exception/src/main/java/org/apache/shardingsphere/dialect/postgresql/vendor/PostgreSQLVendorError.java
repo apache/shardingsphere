@@ -57,6 +57,8 @@ public enum PostgreSQLVendorError implements VendorError {
     
     TRANSACTION_STATE_INVALID(XOpenSQLState.INVALID_TRANSACTION_STATE, "There is already a transaction in progress"),
     
+    WRONG_VALUE_COUNT_ON_ROW(PostgreSQLState.SYNTAX_ERROR, "Column count doesn't match value count at row %d"),
+    
     SYSTEM_ERROR(PostgreSQLState.SYSTEM_ERROR, "system_error");
     
     private final SQLState sqlState;
