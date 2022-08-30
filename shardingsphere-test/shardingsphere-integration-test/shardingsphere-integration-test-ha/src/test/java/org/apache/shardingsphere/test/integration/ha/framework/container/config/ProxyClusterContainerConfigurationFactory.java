@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.integration.ha.framework.container.config
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.ProxyContainerConstants;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,8 +43,8 @@ public final class ProxyClusterContainerConfigurationFactory {
     
     private static Map<String, String> getMountedResources(final String scenario) {
         Map<String, String> result = new HashMap<>(2, 1);
-        result.put("logback-test.xml", "/opt/shardingsphere-proxy/conf/logback.xml");
-        result.put(String.format("env/scenario/%s/proxy/server.yaml", scenario), "/opt/shardingsphere-proxy/conf/server.yaml");
+        result.put("logback-test.xml", ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "logback.xml");
+        result.put(String.format("env/scenario/%s/proxy/server.yaml", scenario), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "server.yaml");
         return result;
     }
 }
