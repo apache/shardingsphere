@@ -22,20 +22,16 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import java.util.Collection;
-
 /**
- * Schema meta data.
+ * Table meta data.
  */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class SchemaMetaData {
+public class ViewMetaData {
     
     private final String name;
     
-    private final Collection<TableMetaData> tables;
-    
-    private final Collection<ViewMetaData> views;
+    private final String viewDefinition;
 }

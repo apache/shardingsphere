@@ -28,11 +28,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.Ru
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecoratorFactory;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.SchemaMetaDataLoaderEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.SchemaMetaDataLoaderMaterials;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ConstraintMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.*;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SchemaMetaDataUtil;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
@@ -97,8 +93,10 @@ public final class GenericSchemaBuilder {
         Map<String, SchemaMetaData> result = new LinkedHashMap<>();
         Collection<TableMetaData> tableMetaDataList = Optional.ofNullable(schemaMetaDataMap.get(
                 DatabaseTypeEngine.getDefaultSchemaName(materials.getStorageType(), materials.getDefaultSchemaName()))).map(SchemaMetaData::getTables).orElseGet(Collections::emptyList);
+        Collection<ViewMetaData> viewMetaDataList = Optional.ofNullable(schemaMetaDataMap.get(
+                DatabaseTypeEngine.getDefaultSchemaName(materials.getStorageType(), materials.getDefaultSchemaName()))).map(SchemaMetaData::getViews).orElseGet(Collections::emptyList);
         String frontendSchemaName = DatabaseTypeEngine.getDefaultSchemaName(materials.getProtocolType(), materials.getDefaultSchemaName());
-        result.put(frontendSchemaName, new SchemaMetaData(frontendSchemaName, tableMetaDataList));
+        result.put(frontendSchemaName, new SchemaMetaData(frontendSchemaName, tableMetaDataList, viewMetaDataList));
         return result;
     }
     

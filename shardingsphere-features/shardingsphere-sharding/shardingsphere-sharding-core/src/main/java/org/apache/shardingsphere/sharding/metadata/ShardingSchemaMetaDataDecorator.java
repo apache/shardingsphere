@@ -57,7 +57,7 @@ public final class ShardingSchemaMetaDataDecorator implements RuleBasedSchemaMet
                 }
                 tables.add(tableEntry.getValue().iterator().next());
             }
-            result.put(entry.getKey(), new SchemaMetaData(entry.getKey(), tables));
+            result.put(entry.getKey(), new SchemaMetaData(entry.getKey(), tables, entry.getValue().getViews()));
         }
         return result;
     }

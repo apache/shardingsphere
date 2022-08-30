@@ -15,27 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.loader.model;
+package org.apache.shardingsphere.infra.metadata.database.schema.decorator.model;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import java.util.Collection;
-
 /**
- * Schema meta data.
+ * ShardingSphere view.
  */
-@RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class SchemaMetaData {
+public final class ShardingSphereView {
     
     private final String name;
     
-    private final Collection<TableMetaData> tables;
+    private final String viewDefinition;
     
-    private final Collection<ViewMetaData> views;
+    public ShardingSphereView() {
+        this("", "");
+    }
+    
+    public ShardingSphereView(final String name, final String viewDefinition) {
+        this.name = name;
+        this.viewDefinition = viewDefinition;
+    }
 }
