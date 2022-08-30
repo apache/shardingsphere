@@ -134,8 +134,8 @@ public final class ConvertYamlConfigurationHandlerTest extends ProxyContextResto
         StringBuilder result = new StringBuilder();
         String fileName = Objects.requireNonNull(ConvertYamlConfigurationHandlerTest.class.getResource(expectedFilePath)).getFile();
         try (
-            FileReader fileReader = new FileReader(fileName);
-            BufferedReader reader = new BufferedReader(fileReader)) {
+                FileReader fileReader = new FileReader(fileName);
+                BufferedReader reader = new BufferedReader(fileReader)) {
             String line;
             while (null != (line = reader.readLine())) {
                 if (!line.startsWith("#") && !line.trim().isEmpty()) {
