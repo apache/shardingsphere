@@ -41,7 +41,7 @@ public final class PostgreSQLDialectExceptionMapperTest {
                 {InTransactionException.class, PSQLState.TRANSACTION_STATE_INVALID.getState()},
                 {InsertColumnsAndValuesMismatchedException.class, PSQLState.SYNTAX_ERROR.getState()},
                 {InvalidParameterValueException.class, PSQLState.INVALID_PARAMETER_VALUE.getState()},
-                {TooManyConnectionsException.class, PSQLState.CONNECTION_REJECTED.getState()}
+                {TooManyConnectionsException.class, PSQLState.CONNECTION_REJECTED.getState()},
         });
     }
     
