@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DistSQLScriptConstants {
-    
+
     public static final String RESOURCE_DB = "resource_db";
     
     public static final String SHARDING_DB = "sharding_db";
