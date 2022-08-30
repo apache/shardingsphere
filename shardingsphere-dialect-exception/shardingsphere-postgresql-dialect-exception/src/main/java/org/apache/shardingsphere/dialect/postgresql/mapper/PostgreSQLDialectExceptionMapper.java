@@ -74,7 +74,7 @@ public final class PostgreSQLDialectExceptionMapper implements SQLDialectExcepti
             return new PSQLException(message, PSQLState.INVALID_PARAMETER_VALUE);
         }
         if (sqlDialectException instanceof TooManyConnectionsException) {
-            return new PSQLException(PostgreSQLVendorError.DATA_SOURCE_REJECTED_CONNECTION_ATTEMPT.getReason(), null);
+            return new PSQLException(ServerErrorMessageBuilder.build("ERROR", PostgreSQLVendorError.DATA_SOURCE_REJECTED_CONNECTION_ATTEMPT));
         }
         if (sqlDialectException instanceof InvalidAuthorizationSpecificationException) {
             return new PSQLException(ServerErrorMessageBuilder.build("FATAL", PostgreSQLVendorError.NO_USERNAME));

@@ -53,7 +53,7 @@ public enum PostgreSQLVendorError implements VendorError {
     
     UNDEFINED_COLUMN(PostgreSQLState.UNDEFINED_COLUMN, "undefined_column"),
     
-    DATA_SOURCE_REJECTED_CONNECTION_ATTEMPT(XOpenSQLState.DATA_SOURCE_REJECTED_CONNECTION_ATTEMPT, "sqlserver_rejected_establishment_of_sqlconnection"),
+    DATA_SOURCE_REJECTED_CONNECTION_ATTEMPT(XOpenSQLState.DATA_SOURCE_REJECTED_CONNECTION_ATTEMPT, "server rejected establishment of sql connection"),
     
     TRANSACTION_STATE_INVALID(XOpenSQLState.INVALID_TRANSACTION_STATE, "There is already a transaction in progress"),
     
