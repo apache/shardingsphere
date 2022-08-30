@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dialect.postgresql.vendor;
+package org.apache.shardingsphere.dialect.postgresql.message;
 
+import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 import org.junit.Assert;
 import org.junit.Test;
 import org.postgresql.util.ServerErrorMessage;
 
 import static org.hamcrest.CoreMatchers.is;
 
-public final class PostgreSQLServerErrorMessageTest {
+public final class ServerErrorMessageBuilderTest {
     
     @Test
     public void assertToServerErrorMessage() {
-        ServerErrorMessage actual = new PostgreSQLServerErrorMessage("FATAL", PostgreSQLVendorError.SYSTEM_ERROR, "foo_reason").toServerErrorMessage();
+        ServerErrorMessage actual = ServerErrorMessageBuilder.build("FATAL", PostgreSQLVendorError.SYSTEM_ERROR, "foo_reason");
         Assert.assertThat(actual.getSeverity(), is("FATAL"));
         Assert.assertThat(actual.getSQLState(), is(PostgreSQLVendorError.SYSTEM_ERROR.getSqlState().getValue()));
         Assert.assertThat(actual.getMessage(), is("foo_reason"));
