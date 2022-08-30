@@ -30,6 +30,8 @@ public enum PostgreSQLState implements SQLState {
     
     PROTOCOL_VIOLATION("08P01"),
     
+    SYNTAX_ERROR("42601"),
+    
     DUPLICATE_DATABASE("42P04"),
     
     INVALID_PASSWORD("28P01"),

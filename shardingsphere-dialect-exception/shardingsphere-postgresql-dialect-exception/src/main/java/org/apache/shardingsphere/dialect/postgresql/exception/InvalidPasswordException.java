@@ -17,16 +17,18 @@
 
 package org.apache.shardingsphere.dialect.postgresql.exception;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 
 /**
  * Invalid password exception.
  */
+@RequiredArgsConstructor
+@Getter
 public final class InvalidPasswordException extends SQLDialectException {
     
     private static final long serialVersionUID = -2266893048070563644L;
     
-    public InvalidPasswordException(final String username) {
-        super("password authentication failed for user \"%s\"", username);
-    }
+    private final String username;
 }

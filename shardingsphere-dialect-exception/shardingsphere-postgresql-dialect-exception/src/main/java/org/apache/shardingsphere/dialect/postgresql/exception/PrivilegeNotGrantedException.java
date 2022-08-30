@@ -17,16 +17,20 @@
 
 package org.apache.shardingsphere.dialect.postgresql.exception;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 
 /**
  * Privilege not granted exception.
  */
+@RequiredArgsConstructor
+@Getter
 public final class PrivilegeNotGrantedException extends SQLDialectException {
     
     private static final long serialVersionUID = 8410672833723209253L;
     
-    public PrivilegeNotGrantedException(final String username, final String databaseName) {
-        super("Access denied for user '%s' to database '%s'", username, databaseName);
-    }
+    private final String username;
+    
+    private final String databaseName;
 }

@@ -37,20 +37,20 @@ public final class PostgreSQLDialectExceptionMapperTest {
     
     private Collection<Object[]> getConvertParameters() {
         return Arrays.asList(new Object[][]{
-                {DatabaseCreateExistsException.class, null},
-                {InTransactionException.class, PSQLState.TRANSACTION_STATE_INVALID},
-                {InsertColumnsAndValuesMismatchedException.class, PSQLState.SYNTAX_ERROR},
-                {InvalidParameterValueException.class, PSQLState.INVALID_PARAMETER_VALUE},
-                {TooManyConnectionsException.class, null},
+                {DatabaseCreateExistsException.class, "42P04"},
+                {InTransactionException.class, PSQLState.TRANSACTION_STATE_INVALID.getState()},
+                {InsertColumnsAndValuesMismatchedException.class, PSQLState.SYNTAX_ERROR.getState()},
+                {InvalidParameterValueException.class, PSQLState.INVALID_PARAMETER_VALUE.getState()},
+                {TooManyConnectionsException.class, PSQLState.CONNECTION_REJECTED.getState()},
         });
     }
     
     @Test
     @SuppressWarnings("unchecked")
     public void convert() {
-        PostgreSQLDialectExceptionMapper postgreSQLDialect = new PostgreSQLDialectExceptionMapper();
+        PostgreSQLDialectExceptionMapper dialectExceptionMapper = new PostgreSQLDialectExceptionMapper();
         for (Object[] item : getConvertParameters()) {
-            assertThat(postgreSQLDialect.convert(mock((Class<SQLDialectException>) item[0])).getSQLState(), is(item[1] == null ? null : ((PSQLState) item[1]).getState()));
+            assertThat(dialectExceptionMapper.convert(mock((Class<SQLDialectException>) item[0])).getSQLState(), is(null == item[1] ? null : item[1]));
         }
     }
 }
