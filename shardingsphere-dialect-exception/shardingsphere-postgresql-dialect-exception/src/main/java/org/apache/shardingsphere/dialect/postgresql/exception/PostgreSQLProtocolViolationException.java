@@ -17,16 +17,20 @@
 
 package org.apache.shardingsphere.dialect.postgresql.exception;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 
 /**
  * PostgreSQL protocol violation exception.
  */
+@RequiredArgsConstructor
+@Getter
 public final class PostgreSQLProtocolViolationException extends SQLDialectException {
     
     private static final long serialVersionUID = 6784109729740919997L;
     
-    public PostgreSQLProtocolViolationException(final String expectedMessageType, final String actualMessageType) {
-        super("expected %s response, got message type %s", expectedMessageType, actualMessageType);
-    }
+    private final String expectedMessageType;
+    
+    private final String actualMessageType;
 }

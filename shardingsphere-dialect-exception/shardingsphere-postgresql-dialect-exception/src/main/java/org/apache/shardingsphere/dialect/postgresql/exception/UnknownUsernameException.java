@@ -17,16 +17,18 @@
 
 package org.apache.shardingsphere.dialect.postgresql.exception;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 
 /**
  * Unknown username exception.
  */
+@RequiredArgsConstructor
+@Getter
 public final class UnknownUsernameException extends SQLDialectException {
     
     private static final long serialVersionUID = -2895258747747089622L;
     
-    public UnknownUsernameException(final String username) {
-        super("unknown username: %s", username);
-    }
+    private final String username;
 }
