@@ -55,7 +55,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Map.Entry;
 
@@ -322,7 +321,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         if (rules.isEmpty()) {
             return;
         }
-        stringBuilder.append(String.format(DistSQLScriptConstants.CREATE_READWRITE_SPLITTING_RULE));
+        stringBuilder.append(DistSQLScriptConstants.CREATE_READWRITE_SPLITTING_RULE);
         for (YamlRuleConfiguration rule : rules) {
             appendStaticReadWriteSplittingRule(rule, stringBuilder);
             // TODO Dynamic READ-WRITE-SPLITTING RULES
@@ -338,7 +337,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
             YamlStaticReadwriteSplittingStrategyConfiguration staticStrategy = entryDataSources.getValue().getStaticStrategy();
             String dataSourceName = entryDataSources.getKey();
             String writeDataSourceName = staticStrategy.getWriteDataSourceName();
-            String readDataSourceNames = appendReadDataSourceNames((ArrayList<String>) staticStrategy.getReadDataSourceNames());
+            String readDataSourceNames = appendReadDataSourceNames((staticStrategy.getReadDataSourceNames()));
             String loadBalancerType = appendLoadBalancer(entryDataSources.getValue().getLoadBalancerName(), entryLoadBalances);
             stringBuilder.append(String.format(DistSQLScriptConstants.STATIC_READWRITE_SPLITTING, dataSourceName, writeDataSourceName, readDataSourceNames, loadBalancerType));
             if (dataSources.hasNext()) {
@@ -348,7 +347,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         stringBuilder.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator());
     }
     
-    private String appendReadDataSourceNames(final ArrayList<String> readDataSourceNames) {
+    private String appendReadDataSourceNames(final Collection<String> readDataSourceNames) {
         StringBuilder result = new StringBuilder();
         Iterator<String> iterator = readDataSourceNames.iterator();
         while (iterator.hasNext()) {
@@ -363,7 +362,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
     
     private String appendLoadBalancer(final String loadBalancerName, final Entry<String, YamlAlgorithmConfiguration> loadBalancers) {
         StringBuilder result = new StringBuilder();
-        String loadBalancerProperties = new String();
+        String loadBalancerProperties = "";
         if (loadBalancers.getValue().getProps().isEmpty()) {
             result.append(String.format(DistSQLScriptConstants.TYPE, loadBalancers.getValue().getType()));
         } else {
