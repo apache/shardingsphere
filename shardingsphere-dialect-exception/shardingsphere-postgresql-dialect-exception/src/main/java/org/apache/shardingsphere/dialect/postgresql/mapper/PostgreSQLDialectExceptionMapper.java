@@ -59,7 +59,7 @@ public final class PostgreSQLDialectExceptionMapper implements SQLDialectExcepti
             return new PSQLException(PostgreSQLVendorError.DATA_SOURCE_REJECTED_CONNECTION_ATTEMPT.getReason(), null);
         }
         if (sqlDialectException instanceof InvalidAuthorizationSpecificationException) {
-            return new PSQLException(ServerErrorMessageBuilder.build("FATAL", PostgreSQLVendorError.INVALID_AUTHORIZATION_SPECIFICATION, "no PostgreSQL user name specified in startup packet"));
+            return new PSQLException(ServerErrorMessageBuilder.build("FATAL", PostgreSQLVendorError.INVALID_AUTHORIZATION_SPECIFICATION, sqlDialectException.getMessage()));
         }
         if (sqlDialectException instanceof PostgreSQLProtocolViolationException) {
             return new PSQLException(ServerErrorMessageBuilder.build("FATAL", PostgreSQLVendorError.PROTOCOL_VIOLATION, sqlDialectException.getMessage()));
