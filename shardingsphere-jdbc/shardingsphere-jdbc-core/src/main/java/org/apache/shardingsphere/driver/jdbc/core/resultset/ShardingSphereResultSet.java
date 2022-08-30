@@ -48,6 +48,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -407,7 +408,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
             return (T) getBlob(columnIndex);
         } else if (Clob.class.equals(type)) {
             return (T) getClob(columnIndex);
-        } else if (LocalDateTime.class.equals(type) || LocalDate.class.equals(type) || LocalTime.class.equals(type)) {
+        } else if (LocalDateTime.class.equals(type) || LocalDate.class.equals(type) || LocalTime.class.equals(type) || OffsetDateTime.class.equals(type)) {
             return (T) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, Timestamp.class), type);
         } else {
             return (T) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, type), type);

@@ -34,6 +34,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
@@ -147,6 +148,9 @@ public final class ResultSetUtil {
         }
         if (LocalTime.class.equals(convertType)) {
             return timestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+        }
+        if (OffsetDateTime.class.equals(convertType)) {
+            return timestamp.toInstant().atZone(ZoneId.systemDefault()).toOffsetDateTime();
         }
         return value;
     }
