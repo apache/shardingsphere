@@ -1590,7 +1590,7 @@ createSubscription
     ;
 
 createTablespace
-    : CREATE TABLESPACE name (OWNER roleSpec)? LOCATION STRING_ (WITH reloptions)? (MAX_SIZE fileSizeLiteral)?
+    : CREATE TABLESPACE name (OWNER roleSpec)? LOCATION STRING_ (WITH reloptions)? (MAXSIZE EQ_? fileSizeLiteral)?
     ;
 
 createTextSearch
