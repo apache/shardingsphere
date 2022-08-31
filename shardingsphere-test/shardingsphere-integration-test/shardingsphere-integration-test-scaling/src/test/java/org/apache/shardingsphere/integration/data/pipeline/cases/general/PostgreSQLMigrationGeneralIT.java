@@ -104,12 +104,12 @@ public final class PostgreSQLMigrationGeneralIT extends BaseExtraSQLITCase {
     }
     
     private void checkOrderMigration(final JdbcTemplate jdbcTemplate) throws SQLException {
-        startMigrationOrder(true);
+        startMigrationOrderCopy(true);
         startIncrementTask(new PostgreSQLIncrementTask(jdbcTemplate, SCHEMA_NAME, false, 20));
-        String jobId = getJobIdByTableName("t_order");
+        String jobId = getJobIdByTableName("t_order_copy");
         waitMigrationFinished(jobId);
         stopMigrationByJobId(jobId);
-        sourceExecuteWithLog(String.format("INSERT INTO %s.t_order (id,order_id,user_id,status) VALUES (%s, %s, %s, '%s')", SCHEMA_NAME, KEY_GENERATE_ALGORITHM.generateKey(),
+        sourceExecuteWithLog(String.format("INSERT INTO %s.t_order_copy (id,order_id,user_id,status) VALUES (%s, %s, %s, '%s')", SCHEMA_NAME, KEY_GENERATE_ALGORITHM.generateKey(),
                 System.currentTimeMillis(), 1, "afterStop"));
         startMigrationByJobId(jobId);
         assertCheckMigrationSuccess(jobId);

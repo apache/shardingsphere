@@ -40,10 +40,4 @@ public final class ExtraSQLCommand {
     
     @XmlElement(name = "full-insert-order-item")
     private String fullInsertOrderItem;
-    
-    @XmlElement(name = "update-table-order-status")
-    private String updateTableOrderStatus;
-    
-    @XmlElement(name = "create-index-status")
-    private String createIndexStatus;
 }

@@ -229,19 +229,23 @@ public abstract class BaseITCase {
         proxyExecuteWithLog(migrationDistSQLCommand.getCreateTargetOrderItemTableRule(), 2);
     }
     
-    protected void startMigrationOrder(final boolean withSchema) throws SQLException {
+    protected void startMigrationOrderCopy(final boolean withSchema) throws SQLException {
         if (withSchema) {
-            proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderSingleTableWithSchema(), 5);
+            proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderCopySingleTableWithSchema(), 1);
         } else {
-            proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderSingleTable(), 5);
+            proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderCopySingleTable(), 1);
         }
+    }
+    
+    protected void startMigrationOrder() throws SQLException {
+        proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderSingleTable(), 1);
     }
     
     protected void startMigrationOrderItem(final boolean withSchema) throws SQLException {
         if (withSchema) {
-            proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderItemSingleTableWithSchema(), 5);
+            proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderItemSingleTableWithSchema(), 1);
         } else {
-            proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderItemSingleTable(), 5);
+            proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderItemSingleTable(), 1);
         }
     }
     
@@ -333,12 +337,12 @@ public abstract class BaseITCase {
     }
     
     protected void stopMigrationByJobId(final String jobId) throws SQLException {
-        proxyExecuteWithLog(String.format("STOP MIGRATION '%s'", jobId), 5);
+        proxyExecuteWithLog(String.format("STOP MIGRATION '%s'", jobId), 1);
     }
     
     // TODO reopen later
     protected void startMigrationByJobId(final String jobId) throws SQLException {
-        proxyExecuteWithLog(String.format("START MIGRATION '%s'", jobId), 10);
+        proxyExecuteWithLog(String.format("START MIGRATION '%s'", jobId), 1);
     }
     
     protected void commitMigrationByJobId(final String jobId) throws SQLException {
@@ -352,7 +356,7 @@ public abstract class BaseITCase {
     
     protected String getJobIdByTableName(final String tableName) {
         List<Map<String, Object>> jobList = queryForListWithLog("SHOW MIGRATION LIST");
-        return jobList.stream().filter(a -> a.get("tables").toString().equals(tableName)).findFirst().orElseThrow(() -> new RuntimeException("not find target table")).get("id").toString();
+        return jobList.stream().filter(a -> a.get("tables").toString().equals(tableName)).findFirst().orElseThrow(() -> new RuntimeException("not find " + tableName + " table")).get("id").toString();
     }
     
     @SneakyThrows(InterruptedException.class)

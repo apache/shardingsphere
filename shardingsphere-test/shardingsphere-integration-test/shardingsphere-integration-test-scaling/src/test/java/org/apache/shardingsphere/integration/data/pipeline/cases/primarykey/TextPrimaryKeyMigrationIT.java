@@ -76,7 +76,7 @@ public class TextPrimaryKeyMigrationIT extends BaseExtraSQLITCase {
         addSourceResource();
         addTargetResource();
         createTargetOrderTableRule();
-        startMigrationOrder(false);
+        startMigrationOrder();
         String jobId = listJobId().get(0);
         waitMigrationFinished(jobId);
         stopMigrationByJobId(jobId);
