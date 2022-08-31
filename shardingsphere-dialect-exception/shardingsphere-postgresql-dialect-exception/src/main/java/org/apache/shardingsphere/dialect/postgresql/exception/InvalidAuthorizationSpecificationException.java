@@ -25,8 +25,4 @@ import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 public final class InvalidAuthorizationSpecificationException extends SQLDialectException {
     
     private static final long serialVersionUID = -7169979989631579431L;
-    
-    public InvalidAuthorizationSpecificationException() {
-        super("no PostgreSQL user name specified in startup packet");
-    }
 }
