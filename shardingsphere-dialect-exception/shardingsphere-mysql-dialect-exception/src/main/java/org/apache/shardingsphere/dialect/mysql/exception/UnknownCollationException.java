@@ -15,23 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dialect.postgresql.exception;
+package org.apache.shardingsphere.dialect.mysql.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
-import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 
 /**
- * PostgreSQL authentication exception.
+ * Unknown collation exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class PostgreSQLAuthenticationException extends SQLDialectException {
+public final class UnknownCollationException extends SQLDialectException {
     
-    private static final long serialVersionUID = 1331782847269278560L;
+    private static final long serialVersionUID = 6920150607711135228L;
     
-    private final PostgreSQLVendorError vendorError;
-    
-    private final String message;
+    private final int collationId;
 }

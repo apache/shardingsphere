@@ -15,12 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.exception;
+package org.apache.shardingsphere.dialect.postgresql.exception.authority;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 
 /**
- * Frontend exception.
+ * Invalid password exception.
  */
-public abstract class FrontendException extends RuntimeException {
+@RequiredArgsConstructor
+@Getter
+public final class InvalidPasswordException extends SQLDialectException {
     
-    private static final long serialVersionUID = 1127309123050216974L;
+    private static final long serialVersionUID = -2266893048070563644L;
+    
+    private final String username;
 }

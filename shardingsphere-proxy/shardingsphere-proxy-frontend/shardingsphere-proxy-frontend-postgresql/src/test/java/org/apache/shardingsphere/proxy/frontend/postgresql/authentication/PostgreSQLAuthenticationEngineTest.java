@@ -31,9 +31,9 @@ import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.authentication.PostgreSQLMD5PasswordAuthenticationPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.apache.shardingsphere.dialect.postgresql.exception.InvalidAuthorizationSpecificationException;
-import org.apache.shardingsphere.dialect.postgresql.exception.InvalidPasswordException;
-import org.apache.shardingsphere.dialect.postgresql.exception.PostgreSQLProtocolViolationException;
+import org.apache.shardingsphere.dialect.postgresql.exception.authority.EmptyUsernameException;
+import org.apache.shardingsphere.dialect.postgresql.exception.authority.InvalidPasswordException;
+import org.apache.shardingsphere.dialect.postgresql.exception.protocol.ProtocolViolationException;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -97,7 +97,7 @@ public final class PostgreSQLAuthenticationEngineTest extends ProxyContextRestor
         assertFalse(actual.isFinished());
     }
     
-    @Test(expected = InvalidAuthorizationSpecificationException.class)
+    @Test(expected = EmptyUsernameException.class)
     public void assertUserNotSet() {
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(8, 512), StandardCharsets.UTF_8);
         payload.writeInt4(64);
@@ -107,7 +107,7 @@ public final class PostgreSQLAuthenticationEngineTest extends ProxyContextRestor
         new PostgreSQLAuthenticationEngine().authenticate(channelHandlerContext, payload);
     }
     
-    @Test(expected = PostgreSQLProtocolViolationException.class)
+    @Test(expected = ProtocolViolationException.class)
     public void assertAuthenticateWithNonPasswordMessage() {
         PostgreSQLAuthenticationEngine authenticationEngine = new PostgreSQLAuthenticationEngine();
         setAlreadyReceivedStartupMessage(authenticationEngine);

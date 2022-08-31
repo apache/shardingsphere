@@ -241,14 +241,14 @@ The text of each license is the standard Apache 2.0 license.
     failureaccess 1.0.1:https://github.com/google/guava, Apache 2.0 
     freemarker 2.3.31: https://freemarker.apache.org/, Apache 2.0
     groovy 4.0.3: https://groovy.apache.org/, Apache 2.0
-    grpc-api 1.27.1: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-context 1.27.1: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-core 1.27.1: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-grpclb 1.27.1: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-netty 1.27.1: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-protobuf 1.27.1: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-protobuf-lite 1.27.1: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-stub 1.27.1: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-api 1.39.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-context 1.39.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-core 1.39.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-grpclb 1.39.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-netty 1.39.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-protobuf 1.39.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-protobuf-lite 1.39.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-stub 1.39.0: https://github.com/grpc/grpc-java, Apache 2.0
     gson 2.9.1: https://github.com/google/gson, Apache 2.0
     guava 30.0-jre: https://github.com/google/guava, Apache 2.0
     HikariCP 3.4.2: https://github.com/brettwooldridge/HikariCP, Apache 2.0
@@ -259,11 +259,10 @@ The text of each license is the standard Apache 2.0 license.
     jackson-databind 2.10.0: http://github.com/FasterXML/jackson, Apache 2.0
     jackson-dataformat-yaml 2.10.0: http://github.com/FasterXML/jackson, Apache 2.0
     jcl-over-slf4j 1.7.7: https://github.com/qos-ch/slf4j, Apache 2.0
-    jetcd-common 0.5.0: https://github.com/etcd-io/jetcd, Apache 2.0
-    jetcd-core 0.5.0: https://github.com/etcd-io/jetcd, Apache 2.0
-    jetcd-resolver 0.5.0: https://github.com/etcd-io/jetcd, Apache 2.0
-    json-path 2.4.0: https://github.com/jayway/JsonPath, Apache 2.0
-    json-smart 2.3: https://www.minidev.net/, Apache 2.0
+    jetcd-common 0.5.10: https://github.com/etcd-io/jetcd, Apache 2.0
+    jetcd-core 0.5.10: https://github.com/etcd-io/jetcd, Apache 2.0
+    json-path 2.7.0: https://github.com/jayway/JsonPath, Apache 2.0
+    json-smart 2.4.7: https://www.minidev.net/, Apache 2.0
     jsr305 3.0.2: http://findbugs.sourceforge.net/, Apache 2.0
     log4j 1.2.17: http://logging.apache.org/log4j/1.2/, Apache 2.0
     memory 0.9.0, Apache 2.0
@@ -285,7 +284,7 @@ The text of each license is the standard Apache 2.0 license.
     netty-transport-native-epoll 4.1.73.Final-linux-x86_64: https://github.com/netty, Apache 2.0
     netty-transport-native-unix-common 4.1.73.Final: https://github.com/netty, Apache 2.0
     perfmark-api 0.19.0: https://github.com/perfmark/perfmark, Apache 2.0
-    proto-google-common-protos 1.17.0: https://github.com/googleapis/common-protos-java, Apache 2.0
+    proto-google-common-protos 2.0.1: https://github.com/googleapis/common-protos-java, Apache 2.0
     quartz 2.3.2: https://github.com/quartz-scheduler/quartz, Apache 2.0
     sketches-core 0.9.0, Apache 2.0
     snakeyaml 1.30: https://bitbucket.org/snakeyaml/snakeyaml, Apache 2.0
@@ -323,8 +322,8 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
     janino 3.0.11: https://github.com/janino-compiler/janino, New BSD License
     opengauss-jdbc 3.0.0: https://gitee.com/opengauss/openGauss-connector-jdbc, BSD-2-Clause
     postgresql 42.4.1: https://github.com/pgjdbc/pgjdbc, BSD-2-Clause
-    protobuf-java 3.11.0: https://github.com/protocolbuffers/protobuf/blob/master/java, BSD-3-Clause
-    protobuf-java-util 3.11.0: https://github.com/protocolbuffers/protobuf/blob/master/java, BSD-3-Clause 
+    protobuf-java 3.17.2: https://github.com/protocolbuffers/protobuf/blob/master/java, BSD-3-Clause
+    protobuf-java-util 3.17.2: https://github.com/protocolbuffers/protobuf/blob/master/java, BSD-3-Clause
 
 ========================================================================
 CDDL licenses

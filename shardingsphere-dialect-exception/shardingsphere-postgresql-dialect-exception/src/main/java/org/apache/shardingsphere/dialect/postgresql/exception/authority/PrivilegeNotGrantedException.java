@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dialect.postgresql.exception;
+package org.apache.shardingsphere.dialect.postgresql.exception.authority;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 
 /**
- * Invalid password exception.
+ * Privilege not granted exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class InvalidPasswordException extends SQLDialectException {
+public final class PrivilegeNotGrantedException extends SQLDialectException {
     
-    private static final long serialVersionUID = -2266893048070563644L;
+    private static final long serialVersionUID = 8410672833723209253L;
     
     private final String username;
+    
+    private final String databaseName;
 }

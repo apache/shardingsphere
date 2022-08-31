@@ -15,14 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dialect.exception.connection;
+package org.apache.shardingsphere.dialect.postgresql.exception.authority;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 
 /**
- * Unsupported prepared statement exception.
+ * Unknown username exception.
  */
-public final class UnsupportedPreparedStatementException extends SQLDialectException {
+@RequiredArgsConstructor
+@Getter
+public final class UnknownUsernameException extends SQLDialectException {
     
-    private static final long serialVersionUID = 2185290474191327830L;
+    private static final long serialVersionUID = -2895258747747089622L;
+    
+    private final String username;
 }
