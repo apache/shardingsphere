@@ -54,9 +54,9 @@ public final class ViewMetaDataLoader {
         try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), connection.getSchema(), null, new String[]{"VIEW"})) {
             while (resultSet.next()) {
                 String tableName = resultSet.getString("TABLE_NAME");
-                String tableDefinition = resultSet.getString("VIEW_DEFINITION");
-                if (null != tableName && null != tableDefinition) {
-                    return new ViewMetaData(tableName, tableDefinition);
+                String viewDefinition = resultSet.getString("VIEW_DEFINITION");
+                if (null != tableName && null != viewDefinition) {
+                    return new ViewMetaData(tableName, viewDefinition);
                 }
             }
         }

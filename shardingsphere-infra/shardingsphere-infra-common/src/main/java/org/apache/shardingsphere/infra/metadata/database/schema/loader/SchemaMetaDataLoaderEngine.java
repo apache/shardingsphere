@@ -109,6 +109,7 @@ public final class SchemaMetaDataLoaderEngine {
         for (SchemaMetaData each : addedSchemaMetaDataList) {
             SchemaMetaData schemaMetaData = schemaMetaDataMap.computeIfAbsent(each.getName(), key -> new SchemaMetaData(each.getName(), new LinkedList<>(), new LinkedList<>()));
             schemaMetaData.getTables().addAll(each.getTables());
+            schemaMetaData.getViews().addAll(each.getViews());
         }
     }
 }
