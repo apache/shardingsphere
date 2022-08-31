@@ -15,14 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dialect.postgresql.exception;
+package org.apache.shardingsphere.dialect.postgresql.exception.authority;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 
 /**
- * Empty username exception.
+ * Privilege not granted exception.
  */
-public final class EmptyUsernameException extends SQLDialectException {
+@RequiredArgsConstructor
+@Getter
+public final class PrivilegeNotGrantedException extends SQLDialectException {
     
-    private static final long serialVersionUID = -7169979989631579431L;
+    private static final long serialVersionUID = 8410672833723209253L;
+    
+    private final String username;
+    
+    private final String databaseName;
 }
