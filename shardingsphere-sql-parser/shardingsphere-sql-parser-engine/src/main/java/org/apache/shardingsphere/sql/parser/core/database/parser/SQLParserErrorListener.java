@@ -25,27 +25,25 @@ import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 
 /**
- * sql parser error listener.
+ * SQL parser error listener.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ParserErrorListener extends BaseErrorListener {
+public final class SQLParserErrorListener extends BaseErrorListener {
     
-    private static final ParserErrorListener INSTANCE = new ParserErrorListener();
+    private static final SQLParserErrorListener INSTANCE = new SQLParserErrorListener();
     
     /**
-     * get ParserErrorListener instance.
-     * @return ParserErrorListener instance
+     * Get instance.
+     * 
+     * @return instance
      */
-    public static ParserErrorListener getInstance() {
+    public static SQLParserErrorListener getInstance() {
         return INSTANCE;
     }
     
     @Override
     public void syntaxError(final Recognizer<?, ?> recognizer, final Object offendingSymbol, final int line, final int charPositionInLine,
                             final String msg, final RecognitionException e) throws ParseCancellationException {
-        StringBuilder sb = new StringBuilder("syntax error at line ");
-        sb.append(line).append(", position ").append(charPositionInLine).append(", near ").append(offendingSymbol).append(", ").append(msg);
-        throw new ParseCancellationException(sb.toString());
+        throw new ParseCancellationException("syntax error at line " + line + ", position " + charPositionInLine + ", near " + offendingSymbol + ", " + msg);
     }
-    
 }
