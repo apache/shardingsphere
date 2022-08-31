@@ -161,7 +161,8 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
             PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(config.getTarget().getType(), config.getTarget().getParameter());
             config.setTargetDatabaseType(targetDataSourceConfig.getDatabaseType().getType());
         }
-        JobDataNodeEntry nodeEntry = new JobDataNodeEntry(config.getSourceTableName(),
+        // target table name is logic table name, source table name is actual table name.
+        JobDataNodeEntry nodeEntry = new JobDataNodeEntry(config.getTargetTableName(),
                 Collections.singletonList(new DataNode(config.getSourceResourceName(), config.getSourceTableName())));
         String dataNodeLine = new JobDataNodeLine(Collections.singletonList(nodeEntry)).marshal();
         config.setTablesFirstDataNodes(dataNodeLine);
@@ -193,7 +194,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     public TaskConfiguration buildTaskConfiguration(final PipelineJobConfiguration pipelineJobConfig, final int jobShardingItem, final PipelineProcessConfiguration pipelineProcessConfig) {
         MigrationJobConfiguration jobConfig = (MigrationJobConfiguration) pipelineJobConfig;
         Map<ActualTableName, LogicTableName> tableNameMap = new LinkedHashMap<>();
-        tableNameMap.put(new ActualTableName(jobConfig.getSourceTableName()), new LogicTableName(jobConfig.getSourceTableName()));
+        tableNameMap.put(new ActualTableName(jobConfig.getSourceTableName()), new LogicTableName(jobConfig.getTargetTableName()));
         Map<LogicTableName, String> tableNameSchemaMap = TableNameSchemaNameMapping.convert(jobConfig.getSourceSchemaName(), Collections.singletonList(jobConfig.getTargetTableName()));
         TableNameSchemaNameMapping tableNameSchemaNameMapping = new TableNameSchemaNameMapping(tableNameSchemaMap);
         DumperConfiguration dumperConfig = createDumperConfiguration(jobConfig.getJobId(), jobConfig.getSourceResourceName(), jobConfig.getSource(), tableNameMap, tableNameSchemaNameMapping);
