@@ -59,10 +59,13 @@ public final class SQLParserExecutor {
         } catch (final ParseCancellationException ex) {
             ((Parser) sqlParser).reset();
             ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.LL);
+            ((Parser) sqlParser).removeErrorListeners();
+            ((Parser) sqlParser).addErrorListener(ParserErrorListener.getInstance());
             try {
                 return (ParseASTNode) sqlParser.parse();
             } catch (final ParseCancellationException e) {
-                throw new SQLParsingException(sql);
+                StringBuilder sb = new StringBuilder(sql).append(";").append(e.getMessage());
+                throw new SQLParsingException(sb.toString());
             }
         }
     }
