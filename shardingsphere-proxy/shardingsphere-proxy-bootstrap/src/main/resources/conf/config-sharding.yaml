@@ -103,36 +103,6 @@
 #  auditors:
 #    sharding_key_required_auditor:
 #      type: DML_SHARDING_CONDITIONS
-#
-#  scalingName: default_scaling
-#  scaling:
-#    default_scaling:
-#      input:
-#        workerThread: 40
-#        batchSize: 1000
-#        rateLimiter:
-#          type: QPS
-#          props:
-#            qps: 50
-#      output:
-#        workerThread: 40
-#        batchSize: 1000
-#        rateLimiter:
-#          type: TPS
-#          props:
-#            tps: 2000
-#      streamChannel:
-#        type: MEMORY
-#        props:
-#          block-queue-size: 10000
-#      completionDetector:
-#        type: IDLE
-#        props:
-#          incremental-task-idle-seconds-threshold: 1800
-#      dataConsistencyChecker:
-#        type: DATA_MATCH
-#        props:
-#          chunk-size: 1000
 
 ######################################################################################################
 #
@@ -221,33 +191,3 @@
 #  auditors:
 #    sharding_key_required_auditor:
 #      type: DML_SHARDING_CONDITIONS
-#
-#  scalingName: default_scaling
-#  scaling:
-#    default_scaling:
-#      input:
-#        workerThread: 40
-#        batchSize: 1000
-#        rateLimiter:
-#          type: QPS
-#          props:
-#            qps: 50
-#      output:
-#        workerThread: 40
-#        batchSize: 1000
-#        rateLimiter:
-#          type: TPS
-#          props:
-#            tps: 2000
-#      streamChannel:
-#        type: MEMORY
-#        props:
-#          block-queue-size: 10000
-#      completionDetector:
-#        type: IDLE
-#        props:
-#          incremental-task-idle-seconds-threshold: 1800
-#      dataConsistencyChecker:
-#        type: DATA_MATCH
-#        props:
-#          chunk-size: 1000
