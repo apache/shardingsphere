@@ -25,7 +25,19 @@ import lombok.NoArgsConstructor;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DistSQLScriptConstants {
-    
+
+    public static final String RESOURCE_DB = "resource_db";
+
+    public static final String SHARDING_DB = "sharding_db";
+
+    public static final String READWRITE_SPLITTING_DB = "readwrite_splitting_db";
+
+    public static final String STANDARD = "standard";
+
+    public static final String COMPLEX = "complex";
+
+    public static final String HINT = "hint";
+
     public static final String COMMA = ",";
     
     public static final String SEMI = ";";
@@ -110,4 +122,22 @@ public final class DistSQLScriptConstants {
     public static final String SHARDING_BINDING_TABLE_RULES = "CREATE SHARDING BINDING TABLE RULES %s";
     
     public static final String BINDING = "(%s)";
+    
+    public static final String CREATE_READWRITE_SPLITTING_RULE = "CREATE READWRITE_SPLITTING RULE";
+    
+    public static final String STATIC_READWRITE_SPLITTING = " %s ("
+            + System.lineSeparator()
+            + "WRITE_RESOURCE=%s,"
+            + System.lineSeparator()
+            + "READ_RESOURCES(%s),"
+            + System.lineSeparator()
+            + "%s"
+            + System.lineSeparator()
+            + ")";
+
+    public static final String TYPE = "TYPE(NAME=\"%s\")";
+    
+    public static final String TYPE_PROPERTIES = "TYPE(NAME=\"%s\", PROPERTIES(%s))";
+    
+    public static final String READ_RESOURCE = "%s";
 }
