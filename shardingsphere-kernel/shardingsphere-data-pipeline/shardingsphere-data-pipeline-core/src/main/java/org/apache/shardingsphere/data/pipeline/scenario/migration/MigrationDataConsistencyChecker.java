@@ -125,15 +125,21 @@ public final class MigrationDataConsistencyChecker {
     
     private DataConsistencyCountCheckResult checkCount(final PipelineDataSourceWrapper sourceDataSource, final PipelineDataSourceWrapper targetDataSource,
                                                        final ThreadPoolExecutor executor) {
+        Future<Long> sourceFuture = executor.submit(() -> count(sourceDataSource, sourceTableName, sourceDataSource.getDatabaseType()));
+        Future<Long> targetFuture = executor.submit(() -> count(targetDataSource, targetTableName, targetDataSource.getDatabaseType()));
+        long sourceCount;
+        long targetCount;
         try {
-            Future<Long> sourceFuture = executor.submit(() -> count(sourceDataSource, sourceTableName, sourceDataSource.getDatabaseType()));
-            Future<Long> targetFuture = executor.submit(() -> count(targetDataSource, targetTableName, targetDataSource.getDatabaseType()));
-            long sourceCount = sourceFuture.get();
-            long targetCount = targetFuture.get();
-            return new DataConsistencyCountCheckResult(sourceCount, targetCount);
+            sourceCount = sourceFuture.get();
         } catch (final InterruptedException | ExecutionException ex) {
-            throw new PipelineDataConsistencyCheckFailedException(String.format("Count check failed for table '%s'", sourceDataSource), ex);
+            throw new PipelineDataConsistencyCheckFailedException(String.format("Count check failed for source table '%s'", sourceTableName), ex);
         }
+        try {
+            targetCount = targetFuture.get();
+        } catch (final InterruptedException | ExecutionException ex) {
+            throw new PipelineDataConsistencyCheckFailedException(String.format("Count check failed for target table '%s'", targetTableName), ex);
+        }
+        return new DataConsistencyCountCheckResult(sourceCount, targetCount);
     }
     
     // TODO use digest (crc32, murmurhash)
