@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.checker.audit.ShardingAuditChecker;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,6 +37,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -69,8 +71,9 @@ public final class ShardingAuditCheckerTest {
     public void setUp() {
         when(sqlStatementContext.getSqlHintExtractor().findDisableAuditNames()).thenReturn(new HashSet<>(Collections.singletonList("auditor_1")));
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("foo_table"));
-        when(rule.isShardingTable("foo_table")).thenReturn(true);
-        when(rule.getAuditStrategyConfiguration(rule.getTableRule("foo_table"))).thenReturn(auditStrategy);
+        TableRule tableRule = mock(TableRule.class);
+        when(rule.findTableRule("foo_table")).thenReturn(Optional.of(tableRule));
+        when(rule.getAuditStrategyConfiguration(tableRule)).thenReturn(auditStrategy);
         when(auditStrategy.getAuditorNames()).thenReturn(Collections.singleton("auditor_1"));
         databases.put("foo_db", mock(ShardingSphereDatabase.class));
     }
