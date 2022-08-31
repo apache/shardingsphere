@@ -907,13 +907,26 @@ columnRefList
     ;
     
 functionCall
-    : aggregationFunction | specialFunction | regularFunction 
+    : aggregationFunction | specialFunction | regularFunction | jsonFunction
     ;
     
 aggregationFunction
     : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? collateClause? RP_ overClause?
     ;
-    
+
+jsonFunction
+    : columnRef (JSON_SEPARATOR | JSON_UNQUOTED_SEPARATOR) path
+    | jsonFunctionName LP_ (expr? | expr (COMMA_ expr)*) RP_
+    ;
+
+jsonFunctionName
+    : JSON_ARRAY | JSON_ARRAY_APPEND |  JSON_ARRAY_INSERT |  JSON_CONTAINS
+    | JSON_CONTAINS_PATH | JSON_DEPTH | JSON_EXTRACT | JSON_INSERT | JSON_KEYS | JSON_LENGTH | JSON_MERGE | JSON_MERGE_PATCH
+    | JSON_MERGE_PRESERVE | JSON_OBJECT | JSON_OVERLAPS | JSON_PRETTY | JSON_QUOTE | JSON_REMOVE | JSON_REPLACE
+    | JSON_SCHEMA_VALID | JSON_SCHEMA_VALIDATION_REPORT | JSON_SEARCH | JSON_SET | JSON_STORAGE_FREE | JSON_STORAGE_SIZE
+    | JSON_TABLE | JSON_TYPE | JSON_UNQUOTE | JSON_VALID | JSON_VALUE | MEMBER OF
+    ;
+
 aggregationFunctionName
     : MAX | MIN | SUM | COUNT | AVG | BIT_XOR
     ;
