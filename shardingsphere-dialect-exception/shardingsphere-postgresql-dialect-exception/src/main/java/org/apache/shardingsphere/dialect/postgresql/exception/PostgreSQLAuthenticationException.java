@@ -15,30 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dialect.postgresql.vendor;
+package org.apache.shardingsphere.dialect.postgresql.exception;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.sql.vendor.VendorError;
-import org.postgresql.util.ServerErrorMessage;
+import org.apache.shardingsphere.dialect.exception.SQLDialectException;
+import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 
 /**
- * PostgreSQL server error message.
+ * PostgreSQL authentication exception.
  */
 @RequiredArgsConstructor
-public final class PostgreSQLServerErrorMessage {
+@Getter
+public final class PostgreSQLAuthenticationException extends SQLDialectException {
     
-    private final String severity;
+    private static final long serialVersionUID = 1331782847269278560L;
     
-    private final VendorError vendorError;
+    private final PostgreSQLVendorError vendorError;
     
-    private final String reason;
-    
-    /**
-     * To server error message.
-     * 
-     * @return server error message
-     */
-    public ServerErrorMessage toServerErrorMessage() {
-        return new ServerErrorMessage("S" + severity + "\0" + "V" + severity + "\0" + "C" + vendorError.getSqlState().getValue() + "\0" + "M" + reason);
-    }
+    private final String message;
 }

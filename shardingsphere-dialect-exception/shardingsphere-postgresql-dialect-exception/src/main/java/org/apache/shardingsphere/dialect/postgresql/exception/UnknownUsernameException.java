@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.postgresql.authentication;
+package org.apache.shardingsphere.dialect.postgresql.exception;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
+import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 
 /**
- * PostgreSQL login result.
+ * Unknown username exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class PostgreSQLLoginResult {
+public final class UnknownUsernameException extends SQLDialectException {
     
-    private final PostgreSQLVendorError vendorError;
+    private static final long serialVersionUID = -2895258747747089622L;
     
-    private final String errorMessage;
+    public UnknownUsernameException(final String username) {
+        super("unknown username: %s", username);
+    }
 }

@@ -30,6 +30,9 @@ import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.opengauss.packet.authentication.OpenGaussAuthenticationSCRAMSha256Packet;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.dialect.postgresql.exception.InvalidAuthorizationSpecificationException;
+import org.apache.shardingsphere.dialect.postgresql.exception.InvalidPasswordException;
+import org.apache.shardingsphere.dialect.postgresql.exception.PostgreSQLProtocolViolationException;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -43,9 +46,6 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
 import org.apache.shardingsphere.proxy.frontend.opengauss.ProxyContextRestorer;
 import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.fixture.OpenGaussAuthenticationAlgorithm;
-import org.apache.shardingsphere.dialect.postgresql.exception.InvalidAuthorizationSpecificationException;
-import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLAuthenticationException;
-import org.apache.shardingsphere.dialect.postgresql.exception.PostgreSQLProtocolViolationException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -127,7 +127,7 @@ public final class OpenGaussAuthenticationEngineTest extends ProxyContextRestore
         assertLogin(password);
     }
     
-    @Test(expected = PostgreSQLAuthenticationException.class)
+    @Test(expected = InvalidPasswordException.class)
     public void assertLoginFailed() {
         assertLogin("wrong" + password);
     }

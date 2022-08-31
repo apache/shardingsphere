@@ -15,12 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.lock;
+package org.apache.shardingsphere.dialect.postgresql.exception;
+
+import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 
 /**
- * Lock state.
+ * Invalid password exception.
  */
-public enum LockState {
+public final class InvalidPasswordException extends SQLDialectException {
     
-    LOCKED, UNLOCKED, LOCKING
+    private static final long serialVersionUID = -2266893048070563644L;
+    
+    public InvalidPasswordException(final String username) {
+        super("password authentication failed for user \"%s\"", username);
+    }
 }

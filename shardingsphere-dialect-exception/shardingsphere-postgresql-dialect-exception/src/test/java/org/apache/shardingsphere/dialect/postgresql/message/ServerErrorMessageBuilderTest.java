@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration;
+package org.apache.shardingsphere.dialect.postgresql.message;
 
-import lombok.Getter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
+import org.junit.Assert;
+import org.junit.Test;
+import org.postgresql.util.ServerErrorMessage;
 
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
+import static org.hamcrest.CoreMatchers.is;
 
-/**
- * Drop migration source resource statement test case.
- */
-@Getter
-public final class DropMigrationSourceResourceStatementTestCase extends SQLParserTestCase {
+public final class ServerErrorMessageBuilderTest {
     
-    @XmlElement(name = "data-source")
-    private final List<String> dataSources = new LinkedList<>();
+    @Test
+    public void assertToServerErrorMessage() {
+        ServerErrorMessage actual = ServerErrorMessageBuilder.build("FATAL", PostgreSQLVendorError.SYSTEM_ERROR, "foo_reason");
+        Assert.assertThat(actual.getSeverity(), is("FATAL"));
+        Assert.assertThat(actual.getSQLState(), is(PostgreSQLVendorError.SYSTEM_ERROR.getSqlState().getValue()));
+        Assert.assertThat(actual.getMessage(), is("foo_reason"));
+    }
 }

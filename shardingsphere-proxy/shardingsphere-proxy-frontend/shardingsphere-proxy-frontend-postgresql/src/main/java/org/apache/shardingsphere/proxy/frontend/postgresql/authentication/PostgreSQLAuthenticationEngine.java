@@ -22,8 +22,6 @@ import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLAuthenticationMethod;
-import org.apache.shardingsphere.proxy.backend.handler.admin.postgresql.PostgreSQLCharacterSets;
-import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLAuthenticationOKPacket;
@@ -37,14 +35,14 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.authent
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.dialect.postgresql.exception.InvalidAuthorizationSpecificationException;
+import org.apache.shardingsphere.dialect.postgresql.exception.PostgreSQLProtocolViolationException;
+import org.apache.shardingsphere.proxy.backend.handler.admin.postgresql.PostgreSQLCharacterSets;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResultBuilder;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.PostgreSQLAuthenticator;
-import org.apache.shardingsphere.dialect.postgresql.exception.InvalidAuthorizationSpecificationException;
-import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLAuthenticationException;
-import org.apache.shardingsphere.dialect.postgresql.exception.PostgreSQLProtocolViolationException;
 
 /**
  * Authentication engine for PostgreSQL.
@@ -100,10 +98,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
             throw new PostgreSQLProtocolViolationException("password", Character.toString(messageType));
         }
         PostgreSQLPasswordMessagePacket passwordMessagePacket = new PostgreSQLPasswordMessagePacket(payload);
-        PostgreSQLLoginResult loginResult = authenticationHandler.login(currentAuthResult.getUsername(), currentAuthResult.getDatabase(), md5Salt, passwordMessagePacket);
-        if (PostgreSQLVendorError.SUCCESSFUL_COMPLETION != loginResult.getVendorError()) {
-            throw new PostgreSQLAuthenticationException(loginResult.getVendorError(), loginResult.getErrorMessage());
-        }
+        authenticationHandler.login(currentAuthResult.getUsername(), currentAuthResult.getDatabase(), md5Salt, passwordMessagePacket);
         // TODO implement PostgreSQLServerInfo like MySQLServerInfo
         context.write(new PostgreSQLAuthenticationOKPacket());
         context.write(new PostgreSQLParameterStatusPacket("server_version", PostgreSQLServerInfo.getServerVersion()));

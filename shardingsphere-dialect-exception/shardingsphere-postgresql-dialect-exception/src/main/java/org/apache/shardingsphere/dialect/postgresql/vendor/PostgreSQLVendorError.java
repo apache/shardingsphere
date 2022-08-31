@@ -47,7 +47,7 @@ public enum PostgreSQLVendorError implements VendorError {
     
     INVALID_PASSWORD(PostgreSQLState.INVALID_PASSWORD, "invalid_password"),
     
-    INVALID_CATALOG_NAME(XOpenSQLState.INVALID_CATALOG_NAME, "invalid_catalog_name"),
+    INVALID_CATALOG_NAME(XOpenSQLState.INVALID_CATALOG_NAME, "database \"%s\" does not exist"),
     
     UNDEFINED_COLUMN(PostgreSQLState.UNDEFINED_COLUMN, "undefined_column"),
     
