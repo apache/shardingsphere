@@ -20,7 +20,6 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
-import org.apache.shardingsphere.driver.jdbc.exception.SQLExceptionErrorCode;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -60,7 +59,6 @@ public final class ShardingSphereResultSetUtil {
         List<Projection> actualProjections = statementContext.getProjectionsContext().getExpandProjections();
         Map<String, Integer> result = new CaseInsensitiveMap<>(actualProjections.size(), 1);
         for (int columnIndex = actualProjections.size(); columnIndex > 0; columnIndex--) {
-            checkColumnIndex(actualProjections, columnIndex);
             Projection projection = actualProjections.get(columnIndex - 1);
             result.put(DerivedColumn.isDerivedColumnName(projection.getColumnLabel()) ? projection.getExpression() : projection.getColumnLabel(), columnIndex);
         }
@@ -69,12 +67,5 @@ public final class ShardingSphereResultSetUtil {
     
     private static boolean hasSelectExpandProjections(final SQLStatementContext<?> sqlStatementContext) {
         return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty();
-    }
-    
-    private static void checkColumnIndex(final List<Projection> actualProjections, final int column) throws SQLException {
-        if (column > actualProjections.size()) {
-            SQLExceptionErrorCode errorCode = SQLExceptionErrorCode.COLUMN_INDEX_OUT_OF_RANGE;
-            throw new SQLException(errorCode.getErrorMessage(), errorCode.getSqlState(), errorCode.getErrorCode());
-        }
     }
 }
