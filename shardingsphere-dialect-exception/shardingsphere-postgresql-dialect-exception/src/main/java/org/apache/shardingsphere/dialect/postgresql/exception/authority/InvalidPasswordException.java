@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dialect.postgresql.exception;
+package org.apache.shardingsphere.dialect.postgresql.exception.authority;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

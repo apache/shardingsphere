@@ -15,22 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dialect.postgresql.exception;
+package org.apache.shardingsphere.dialect.postgresql.exception.authority;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 
 /**
- * PostgreSQL protocol violation exception.
+ * Empty username exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class PostgreSQLProtocolViolationException extends SQLDialectException {
+public final class EmptyUsernameException extends SQLDialectException {
     
-    private static final long serialVersionUID = 6784109729740919997L;
-    
-    private final String expectedMessageType;
-    
-    private final String actualMessageType;
+    private static final long serialVersionUID = -7169979989631579431L;
 }
