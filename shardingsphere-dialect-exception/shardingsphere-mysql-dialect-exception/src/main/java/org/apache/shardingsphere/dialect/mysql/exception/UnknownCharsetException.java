@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dialect.exception.connection;
+package org.apache.shardingsphere.dialect.mysql.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 
 /**
- * Unknown collation exception.
+ * Unknown charset exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class UnknownCollationException extends SQLDialectException {
+public final class UnknownCharsetException extends SQLDialectException {
     
-    private static final long serialVersionUID = 6920150607711135228L;
+    private static final long serialVersionUID = 6289715520954322551L;
     
-    private final int collationId;
+    private final String charset;
 }

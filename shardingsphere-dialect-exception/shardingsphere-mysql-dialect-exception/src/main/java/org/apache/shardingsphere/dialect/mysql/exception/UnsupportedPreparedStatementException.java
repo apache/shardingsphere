@@ -15,20 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dialect.exception.connection;
+package org.apache.shardingsphere.dialect.mysql.exception;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 
 /**
- * Unknown charset exception.
+ * Unsupported prepared statement exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class UnknownCharsetException extends SQLDialectException {
+public final class UnsupportedPreparedStatementException extends SQLDialectException {
     
-    private static final long serialVersionUID = 6289715520954322551L;
-    
-    private final String charset;
+    private static final long serialVersionUID = 2185290474191327830L;
 }
