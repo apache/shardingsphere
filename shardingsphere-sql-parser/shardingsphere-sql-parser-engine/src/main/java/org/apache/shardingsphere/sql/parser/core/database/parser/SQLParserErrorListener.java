@@ -43,7 +43,7 @@ public final class SQLParserErrorListener extends BaseErrorListener {
     
     @Override
     public void syntaxError(final Recognizer<?, ?> recognizer, final Object offendingSymbol, final int line, final int charPositionInLine,
-                            final String msg, final RecognitionException e) throws ParseCancellationException {
-        throw new ParseCancellationException("syntax error at line " + line + ", position " + charPositionInLine + ", near " + offendingSymbol + ", " + msg);
+                            final String message, final RecognitionException e) throws ParseCancellationException {
+        throw new ParseCancellationException(message + " at line " + line + ", position " + charPositionInLine + ", near " + offendingSymbol);
     }
 }
