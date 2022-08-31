@@ -25,7 +25,7 @@ import org.apache.shardingsphere.dialect.exception.syntax.database.DatabaseCreat
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.dialect.exception.transaction.InTransactionException;
 import org.apache.shardingsphere.dialect.mapper.SQLDialectExceptionMapper;
-import org.apache.shardingsphere.dialect.postgresql.exception.InvalidAuthorizationSpecificationException;
+import org.apache.shardingsphere.dialect.postgresql.exception.EmptyUsernameException;
 import org.apache.shardingsphere.dialect.postgresql.exception.InvalidPasswordException;
 import org.apache.shardingsphere.dialect.postgresql.exception.PostgreSQLProtocolViolationException;
 import org.apache.shardingsphere.dialect.postgresql.exception.PrivilegeNotGrantedException;
@@ -75,7 +75,7 @@ public final class PostgreSQLDialectExceptionMapper implements SQLDialectExcepti
         if (sqlDialectException instanceof TooManyConnectionsException) {
             return new PSQLException(ServerErrorMessageBuilder.build("ERROR", PostgreSQLVendorError.DATA_SOURCE_REJECTED_CONNECTION_ATTEMPT));
         }
-        if (sqlDialectException instanceof InvalidAuthorizationSpecificationException) {
+        if (sqlDialectException instanceof EmptyUsernameException) {
             return new PSQLException(ServerErrorMessageBuilder.build("FATAL", PostgreSQLVendorError.NO_USERNAME));
         }
         if (sqlDialectException instanceof PostgreSQLProtocolViolationException) {

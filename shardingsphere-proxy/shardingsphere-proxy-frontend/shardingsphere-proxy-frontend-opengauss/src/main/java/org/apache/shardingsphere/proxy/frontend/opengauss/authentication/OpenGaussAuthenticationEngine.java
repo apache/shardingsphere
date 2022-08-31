@@ -31,7 +31,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.Postgre
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLSSLNegativePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.apache.shardingsphere.dialect.postgresql.exception.InvalidAuthorizationSpecificationException;
+import org.apache.shardingsphere.dialect.postgresql.exception.EmptyUsernameException;
 import org.apache.shardingsphere.dialect.postgresql.exception.PostgreSQLProtocolViolationException;
 import org.apache.shardingsphere.proxy.backend.handler.admin.postgresql.PostgreSQLCharacterSets;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
@@ -99,7 +99,7 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
         context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(PostgreSQLCharacterSets.findCharacterSet(clientEncoding));
         String user = comStartupPacket.getUser();
         if (Strings.isNullOrEmpty(user)) {
-            throw new InvalidAuthorizationSpecificationException();
+            throw new EmptyUsernameException();
         }
         context.writeAndFlush(new OpenGaussAuthenticationSCRAMSha256Packet(saltHexString.getBytes(), nonceHexString.getBytes(), serverIteration));
         currentAuthResult = AuthenticationResultBuilder.continued(user, "", comStartupPacket.getDatabase());

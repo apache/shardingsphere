@@ -20,9 +20,9 @@ package org.apache.shardingsphere.dialect.postgresql.exception;
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 
 /**
- * Invalid authorization specification exception.
+ * Empty username exception.
  */
-public final class InvalidAuthorizationSpecificationException extends SQLDialectException {
+public final class EmptyUsernameException extends SQLDialectException {
     
     private static final long serialVersionUID = -7169979989631579431L;
 }
