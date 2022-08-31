@@ -56,7 +56,7 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
         while (executeCount < executeCountLimit && !Thread.currentThread().isInterrupted()) {
             Object orderPrimaryKey = insertOrder();
             if (executeCount % 2 == 0) {
-                jdbcTemplate.update(prefixSchema("DELETE FROM ${schema}t_order WHERE id = ?", schema), orderPrimaryKey);
+                jdbcTemplate.update(prefixSchema("DELETE FROM ${schema}t_order_copy WHERE id = ?", schema), orderPrimaryKey);
             } else {
                 updateOrderByPrimaryKey(orderPrimaryKey);
             }
@@ -74,7 +74,7 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         String status = random.nextInt() % 2 == 0 ? null : "NOT-NULL";
         Object[] orderInsertDate = new Object[]{KEY_GENERATE_ALGORITHM.generateKey(), ScalingCaseHelper.generateSnowflakeKey(), random.nextInt(0, 6), status};
-        jdbcTemplate.update(prefixSchema("INSERT INTO ${schema}t_order (id,order_id,user_id,status) VALUES (?, ?, ?, ?)", schema), orderInsertDate);
+        jdbcTemplate.update(prefixSchema("INSERT INTO ${schema}t_order_copy (id,order_id,user_id,status) VALUES (?, ?, ?, ?)", schema), orderInsertDate);
         return orderInsertDate[0];
     }
     
@@ -88,7 +88,7 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
     
     private void updateOrderByPrimaryKey(final Object primaryKey) {
         Object[] updateData = {"updated" + Instant.now().getEpochSecond(), primaryKey};
-        jdbcTemplate.update(prefixSchema("UPDATE ${schema}t_order SET status = ? WHERE id = ?", schema), updateData);
+        jdbcTemplate.update(prefixSchema("UPDATE ${schema}t_order_copy SET status = ? WHERE id = ?", schema), updateData);
     }
     
     private String prefixSchema(final String sql, final String schema) {

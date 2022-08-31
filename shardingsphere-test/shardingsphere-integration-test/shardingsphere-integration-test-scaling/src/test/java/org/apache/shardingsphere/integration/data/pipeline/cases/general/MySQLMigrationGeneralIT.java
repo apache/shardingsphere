@@ -87,10 +87,10 @@ public final class MySQLMigrationGeneralIT extends BaseExtraSQLITCase {
             jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrder(), dataPair.getLeft());
             jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
         }
-        startMigrationOrder(false);
+        startMigrationOrderCopy(false);
         startMigrationOrderItem(false);
-        startIncrementTask(new MySQLIncrementTask(jdbcTemplate, keyGenerateAlgorithm, true, 20));
-        String orderJobId = getJobIdByTableName("t_order");
+        startIncrementTask(new MySQLIncrementTask(jdbcTemplate, keyGenerateAlgorithm, 20));
+        String orderJobId = getJobIdByTableName("t_order_copy");
         String orderItemJobId = getJobIdByTableName("t_order_item");
         assertMigrationSuccessById(orderJobId);
         assertMigrationSuccessById(orderItemJobId);

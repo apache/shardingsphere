@@ -50,11 +50,14 @@ public final class MigrationDistSQLCommand {
     @XmlElement(name = "migration-order-single-table")
     private String migrationOrderSingleTable;
     
+    @XmlElement(name = "migration-order-copy-single-table")
+    private String migrationOrderCopySingleTable;
+    
+    @XmlElement(name = "migration-order-copy-single-table-with-schema")
+    private String migrationOrderCopySingleTableWithSchema;
+    
     @XmlElement(name = "migration-order-item-single-table")
     private String migrationOrderItemSingleTable;
-    
-    @XmlElement(name = "migration-order-single-table-with-schema")
-    private String migrationOrderSingleTableWithSchema;
     
     @XmlElement(name = "migration-order-item-single-table-with-schema")
     private String migrationOrderItemSingleTableWithSchema;

@@ -44,9 +44,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -69,14 +71,18 @@ public final class MigrationDataConsistencyChecker {
     
     private final String sourceTableName;
     
+    private final String targetTableName;
+    
     private final TableNameSchemaNameMapping tableNameSchemaNameMapping;
     
     private final JobRateLimitAlgorithm readRateLimitAlgorithm;
     
     public MigrationDataConsistencyChecker(final MigrationJobConfiguration jobConfig, final JobRateLimitAlgorithm readRateLimitAlgorithm) {
         this.jobConfig = jobConfig;
-        this.sourceTableName = jobConfig.getSourceTableName();
-        tableNameSchemaNameMapping = new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(jobConfig.getSourceSchemaName(), Collections.singletonList(jobConfig.getSourceTableName())));
+        sourceTableName = jobConfig.getSourceTableName();
+        targetTableName = jobConfig.getTargetTableName();
+        tableNameSchemaNameMapping = new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(jobConfig.getSourceSchemaName(), 
+                new HashSet<>(Arrays.asList(jobConfig.getSourceTableName(), jobConfig.getTargetTableName()))));
         this.readRateLimitAlgorithm = readRateLimitAlgorithm;
     }
     
@@ -107,9 +113,7 @@ public final class MigrationDataConsistencyChecker {
         try (
                 PipelineDataSourceWrapper sourceDataSource = PipelineDataSourceFactory.newInstance(sourceDataSourceConfig);
                 PipelineDataSourceWrapper targetDataSource = PipelineDataSourceFactory.newInstance(targetDataSourceConfig)) {
-            for (String each : Collections.singletonList(sourceTableName)) {
-                result.put(each, checkCount(each, sourceDataSource, targetDataSource, executor));
-            }
+            result.put(sourceTableName, checkCount(sourceDataSource, targetDataSource, executor));
             return result;
         } catch (final SQLException ex) {
             throw new PipelineDataConsistencyCheckFailedException("Count check failed", ex);
@@ -119,17 +123,23 @@ public final class MigrationDataConsistencyChecker {
         }
     }
     
-    private DataConsistencyCountCheckResult checkCount(final String table, final PipelineDataSourceWrapper sourceDataSource, final PipelineDataSourceWrapper targetDataSource,
+    private DataConsistencyCountCheckResult checkCount(final PipelineDataSourceWrapper sourceDataSource, final PipelineDataSourceWrapper targetDataSource,
                                                        final ThreadPoolExecutor executor) {
+        Future<Long> sourceFuture = executor.submit(() -> count(sourceDataSource, sourceTableName, sourceDataSource.getDatabaseType()));
+        Future<Long> targetFuture = executor.submit(() -> count(targetDataSource, targetTableName, targetDataSource.getDatabaseType()));
+        long sourceCount;
+        long targetCount;
         try {
-            Future<Long> sourceFuture = executor.submit(() -> count(sourceDataSource, table, sourceDataSource.getDatabaseType()));
-            Future<Long> targetFuture = executor.submit(() -> count(targetDataSource, table, targetDataSource.getDatabaseType()));
-            long sourceCount = sourceFuture.get();
-            long targetCount = targetFuture.get();
-            return new DataConsistencyCountCheckResult(sourceCount, targetCount);
+            sourceCount = sourceFuture.get();
         } catch (final InterruptedException | ExecutionException ex) {
-            throw new PipelineDataConsistencyCheckFailedException(String.format("Count check failed for table '%s'", table), ex);
+            throw new PipelineDataConsistencyCheckFailedException(String.format("Count check failed for source table '%s'", sourceTableName), ex);
         }
+        try {
+            targetCount = targetFuture.get();
+        } catch (final InterruptedException | ExecutionException ex) {
+            throw new PipelineDataConsistencyCheckFailedException(String.format("Count check failed for target table '%s'", targetTableName), ex);
+        }
+        return new DataConsistencyCountCheckResult(sourceCount, targetCount);
     }
     
     // TODO use digest (crc32, murmurhash)
@@ -171,7 +181,8 @@ public final class MigrationDataConsistencyChecker {
                 Collection<String> columnNames = tableMetaData.getColumnNames();
                 PipelineColumnMetaData uniqueKey = tableMetaData.getColumnMetaData(tableMetaData.getPrimaryKeyColumns().get(0));
                 DataConsistencyCalculateParameter sourceParameter = buildParameter(sourceDataSource, tableNameSchemaNameMapping, each, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey);
-                DataConsistencyCalculateParameter targetParameter = buildParameter(targetDataSource, tableNameSchemaNameMapping, each, columnNames, targetDatabaseType, sourceDatabaseType, uniqueKey);
+                DataConsistencyCalculateParameter targetParameter = buildParameter(targetDataSource, tableNameSchemaNameMapping, targetTableName, columnNames, targetDatabaseType, sourceDatabaseType,
+                        uniqueKey);
                 Iterator<Object> sourceCalculatedResults = calculator.calculate(sourceParameter).iterator();
                 Iterator<Object> targetCalculatedResults = calculator.calculate(targetParameter).iterator();
                 boolean contentMatched = true;
