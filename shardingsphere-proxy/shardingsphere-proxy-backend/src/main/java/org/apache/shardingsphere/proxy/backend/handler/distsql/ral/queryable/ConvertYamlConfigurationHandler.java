@@ -179,12 +179,12 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         }
     }
     
-    private void appendShardingRules(final Collection<YamlRuleConfiguration> rules, final StringBuilder result) {
-        if (rules.isEmpty()) {
+    private void appendShardingRules(final Collection<YamlRuleConfiguration> ruleConfigs, final StringBuilder result) {
+        if (ruleConfigs.isEmpty()) {
             return;
         }
-        for (YamlRuleConfiguration rule : rules) {
-            ShardingRuleConfiguration shardingRuleConfig = new YamlShardingRuleConfigurationSwapper().swapToObject((YamlShardingRuleConfiguration) rule);
+        for (YamlRuleConfiguration ruleCofig : ruleConfigs) {
+            ShardingRuleConfiguration shardingRuleConfig = new YamlShardingRuleConfigurationSwapper().swapToObject((YamlShardingRuleConfiguration) ruleCofig);
             appendShardingAlgorithms(shardingRuleConfig, result);
             appendKeyGenerators(shardingRuleConfig, result);
             appendShardingTableRules(shardingRuleConfig, result);
@@ -311,20 +311,20 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         return result.toString();
     }
     
-    private void appendReadWriteSplittingRules(final Collection<YamlRuleConfiguration> rules, final StringBuilder result) {
-        if (rules.isEmpty()) {
+    private void appendReadWriteSplittingRules(final Collection<YamlRuleConfiguration> ruleConfigs, final StringBuilder result) {
+        if (ruleConfigs.isEmpty()) {
             return;
         }
         result.append(DistSQLScriptConstants.CREATE_READWRITE_SPLITTING_RULE);
-        for (YamlRuleConfiguration rule : rules) {
-            appendStaticReadWriteSplittingRule(rule, result);
+        for (YamlRuleConfiguration ruleConfig : ruleConfigs) {
+            appendStaticReadWriteSplittingRule(ruleConfig, result);
             // TODO Dynamic READ-WRITE-SPLITTING RULES
         }
     }
     
-    private void appendStaticReadWriteSplittingRule(final YamlRuleConfiguration rule, final StringBuilder result) {
-        Iterator<Entry<String, YamlReadwriteSplittingDataSourceRuleConfiguration>> dataSources = ((YamlReadwriteSplittingRuleConfiguration) rule).getDataSources().entrySet().iterator();
-        Iterator<Entry<String, YamlAlgorithmConfiguration>> loadBalancers = ((YamlReadwriteSplittingRuleConfiguration) rule).getLoadBalancers().entrySet().iterator();
+    private void appendStaticReadWriteSplittingRule(final YamlRuleConfiguration ruleConfig, final StringBuilder result) {
+        Iterator<Entry<String, YamlReadwriteSplittingDataSourceRuleConfiguration>> dataSources = ((YamlReadwriteSplittingRuleConfiguration) ruleConfig).getDataSources().entrySet().iterator();
+        Iterator<Entry<String, YamlAlgorithmConfiguration>> loadBalancers = ((YamlReadwriteSplittingRuleConfiguration) ruleConfig).getLoadBalancers().entrySet().iterator();
         while (dataSources.hasNext()) {
             Entry<String, YamlReadwriteSplittingDataSourceRuleConfiguration> entryDataSources = dataSources.next();
             Entry<String, YamlAlgorithmConfiguration> entryLoadBalances = loadBalancers.next();
@@ -364,7 +364,6 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
             while (iterator.hasNext()) {
                 Entry<Object, Object> entry = iterator.next();
                 if (loadBalancerName == entry.getKey()) {
-                    
                     loadBalancerProperties = appendLoadBalancerProperties(loadBalancers.getValue().getProps());
                 }
             }
