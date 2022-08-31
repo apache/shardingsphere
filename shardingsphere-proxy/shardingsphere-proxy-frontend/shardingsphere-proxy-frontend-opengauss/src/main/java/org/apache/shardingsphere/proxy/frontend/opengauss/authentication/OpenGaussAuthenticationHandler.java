@@ -72,7 +72,7 @@ public final class OpenGaussAuthenticationHandler {
      * @param passwordMessagePacket password message packet
      */
     public static void loginWithSCRAMSha256Password(final String username, final String databaseName, final String salt, final String nonce, final int serverIteration,
-                                                                     final PostgreSQLPasswordMessagePacket passwordMessagePacket) {
+                                                    final PostgreSQLPasswordMessagePacket passwordMessagePacket) {
         String clientDigest = passwordMessagePacket.getDigest();
         Grantee grantee = new Grantee(username, "%");
         if (!Strings.isNullOrEmpty(databaseName) && !ProxyContext.getInstance().databaseExists(databaseName)) {

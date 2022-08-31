@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereView;
 public final class YamlViewSwapper implements YamlConfigurationSwapper<YamlShardingSphereView, ShardingSphereView> {
     
     @Override
-    public YamlShardingSphereView swapToYamlConfiguration(ShardingSphereView view) {
+    public YamlShardingSphereView swapToYamlConfiguration(final ShardingSphereView view) {
         YamlShardingSphereView result = new YamlShardingSphereView();
         result.setName(view.getName());
         result.setViewDefinition(view.getViewDefinition());
@@ -35,7 +35,7 @@ public final class YamlViewSwapper implements YamlConfigurationSwapper<YamlShard
     }
     
     @Override
-    public ShardingSphereView swapToObject(YamlShardingSphereView yamlConfig) {
+    public ShardingSphereView swapToObject(final YamlShardingSphereView yamlConfig) {
         return new ShardingSphereView(yamlConfig.getName(), yamlConfig.getViewDefinition());
     }
 }

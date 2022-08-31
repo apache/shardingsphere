@@ -24,9 +24,9 @@ import lombok.ToString;
 
 import java.util.Collection;
 
- /**
- * Schema meta data.
- */
+/**
+* Schema meta data.
+*/
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
