@@ -20,10 +20,10 @@ propertyDefinition ::=
   ( key  '=' value ) ( ',' key  '=' value )*
 
 keyGeneratorName ::=
-  identifier
+  string
   
 algorithmType ::=
-  identifier
+  string
 ```
 
 ### 补充说明

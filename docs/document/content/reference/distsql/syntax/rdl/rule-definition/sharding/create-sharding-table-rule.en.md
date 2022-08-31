@@ -32,16 +32,16 @@ propertyDefinition ::=
   ( key  '=' value ) ( ',' key  '=' value )* 
     
 tableName ::=
-  identifier
+  string
 
 resourceName ::=
-  identifier
+  string
 
 columnName ::=
-  identifier
+  string
 
 algorithmName ::=
-  identifier
+  string
 ```
 
 ### Supplement

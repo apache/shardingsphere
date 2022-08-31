@@ -26,19 +26,19 @@ shadowAlgorithm ::=
     ( algorithmName ',' )? 'TYPE' '('  'NAME' '=' shadowAlgorithmType ',' 'PROPERTIES' '(' 'key' '=' 'value' ( ',' 'key' '=' 'value' ) ')'
 
 ruleName ::=
-  identifier
+  string
 
 resourceName ::=
-  identifier
+  string
 
 tableName ::=
-  identifier
+  string
 
 algorithmName ::=
-  identifier
+  string
 
 shadowAlgorithmType ::=
-  identifier
+  string
 ```
 
 ### 补充说明

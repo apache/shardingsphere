@@ -18,7 +18,7 @@ bindingTableDefinition ::=
   '(' tableName (',' tableName)* ')'
 
 tableName ::=
-  identifier
+  string
 ```
 
 ### Supplement

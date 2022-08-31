@@ -26,13 +26,13 @@ loadBanlancerDefinition ::=
     'TYPE' '(' 'NAME' '=' loadBanlancerType ( ',' 'PROPERTIES' '(' 'key' '=' 'value' ( ',' 'key' '=' 'value' )* ')' )? ')'
 
 ruleName ::=
-  identifier
+  string
 
 writeResourceName ::=
-  identifier
+  string
 
 resourceName ::=
-  identifier
+  string
 ```
 
 ### 补充说明

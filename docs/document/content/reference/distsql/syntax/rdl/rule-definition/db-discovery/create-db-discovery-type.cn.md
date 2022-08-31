@@ -17,10 +17,10 @@ databaseDiscoveryTypeDefinition ::=
     discoveryTypeName '(' 'TYPE' '(' 'NAME' '=' typeName ( ',' 'PROPERTIES' '(' 'key' '=' 'value' ( ',' 'key' '=' 'value' )* ')' )? ')' ')'
     
 discoveryTypeName ::=
-  identifier
+  string
 
 typeName ::=
-  identifier
+  string
 ```
 
 ### 补充说明

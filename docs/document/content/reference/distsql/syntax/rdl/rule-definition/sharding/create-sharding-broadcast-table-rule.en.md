@@ -15,7 +15,7 @@ CreateBroadcastTableRule ::=
   'CREATE' 'SHARDING' 'BROADCAST' 'TABLE' 'RULES' '(' tableName (',' tableName)* ')'
 
 tableName ::=
-  identifier
+  string
 ```
 
 ### Supplement

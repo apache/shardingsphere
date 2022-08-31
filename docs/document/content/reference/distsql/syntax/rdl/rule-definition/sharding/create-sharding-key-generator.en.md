@@ -21,10 +21,10 @@ propertyDefinition ::=
   ( key  '=' value ) ( ',' key  '=' value )*
 
 keyGeneratorName ::=
-  identifier
+  string
   
 algorithmType ::=
-  identifier
+  string
 ```
 
 ### Supplement

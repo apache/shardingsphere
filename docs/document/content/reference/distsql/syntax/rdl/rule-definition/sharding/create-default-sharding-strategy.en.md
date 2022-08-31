@@ -23,13 +23,13 @@ columnNames ::=
   columnName (',' columnName)+
 
 columnName ::=
-  identifier
+  string
 
 algorithmName ::=
-  identifier
+  string
   
 algorithmType ::=
-  identifier
+  string
 ```
 
 ### Supplement

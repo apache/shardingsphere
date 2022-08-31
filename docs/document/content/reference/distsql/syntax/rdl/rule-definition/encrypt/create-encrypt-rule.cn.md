@@ -20,22 +20,22 @@ columnDefinition ::=
     'NAME' '=' columnName ',' ( 'PLAIN' '=' plainColumnName )? 'CIPHER' '=' cipherColumnName ','  'TYPE' '(' 'NAME' '=' encryptAlgorithmType ( ',' 'PROPERTIES' '(' 'key' '=' 'value' ( ',' 'key' '=' 'value' )* ')' )? ')'
 
 tableName ::=
-  identifier
+  string
 
 queryWithCipherColumn ::=
-  identifier
+  string
 
 columnName ::=
-  identifier
+  string
 
 plainColumnName ::=
-  identifier
+  string
 
 cipherColumnName ::=
-  identifier
+  string
 
 encryptAlgorithmType ::=
-  identifier
+  string
 ```
 
 ### 补充说明
