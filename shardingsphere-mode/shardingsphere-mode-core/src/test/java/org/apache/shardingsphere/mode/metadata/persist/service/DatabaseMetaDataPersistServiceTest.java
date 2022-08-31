@@ -84,9 +84,9 @@ public final class DatabaseMetaDataPersistServiceTest {
         Optional<ShardingSphereSchema> empty = databaseMetaDataPersistService.load("test", "test");
         assertThat(empty, is(Optional.empty()));
         assertThat(schema.get().getAllTableNames(), is(Collections.singleton("t_order")));
-        assertThat(schema.get().get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
+        assertThat(schema.get().getTable("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
         assertThat(schema.get().getAllColumnNames("t_order").size(), is(1));
-        assertThat(schema.get().get("t_order").getColumns().keySet(), is(Collections.singleton("id")));
+        assertThat(schema.get().getTable("t_order").getColumns().keySet(), is(Collections.singleton("id")));
     }
     
     @Test

@@ -19,11 +19,7 @@ package org.apache.shardingsphere.infra.metadata.database.schema.builder;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereConstraint;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereIndex;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.*;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecorator;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecoratorFactory;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.SchemaMetaDataLoaderEngine;
@@ -119,7 +115,8 @@ public final class GenericSchemaBuilder {
         Map<String, ShardingSphereSchema> result = new ConcurrentHashMap<>(schemaMetaDataMap.size(), 1);
         for (Entry<String, SchemaMetaData> entry : schemaMetaDataMap.entrySet()) {
             Map<String, ShardingSphereTable> tables = convertToTableMap(entry.getValue().getTables());
-            result.put(entry.getKey().toLowerCase(), new ShardingSphereSchema(tables));
+            Map<String, ShardingSphereView> views = convertToViewMap(entry.getValue().getViews());
+            result.put(entry.getKey().toLowerCase(), new ShardingSphereSchema(tables, views));
         }
         return result;
     }
@@ -155,6 +152,14 @@ public final class GenericSchemaBuilder {
         Collection<ShardingSphereConstraint> result = new LinkedList<>();
         for (ConstraintMetaData each : constraintMetaDataList) {
             result.add(new ShardingSphereConstraint(each.getName(), each.getReferencedTableName()));
+        }
+        return result;
+    }
+    
+    private static Map<String, ShardingSphereView> convertToViewMap(final Collection<ViewMetaData> viewMetaDataList) {
+        Map<String, ShardingSphereView> result = new LinkedHashMap<>(viewMetaDataList.size(), 1);
+        for ( ViewMetaData each : viewMetaDataList) {
+            result.put(each.getName(), new ShardingSphereView(each.getName(), each.getViewDefinition()));
         }
         return result;
     }

@@ -31,4 +31,6 @@ import java.util.Map;
 public final class YamlShardingSphereSchema implements YamlConfiguration {
     
     private Map<String, YamlShardingSphereTable> tables;
+    
+    private Map<String, YamlShardingSphereView> views;
 }

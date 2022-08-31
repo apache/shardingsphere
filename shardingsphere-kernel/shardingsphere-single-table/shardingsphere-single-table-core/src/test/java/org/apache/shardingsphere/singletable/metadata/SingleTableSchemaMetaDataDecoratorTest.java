@@ -66,6 +66,6 @@ public final class SingleTableSchemaMetaDataDecoratorTest {
         Collection<IndexMetaData> indexMetaDataList = Arrays.asList(new IndexMetaData("id_" + TABLE_NAME), new IndexMetaData("idx_name_" + TABLE_NAME));
         Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
         tableMetaDataList.add(new TableMetaData(TABLE_NAME, columns, indexMetaDataList, Collections.emptyList()));
-        return Collections.singletonMap("sharding_db", new SchemaMetaData("sharding_db", tableMetaDataList));
+        return Collections.singletonMap("sharding_db", new SchemaMetaData("sharding_db", tableMetaDataList, Collections.emptyList()));
     }
 }

@@ -86,8 +86,8 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         when(accountTableMetaData.getIndexes()).thenReturn(Collections.singletonMap("status_idx_exist", new ShardingSphereIndex("status_idx_exist")));
         when(accountTableMetaData.getPrimaryKeyColumns()).thenReturn(Collections.singletonList("account_id"));
         when(result.containsTable("t_account")).thenReturn(true);
-        when(result.get("t_account")).thenReturn(accountTableMetaData);
-        when(result.get("t_account_detail")).thenReturn(mock(ShardingSphereTable.class));
+        when(result.getTable("t_account")).thenReturn(accountTableMetaData);
+        when(result.getTable("t_account_detail")).thenReturn(mock(ShardingSphereTable.class));
         when(result.getAllColumnNames("t_account")).thenReturn(new ArrayList<>(Arrays.asList("account_id", "amount", "status")));
         when(result.getAllColumnNames("t_user")).thenReturn(new ArrayList<>(Arrays.asList("id", "content")));
         when(result.getAllColumnNames("t_user_extend")).thenReturn(new ArrayList<>(Arrays.asList("user_id", "content")));

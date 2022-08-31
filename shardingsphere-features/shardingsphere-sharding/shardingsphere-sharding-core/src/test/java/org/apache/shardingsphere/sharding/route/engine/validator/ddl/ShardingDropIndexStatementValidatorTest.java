@@ -71,7 +71,7 @@ public final class ShardingDropIndexStatementValidatorTest {
         Map<String, ShardingSphereIndex> indexes = mock(HashMap.class);
         when(table.getIndexes()).thenReturn(indexes);
         when(database.getSchema("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
-        when(database.getSchema("public").get("t_order")).thenReturn(table);
+        when(database.getSchema("public").getTable("t_order")).thenReturn(table);
         when(indexes.containsKey("t_order_index")).thenReturn(true);
         when(indexes.containsKey("t_order_index_new")).thenReturn(true);
         new ShardingDropIndexStatementValidator().preValidate(shardingRule, new DropIndexStatementContext(sqlStatement), Collections.emptyList(), database);
@@ -86,7 +86,7 @@ public final class ShardingDropIndexStatementValidatorTest {
         Map<String, ShardingSphereIndex> indexes = mock(HashMap.class);
         when(table.getIndexes()).thenReturn(indexes);
         when(database.getSchema("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
-        when(database.getSchema("public").get("t_order")).thenReturn(table);
+        when(database.getSchema("public").getTable("t_order")).thenReturn(table);
         when(indexes.containsKey("t_order_index")).thenReturn(false);
         new ShardingDropIndexStatementValidator().preValidate(shardingRule, new DropIndexStatementContext(sqlStatement), Collections.emptyList(), database);
     }
@@ -100,7 +100,7 @@ public final class ShardingDropIndexStatementValidatorTest {
         Map<String, ShardingSphereIndex> indexes = mock(HashMap.class);
         when(table.getIndexes()).thenReturn(indexes);
         when(database.getSchema("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
-        when(database.getSchema("public").get("t_order")).thenReturn(table);
+        when(database.getSchema("public").getTable("t_order")).thenReturn(table);
         when(indexes.containsKey("t_order_index")).thenReturn(true);
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
         when(shardingRule.getTableRule("t_order")).thenReturn(new TableRule(Arrays.asList("ds_0", "ds_1"), "t_order"));
@@ -121,7 +121,7 @@ public final class ShardingDropIndexStatementValidatorTest {
         Map<String, ShardingSphereIndex> indexes = mock(HashMap.class);
         when(table.getIndexes()).thenReturn(indexes);
         when(database.getSchema("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
-        when(database.getSchema("public").get("t_order")).thenReturn(table);
+        when(database.getSchema("public").getTable("t_order")).thenReturn(table);
         when(indexes.containsKey("t_order_index")).thenReturn(true);
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
         when(shardingRule.getTableRule("t_order")).thenReturn(new TableRule(Arrays.asList("ds_0", "ds_1"), "t_order"));
@@ -141,7 +141,7 @@ public final class ShardingDropIndexStatementValidatorTest {
         Map<String, ShardingSphereIndex> indexes = mock(HashMap.class);
         when(table.getIndexes()).thenReturn(indexes);
         when(database.getSchema("public").getAllTableNames()).thenReturn(Collections.singletonList("t_config"));
-        when(database.getSchema("public").get("t_config")).thenReturn(table);
+        when(database.getSchema("public").getTable("t_config")).thenReturn(table);
         when(indexes.containsKey("t_config_index")).thenReturn(true);
         when(shardingRule.isBroadcastTable("t_config")).thenReturn(true);
         when(shardingRule.getTableRule("t_config")).thenReturn(new TableRule(Arrays.asList("ds_0", "ds_1"), "t_config"));
@@ -162,7 +162,7 @@ public final class ShardingDropIndexStatementValidatorTest {
         Map<String, ShardingSphereIndex> indexes = mock(HashMap.class);
         when(table.getIndexes()).thenReturn(indexes);
         when(database.getSchema("public").getAllTableNames()).thenReturn(Collections.singletonList("t_config"));
-        when(database.getSchema("public").get("t_config")).thenReturn(table);
+        when(database.getSchema("public").getTable("t_config")).thenReturn(table);
         when(indexes.containsKey("t_config_index")).thenReturn(true);
         when(shardingRule.isBroadcastTable("t_config")).thenReturn(true);
         when(shardingRule.getTableRule("t_config")).thenReturn(new TableRule(Arrays.asList("ds_0", "ds_1"), "t_config"));

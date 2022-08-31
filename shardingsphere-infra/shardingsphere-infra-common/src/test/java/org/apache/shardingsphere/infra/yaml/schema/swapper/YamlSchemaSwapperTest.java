@@ -75,7 +75,7 @@ public final class YamlSchemaSwapperTest {
         YamlShardingSphereSchema yamlSchema = YamlEngine.unmarshal(readYAML(YAML), YamlShardingSphereSchema.class);
         ShardingSphereSchema schema = new YamlSchemaSwapper().swapToObject(yamlSchema);
         assertThat(schema.getAllTableNames(), is(Collections.singleton("t_order")));
-        assertThat(schema.get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
+        assertThat(schema.getTable("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
         assertThat(schema.getAllColumnNames("t_order").size(), is(2));
         assertTrue(schema.containsColumn("t_order", "id"));
         assertTrue(schema.containsColumn("t_order", "name"));

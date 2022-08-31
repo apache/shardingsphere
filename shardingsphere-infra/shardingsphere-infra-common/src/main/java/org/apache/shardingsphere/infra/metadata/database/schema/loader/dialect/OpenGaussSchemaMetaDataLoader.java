@@ -68,7 +68,8 @@ public final class OpenGaussSchemaMetaDataLoader implements DialectSchemaMetaDat
         for (String each : schemaNames) {
             Multimap<String, IndexMetaData> tableIndexMetaDataMap = schemaIndexMetaDataMap.getOrDefault(each, LinkedHashMultimap.create());
             Multimap<String, ColumnMetaData> tableColumnMetaDataMap = schemaColumnMetaDataMap.getOrDefault(each, LinkedHashMultimap.create());
-            result.add(new SchemaMetaData(each, createTableMetaDataList(tableIndexMetaDataMap, tableColumnMetaDataMap)));
+            // TODO load views from OpenGauss database.
+            result.add(new SchemaMetaData(each, createTableMetaDataList(tableIndexMetaDataMap, tableColumnMetaDataMap), Collections.emptyList()));
         }
         return result;
     }

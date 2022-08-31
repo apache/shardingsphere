@@ -40,7 +40,7 @@ public final class DropTableStatementSchemaRefresher implements MetaDataRefreshe
                                                     final String schemaName, final DropTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         SchemaAlteredEvent event = new SchemaAlteredEvent(database.getName(), schemaName);
         sqlStatement.getTables().forEach(each -> {
-            database.getSchema(schemaName).remove(each.getTableName().getIdentifier().getValue());
+            database.getSchema(schemaName).removeTable(each.getTableName().getIdentifier().getValue());
             event.getDroppedTables().add(each.getTableName().getIdentifier().getValue());
         });
         Collection<MutableDataNodeRule> rules = database.getRuleMetaData().findRules(MutableDataNodeRule.class);

@@ -172,7 +172,7 @@ public final class ContextManagerTest {
     
     private ShardingSphereSchema createToBeAlteredSchema() {
         ShardingSphereTable beforeChangedTable = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        return new ShardingSphereSchema(Collections.singletonMap("foo_tbl", beforeChangedTable));
+        return new ShardingSphereSchema(Collections.singletonMap("foo_tbl", beforeChangedTable), Collections.emptyMap());
     }
     
     // TODO fix me

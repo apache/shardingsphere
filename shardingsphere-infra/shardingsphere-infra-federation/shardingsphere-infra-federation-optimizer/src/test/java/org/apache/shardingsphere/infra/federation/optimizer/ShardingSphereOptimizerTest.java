@@ -98,7 +98,7 @@ public final class ShardingSphereOptimizerTest {
         Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1);
         tables.put("t_order_federate", createOrderTableMetaData());
         tables.put("t_user_info", createUserInfoTableMetaData());
-        ShardingSphereSchema schema = new ShardingSphereSchema(tables);
+        ShardingSphereSchema schema = new ShardingSphereSchema(tables, Collections.emptyMap());
         SqlToRelConverter converter = createSqlToRelConverter(schema);
         optimizer = new ShardingSphereOptimizer(converter, QueryOptimizePlannerFactory.createHepPlannerWithoutCalc(), QueryOptimizePlannerFactory.createHepPlannerWithCalc());
     }

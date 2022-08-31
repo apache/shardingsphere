@@ -100,7 +100,7 @@ public class IndexMetaDataUtil {
     
     private static Optional<String> findLogicTableNameFromMetaData(final ShardingSphereSchema schema, final String logicIndexName) {
         for (String each : schema.getAllTableNames()) {
-            if (schema.get(each).getIndexes().containsKey(logicIndexName)) {
+            if (schema.getTable(each).getIndexes().containsKey(logicIndexName)) {
                 return Optional.of(each);
             }
         }

@@ -38,6 +38,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
@@ -172,7 +173,7 @@ public final class ContextManager implements AutoCloseable {
         if (!containsMutableDataNodeRule(database, beBoChangedTable.getName())) {
             database.reloadRules(MutableDataNodeRule.class);
         }
-        database.getSchema(schemaName).put(beBoChangedTable.getName(), beBoChangedTable);
+        database.getSchema(schemaName).putTable(beBoChangedTable.getName(), beBoChangedTable);
     }
     
     private boolean containsMutableDataNodeRule(final ShardingSphereDatabase database, final String tableName) {
@@ -182,7 +183,7 @@ public final class ContextManager implements AutoCloseable {
     
     private void dropTable(final String databaseName, final String schemaName, final String toBeDeletedTableName) {
         if (metaDataContexts.getMetaData().getDatabase(databaseName).containsSchema(schemaName)) {
-            metaDataContexts.getMetaData().getDatabase(databaseName).getSchema(schemaName).remove(toBeDeletedTableName);
+            metaDataContexts.getMetaData().getDatabase(databaseName).getSchema(schemaName).removeTable(toBeDeletedTableName);
             metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules().stream().filter(each -> each instanceof MutableDataNodeRule)
                     .findFirst().ifPresent(optional -> ((MutableDataNodeRule) optional).remove(schemaName, toBeDeletedTableName));
         }
@@ -246,6 +247,7 @@ public final class ContextManager implements AutoCloseable {
         Map<String, DataSourceProperties> toBeReservedDataSourcePropsMap = getToBeReservedDataSourcePropsMap(databaseName, toBeDroppedResourceNames);
         SwitchingResource switchingResource = new ResourceSwitchManager().create(metaDataContexts.getMetaData().getDatabase(databaseName).getResource(), toBeReservedDataSourcePropsMap);
         Map<String, ShardingSphereDatabase> reloadDatabases = createChangedDatabases(databaseName, switchingResource, null);
+        // TODO Consider add drop view logic
         deleteTableMetaData(metaDataContexts.getMetaData().getDatabase(databaseName), reloadDatabases.get(databaseName.toLowerCase()));
         metaDataContexts.getMetaData().getDatabases().putAll(reloadDatabases);
         metaDataContexts.getPersistService().getDataSourceService().persist(metaDataContexts.getMetaData().getActualDatabaseName(databaseName), toBeReservedDataSourcePropsMap);
@@ -421,7 +423,7 @@ public final class ContextManager implements AutoCloseable {
     private Map<String, ShardingSphereSchema> getToBeDeletedTables(final Map<String, ShardingSphereSchema> currentSchemas, final Map<String, ShardingSphereSchema> reloadedSchemas) {
         Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(currentSchemas.size(), 1);
         currentSchemas.entrySet().stream().filter(entry -> reloadedSchemas.containsKey(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue))
-                .forEach((key, value) -> result.put(key, new ShardingSphereSchema(getToBeDeletedTables(value, reloadedSchemas.get(key)))));
+                .forEach((key, value) -> result.put(key, new ShardingSphereSchema(getToBeDeletedTables(value, reloadedSchemas.get(key)), Collections.emptyMap())));
         return result;
     }
     
@@ -517,7 +519,7 @@ public final class ContextManager implements AutoCloseable {
                 database.getResource().getDatabaseType(), dataSourceMap, database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps(), schemaName);
         ShardingSphereSchema schema = GenericSchemaBuilder.build(Collections.singletonList(tableName), materials).getOrDefault(schemaName, new ShardingSphereSchema());
         if (schema.containsTable(tableName)) {
-            alterTable(databaseName, schemaName, schema.get(tableName));
+            alterTable(databaseName, schemaName, schema.getTable(tableName));
         } else {
             dropTable(databaseName, schemaName, tableName);
         }

@@ -111,7 +111,7 @@ public final class TablesContextTest {
         SimpleTableSegment tableSegment2 = createTableSegment("TABLE_2", "TBL_2");
         ShardingSphereTable table = new ShardingSphereTable("TABLE_1",
                 Collections.singletonList(new ShardingSphereColumn("COL", 0, false, false, true, true)), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereSchema schema = new ShardingSphereSchema(Stream.of(table).collect(Collectors.toMap(ShardingSphereTable::getName, value -> value)));
+        ShardingSphereSchema schema = new ShardingSphereSchema(Stream.of(table).collect(Collectors.toMap(ShardingSphereTable::getName, value -> value)), Collections.emptyMap());
         ColumnSegment columnSegment = createColumnSegment(null, "COL");
         Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2),
                 DatabaseTypeEngine.getDatabaseType("MySQL")).findTableNamesByColumnSegment(Collections.singletonList(columnSegment), schema);
@@ -169,7 +169,7 @@ public final class TablesContextTest {
         SimpleTableSegment tableSegment2 = createTableSegment("TABLE_2", "TBL_2");
         ShardingSphereTable table = new ShardingSphereTable("TABLE_1", Collections.singletonList(
                 new ShardingSphereColumn("COL", 0, false, false, true, true)), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereSchema schema = new ShardingSphereSchema(Stream.of(table).collect(Collectors.toMap(ShardingSphereTable::getName, value -> value)));
+        ShardingSphereSchema schema = new ShardingSphereSchema(Stream.of(table).collect(Collectors.toMap(ShardingSphereTable::getName, value -> value)), Collections.emptyMap());
         ColumnProjection columnProjection = new ColumnProjection(null, "COL", "CL");
         Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), DatabaseTypeEngine.getDatabaseType("MySQL"))
                 .findTableNamesByColumnProjection(Collections.singletonList(columnProjection), schema);

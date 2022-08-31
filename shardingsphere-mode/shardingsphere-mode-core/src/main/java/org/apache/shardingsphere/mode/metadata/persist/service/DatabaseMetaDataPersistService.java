@@ -170,7 +170,7 @@ public final class DatabaseMetaDataPersistService {
             String content = repository.get(DatabaseMetaDataNode.getTableMetaDataPath(databaseName, schemaName, each));
             if (!StringUtils.isEmpty(content)) {
                 ShardingSphereTable table = new YamlTableSwapper().swapToObject(YamlEngine.unmarshal(content, YamlShardingSphereTable.class));
-                schema.put(each, table);
+                schema.putTable(each, table);
             }
         });
         return Optional.of(schema);

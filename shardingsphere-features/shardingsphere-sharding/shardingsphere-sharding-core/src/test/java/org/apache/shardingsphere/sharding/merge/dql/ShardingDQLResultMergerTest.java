@@ -507,7 +507,7 @@ public final class ShardingDQLResultMergerTest {
         ShardingSphereColumn column2 = new ShardingSphereColumn("col2", 0, false, false, false, true);
         ShardingSphereColumn column3 = new ShardingSphereColumn("col3", 0, false, false, false, true);
         ShardingSphereTable table = new ShardingSphereTable("tbl", Arrays.asList(column1, column2, column3), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereSchema schema = new ShardingSphereSchema(Collections.singletonMap("tbl", table));
+        ShardingSphereSchema schema = new ShardingSphereSchema(Collections.singletonMap("tbl", table), Collections.emptyMap());
         return new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, DatabaseTypeFactory.getInstance("MySQL"), mock(ShardingSphereResource.class),
                 mock(ShardingSphereRuleMetaData.class), Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema));
     }

@@ -55,7 +55,8 @@ public final class ShowTableStatusMergedResultTest {
     @Before
     public void setUp() {
         shardingRule = buildShardingRule();
-        schema = new ShardingSphereSchema(Collections.singletonMap("table", new ShardingSphereTable("table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())));
+        schema = new ShardingSphereSchema(Collections.singletonMap("table",
+                new ShardingSphereTable("table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyMap());
     }
     
     private ShardingRule buildShardingRule() {
