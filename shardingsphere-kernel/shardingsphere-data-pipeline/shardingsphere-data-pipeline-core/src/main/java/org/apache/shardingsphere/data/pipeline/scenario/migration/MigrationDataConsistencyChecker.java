@@ -81,7 +81,7 @@ public final class MigrationDataConsistencyChecker {
         this.jobConfig = jobConfig;
         sourceTableName = jobConfig.getSourceTableName();
         targetTableName = jobConfig.getTargetTableName();
-        tableNameSchemaNameMapping = new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(jobConfig.getSourceSchemaName(), 
+        tableNameSchemaNameMapping = new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(jobConfig.getSourceSchemaName(),
                 new HashSet<>(Arrays.asList(jobConfig.getSourceTableName(), jobConfig.getTargetTableName()))));
         this.readRateLimitAlgorithm = readRateLimitAlgorithm;
     }
