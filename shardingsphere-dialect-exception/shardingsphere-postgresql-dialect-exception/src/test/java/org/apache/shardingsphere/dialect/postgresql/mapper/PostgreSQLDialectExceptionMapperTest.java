@@ -24,6 +24,8 @@ import org.apache.shardingsphere.dialect.exception.data.InvalidParameterValueExc
 import org.apache.shardingsphere.dialect.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.dialect.exception.transaction.InTransactionException;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.postgresql.util.PSQLState;
 
 import java.util.Arrays;
@@ -33,9 +35,20 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
+@RunWith(Parameterized.class)
 public final class PostgreSQLDialectExceptionMapperTest {
     
-    private Collection<Object[]> getConvertParameters() {
+    private final Class<SQLDialectException> sqlDialectExceptionClazz;
+
+    private final String psqlState;
+
+    public PostgreSQLDialectExceptionMapperTest(final Class<SQLDialectException> sqlDialectExceptionClazz, final String psqlState) {
+        this.sqlDialectExceptionClazz = sqlDialectExceptionClazz;
+        this.psqlState = psqlState;
+    }
+
+    @Parameterized.Parameters
+    public static Collection<Object[]> getConvertParameters() {
         return Arrays.asList(new Object[][]{
                 {DatabaseCreateExistsException.class, "42P04"},
                 {InTransactionException.class, PSQLState.TRANSACTION_STATE_INVALID.getState()},
@@ -49,8 +62,6 @@ public final class PostgreSQLDialectExceptionMapperTest {
     @SuppressWarnings("unchecked")
     public void convert() {
         PostgreSQLDialectExceptionMapper dialectExceptionMapper = new PostgreSQLDialectExceptionMapper();
-        for (Object[] item : getConvertParameters()) {
-            assertThat(dialectExceptionMapper.convert(mock((Class<SQLDialectException>) item[0])).getSQLState(), is(null == item[1] ? null : item[1]));
-        }
+        assertThat(dialectExceptionMapper.convert(mock(sqlDialectExceptionClazz)).getSQLState(), is(psqlState));
     }
 }
