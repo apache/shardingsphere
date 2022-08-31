@@ -39,7 +39,7 @@ public final class DropViewStatementSchemaRefresher implements MetaDataRefresher
     public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                                                     final String schemaName, final DropViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         SchemaAlteredEvent event = new SchemaAlteredEvent(database.getName(), schemaName);
-        // TODO Drop view meta data from ShardingSphereSchema 's views
+        // TODO Drop view meta data from views
         sqlStatement.getViews().forEach(each -> {
             database.getSchema(schemaName).removeTable(each.getTableName().getIdentifier().getValue());
             event.getDroppedTables().add(each.getTableName().getIdentifier().getValue());

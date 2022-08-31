@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * Table meta data.
+ * View meta data.
  */
 @RequiredArgsConstructor
 @Getter

@@ -110,7 +110,6 @@ public final class ShardingSphereSchema {
     /**
      * Add tables.
      *
-     *
      * @param tables tables
      */
     public void putAll(final Map<String, ShardingSphereTable> tables) {
