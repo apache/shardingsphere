@@ -15,21 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
+grammar RALStatement;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.TransactionProviderSegment;
-import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
+import Keyword, Literals;
 
-/**
- * Alter Transaction rule statement.
- */
-@RequiredArgsConstructor
-@Getter
-public final class AlterTransactionRuleStatement extends UpdatableRALStatement {
-    
-    private final String defaultType;
-    
-    private final TransactionProviderSegment provider;
-}
+showTransactionRule
+    : SHOW TRANSACTION RULE
+    ;
+
+alterTransactionRule
+    : ALTER TRANSACTION RULE transactionRuleDefinition
+    ;
+
+transactionRuleDefinition
+    : LP DEFAULT EQ defaultType (COMMA providerDefinition)?
+    ;
+
+providerDefinition
+    : TYPE LP NAME EQ providerName (COMMA propertiesDefinition)? RP
+    ;
+
+defaultType
+    : STRING
+    ;
+
+providerName
+    : STRING
+    ;
+
+propertiesDefinition
+    : PROPERTIES LP properties? RP
+    ;
+
+properties
+    : property (COMMA property)*
+    ;
+
+property
+    : key=STRING EQ value=STRING
+    ;

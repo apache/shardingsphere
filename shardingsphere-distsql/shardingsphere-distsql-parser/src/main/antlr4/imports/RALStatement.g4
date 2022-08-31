@@ -59,14 +59,6 @@ showTableMetadata
     : SHOW TABLE METADATA tableName (COMMA tableName*)? (FROM databaseName)?
     ;
 
-showTransactionRule
-    : SHOW TRANSACTION RULE
-    ;
-
-alterTransactionRule
-    : ALTER TRANSACTION RULE transactionRuleDefinition
-    ;
-
 showSQLParserRule
     : SHOW SQL_PARSER RULE
     ;
@@ -160,22 +152,6 @@ confPath
     ;
 
 filePath
-    : STRING
-    ;
-
-transactionRuleDefinition
-    : LP DEFAULT EQ defaultType (COMMA providerDefinition)?
-    ;
-
-providerDefinition
-    : TYPE LP NAME EQ providerName (COMMA propertiesDefinition)? RP
-    ;
-
-defaultType
-    : STRING
-    ;
-
-providerName
     : STRING
     ;
 

@@ -15,31 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
+package org.apache.shardingsphere.transaction.distsql.handler.update;
 
-import com.atomikos.jdbc.AtomikosDataSourceBean;
-import org.apache.shardingsphere.distsql.parser.segment.TransactionProviderSegment;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterTransactionRuleStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
+import org.apache.shardingsphere.infra.util.props.PropertiesConverter;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.distsql.parser.segment.TransactionProviderSegment;
+import org.apache.shardingsphere.transaction.distsql.parser.statement.updatable.AlterTransactionRuleStatement;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
+import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -53,17 +45,30 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-public final class AlterTransactionRuleHandlerTest extends ProxyContextRestorer {
+public final class AlterTransactionRuleStatementUpdaterTest {
     
-    @Mock
-    private ContextManager contextManager;
+    @Test
+    public void assertExecuteWithXA() throws DistSQLException {
+        AlterTransactionRuleStatementUpdater updater = new AlterTransactionRuleStatementUpdater();
+        ShardingSphereMetaData metaData = createMetaData();
+        updater.executeUpdate(metaData, new AlterTransactionRuleStatement("XA", new TransactionProviderSegment("Atomikos", createProperties())));
+        TransactionRule updatedRule = metaData.getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
+        assertThat(updatedRule.getDefaultType(), is(TransactionType.XA));
+        assertThat(updatedRule.getProviderType(), is("Atomikos"));
+        assertTrue(updatedRule.getDatabases().containsKey("foo_db"));
+        assertTrue(null != updatedRule.getProps() && !updatedRule.getProps().isEmpty());
+        assertThat(PropertiesConverter.convert(updatedRule.getProps()), is("host=127.0.0.1,databaseName=jbossts"));
+    }
     
-    @Before
-    public void before() {
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS), createMetaData());
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.init(contextManager);
+    @Test
+    public void assertExecuteWithLocal() throws DistSQLException {
+        AlterTransactionRuleStatementUpdater updater = new AlterTransactionRuleStatementUpdater();
+        ShardingSphereMetaData metaData = createMetaData();
+        updater.executeUpdate(metaData, new AlterTransactionRuleStatement("LOCAL", new TransactionProviderSegment("", new Properties())));
+        TransactionRule updatedRule = metaData.getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
+        assertThat(updatedRule.getDefaultType(), is(TransactionType.LOCAL));
+        assertThat(updatedRule.getProviderType(), is(""));
+        assertTrue(updatedRule.getDatabases().containsKey("foo_db"));
     }
     
     private ShardingSphereMetaData createMetaData() {
@@ -73,22 +78,19 @@ public final class AlterTransactionRuleHandlerTest extends ProxyContextRestorer 
     }
     
     private TransactionRule createTransactionRule(final Map<String, ShardingSphereDatabase> databases) {
-        return new TransactionRule(new TransactionRuleConfiguration("LOCAL", null, new Properties()), databases, mock(InstanceContext.class));
+        return new TransactionRule(new TransactionRuleConfiguration("BASE", null, new Properties()), databases, mock(InstanceContext.class));
     }
     
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getResource().getDataSources()).thenReturn(Collections.singletonMap("foo_ds", mock(AtomikosDataSourceBean.class, RETURNS_DEEP_STUBS)));
+        when(result.getResource().getDataSources()).thenReturn(Collections.singletonMap("foo_ds", mock(DataSource.class, RETURNS_DEEP_STUBS)));
         return result;
     }
     
-    @Test
-    public void assertUpdate() {
-        AlterTransactionRuleHandler handler = new AlterTransactionRuleHandler();
-        handler.init(new AlterTransactionRuleStatement("BASE", new TransactionProviderSegment(null, new Properties())), mock(ConnectionSession.class, RETURNS_DEEP_STUBS));
-        handler.update(contextManager);
-        TransactionRule updatedRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
-        assertThat(updatedRule.getDefaultType(), is(TransactionType.BASE));
-        assertTrue(updatedRule.getDatabases().containsKey("foo_db"));
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("host", "127.0.0.1");
+        result.setProperty("databaseName", "jbossts");
+        return result;
     }
 }
