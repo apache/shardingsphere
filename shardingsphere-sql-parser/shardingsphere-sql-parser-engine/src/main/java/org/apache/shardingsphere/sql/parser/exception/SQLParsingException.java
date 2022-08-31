@@ -31,7 +31,7 @@ public final class SQLParsingException extends ShardingSphereSQLException {
         super(XOpenSQLState.SYNTAX_ERROR, 11000, "You have an error in your SQL syntax: %s", sql);
     }
 
-    public SQLParsingException(final String sql, Exception cause) {
+    public SQLParsingException(final String sql, final Exception cause) {
         super(cause, XOpenSQLState.SYNTAX_ERROR.getValue(), 11000, "You have an error in your SQL syntax: %s, Error message: %s", sql, cause.getMessage());
     }
 }
