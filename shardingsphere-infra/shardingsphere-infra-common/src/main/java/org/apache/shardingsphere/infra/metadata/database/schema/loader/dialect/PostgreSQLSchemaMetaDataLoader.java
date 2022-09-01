@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.Col
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ViewMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DataTypeLoaderFactory;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoader;
 
@@ -53,6 +54,8 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
     
     private static final String TABLE_META_DATA_SQL_WITH_TABLES = BASIC_TABLE_META_DATA_SQL + " AND table_name IN (%s) ORDER BY ordinal_position";
     
+    private static final String VIEW_META_DATA_SQL = "SELECT table_name, view_definition FROM information_schema.views WHERE table_schema = ?";
+    
     private static final String PRIMARY_KEY_META_DATA_SQL = "SELECT tc.table_name, kc.column_name, kc.table_schema FROM information_schema.table_constraints tc"
             + " JOIN information_schema.key_column_usage kc ON kc.table_schema = tc.table_schema AND kc.table_name = tc.table_name AND kc.constraint_name = tc.constraint_name"
             + " WHERE tc.constraint_type = 'PRIMARY KEY' AND kc.ordinal_position IS NOT NULL AND kc.table_schema IN (%s)";
@@ -72,7 +75,7 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
         for (String each : schemaNames) {
             Multimap<String, IndexMetaData> tableIndexMetaDataMap = schemaIndexMetaDataMap.getOrDefault(each, LinkedHashMultimap.create());
             Multimap<String, ColumnMetaData> tableColumnMetaDataMap = schemaColumnMetaDataMap.getOrDefault(each, LinkedHashMultimap.create());
-            result.add(new SchemaMetaData(each, createTableMetaDataList(tableIndexMetaDataMap, tableColumnMetaDataMap)));
+            result.add(new SchemaMetaData(each, createTableMetaDataList(tableIndexMetaDataMap, tableColumnMetaDataMap), loadViewMetaData(dataSource, each)));
         }
         return result;
     }
@@ -83,6 +86,23 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
             Collection<ColumnMetaData> columnMetaDataList = tableColumnMetaDataMap.get(each);
             Collection<IndexMetaData> indexMetaDataList = tableIndexMetaDataMap.get(each);
             result.add(new TableMetaData(each, columnMetaDataList, indexMetaDataList, Collections.emptyList()));
+        }
+        return result;
+    }
+    
+    private Collection<ViewMetaData> loadViewMetaData(final DataSource dataSource, final String schemaName) throws SQLException {
+        Collection<ViewMetaData> result = new LinkedList<>();
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(VIEW_META_DATA_SQL)) {
+            preparedStatement.setString(1, schemaName);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    String tableName = resultSet.getString("table_name");
+                    String viewDefinition = resultSet.getString("view_definition");
+                    result.add(new ViewMetaData(tableName, viewDefinition));
+                }
+            }
         }
         return result;
     }

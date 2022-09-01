@@ -75,7 +75,7 @@ public final class ShowTableMetadataHandler extends QueryableRALBackendHandler<S
     private Collection<LocalDataQueryResultRow> buildTableRows(final String databaseName, final ShardingSphereSchema schema, final String tableName) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         Collection<LocalDataQueryResultRow> columnRows = schema.getAllColumnNames(tableName).stream().map(each -> buildRow(databaseName, tableName, "COLUMN", each)).collect(Collectors.toList());
-        Collection<LocalDataQueryResultRow> indexRows = schema.get(tableName).getIndexes().values().stream().map(ShardingSphereIndex::getName)
+        Collection<LocalDataQueryResultRow> indexRows = schema.getTable(tableName).getIndexes().values().stream().map(ShardingSphereIndex::getName)
                 .map(each -> buildRow(databaseName, tableName, "INDEX", each)).collect(Collectors.toList());
         result.addAll(columnRows);
         result.addAll(indexRows);

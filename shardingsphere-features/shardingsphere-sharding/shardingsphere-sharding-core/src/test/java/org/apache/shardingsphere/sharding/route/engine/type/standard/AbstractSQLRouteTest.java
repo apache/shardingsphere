@@ -83,6 +83,6 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         tables.put("t_other", new ShardingSphereTable("t_other", Collections.singletonList(
                 new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true)), Collections.emptyList(), Collections.emptyList()));
         tables.put("t_category", new ShardingSphereTable("t_category", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
-        return Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new ShardingSphereSchema(tables));
+        return Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new ShardingSphereSchema(tables, Collections.emptyMap()));
     }
 }

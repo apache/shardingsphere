@@ -192,7 +192,7 @@ public final class GroupByMemoryMergedResultTest {
         when(queryResult.getMetaData().getColumnLabel(2)).thenReturn("content");
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         ShardingSphereTable table = mock(ShardingSphereTable.class);
-        when(schema.get("t_order")).thenReturn(table);
+        when(schema.getTable("t_order")).thenReturn(table);
         when(table.getColumns()).thenReturn(Collections.emptyMap());
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);

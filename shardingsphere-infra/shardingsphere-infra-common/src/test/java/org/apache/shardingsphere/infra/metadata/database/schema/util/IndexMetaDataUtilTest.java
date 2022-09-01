@@ -94,7 +94,7 @@ public final class IndexMetaDataUtilTest {
         ShardingSphereTable table = new ShardingSphereTable(TABLE_NAME, Collections.emptyList(), Collections.singleton(new ShardingSphereIndex(INDEX_NAME)), Collections.emptyList());
         Map<String, ShardingSphereTable> tables = Collections.singletonMap(TABLE_NAME, table);
         Map<String, ShardingSphereSchema> schemas = new LinkedHashMap<>(1, 1);
-        schemas.put(DefaultDatabase.LOGIC_NAME, new ShardingSphereSchema(tables));
+        schemas.put(DefaultDatabase.LOGIC_NAME, new ShardingSphereSchema(tables, Collections.emptyMap()));
         return new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), mock(ShardingSphereResource.class), mock(ShardingSphereRuleMetaData.class), schemas);
     }
 }

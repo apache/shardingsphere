@@ -57,7 +57,7 @@ public class AdvancedFederationExecutorTest {
         tables.put("t_user_info", createUserInfoTableMetaData());
         String schemaName = "federate_jdbc";
         String databaseName = "database_name";
-        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(databaseName, new ShardingSphereSchema(tables));
+        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(databaseName, new ShardingSphereSchema(tables, Collections.emptyMap()));
         ShardingSphereDatabase metaData = new ShardingSphereDatabase(schemaName, new H2DatabaseType(), mockResource(), null, schemas);
         OptimizerContext optimizerContext = OptimizerContextFactory.create(Collections.singletonMap(schemaName, metaData), createGlobalRuleMetaData());
         executor = new AdvancedFederationExecutor(databaseName, schemaName, optimizerContext, mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties()),

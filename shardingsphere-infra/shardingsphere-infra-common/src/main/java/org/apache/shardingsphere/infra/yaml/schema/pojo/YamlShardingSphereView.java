@@ -21,16 +21,14 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
-import java.util.Map;
-
 /**
- * ShardingSphere schema metadata for YAML.
+ * ShardingSphere view metadata for YAML.
  */
 @Getter
 @Setter
-public final class YamlShardingSphereSchema implements YamlConfiguration {
+public final class YamlShardingSphereView implements YamlConfiguration {
     
-    private Map<String, YamlShardingSphereTable> tables;
+    private String name;
     
-    private Map<String, YamlShardingSphereView> views;
+    private String viewDefinition;
 }

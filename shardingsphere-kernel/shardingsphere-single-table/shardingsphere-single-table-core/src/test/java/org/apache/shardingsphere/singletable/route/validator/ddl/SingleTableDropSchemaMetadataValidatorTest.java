@@ -58,7 +58,7 @@ public final class SingleTableDropSchemaMetadataValidatorTest {
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ShardingSphereSchema schema = new ShardingSphereSchema();
-        schema.put("foo_table", new ShardingSphereTable());
+        schema.putTable("foo_table", new ShardingSphereTable());
         when(result.getSchemas()).thenReturn(Collections.singletonMap("foo_schema", schema));
         return result;
     }

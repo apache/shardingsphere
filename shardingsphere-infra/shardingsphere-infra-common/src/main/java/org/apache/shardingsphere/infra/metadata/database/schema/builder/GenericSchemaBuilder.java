@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecorator;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecoratorFactory;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.SchemaMetaDataLoaderEngine;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.Con
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ViewMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SchemaMetaDataUtil;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
@@ -97,8 +99,10 @@ public final class GenericSchemaBuilder {
         Map<String, SchemaMetaData> result = new LinkedHashMap<>();
         Collection<TableMetaData> tableMetaDataList = Optional.ofNullable(schemaMetaDataMap.get(
                 DatabaseTypeEngine.getDefaultSchemaName(materials.getStorageType(), materials.getDefaultSchemaName()))).map(SchemaMetaData::getTables).orElseGet(Collections::emptyList);
+        Collection<ViewMetaData> viewMetaDataList = Optional.ofNullable(schemaMetaDataMap.get(
+                DatabaseTypeEngine.getDefaultSchemaName(materials.getStorageType(), materials.getDefaultSchemaName()))).map(SchemaMetaData::getViews).orElseGet(Collections::emptyList);
         String frontendSchemaName = DatabaseTypeEngine.getDefaultSchemaName(materials.getProtocolType(), materials.getDefaultSchemaName());
-        result.put(frontendSchemaName, new SchemaMetaData(frontendSchemaName, tableMetaDataList));
+        result.put(frontendSchemaName, new SchemaMetaData(frontendSchemaName, tableMetaDataList, viewMetaDataList));
         return result;
     }
     
@@ -121,7 +125,8 @@ public final class GenericSchemaBuilder {
         Map<String, ShardingSphereSchema> result = new ConcurrentHashMap<>(schemaMetaDataMap.size(), 1);
         for (Entry<String, SchemaMetaData> entry : schemaMetaDataMap.entrySet()) {
             Map<String, ShardingSphereTable> tables = convertToTableMap(entry.getValue().getTables());
-            result.put(entry.getKey().toLowerCase(), new ShardingSphereSchema(tables));
+            Map<String, ShardingSphereView> views = convertToViewMap(entry.getValue().getViews());
+            result.put(entry.getKey().toLowerCase(), new ShardingSphereSchema(tables, views));
         }
         return result;
     }
@@ -157,6 +162,14 @@ public final class GenericSchemaBuilder {
         Collection<ShardingSphereConstraint> result = new LinkedList<>();
         for (ConstraintMetaData each : constraintMetaDataList) {
             result.add(new ShardingSphereConstraint(each.getName(), each.getReferencedTableName()));
+        }
+        return result;
+    }
+    
+    private static Map<String, ShardingSphereView> convertToViewMap(final Collection<ViewMetaData> viewMetaDataList) {
+        Map<String, ShardingSphereView> result = new LinkedHashMap<>(viewMetaDataList.size(), 1);
+        for (ViewMetaData each : viewMetaDataList) {
+            result.put(each.getName(), new ShardingSphereView(each.getName(), each.getViewDefinition()));
         }
         return result;
     }

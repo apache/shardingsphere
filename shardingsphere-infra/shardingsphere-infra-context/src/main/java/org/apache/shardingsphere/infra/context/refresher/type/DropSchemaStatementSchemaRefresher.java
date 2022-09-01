@@ -45,7 +45,7 @@ public final class DropSchemaStatementSchemaRefresher implements MetaDataRefresh
         Collection<String> tobeRemovedSchemas = new LinkedHashSet<>();
         Collection<String> schemaNames = getSchemaNames(sqlStatement);
         for (String each : schemaNames) {
-            ShardingSphereSchema schema = new ShardingSphereSchema(database.getSchema(schemaName).getTables());
+            ShardingSphereSchema schema = new ShardingSphereSchema(database.getSchema(schemaName).getTables(), database.getSchema(schemaName).getViews());
             database.removeSchema(schemaName);
             Optional.of(schema).ifPresent(optional -> tobeRemovedTables.addAll(optional.getAllTableNames()));
             tobeRemovedSchemas.add(each.toLowerCase());

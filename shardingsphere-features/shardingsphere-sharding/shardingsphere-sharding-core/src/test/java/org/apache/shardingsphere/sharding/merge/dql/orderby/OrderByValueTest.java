@@ -141,7 +141,7 @@ public final class OrderByValueTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database),
                 Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.get("table")).thenReturn(new ShardingSphereTable());
+        when(schema.getTable("table")).thenReturn(new ShardingSphereTable());
         QueryResult queryResult1 = createQueryResult("1", "2");
         OrderByValue orderByValue1 = new OrderByValue(queryResult1, Arrays.asList(
                 createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)),

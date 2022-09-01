@@ -15,22 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.schema.pojo;
+package org.apache.shardingsphere.infra.metadata.database.schema.decorator.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-
-import java.util.Map;
+import lombok.ToString;
 
 /**
- * ShardingSphere schema metadata for YAML.
+ * ShardingSphere view.
  */
 @Getter
-@Setter
-public final class YamlShardingSphereSchema implements YamlConfiguration {
+@EqualsAndHashCode
+@ToString
+public final class ShardingSphereView {
     
-    private Map<String, YamlShardingSphereTable> tables;
+    private final String name;
     
-    private Map<String, YamlShardingSphereView> views;
+    private final String viewDefinition;
+    
+    public ShardingSphereView() {
+        this("", "");
+    }
+    
+    public ShardingSphereView(final String name, final String viewDefinition) {
+        this.name = name;
+        this.viewDefinition = viewDefinition;
+    }
 }

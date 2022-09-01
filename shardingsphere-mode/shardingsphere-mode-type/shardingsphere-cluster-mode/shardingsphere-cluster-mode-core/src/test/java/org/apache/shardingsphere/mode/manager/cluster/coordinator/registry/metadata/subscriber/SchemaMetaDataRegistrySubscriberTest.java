@@ -81,7 +81,7 @@ public final class SchemaMetaDataRegistrySubscriberTest {
     
     @Test
     public void assertAlterSchemaEventWhenContainsTable() {
-        ShardingSphereSchema schema = new ShardingSphereSchema(Collections.singletonMap("t_order", new ShardingSphereTable()));
+        ShardingSphereSchema schema = new ShardingSphereSchema(Collections.singletonMap("t_order", new ShardingSphereTable()), Collections.emptyMap());
         AlterSchemaEvent event = new AlterSchemaEvent("foo_db", "foo_schema", "new_foo_schema", schema);
         schemaMetaDataRegistrySubscriber.alterSchema(event);
         verify(persistService).compareAndPersistMetaData("foo_db", "new_foo_schema", schema);
