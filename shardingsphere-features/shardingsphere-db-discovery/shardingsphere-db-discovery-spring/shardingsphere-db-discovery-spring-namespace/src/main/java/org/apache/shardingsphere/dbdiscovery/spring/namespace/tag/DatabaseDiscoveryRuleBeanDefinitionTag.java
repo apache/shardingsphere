@@ -52,7 +52,7 @@ public final class DatabaseDiscoveryRuleBeanDefinitionTag {
     public static final String DB_DISCOVERY_HEARTBEAT_NAME_ATTRIBUTE = "discovery-heartbeat-name";
     
     /**
-     * Database discovery type name attribute
+     * Database discovery type name attribute.
      */
     public static final String DB_DISCOVERY_TYPE_NAME_ATTRIBUTE = "discovery-type-name";
 }
