@@ -20,6 +20,7 @@ package org.apache.shardingsphere.dbdiscovery.mysql.type;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.dbdiscovery.mysql.exception.InvalidMGRPluginException;
 import org.apache.shardingsphere.dbdiscovery.mysql.exception.InvalidMGRReplicationGroupMemberException;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
@@ -104,7 +105,9 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
     
     private void checkPluginActive(final String databaseName, final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(QUERY_PLUGIN_STATUS)) {
-            Preconditions.checkState(resultSet.next() && "ACTIVE".equals(resultSet.getString("PLUGIN_STATUS")), "MGR plugin is not active in database `%s`.", databaseName);
+            if (!resultSet.next() || !"ACTIVE".equals(resultSet.getString("PLUGIN_STATUS"))) {
+                throw new InvalidMGRPluginException(databaseName);
+            }
         }
     }
     
