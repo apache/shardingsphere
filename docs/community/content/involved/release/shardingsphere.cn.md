@@ -316,7 +316,7 @@ cp -f ~/shardingsphere/shardingsphere-agent/shardingsphere-agent-distribution/ta
 ### 4. 提交 Apache SVN
 
 ```shell
-svn add *
+svn add * --parents
 svn --username=${APACHE LDAP 用户名} commit -m "release ${RELEASE.VERSION}"
 ```
 
