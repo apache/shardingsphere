@@ -59,6 +59,8 @@ public enum XOpenSQLState implements SQLState {
     
     CHECK_OPTION_VIOLATION("44000"),
     
+    INVALID_COLUMN_NUMBER("HV008"),
+    
     GENERAL_ERROR("HY000"),
     
     INVALID_DATA_TYPE("HY004");
