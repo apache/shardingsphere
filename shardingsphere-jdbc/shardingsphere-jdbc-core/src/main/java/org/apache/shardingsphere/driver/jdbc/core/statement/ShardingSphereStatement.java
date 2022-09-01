@@ -29,8 +29,8 @@ import org.apache.shardingsphere.driver.jdbc.adapter.AbstractStatementAdapter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.GeneratedKeysResultSet;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
+import org.apache.shardingsphere.driver.jdbc.exception.EmptySQLException;
 import org.apache.shardingsphere.driver.jdbc.exception.JDBCTransactionAcrossDatabasesException;
-import org.apache.shardingsphere.driver.jdbc.exception.SQLExceptionErrorCode;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDeciderContext;
@@ -153,8 +153,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     @Override
     public ResultSet executeQuery(final String sql) throws SQLException {
         if (Strings.isNullOrEmpty(sql)) {
-            SQLExceptionErrorCode errorCode = SQLExceptionErrorCode.SQL_STRING_NULL_OR_EMPTY;
-            throw new SQLException(errorCode.getErrorMessage(), errorCode.getSqlState(), errorCode.getErrorCode());
+            throw new EmptySQLException().toSQLException();
         }
         ResultSet result;
         try {

@@ -28,10 +28,10 @@ import org.apache.shardingsphere.driver.executor.callback.impl.PreparedStatement
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractPreparedStatementAdapter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.GeneratedKeysResultSet;
-import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetUtil;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
+import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetUtil;
 import org.apache.shardingsphere.driver.jdbc.core.statement.metadata.ShardingSphereParameterMetaData;
-import org.apache.shardingsphere.driver.jdbc.exception.SQLExceptionErrorCode;
+import org.apache.shardingsphere.driver.jdbc.exception.EmptySQLException;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
@@ -181,8 +181,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                                             final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys,
                                             final String[] columns) throws SQLException {
         if (Strings.isNullOrEmpty(sql)) {
-            SQLExceptionErrorCode errorCode = SQLExceptionErrorCode.SQL_STRING_NULL_OR_EMPTY;
-            throw new SQLException(errorCode.getErrorMessage(), errorCode.getSqlState(), errorCode.getErrorCode());
+            throw new EmptySQLException().toSQLException();
         }
         this.connection = connection;
         metaDataContexts = connection.getContextManager().getMetaDataContexts();
