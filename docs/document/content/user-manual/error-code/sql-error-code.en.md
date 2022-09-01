@@ -23,6 +23,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 42000     | 11001       | configuration error |
 | 42000     | 11002       | Resource does not exist |
 | 42000     | 11003       | Rule does not exist |
+| 42000     | 11004       | You have an error in your SQL syntax: \`%s\`, error message: \`%s\` |
 | HY000     | 11004       | File access failed, reason is: %s |
 | 42000     | 11200       | Can not support database \`%s\` in SQL translation |
 | 42000     | 11201       | Translation error, SQL is: %s |
