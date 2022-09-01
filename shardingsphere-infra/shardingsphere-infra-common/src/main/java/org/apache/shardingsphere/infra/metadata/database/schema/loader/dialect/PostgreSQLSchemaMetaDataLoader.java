@@ -19,6 +19,18 @@ package org.apache.shardingsphere.infra.metadata.database.schema.loader.dialect;
 
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.sql.DataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ConstraintMetaData;
@@ -28,20 +40,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.Tab
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ViewMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DataTypeLoaderFactory;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoader;
-
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Schema meta data loader for PostgreSQL.
@@ -58,7 +56,10 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
     private static final String VIEW_META_DATA_SQL = "SELECT table_name, view_definition FROM information_schema.views WHERE table_schema = ?";
     
     private static final String FOREIGN_KEY_META_DATA_SQL =
-            "SELECT tc.table_schema,tc.table_name,tc.constraint_name,pgo.relname refer_table_name FROM information_schema.table_constraints tc JOIN pg_constraint pgc ON tc.constraint_name = pgc.conname AND contype='f' JOIN pg_class pgo ON pgc.confrelid = pgo.oid WHERE tc.constraint_type = 'FOREIGN KEY' AND tc.table_schema IN (%s)";
+            "SELECT tc.table_schema,tc.table_name,tc.constraint_name,pgo.relname refer_table_name " +
+                    "FROM information_schema.table_constraints tc " +
+                    "JOIN pg_constraint pgc ON tc.constraint_name = pgc.conname AND contype='f' " +
+                    "JOIN pg_class pgo ON pgc.confrelid = pgo.oid WHERE tc.constraint_type = 'FOREIGN KEY' AND tc.table_schema IN (%s)";
     
     private static final String PRIMARY_KEY_META_DATA_SQL = "SELECT tc.table_name, kc.column_name, kc.table_schema FROM information_schema.table_constraints tc"
             + " JOIN information_schema.key_column_usage kc ON kc.table_schema = tc.table_schema AND kc.table_name = tc.table_name AND kc.constraint_name = tc.constraint_name"
@@ -135,7 +136,7 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
         return result;
     }
     
-    private String getConstraintKeyMetaDataSQL(Collection<String> schemaNames) {
+    private String getConstraintKeyMetaDataSQL(final Collection<String> schemaNames) {
         return String.format(FOREIGN_KEY_META_DATA_SQL, schemaNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
