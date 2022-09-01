@@ -46,7 +46,7 @@ import org.mockito.MockedConstruction;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class JDBCRepositoryTest {
+public final class JDBCRepositoryTest {
     
     @Mock
     private JdbcConnection mockJdbcConnection;
