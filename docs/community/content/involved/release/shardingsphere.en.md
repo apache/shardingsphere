@@ -320,7 +320,7 @@ cp -f ~/shardingsphere/shardingsphere-agent/shardingsphere-agent-distribution/ta
 ### 4. Commit to Apache SVN
 
 ```shell
-svn add *
+svn add * --parents
 svn --username=${APACHE LDAP username} commit -m "release ${RELEASE.VERSION}"
 ```
 
