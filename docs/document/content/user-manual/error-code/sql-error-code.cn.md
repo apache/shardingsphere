@@ -19,6 +19,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 34000     | 10200       | Can not get cursor name from fetch statement |
 | HY000     | 10300       | Could not support variable \`%s\` |
 | HY004     | 10301       | Invalid value \`%s\` |
+| HV008     | 10302       | Column index \`%d\` is out of range |
 | 42000     | 11000       | You have an error in your SQL syntax: %s |
 | 42000     | 11001       | configuration error |
 | 42000     | 11002       | Resource does not exist |
