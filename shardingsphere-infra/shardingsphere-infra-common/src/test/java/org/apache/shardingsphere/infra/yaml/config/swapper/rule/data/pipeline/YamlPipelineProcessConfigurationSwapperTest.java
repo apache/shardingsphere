@@ -50,9 +50,8 @@ public final class YamlPipelineProcessConfigurationSwapperTest {
         Properties streamChannelProps = new Properties();
         streamChannelProps.setProperty("block-queue-size", "10000");
         yamlConfig.setStreamChannel(new YamlAlgorithmConfiguration("MEMORY", streamChannelProps));
-        YamlPipelineProcessConfigurationSwapper onRuleAlteredActionConfigSwapper = new YamlPipelineProcessConfigurationSwapper();
-        PipelineProcessConfiguration actualConfig = onRuleAlteredActionConfigSwapper.swapToObject(yamlConfig);
-        YamlPipelineProcessConfiguration actualYamlConfig = onRuleAlteredActionConfigSwapper.swapToYamlConfiguration(actualConfig);
+        PipelineProcessConfiguration actualConfig = SWAPPER.swapToObject(yamlConfig);
+        YamlPipelineProcessConfiguration actualYamlConfig = SWAPPER.swapToYamlConfiguration(actualConfig);
         assertThat(YamlEngine.marshal(actualYamlConfig), is(YamlEngine.marshal(yamlConfig)));
     }
     

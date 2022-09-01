@@ -315,7 +315,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         String jobId = jobConfig.getJobId();
         JobRateLimitAlgorithm readRateLimitAlgorithm = buildPipelineProcessContext(jobConfig).getReadRateLimitAlgorithm();
         Map<String, DataConsistencyCheckResult> result = new MigrationDataConsistencyChecker(jobConfig, readRateLimitAlgorithm).check(calculator);
-        log.info("Scaling job {} with check algorithm '{}' data consistency checker result {}", jobId, calculator.getType(), result);
+        log.info("job {} with check algorithm '{}' data consistency checker result {}", jobId, calculator.getType(), result);
         PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobCheckResult(jobId, aggregateDataConsistencyCheckResults(jobId, result));
         return result;
     }
@@ -330,7 +330,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
             boolean isCountMatched = checkResult.getCountCheckResult().isMatched();
             boolean isContentMatched = checkResult.getContentCheckResult().isMatched();
             if (!isCountMatched || !isContentMatched) {
-                log.error("Scaling job: {}, table: {} data consistency check failed, count matched: {}, content matched: {}", jobId, entry.getKey(), isCountMatched, isContentMatched);
+                log.error("job: {}, table: {} data consistency check failed, count matched: {}, content matched: {}", jobId, entry.getKey(), isCountMatched, isContentMatched);
                 return false;
             }
         }

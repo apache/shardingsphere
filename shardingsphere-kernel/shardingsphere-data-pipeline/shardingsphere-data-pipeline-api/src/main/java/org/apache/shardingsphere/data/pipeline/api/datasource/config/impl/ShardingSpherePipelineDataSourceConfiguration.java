@@ -30,9 +30,9 @@ import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -114,19 +114,6 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
     @Override
     public String getType() {
         return TYPE;
-    }
-    
-    /**
-     * Get actual data source configuration.
-     *
-     * @param actualDataSourceName actual data source name
-     * @return actual data source configuration
-     */
-    // TODO the invocation is disabled for now, it might be used again for next new feature
-    public StandardPipelineDataSourceConfiguration getActualDataSourceConfig(final String actualDataSourceName) {
-        Map<String, Object> yamlDataSourceConfig = rootConfig.getDataSources().get(actualDataSourceName);
-        Preconditions.checkNotNull(yamlDataSourceConfig, "actualDataSourceName '{}' does not exist", actualDataSourceName);
-        return new StandardPipelineDataSourceConfiguration(yamlDataSourceConfig);
     }
     
     /**

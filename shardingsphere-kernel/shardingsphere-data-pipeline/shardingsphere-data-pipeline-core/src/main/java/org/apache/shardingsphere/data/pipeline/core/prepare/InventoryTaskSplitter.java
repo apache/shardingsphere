@@ -119,10 +119,10 @@ public final class InventoryTaskSplitter {
     private Collection<InventoryDumperConfiguration> splitByPrimaryKey(final PipelineJobItemContext jobItemContext, final DataSource dataSource, final PipelineTableMetaDataLoader metaDataLoader,
                                                                        final InventoryDumperConfiguration dumperConfig) {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
-        PipelineProcessContext ruleAlteredContext = jobItemContext.getJobProcessContext();
-        PipelineReadConfiguration readConfig = ruleAlteredContext.getPipelineProcessConfig().getRead();
+        PipelineProcessContext jobProcessContext = jobItemContext.getJobProcessContext();
+        PipelineReadConfiguration readConfig = jobProcessContext.getPipelineProcessConfig().getRead();
         int batchSize = readConfig.getBatchSize();
-        JobRateLimitAlgorithm rateLimitAlgorithm = ruleAlteredContext.getReadRateLimitAlgorithm();
+        JobRateLimitAlgorithm rateLimitAlgorithm = jobProcessContext.getReadRateLimitAlgorithm();
         Collection<IngestPosition<?>> inventoryPositions = getInventoryPositions(jobItemContext, dumperConfig, dataSource, metaDataLoader);
         int i = 0;
         for (IngestPosition<?> inventoryPosition : inventoryPositions) {

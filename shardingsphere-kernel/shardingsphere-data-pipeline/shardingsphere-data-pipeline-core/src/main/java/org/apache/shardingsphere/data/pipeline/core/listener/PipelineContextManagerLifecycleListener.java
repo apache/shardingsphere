@@ -41,7 +41,6 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
         }
         PipelineContext.initModeConfig(modeConfig);
         PipelineContext.initContextManager(contextManager);
-        // TODO init worker only if necessary, e.g. 1) rule altered action configured, 2) enabled job exists, 3) stopped job restarted
         PipelineJobWorker.initialize();
     }
 }
