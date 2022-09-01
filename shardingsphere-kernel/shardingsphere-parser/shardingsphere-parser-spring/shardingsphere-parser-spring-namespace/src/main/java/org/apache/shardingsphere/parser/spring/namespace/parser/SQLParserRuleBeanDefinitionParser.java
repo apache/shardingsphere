@@ -33,9 +33,9 @@ public final class SQLParserRuleBeanDefinitionParser extends AbstractBeanDefinit
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SQLParserRuleConfiguration.class);
-        factory.addConstructorArgValue(Boolean.parseBoolean(element.getAttribute(SQLParserRuleBeanDefinitionTag.SQL_COMMENT_PARSER_ENABLE)));
-        factory.addConstructorArgReference(element.getAttribute(SQLParserRuleBeanDefinitionTag.PARSE_TREE_CACHE_REF));
-        factory.addConstructorArgReference(element.getAttribute(SQLParserRuleBeanDefinitionTag.SQL_STATEMENT_CACHE_REF));
+        factory.addConstructorArgValue(Boolean.parseBoolean(element.getAttribute(SQLParserRuleBeanDefinitionTag.SQL_COMMENT_PARSER_ENABLE_ATTRIBUTE)));
+        factory.addConstructorArgReference(element.getAttribute(SQLParserRuleBeanDefinitionTag.PARSE_TREE_CACHE_REF_ATTRIBUTE));
+        factory.addConstructorArgReference(element.getAttribute(SQLParserRuleBeanDefinitionTag.SQL_STATEMENT_CACHE_REF_ATTRIBUTE));
         return factory.getBeanDefinition();
     }
 }

@@ -26,11 +26,23 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReadwriteSplittingRuleBeanDefinitionTag {
     
+    /**
+     * Root tag.
+     */
     public static final String ROOT_TAG = "rule";
     
+    /**
+     * Data source tag.
+     */
     public static final String DATA_SOURCE_TAG = "data-source-rule";
     
+    /**
+     * Readwrite splitting data source id attribute.
+     */
     public static final String READWRITE_SPLITTING_DATA_SOURCE_ID_ATTRIBUTE = "id";
     
+    /**
+     * Load balance algorithm ref attribute.
+     */
     public static final String LOAD_BALANCE_ALGORITHM_REF_ATTRIBUTE = "load-balance-algorithm-ref";
 }

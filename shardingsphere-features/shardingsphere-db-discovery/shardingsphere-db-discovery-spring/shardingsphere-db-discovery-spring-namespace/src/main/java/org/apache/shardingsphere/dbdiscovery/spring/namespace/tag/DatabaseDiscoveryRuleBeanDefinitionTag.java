@@ -26,15 +26,33 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseDiscoveryRuleBeanDefinitionTag {
     
+    /**
+     * Root tag.
+     */
     public static final String ROOT_TAG = "rule";
     
+    /**
+     * Data source rule tag.
+     */
     public static final String DATA_SOURCE_TAG = "data-source-rule";
     
+    /**
+     * Database discovery data source id attribute.
+     */
     public static final String DB_DISCOVERY_DATA_SOURCE_ID_ATTRIBUTE = "id";
     
+    /**
+     * Database discovery data source names attribute.
+     */
     public static final String DB_DISCOVERY_DATASOURCE_NAMES_ATTRIBUTE = "data-source-names";
     
+    /**
+     * Database discovery heartbeat name attribute.
+     */
     public static final String DB_DISCOVERY_HEARTBEAT_NAME_ATTRIBUTE = "discovery-heartbeat-name";
     
+    /**
+     * Database discovery type name attribute
+     */
     public static final String DB_DISCOVERY_TYPE_NAME_ATTRIBUTE = "discovery-type-name";
 }

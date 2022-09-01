@@ -26,25 +26,58 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShadowRuleBeanDefinitionTag {
     
+    /**
+     * Root tag.
+     */
     public static final String ROOT_TAG = "rule";
     
+    /**
+     * Data source tag.
+     */
     public static final String DATA_SOURCE_TAG = "data-source";
     
+    /**
+     * Data source id attribute.
+     */
     public static final String DATA_SOURCE_ID_ATTRIBUTE = "id";
     
+    /**
+     * Shadow name attribute.
+     */
     public static final String SHADOW_NAME_ATTRIBUTE = "name";
     
+    /**
+     * Production data source name attribute.
+     */
     public static final String PRODUCTION_DATA_SOURCE_NAME_ATTRIBUTE = "production-data-source-name";
     
+    /**
+     * Shadow data source name attribute.
+     */
     public static final String SHADOW_DATA_SOURCE_NAME_ATTRIBUTE = "shadow-data-source-name";
     
+    /**
+     * Shadow table attribute.
+     */
     public static final String SHADOW_TABLE_TAG = "shadow-table";
     
+    /**
+     * Default shadow algorithm-name attribute.
+     */
     public static final String SHADOW_DEFAULT_SHADOW_ALGORITHM_NAME = "default-shadow-algorithm-name";
     
+    /**
+     * Data sources attribute.
+     */
     public static final String SHADOW_TABLE_DATA_SOURCE_REFS_ATTRIBUTE = "data-sources";
     
+    /**
+     * Algorithm tag.
+     */
     public static final String SHADOW_TABLE_ALGORITHM_TAG = "algorithm";
     
+    /**
+     * Shadow algorithm ref.
+     */
     public static final String SHADOW_TABLE_ALGORITHM_REF_ATTRIBUTE = "shadow-algorithm-ref";
 }
