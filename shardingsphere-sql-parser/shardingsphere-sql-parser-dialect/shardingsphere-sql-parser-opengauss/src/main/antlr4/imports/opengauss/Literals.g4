@@ -41,15 +41,7 @@ BIT_NUM_
     ;
 
 FILESIZE_LITERAL
-    : INT_NUM_ ('K'|'M'|'G'|'T')
-    ;
-
-INT_NUM_
-    : DIGIT+
-    ;
-
-fragment DIGIT
-    : [0-9]
+    : INT_ ('K'|'M'|'G'|'T')
     ;
 
 fragment INT_
