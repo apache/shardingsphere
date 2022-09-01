@@ -21,13 +21,13 @@ import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLExcep
 import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
 
 /**
- * Invalid MGR replication group member exception.
+ * Invalid MGR plugin exception.
  */
-public final class InvalidMGRReplicationGroupMemberException extends ShardingSphereSQLException {
+public final class InvalidMGRPluginException extends ShardingSphereSQLException {
     
-    private static final long serialVersionUID = 3766206496827463146L;
+    private static final long serialVersionUID = 1703082683321097037L;
     
-    public InvalidMGRReplicationGroupMemberException(final String url, final String databaseName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 23001, "`%s` is not in MGR replication group member in database `%s`", url, databaseName);
+    public InvalidMGRPluginException(final String databaseName) {
+        super(XOpenSQLState.GENERAL_ERROR, 23000, "MGR plugin is not active in database `%s`", databaseName);
     }
 }
