@@ -33,8 +33,8 @@ public final class SQLTranslatorRuleBeanDefinitionParser extends AbstractBeanDef
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SQLTranslatorRuleConfiguration.class);
-        factory.addConstructorArgValue(element.getAttribute(SQLTranslatorRuleBeanDefinitionTag.SQL_TRANSLATOR_TYPE));
-        factory.addConstructorArgValue(Boolean.parseBoolean(element.getAttribute(SQLTranslatorRuleBeanDefinitionTag.SQL_USE_ORIGINAL_SQL_WHEN_TRANSLATING_FAILED)));
+        factory.addConstructorArgValue(element.getAttribute(SQLTranslatorRuleBeanDefinitionTag.SQL_TRANSLATOR_TYPE_ATTRIBUTE));
+        factory.addConstructorArgValue(Boolean.parseBoolean(element.getAttribute(SQLTranslatorRuleBeanDefinitionTag.SQL_USE_ORIGINAL_SQL_WHEN_TRANSLATING_FAILED_ATTRIBUTE)));
         return factory.getBeanDefinition();
     }
 }

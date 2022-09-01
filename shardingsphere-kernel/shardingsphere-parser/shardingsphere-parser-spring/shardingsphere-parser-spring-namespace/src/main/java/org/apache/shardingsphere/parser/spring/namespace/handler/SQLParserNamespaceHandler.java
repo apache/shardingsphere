@@ -30,6 +30,6 @@ public final class SQLParserNamespaceHandler extends NamespaceHandlerSupport {
     @Override
     public void init() {
         registerBeanDefinitionParser(SQLParserRuleBeanDefinitionTag.ROOT_TAG, new SQLParserRuleBeanDefinitionParser());
-        registerBeanDefinitionParser(SQLParserRuleBeanDefinitionTag.CACHE_OPTION, new CacheOptionBeanDefinitionParser());
+        registerBeanDefinitionParser(SQLParserRuleBeanDefinitionTag.CACHE_OPTION_ATTRIBUTE, new CacheOptionBeanDefinitionParser());
     }
 }

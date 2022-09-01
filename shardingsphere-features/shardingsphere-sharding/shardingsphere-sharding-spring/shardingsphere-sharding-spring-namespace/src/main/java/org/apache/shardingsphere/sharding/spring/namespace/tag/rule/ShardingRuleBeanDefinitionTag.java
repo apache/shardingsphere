@@ -26,47 +26,113 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingRuleBeanDefinitionTag {
     
+    /**
+     * Root tag.
+     */
     public static final String ROOT_TAG = "rule";
     
+    /**
+     * Table rules tag.
+     */
     public static final String TABLE_RULES_TAG = "table-rules";
     
+    /**
+     * Auto table rules tag.
+     */
     public static final String AUTO_TABLE_RULES_TAG = "auto-table-rules";
     
+    /**
+     * Table rule tag.
+     */
     public static final String TABLE_RULE_TAG = "table-rule";
     
+    /**
+     * Auto table rule tag.
+     */
     public static final String AUTO_TABLE_RULE_TAG = "auto-table-rule";
     
+    /**
+     * Binding table rules tag.
+     */
     public static final String BINDING_TABLE_RULES_TAG = "binding-table-rules";
     
+    /**
+     * Binding table rule tag.
+     */
     public static final String BINDING_TABLE_RULE_TAG = "binding-table-rule";
     
+    /**
+     * Logic table attribute.
+     */
     public static final String LOGIC_TABLE_ATTRIBUTE = "logic-table";
     
+    /**
+     * Logic tables attribute.
+     */
     public static final String LOGIC_TABLES_ATTRIBUTE = "logic-tables";
     
+    /**
+     * Broadcast table rules tag.
+     */
     public static final String BROADCAST_TABLE_RULES_TAG = "broadcast-table-rules";
     
+    /**
+     * Broadcast table rule tag.
+     */
     public static final String BROADCAST_TABLE_RULE_TAG = "broadcast-table-rule";
     
+    /**
+     * Table tag.
+     */
     public static final String TABLE_ATTRIBUTE = "table";
     
+    /**
+     * Actual data nodes attribute.
+     */
     public static final String ACTUAL_DATA_NODES_ATTRIBUTE = "actual-data-nodes";
     
+    /**
+     * Actual data sources attribute.
+     */
     public static final String ACTUAL_DATA_SOURCES_ATTRIBUTE = "actual-data-sources";
     
+    /**
+     * Database strategy ref attribute.
+     */
     public static final String DATABASE_STRATEGY_REF_ATTRIBUTE = "database-strategy-ref";
     
+    /**
+     * Table strategy ref attribute.
+     */
     public static final String TABLE_STRATEGY_REF_ATTRIBUTE = "table-strategy-ref";
     
+    /**
+     * Sharding strategy ref attribute.
+     */
     public static final String SHARDING_STRATEGY_REF_ATTRIBUTE = "sharding-strategy-ref";
     
+    /**
+     * Default database strategy ref attribute.
+     */
     public static final String DEFAULT_DATABASE_STRATEGY_REF_ATTRIBUTE = "default-database-strategy-ref";
     
+    /**
+     * Default table strategy ref attribute.
+     */
     public static final String DEFAULT_TABLE_STRATEGY_REF_ATTRIBUTE = "default-table-strategy-ref";
     
+    /**
+     * Key generate strategy ref attribute.
+     */
     public static final String STRATEGY_REF_ATTRIBUTE = "key-generate-strategy-ref";
     
+    /**
+     * Default key generate strategy ref attribute.
+     */
     public static final String DEFAULT_KEY_GENERATE_STRATEGY_REF_ATTRIBUTE = "default-key-generate-strategy-ref";
     
-    public static final String DEFAULT_SHARDING_COLUMN = "default-sharding-column";
+    /**
+     * Default sharding column attribute.
+     */
+    public static final String DEFAULT_SHARDING_COLUMN_ATTRIBUTE = "default-sharding-column";
 }

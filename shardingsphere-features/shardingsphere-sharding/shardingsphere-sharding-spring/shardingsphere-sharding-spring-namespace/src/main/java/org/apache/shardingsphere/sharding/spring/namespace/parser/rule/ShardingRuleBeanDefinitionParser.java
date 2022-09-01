@@ -194,7 +194,7 @@ public final class ShardingRuleBeanDefinitionParser extends AbstractBeanDefiniti
     }
     
     private void setDefaultShardingColumn(final Element element, final BeanDefinitionBuilder factory) {
-        String defaultShardingColumn = element.getAttribute(ShardingRuleBeanDefinitionTag.DEFAULT_SHARDING_COLUMN);
+        String defaultShardingColumn = element.getAttribute(ShardingRuleBeanDefinitionTag.DEFAULT_SHARDING_COLUMN_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(defaultShardingColumn)) {
             factory.addPropertyValue("defaultShardingColumn", defaultShardingColumn);
         }
