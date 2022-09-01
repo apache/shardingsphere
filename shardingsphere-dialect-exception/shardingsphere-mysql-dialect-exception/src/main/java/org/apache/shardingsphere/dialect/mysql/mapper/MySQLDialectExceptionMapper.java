@@ -19,9 +19,9 @@ package org.apache.shardingsphere.dialect.mysql.mapper;
 
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 import org.apache.shardingsphere.dialect.exception.connection.TooManyConnectionsException;
-import org.apache.shardingsphere.dialect.exception.connection.UnknownCharsetException;
-import org.apache.shardingsphere.dialect.exception.connection.UnknownCollationException;
-import org.apache.shardingsphere.dialect.exception.connection.UnsupportedPreparedStatementException;
+import org.apache.shardingsphere.dialect.mysql.exception.UnknownCharsetException;
+import org.apache.shardingsphere.dialect.mysql.exception.UnknownCollationException;
+import org.apache.shardingsphere.dialect.mysql.exception.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.dialect.exception.data.InsertColumnsAndValuesMismatchedException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.DatabaseDropNotExistsException;

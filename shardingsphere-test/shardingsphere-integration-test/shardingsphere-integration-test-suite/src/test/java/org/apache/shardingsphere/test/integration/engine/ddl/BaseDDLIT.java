@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.integration.engine.ddl;
 
 import com.google.common.base.Splitter;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.dialect.exception.syntax.table.NoSuchTableException;
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
@@ -40,7 +39,6 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -59,31 +57,11 @@ public abstract class BaseDDLIT extends SingleITCase {
         assertNotNull("Expected affected table is required", getAssertion().getInitialSQL());
         assertNotNull("Init SQL is required", getAssertion().getInitialSQL().getAffectedTable());
         try (Connection connection = getTargetDataSource().getConnection()) {
-            executeInitSQLs(connection);
-        }
-        sleepIntervalTime();
-    }
-    
-    @SneakyThrows(InterruptedException.class)
-    private void sleepIntervalTime() {
-        if ("Cluster".equalsIgnoreCase(getMode())) {
-            TimeUnit.MILLISECONDS.sleep(200L);
+            synchronizedExecuteInitSQLs(connection);
         }
     }
     
-    @After
-    public final void tearDown() {
-        try (Connection connection = getTargetDataSource().getConnection()) {
-            String dropSql = String.format("DROP TABLE %s", getAssertion().getInitialSQL().getAffectedTable());
-            try (PreparedStatement preparedStatement = connection.prepareStatement(dropSql)) {
-                preparedStatement.executeUpdate();
-            }
-        } catch (final SQLException | NoSuchTableException ignored) {
-        }
-        sleepIntervalTime();
-    }
-    
-    private void executeInitSQLs(final Connection connection) throws SQLException {
+    private synchronized void synchronizedExecuteInitSQLs(final Connection connection) throws SQLException {
         if (null == getAssertion().getInitialSQL().getSql()) {
             return;
         }
@@ -91,6 +69,20 @@ public abstract class BaseDDLIT extends SingleITCase {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
                 preparedStatement.executeUpdate();
             }
+        }
+    }
+    
+    @After
+    public final void tearDown() {
+        try (Connection connection = getTargetDataSource().getConnection()) {
+            synchronizedExecuteDropSQLs(connection, String.format("DROP TABLE %s", getAssertion().getInitialSQL().getAffectedTable()));
+        } catch (final SQLException | NoSuchTableException ignored) {
+        }
+    }
+    
+    private synchronized void synchronizedExecuteDropSQLs(final Connection connection, final String sql) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.executeUpdate();
         }
     }
     

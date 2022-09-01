@@ -28,9 +28,9 @@ public final class ServerErrorMessageBuilderTest {
     
     @Test
     public void assertToServerErrorMessage() {
-        ServerErrorMessage actual = ServerErrorMessageBuilder.build("FATAL", PostgreSQLVendorError.SYSTEM_ERROR, "foo_reason");
+        ServerErrorMessage actual = ServerErrorMessageBuilder.build("FATAL", PostgreSQLVendorError.PRIVILEGE_NOT_GRANTED, "foo_user", "foo_db");
         Assert.assertThat(actual.getSeverity(), is("FATAL"));
-        Assert.assertThat(actual.getSQLState(), is(PostgreSQLVendorError.SYSTEM_ERROR.getSqlState().getValue()));
-        Assert.assertThat(actual.getMessage(), is("foo_reason"));
+        Assert.assertThat(actual.getSQLState(), is(PostgreSQLVendorError.PRIVILEGE_NOT_GRANTED.getSqlState().getValue()));
+        Assert.assertThat(actual.getMessage(), is("Access denied for user 'foo_user' to database 'foo_db'"));
     }
 }

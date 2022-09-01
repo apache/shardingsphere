@@ -47,10 +47,13 @@ public final class ShardingAuditChecker implements SQLChecker<ShardingRule> {
     @Override
     public SQLCheckResult check(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, final Grantee grantee,
                                 final String currentDatabase, final Map<String, ShardingSphereDatabase> databases, final ShardingRule rule) {
+        Collection<ShardingAuditStrategyConfiguration> auditStrategies = getShardingAuditStrategies(sqlStatementContext, rule);
+        if (auditStrategies.isEmpty()) {
+            return new SQLCheckResult(true, "");
+        }
         Collection<String> disableAuditNames = sqlStatementContext instanceof CommonSQLStatementContext
                 ? ((CommonSQLStatementContext<?>) sqlStatementContext).getSqlHintExtractor().findDisableAuditNames()
                 : Collections.emptyList();
-        Collection<ShardingAuditStrategyConfiguration> auditStrategies = getShardingAuditStrategies(sqlStatementContext, rule);
         for (ShardingAuditStrategyConfiguration auditStrategy : auditStrategies) {
             for (String auditorName : auditStrategy.getAuditorNames()) {
                 if (auditStrategy.isAllowHintDisable() && disableAuditNames.contains(auditorName.toLowerCase())) {
@@ -79,9 +82,7 @@ public final class ShardingAuditChecker implements SQLChecker<ShardingRule> {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         Collection<ShardingAuditStrategyConfiguration> result = new ArrayList<>(tableNames.size());
         for (String each : tableNames) {
-            if (rule.isShardingTable(each)) {
-                result.add(rule.getAuditStrategyConfiguration(rule.getTableRule(each)));
-            }
+            rule.findTableRule(each).ifPresent(tableRule -> result.add(rule.getAuditStrategyConfiguration(tableRule)));
         }
         return result;
     }

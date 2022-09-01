@@ -22,11 +22,13 @@ import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class SQLDialectExceptionMapperFactoryTest {
     
     @Test
     public void assertGetInstance() {
-        assertThat(SQLDialectExceptionMapperFactory.getInstance("FIXTURE"), instanceOf(FixtureSQLDialectExceptionMapper.class));
+        assertTrue(SQLDialectExceptionMapperFactory.findInstance("FIXTURE").isPresent());
+        assertThat(SQLDialectExceptionMapperFactory.findInstance("FIXTURE").get(), instanceOf(FixtureSQLDialectExceptionMapper.class));
     }
 }

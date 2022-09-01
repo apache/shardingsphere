@@ -15,18 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dialect.postgresql.exception;
+package org.apache.shardingsphere.dialect.mysql.exception;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 
 /**
- * Invalid authorization specification exception.
+ * Unknown collation exception.
  */
-public final class InvalidAuthorizationSpecificationException extends SQLDialectException {
+@RequiredArgsConstructor
+@Getter
+public final class UnknownCollationException extends SQLDialectException {
     
-    private static final long serialVersionUID = -7169979989631579431L;
+    private static final long serialVersionUID = 6920150607711135228L;
     
-    public InvalidAuthorizationSpecificationException() {
-        super("no PostgreSQL user name specified in startup packet");
-    }
+    private final int collationId;
 }

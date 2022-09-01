@@ -35,12 +35,11 @@ public abstract class ShardingSphereSQLException extends ShardingSphereInsideExc
     
     private final String reason;
     
-    public ShardingSphereSQLException(final SQLState sqlState, final int vendorCode, final String reason, final String... messageArguments) {
+    public ShardingSphereSQLException(final SQLState sqlState, final int vendorCode, final String reason, final Object... messageArguments) {
         this(sqlState.getValue(), vendorCode, reason, messageArguments);
     }
     
-    @SuppressWarnings("ConfusingArgumentToVarargsMethod")
-    public ShardingSphereSQLException(final String sqlState, final int vendorCode, final String reason, final String... messageArguments) {
+    public ShardingSphereSQLException(final String sqlState, final int vendorCode, final String reason, final Object... messageArguments) {
         this.sqlState = sqlState;
         this.vendorCode = vendorCode;
         this.reason = null == reason ? null : String.format(reason, messageArguments);

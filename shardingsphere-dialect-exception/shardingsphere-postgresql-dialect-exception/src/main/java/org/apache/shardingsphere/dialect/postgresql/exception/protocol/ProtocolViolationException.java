@@ -15,18 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dialect.postgresql.exception;
+package org.apache.shardingsphere.dialect.postgresql.exception.protocol;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 
 /**
- * Privilege not granted exception.
+ * Protocol violation exception.
  */
-public final class PrivilegeNotGrantedException extends SQLDialectException {
+@RequiredArgsConstructor
+@Getter
+public final class ProtocolViolationException extends SQLDialectException {
     
-    private static final long serialVersionUID = 8410672833723209253L;
+    private static final long serialVersionUID = 6784109729740919997L;
     
-    public PrivilegeNotGrantedException(final String username, final String databaseName) {
-        super("Access denied for user '%s' to database '%s'", username, databaseName);
-    }
+    private final String expectedMessageType;
+    
+    private final String actualMessageType;
 }

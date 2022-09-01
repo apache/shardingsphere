@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.db.protocol.mysql.constant;
 
 import lombok.Getter;
-import org.apache.shardingsphere.dialect.exception.connection.UnknownCollationException;
+import org.apache.shardingsphere.dialect.mysql.exception.UnknownCollationException;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;

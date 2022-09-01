@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dialect.exception.connection;
+package org.apache.shardingsphere.dialect.mysql.exception;
 
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 

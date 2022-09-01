@@ -17,15 +17,9 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractResultSetAdapter;
-import org.apache.shardingsphere.driver.jdbc.exception.SQLExceptionErrorCode;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtil;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.DerivedColumn;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtil;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 
 import java.io.InputStream;
@@ -38,7 +32,6 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLXML;
@@ -71,42 +64,14 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     public ShardingSphereResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Statement statement, final ExecutionContext executionContext) throws SQLException {
         super(resultSets, statement, executionContext);
         this.mergeResultSet = mergeResultSet;
-        columnLabelAndIndexMap = createColumnLabelAndIndexMap(resultSets.get(0).getMetaData());
+        columnLabelAndIndexMap = ShardingSphereResultSetUtil.createColumnLabelAndIndexMap(executionContext.getSqlStatementContext(), resultSets.get(0).getMetaData());
     }
     
-    private Map<String, Integer> createColumnLabelAndIndexMap(final ResultSetMetaData resultSetMetaData) throws SQLException {
-        if (hasSelectExpandProjections()) {
-            return createColumnLabelAndIndexMapWithExpandProjections();
-        }
-        Map<String, Integer> result = new CaseInsensitiveMap<>(resultSetMetaData.getColumnCount(), 1);
-        for (int columnIndex = resultSetMetaData.getColumnCount(); columnIndex > 0; columnIndex--) {
-            result.put(resultSetMetaData.getColumnLabel(columnIndex), columnIndex);
-        }
-        return result;
-    }
-    
-    private Map<String, Integer> createColumnLabelAndIndexMapWithExpandProjections() throws SQLException {
-        SelectStatementContext statementContext = (SelectStatementContext) getExecutionContext().getSqlStatementContext();
-        Map<String, Integer> result = new CaseInsensitiveMap<>(statementContext.getProjectionsContext().getExpandProjections().size(), 1);
-        for (int columnIndex = statementContext.getProjectionsContext().getExpandProjections().size(); columnIndex > 0; columnIndex--) {
-            checkColumnIndex(columnIndex);
-            Projection projection = statementContext.getProjectionsContext().getExpandProjections().get(columnIndex - 1);
-            result.put(DerivedColumn.isDerivedColumnName(projection.getColumnLabel()) ? projection.getExpression() : projection.getColumnLabel(), columnIndex);
-        }
-        return result;
-    }
-    
-    private boolean hasSelectExpandProjections() {
-        SQLStatementContext<?> sqlStatementContext = getExecutionContext().getSqlStatementContext();
-        return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty();
-    }
-    
-    private void checkColumnIndex(final int column) throws SQLException {
-        List<Projection> actualProjections = ((SelectStatementContext) getExecutionContext().getSqlStatementContext()).getProjectionsContext().getExpandProjections();
-        if (column > actualProjections.size()) {
-            SQLExceptionErrorCode errorCode = SQLExceptionErrorCode.COLUMN_INDEX_OUT_OF_RANGE;
-            throw new SQLException(errorCode.getErrorMessage(), errorCode.getSqlState(), errorCode.getErrorCode());
-        }
+    public ShardingSphereResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Statement statement, final ExecutionContext executionContext,
+                                   final Map<String, Integer> columnLabelAndIndexMap) {
+        super(resultSets, statement, executionContext);
+        this.mergeResultSet = mergeResultSet;
+        this.columnLabelAndIndexMap = columnLabelAndIndexMap;
     }
     
     @Override

@@ -30,9 +30,9 @@ import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.opengauss.packet.authentication.OpenGaussAuthenticationSCRAMSha256Packet;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.apache.shardingsphere.dialect.postgresql.exception.InvalidAuthorizationSpecificationException;
-import org.apache.shardingsphere.dialect.postgresql.exception.InvalidPasswordException;
-import org.apache.shardingsphere.dialect.postgresql.exception.PostgreSQLProtocolViolationException;
+import org.apache.shardingsphere.dialect.postgresql.exception.authority.EmptyUsernameException;
+import org.apache.shardingsphere.dialect.postgresql.exception.authority.InvalidPasswordException;
+import org.apache.shardingsphere.dialect.postgresql.exception.protocol.ProtocolViolationException;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -94,7 +94,7 @@ public final class OpenGaussAuthenticationEngineTest extends ProxyContextRestore
         assertFalse(actual.isFinished());
     }
     
-    @Test(expected = InvalidAuthorizationSpecificationException.class)
+    @Test(expected = EmptyUsernameException.class)
     public void assertUserNotSet() {
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(8, 512), StandardCharsets.UTF_8);
         payload.writeInt4(64);
@@ -104,7 +104,7 @@ public final class OpenGaussAuthenticationEngineTest extends ProxyContextRestore
         new OpenGaussAuthenticationEngine().authenticate(channelHandlerContext, payload);
     }
     
-    @Test(expected = PostgreSQLProtocolViolationException.class)
+    @Test(expected = ProtocolViolationException.class)
     public void assertAuthenticateWithNonPasswordMessage() {
         OpenGaussAuthenticationEngine authenticationEngine = new OpenGaussAuthenticationEngine();
         setAlreadyReceivedStartupMessage(authenticationEngine);
