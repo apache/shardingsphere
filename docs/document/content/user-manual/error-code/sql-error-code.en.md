@@ -67,6 +67,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | HY000     | 20050       | Routed target \`%s\` does not exist, available targets are \`%s\` |
 | HY000     | 20051       | \`%s %s\` can not route correctly for %s \`%s\` |
 | 42S02     | 20052       | Can not find data source in sharding rule, invalid actual data node \`%s\` |
+| 44000     | 23000       | \`%s\` is not in MGR replication group member in database \`%s\` |
 | HY004     | 24000       | Encrypt algorithm \`%s\` initialize failed, reason is: %s |
 | HY004     | 24001       | The SQL clause \`%s\` is unsupported in encrypt rule |
 | 44000     | 24002       | Altered column \`%s\` must use same encrypt algorithm with previous column \`%s\` in table \`%s\` |

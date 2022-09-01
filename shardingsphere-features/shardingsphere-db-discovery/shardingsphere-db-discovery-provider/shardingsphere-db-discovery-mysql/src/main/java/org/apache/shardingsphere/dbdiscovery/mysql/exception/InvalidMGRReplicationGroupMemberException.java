@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.exception;
+package org.apache.shardingsphere.dbdiscovery.mysql.exception;
 
 import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
 
 /**
- * Configuration exception.
+ * Invalid MGR replication group member exception.
  */
-public final class ShardingSphereConfigurationException extends ShardingSphereSQLException {
+public final class InvalidMGRReplicationGroupMemberException extends ShardingSphereSQLException {
     
-    private static final long serialVersionUID = -1360264079938958332L;
+    private static final long serialVersionUID = 3766206496827463146L;
     
-    public ShardingSphereConfigurationException(final String reason, final Object... messageArguments) {
-        super(XOpenSQLState.SYNTAX_ERROR, 11001, reason, messageArguments);
+    public InvalidMGRReplicationGroupMemberException(final String url, final String databaseName) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 23000, "`%s` is not in MGR replication group member in database `%s`", url, databaseName);
     }
 }

@@ -20,9 +20,9 @@ package org.apache.shardingsphere.dbdiscovery.mysql.type;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.dbdiscovery.mysql.exception.InvalidMGRReplicationGroupMemberException;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
-import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.util.exception.sql.SQLWrapperException;
@@ -129,7 +129,7 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
                 }
             }
         }
-        throw new ShardingSphereConfigurationException("`%s` is not in MGR replication group member in database `%s`.", url, databaseName);
+        throw new InvalidMGRReplicationGroupMemberException(url, databaseName);
     }
     
     @Override
