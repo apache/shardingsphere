@@ -54,11 +54,12 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
     private static final String TABLE_META_DATA_SQL_WITHOUT_TABLES = BASIC_TABLE_META_DATA_SQL + " ORDER BY ordinal_position";
     
     private static final String TABLE_META_DATA_SQL_WITH_TABLES = BASIC_TABLE_META_DATA_SQL + " AND table_name IN (%s) ORDER BY ordinal_position";
-
+    
     private static final String VIEW_META_DATA_SQL = "SELECT table_name, view_definition FROM information_schema.views WHERE table_schema = ?";
-
-    private static final String FOREIGN_KEY_META_DATA_SQL = "SELECT tc.table_schema,tc.table_name,tc.constraint_name,pgo.relname refer_table_name FROM information_schema.table_constraints tc JOIN pg_constraint pgc ON tc.constraint_name = pgc.conname AND contype='f' JOIN pg_class pgo ON pgc.confrelid = pgo.oid WHERE tc.constraint_type = 'FOREIGN KEY' AND tc.table_schema IN (%s)";
-
+    
+    private static final String FOREIGN_KEY_META_DATA_SQL =
+            "SELECT tc.table_schema,tc.table_name,tc.constraint_name,pgo.relname refer_table_name FROM information_schema.table_constraints tc JOIN pg_constraint pgc ON tc.constraint_name = pgc.conname AND contype='f' JOIN pg_class pgo ON pgc.confrelid = pgo.oid WHERE tc.constraint_type = 'FOREIGN KEY' AND tc.table_schema IN (%s)";
+    
     private static final String PRIMARY_KEY_META_DATA_SQL = "SELECT tc.table_name, kc.column_name, kc.table_schema FROM information_schema.table_constraints tc"
             + " JOIN information_schema.key_column_usage kc ON kc.table_schema = tc.table_schema AND kc.table_name = tc.table_name AND kc.constraint_name = tc.constraint_name"
             + " WHERE tc.constraint_type = 'PRIMARY KEY' AND kc.ordinal_position IS NOT NULL AND kc.table_schema IN (%s)";
@@ -80,14 +81,14 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
             Multimap<String, IndexMetaData> tableIndexMetaDataMap = schemaIndexMetaDataMap.getOrDefault(each, LinkedHashMultimap.create());
             Multimap<String, ColumnMetaData> tableColumnMetaDataMap = schemaColumnMetaDataMap.getOrDefault(each, LinkedHashMultimap.create());
             Multimap<String, ConstraintMetaData> tableConstraintMetaDataMap = schemaConstraintMetaDataMap.getOrDefault(each, LinkedHashMultimap.create());
-            result.add(new SchemaMetaData(each, createTableMetaDataList(tableIndexMetaDataMap, tableColumnMetaDataMap,tableConstraintMetaDataMap), loadViewMetaData(dataSource, each)));
+            result.add(new SchemaMetaData(each, createTableMetaDataList(tableIndexMetaDataMap, tableColumnMetaDataMap, tableConstraintMetaDataMap), loadViewMetaData(dataSource, each)));
         }
         return result;
     }
     
     private Collection<TableMetaData> createTableMetaDataList(final Multimap<String, IndexMetaData> tableIndexMetaDataMap,
-                                                                final Multimap<String, ColumnMetaData> tableColumnMetaDataMap,
-                                                                final Multimap<String, ConstraintMetaData> tableConstraintMetaDataMap) {
+                                                              final Multimap<String, ColumnMetaData> tableColumnMetaDataMap,
+                                                              final Multimap<String, ConstraintMetaData> tableConstraintMetaDataMap) {
         Collection<TableMetaData> result = new LinkedList<>();
         for (String each : tableColumnMetaDataMap.keySet()) {
             Collection<ColumnMetaData> columnMetaDataList = tableColumnMetaDataMap.get(each);
@@ -97,7 +98,7 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
         }
         return result;
     }
-
+    
     private Collection<ViewMetaData> loadViewMetaData(final DataSource dataSource, final String schemaName) throws SQLException {
         Collection<ViewMetaData> result = new LinkedList<>();
         try (
@@ -114,16 +115,16 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
         }
         return result;
     }
-
+    
     private Map<String, Multimap<String, ConstraintMetaData>> loadConstraintMetaDataMap(final DataSource dataSource,
-                                                                                final Collection<String> schemaNames) throws SQLException {
+                                                                                        final Collection<String> schemaNames) throws SQLException {
         Map<String, Multimap<String, ConstraintMetaData>> result = new LinkedHashMap<>();
         try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(getConstraintKeyMetaDataSQL(schemaNames))) {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String schemaName = resultSet.getString("table_schema");
                     Multimap<String, ConstraintMetaData> constraintMetaData = result.computeIfAbsent(schemaName, key -> LinkedHashMultimap.create());
-
+                    
                     String tableName = resultSet.getString("table_name");
                     String constraintName = resultSet.getString("constraint_name");
                     String referencedTableName = resultSet.getString("refer_table_name");
@@ -133,11 +134,11 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
         }
         return result;
     }
-
+    
     private String getConstraintKeyMetaDataSQL(Collection<String> schemaNames) {
         return String.format(FOREIGN_KEY_META_DATA_SQL, schemaNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
-
+    
     private Map<String, Multimap<String, ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> tables,
                                                                                 final Collection<String> schemaNames) throws SQLException {
         Map<String, Multimap<String, ColumnMetaData>> result = new LinkedHashMap<>();
