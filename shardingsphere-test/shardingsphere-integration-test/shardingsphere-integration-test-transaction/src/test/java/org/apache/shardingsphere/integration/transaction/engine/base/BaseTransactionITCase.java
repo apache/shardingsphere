@@ -68,6 +68,7 @@ public abstract class BaseTransactionITCase extends BaseITCase {
         createOrderTable(conn);
         createOrderItemTable(conn);
         createAccountTable(conn);
+        createAddressTable(conn);
     }
     
     private void initTableRules() throws SQLException {
@@ -76,6 +77,7 @@ public abstract class BaseTransactionITCase extends BaseITCase {
         createOrderItemTableRule(connection);
         bindingShardingRule(connection);
         createAccountTableRule(connection);
+        createAddressBroadcastTableRule(connection);
     }
     
     protected void createOrderTableRule(final Connection connection) throws SQLException {
@@ -88,6 +90,10 @@ public abstract class BaseTransactionITCase extends BaseITCase {
     
     protected void createAccountTableRule(final Connection connection) throws SQLException {
         executeWithLog(connection, getCommonSQLCommand().getCreateAccountTableRule());
+    }
+    
+    private void createAddressBroadcastTableRule(final Connection connection) throws SQLException {
+        executeWithLog(connection, getCommonSQLCommand().getCreateAddressBroadcastTableRule());
     }
     
     protected void bindingShardingRule(final Connection connection) throws SQLException {
@@ -116,6 +122,10 @@ public abstract class BaseTransactionITCase extends BaseITCase {
     
     protected void createOrderItemTable(final Connection connection) throws SQLException {
         executeWithLog(connection, getCommonSQLCommand().getCreateOrderItemTable());
+    }
+    
+    protected void createAddressTable(final Connection connection) throws SQLException {
+        executeWithLog(connection, getCommonSQLCommand().getCreateAddressTable());
     }
     
     protected void dropOrderItemTable(final Connection connection) throws SQLException {
