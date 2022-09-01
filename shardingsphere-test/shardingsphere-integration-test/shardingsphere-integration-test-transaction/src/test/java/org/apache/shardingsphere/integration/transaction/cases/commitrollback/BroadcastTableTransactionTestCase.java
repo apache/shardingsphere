@@ -72,7 +72,7 @@ public class BroadcastTableTransactionTestCase extends BaseTransactionTestCase {
         conn.setAutoCommit(false);
         executeWithLog(conn, "delete from t_address;");
         assertTableRowCount(conn, T_ADDRESS, 0);
-        executeWithLog(conn, "INSERT INTO t_address (`id`, `code`, `address`) VALUES (1, '1', 'nanjing');");
+        executeWithLog(conn, "INSERT INTO t_address (id, code, address) VALUES (1, '1', 'nanjing');");
         assertTableRowCount(conn, T_ADDRESS, 1);
         conn.commit();
     }
@@ -82,7 +82,7 @@ public class BroadcastTableTransactionTestCase extends BaseTransactionTestCase {
         conn.setAutoCommit(false);
         executeWithLog(conn, "delete from t_address;");
         assertTableRowCount(conn, T_ADDRESS, 0);
-        executeWithLog(conn, "INSERT INTO t_address (`id`, `code`, `address`) VALUES (1, '1', 'nanjing');");
+        executeWithLog(conn, "INSERT INTO t_address (id, code, address) VALUES (1, '1', 'nanjing');");
         assertTableRowCount(conn, T_ADDRESS, 1);
         conn.commit();
     }
