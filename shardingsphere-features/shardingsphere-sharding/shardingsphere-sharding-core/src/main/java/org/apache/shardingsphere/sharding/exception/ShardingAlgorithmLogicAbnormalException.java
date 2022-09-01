@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideExcept
  * Sharding algorithm logic is abnormal.
  */
 public final class ShardingAlgorithmLogicAbnormalException extends ShardingSphereInsideException {
-
+    
     public ShardingAlgorithmLogicAbnormalException(final Exception cause) {
         super(cause);
     }
