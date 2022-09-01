@@ -68,11 +68,11 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | HY000     | 20051       | \`%s %s\` can not route correctly for %s \`%s\` |
 | 42S02     | 20052       | Can not find data source in sharding rule, invalid actual data node \`%s\` |
 | 44000     | 23000       | \`%s\` is not in MGR replication group member in database \`%s\` |
-| HY004     | 24000       | Encrypt algorithm \`%s\` initialize failed, reason is: %s |
-| HY004     | 24001       | The SQL clause \`%s\` is unsupported in encrypt rule |
-| 44000     | 24002       | Altered column \`%s\` must use same encrypt algorithm with previous column \`%s\` in table \`%s\` |
-| 42000     | 24003       | Insert value of index \`%s\` can not support for encrypt |
-| 44000     | 24004       | Can not find logic encrypt column by \`%s\` |
-| HY004     | 25000       | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type |
-| 42000     | 25003       | Insert value of index \`%s\` can not support for shadow |
+| HY004     | 27000       | Encrypt algorithm \`%s\` initialize failed, reason is: %s |
+| 0A000     | 27001       | The SQL clause \`%s\` is unsupported in encrypt rule |
+| 44000     | 27002       | Altered column \`%s\` must use same encrypt algorithm with previous column \`%s\` in table \`%s\` |
+| 42000     | 27003       | Insert value of index \`%s\` can not support for encrypt |
+| 44000     | 27004       | Can not find logic encrypt column by \`%s\` |
+| HY004     | 28000       | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type |
+| 42000     | 28003       | Insert value of index \`%s\` can not support for shadow |
 | HY004     | 30000       | Unknown exception: %s |
