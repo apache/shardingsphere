@@ -2846,3 +2846,115 @@ YEAR_MONTH
 ZEROFILL
     : Z E R O F I L L
     ;
+
+JSON_ARRAY
+    : J S O N UL_ A R R A Y
+    ;
+
+JSON_ARRAY_APPEND
+    : J S O N UL_ A R R A Y UL_ A P P E N D
+    ;
+
+JSON_ARRAY_INSERT
+    : J S O N UL_ A R R A Y UL_ I N S E R T
+    ;
+
+JSON_CONTAINS
+    : J S O N UL_ C O N T A I N S
+    ;
+
+JSON_CONTAINS_PATH
+    : J S O N UL_ C O N T A I N S UL_ P A T H
+    ;
+JSON_DEPTH
+    : J S O N UL_ D E P T H
+    ;
+
+JSON_EXTRACT
+    : J S O N UL_ E X T R A C T
+    ;
+
+JSON_INSERT
+    : J S O N UL_ I N S E R T
+    ;
+
+JSON_KEYS
+    : J S O N UL_ K E Y S
+    ;
+
+JSON_LENGTH
+    : J S O N UL_ L E N G T H
+    ;
+
+JSON_MERGE
+    : J S O N UL_ M E R G E
+    ;
+
+JSON_MERGE_PATCH
+    : J S O N UL_ M E R G E UL_ P A T C H
+    ;
+
+JSON_MERGE_PRESERVE
+    : J S O N UL_ M E R G E UL_ P R E S E R V E
+    ;
+
+JSON_OBJECT
+    : J S O N UL_ O B J E C T
+    ;
+
+JSON_OVERLAPS
+    : J S O N UL_ O V E R L A P S
+    ;
+
+JSON_PRETTY
+    : J S O N UL_ P R E T T Y
+    ;
+
+JSON_QUOTE
+    : J S O N UL_ Q U O T E
+    ;
+
+JSON_REMOVE
+    : J S O N UL_ R E M O V E
+    ;
+
+JSON_REPLACE
+    : J S O N UL_ R E P L A C E
+    ;
+
+JSON_SCHEMA_VALID
+    : J S O N UL_ S C H E M A UL_ V A L I D
+    ;
+
+JSON_SCHEMA_VALIDATION_REPORT
+    : J S O N UL_ S C H E M A UL_ V A L I D A T I O N UL_ R E P O R T
+    ;
+
+JSON_SEARCH
+    : J S O N UL_ S E A R C H
+    ;
+
+JSON_SET
+    : J S O N UL_ S E T
+    ;
+
+JSON_STORAGE_FREE
+    : J S O N UL_ S T O R A G E UL_ F R E E
+    ;
+
+JSON_STORAGE_SIZE
+    : J S O N UL_ S T O R A G E UL_ S I Z E
+    ;
+
+JSON_TYPE
+    : J S O N UL_ T Y P E
+    ;
+
+JSON_UNQUOTE
+    : J S O N UL_ U N Q U O T E
+    ;
+
+JSON_VALID
+    : J S O N UL_ V A L I D
+    ;
+
