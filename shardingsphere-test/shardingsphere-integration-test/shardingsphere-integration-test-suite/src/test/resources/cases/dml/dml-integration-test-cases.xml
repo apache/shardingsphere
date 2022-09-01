@@ -266,13 +266,13 @@
                    expected-data-file="shadow_insert_order_value.xml" />
     </test-case>
     
-    <test-case sql="UPDATE t_shadow SET order_name = ?, type_char = ?, type_boolean = ?, type_smallint = ?, type_decimal = ?, type_enum = ?::season
+    <test-case sql="UPDATE t_shadow SET order_name = ?, type_char = ?, type_boolean = ?, type_smallint = ?, type_decimal = ?, type_enum = CAST(? AS season)
                     WHERE user_id = ? and order_id in (?, ?)" db-types="PostgreSQL" scenario-types="shadow">
         <assertion parameters="pro_order_update:String, F:char, false:boolean, 60:smallint, 120.00:decimal, spring:enum#season, 1:int, 1:long, 2:long"
                    expected-data-file="pro_update_order_by_user_id.xml" />
     </test-case>
     
-    <test-case sql="UPDATE t_shadow SET order_name = ?, type_char = ?, type_boolean = ?, type_smallint = ?, type_decimal = ?, type_enum = ?::season
+    <test-case sql="UPDATE t_shadow SET order_name = ?, type_char = ?, type_boolean = ?, type_smallint = ?, type_decimal = ?, type_enum = CAST(? AS season)
                     WHERE user_id = ? and order_id in (?, ?)" db-types="PostgreSQL" scenario-types="shadow">
         <assertion parameters="shadow_order_update:String, F:char, false:boolean, 60:smallint, 120.00:decimal, spring:enum#season, 0:int, 1:long, 2:long"
                    expected-data-file="shadow_update_order_by_user_id.xml" />
