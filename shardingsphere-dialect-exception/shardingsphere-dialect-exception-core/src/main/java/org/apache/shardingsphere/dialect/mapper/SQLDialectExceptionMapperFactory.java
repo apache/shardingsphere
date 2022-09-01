@@ -22,6 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
+import java.util.Optional;
+
 /**
  * SQL dialect exception mapper factory.
  */
@@ -33,12 +35,12 @@ public final class SQLDialectExceptionMapperFactory {
     }
     
     /**
-     * Get instance of SQL dialect exception mapper.
+     * Find instance of SQL dialect exception mapper.
      * 
      * @param databaseType database type
-     * @return got instance
+     * @return found instance
      */
-    public static SQLDialectExceptionMapper getInstance(final String databaseType) {
-        return TypedSPIRegistry.getRegisteredService(SQLDialectExceptionMapper.class, databaseType);
+    public static Optional<SQLDialectExceptionMapper> findInstance(final String databaseType) {
+        return TypedSPIRegistry.findRegisteredService(SQLDialectExceptionMapper.class, databaseType);
     }
 }

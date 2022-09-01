@@ -20,6 +20,7 @@ package org.apache.shardingsphere.driver.jdbc.core.statement;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.shardingsphere.dialect.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.driver.executor.DriverExecutor;
 import org.apache.shardingsphere.driver.executor.batch.BatchExecutionUnit;
 import org.apache.shardingsphere.driver.executor.batch.BatchPreparedStatementExecutor;
@@ -235,9 +236,11 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             Map<String, Integer> columnLabelAndIndexMap = null != this.columnLabelAndIndexMap ? this.columnLabelAndIndexMap
                     : (this.columnLabelAndIndexMap = ShardingSphereResultSetUtil.createColumnLabelAndIndexMap(sqlStatementContext, resultSets.get(0).getMetaData()));
             result = new ShardingSphereResultSet(resultSets, mergedResult, this, executionContext, columnLabelAndIndexMap);
-        } catch (SQLException ex) {
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
             handleExceptionInTransaction(connection, metaDataContexts);
-            throw ex;
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getResource().getDatabaseType().getType());
         } finally {
             clearBatch();
         }
@@ -335,9 +338,11 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             cacheStatements(executionGroupContext.getInputGroups());
             return executor.getRegularExecutor().executeUpdate(executionGroupContext,
                     executionContext.getQueryContext(), executionContext.getRouteContext().getRouteUnits(), createExecuteUpdateCallback());
-        } catch (SQLException ex) {
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
             handleExceptionInTransaction(connection, metaDataContexts);
-            throw ex;
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getResource().getDatabaseType().getType());
         } finally {
             clearBatch();
         }
@@ -398,9 +403,11 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             cacheStatements(executionGroupContext.getInputGroups());
             return executor.getRegularExecutor().execute(executionGroupContext,
                     executionContext.getQueryContext(), executionContext.getRouteContext().getRouteUnits(), createExecuteCallback());
-        } catch (SQLException ex) {
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
             handleExceptionInTransaction(connection, metaDataContexts);
-            throw ex;
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getResource().getDatabaseType().getType());
         } finally {
             clearBatch();
         }
@@ -584,9 +591,11 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             // TODO add raw SQL executor
             initBatchPreparedStatementExecutor();
             return batchPreparedStatementExecutor.executeBatch(executionContext.getSqlStatementContext());
-        } catch (SQLException ex) {
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
             handleExceptionInTransaction(connection, metaDataContexts);
-            throw ex;
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getResource().getDatabaseType().getType());
         } finally {
             clearBatch();
         }
