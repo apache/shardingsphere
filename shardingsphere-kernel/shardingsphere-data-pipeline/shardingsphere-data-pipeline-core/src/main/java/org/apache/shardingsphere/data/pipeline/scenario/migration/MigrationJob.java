@@ -121,10 +121,10 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
             return;
         }
         log.info("stop tasks runner, jobId={}", getJobId());
-        String scalingJobBarrierDisablePath = PipelineMetaDataNode.getJobBarrierDisablePath(getJobId());
+        String jobBarrierDisablePath = PipelineMetaDataNode.getJobBarrierDisablePath(getJobId());
         for (PipelineTasksRunner each : getTasksRunnerMap().values()) {
             each.stop();
-            pipelineDistributedBarrier.persistEphemeralChildrenNode(scalingJobBarrierDisablePath, each.getJobItemContext().getShardingItem());
+            pipelineDistributedBarrier.persistEphemeralChildrenNode(jobBarrierDisablePath, each.getJobItemContext().getShardingItem());
         }
         getTasksRunnerMap().clear();
         PipelineJobProgressPersistService.removeJobProgressPersistContext(getJobId());

@@ -38,7 +38,7 @@ import java.sql.SQLException;
 @Slf4j
 public final class OpenGaussPositionInitializer implements PositionInitializer {
     
-    private static final String SLOT_NAME_PREFIX = "sharding_scaling";
+    private static final String SLOT_NAME_PREFIX = "pipeline";
     
     private static final String DECODE_PLUGIN = "mppdb_decoding";
     

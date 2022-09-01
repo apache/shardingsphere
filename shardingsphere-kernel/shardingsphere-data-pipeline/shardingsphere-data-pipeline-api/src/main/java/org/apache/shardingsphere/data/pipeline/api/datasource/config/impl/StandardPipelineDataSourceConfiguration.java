@@ -116,6 +116,4 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
     public Object getDataSourceConfiguration() {
         return dataSourceProperties;
     }
-    
-    // TODO toShardingSphereJDBCDataSource(final String actualDataSourceName, final String logicTableName, final String actualTableName)
 }

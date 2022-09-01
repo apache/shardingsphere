@@ -29,14 +29,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
- * Scaling executor engine.
+ * Executor engine.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExecuteEngine {
     
-    private static final String SCALING_THREAD_PREFIX = "Scaling-";
+    private static final String THREAD_PREFIX = "pipeline-";
     
-    private static final String SCALING_THREAD_SUFFIX = "-%d";
+    private static final String THREAD_SUFFIX = "-%d";
     
     private final ExecutorService executorService;
     
@@ -47,7 +47,7 @@ public final class ExecuteEngine {
      * @return task execute engine instance
      */
     public static ExecuteEngine newCachedThreadInstance(final String threadName) {
-        String threadNameFormat = SCALING_THREAD_PREFIX + threadName + SCALING_THREAD_SUFFIX;
+        String threadNameFormat = THREAD_PREFIX + threadName + THREAD_SUFFIX;
         return new ExecuteEngine(Executors.newCachedThreadPool(ExecutorThreadFactoryBuilder.build(threadNameFormat)));
     }
     
@@ -59,7 +59,7 @@ public final class ExecuteEngine {
      * @return task execute engine instance
      */
     public static ExecuteEngine newFixedThreadInstance(final int threadNumber, final String threadName) {
-        String threadNameFormat = SCALING_THREAD_PREFIX + threadName + SCALING_THREAD_SUFFIX;
+        String threadNameFormat = THREAD_PREFIX + threadName + THREAD_SUFFIX;
         return new ExecuteEngine(Executors.newFixedThreadPool(threadNumber, ExecutorThreadFactoryBuilder.build(threadNameFormat)));
     }
     

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.execute;
 
 /**
- * Scaling task execute callback.
+ * Task execute callback.
  */
 public interface ExecuteCallback {
     

@@ -64,7 +64,7 @@ public final class MigrationJobPreparer {
     private static final MigrationJobAPI JOB_API = MigrationJobAPIFactory.getInstance();
     
     /**
-     * Do prepare work for scaling job.
+     * Do prepare work.
      *
      * @param jobItemContext job item context
      * @throws SQLException SQL exception
@@ -90,8 +90,8 @@ public final class MigrationJobPreparer {
             log.info("prepare, jobId={}, shardingItem={}, inventoryTasks={}, incrementalTasks={}",
                     jobItemContext.getJobId(), jobItemContext.getShardingItem(), jobItemContext.getInventoryTasks(), jobItemContext.getIncrementalTasks());
         } catch (final SQLException ex) {
-            log.error("Scaling job preparing failed, jobId={}", jobItemContext.getJobId());
-            throw new PipelineJobPrepareFailedException("Scaling job preparing failed, jobId=" + jobItemContext.getJobId(), ex);
+            log.error("job preparing failed, jobId={}", jobItemContext.getJobId());
+            throw new PipelineJobPrepareFailedException("job preparing failed, jobId=" + jobItemContext.getJobId(), ex);
         }
     }
     
@@ -187,7 +187,7 @@ public final class MigrationJobPreparer {
     }
     
     /**
-     * Do cleanup work for scaling job.
+     * Do cleanup work.
      *
      * @param jobConfig job configuration
      */
@@ -195,7 +195,7 @@ public final class MigrationJobPreparer {
         try {
             PipelineJobPreparerUtils.destroyPosition(jobConfig.getJobId(), jobConfig.getSource());
         } catch (final SQLException ex) {
-            log.warn("Scaling job destroying failed", ex);
+            log.warn("job destroying failed", ex);
         }
     }
 }
