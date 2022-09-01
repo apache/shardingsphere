@@ -17,24 +17,17 @@
 
 package org.apache.shardingsphere.driver.jdbc.exception;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
 
 /**
- * SQL exception constant.
+ * Empty SQL exception.
  */
-@RequiredArgsConstructor
-@Getter
-public enum SQLExceptionErrorCode {
+public final class EmptySQLException extends ShardingSphereSQLException {
     
-    SQL_STRING_NULL_OR_EMPTY(0, null, "SQL String can not be NULL or empty."),
+    private static final long serialVersionUID = -5723825491720138339L;
     
-    COLUMN_INDEX_OUT_OF_RANGE(0, XOpenSQLState.INVALID_COLUMN_NUMBER.getValue(), "Column index out of range.");
-    
-    private final int errorCode;
-    
-    private final String sqlState;
-    
-    private final String errorMessage;
+    public EmptySQLException() {
+        super(XOpenSQLState.GENERAL_ERROR.getValue(), 10005, "SQL String can not be NULL or empty");
+    }
 }
