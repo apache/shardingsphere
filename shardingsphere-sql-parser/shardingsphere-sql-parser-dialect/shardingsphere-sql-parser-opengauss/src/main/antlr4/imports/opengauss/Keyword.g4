@@ -151,6 +151,10 @@ DISTINCT
     : D I S T I N C T
     ;
 
+MAXSIZE
+    : M A X S I Z E
+    ;
+
 CASE
     : C A S E
     ;

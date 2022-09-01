@@ -17,6 +17,7 @@
   -->
 
 <sql-parser-test-cases>
+    <create-tablespace sql-case-id="create_tablespace_with_maxsize" />
     <create-tablespace sql-case-id="create_tablespace_for_innodb" />
     <create-tablespace sql-case-id="create_tablespace_for_myisam" />
     <create-tablespace sql-case-id="create_undo_tablespace_for_innodb" />

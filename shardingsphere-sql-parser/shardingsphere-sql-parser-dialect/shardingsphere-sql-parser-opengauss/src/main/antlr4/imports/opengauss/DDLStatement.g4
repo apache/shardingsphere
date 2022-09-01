@@ -323,6 +323,10 @@ onlyClause
     : ONLY?
     ;
 
+fileSizeLiteral
+    : FILESIZE_LITERAL | numberLiterals
+    ;
+
 asteriskClause
     : ASTERISK_?
     ;
@@ -1586,7 +1590,7 @@ createSubscription
     ;
 
 createTablespace
-    : CREATE TABLESPACE name (OWNER roleSpec)? LOCATION STRING_ (WITH reloptions)?
+    : CREATE TABLESPACE name (OWNER roleSpec)? LOCATION STRING_ (WITH reloptions)? (MAXSIZE EQ_? fileSizeLiteral)?
     ;
 
 createTextSearch
