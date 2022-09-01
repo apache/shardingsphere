@@ -26,6 +26,7 @@ import org.junit.Test;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -41,10 +42,13 @@ public final class TransactionRuleQueryResultSetTest {
         ShardingSphereRuleMetaData ruleMetaData = createGlobalRuleMetaData("XA", "Atomikos", createProperties());
         resultSet.init(ruleMetaData, mock(ShowTransactionRuleStatement.class));
         Collection<Object> actual = resultSet.getRowData();
+        Iterator<Object> rowData = actual.iterator();
         assertThat(actual.size(), is(3));
-        assertTrue(actual.contains("XA"));
-        assertTrue(actual.contains("Atomikos"));
-        assertTrue(actual.contains("host=127.0.0.1,databaseName=jbossts"));
+        assertThat(rowData.next(), is("XA"));
+        assertThat(rowData.next(), is("Atomikos"));
+        String props = (String) rowData.next();
+        assertTrue(props.contains("host=127.0.0.1"));
+        assertTrue(props.contains("databaseName=jbossts"));
     }
     
     @Test

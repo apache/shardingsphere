@@ -57,7 +57,9 @@ public final class AlterTransactionRuleStatementUpdaterTest {
         assertThat(updatedRule.getProviderType(), is("Atomikos"));
         assertTrue(updatedRule.getDatabases().containsKey("foo_db"));
         assertTrue(null != updatedRule.getProps() && !updatedRule.getProps().isEmpty());
-        assertThat(PropertiesConverter.convert(updatedRule.getProps()), is("host=127.0.0.1,databaseName=jbossts"));
+        String props = PropertiesConverter.convert(updatedRule.getProps());
+        assertTrue(props.contains("host=127.0.0.1"));
+        assertTrue(props.contains("databaseName=jbossts"));
     }
     
     @Test
