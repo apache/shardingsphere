@@ -29,7 +29,7 @@ import lombok.ToString;
 @Getter
 @EqualsAndHashCode
 @ToString
-public class ViewMetaData {
+public final class ViewMetaData {
     
     private final String name;
     
