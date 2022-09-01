@@ -75,7 +75,6 @@ public class JDBCRepositoryTest {
         try (MockedConstruction<HikariDataSource> ignored = mockConstruction(HikariDataSource.class, (mock, context) -> when(mock.getConnection()).thenReturn(mockJdbcConnection))) {
             JDBCRepository repository = new JDBCRepository();
             repository.init(getHikariProperties());
-            
             verify(mockStatement).execute(fixture.dropTableSQL());
             verify(mockStatement).execute(fixture.createTableSQL());
         } catch (SQLException e) {
@@ -88,15 +87,12 @@ public class JDBCRepositoryTest {
         try (MockedConstruction<HikariDataSource> ignored = mockConstruction(HikariDataSource.class, (mock, context) -> when(mock.getConnection()).thenReturn(mockJdbcConnection))) {
             JDBCRepository repository = new JDBCRepository();
             repository.init(getHikariProperties());
-            
             String key = "key";
             String value = "value";
-            
             when(mockJdbcConnection.prepareStatement(eq(fixture.selectByKeySQL()))).thenReturn(mockPreparedStatement);
             when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
             when(mockResultSet.next()).thenReturn(true);
             when(mockResultSet.getString(eq("value"))).thenReturn(value);
-            
             String actualResponse = repository.get(key);
             verify(mockPreparedStatement).setString(eq(1), eq(key));
             assertEquals(value, actualResponse);
@@ -110,9 +106,7 @@ public class JDBCRepositoryTest {
         try (MockedConstruction<HikariDataSource> ignored = mockConstruction(HikariDataSource.class, (mock, context) -> when(mock.getConnection()).thenReturn(mockJdbcConnection))) {
             JDBCRepository repository = new JDBCRepository();
             repository.init(getHikariProperties());
-            
             when(mockJdbcConnection.prepareStatement(eq(fixture.selectByKeySQL()))).thenThrow(new SQLException());
-            
             String actualResponse = repository.get("key");
             assertEquals("", actualResponse);
         } catch (SQLException e) {
@@ -125,7 +119,6 @@ public class JDBCRepositoryTest {
         try (MockedConstruction<HikariDataSource> ignored = mockConstruction(HikariDataSource.class, (mock, context) -> when(mock.getConnection()).thenReturn(mockJdbcConnection))) {
             JDBCRepository repository = new JDBCRepository();
             repository.init(getHikariProperties());
-            
             when(mockJdbcConnection.prepareStatement(eq(fixture.selectByParentKeySQL()))).thenReturn(mockPreparedStatement);
             when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
             when(mockResultSet.next())
@@ -137,7 +130,6 @@ public class JDBCRepositoryTest {
                     .thenReturn("parent1/test1")
                     .thenReturn("parent1/test2")
                     .thenReturn("");
-            
             List<String> childrenKeys = repository.getChildrenKeys("/testPath");
             assertThat(childrenKeys.get(0), is("test1"));
             assertThat(childrenKeys.get(1), is("test2"));
@@ -151,9 +143,7 @@ public class JDBCRepositoryTest {
         try (MockedConstruction<HikariDataSource> ignored = mockConstruction(HikariDataSource.class, (mock, context) -> when(mock.getConnection()).thenReturn(mockJdbcConnection))) {
             JDBCRepository repository = new JDBCRepository();
             repository.init(getHikariProperties());
-            
             when(mockJdbcConnection.prepareStatement(eq(fixture.selectByParentKeySQL()))).thenThrow(new SQLException());
-            
             List<String> actualResponse = repository.getChildrenKeys("key");
             assertEquals(0, actualResponse.size());
         } catch (SQLException e) {
@@ -196,12 +186,9 @@ public class JDBCRepositoryTest {
             when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
             when(mockResultSet.next()).thenReturn(false);
             repository.persist(key, value);
-            
             int depthOfDirectory = StringUtils.countMatches(key, "/");
-            
             int beginIndex = 0;
             String parentDirectory = "/";
-            
             for (int i = 0; i < depthOfDirectory; i++) {
                 int separatorIndex = key.indexOf('/', beginIndex);
                 int nextSeparatorIndex = key.indexOf('/', separatorIndex + 1);
@@ -209,29 +196,21 @@ public class JDBCRepositoryTest {
                     nextSeparatorIndex = key.length();
                 }
                 String directoryPath = key.substring(0, nextSeparatorIndex);
-                
                 // Verifying if get operation is called for every directory level
                 verify(mockPreparedStatement).setString(eq(1), eq(directoryPath));
-                
                 // Verifying that during insert operation, setString at index 2 is called for every directory level
                 verify(mockPreparedStatementForPersist).setString(eq(2), eq(directoryPath));
-                
                 // Verifying that during insert operation, setString at index 4 is called for every parent directory
                 verify(mockPreparedStatementForPersist).setString(eq(4), eq(parentDirectory));
-                
                 beginIndex = nextSeparatorIndex;
                 parentDirectory = directoryPath;
             }
-            
             // Verifying that during insert operation, setString at index 3 is called with "" for all the parent directories
             verify(mockPreparedStatementForPersist, times(depthOfDirectory - 1)).setString(eq(3), eq(""));
-            
             // Verifying that during insert operation, setString at index 3 is called with the leaf node once
             verify(mockPreparedStatementForPersist, times(1)).setString(eq(3), eq("test1_content"));
-            
             // Verifying that during insert operation, setString at index 1 is called with a UUID
             verify(mockPreparedStatementForPersist, times(depthOfDirectory)).setString(eq(1), anyString());
-            
             // Verifying that executeOperation in insert is called for all the directory levels
             verify(mockPreparedStatementForPersist, times(depthOfDirectory)).executeUpdate();
         } catch (SQLException e) {
@@ -330,7 +309,6 @@ public class JDBCRepositoryTest {
             JDBCRepository repository = new JDBCRepository();
             repository.init(getHikariProperties());
             repository.close();
-            
             HikariDataSource hikariDataSource = construction.constructed().get(0);
             verify(hikariDataSource).close();
         }
