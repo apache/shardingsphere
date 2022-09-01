@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.loader.dialect;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.datasource.registry.GlobalDataSourceRegistry;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ViewMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DataTypeLoaderFactory;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoader;
 
@@ -53,6 +55,8 @@ public final class SQLServerSchemaMetaDataLoader implements DialectSchemaMetaDat
     private static final String ORDER_BY_COLUMN_ID = " ORDER BY col.column_id";
     
     private static final String TABLE_META_DATA_SQL = TABLE_META_DATA_SQL_NO_ORDER + ORDER_BY_COLUMN_ID;
+
+    private static final String VIEW_META_DATA_SQL = "SELECT TABLE_NAME, VIEW_DEFINITION FROM INFORMATION_SCHEMA.VIEWS WHERE TABLE_CATALOG = ?";
     
     private static final String TABLE_META_DATA_SQL_IN_TABLES = TABLE_META_DATA_SQL_NO_ORDER + " WHERE obj.name IN (%s)" + ORDER_BY_COLUMN_ID;
     
@@ -72,8 +76,25 @@ public final class SQLServerSchemaMetaDataLoader implements DialectSchemaMetaDat
                 tableMetaDataList.add(new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataList, Collections.emptyList()));
             }
         }
-        // TODO load views from SQLServer database.
-        return Collections.singletonList(new SchemaMetaData(defaultSchemaName, tableMetaDataList, Collections.emptyList()));
+        return Collections.singletonList(new SchemaMetaData(defaultSchemaName, tableMetaDataList, loadViewMetaData(dataSource, tables)));
+    }
+
+    private Collection<ViewMetaData> loadViewMetaData(final DataSource dataSource, final Collection<String> tables) throws SQLException {
+        Collection<ViewMetaData> result = new LinkedList<>();
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(VIEW_META_DATA_SQL)) {
+            String databaseName = "".equals(connection.getCatalog()) ? GlobalDataSourceRegistry.getInstance().getCachedDatabaseTables().get(tables.iterator().next()) : connection.getCatalog();
+            preparedStatement.setString(1, databaseName);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    String tableName = resultSet.getString("TABLE_NAME");
+                    String viewDefinition = resultSet.getString("VIEW_DEFINITION");
+                    result.add(new ViewMetaData(tableName, viewDefinition));
+                }
+            }
+        }
+        return result;
     }
     
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> tables) throws SQLException {
