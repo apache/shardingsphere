@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.ingest.dumper;
+package org.apache.shardingsphere.data.pipeline.api.ingest.dumper;
+
+import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
 
 /**
- * Incremental dumper.
+ * Dumper interface.
  */
-public interface IncrementalDumper extends Dumper {
+public interface Dumper extends LifecycleExecutor {
 }
