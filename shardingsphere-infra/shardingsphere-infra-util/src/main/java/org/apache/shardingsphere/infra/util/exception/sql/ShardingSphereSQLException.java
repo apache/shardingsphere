@@ -18,14 +18,13 @@
 package org.apache.shardingsphere.infra.util.exception.sql;
 
 import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.SQLState;
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 
 import java.sql.SQLException;
 
 /**
  * ShardingSphere SQL exception.
  */
-public abstract class ShardingSphereSQLException extends ShardingSphereInsideException {
+public abstract class ShardingSphereSQLException extends RuntimeException {
     
     private static final long serialVersionUID = -8238061892944243621L;
     
