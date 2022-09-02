@@ -17,7 +17,7 @@ resourceDefinition ::=
   resourceName '(' ( 'HOST' '=' hostName ',' 'PORT' '=' port ',' 'DB' '=' dbName  |  'URL' '=' url  ) ',' 'USER' '=' user (',' 'PASSWORD' '=' password )?  (',' proerties)?')'
 
 resourceName ::=
-  string
+  identifier
 
 hostname ::=
   string

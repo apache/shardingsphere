@@ -20,16 +20,16 @@ databaseDiscoveryConstruction ::=
     ruleName '(' 'RESOURCES' '(' resourceName ( ',' resourceName )* ')' ',' 'TYPE' '=' discoveryTypeName ',' 'HEARTBEAT' '=' discoveryHeartbeatName ')'
     
 ruleName ::=
-  string
+  identifier
 
 resourceName ::=
-  string
+  identifier
 
 typeName ::=
-  string
+  identifier
 
 discoveryHeartbeatName ::=
-  string
+  identifier
 ```
 
 ### 补充说明

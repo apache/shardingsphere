@@ -14,7 +14,7 @@ DropResource ::=
   'DROP' 'RESOURCE' ( 'IF' 'EXISTS' )? resourceName  ( ',' resourceName )* ( 'IGNORE' 'SINGLE' 'TABLES' )?
 
 resourceName ::=
-  string
+  identifier
 ```
 
 ### Supplement

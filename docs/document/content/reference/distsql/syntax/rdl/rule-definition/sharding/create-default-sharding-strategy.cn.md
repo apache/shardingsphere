@@ -23,10 +23,10 @@ columnNames ::=
   columnName (',' columnName)+
 
 columnName ::=
-  string
+  identifier
 
 algorithmName ::=
-  string
+  identifier
   
 algorithmType ::=
   string

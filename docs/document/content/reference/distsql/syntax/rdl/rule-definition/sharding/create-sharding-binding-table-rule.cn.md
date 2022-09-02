@@ -17,7 +17,7 @@ bindingRelationshipDefinition ::=
   '(' tableName (',' tableName)* ')'
 
 tableName ::=
-  string
+  identifier
 ```
 
 ### 补充说明

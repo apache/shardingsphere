@@ -20,7 +20,7 @@ propertyDefinition ::=
   ( key  '=' value ) ( ',' key  '=' value )*
 
 shardingAlgorithmName ::=
-  string
+  identifier
   
 algorithmType ::=
   string

@@ -17,7 +17,7 @@ databaseDiscoveryTypeDefinition ::=
     discoveryTypeName '(' 'TYPE' '(' 'NAME' '=' typeName ( ',' 'PROPERTIES' '(' 'key' '=' 'value' ( ',' 'key' '=' 'value' )* ')' )? ')' ')'
     
 discoveryTypeName ::=
-  string
+  identifier
 
 typeName ::=
   string

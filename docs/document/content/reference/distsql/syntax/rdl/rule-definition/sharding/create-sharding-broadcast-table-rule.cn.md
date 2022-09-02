@@ -10,26 +10,11 @@ weight = 7
 ### 语法定义
 
 ```sql
-CreateDefaultShardingStrategy ::=
-  'CREATE' 'DEFAULT' 'SHARDING' ('DATABASE' | 'TABLE') 'STRATEGY' '(' shardingStrategy ')'
+CreateBroadcastTableRule ::=
+  'CREATE' 'SHARDING' 'BROADCAST' 'TABLE' 'RULES' '(' tableName (',' tableName)* ')'
 
-shardingStrategy ::=
-  'TYPE' '=' strategyType ',' ( 'SHARDING_COLUMN' '=' columnName  | 'SHARDING_COLUMNS' '=' columnNames ) ',' ( 'SHARDING_ALGORITHM' '=' algorithmName | algorithmDefinition )
-
-algorithmDefinition ::=
-  'TYPE' '(' 'NAME' '=' algorithmType ( ',' 'PROPERTIES'  '(' propertyDefinition  ')' )?')'  
-
-columnNames ::=
-  columnName (',' columnName)+
-
-columnName ::=
-  string
-
-algorithmName ::=
-  string
-  
-algorithmType ::=
-  string
+tableName ::=
+  identifier
 ```
 
 ### 补充说明

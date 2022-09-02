@@ -20,7 +20,7 @@ propertyDefinition ::=
   ( key  '=' value ) ( ',' key  '=' value )*
 
 keyGeneratorName ::=
-  string
+  identifier
   
 algorithmType ::=
   string

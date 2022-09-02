@@ -26,16 +26,16 @@ shadowAlgorithm ::=
     ( algorithmName ',' )? 'TYPE' '('  'NAME' '=' shadowAlgorithmType ',' 'PROPERTIES' '(' 'key' '=' 'value' ( ',' 'key' '=' 'value' ) ')'
 
 ruleName ::=
-  string
+  identifier
 
 resourceName ::=
-  string
+  identifier
 
 tableName ::=
-  string
+  identifier
 
 algorithmName ::=
-  string
+  identifier
 
 shadowAlgorithmType ::=
   string

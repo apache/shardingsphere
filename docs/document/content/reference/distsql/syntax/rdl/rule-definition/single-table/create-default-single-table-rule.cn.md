@@ -17,7 +17,7 @@ singleTableDefinition ::=
   'RESOURCE' '=' resourceName
 
 resourceName ::=
-  string
+  identifier
 ```
 
 ### 补充说明
