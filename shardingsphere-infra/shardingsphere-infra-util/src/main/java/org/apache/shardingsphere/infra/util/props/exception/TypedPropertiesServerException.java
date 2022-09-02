@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.util.props.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.ShardingSphereServerException;
+import org.apache.shardingsphere.infra.util.exception.external.server.ShardingSphereServerException;
 
 import java.util.Collection;
 

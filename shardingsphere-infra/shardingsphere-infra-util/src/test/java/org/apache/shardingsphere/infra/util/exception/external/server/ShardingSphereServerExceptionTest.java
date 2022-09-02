@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.exception.external;
+package org.apache.shardingsphere.infra.util.exception.external.server;
 
-import org.apache.shardingsphere.infra.util.exception.external.fixture.ShardingSphereServerExceptionFixture;
+import org.apache.shardingsphere.infra.util.exception.external.server.fixture.ShardingSphereServerExceptionFixture;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

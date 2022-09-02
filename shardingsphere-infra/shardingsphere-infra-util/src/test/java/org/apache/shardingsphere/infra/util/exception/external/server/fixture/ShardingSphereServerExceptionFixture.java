@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.exception.external.fixture;
+package org.apache.shardingsphere.infra.util.exception.external.server.fixture;
 
-import org.apache.shardingsphere.infra.util.exception.external.ShardingSphereServerException;
+import org.apache.shardingsphere.infra.util.exception.external.server.ShardingSphereServerException;
 
 public final class ShardingSphereServerExceptionFixture extends ShardingSphereServerException {
     

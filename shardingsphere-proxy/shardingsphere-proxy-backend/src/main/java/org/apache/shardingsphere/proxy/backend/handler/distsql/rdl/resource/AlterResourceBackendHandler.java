@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
-import org.apache.shardingsphere.infra.util.exception.external.ShardingSphereServerException;
+import org.apache.shardingsphere.infra.util.exception.external.server.ShardingSphereServerException;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.DatabaseRequiredBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;

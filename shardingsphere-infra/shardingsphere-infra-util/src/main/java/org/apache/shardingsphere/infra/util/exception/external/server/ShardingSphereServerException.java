@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.exception.external;
+package org.apache.shardingsphere.infra.util.exception.external.server;
+
+import org.apache.shardingsphere.infra.util.exception.external.ShardingSphereExternalException;
 
 /**
  * ShardingSphere server exception.
