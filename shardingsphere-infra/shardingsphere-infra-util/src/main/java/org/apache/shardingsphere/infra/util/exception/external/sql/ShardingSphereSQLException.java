@@ -15,16 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.exception.sql;
+package org.apache.shardingsphere.infra.util.exception.external.sql;
 
-import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.SQLState;
+import org.apache.shardingsphere.infra.util.exception.external.ShardingSphereExternalException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.SQLState;
 
 import java.sql.SQLException;
 
 /**
  * ShardingSphere SQL exception.
  */
-public abstract class ShardingSphereSQLException extends RuntimeException {
+public abstract class ShardingSphereSQLException extends ShardingSphereExternalException {
     
     private static final long serialVersionUID = -8238061892944243621L;
     

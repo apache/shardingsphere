@@ -15,17 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.exception.sql.sqlstate;
+package org.apache.shardingsphere.infra.util.exception.external;
+
+import lombok.NoArgsConstructor;
 
 /**
- * SQL state.
+ * ShardingSphere external exception.
  */
-public interface SQLState {
+@NoArgsConstructor
+public abstract class ShardingSphereExternalException extends RuntimeException {
     
-    /**
-     * Get value.
-     * 
-     * @return value
-     */
-    String getValue();
+    private static final long serialVersionUID = 1629786588176694067L;
+    
+    public ShardingSphereExternalException(final String reason) {
+        super(reason);
+    }
+    
+    public ShardingSphereExternalException(final String reason, final Exception cause) {
+        super(reason, cause);
+    }
 }

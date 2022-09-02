@@ -15,33 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.exception.sql.vendor;
+package org.apache.shardingsphere.infra.util.exception.external.sql;
 
-import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.SQLState;
+import java.sql.SQLException;
 
 /**
- * Vendor error.
+ * SQL wrapper exception.
  */
-public interface VendorError {
+public final class SQLWrapperException extends ShardingSphereSQLException {
     
-    /**
-     * Get SQL state.
-     * 
-     * @return SQL state
-     */
-    SQLState getSqlState();
+    private static final long serialVersionUID = 8983736995662464009L;
     
-    /**
-     * Get database vendor code.
-     *
-     * @return vendor code
-     */
-    int getVendorCode();
-    
-    /**
-     * Get reason.
-     *
-     * @return reason
-     */
-    String getReason();
+    public SQLWrapperException(final SQLException cause) {
+        super(cause.getSQLState(), cause.getErrorCode(), cause.getMessage());
+    }
 }

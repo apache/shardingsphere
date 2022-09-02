@@ -15,18 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.exception.sql;
+package org.apache.shardingsphere.infra.util.exception.external;
 
-import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.util.exception.external.fixture.ShardingSphereServerExceptionFixture;
+import org.junit.Test;
 
-/**
- * Unknown SQL exception.
- */
-public final class UnknownSQLException extends ShardingSphereSQLException {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class ShardingSphereServerExceptionTest {
     
-    private static final long serialVersionUID = -7357918573504734977L;
+    @Test
+    public void assertGetMessage() {
+        assertThat(new ShardingSphereServerExceptionFixture().getMessage(), is("FIXTURE-00001: Fixture error message"));
+    }
     
-    public UnknownSQLException(final Exception cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 30000, "Unknown exception: %s", cause.getMessage());
+    @Test
+    public void assertGetCause() {
+        RuntimeException cause = new RuntimeException("Test");
+        assertThat(new ShardingSphereServerExceptionFixture(cause).getCause(), is(cause));
     }
 }

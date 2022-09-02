@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.exception;
 
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereServerException;
+import org.apache.shardingsphere.infra.util.exception.external.ShardingSphereServerException;
 
 import java.sql.SQLException;
 

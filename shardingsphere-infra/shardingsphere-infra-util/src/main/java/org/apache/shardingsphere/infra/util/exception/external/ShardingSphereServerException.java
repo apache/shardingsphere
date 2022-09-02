@@ -15,27 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.exception;
-
-import lombok.NoArgsConstructor;
+package org.apache.shardingsphere.infra.util.exception.external;
 
 /**
- * ShardingSphere internal exception.
+ * ShardingSphere server exception.
  */
-@NoArgsConstructor
-public abstract class ShardingSphereInternalException extends Exception {
+public abstract class ShardingSphereServerException extends ShardingSphereExternalException {
     
-    private static final long serialVersionUID = -8238061892944243621L;
+    private static final long serialVersionUID = 1547233217081261239L;
     
-    public ShardingSphereInternalException(final String errorMessage, final Object... args) {
-        super(String.format(errorMessage, args));
+    public ShardingSphereServerException(final String errorCategory, final int errorCode, final String message) {
+        super(String.format("%s-%05d: %s", errorCategory, errorCode, message));
     }
     
-    public ShardingSphereInternalException(final Exception cause) {
-        super(cause);
-    }
-    
-    public ShardingSphereInternalException(final String message, final Exception cause) {
-        super(message, cause);
+    public ShardingSphereServerException(final String errorCategory, final int errorCode, final String message, final Exception cause) {
+        super(String.format("%s-%05d: %s", errorCategory, errorCode, message), cause);
     }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.util.props.exception;
 
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereInternalException;
+import org.apache.shardingsphere.infra.util.exception.internal.ShardingSphereInternalException;
 import org.apache.shardingsphere.infra.util.props.TypedPropertyKey;
 
 /**

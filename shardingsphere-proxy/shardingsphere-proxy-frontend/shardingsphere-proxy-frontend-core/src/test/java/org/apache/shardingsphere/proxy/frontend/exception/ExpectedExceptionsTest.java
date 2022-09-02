@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.proxy.frontend.exception;
 
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereInternalException;
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereServerException;
-import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.internal.ShardingSphereInternalException;
+import org.apache.shardingsphere.infra.util.exception.external.ShardingSphereServerException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;

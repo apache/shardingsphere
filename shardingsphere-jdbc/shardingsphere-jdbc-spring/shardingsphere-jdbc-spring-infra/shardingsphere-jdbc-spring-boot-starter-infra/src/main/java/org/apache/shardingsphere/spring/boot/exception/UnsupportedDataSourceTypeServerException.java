@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.spring.boot.exception;
 
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereServerException;
+import org.apache.shardingsphere.infra.util.exception.external.ShardingSphereServerException;
 
 /**
  * Unsupported data source type exception.

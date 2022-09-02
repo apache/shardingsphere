@@ -15,24 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.exception;
+package org.apache.shardingsphere.infra.util.exception.internal;
 
-import org.apache.shardingsphere.infra.util.exception.fixture.ShardingSphereServerExceptionFixture;
-import org.junit.Test;
+import lombok.NoArgsConstructor;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class ShardingSphereServerExceptionTest {
+/**
+ * ShardingSphere internal exception.
+ */
+@NoArgsConstructor
+public abstract class ShardingSphereInternalException extends Exception {
     
-    @Test
-    public void assertGetMessage() {
-        assertThat(new ShardingSphereServerExceptionFixture().getMessage(), is("FIXTURE-00001: Fixture error message"));
+    private static final long serialVersionUID = -8238061892944243621L;
+    
+    public ShardingSphereInternalException(final String errorMessage, final Object... args) {
+        super(String.format(errorMessage, args));
     }
     
-    @Test
-    public void assertGetCause() {
-        RuntimeException cause = new RuntimeException("Test");
-        assertThat(new ShardingSphereServerExceptionFixture(cause).getCause(), is(cause));
+    public ShardingSphereInternalException(final Exception cause) {
+        super(cause);
+    }
+    
+    public ShardingSphereInternalException(final String message, final Exception cause) {
+        super(message, cause);
     }
 }

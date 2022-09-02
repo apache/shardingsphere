@@ -15,23 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.exception.fixture;
+package org.apache.shardingsphere.infra.util.exception.external.sql;
 
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereInternalException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
-public final class ShardingSphereInternalExceptionFixture extends ShardingSphereInternalException {
+/**
+ * Unknown SQL exception.
+ */
+public final class UnknownSQLException extends ShardingSphereSQLException {
     
-    private static final long serialVersionUID = 3759417279204541147L;
+    private static final long serialVersionUID = -7357918573504734977L;
     
-    public ShardingSphereInternalExceptionFixture(final String message) {
-        super("Fixture error message: %s", message);
-    }
-    
-    public ShardingSphereInternalExceptionFixture(final String message, final Exception cause) {
-        super(message, cause);
-    }
-    
-    public ShardingSphereInternalExceptionFixture(final Exception cause) {
-        super(cause);
+    public UnknownSQLException(final Exception cause) {
+        super(XOpenSQLState.GENERAL_ERROR, 30000, "Unknown exception: %s", cause.getMessage());
     }
 }

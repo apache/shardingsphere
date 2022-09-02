@@ -32,8 +32,8 @@ import org.apache.shardingsphere.dialect.exception.syntax.table.TableExistsExcep
 import org.apache.shardingsphere.dialect.exception.transaction.TableModifyInTransactionException;
 import org.apache.shardingsphere.dialect.mapper.SQLDialectExceptionMapper;
 import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
-import org.apache.shardingsphere.infra.util.exception.sql.UnknownSQLException;
-import org.apache.shardingsphere.infra.util.exception.sql.vendor.VendorError;
+import org.apache.shardingsphere.infra.util.exception.external.sql.UnknownSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.vendor.VendorError;
 
 import java.sql.SQLException;
 
