@@ -74,7 +74,7 @@ public final class TableMetaDataPersistService implements SchemaMetaDataPersistS
             ShardingSphereTable currentTable = currentTables.get(entry.getKey());
             if (null != currentTable && !entry.getValue().equals(currentTable)) {
                 result.put(entry.getKey(), entry.getValue());
-            } else if (null == currentTable){
+            } else if (null == currentTable) {
                 result.put(entry.getKey(), entry.getValue());
             }
         }
