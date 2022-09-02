@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseExtraSQLITCase;
+import org.apache.shardingsphere.integration.data.pipeline.cases.base.AbstractMigrationITCase;
 import org.apache.shardingsphere.integration.data.pipeline.cases.task.MySQLIncrementTask;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingCaseHelper;
@@ -46,7 +46,7 @@ import static org.junit.Assert.assertThat;
  */
 @Slf4j
 @RunWith(Parameterized.class)
-public final class MySQLMigrationGeneralIT extends BaseExtraSQLITCase {
+public final class MySQLMigrationGeneralIT extends AbstractMigrationITCase {
     
     private final ScalingParameterized parameterized;
     
@@ -75,8 +75,8 @@ public final class MySQLMigrationGeneralIT extends BaseExtraSQLITCase {
         addMigrationProcessConfig();
         createSourceOrderTable();
         createSourceOrderItemTable();
-        addSourceResource();
-        addTargetResource();
+        addMigrationSourceResource();
+        addMigrationTargetResource();
         createTargetOrderTableRule();
         createTargetOrderTableEncryptRule();
         createTargetOrderItemTableRule();

@@ -28,7 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.cases.command.MigrationDistSQLCommand;
+import org.apache.shardingsphere.integration.data.pipeline.cases.command.ExtraSQLCommand;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.BaseComposedContainer;
@@ -63,9 +63,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @Slf4j
@@ -76,7 +74,11 @@ public abstract class BaseITCase {
     
     protected static final String SCHEMA_NAME = "test";
     
+    protected static final String PROXY_DATABASE = "sharding_db";
+    
     protected static final String DS_0 = "scaling_it_0";
+    
+    protected static final String DS_1 = "scaling_it_1";
     
     protected static final String DS_2 = "scaling_it_2";
     
@@ -94,7 +96,7 @@ public abstract class BaseITCase {
     
     private final BaseComposedContainer composedContainer;
     
-    private final MigrationDistSQLCommand migrationDistSQLCommand;
+    private final ExtraSQLCommand extraSQLCommand;
     
     private final DatabaseType databaseType;
     
@@ -129,7 +131,7 @@ public abstract class BaseITCase {
         if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NATIVE) {
             cleanUpDataSource();
         }
-        migrationDistSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BaseITCase.class.getClassLoader().getResource("env/common/command.xml")), MigrationDistSQLCommand.class);
+        extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(AbstractMigrationITCase.class.getClassLoader().getResource(parameterized.getScenario())), ExtraSQLCommand.class);
         scalingWatcher = new ScalingWatcher(composedContainer);
     }
     
@@ -148,17 +150,17 @@ public abstract class BaseITCase {
         try (Connection connection = DriverManager.getConnection(jdbcUrl, ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD)) {
             if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NATIVE) {
                 try {
-                    connectionExecuteWithLog(connection, "DROP DATABASE sharding_db");
+                    connectionExecuteWithLog(connection, String.format("DROP DATABASE %s", PROXY_DATABASE));
                 } catch (final SQLException ex) {
-                    log.warn("Drop sharding_db failed, maybe it's not exist. error msg={}", ex.getMessage());
+                    log.warn("Drop proxy database failed, maybe it's not exist. error msg={}", ex.getMessage());
                 }
             }
-            connectionExecuteWithLog(connection, "CREATE DATABASE sharding_db");
+            connectionExecuteWithLog(connection, String.format("CREATE DATABASE %s", PROXY_DATABASE));
         } catch (final SQLException ex) {
             throw new IllegalStateException(ex);
         }
         sourceDataSource = getDataSource(getActualJdbcUrlTemplate(DS_0, false), username, password);
-        proxyDataSource = getDataSource(composedContainer.getProxyJdbcUrl("sharding_db"), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD);
+        proxyDataSource = getDataSource(composedContainer.getProxyJdbcUrl(PROXY_DATABASE), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD);
     }
     
     private DataSource getDataSource(final String jdbcUrl, final String username, final String password) {
@@ -172,40 +174,11 @@ public abstract class BaseITCase {
         return result;
     }
     
-    @SneakyThrows(SQLException.class)
-    protected void addSourceResource() {
-        try (Connection connection = DriverManager.getConnection(getComposedContainer().getProxyJdbcUrl("sharding_db"), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD)) {
-            addSourceResource0(connection);
-        }
+    protected void addResource(final String distSQL) throws SQLException {
+        proxyExecuteWithLog(distSQL, 2);
     }
     
-    @SneakyThrows(SQLException.class)
-    private void addSourceResource0(final Connection connection) {
-        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NATIVE) {
-            try {
-                connectionExecuteWithLog(connection, "DROP MIGRATION SOURCE RESOURCE ds_0");
-            } catch (final SQLException ex) {
-                log.warn("Drop sharding_db failed, maybe it's not exist. error msg={}", ex.getMessage());
-            }
-        }
-        String addSourceResource = migrationDistSQLCommand.getAddMigrationSourceResourceTemplate().replace("${user}", username)
-                .replace("${password}", password)
-                .replace("${ds0}", getActualJdbcUrlTemplate(DS_0, true));
-        connectionExecuteWithLog(connection, addSourceResource);
-    }
-    
-    protected void addTargetResource() throws SQLException {
-        String addTargetResource = migrationDistSQLCommand.getAddMigrationTargetResourceTemplate().replace("${user}", username)
-                .replace("${password}", password)
-                .replace("${ds2}", getActualJdbcUrlTemplate(DS_2, true))
-                .replace("${ds3}", getActualJdbcUrlTemplate(DS_3, true))
-                .replace("${ds4}", getActualJdbcUrlTemplate(DS_4, true));
-        proxyExecuteWithLog(addTargetResource, 2);
-        List<Map<String, Object>> resources = queryForListWithLog("SHOW DATABASE RESOURCES from sharding_db");
-        assertThat(resources.size(), is(3));
-    }
-    
-    private String getActualJdbcUrlTemplate(final String databaseName, final boolean isInContainer) {
+    protected String getActualJdbcUrlTemplate(final String databaseName, final boolean isInContainer) {
         if (ScalingITEnvTypeEnum.DOCKER == ENV.getItEnvType()) {
             DockerStorageContainer storageContainer = ((MigrationComposedContainer) composedContainer).getStorageContainer();
             if (isInContainer) {
@@ -217,48 +190,24 @@ public abstract class BaseITCase {
         return DataSourceEnvironment.getURL(getDatabaseType(), "127.0.0.1", ENV.getActualDataSourceDefaultPort(databaseType), databaseName);
     }
     
-    protected void createTargetOrderTableRule() throws SQLException {
-        proxyExecuteWithLog(migrationDistSQLCommand.getCreateTargetOrderTableRule(), 2);
+    protected void createSourceOrderTable() throws SQLException {
+        sourceExecuteWithLog(extraSQLCommand.getCreateTableOrder());
     }
     
-    protected void createTargetOrderTableEncryptRule() throws SQLException {
-        proxyExecuteWithLog(migrationDistSQLCommand.getCreateTargetOrderTableEncryptRule(), 2);
-    }
-    
-    protected void createTargetOrderItemTableRule() throws SQLException {
-        proxyExecuteWithLog(migrationDistSQLCommand.getCreateTargetOrderItemTableRule(), 2);
-    }
-    
-    protected void startMigrationOrderCopy(final boolean withSchema) throws SQLException {
-        if (withSchema) {
-            proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderCopySingleTableWithSchema(), 1);
-        } else {
-            proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderCopySingleTable(), 1);
+    protected void createSourceTableIndexList(final String schema) throws SQLException {
+        if (DatabaseTypeUtil.isPostgreSQL(getDatabaseType())) {
+            sourceExecuteWithLog(String.format("CREATE INDEX IF NOT EXISTS idx_user_id ON %s.t_order_copy ( user_id )", schema));
+        } else if (DatabaseTypeUtil.isOpenGauss(getDatabaseType())) {
+            sourceExecuteWithLog(String.format("CREATE INDEX idx_user_id ON %s.t_order_copy ( user_id )", schema));
         }
     }
     
-    protected void startMigrationOrder() throws SQLException {
-        proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderSingleTable(), 1);
+    protected void createSourceCommentOnList(final String schema) throws SQLException {
+        sourceExecuteWithLog(String.format("COMMENT ON COLUMN %s.t_order_copy.user_id IS 'user id'", schema));
     }
     
-    protected void startMigrationOrderItem(final boolean withSchema) throws SQLException {
-        if (withSchema) {
-            proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderItemSingleTableWithSchema(), 1);
-        } else {
-            proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderItemSingleTable(), 1);
-        }
-    }
-    
-    protected void addMigrationProcessConfig() throws SQLException {
-        try {
-            proxyExecuteWithLog(migrationDistSQLCommand.getAddMigrationProcessConfig(), 0);
-        } catch (final SQLException ex) {
-            if ("58000".equals(ex.getSQLState()) || "42000".equals(ex.getSQLState())) {
-                log.warn(ex.getMessage());
-                return;
-            }
-            throw ex;
-        }
+    protected void createSourceOrderItemTable() throws SQLException {
+        sourceExecuteWithLog(extraSQLCommand.getCreateTableOrderItem());
     }
     
     protected void createSourceSchema(final String schemaName) throws SQLException {
@@ -340,7 +289,6 @@ public abstract class BaseITCase {
         proxyExecuteWithLog(String.format("STOP MIGRATION '%s'", jobId), 1);
     }
     
-    // TODO reopen later
     protected void startMigrationByJobId(final String jobId) throws SQLException {
         proxyExecuteWithLog(String.format("START MIGRATION '%s'", jobId), 1);
     }
@@ -412,7 +360,7 @@ public abstract class BaseITCase {
         List<Map<String, Object>> listScalingStatus = showScalingStatus(jobId);
         log.info("listScalingStatus result: {}", listScalingStatus);
         for (Map<String, Object> entry : listScalingStatus) {
-            if (JobStatus.EXECUTE_INCREMENTAL_TASK.name().equalsIgnoreCase(entry.get("status").toString())) {
+            if (!JobStatus.EXECUTE_INCREMENTAL_TASK.name().equalsIgnoreCase(entry.get("status").toString())) {
                 return false;
             }
             int incrementalIdleSeconds = Integer.parseInt(entry.get("incremental_idle_seconds").toString());

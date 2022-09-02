@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseExtraSQLITCase;
+import org.apache.shardingsphere.integration.data.pipeline.cases.base.AbstractMigrationITCase;
 import org.apache.shardingsphere.integration.data.pipeline.cases.task.PostgreSQLIncrementTask;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingCaseHelper;
@@ -47,7 +47,7 @@ import static org.junit.Assert.assertThat;
  */
 @Slf4j
 @RunWith(Parameterized.class)
-public final class PostgreSQLMigrationGeneralIT extends BaseExtraSQLITCase {
+public final class PostgreSQLMigrationGeneralIT extends AbstractMigrationITCase {
     
     private static final SnowflakeKeyGenerateAlgorithm KEY_GENERATE_ALGORITHM = new SnowflakeKeyGenerateAlgorithm();
     
@@ -83,8 +83,8 @@ public final class PostgreSQLMigrationGeneralIT extends BaseExtraSQLITCase {
         createSourceOrderItemTable();
         createSourceTableIndexList(SCHEMA_NAME);
         createSourceCommentOnList(SCHEMA_NAME);
-        addSourceResource();
-        addTargetResource();
+        addMigrationSourceResource();
+        addMigrationTargetResource();
         createTargetOrderTableRule();
         createTargetOrderItemTableRule();
         Pair<List<Object[]>, List<Object[]>> dataPair = ScalingCaseHelper.generateFullInsertData(KEY_GENERATE_ALGORITHM, parameterized.getDatabaseType(), TABLE_INIT_ROW_COUNT);
