@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.props.exception;
+package org.apache.shardingsphere.infra.util.exception.fixture;
 
-import org.junit.Test;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereServerException;
 
-import java.util.Arrays;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class TypedPropertiesExceptionTest {
+public final class ShardingSphereServerExceptionFixture extends ShardingSphereServerException {
     
-    @Test
-    public void assertGetMessage() {
-        assertThat(new TypedPropertiesServerException(Arrays.asList("foo_msg", "bar_msg")).getMessage(), is("PROPS-00001: foo_msg" + System.lineSeparator() + "bar_msg"));
+    private static final long serialVersionUID = 4263474713534006256L;
+    
+    public ShardingSphereServerExceptionFixture() {
+        super("FIXTURE", 1, "Fixture error message");
+    }
+    
+    public ShardingSphereServerExceptionFixture(final Exception cause) {
+        super("FIXTURE", 1, "Fixture error message", cause);
     }
 }

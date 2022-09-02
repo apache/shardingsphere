@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.util.spi.type.required;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundException;
+import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
 import org.apache.shardingsphere.infra.util.spi.lifecycle.SPIPostProcessor;
 
 import java.util.Collection;
@@ -50,7 +50,7 @@ public final class RequiredSPIRegistry {
     private static <T extends RequiredSPI> T getRequiredService(final Class<T> spiClass) {
         Collection<T> services = ShardingSphereServiceLoader.getServiceInstances(spiClass);
         if (services.isEmpty()) {
-            throw new ServiceProviderNotFoundException(spiClass);
+            throw new ServiceProviderNotFoundServerException(spiClass);
         }
         if (1 == services.size()) {
             return services.iterator().next();

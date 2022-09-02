@@ -15,22 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.boot.exception;
+package org.apache.shardingsphere.infra.util.props.exception;
 
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereServerException;
+
+import java.util.Collection;
 
 /**
- * Unsupported data source type exception.
+ * Typed properties exception.
  */
-public final class UnsupportedDataSourceTypeException extends ShardingSphereException {
+public final class TypedPropertiesServerException extends ShardingSphereServerException {
     
-    private static final long serialVersionUID = 8264305279431450585L;
+    private static final long serialVersionUID = -8301410307117564844L;
     
-    private static final String ERROR_CATEGORY = "SPRING";
+    private static final String ERROR_CATEGORY = "PROPS";
     
     private static final int ERROR_CODE = 1;
     
-    public UnsupportedDataSourceTypeException(final Exception cause) {
-        super(ERROR_CATEGORY, ERROR_CODE, "Can not find data source type", cause);
+    public TypedPropertiesServerException(final Collection<String> errorMessages) {
+        super(ERROR_CATEGORY, ERROR_CODE, String.join(System.lineSeparator(), errorMessages));
     }
 }

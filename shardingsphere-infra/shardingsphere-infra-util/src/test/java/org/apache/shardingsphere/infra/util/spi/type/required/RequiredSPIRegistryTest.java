@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.util.spi.type.required;
 
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundException;
+import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
 import org.apache.shardingsphere.infra.util.spi.type.required.fixture.empty.EmptyRequiredSPIFixture;
 import org.apache.shardingsphere.infra.util.spi.type.required.fixture.multiple.DefaultMultipleRequiredSPIFixtureImpl;
 import org.apache.shardingsphere.infra.util.spi.type.required.fixture.multiple.MultipleRequiredSPIFixture;
@@ -37,7 +37,7 @@ public final class RequiredSPIRegistryTest {
         ShardingSphereServiceLoader.register(MultipleRequiredSPIFixture.class);
     }
     
-    @Test(expected = ServiceProviderNotFoundException.class)
+    @Test(expected = ServiceProviderNotFoundServerException.class)
     public void assertRegisteredServiceWithEmptyImplementation() {
         RequiredSPIRegistry.getRegisteredService(EmptyRequiredSPIFixture.class);
     }

@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.distsql.exception.resource.ResourceInUsed
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereServerException;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -61,7 +61,7 @@ public final class DropResourceBackendHandler extends DatabaseRequiredBackendHan
         check(databaseName, toBeDroppedResourceNames, sqlStatement.isIgnoreSingleTables(), sqlStatement.isIfExists());
         try {
             ProxyContext.getInstance().getContextManager().dropResources(databaseName, toBeDroppedResourceNames);
-        } catch (final SQLException | ShardingSphereException ex) {
+        } catch (final SQLException | ShardingSphereServerException ex) {
             log.error("Drop resource failed", ex);
             throw new InvalidResourcesException(Collections.singleton(ex.getMessage()));
         }

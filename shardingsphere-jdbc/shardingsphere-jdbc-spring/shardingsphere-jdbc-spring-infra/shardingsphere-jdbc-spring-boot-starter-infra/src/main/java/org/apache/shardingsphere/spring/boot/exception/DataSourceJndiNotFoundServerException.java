@@ -15,19 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.exception.fixture;
+package org.apache.shardingsphere.spring.boot.exception;
 
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereServerException;
 
-public final class ShardingSphereExceptionFixture extends ShardingSphereException {
+/**
+ * Data source JNDI not found exception.
+ */
+public final class DataSourceJndiNotFoundServerException extends ShardingSphereServerException {
     
-    private static final long serialVersionUID = 4263474713534006256L;
+    private static final long serialVersionUID = -7793679063807601394L;
     
-    public ShardingSphereExceptionFixture() {
-        super("FIXTURE", 1, "Fixture error message");
-    }
+    private static final String ERROR_CATEGORY = "SPRING";
     
-    public ShardingSphereExceptionFixture(final Exception cause) {
-        super("FIXTURE", 1, "Fixture error message", cause);
+    private static final int ERROR_CODE = 2;
+    
+    public DataSourceJndiNotFoundServerException(final Exception cause) {
+        super(ERROR_CATEGORY, ERROR_CODE, "Can not find JNDI data source", cause);
     }
 }

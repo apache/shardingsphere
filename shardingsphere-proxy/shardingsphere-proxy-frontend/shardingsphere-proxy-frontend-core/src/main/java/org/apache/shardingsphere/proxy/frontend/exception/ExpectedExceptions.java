@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.exception;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereServerException;
 import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
 
@@ -35,7 +35,7 @@ public final class ExpectedExceptions {
     private static final Collection<Class<? extends Exception>> EXCEPTIONS = new HashSet<>();
     
     static {
-        EXCEPTIONS.add(ShardingSphereException.class);
+        EXCEPTIONS.add(ShardingSphereServerException.class);
         EXCEPTIONS.add(ShardingSphereInsideException.class);
         EXCEPTIONS.add(ShardingSphereSQLException.class);
     }
