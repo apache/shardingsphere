@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc;
 
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
@@ -29,12 +29,17 @@ import java.util.List;
 /**
  * JDBC executor.
  */
-@RequiredArgsConstructor
+@Setter
 public final class JDBCExecutor {
     
-    private final ExecutorEngine executorEngine;
+    private ExecutorEngine executorEngine;
     
-    private final boolean serial;
+    private boolean serial;
+    
+    public JDBCExecutor(final ExecutorEngine executorEngine, final boolean serial) {
+        this.executorEngine = executorEngine;
+        this.serial = serial;
+    }
     
     /**
      * Execute.

@@ -46,14 +46,20 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDB
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.callback.ProxyJDBCExecutorCallback;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.callback.ProxyJDBCExecutorCallbackFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.JDBCBackendStatement;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JDBCBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilderEngine;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.sharding.merge.common.IteratorStreamMergedResult;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
+import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -129,12 +135,33 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
             return new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement());
         }
         proxySQLExecutor.checkExecutePrerequisites(executionContext);
-        List result = proxySQLExecutor.execute(executionContext);
-        refreshMetaData(executionContext);
-        Object executeResultSample = result.iterator().next();
-        return executeResultSample instanceof QueryResult
-                ? processExecuteQuery(executionContext, result, (QueryResult) executeResultSample)
-                : processExecuteUpdate(executionContext, result);
+        TransactionStatus transactionStatus = backendConnection.getConnectionSession().getTransactionStatus();
+        SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
+        JDBCBackendTransactionManager transactionManager = null;
+        if (TransactionType.XA == transactionStatus.getTransactionType() && transactionStatus.isInTransaction()
+                && sqlStatement instanceof DMLStatement && !(sqlStatement instanceof SelectStatement)) {
+            proxySQLExecutor.getJdbcExecutor().getJdbcExecutor().setSerial(true);
+            transactionManager = new JDBCBackendTransactionManager(backendConnection);
+            transactionManager.begin();
+        }
+        ResponseHeader responseHeader;
+        try {
+            List result = proxySQLExecutor.execute(executionContext);
+            refreshMetaData(executionContext);
+            Object executeResultSample = result.iterator().next();
+            responseHeader = executeResultSample instanceof QueryResult
+                    ? processExecuteQuery(executionContext, result, (QueryResult) executeResultSample)
+                    : processExecuteUpdate(executionContext, result);
+            if (null != transactionManager) {
+                transactionManager.commit();
+            }
+        } catch (final SQLException ex) {
+            if (null != transactionManager) {
+                transactionManager.rollback();
+            }
+            throw ex;
+        }
+        return responseHeader;
     }
     
     private static SQLFederationDeciderContext decide(final QueryContext queryContext, final ConfigurationProperties props, final ShardingSphereDatabase database) {
