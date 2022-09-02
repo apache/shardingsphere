@@ -89,6 +89,10 @@
         )
     </create-three-data-source-account-table-rule>
 
+    <create-address-broadcast-table-rule>
+        CREATE SHARDING BROADCAST TABLE RULES (t_address);
+    </create-address-broadcast-table-rule>
+    
     <alter-local-transaction-rule>
         ALTER TRANSACTION RULE ( DEFAULT=LOCAL )
     </alter-local-transaction-rule>
@@ -149,4 +153,14 @@
         PRIMARY KEY (item_id)
         )
     </create-order-item-table>
+    
+    <create-address-table>
+        CREATE TABLE IF NOT EXISTS t_address 
+        (
+        id BIGINT NOT NULL,
+        code VARCHAR(36) DEFAULT NULL,
+        address VARCHAR(36) DEFAULT NULL,
+        PRIMARY KEY (id)
+        )
+    </create-address-table>
 </command>
