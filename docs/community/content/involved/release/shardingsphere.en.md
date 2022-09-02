@@ -440,7 +440,7 @@ Hello ShardingSphere Community,
 This is a call for vote to release Apache ShardingSphere version ${RELEASE.VERSION}
 
 Release notes:
-https://github.com/apache/shardingsphere/blob/master/RELEASE-NOTES.md
+https://github.com/apache/shardingsphere/blob/${RELEASE.VERSION}-release/RELEASE-NOTES.md
 
 The release candidates:
 https://dist.apache.org/repos/dist/dev/shardingsphere/${RELEASE.VERSION}/
@@ -489,6 +489,8 @@ Checklist for reference:
 
 [ ] No compiled archives bundled in source archive.
 ```
+
+> To be noticed: `Release Commit ID` uses the commit id corresponding to `prepare release ${RELEASE.VERSION}` log on release branch.
 
 2. Announce the vote result:
 
