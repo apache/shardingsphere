@@ -27,6 +27,7 @@ import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.LinkedHashMap;
 import java.util.Collection;
 import java.util.Collections;
@@ -43,10 +44,9 @@ public final class TableMetaDataPersistService implements SchemaMetaDataPersistS
     @Override
     public void compareAndPersist(final String databaseName, final String schemaName, final Map<String, ShardingSphereTable> loadedTables) {
         Map<String, ShardingSphereTable> currentTables = load(databaseName, schemaName);
-        Map<String, ShardingSphereTable> toBeAddedTables =
-                loadedTables.entrySet().stream().filter(entry -> !currentTables.containsKey(entry.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        Map<String, ShardingSphereTable> toBeDeletedTables =
-                currentTables.entrySet().stream().filter(entry -> !loadedTables.containsKey(entry.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        // TODO Add ShardingSphereSchemaFactory to support toBeAddedTables and toBeDeletedTables.
+        Map<String, ShardingSphereTable> toBeAddedTables = getToBeAddedTables(loadedTables, currentTables);
+        Map<String, ShardingSphereTable> toBeDeletedTables = getToBeDeletedTables(loadedTables, currentTables);
         persist(databaseName, schemaName, toBeAddedTables);
         toBeDeletedTables.forEach((key, value) -> delete(databaseName, schemaName, key));
     }
@@ -66,6 +66,23 @@ public final class TableMetaDataPersistService implements SchemaMetaDataPersistS
     @Override
     public void delete(final String databaseName, final String schemaName, final String tableName) {
         repository.delete(DatabaseMetaDataNode.getTableMetaDataPath(databaseName, schemaName, tableName.toLowerCase()));
+    }
+    
+    private Map<String, ShardingSphereTable> getToBeAddedTables(final Map<String, ShardingSphereTable> loadedTables, final Map<String, ShardingSphereTable> currentTables) {
+        Map<String, ShardingSphereTable> result = new LinkedHashMap<>(loadedTables.size(), 1);
+        for (Entry<String, ShardingSphereTable> entry : loadedTables.entrySet()) {
+            ShardingSphereTable currentTable = currentTables.get(entry.getKey());
+            if (null != currentTable && !entry.getValue().equals(currentTable)) {
+                result.put(entry.getKey(), entry.getValue());
+            } else if (null == currentTable){
+                result.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return result;
+    }
+    
+    private Map<String, ShardingSphereTable> getToBeDeletedTables(final Map<String, ShardingSphereTable> loadedTables, final Map<String, ShardingSphereTable> currentTables) {
+        return currentTables.entrySet().stream().filter(entry -> !loadedTables.containsKey(entry.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
     
     private Map<String, ShardingSphereTable> getTableMetaDataByTableNames(final String databaseName, final String schemaName, final Collection<String> tableNames) {
