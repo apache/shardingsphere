@@ -15,31 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.dumper;
+package org.apache.shardingsphere.data.pipeline.spi.ingest.dumper;
 
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumper;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
+import javax.sql.DataSource;
+
 /**
- * Incremental dumper creator.
+ * Inventory dumper creator.
  */
 @SingletonSPI
-public interface IncrementalDumperCreator<P> extends TypedSPI {
+public interface InventoryDumperCreator extends TypedSPI, RequiredSPI {
     
     /**
-     * Create incremental dumper.
-     *
-     * @param dumperConfig dumperConfig
-     * @param position position
-     * @param channel channel
-     * @param metaDataLoader metaDataLoader
-     * @return IncrementalDumper
+     * Create Inventory Dumper.
+     * @param inventoryDumperConfig inventoryDumperConfig
+     * @param channel chanel
+     * @param sourceDataSource sourceDataSource
+     * @param sourceMetaDataLoader sourceMetaDataLoader
+     * @return InventoryDumper
      */
-    IncrementalDumper createIncrementalDumper(DumperConfiguration dumperConfig, IngestPosition<P> position,
-                                              PipelineChannel channel, PipelineTableMetaDataLoader metaDataLoader);
+    InventoryDumper createInventoryDumper(InventoryDumperConfiguration inventoryDumperConfig, PipelineChannel channel,
+                                          DataSource sourceDataSource, PipelineTableMetaDataLoader sourceMetaDataLoader);
 }
