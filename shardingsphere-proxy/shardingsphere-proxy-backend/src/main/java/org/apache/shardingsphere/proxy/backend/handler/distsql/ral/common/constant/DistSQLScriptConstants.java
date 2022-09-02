@@ -25,13 +25,15 @@ import lombok.NoArgsConstructor;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DistSQLScriptConstants {
-    
+
     public static final String RESOURCE_DB = "resource_db";
     
     public static final String SHARDING_DB = "sharding_db";
     
     public static final String READWRITE_SPLITTING_DB = "readwrite_splitting_db";
-    
+
+    public static final String DATABASE_DISCOVERY_DB = "database_discovery_db";
+
     public static final String STANDARD = "standard";
     
     public static final String COMPLEX = "complex";
@@ -134,10 +136,26 @@ public final class DistSQLScriptConstants {
             + "%s"
             + System.lineSeparator()
             + ")";
+
+    public static final String READWRITE_SPLITTING_TYPE = "TYPE(NAME=\"%s\")";
     
-    public static final String TYPE = "TYPE(NAME=\"%s\")";
-    
-    public static final String TYPE_PROPERTIES = "TYPE(NAME=\"%s\", PROPERTIES(%s))";
+    public static final String READWRITE_SPLITTING_TYPE_PROPERTIES = "TYPE(NAME=\"%s\", PROPERTIES(%s))";
     
     public static final String READ_RESOURCE = "%s";
+
+    public static final String CREATE_DB_DISCOVERY = "CREATE DB_DISCOVERY RULE";
+
+    public static final String DB_DISCOVERY = " %s ("
+            + System.lineSeparator()
+            + "RESOURCES(%s),"
+            + System.lineSeparator()
+            + "%s,"
+            + System.lineSeparator()
+            + "HEARTBEAT(PROPERTIES(%s))"
+            + System.lineSeparator()
+            + ")";
+
+    public static final String DB_DISCOVERY_TYPE = "TYPE(NAME=\'%s\', PROPERTIES(%s))";
+
+    public static final String DB_DISCOVERY_PROPERTY = "\'%s\'=\'%s\'";
 }

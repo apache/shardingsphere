@@ -20,6 +20,8 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 import com.google.common.base.Preconditions;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shardingsphere.dbdiscovery.yaml.config.rule.YamlDatabaseDiscoveryDataSourceRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.yaml.config.rule.YamlDatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertYamlConfigurationStatement;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
@@ -48,6 +50,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardS
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.YamlShardingRuleConfigurationSwapper;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
 
 import java.io.File;
 import java.io.IOException;
@@ -97,6 +100,9 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
             case DistSQLScriptConstants.READWRITE_SPLITTING_DB:
                 addReadWriteSplittingDistSQL(yamlConfig, result);
                 break;
+            case DistSQLScriptConstants.DATABASE_DISCOVERY_DB:
+                addDatabaseDiscoveryDistSQL(yamlConfig, result);
+                break;
             default:
                 break;
         }
@@ -118,6 +124,12 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         appendDatabase(yamlConfig.getDatabaseName(), result);
         appendResources(yamlConfig.getDataSources(), result);
         appendReadWriteSplittingRules(yamlConfig.getRules(), result);
+    }
+
+    private void addDatabaseDiscoveryDistSQL(final YamlProxyDatabaseConfiguration yamlConfig, final StringBuilder result) {
+        appendDatabase(yamlConfig.getDatabaseName(), result);
+        appendResources(yamlConfig.getDataSources(), result);
+        appendDatabaseDiscoveryRules(yamlConfig.getRules(), result);
     }
     
     private void appendDatabase(final String databaseName, final StringBuilder result) {
@@ -358,7 +370,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         StringBuilder result = new StringBuilder();
         String loadBalancerProperties = "";
         if (loadBalancers.getValue().getProps().isEmpty()) {
-            result.append(String.format(DistSQLScriptConstants.TYPE, loadBalancers.getValue().getType()));
+            result.append(String.format(DistSQLScriptConstants.READWRITE_SPLITTING_TYPE, loadBalancers.getValue().getType()));
         } else {
             Iterator<Entry<Object, Object>> iterator = loadBalancers.getValue().getProps().entrySet().iterator();
             while (iterator.hasNext()) {
@@ -367,7 +379,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
                     loadBalancerProperties = appendLoadBalancerProperties(loadBalancers.getValue().getProps());
                 }
             }
-            result.append(String.format(DistSQLScriptConstants.TYPE_PROPERTIES, loadBalancers.getValue().getType(), loadBalancerProperties));
+            result.append(String.format(DistSQLScriptConstants.READWRITE_SPLITTING_TYPE_PROPERTIES, loadBalancers.getValue().getType(), loadBalancerProperties));
         }
         return result.toString();
     }
@@ -383,5 +395,77 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
             }
         }
         return result.toString();
+    }
+
+    private void appendDatabaseDiscoveryRules(final Collection<YamlRuleConfiguration> ruleConfigs, final StringBuilder result) {
+        if (ruleConfigs.isEmpty()) {
+            return;
+        }
+        result.append(DistSQLScriptConstants.CREATE_DB_DISCOVERY);
+        for (YamlRuleConfiguration ruleConfig: ruleConfigs) {
+            Iterator<Entry<String, YamlDatabaseDiscoveryDataSourceRuleConfiguration>> dataSourcesIter = ((YamlDatabaseDiscoveryRuleConfiguration) ruleConfig).getDataSources().entrySet().iterator();
+            while (dataSourcesIter.hasNext()) {
+                Entry<String, YamlDatabaseDiscoveryDataSourceRuleConfiguration> entry = dataSourcesIter.next();
+                String databaseDiscoveryName = entry.getKey();
+                String databaseSourceNames = getDatabaseDiscoveryResources(entry.getValue().getDataSourceNames());
+                String databaseType = getDatabaseDiscoveryType(entry.getValue().getDiscoveryTypeName(), ruleConfig);
+                String databaseHeartbeatProperty = getDatabaseDiscoveryHeartbeat(entry.getValue().getDiscoveryHeartbeatName(), ruleConfig);
+                result.append(String.format(DistSQLScriptConstants.DB_DISCOVERY, databaseDiscoveryName, databaseSourceNames, databaseType, databaseHeartbeatProperty));
+                if (dataSourcesIter.hasNext()) {
+                    result.append(DistSQLScriptConstants.COMMA);
+                }
+            }
+            result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator());
+        }
+    }
+
+    private String getDatabaseDiscoveryResources(final Collection<String> databaseDiscoveryNames) {
+        StringBuilder result = new StringBuilder();
+        Iterator<String> iterator = databaseDiscoveryNames.iterator();
+        while (iterator.hasNext()) {
+            String databaseDiscoveryName = iterator.next();
+            result.append(databaseDiscoveryName);
+            if (iterator.hasNext()) {
+                result.append(DistSQLScriptConstants.COMMA);
+            }
+        }
+        return result.toString();
+    }
+
+    private String getDatabaseDiscoveryHeartbeat(final String discoveryHeartbeatName, final YamlRuleConfiguration ruleConfig) {
+        StringBuilder result = new StringBuilder();
+        Iterator<Entry<String, YamlDatabaseDiscoveryHeartBeatConfiguration>> discoveryHeartbeatsIter =
+                ((YamlDatabaseDiscoveryRuleConfiguration) ruleConfig).getDiscoveryHeartbeats().entrySet().iterator();
+        while (discoveryHeartbeatsIter.hasNext()) {
+            Entry<String, YamlDatabaseDiscoveryHeartBeatConfiguration> entry = discoveryHeartbeatsIter.next();
+            if (entry.getKey().equals(discoveryHeartbeatName)) {
+                getDatabaseDiscoveryProperties(entry.getValue().getProps(), result);
+            }
+        }
+        return result.toString();
+    }
+
+    private String getDatabaseDiscoveryType(final String discoveryTypeName, final YamlRuleConfiguration ruleConfig) {
+        StringBuilder result = new StringBuilder();
+        StringBuilder properties = new StringBuilder();
+        Iterator<Entry<String, YamlAlgorithmConfiguration>> discoveryTypesIter = ((YamlDatabaseDiscoveryRuleConfiguration) ruleConfig).getDiscoveryTypes().entrySet().iterator();
+        while (discoveryTypesIter.hasNext()) {
+            Entry<String, YamlAlgorithmConfiguration> entry = discoveryTypesIter.next();
+            if (entry.getKey().equals(discoveryTypeName)) {
+                getDatabaseDiscoveryProperties(entry.getValue().getProps(), properties);
+                String typeName = entry.getValue().getType();
+                String typePros = properties.toString();
+                result.append(String.format(DistSQLScriptConstants.DB_DISCOVERY_TYPE, typeName, typePros));
+            }
+        }
+        return result.toString();
+    }
+
+    private void getDatabaseDiscoveryProperties(final Properties heartbeatProperties, final StringBuilder result) {
+        Iterator<Entry<Object, Object>> iterator = heartbeatProperties.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Entry<Object, Object> entry = iterator.next();
+            result.append(String.format(DistSQLScriptConstants.DB_DISCOVERY_PROPERTY, entry.getKey(), entry.getValue()));
+        }
     }
 }

@@ -51,26 +51,33 @@ public final class ConvertYamlConfigurationHandlerTest extends ProxyContextResto
     private final String shardingFilePath = "/conf/convert/config-sharding.yaml";
     
     private final String readWriteSplittingFilePath = "/conf/convert/config-readwrite-splitting.yaml";
+
+    private final String databaseDiscoveryFilePath = "/conf/convert/config-database-discovery.yaml";
     
     private final String resourceExpectedFilePath = "/expected/convert-add-resource.yaml";
     
     private final String shardingExpectedFilePath = "/expected/convert-create-sharding.yaml";
     
     private final String readWriteSplittingExpectedFilePath = "/expected/convert-readwrite-splitting.yaml";
+
+    private final String databaseDiscoveryExpectedFilePath = "/expected/convert-database-discovery.yaml";
     
     private final String resource = "resource";
     
     private final String sharding = "sharding";
     
     private final String readWriteSplitting = "readWriteSplitting";
+
+    private final String databaseDiscovery = "databaseDiscovery";
     
-    private final Map<String, String> featureMap = new HashMap<>(3, 1);
+    private final Map<String, String> featureMap = new HashMap<>(4, 1);
     
     @Before
     public void setup() {
         featureMap.put(resource, resourceFilePath);
         featureMap.put(sharding, shardingFilePath);
         featureMap.put(readWriteSplitting, readWriteSplittingFilePath);
+        featureMap.put(databaseDiscovery, databaseDiscoveryFilePath);
     }
     
     @Before
@@ -93,7 +100,12 @@ public final class ConvertYamlConfigurationHandlerTest extends ProxyContextResto
     public void assertExecuteWithReadWriteSplitting() throws SQLException {
         assertExecute(readWriteSplitting, readWriteSplittingExpectedFilePath);
     }
-    
+
+    @Test
+    public void assertExecuteWithDatabaseDiscovery() throws SQLException {
+        assertExecute(databaseDiscovery, databaseDiscoveryExpectedFilePath);
+    }
+
     public void assertExecute(final String type, final String expectedFilePath) throws SQLException {
         ConvertYamlConfigurationHandler handler = new ConvertYamlConfigurationHandler();
         handler.init(new ConvertYamlConfigurationStatement(Objects.requireNonNull(ConvertYamlConfigurationHandlerTest.class.getResource(featureMap.get(type))).getPath()),

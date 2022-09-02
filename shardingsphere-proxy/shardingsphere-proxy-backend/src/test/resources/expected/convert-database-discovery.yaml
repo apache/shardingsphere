@@ -1,0 +1,40 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+CREATE DATABASE database_discovery_db;
+USE database_discovery_db;
+ADD RESOURCE ds_0 (
+URL="jdbc:mysql://127.0.0.1:3306/demo_primary_ds?serverTimezone=UTC&useSSL=false",
+USER="root",
+PASSWORD="12345678",
+PROPERTIES("minPoolSize"="1","connectionTimeoutMilliseconds"="3000","maxLifetimeMilliseconds"="1800000","idleTimeoutMilliseconds"="60000","maxPoolSize"="50")
+), ds_1 (
+URL="jdbc:mysql://127.0.0.1:3306/demo_replica_ds_0?serverTimezone=UTC&useSSL=false",
+USER="root",
+PASSWORD="12345678",
+PROPERTIES("minPoolSize"="1","connectionTimeoutMilliseconds"="3000","maxLifetimeMilliseconds"="1800000","idleTimeoutMilliseconds"="60000","maxPoolSize"="50")
+), ds_2 (
+URL="jdbc:mysql://127.0.0.1:3306/demo_replica_ds_1?serverTimezone=UTC&useSSL=false",
+USER="root",
+PASSWORD="12345678",
+PROPERTIES("minPoolSize"="1","connectionTimeoutMilliseconds"="3000","maxLifetimeMilliseconds"="1800000","idleTimeoutMilliseconds"="60000","maxPoolSize"="50")
+);
+CREATE DB_DISCOVERY RULE readwrite_ds (
+RESOURCES(ds_0,ds_1,ds_2),
+TYPE(NAME='MySQL.MGR', PROPERTIES('group-name'='92504d5b-6dec-11e8-91ea-246e9612aaf1')),
+HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
+);
