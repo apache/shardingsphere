@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.env.enums;
 
-public enum ScalingITEnvTypeEnum {
+public enum ITEnvTypeEnum {
     
     NONE, DOCKER, NATIVE
 }

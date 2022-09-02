@@ -25,7 +25,7 @@ import org.apache.shardingsphere.integration.data.pipeline.cases.entity.CreateTa
 import org.apache.shardingsphere.integration.data.pipeline.cases.entity.CreateTableSQLGeneratorAssertionsRootEntity;
 import org.apache.shardingsphere.integration.data.pipeline.cases.entity.CreateTableSQLGeneratorOutputEntity;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
+import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainerFactory;
@@ -87,7 +87,7 @@ public final class CreateTableSQLGeneratorIT {
     @Parameters(name = "{0}")
     public static Collection<ScalingParameterized> getParameters() {
         Collection<ScalingParameterized> result = new LinkedList<>();
-        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NONE) {
+        if (ENV.getItEnvType() == ITEnvTypeEnum.NONE) {
             return result;
         }
         for (String each : ENV.getPostgresVersions()) {

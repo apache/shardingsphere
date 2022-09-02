@@ -21,8 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseExtraSQLITCase;
-import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
+import org.apache.shardingsphere.integration.data.pipeline.cases.base.AbstractMigrationITCase;
+import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm;
 import org.junit.Test;
@@ -43,7 +43,7 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
 @Slf4j
-public class TextPrimaryKeyMigrationIT extends BaseExtraSQLITCase {
+public class TextPrimaryKeyMigrationIT extends AbstractMigrationITCase {
     
     public TextPrimaryKeyMigrationIT(final ScalingParameterized parameterized) {
         super(parameterized);
@@ -53,7 +53,7 @@ public class TextPrimaryKeyMigrationIT extends BaseExtraSQLITCase {
     @Parameters(name = "{0}")
     public static Collection<ScalingParameterized> getParameters() {
         Collection<ScalingParameterized> result = new LinkedList<>();
-        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NONE) {
+        if (ENV.getItEnvType() == ITEnvTypeEnum.NONE) {
             return result;
         }
         for (String version : ENV.listDatabaseDockerImageNames(new MySQLDatabaseType())) {
@@ -73,15 +73,15 @@ public class TextPrimaryKeyMigrationIT extends BaseExtraSQLITCase {
         createSourceOrderTable();
         batchInsertOrder();
         addMigrationProcessConfig();
-        addSourceResource();
-        addTargetResource();
+        addMigrationSourceResource();
+        addMigrationTargetResource();
         createTargetOrderTableRule();
         startMigrationOrder();
         String jobId = listJobId().get(0);
         waitMigrationFinished(jobId);
         stopMigrationByJobId(jobId);
         assertCheckMigrationSuccess(jobId);
-        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER) {
+        if (ENV.getItEnvType() == ITEnvTypeEnum.DOCKER) {
             commitMigrationByJobId(jobId);
             List<String> lastJobIds = listJobId();
             assertThat(lastJobIds.size(), is(0));
