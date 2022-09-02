@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.exception;
+package org.apache.shardingsphere.infra.util.spi.exception;
 
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereException;
-
-import java.sql.SQLException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereServerException;
 
 /**
- * Database server loading exception.
+ * Service provider not found exception.
  */
-public final class DatabaseServerLoadingException extends ShardingSphereException {
+public final class ServiceProviderNotFoundServerException extends ShardingSphereServerException {
     
-    private static final long serialVersionUID = -4016611838309960905L;
+    private static final long serialVersionUID = -3730257541332863236L;
     
-    private static final String ERROR_CATEGORY = "PROXY";
+    private static final String ERROR_CATEGORY = "SPI";
     
     private static final int ERROR_CODE = 1;
     
-    public DatabaseServerLoadingException(final SQLException cause) {
-        super(ERROR_CATEGORY, ERROR_CODE, "Load database server info failed", cause);
+    public ServiceProviderNotFoundServerException(final Class<?> clazz) {
+        super(ERROR_CATEGORY, ERROR_CODE, String.format("No implementation class load from SPI `%s`.", clazz.getName()));
+    }
+    
+    public ServiceProviderNotFoundServerException(final Class<?> clazz, final String type) {
+        super(ERROR_CATEGORY, ERROR_CODE, String.format("No implementation class load from SPI `%s` with type `%s`.", clazz.getName(), type));
     }
 }

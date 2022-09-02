@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.props.exception;
+package org.apache.shardingsphere.proxy.exception;
 
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereServerException;
 
-import java.util.Collection;
+import java.sql.SQLException;
 
 /**
- * Typed properties exception.
+ * Database server loading exception.
  */
-public final class TypedPropertiesException extends ShardingSphereException {
+public final class DatabaseServerLoadingServerException extends ShardingSphereServerException {
     
-    private static final long serialVersionUID = -8301410307117564844L;
+    private static final long serialVersionUID = -4016611838309960905L;
     
-    private static final String ERROR_CATEGORY = "PROPS";
+    private static final String ERROR_CATEGORY = "PROXY";
     
     private static final int ERROR_CODE = 1;
     
-    public TypedPropertiesException(final Collection<String> errorMessages) {
-        super(ERROR_CATEGORY, ERROR_CODE, String.join(System.lineSeparator(), errorMessages));
+    public DatabaseServerLoadingServerException(final SQLException cause) {
+        super(ERROR_CATEGORY, ERROR_CODE, "Load database server info failed", cause);
     }
 }

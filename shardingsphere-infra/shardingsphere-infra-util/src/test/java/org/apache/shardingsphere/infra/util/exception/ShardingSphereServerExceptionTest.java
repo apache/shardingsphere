@@ -15,22 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.spring.namespace.exception;
+package org.apache.shardingsphere.infra.util.exception;
 
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.util.exception.fixture.ShardingSphereServerExceptionFixture;
+import org.junit.Test;
 
-/**
- * Unsupported sharding algorithm type exception.
- */
-public final class UnsupportedShardingAlgorithmTypeException extends ShardingSphereException {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class ShardingSphereServerExceptionTest {
     
-    private static final long serialVersionUID = -9113172467431755471L;
+    @Test
+    public void assertGetMessage() {
+        assertThat(new ShardingSphereServerExceptionFixture().getMessage(), is("FIXTURE-00001: Fixture error message"));
+    }
     
-    private static final String ERROR_CATEGORY = "SPRING-SHARDING";
-    
-    private static final int ERROR_CODE = 1;
-    
-    public UnsupportedShardingAlgorithmTypeException(final String type) {
-        super(ERROR_CATEGORY, ERROR_CODE, String.format("Can not support type `%s`", type));
+    @Test
+    public void assertGetCause() {
+        RuntimeException cause = new RuntimeException("Test");
+        assertThat(new ShardingSphereServerExceptionFixture(cause).getCause(), is(cause));
     }
 }

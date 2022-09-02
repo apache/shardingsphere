@@ -15,24 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.exception;
+package org.apache.shardingsphere.spring.boot.exception;
 
-import org.apache.shardingsphere.infra.util.exception.fixture.ShardingSphereExceptionFixture;
-import org.junit.Test;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereServerException;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class ShardingSphereExceptionTest {
+/**
+ * Unsupported data source type exception.
+ */
+public final class UnsupportedDataSourceTypeServerException extends ShardingSphereServerException {
     
-    @Test
-    public void assertGetMessage() {
-        assertThat(new ShardingSphereExceptionFixture().getMessage(), is("FIXTURE-00001: Fixture error message"));
-    }
+    private static final long serialVersionUID = 8264305279431450585L;
     
-    @Test
-    public void assertGetCause() {
-        RuntimeException cause = new RuntimeException("Test");
-        assertThat(new ShardingSphereExceptionFixture(cause).getCause(), is(cause));
+    private static final String ERROR_CATEGORY = "SPRING";
+    
+    private static final int ERROR_CODE = 1;
+    
+    public UnsupportedDataSourceTypeServerException(final Exception cause) {
+        super(ERROR_CATEGORY, ERROR_CODE, "Can not find data source type", cause);
     }
 }

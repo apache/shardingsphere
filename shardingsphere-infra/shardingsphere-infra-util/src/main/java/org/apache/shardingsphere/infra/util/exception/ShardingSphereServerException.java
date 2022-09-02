@@ -18,17 +18,17 @@
 package org.apache.shardingsphere.infra.util.exception;
 
 /**
- * ShardingSphere exception.
+ * ShardingSphere server exception.
  */
-public abstract class ShardingSphereException extends RuntimeException {
+public abstract class ShardingSphereServerException extends RuntimeException {
     
     private static final long serialVersionUID = 1547233217081261239L;
     
-    public ShardingSphereException(final String errorCategory, final int errorCode, final String message) {
+    public ShardingSphereServerException(final String errorCategory, final int errorCode, final String message) {
         super(String.format("%s-%05d: %s", errorCategory, errorCode, message));
     }
     
-    public ShardingSphereException(final String errorCategory, final int errorCode, final String message, final Exception cause) {
+    public ShardingSphereServerException(final String errorCategory, final int errorCode, final String message, final Exception cause) {
         super(String.format("%s-%05d: %s", errorCategory, errorCode, message), cause);
     }
 }

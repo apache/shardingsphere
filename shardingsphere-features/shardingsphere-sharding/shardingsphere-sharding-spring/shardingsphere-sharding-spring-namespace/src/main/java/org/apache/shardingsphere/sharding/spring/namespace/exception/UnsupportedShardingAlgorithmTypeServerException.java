@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.boot.exception;
+package org.apache.shardingsphere.sharding.spring.namespace.exception;
 
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereServerException;
 
 /**
- * Data source JNDI not found exception.
+ * Unsupported sharding algorithm type exception.
  */
-public final class DataSourceJndiNotFoundException extends ShardingSphereException {
+public final class UnsupportedShardingAlgorithmTypeServerException extends ShardingSphereServerException {
     
-    private static final long serialVersionUID = -7793679063807601394L;
+    private static final long serialVersionUID = -9113172467431755471L;
     
-    private static final String ERROR_CATEGORY = "SPRING";
+    private static final String ERROR_CATEGORY = "SPRING-SHARDING";
     
-    private static final int ERROR_CODE = 2;
+    private static final int ERROR_CODE = 1;
     
-    public DataSourceJndiNotFoundException(final Exception cause) {
-        super(ERROR_CATEGORY, ERROR_CODE, "Can not find JNDI data source", cause);
+    public UnsupportedShardingAlgorithmTypeServerException(final String type) {
+        super(ERROR_CATEGORY, ERROR_CODE, String.format("Can not support type `%s`", type));
     }
 }
