@@ -20,22 +20,22 @@ package org.apache.shardingsphere.infra.util.exception;
 import lombok.NoArgsConstructor;
 
 /**
- * ShardingSphere inside exception.
+ * ShardingSphere internal exception.
  */
 @NoArgsConstructor
-public abstract class ShardingSphereInsideException extends RuntimeException {
+public abstract class ShardingSphereInternalException extends Exception {
     
     private static final long serialVersionUID = -8238061892944243621L;
     
-    public ShardingSphereInsideException(final String errorMessage, final Object... args) {
+    public ShardingSphereInternalException(final String errorMessage, final Object... args) {
         super(String.format(errorMessage, args));
     }
     
-    public ShardingSphereInsideException(final Exception cause) {
+    public ShardingSphereInternalException(final Exception cause) {
         super(cause);
     }
     
-    public ShardingSphereInsideException(final String message, final Exception cause) {
+    public ShardingSphereInternalException(final String message, final Exception cause) {
         super(message, cause);
     }
 }

@@ -17,21 +17,21 @@
 
 package org.apache.shardingsphere.infra.util.exception.fixture;
 
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereInternalException;
 
-public final class ShardingSphereInsideExceptionFixture extends ShardingSphereInsideException {
+public final class ShardingSphereInternalExceptionFixture extends ShardingSphereInternalException {
     
     private static final long serialVersionUID = 3759417279204541147L;
     
-    public ShardingSphereInsideExceptionFixture(final String message) {
+    public ShardingSphereInternalExceptionFixture(final String message) {
         super("Fixture error message: %s", message);
     }
     
-    public ShardingSphereInsideExceptionFixture(final String message, final Exception cause) {
+    public ShardingSphereInternalExceptionFixture(final String message, final Exception cause) {
         super(message, cause);
     }
     
-    public ShardingSphereInsideExceptionFixture(final Exception cause) {
+    public ShardingSphereInternalExceptionFixture(final Exception cause) {
         super(cause);
     }
 }
