@@ -51,8 +51,6 @@ execute
     | showTableMetadata
     | showSQLParserRule
     | alterSQLParserRule
-    | showTransactionRule
-    | alterTransactionRule
     | exportDatabaseConfiguration
     | showRulesUsedResource
     | importDatabaseConfiguration

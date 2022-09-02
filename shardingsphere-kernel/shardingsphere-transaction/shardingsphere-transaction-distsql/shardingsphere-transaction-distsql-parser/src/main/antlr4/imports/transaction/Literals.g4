@@ -15,22 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.segment;
+lexer grammar Literals;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import Alphabet, Symbol;
 
-import java.util.Properties;
+IDENTIFIER
+    : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
+    | BQ ~'`'+ BQ
+    ;
 
-/**
- * Transaction provider segment.
- */
-@RequiredArgsConstructor
-@Getter
-public final class TransactionProviderSegment implements ASTNode {
-    
-    private final String providerType;
-    
-    private final Properties props;
-}
+STRING
+    : (DQ ('\\'. | '""' | ~('"' | '\\'))* DQ)
+    | (SQ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ)
+    ;
