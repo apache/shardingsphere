@@ -75,10 +75,10 @@ public final class SQLServerSchemaMetaDataLoader implements DialectSchemaMetaDat
                 tableMetaDataList.add(new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataList, Collections.emptyList()));
             }
         }
-        return Collections.singletonList(new SchemaMetaData(defaultSchemaName, tableMetaDataList, loadViewMetaData(dataSource, tables)));
+        return Collections.singletonList(new SchemaMetaData(defaultSchemaName, tableMetaDataList, loadViewMetaData(dataSource)));
     }
     
-    private Collection<ViewMetaData> loadViewMetaData(final DataSource dataSource, final Collection<String> tables) throws SQLException {
+    private Collection<ViewMetaData> loadViewMetaData(final DataSource dataSource) throws SQLException {
         Collection<ViewMetaData> result = new LinkedList<>();
         try (
                 Connection connection = dataSource.getConnection();
