@@ -21,7 +21,7 @@
 1. Support cartesian product configuration for read write splitting
 1. Support spring namespace and spring boot usage for sql translator
 1. Support JSR-310 Year and Month in IntervalShardingAlgorithm
-1. broadcast table support update/delete limit statement
+1. Support broadcast table update/delete limit statement
 1. Support create index on table(column) statement rewrite when config encrypt
 1. Support openGauss cursor, fetch, move, close statement for sharding, readwrite-splitting
 1. Support encrypt column rewrite when execute column is null in predicate
@@ -76,7 +76,7 @@
 1. Support parsing CREATE RESTORE POINT in Oracle
 1. Support parsing DROP INMEMORY JOIN GROUP in Oracle
 1. Support parsing create_bit_xor_table in MySQL
-1. Support parsing MySQL DO statement.
+1. Support parsing MySQL DO statement
 1. Support parsing DropServer in openGauss
 1. Support parsing CREATE AGGREGATE In openGauss
 1. Support parsing ALTER ROUTINE in PostgreSQL
@@ -91,7 +91,7 @@
 1. Add PostgreSQL Comment Statement
 1. Support listen statement in postgreSQL
 1. Support DECLARE cursor statement
-1. add default serverConfig in helm charts
+1. Add default serverConfig in helm charts
 1. Assemble openGauss JDBC Driver into Proxy distribution
 1. ShardingSphere-Proxy listen on specified IP addresses
 1. Support COM_STMT_SEND_LONG_DATA in MySQL Proxy
@@ -140,8 +140,8 @@
 1. Fix the failed conversion of Month related classes on IntervalShardingAlgorithm
 1. Fix NullPointerException when execute select union statement contains subquery
 1. Fix wrong encrypt rewrite result due to incorrect order of metadata
-1. fix MySQL trim function parse error
-1. fix MySQL insert values with _binary parse error
+1. Fix MySQL trim function parse error
+1. Fix MySQL insert values with _binary parse error
 1. Fix MySQL syntax error cannot be thrown to client
 1. Avoid EventLoop blocked because of closing JDBC resources
 1. Correct server status flags returned by MySQL Proxy
