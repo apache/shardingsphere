@@ -69,14 +69,14 @@ public final class SchemaMetaDataRegistrySubscriberTest {
     public void assertAddSchemaEvent() {
         AddSchemaEvent event = new AddSchemaEvent("foo_db", "foo_schema");
         schemaMetaDataRegistrySubscriber.addSchema(event);
-        verify(persistService).persistSchema("foo_db", "foo_schema");
+        verify(persistService).addSchema("foo_db", "foo_schema");
     }
     
     @Test
     public void assertDropSchemaEvent() {
         DropSchemaEvent event = new DropSchemaEvent("foo_db", Collections.singleton("foo_schema"));
         schemaMetaDataRegistrySubscriber.dropSchema(event);
-        verify(persistService).deleteSchema("foo_db", "foo_schema");
+        verify(persistService).dropSchema("foo_db", "foo_schema");
     }
     
     @Test
@@ -85,7 +85,7 @@ public final class SchemaMetaDataRegistrySubscriberTest {
         AlterSchemaEvent event = new AlterSchemaEvent("foo_db", "foo_schema", "new_foo_schema", schema);
         schemaMetaDataRegistrySubscriber.alterSchema(event);
         verify(persistService).compareAndPersistMetaData("foo_db", "new_foo_schema", schema);
-        verify(persistService).deleteSchema("foo_db", "foo_schema");
+        verify(persistService).dropSchema("foo_db", "foo_schema");
     }
     
     @Test
@@ -94,6 +94,6 @@ public final class SchemaMetaDataRegistrySubscriberTest {
         AlterSchemaEvent event = new AlterSchemaEvent("foo_db", "foo_schema", "new_foo_schema", schema);
         schemaMetaDataRegistrySubscriber.alterSchema(event);
         verify(persistService).compareAndPersistMetaData("foo_db", "new_foo_schema", schema);
-        verify(persistService).deleteSchema("foo_db", "foo_schema");
+        verify(persistService).dropSchema("foo_db", "foo_schema");
     }
 }

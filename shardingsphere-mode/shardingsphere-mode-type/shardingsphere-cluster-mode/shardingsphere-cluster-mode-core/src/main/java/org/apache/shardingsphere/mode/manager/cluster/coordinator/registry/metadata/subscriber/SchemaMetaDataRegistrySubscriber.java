@@ -58,7 +58,7 @@ public final class SchemaMetaDataRegistrySubscriber {
      */
     @Subscribe
     public void addSchema(final AddSchemaEvent event) {
-        persistService.persistSchema(event.getDatabaseName(), event.getSchemaName());
+        persistService.addSchema(event.getDatabaseName(), event.getSchemaName());
     }
     
     /**
@@ -69,7 +69,7 @@ public final class SchemaMetaDataRegistrySubscriber {
     @Subscribe
     public void alterSchema(final AlterSchemaEvent event) {
         persistService.compareAndPersistMetaData(event.getDatabaseName(), event.getRenameSchemaName(), event.getSchema());
-        persistService.deleteSchema(event.getDatabaseName(), event.getSchemaName());
+        persistService.dropSchema(event.getDatabaseName(), event.getSchemaName());
     }
     
     /**
@@ -79,7 +79,7 @@ public final class SchemaMetaDataRegistrySubscriber {
      */
     @Subscribe
     public void dropSchema(final DropSchemaEvent event) {
-        event.getSchemaNames().forEach(each -> persistService.deleteSchema(event.getDatabaseName(), each));
+        event.getSchemaNames().forEach(each -> persistService.dropSchema(event.getDatabaseName(), each));
     }
     
     /**
