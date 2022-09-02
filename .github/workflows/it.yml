@@ -145,10 +145,6 @@ jobs:
         exclude:
           - adapter: jdbc
             mode: Cluster
-          - adapter: proxy
-            mode: Cluster
-            database: PostgreSQL
-            scenario: shadow
     steps:
       - uses: actions/checkout@v2
       - name: Cache Maven Repos
