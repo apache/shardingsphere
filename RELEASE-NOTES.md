@@ -17,7 +17,7 @@
 
 ### Enhancement
 
-1. Support column visible feature for MySQL, Oracle, SQLServer and H2.
+1. Support column visible feature for MySQL, Oracle, SQLServer and H2
 1. Support cartesian product configuration for read write splitting
 1. Support spring namespace and spring boot usage for sql translator
 1. Support JSR-310 Year and Month in IntervalShardingAlgorithm
