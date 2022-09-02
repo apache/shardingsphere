@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.event.AlterSchem
 import org.apache.shardingsphere.infra.metadata.database.schema.event.DropSchemaEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseMetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.schema.TableMetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,6 +38,9 @@ import java.util.Collections;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyMap;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class SchemaMetaDataRegistrySubscriberTest {
@@ -60,9 +64,11 @@ public final class SchemaMetaDataRegistrySubscriberTest {
         ShardingSphereTable table = new ShardingSphereTable();
         event.getAlteredTables().add(table);
         event.getDroppedTables().add("foo_table");
+        when(persistService.getTableMetaDataPersistService()).thenReturn(mock(TableMetaDataPersistService.class));
         schemaMetaDataRegistrySubscriber.update(event);
-        verify(persistService).persistTable("foo_db", "foo_schema", table);
-        verify(persistService).deleteTable("foo_db", "foo_schema", "foo_table");
+        TableMetaDataPersistService tableMetaDataPersistService = persistService.getTableMetaDataPersistService();
+        verify(tableMetaDataPersistService).persist(anyString(), anyString(), anyMap());
+        verify(tableMetaDataPersistService).delete("foo_db", "foo_schema", "foo_table");
     }
     
     @Test
@@ -84,7 +90,7 @@ public final class SchemaMetaDataRegistrySubscriberTest {
         ShardingSphereSchema schema = new ShardingSphereSchema(Collections.singletonMap("t_order", new ShardingSphereTable()), Collections.emptyMap());
         AlterSchemaEvent event = new AlterSchemaEvent("foo_db", "foo_schema", "new_foo_schema", schema);
         schemaMetaDataRegistrySubscriber.alterSchema(event);
-        verify(persistService).compareAndPersistMetaData("foo_db", "new_foo_schema", schema);
+        verify(persistService).compareAndPersist("foo_db", "new_foo_schema", schema);
         verify(persistService).dropSchema("foo_db", "foo_schema");
     }
     
@@ -93,7 +99,7 @@ public final class SchemaMetaDataRegistrySubscriberTest {
         ShardingSphereSchema schema = new ShardingSphereSchema();
         AlterSchemaEvent event = new AlterSchemaEvent("foo_db", "foo_schema", "new_foo_schema", schema);
         schemaMetaDataRegistrySubscriber.alterSchema(event);
-        verify(persistService).compareAndPersistMetaData("foo_db", "new_foo_schema", schema);
+        verify(persistService).compareAndPersist("foo_db", "new_foo_schema", schema);
         verify(persistService).dropSchema("foo_db", "foo_schema");
     }
 }
