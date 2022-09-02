@@ -21,22 +21,17 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere</artifactId>
+        <artifactId>shardingsphere-sql-federation</artifactId>
         <version>5.1.3-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-kernel</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-sql-federation-api</artifactId>
     <name>${project.artifactId}</name>
     
-    <modules>
-        <module>shardingsphere-parser</module>
-        <module>shardingsphere-single-table</module>
-        <module>shardingsphere-authority</module>
-        <module>shardingsphere-transaction</module>
-        <module>shardingsphere-schedule</module>
-        <module>shardingsphere-data-pipeline</module>
-        <module>shardingsphere-sql-federation</module>
-        <module>shardingsphere-sql-translator</module>
-        <module>shardingsphere-traffic</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

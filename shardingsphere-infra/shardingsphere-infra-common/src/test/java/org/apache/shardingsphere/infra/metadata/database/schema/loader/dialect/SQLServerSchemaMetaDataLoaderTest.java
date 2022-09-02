@@ -72,7 +72,7 @@ public final class SQLServerSchemaMetaDataLoaderTest {
     
     private static final String LOAD_INDEX_META_DATA = "SELECT a.name AS INDEX_NAME, c.name AS TABLE_NAME FROM sys.indexes a"
             + " JOIN sys.objects c ON a.object_id = c.object_id WHERE a.index_id NOT IN (0, 255) AND c.name IN ('tbl')";
-
+    
     private static final String LOAD_VIEW_META_DATA = "SELECT TABLE_NAME, VIEW_DEFINITION FROM INFORMATION_SCHEMA.VIEWS WHERE TABLE_CATALOG = ?";
     
     @Test
@@ -144,7 +144,7 @@ public final class SQLServerSchemaMetaDataLoaderTest {
         assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, false, true, true, true)));
         assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false, true)));
     }
-
+    
     @Test
     public void assertLoadViewMetaData() throws SQLException {
         DataSource dataSource = mockDataSource();

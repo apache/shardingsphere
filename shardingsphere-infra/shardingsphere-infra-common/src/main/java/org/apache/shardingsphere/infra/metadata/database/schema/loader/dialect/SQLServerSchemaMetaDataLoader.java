@@ -54,7 +54,7 @@ public final class SQLServerSchemaMetaDataLoader implements DialectSchemaMetaDat
     private static final String ORDER_BY_COLUMN_ID = " ORDER BY col.column_id";
     
     private static final String TABLE_META_DATA_SQL = TABLE_META_DATA_SQL_NO_ORDER + ORDER_BY_COLUMN_ID;
-
+    
     private static final String VIEW_META_DATA_SQL = "SELECT TABLE_NAME, VIEW_DEFINITION FROM INFORMATION_SCHEMA.VIEWS WHERE TABLE_CATALOG = ?";
     
     private static final String TABLE_META_DATA_SQL_IN_TABLES = TABLE_META_DATA_SQL_NO_ORDER + " WHERE obj.name IN (%s)" + ORDER_BY_COLUMN_ID;
@@ -77,7 +77,7 @@ public final class SQLServerSchemaMetaDataLoader implements DialectSchemaMetaDat
         }
         return Collections.singletonList(new SchemaMetaData(defaultSchemaName, tableMetaDataList, loadViewMetaData(dataSource)));
     }
-
+    
     private Collection<ViewMetaData> loadViewMetaData(final DataSource dataSource) throws SQLException {
         Collection<ViewMetaData> result = new LinkedList<>();
         try (
