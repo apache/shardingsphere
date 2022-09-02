@@ -1456,3 +1456,7 @@ BYPASSRLS
 NOBYPASSRLS
     : N O B Y P A S S R L S
     ;
+
+ASENSITIVE
+    : A S E N S I T I V E
+    ;
