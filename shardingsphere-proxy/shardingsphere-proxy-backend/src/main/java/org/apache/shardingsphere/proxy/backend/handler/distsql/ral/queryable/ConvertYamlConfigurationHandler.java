@@ -125,7 +125,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         appendResources(yamlConfig.getDataSources(), result);
         appendReadWriteSplittingRules(yamlConfig.getRules(), result);
     }
-
+    
     private void addDatabaseDiscoveryDistSQL(final YamlProxyDatabaseConfiguration yamlConfig, final StringBuilder result) {
         appendDatabase(yamlConfig.getDatabaseName(), result);
         appendResources(yamlConfig.getDataSources(), result);
@@ -396,13 +396,13 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         }
         return result.toString();
     }
-
+    
     private void appendDatabaseDiscoveryRules(final Collection<YamlRuleConfiguration> ruleConfigs, final StringBuilder result) {
         if (ruleConfigs.isEmpty()) {
             return;
         }
         result.append(DistSQLScriptConstants.CREATE_DB_DISCOVERY);
-        for (YamlRuleConfiguration ruleConfig: ruleConfigs) {
+        for (YamlRuleConfiguration ruleConfig : ruleConfigs) {
             Iterator<Entry<String, YamlDatabaseDiscoveryDataSourceRuleConfiguration>> dataSourcesIter = ((YamlDatabaseDiscoveryRuleConfiguration) ruleConfig).getDataSources().entrySet().iterator();
             while (dataSourcesIter.hasNext()) {
                 Entry<String, YamlDatabaseDiscoveryDataSourceRuleConfiguration> entry = dataSourcesIter.next();
@@ -418,7 +418,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
             result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator());
         }
     }
-
+    
     private String getDatabaseDiscoveryResources(final Collection<String> databaseDiscoveryNames) {
         StringBuilder result = new StringBuilder();
         Iterator<String> iterator = databaseDiscoveryNames.iterator();
@@ -431,7 +431,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         }
         return result.toString();
     }
-
+    
     private String getDatabaseDiscoveryHeartbeat(final String discoveryHeartbeatName, final YamlRuleConfiguration ruleConfig) {
         StringBuilder result = new StringBuilder();
         Iterator<Entry<String, YamlDatabaseDiscoveryHeartBeatConfiguration>> discoveryHeartbeatsIter =
@@ -444,7 +444,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         }
         return result.toString();
     }
-
+    
     private String getDatabaseDiscoveryType(final String discoveryTypeName, final YamlRuleConfiguration ruleConfig) {
         StringBuilder result = new StringBuilder();
         StringBuilder properties = new StringBuilder();
@@ -460,7 +460,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         }
         return result.toString();
     }
-
+    
     private void getDatabaseDiscoveryProperties(final Properties heartbeatProperties, final StringBuilder result) {
         Iterator<Entry<Object, Object>> iterator = heartbeatProperties.entrySet().iterator();
         while (iterator.hasNext()) {
