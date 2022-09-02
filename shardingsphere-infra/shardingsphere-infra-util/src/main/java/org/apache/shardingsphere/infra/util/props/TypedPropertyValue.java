@@ -28,11 +28,11 @@ public final class TypedPropertyValue {
     
     private final Object value;
     
-    public TypedPropertyValue(final TypedPropertyKey key, final String value) {
+    public TypedPropertyValue(final TypedPropertyKey key, final String value) throws TypedPropertyValueException {
         this.value = createTypedValue(key, value);
     }
     
-    private Object createTypedValue(final TypedPropertyKey key, final String value) {
+    private Object createTypedValue(final TypedPropertyKey key, final String value) throws TypedPropertyValueException {
         if (boolean.class == key.getType() || Boolean.class == key.getType()) {
             return Boolean.valueOf(value);
         }

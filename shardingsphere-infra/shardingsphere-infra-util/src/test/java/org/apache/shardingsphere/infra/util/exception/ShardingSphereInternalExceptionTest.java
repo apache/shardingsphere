@@ -17,28 +17,28 @@
 
 package org.apache.shardingsphere.infra.util.exception;
 
-import org.apache.shardingsphere.infra.util.exception.fixture.ShardingSphereInsideExceptionFixture;
+import org.apache.shardingsphere.infra.util.exception.fixture.ShardingSphereInternalExceptionFixture;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class ShardingSphereInsideExceptionTest {
+public final class ShardingSphereInternalExceptionTest {
     
     @Test
     public void assertGetMessage() {
-        assertThat(new ShardingSphereInsideExceptionFixture("Test").getMessage(), is("Fixture error message: Test"));
+        assertThat(new ShardingSphereInternalExceptionFixture("Test").getMessage(), is("Fixture error message: Test"));
     }
     
     @Test
     public void assertGetCause() {
         RuntimeException cause = new RuntimeException("Test");
-        assertThat(new ShardingSphereInsideExceptionFixture(cause).getCause(), is(cause));
+        assertThat(new ShardingSphereInternalExceptionFixture(cause).getCause(), is(cause));
     }
     
     @Test
     public void assertGetCauseWithMessage() {
         RuntimeException cause = new RuntimeException("Test");
-        assertThat(new ShardingSphereInsideExceptionFixture("Test", cause).getCause(), is(cause));
+        assertThat(new ShardingSphereInternalExceptionFixture("Test", cause).getCause(), is(cause));
     }
 }
