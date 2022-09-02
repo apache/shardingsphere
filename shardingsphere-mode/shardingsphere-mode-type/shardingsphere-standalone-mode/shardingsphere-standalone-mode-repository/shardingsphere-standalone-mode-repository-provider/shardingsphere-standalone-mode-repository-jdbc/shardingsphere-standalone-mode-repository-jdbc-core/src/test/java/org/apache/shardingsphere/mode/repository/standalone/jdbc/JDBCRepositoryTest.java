@@ -37,7 +37,7 @@ import org.h2.jdbc.JdbcCallableStatement;
 import org.h2.jdbc.JdbcConnection;
 import org.h2.jdbc.JdbcResultSet;
 import org.h2.jdbc.JdbcStatement;
-import org.junit.Assert;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -65,253 +65,189 @@ public final class JDBCRepositoryTest {
     
     private final JDBCRepositoryProviderFixture fixture = new JDBCRepositoryProviderFixture();
     
+    private MockedConstruction<HikariDataSource> mockedConstruction;
+    
+    private JDBCRepository repository;
+    
     @Before
     public void setup() throws Exception {
+        this.mockedConstruction = mockConstruction(HikariDataSource.class, (mock, context) -> when(mock.getConnection()).thenReturn(mockJdbcConnection));
         when(mockJdbcConnection.createStatement()).thenReturn(mockStatement);
+        repository = new JDBCRepository();
+        repository.init(getHikariProperties());
+    }
+    
+    @After
+    public void tearDown() {
+        this.mockedConstruction.close();
     }
     
     @Test
-    public void assertInit() {
-        try (MockedConstruction<HikariDataSource> ignored = mockConstruction(HikariDataSource.class, (mock, context) -> when(mock.getConnection()).thenReturn(mockJdbcConnection))) {
-            JDBCRepository repository = new JDBCRepository();
-            repository.init(getHikariProperties());
-            verify(mockStatement).execute(fixture.dropTableSQL());
-            verify(mockStatement).execute(fixture.createTableSQL());
-        } catch (SQLException e) {
-            Assert.fail();
-        }
+    public void assertInit() throws Exception {
+        verify(mockStatement).execute(fixture.dropTableSQL());
+        verify(mockStatement).execute(fixture.createTableSQL());
     }
     
     @Test
-    public void assertGet() {
-        try (MockedConstruction<HikariDataSource> ignored = mockConstruction(HikariDataSource.class, (mock, context) -> when(mock.getConnection()).thenReturn(mockJdbcConnection))) {
-            JDBCRepository repository = new JDBCRepository();
-            repository.init(getHikariProperties());
-            String key = "key";
-            String value = "value";
-            when(mockJdbcConnection.prepareStatement(eq(fixture.selectByKeySQL()))).thenReturn(mockPreparedStatement);
-            when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
-            when(mockResultSet.next()).thenReturn(true);
-            when(mockResultSet.getString(eq("value"))).thenReturn(value);
-            String actualResponse = repository.get(key);
-            verify(mockPreparedStatement).setString(eq(1), eq(key));
-            assertEquals(value, actualResponse);
-        } catch (SQLException e) {
-            Assert.fail();
-        }
+    public void assertGet() throws Exception {
+        String key = "key";
+        String value = "value";
+        when(mockJdbcConnection.prepareStatement(eq(fixture.selectByKeySQL()))).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(true);
+        when(mockResultSet.getString(eq("value"))).thenReturn(value);
+        String actualResponse = repository.get(key);
+        verify(mockPreparedStatement).setString(eq(1), eq(key));
+        assertEquals(value, actualResponse);
     }
     
     @Test
-    public void assertGetFailure() {
-        try (MockedConstruction<HikariDataSource> ignored = mockConstruction(HikariDataSource.class, (mock, context) -> when(mock.getConnection()).thenReturn(mockJdbcConnection))) {
-            JDBCRepository repository = new JDBCRepository();
-            repository.init(getHikariProperties());
-            when(mockJdbcConnection.prepareStatement(eq(fixture.selectByKeySQL()))).thenThrow(new SQLException());
-            String actualResponse = repository.get("key");
-            assertEquals("", actualResponse);
-        } catch (SQLException e) {
-            Assert.fail();
-        }
+    public void assertGetFailure() throws Exception {
+        when(mockJdbcConnection.prepareStatement(eq(fixture.selectByKeySQL()))).thenThrow(new SQLException());
+        String actualResponse = repository.get("key");
+        assertEquals("", actualResponse);
     }
     
     @Test
-    public void assertPersistAndGetChildrenKeys() {
-        try (MockedConstruction<HikariDataSource> ignored = mockConstruction(HikariDataSource.class, (mock, context) -> when(mock.getConnection()).thenReturn(mockJdbcConnection))) {
-            JDBCRepository repository = new JDBCRepository();
-            repository.init(getHikariProperties());
-            when(mockJdbcConnection.prepareStatement(eq(fixture.selectByParentKeySQL()))).thenReturn(mockPreparedStatement);
-            when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
-            when(mockResultSet.next())
-                    .thenReturn(true)
-                    .thenReturn(true)
-                    .thenReturn(true)
-                    .thenReturn(false);
-            when(mockResultSet.getString(eq("key")))
-                    .thenReturn("parent1/test1")
-                    .thenReturn("parent1/test2")
-                    .thenReturn("");
-            List<String> childrenKeys = repository.getChildrenKeys("/testPath");
-            assertThat(childrenKeys.get(0), is("test1"));
-            assertThat(childrenKeys.get(1), is("test2"));
-        } catch (SQLException e) {
-            Assert.fail();
-        }
+    public void assertPersistAndGetChildrenKeys() throws Exception {
+        when(mockJdbcConnection.prepareStatement(eq(fixture.selectByParentKeySQL()))).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next())
+                .thenReturn(true)
+                .thenReturn(true)
+                .thenReturn(true)
+                .thenReturn(false);
+        when(mockResultSet.getString(eq("key")))
+                .thenReturn("parent1/test1")
+                .thenReturn("parent1/test2")
+                .thenReturn("");
+        List<String> childrenKeys = repository.getChildrenKeys("/testPath");
+        assertThat(childrenKeys.get(0), is("test1"));
+        assertThat(childrenKeys.get(1), is("test2"));
     }
     
     @Test
-    public void assertPersistAndGetChildrenKeysFailure() {
-        try (MockedConstruction<HikariDataSource> ignored = mockConstruction(HikariDataSource.class, (mock, context) -> when(mock.getConnection()).thenReturn(mockJdbcConnection))) {
-            JDBCRepository repository = new JDBCRepository();
-            repository.init(getHikariProperties());
-            when(mockJdbcConnection.prepareStatement(eq(fixture.selectByParentKeySQL()))).thenThrow(new SQLException());
-            List<String> actualResponse = repository.getChildrenKeys("key");
-            assertEquals(0, actualResponse.size());
-        } catch (SQLException e) {
-            Assert.fail();
-        }
+    public void assertPersistAndGetChildrenKeysFailure() throws Exception {
+        when(mockJdbcConnection.prepareStatement(eq(fixture.selectByParentKeySQL()))).thenThrow(new SQLException());
+        List<String> actualResponse = repository.getChildrenKeys("key");
+        assertEquals(0, actualResponse.size());
     }
     
     @Test
-    public void assertPersistWithUpdateForSimpleKeys() {
-        try (MockedConstruction<HikariDataSource> ignored = mockConstruction(HikariDataSource.class, (mock, context) -> when(mock.getConnection()).thenReturn(mockJdbcConnection))) {
-            JDBCRepository repository = new JDBCRepository();
-            repository.init(getHikariProperties());
-            final String key = "key";
-            final String value = "value";
-            when(mockJdbcConnection.prepareStatement(eq(fixture.selectByKeySQL()))).thenReturn(mockPreparedStatement);
-            when(mockJdbcConnection.prepareStatement(eq(fixture.updateSQL()))).thenReturn(mockPreparedStatementForPersist);
-            when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
-            when(mockResultSet.next()).thenReturn(true);
-            when(mockResultSet.getString(eq("value"))).thenReturn("oldValue");
-            repository.persist(key, value);
-            verify(mockPreparedStatement).setString(eq(1), eq(key));
-            verify(mockPreparedStatementForPersist).setString(eq(1), anyString());
-            verify(mockPreparedStatementForPersist).setString(eq(1), eq(value));
-            verify(mockPreparedStatementForPersist).setString(eq(2), eq(key));
-            verify(mockPreparedStatementForPersist).executeUpdate();
-        } catch (SQLException e) {
-            Assert.fail();
-        }
+    public void assertPersistWithUpdateForSimpleKeys() throws Exception {
+        final String key = "key";
+        final String value = "value";
+        when(mockJdbcConnection.prepareStatement(eq(fixture.selectByKeySQL()))).thenReturn(mockPreparedStatement);
+        when(mockJdbcConnection.prepareStatement(eq(fixture.updateSQL()))).thenReturn(mockPreparedStatementForPersist);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(true);
+        when(mockResultSet.getString(eq("value"))).thenReturn("oldValue");
+        repository.persist(key, value);
+        verify(mockPreparedStatement).setString(eq(1), eq(key));
+        verify(mockPreparedStatementForPersist).setString(eq(1), anyString());
+        verify(mockPreparedStatementForPersist).setString(eq(1), eq(value));
+        verify(mockPreparedStatementForPersist).setString(eq(2), eq(key));
+        verify(mockPreparedStatementForPersist).executeUpdate();
     }
     
     @Test
-    public void assertPersistForDirectory() {
-        try (MockedConstruction<HikariDataSource> ignored = mockConstruction(HikariDataSource.class, (mock, context) -> when(mock.getConnection()).thenReturn(mockJdbcConnection))) {
-            JDBCRepository repository = new JDBCRepository();
-            repository.init(getHikariProperties());
-            final String key = "/parent/child/test1";
-            final String value = "test1_content";
-            when(mockJdbcConnection.prepareStatement(eq(fixture.selectByKeySQL()))).thenReturn(mockPreparedStatement);
-            when(mockJdbcConnection.prepareStatement(eq(fixture.insertSQL()))).thenReturn(mockPreparedStatementForPersist);
-            when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
-            when(mockResultSet.next()).thenReturn(false);
-            repository.persist(key, value);
-            int depthOfDirectory = StringUtils.countMatches(key, "/");
-            int beginIndex = 0;
-            String parentDirectory = "/";
-            for (int i = 0; i < depthOfDirectory; i++) {
-                int separatorIndex = key.indexOf('/', beginIndex);
-                int nextSeparatorIndex = key.indexOf('/', separatorIndex + 1);
-                if (nextSeparatorIndex == -1) {
-                    nextSeparatorIndex = key.length();
-                }
-                String directoryPath = key.substring(0, nextSeparatorIndex);
-                // Verifying if get operation is called for every directory level
-                verify(mockPreparedStatement).setString(eq(1), eq(directoryPath));
-                // Verifying that during insert operation, setString at index 2 is called for every directory level
-                verify(mockPreparedStatementForPersist).setString(eq(2), eq(directoryPath));
-                // Verifying that during insert operation, setString at index 4 is called for every parent directory
-                verify(mockPreparedStatementForPersist).setString(eq(4), eq(parentDirectory));
-                beginIndex = nextSeparatorIndex;
-                parentDirectory = directoryPath;
+    public void assertPersistForDirectory() throws Exception {
+        final String key = "/parent/child/test1";
+        final String value = "test1_content";
+        when(mockJdbcConnection.prepareStatement(eq(fixture.selectByKeySQL()))).thenReturn(mockPreparedStatement);
+        when(mockJdbcConnection.prepareStatement(eq(fixture.insertSQL()))).thenReturn(mockPreparedStatementForPersist);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(false);
+        repository.persist(key, value);
+        int depthOfDirectory = StringUtils.countMatches(key, "/");
+        int beginIndex = 0;
+        String parentDirectory = "/";
+        for (int i = 0; i < depthOfDirectory; i++) {
+            int separatorIndex = key.indexOf('/', beginIndex);
+            int nextSeparatorIndex = key.indexOf('/', separatorIndex + 1);
+            if (nextSeparatorIndex == -1) {
+                nextSeparatorIndex = key.length();
             }
-            // Verifying that during insert operation, setString at index 3 is called with "" for all the parent directories
-            verify(mockPreparedStatementForPersist, times(depthOfDirectory - 1)).setString(eq(3), eq(""));
-            // Verifying that during insert operation, setString at index 3 is called with the leaf node once
-            verify(mockPreparedStatementForPersist, times(1)).setString(eq(3), eq("test1_content"));
-            // Verifying that during insert operation, setString at index 1 is called with a UUID
-            verify(mockPreparedStatementForPersist, times(depthOfDirectory)).setString(eq(1), anyString());
-            // Verifying that executeOperation in insert is called for all the directory levels
-            verify(mockPreparedStatementForPersist, times(depthOfDirectory)).executeUpdate();
-        } catch (SQLException e) {
-            Assert.fail();
+            String directoryPath = key.substring(0, nextSeparatorIndex);
+            // Verifying if get operation is called for every directory level
+            verify(mockPreparedStatement).setString(eq(1), eq(directoryPath));
+            // Verifying that during insert operation, setString at index 2 is called for every directory level
+            verify(mockPreparedStatementForPersist).setString(eq(2), eq(directoryPath));
+            // Verifying that during insert operation, setString at index 4 is called for every parent directory
+            verify(mockPreparedStatementForPersist).setString(eq(4), eq(parentDirectory));
+            beginIndex = nextSeparatorIndex;
+            parentDirectory = directoryPath;
         }
+        // Verifying that during insert operation, setString at index 3 is called with "" for all the parent directories
+        verify(mockPreparedStatementForPersist, times(depthOfDirectory - 1)).setString(eq(3), eq(""));
+        // Verifying that during insert operation, setString at index 3 is called with the leaf node once
+        verify(mockPreparedStatementForPersist, times(1)).setString(eq(3), eq("test1_content"));
+        // Verifying that during insert operation, setString at index 1 is called with a UUID
+        verify(mockPreparedStatementForPersist, times(depthOfDirectory)).setString(eq(1), anyString());
+        // Verifying that executeOperation in insert is called for all the directory levels
+        verify(mockPreparedStatementForPersist, times(depthOfDirectory)).executeUpdate();
     }
     
     @Test
-    public void assertPersistFailureDuringUpdate() {
-        try (MockedConstruction<HikariDataSource> ignored = mockConstruction(HikariDataSource.class, (mock, context) -> when(mock.getConnection()).thenReturn(mockJdbcConnection))) {
-            JDBCRepository repository = new JDBCRepository();
-            repository.init(getHikariProperties());
-            final String key = "key";
-            when(mockJdbcConnection.prepareStatement(eq(fixture.selectByKeySQL()))).thenReturn(mockPreparedStatement);
-            when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
-            when(mockResultSet.next()).thenReturn(true);
-            when(mockResultSet.getString(eq("value"))).thenReturn("oldValue");
-            when(mockJdbcConnection.prepareStatement(eq(fixture.updateSQL()))).thenThrow(new SQLException());
-            repository.persist(key, "value");
-            verify(mockPreparedStatementForPersist, times(0)).executeUpdate();
-        } catch (SQLException e) {
-            Assert.fail();
-        }
+    public void assertPersistFailureDuringUpdate() throws Exception {
+        final String key = "key";
+        when(mockJdbcConnection.prepareStatement(eq(fixture.selectByKeySQL()))).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(true);
+        when(mockResultSet.getString(eq("value"))).thenReturn("oldValue");
+        when(mockJdbcConnection.prepareStatement(eq(fixture.updateSQL()))).thenThrow(new SQLException());
+        repository.persist(key, "value");
+        verify(mockPreparedStatementForPersist, times(0)).executeUpdate();
     }
     
     @Test
-    public void assertPersistWithInsertForSimpleKeys() {
-        try (MockedConstruction<HikariDataSource> ignored = mockConstruction(HikariDataSource.class, (mock, context) -> when(mock.getConnection()).thenReturn(mockJdbcConnection))) {
-            JDBCRepository repository = new JDBCRepository();
-            repository.init(getHikariProperties());
-            final String key = "key";
-            final String value = "value";
-            when(mockJdbcConnection.prepareStatement(eq(fixture.selectByKeySQL()))).thenReturn(mockPreparedStatement);
-            when(mockJdbcConnection.prepareStatement(eq(fixture.insertSQL()))).thenReturn(mockPreparedStatementForPersist);
-            when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
-            when(mockResultSet.next()).thenReturn(false);
-            repository.persist(key, value);
-            verify(mockPreparedStatement).setString(eq(1), eq(key));
-            verify(mockPreparedStatementForPersist).setString(eq(1), anyString());
-            verify(mockPreparedStatementForPersist).setString(eq(2), eq(key));
-            verify(mockPreparedStatementForPersist).setString(eq(3), eq(value));
-            verify(mockPreparedStatementForPersist).setString(eq(4), eq("/"));
-            verify(mockPreparedStatementForPersist).executeUpdate();
-        } catch (SQLException e) {
-            Assert.fail();
-        }
+    public void assertPersistWithInsertForSimpleKeys() throws Exception {
+        final String key = "key";
+        final String value = "value";
+        when(mockJdbcConnection.prepareStatement(eq(fixture.selectByKeySQL()))).thenReturn(mockPreparedStatement);
+        when(mockJdbcConnection.prepareStatement(eq(fixture.insertSQL()))).thenReturn(mockPreparedStatementForPersist);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(false);
+        repository.persist(key, value);
+        verify(mockPreparedStatement).setString(eq(1), eq(key));
+        verify(mockPreparedStatementForPersist).setString(eq(1), anyString());
+        verify(mockPreparedStatementForPersist).setString(eq(2), eq(key));
+        verify(mockPreparedStatementForPersist).setString(eq(3), eq(value));
+        verify(mockPreparedStatementForPersist).setString(eq(4), eq("/"));
+        verify(mockPreparedStatementForPersist).executeUpdate();
     }
     
     @Test
-    public void assertPersistFailureDuringInsert() {
-        try (MockedConstruction<HikariDataSource> ignored = mockConstruction(HikariDataSource.class, (mock, context) -> when(mock.getConnection()).thenReturn(mockJdbcConnection))) {
-            JDBCRepository repository = new JDBCRepository();
-            repository.init(getHikariProperties());
-            String key = "key";
-            when(mockJdbcConnection.prepareStatement(eq(fixture.selectByKeySQL()))).thenThrow(new SQLException());
-            when(mockJdbcConnection.prepareStatement(eq(fixture.insertSQL()))).thenThrow(new SQLException());
-            repository.persist(key, "value");
-            verify(mockPreparedStatementForPersist, times(0)).executeUpdate();
-        } catch (SQLException e) {
-            Assert.fail();
-        }
+    public void assertPersistFailureDuringInsert() throws Exception {
+        String key = "key";
+        when(mockJdbcConnection.prepareStatement(eq(fixture.selectByKeySQL()))).thenThrow(new SQLException());
+        when(mockJdbcConnection.prepareStatement(eq(fixture.insertSQL()))).thenThrow(new SQLException());
+        repository.persist(key, "value");
+        verify(mockPreparedStatementForPersist, times(0)).executeUpdate();
     }
     
     @Test
-    public void assertDelete() {
-        try (MockedConstruction<HikariDataSource> ignored = mockConstruction(HikariDataSource.class, (mock, context) -> when(mock.getConnection()).thenReturn(mockJdbcConnection))) {
-            JDBCRepository repository = new JDBCRepository();
-            repository.init(getHikariProperties());
-            String key = "key";
-            when(mockJdbcConnection.prepareStatement(eq(fixture.deleteSQL()))).thenReturn(mockPreparedStatement);
-            repository.delete(key);
-            verify(mockPreparedStatement).setString(eq(1), eq(key));
-            verify(mockPreparedStatement).executeUpdate();
-        } catch (SQLException e) {
-            Assert.fail();
-        }
+    public void assertDelete() throws Exception {
+        String key = "key";
+        when(mockJdbcConnection.prepareStatement(eq(fixture.deleteSQL()))).thenReturn(mockPreparedStatement);
+        repository.delete(key);
+        verify(mockPreparedStatement).setString(eq(1), eq(key));
+        verify(mockPreparedStatement).executeUpdate();
     }
     
     @Test
-    public void assertDeleteFailure() {
-        try (MockedConstruction<HikariDataSource> ignored = mockConstruction(HikariDataSource.class, (mock, context) -> when(mock.getConnection()).thenReturn(mockJdbcConnection))) {
-            JDBCRepository repository = new JDBCRepository();
-            repository.init(getHikariProperties());
-            String key = "key";
-            when(mockJdbcConnection.prepareStatement(eq(fixture.deleteSQL()))).thenThrow(new SQLException());
-            repository.delete(key);
-            verify(mockPreparedStatement, times(0)).executeUpdate();
-        } catch (SQLException e) {
-            Assert.fail();
-        }
+    public void assertDeleteFailure() throws Exception {
+        String key = "key";
+        when(mockJdbcConnection.prepareStatement(eq(fixture.deleteSQL()))).thenThrow(new SQLException());
+        repository.delete(key);
+        verify(mockPreparedStatement, times(0)).executeUpdate();
     }
     
     @Test
     public void assertClose() {
-        try (MockedConstruction<HikariDataSource> construction = mockConstruction(HikariDataSource.class, (mock, context) -> when(mock.getConnection()).thenReturn(mockJdbcConnection))) {
-            JDBCRepository repository = new JDBCRepository();
-            repository.init(getHikariProperties());
-            repository.close();
-            HikariDataSource hikariDataSource = construction.constructed().get(0);
-            verify(hikariDataSource).close();
-        }
+        repository.close();
+        HikariDataSource hikariDataSource = mockedConstruction.constructed().get(0);
+        verify(hikariDataSource).close();
     }
     
     private Properties getHikariProperties() {
