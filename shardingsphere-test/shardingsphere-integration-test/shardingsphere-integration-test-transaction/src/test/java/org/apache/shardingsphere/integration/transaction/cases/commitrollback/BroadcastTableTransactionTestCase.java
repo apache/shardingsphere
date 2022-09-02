@@ -32,7 +32,7 @@ import java.sql.SQLException;
  */
 @Slf4j
 @TransactionTestCase
-public class BroadcastTableTransactionTestCase extends BaseTransactionTestCase {
+public final class BroadcastTableTransactionTestCase extends BaseTransactionTestCase {
     
     private static final String T_ADDRESS = "t_address";
     
