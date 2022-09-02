@@ -43,12 +43,10 @@ public final class TableMetaDataPersistService implements SchemaMetaDataPersistS
     
     @Override
     public void compareAndPersist(final String databaseName, final String schemaName, final Map<String, ShardingSphereTable> loadedTables) {
-        Map<String, ShardingSphereTable> currentTables = load(databaseName, schemaName);
         // TODO Add ShardingSphereSchemaFactory to support toBeAddedTables and toBeDeletedTables.
-        Map<String, ShardingSphereTable> toBeAddedTables = getToBeAddedTables(loadedTables, currentTables);
-        Map<String, ShardingSphereTable> toBeDeletedTables = getToBeDeletedTables(loadedTables, currentTables);
-        persist(databaseName, schemaName, toBeAddedTables);
-        toBeDeletedTables.forEach((key, value) -> delete(databaseName, schemaName, key));
+        Map<String, ShardingSphereTable> currentTables = load(databaseName, schemaName);
+        persist(databaseName, schemaName, getToBeAddedTables(loadedTables, currentTables));
+        getToBeDeletedTables(loadedTables, currentTables).forEach((key, value) -> delete(databaseName, schemaName, key));
     }
     
     @Override
