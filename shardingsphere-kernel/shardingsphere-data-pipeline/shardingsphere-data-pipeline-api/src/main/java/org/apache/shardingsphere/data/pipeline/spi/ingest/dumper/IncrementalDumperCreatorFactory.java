@@ -36,7 +36,7 @@ public class IncrementalDumperCreatorFactory {
      * Incremental dumper creator.
      *
      * @param databaseType database type
-     * @return Incremental dumper creator
+     * @return incremental dumper creator
      */
     public static IncrementalDumperCreator getInstance(final String databaseType) {
         return TypedSPIRegistry.getRegisteredService(IncrementalDumperCreator.class, databaseType);

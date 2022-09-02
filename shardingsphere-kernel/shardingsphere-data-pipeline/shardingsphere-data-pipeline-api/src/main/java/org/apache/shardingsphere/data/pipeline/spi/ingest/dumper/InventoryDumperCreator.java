@@ -34,12 +34,13 @@ import javax.sql.DataSource;
 public interface InventoryDumperCreator extends TypedSPI, RequiredSPI {
     
     /**
-     * Create Inventory Dumper.
-     * @param inventoryDumperConfig inventoryDumperConfig
+     * Create inventory dumper.
+     *
+     * @param inventoryDumperConfig inventory dumper configuration
      * @param channel chanel
-     * @param sourceDataSource sourceDataSource
-     * @param sourceMetaDataLoader sourceMetaDataLoader
-     * @return InventoryDumper
+     * @param sourceDataSource source data source
+     * @param sourceMetaDataLoader source meta data loader
+     * @return inventory dumper
      */
     InventoryDumper createInventoryDumper(InventoryDumperConfiguration inventoryDumperConfig, PipelineChannel channel,
                                           DataSource sourceDataSource, PipelineTableMetaDataLoader sourceMetaDataLoader);

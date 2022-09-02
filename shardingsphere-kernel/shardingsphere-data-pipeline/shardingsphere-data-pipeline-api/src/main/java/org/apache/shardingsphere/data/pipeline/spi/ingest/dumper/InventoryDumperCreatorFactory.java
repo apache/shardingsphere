@@ -34,10 +34,10 @@ public class InventoryDumperCreatorFactory {
     }
     
     /**
-     * Get inventoryDumper creator instance.
+     * Get inventory dumper creator instance.
      *
-     * @param databaseType databaseType
-     * @return InventoryDumperCreator
+     * @param databaseType database type
+     * @return inventory dumper creator
      */
     public static InventoryDumperCreator getInstance(final String databaseType) {
         return TypedSPIRegistry.findRegisteredService(InventoryDumperCreator.class, databaseType).orElseGet(() -> RequiredSPIRegistry.getRegisteredService(InventoryDumperCreator.class));

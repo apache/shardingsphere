@@ -34,11 +34,11 @@ public interface IncrementalDumperCreator<P> extends TypedSPI {
     /**
      * Create incremental dumper.
      *
-     * @param dumperConfig dumperConfig
+     * @param dumperConfig dumper configuration
      * @param position position
      * @param channel channel
-     * @param metaDataLoader metaDataLoader
-     * @return IncrementalDumper
+     * @param metaDataLoader meta data loader
+     * @return incremental dumper
      */
     IncrementalDumper createIncrementalDumper(DumperConfiguration dumperConfig, IngestPosition<P> position,
                                               PipelineChannel channel, PipelineTableMetaDataLoader metaDataLoader);
