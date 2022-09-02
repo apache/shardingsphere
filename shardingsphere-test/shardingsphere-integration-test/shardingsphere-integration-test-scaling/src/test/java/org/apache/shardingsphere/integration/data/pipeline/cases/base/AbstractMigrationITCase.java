@@ -17,19 +17,30 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.cases.base;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.integration.data.pipeline.cases.command.MigrationDistSQLCommand;
-import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
+import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 
 import javax.xml.bind.JAXB;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @Slf4j
 public abstract class AbstractMigrationITCase extends BaseITCase {
@@ -42,7 +53,7 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
     }
     
     protected void addMigrationSourceResource() throws SQLException {
-        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NATIVE) {
+        if (ENV.getItEnvType() == ITEnvTypeEnum.NATIVE) {
             try {
                 proxyExecuteWithLog("DROP MIGRATION SOURCE RESOURCE ds_0", 2);
             } catch (final SQLException ex) {
@@ -110,4 +121,82 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
         }
     }
     
+    protected void stopMigrationByJobId(final String jobId) throws SQLException {
+        proxyExecuteWithLog(String.format("STOP MIGRATION '%s'", jobId), 1);
+    }
+    
+    protected void startMigrationByJobId(final String jobId) throws SQLException {
+        proxyExecuteWithLog(String.format("START MIGRATION '%s'", jobId), 1);
+    }
+    
+    protected void commitMigrationByJobId(final String jobId) throws SQLException {
+        proxyExecuteWithLog(String.format("COMMIT MIGRATION '%s'", jobId), 1);
+    }
+    
+    protected List<String> listJobId() {
+        List<Map<String, Object>> jobList = queryForListWithLog("SHOW MIGRATION LIST");
+        return jobList.stream().map(a -> a.get("id").toString()).collect(Collectors.toList());
+    }
+    
+    protected String getJobIdByTableName(final String tableName) {
+        List<Map<String, Object>> jobList = queryForListWithLog("SHOW MIGRATION LIST");
+        return jobList.stream().filter(a -> a.get("tables").toString().equals(tableName)).findFirst().orElseThrow(() -> new RuntimeException("not find " + tableName + " table")).get("id").toString();
+    }
+    
+    @SneakyThrows(InterruptedException.class)
+    protected void waitMigrationFinished(final String jobId) {
+        if (null != getIncreaseTaskThread()) {
+            TimeUnit.SECONDS.timedJoin(getIncreaseTaskThread(), 60);
+        }
+        log.info("jobId: {}", jobId);
+        Set<String> actualStatus;
+        for (int i = 0; i < 10; i++) {
+            List<Map<String, Object>> showJobStatusResult = showJobStatus(jobId);
+            log.info("show migration status result: {}", showJobStatusResult);
+            actualStatus = showJobStatusResult.stream().map(each -> each.get("status").toString()).collect(Collectors.toSet());
+            assertFalse(CollectionUtils.containsAny(actualStatus, Arrays.asList(JobStatus.PREPARING_FAILURE.name(), JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name(),
+                    JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name())));
+            if (actualStatus.size() == 1 && actualStatus.contains(JobStatus.EXECUTE_INCREMENTAL_TASK.name())) {
+                break;
+            } else if (actualStatus.size() >= 1 && actualStatus.containsAll(new HashSet<>(Arrays.asList("", JobStatus.EXECUTE_INCREMENTAL_TASK.name())))) {
+                log.warn("one of the shardingItem was not started correctly");
+            }
+            ThreadUtil.sleep(3, TimeUnit.SECONDS);
+        }
+    }
+    
+    protected List<Map<String, Object>> showJobStatus(final String jobId) {
+        return queryForListWithLog(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+    }
+    
+    protected void assertCheckMigrationSuccess(final String jobId) {
+        for (int i = 0; i < 10; i++) {
+            if (checkJobIncrementTaskFinished(jobId)) {
+                break;
+            }
+            ThreadUtil.sleep(3, TimeUnit.SECONDS);
+        }
+        boolean secondCheckJobResult = checkJobIncrementTaskFinished(jobId);
+        log.info("second check job result: {}", secondCheckJobResult);
+        List<Map<String, Object>> checkJobResults = queryForListWithLog(String.format("CHECK MIGRATION '%s' BY TYPE (NAME='DATA_MATCH')", jobId));
+        log.info("check job results: {}", checkJobResults);
+        for (Map<String, Object> entry : checkJobResults) {
+            assertTrue(Boolean.parseBoolean(entry.get("records_content_matched").toString()));
+        }
+    }
+    
+    protected boolean checkJobIncrementTaskFinished(final String jobId) {
+        List<Map<String, Object>> listJobStatus = showJobStatus(jobId);
+        log.info("list job status result: {}", listJobStatus);
+        for (Map<String, Object> entry : listJobStatus) {
+            if (!JobStatus.EXECUTE_INCREMENTAL_TASK.name().equalsIgnoreCase(entry.get("status").toString())) {
+                return false;
+            }
+            int incrementalIdleSeconds = Integer.parseInt(entry.get("incremental_idle_seconds").toString());
+            if (incrementalIdleSeconds < 3) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

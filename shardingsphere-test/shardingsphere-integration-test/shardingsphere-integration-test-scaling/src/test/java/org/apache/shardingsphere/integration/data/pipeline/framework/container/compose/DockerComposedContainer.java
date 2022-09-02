@@ -33,7 +33,7 @@ import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironm
 /**
  * Composed container, include governance container and database container.
  */
-public final class MigrationComposedContainer extends BaseComposedContainer {
+public final class DockerComposedContainer extends BaseComposedContainer {
     
     private final DatabaseType databaseType;
     
@@ -45,7 +45,7 @@ public final class MigrationComposedContainer extends BaseComposedContainer {
     @Getter
     private final GovernanceContainer governanceContainer;
     
-    public MigrationComposedContainer(final DatabaseType databaseType, final String dockerImageName) {
+    public DockerComposedContainer(final DatabaseType databaseType, final String dockerImageName) {
         this.databaseType = databaseType;
         governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
         storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, dockerImageName,

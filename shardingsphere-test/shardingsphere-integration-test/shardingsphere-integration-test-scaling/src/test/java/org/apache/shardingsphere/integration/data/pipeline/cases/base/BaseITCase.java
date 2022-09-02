@@ -21,18 +21,15 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.command.ExtraSQLCommand;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
+import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.BaseComposedContainer;
-import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.MigrationComposedContainer;
+import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.DockerComposedContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.NativeComposedContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.integration.data.pipeline.framework.watcher.ScalingWatcher;
@@ -53,17 +50,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @Slf4j
@@ -113,14 +106,14 @@ public abstract class BaseITCase {
     
     public BaseITCase(final ScalingParameterized parameterized) {
         databaseType = parameterized.getDatabaseType();
-        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER) {
-            composedContainer = new MigrationComposedContainer(parameterized.getDatabaseType(), parameterized.getDockerImageName());
+        if (ENV.getItEnvType() == ITEnvTypeEnum.DOCKER) {
+            composedContainer = new DockerComposedContainer(parameterized.getDatabaseType(), parameterized.getDockerImageName());
         } else {
             composedContainer = new NativeComposedContainer(parameterized.getDatabaseType());
         }
         composedContainer.start();
-        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER) {
-            DockerStorageContainer storageContainer = ((MigrationComposedContainer) composedContainer).getStorageContainer();
+        if (ENV.getItEnvType() == ITEnvTypeEnum.DOCKER) {
+            DockerStorageContainer storageContainer = ((DockerComposedContainer) composedContainer).getStorageContainer();
             username = storageContainer.getUsername();
             password = storageContainer.getUnifiedPassword();
         } else {
@@ -128,10 +121,10 @@ public abstract class BaseITCase {
             password = ENV.getActualDataSourcePassword(databaseType);
         }
         createProxyDatabase(parameterized.getDatabaseType());
-        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NATIVE) {
+        if (ENV.getItEnvType() == ITEnvTypeEnum.NATIVE) {
             cleanUpDataSource();
         }
-        extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(AbstractMigrationITCase.class.getClassLoader().getResource(parameterized.getScenario())), ExtraSQLCommand.class);
+        extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BaseITCase.class.getClassLoader().getResource(parameterized.getScenario())), ExtraSQLCommand.class);
         scalingWatcher = new ScalingWatcher(composedContainer);
     }
     
@@ -148,7 +141,7 @@ public abstract class BaseITCase {
         }
         String jdbcUrl = composedContainer.getProxyJdbcUrl(defaultDatabaseName);
         try (Connection connection = DriverManager.getConnection(jdbcUrl, ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD)) {
-            if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NATIVE) {
+            if (ENV.getItEnvType() == ITEnvTypeEnum.NATIVE) {
                 try {
                     connectionExecuteWithLog(connection, String.format("DROP DATABASE %s", PROXY_DATABASE));
                 } catch (final SQLException ex) {
@@ -179,8 +172,8 @@ public abstract class BaseITCase {
     }
     
     protected String getActualJdbcUrlTemplate(final String databaseName, final boolean isInContainer) {
-        if (ScalingITEnvTypeEnum.DOCKER == ENV.getItEnvType()) {
-            DockerStorageContainer storageContainer = ((MigrationComposedContainer) composedContainer).getStorageContainer();
+        if (ITEnvTypeEnum.DOCKER == ENV.getItEnvType()) {
+            DockerStorageContainer storageContainer = ((DockerComposedContainer) composedContainer).getStorageContainer();
             if (isInContainer) {
                 return DataSourceEnvironment.getURL(getDatabaseType(), getDatabaseType().getType().toLowerCase() + ".host", storageContainer.getPort(), databaseName);
             } else {
@@ -285,89 +278,10 @@ public abstract class BaseITCase {
         getIncreaseTaskThread().start();
     }
     
-    protected void stopMigrationByJobId(final String jobId) throws SQLException {
-        proxyExecuteWithLog(String.format("STOP MIGRATION '%s'", jobId), 1);
-    }
-    
-    protected void startMigrationByJobId(final String jobId) throws SQLException {
-        proxyExecuteWithLog(String.format("START MIGRATION '%s'", jobId), 1);
-    }
-    
-    protected void commitMigrationByJobId(final String jobId) throws SQLException {
-        proxyExecuteWithLog(String.format("COMMIT MIGRATION '%s'", jobId), 1);
-    }
-    
-    protected List<String> listJobId() {
-        List<Map<String, Object>> jobList = queryForListWithLog("SHOW MIGRATION LIST");
-        return jobList.stream().map(a -> a.get("id").toString()).collect(Collectors.toList());
-    }
-    
-    protected String getJobIdByTableName(final String tableName) {
-        List<Map<String, Object>> jobList = queryForListWithLog("SHOW MIGRATION LIST");
-        return jobList.stream().filter(a -> a.get("tables").toString().equals(tableName)).findFirst().orElseThrow(() -> new RuntimeException("not find " + tableName + " table")).get("id").toString();
-    }
-    
-    @SneakyThrows(InterruptedException.class)
-    protected void waitMigrationFinished(final String jobId) {
-        if (null != increaseTaskThread) {
-            TimeUnit.SECONDS.timedJoin(increaseTaskThread, 60);
-        }
-        log.info("jobId: {}", jobId);
-        Set<String> actualStatus;
-        for (int i = 0; i < 10; i++) {
-            List<Map<String, Object>> showScalingStatusResult = showScalingStatus(jobId);
-            log.info("show migration status result: {}", showScalingStatusResult);
-            actualStatus = showScalingStatusResult.stream().map(each -> each.get("status").toString()).collect(Collectors.toSet());
-            assertFalse(CollectionUtils.containsAny(actualStatus, Arrays.asList(JobStatus.PREPARING_FAILURE.name(), JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name(),
-                    JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name())));
-            if (actualStatus.size() == 1 && actualStatus.contains(JobStatus.EXECUTE_INCREMENTAL_TASK.name())) {
-                break;
-            } else if (actualStatus.size() >= 1 && actualStatus.containsAll(new HashSet<>(Arrays.asList("", JobStatus.EXECUTE_INCREMENTAL_TASK.name())))) {
-                log.warn("one of the shardingItem was not started correctly");
-            }
-            ThreadUtil.sleep(3, TimeUnit.SECONDS);
-        }
-    }
-    
     protected void assertGreaterThanOrderTableInitRows(final int tableInitRows, final String schema) throws SQLException {
         proxyExecuteWithLog("REFRESH TABLE METADATA", 2);
         String countSQL = StringUtils.isBlank(schema) ? "SELECT COUNT(*) as count FROM t_order" : String.format("SELECT COUNT(*) as count FROM %s.t_order", schema);
         Map<String, Object> actual = queryForListWithLog(countSQL).get(0);
         assertTrue("actual count " + actual.get("count"), Integer.parseInt(actual.get("count").toString()) > tableInitRows);
-    }
-    
-    protected List<Map<String, Object>> showScalingStatus(final String jobId) {
-        return queryForListWithLog(String.format("SHOW MIGRATION STATUS '%s'", jobId));
-    }
-    
-    protected void assertCheckMigrationSuccess(final String jobId) {
-        for (int i = 0; i < 10; i++) {
-            if (checkJobIncrementTaskFinished(jobId)) {
-                break;
-            }
-            ThreadUtil.sleep(3, TimeUnit.SECONDS);
-        }
-        boolean secondCheckJobResult = checkJobIncrementTaskFinished(jobId);
-        log.info("second check job result: {}", secondCheckJobResult);
-        List<Map<String, Object>> checkScalingResults = queryForListWithLog(String.format("CHECK MIGRATION '%s' BY TYPE (NAME='DATA_MATCH')", jobId));
-        log.info("checkScalingResults: {}", checkScalingResults);
-        for (Map<String, Object> entry : checkScalingResults) {
-            assertTrue(Boolean.parseBoolean(entry.get("records_content_matched").toString()));
-        }
-    }
-    
-    private boolean checkJobIncrementTaskFinished(final String jobId) {
-        List<Map<String, Object>> listScalingStatus = showScalingStatus(jobId);
-        log.info("listScalingStatus result: {}", listScalingStatus);
-        for (Map<String, Object> entry : listScalingStatus) {
-            if (!JobStatus.EXECUTE_INCREMENTAL_TASK.name().equalsIgnoreCase(entry.get("status").toString())) {
-                return false;
-            }
-            int incrementalIdleSeconds = Integer.parseInt(entry.get("incremental_idle_seconds").toString());
-            if (incrementalIdleSeconds < 3) {
-                return false;
-            }
-        }
-        return true;
     }
 }
