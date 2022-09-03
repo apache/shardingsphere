@@ -1777,6 +1777,7 @@ cursorOption
     : NO SCROLL
     | SCROLL
     | BINARY
+    | ASENSITIVE
     | INSENSITIVE
     ;
 
