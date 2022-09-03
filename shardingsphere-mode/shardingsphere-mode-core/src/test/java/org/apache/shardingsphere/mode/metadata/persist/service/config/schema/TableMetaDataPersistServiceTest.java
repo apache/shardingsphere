@@ -81,6 +81,6 @@ public final class TableMetaDataPersistServiceTest {
     
     @SneakyThrows({IOException.class, URISyntaxException.class})
     private String readYAML() {
-        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("yaml/schema/schema.yaml").toURI())).stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
+        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("yaml/schema/table.yaml").toURI())).stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
 }
