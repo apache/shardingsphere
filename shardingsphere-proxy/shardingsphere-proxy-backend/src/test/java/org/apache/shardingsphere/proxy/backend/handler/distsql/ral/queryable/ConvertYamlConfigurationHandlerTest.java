@@ -53,6 +53,8 @@ public final class ConvertYamlConfigurationHandlerTest extends ProxyContextResto
     private final String readWriteSplittingFilePath = "/conf/convert/config-readwrite-splitting.yaml";
     
     private final String databaseDiscoveryFilePath = "/conf/convert/config-database-discovery.yaml";
+
+    private final String encryptFilePath = "/conf/convert/config-encrypt.yaml";
     
     private final String resourceExpectedFilePath = "/expected/convert-add-resource.yaml";
     
@@ -61,16 +63,20 @@ public final class ConvertYamlConfigurationHandlerTest extends ProxyContextResto
     private final String readWriteSplittingExpectedFilePath = "/expected/convert-readwrite-splitting.yaml";
     
     private final String databaseDiscoveryExpectedFilePath = "/expected/convert-database-discovery.yaml";
+
+    private final String encryptExpectedFilePath = "/expected/convert-create-encrypt.yaml";
     
     private final String resource = "resource";
     
     private final String sharding = "sharding";
     
     private final String readWriteSplitting = "readWriteSplitting";
-    
+
     private final String databaseDiscovery = "databaseDiscovery";
-    
-    private final Map<String, String> featureMap = new HashMap<>(4, 1);
+
+    private final String encrypt = "encrypt";
+
+    private final Map<String, String> featureMap = new HashMap<>(5, 1);
     
     @Before
     public void setup() {
@@ -78,6 +84,7 @@ public final class ConvertYamlConfigurationHandlerTest extends ProxyContextResto
         featureMap.put(sharding, shardingFilePath);
         featureMap.put(readWriteSplitting, readWriteSplittingFilePath);
         featureMap.put(databaseDiscovery, databaseDiscoveryFilePath);
+        featureMap.put(encrypt, encryptFilePath);
     }
     
     @Before
@@ -97,15 +104,20 @@ public final class ConvertYamlConfigurationHandlerTest extends ProxyContextResto
     }
     
     @Test
-    public void assertExecuteWithReadWriteSplitting() throws SQLException {
+    public void assertExecuteWithCreateReadWriteSplitting() throws SQLException {
         assertExecute(readWriteSplitting, readWriteSplittingExpectedFilePath);
     }
     
     @Test
-    public void assertExecuteWithDatabaseDiscovery() throws SQLException {
+    public void assertExecuteWithCreateDatabaseDiscovery() throws SQLException {
         assertExecute(databaseDiscovery, databaseDiscoveryExpectedFilePath);
     }
-    
+
+    @Test
+    public void assertExecuteWithCreateEncrypt() throws SQLException {
+        assertExecute(encrypt, encryptExpectedFilePath);
+    }
+
     public void assertExecute(final String type, final String expectedFilePath) throws SQLException {
         ConvertYamlConfigurationHandler handler = new ConvertYamlConfigurationHandler();
         handler.init(new ConvertYamlConfigurationStatement(Objects.requireNonNull(ConvertYamlConfigurationHandlerTest.class.getResource(featureMap.get(type))).getPath()),

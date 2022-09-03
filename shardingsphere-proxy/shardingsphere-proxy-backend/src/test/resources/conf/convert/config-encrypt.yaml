@@ -15,53 +15,45 @@
 # limitations under the License.
 #
 
-databaseName: database_discovery_db
+
+databaseName: encrypt_db
 
 dataSources:
   ds_0:
-    url: jdbc:mysql://127.0.0.1:3306/demo_primary_ds_0?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://127.0.0.1:3306/demo_encrypt_ds_0?serverTimezone=UTC&useSSL=false
     username: root
     password: 12345678
-    connectionTimeoutMilliseconds: 3000
+    connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 50
     minPoolSize: 1
   ds_1:
-    url: jdbc:mysql://127.0.0.1:3306/demo_replica_ds_0?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://127.0.0.1:3306/demo_encrypt_ds_1?serverTimezone=UTC&useSSL=false
     username: root
     password: 12345678
-    connectionTimeoutMilliseconds: 3000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 50
-    minPoolSize: 1
-  ds_2:
-    url: jdbc:mysql://127.0.0.1:3306/demo_replica_ds_1?serverTimezone=UTC&useSSL=false
-    username: root
-    password: 12345678
-    connectionTimeoutMilliseconds: 3000
+    connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 50
     minPoolSize: 1
 
 rules:
-  - !DB_DISCOVERY
-    dataSources:
-      readwrite_ds:
-        dataSourceNames:
-          - ds_0
-          - ds_1
-          - ds_2
-        discoveryHeartbeatName: mgr-heartbeat
-        discoveryTypeName: mgr
-    discoveryHeartbeats:
-      mgr-heartbeat:
-        props:
-          keep-alive-cron: '0/5 * * * * ?'
-    discoveryTypes:
-      mgr:
-        type: MySQL.MGR
-        props:
-          group-name: 92504d5b-6dec-11e8-91ea-246e9612aaf1
+- !ENCRYPT
+  encryptors:
+    aes_encryptor:
+      type: AES
+      props:
+        aes-key-value: 123456abc
+    md5_encryptor:
+      type: MD5
+  tables:
+    t_encrypt:
+      columns:
+        user_id:
+          plainColumn: user_plain
+          cipherColumn: user_cipher
+          encryptorName: aes_encryptor
+        order_id:
+          cipherColumn: order_cipher
+          encryptorName: md5_encryptor
