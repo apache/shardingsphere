@@ -61,6 +61,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 42000     | 20018       | INSERT INTO ... SELECT can not support applying key generator with absent generate key column |
 | 44000     | 20019       | The table inserted and the table selected must be the same or bind tables |
 | 44000     | 20020       | Inline sharding algorithms expression \`%s\` and sharding column \`%s\` do not match |
+| 44000     | 20021       | Actual data nodes must be configured for sharding table \`%s\` |
 | 42S01     | 20030       | Index \`%s\` already exists |
 | 42S02     | 20031       | Index \`%s\` does not exist |
 | 44000     | 20032       | Actual tables \`%s\` are in use |
