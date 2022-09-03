@@ -45,6 +45,13 @@ public final class ResourceSwitchManager {
         return new SwitchingResource(resource, createNewDataSources(resource, toBeChangedDataSourceProps), getStaleDataSources(resource, toBeChangedDataSourceProps));
     }
     
+    /**
+     * Create switching resource.
+     *
+     * @param resource resource
+     * @param toBeDeletedDataSourceProps to be deleted data source properties map
+     * @return created switching resource
+     */
     public SwitchingResource createByDropResource(final ShardingSphereResource resource, final Map<String, DataSourceProperties> toBeDeletedDataSourceProps) {
         return new SwitchingResource(resource, Collections.emptyMap(), getStaleDataSources(resource.getDataSources(), toBeDeletedDataSourceProps));
     }
