@@ -20,6 +20,7 @@ package org.apache.shardingsphere.dbdiscovery.mysql.type;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.dbdiscovery.mysql.exception.InvalidMGRModeException;
 import org.apache.shardingsphere.dbdiscovery.mysql.exception.InvalidMGRPluginException;
 import org.apache.shardingsphere.dbdiscovery.mysql.exception.InvalidMGRReplicationGroupMemberException;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
@@ -112,7 +113,7 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
     
     private void checkSinglePrimaryMode(final String databaseName, final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(QUERY_SINGLE_PRIMARY_MODE)) {
-            Preconditions.checkState(resultSet.next() && "ON".equals(resultSet.getString("VARIABLE_VALUE")), "MGR is not in single primary mode in database `%s`.", databaseName);
+            ShardingSpherePreconditions.checkStatus(resultSet.next() && "ON".equals(resultSet.getString("VARIABLE_VALUE")), new InvalidMGRModeException(databaseName));
         }
     }
     
