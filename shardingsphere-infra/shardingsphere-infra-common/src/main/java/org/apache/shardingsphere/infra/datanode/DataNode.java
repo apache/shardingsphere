@@ -23,7 +23,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.infra.exception.InvalidDataNodesFormatException;
 
 import java.util.List;
 
@@ -54,10 +54,10 @@ public final class DataNode {
         // TODO remove duplicated splitting?
         boolean isIncludeInstance = isActualDataNodesIncludedDataSourceInstance(dataNode);
         if (!isIncludeInstance && !isValidDataNode(dataNode, 2)) {
-            throw new ShardingSphereConfigurationException("Invalid format for actual data nodes: '%s'", dataNode);
+            throw new InvalidDataNodesFormatException(dataNode);
         }
         if (isIncludeInstance && !isValidDataNode(dataNode, 3)) {
-            throw new ShardingSphereConfigurationException("Invalid format for actual data nodes: '%s'", dataNode);
+            throw new InvalidDataNodesFormatException(dataNode);
         }
         List<String> segments = Splitter.on(DELIMITER).splitToList(dataNode);
         dataSourceName = isIncludeInstance ? segments.get(0) + DELIMITER + segments.get(1) : segments.get(0);
