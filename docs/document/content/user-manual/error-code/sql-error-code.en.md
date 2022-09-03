@@ -76,6 +76,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 44000     | 27002       | Altered column \`%s\` must use same encrypt algorithm with previous column \`%s\` in table \`%s\` |
 | 42000     | 27003       | Insert value of index \`%s\` can not support for encrypt |
 | 44000     | 27004       | Can not find logic encrypt column by \`%s\` |
+| 44000     | 27005       | Fail to find encrypt column \`%s\` from table \`%s\` |
 | HY004     | 28000       | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type |
 | 42000     | 28003       | Insert value of index \`%s\` can not support for shadow |
 | HY004     | 30000       | Unknown exception: %s |

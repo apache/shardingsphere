@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.exception.EncryptColumnAlterException;
+import org.apache.shardingsphere.encrypt.exception.EncryptColumnNotFoundException;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptAlterTableToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
@@ -26,7 +27,6 @@ import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.AlterTableStatementContext;
-import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
@@ -139,7 +139,7 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
     }
     
     private EncryptColumn getEncryptColumn(final String tableName, final String columnName) {
-        return encryptRule.findEncryptColumn(tableName, columnName).orElseThrow(() -> new ShardingSphereConfigurationException("Failed finding encrypt column"));
+        return encryptRule.findEncryptColumn(tableName, columnName).orElseThrow(() -> new EncryptColumnNotFoundException(tableName, columnName));
     }
     
     @SuppressWarnings("rawtypes")
