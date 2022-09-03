@@ -15,19 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.exception.fixture;
+package org.apache.shardingsphere.infra.util.exception.external.sql.vendor;
 
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereServerException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.SQLState;
 
-public final class ShardingSphereServerExceptionFixture extends ShardingSphereServerException {
+/**
+ * Vendor error.
+ */
+public interface VendorError {
     
-    private static final long serialVersionUID = 4263474713534006256L;
+    /**
+     * Get SQL state.
+     * 
+     * @return SQL state
+     */
+    SQLState getSqlState();
     
-    public ShardingSphereServerExceptionFixture() {
-        super("FIXTURE", 1, "Fixture error message");
-    }
+    /**
+     * Get database vendor code.
+     *
+     * @return vendor code
+     */
+    int getVendorCode();
     
-    public ShardingSphereServerExceptionFixture(final Exception cause) {
-        super("FIXTURE", 1, "Fixture error message", cause);
-    }
+    /**
+     * Get reason.
+     *
+     * @return reason
+     */
+    String getReason();
 }

@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.exception;
+package org.apache.shardingsphere.infra.util.exception.external.server.fixture;
 
-/**
- * ShardingSphere server exception.
- */
-public abstract class ShardingSphereServerException extends RuntimeException {
+import org.apache.shardingsphere.infra.util.exception.external.server.ShardingSphereServerException;
+
+public final class ShardingSphereServerExceptionFixture extends ShardingSphereServerException {
     
-    private static final long serialVersionUID = 1547233217081261239L;
+    private static final long serialVersionUID = 4263474713534006256L;
     
-    public ShardingSphereServerException(final String errorCategory, final int errorCode, final String message) {
-        super(String.format("%s-%05d: %s", errorCategory, errorCode, message));
+    public ShardingSphereServerExceptionFixture() {
+        super("FIXTURE", 1, "Fixture error message");
     }
     
-    public ShardingSphereServerException(final String errorCategory, final int errorCode, final String message, final Exception cause) {
-        super(String.format("%s-%05d: %s", errorCategory, errorCode, message), cause);
+    public ShardingSphereServerExceptionFixture(final Exception cause) {
+        super("FIXTURE", 1, "Fixture error message", cause);
     }
 }

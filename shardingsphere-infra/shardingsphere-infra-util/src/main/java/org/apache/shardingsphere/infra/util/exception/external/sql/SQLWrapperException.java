@@ -15,27 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.exception;
+package org.apache.shardingsphere.infra.util.exception.external.sql;
 
-import lombok.NoArgsConstructor;
+import java.sql.SQLException;
 
 /**
- * ShardingSphere internal exception.
+ * SQL wrapper exception.
  */
-@NoArgsConstructor
-public abstract class ShardingSphereInternalException extends Exception {
+public final class SQLWrapperException extends ShardingSphereSQLException {
     
-    private static final long serialVersionUID = -8238061892944243621L;
+    private static final long serialVersionUID = 8983736995662464009L;
     
-    public ShardingSphereInternalException(final String errorMessage, final Object... args) {
-        super(String.format(errorMessage, args));
-    }
-    
-    public ShardingSphereInternalException(final Exception cause) {
-        super(cause);
-    }
-    
-    public ShardingSphereInternalException(final String message, final Exception cause) {
-        super(message, cause);
+    public SQLWrapperException(final SQLException cause) {
+        super(cause.getSQLState(), cause.getErrorCode(), cause.getMessage());
     }
 }

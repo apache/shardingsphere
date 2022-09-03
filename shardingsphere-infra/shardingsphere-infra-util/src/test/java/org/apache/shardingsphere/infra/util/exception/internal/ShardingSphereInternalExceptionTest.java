@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.exception;
+package org.apache.shardingsphere.infra.util.exception.internal;
 
-import org.apache.shardingsphere.infra.util.exception.fixture.ShardingSphereInternalExceptionFixture;
+import org.apache.shardingsphere.infra.util.exception.internal.fixture.ShardingSphereInternalExceptionFixture;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

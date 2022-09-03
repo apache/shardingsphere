@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.dialect.exception;
 
+import org.apache.shardingsphere.infra.util.exception.external.ShardingSphereExternalException;
+
 /**
  * SQL dialect exception.
  */
-public abstract class SQLDialectException extends RuntimeException {
+public abstract class SQLDialectException extends ShardingSphereExternalException {
     
     private static final long serialVersionUID = -5090068160364259336L;
 }

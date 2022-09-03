@@ -26,7 +26,7 @@ import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgori
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
-import org.apache.shardingsphere.infra.util.exception.sql.SQLWrapperException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.SQLWrapperException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

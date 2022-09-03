@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.exception.sql.sqlstate;
+package org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
