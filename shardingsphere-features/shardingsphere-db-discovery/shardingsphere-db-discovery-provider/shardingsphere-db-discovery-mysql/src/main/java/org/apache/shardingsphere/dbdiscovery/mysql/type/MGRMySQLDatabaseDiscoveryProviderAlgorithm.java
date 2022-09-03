@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.dbdiscovery.mysql.exception.InvalidMGRGroupNameConfigurationException;
 import org.apache.shardingsphere.dbdiscovery.mysql.exception.InvalidMGRModeException;
 import org.apache.shardingsphere.dbdiscovery.mysql.exception.InvalidMGRPluginException;
 import org.apache.shardingsphere.dbdiscovery.mysql.exception.InvalidMGRReplicationGroupMemberException;
@@ -107,20 +107,20 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
     
     private void checkPluginActive(final String databaseName, final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(QUERY_PLUGIN_STATUS)) {
-            ShardingSpherePreconditions.checkStatus(resultSet.next() && "ACTIVE".equals(resultSet.getString("PLUGIN_STATUS")), new InvalidMGRPluginException(databaseName));
+            ShardingSpherePreconditions.checkState(resultSet.next() && "ACTIVE".equals(resultSet.getString("PLUGIN_STATUS")), new InvalidMGRPluginException(databaseName));
         }
     }
     
     private void checkSinglePrimaryMode(final String databaseName, final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(QUERY_SINGLE_PRIMARY_MODE)) {
-            ShardingSpherePreconditions.checkStatus(resultSet.next() && "ON".equals(resultSet.getString("VARIABLE_VALUE")), new InvalidMGRModeException(databaseName));
+            ShardingSpherePreconditions.checkState(resultSet.next() && "ON".equals(resultSet.getString("VARIABLE_VALUE")), new InvalidMGRModeException(databaseName));
         }
     }
     
     private void checkGroupName(final String databaseName, final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(QUERY_GROUP_NAME)) {
-            Preconditions.checkState(resultSet.next() && props.getProperty("group-name", "").equals(resultSet.getString("VARIABLE_VALUE")),
-                    "Group name in MGR is not same with configured one `%s` in database `%s`.", props.getProperty("group-name"), databaseName);
+            ShardingSpherePreconditions.checkState(resultSet.next() && props.getProperty("group-name", "").equals(resultSet.getString("VARIABLE_VALUE")),
+                    new InvalidMGRGroupNameConfigurationException(props.getProperty("group-name"), databaseName));
         }
     }
     
