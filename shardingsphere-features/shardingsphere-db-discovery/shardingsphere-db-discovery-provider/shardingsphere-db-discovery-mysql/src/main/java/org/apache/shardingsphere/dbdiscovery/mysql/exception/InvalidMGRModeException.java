@@ -21,13 +21,13 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSpher
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Invalid MGR replication group member exception.
+ * Invalid MGR mode exception.
  */
-public final class InvalidMGRReplicationGroupMemberException extends ShardingSphereSQLException {
+public final class InvalidMGRModeException extends ShardingSphereSQLException {
     
-    private static final long serialVersionUID = 3766206496827463146L;
+    private static final long serialVersionUID = -2190741601319220590L;
     
-    public InvalidMGRReplicationGroupMemberException(final String url, final String databaseName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 23002, "`%s` is not in MGR replication group member in database `%s`", url, databaseName);
+    public InvalidMGRModeException(final String databaseName) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 23001, "MGR is not in single primary mode in database `%s`", databaseName);
     }
 }
