@@ -92,7 +92,6 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -146,14 +145,16 @@ public final class ClusterContextManagerCoordinatorTest {
     
     private Map<String, ShardingSphereDatabase> createDatabases() {
         when(database.getName()).thenReturn("db");
-        when(database.getResource().getDataSources()).thenReturn(Collections.emptyMap());
+        when(database.getResource().getDataSources()).thenReturn(new LinkedHashMap<>());
         when(database.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(database.getProtocolType()).thenReturn(new MySQLDatabaseType());
         when(database.getSchema("foo_schema")).thenReturn(mock(ShardingSphereSchema.class));
         when(database.getRuleMetaData().getRules()).thenReturn(new LinkedList<>());
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         when(database.getRuleMetaData().findRules(ResourceHeldRule.class)).thenReturn(Collections.emptyList());
-        return new HashMap<>(Collections.singletonMap("db", database));
+        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
+        result.put("db", database);
+        return result;
     }
     
     @Test

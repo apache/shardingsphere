@@ -45,6 +45,7 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -205,12 +206,20 @@ public final class ContextManagerTest {
     
     @Test
     public void assertDropResources() throws SQLException {
+        ShardingSphereDatabase database = new ShardingSphereDatabase(
+                "foo_db", new MySQLDatabaseType(), createOriginalResource(), createOriginalRuleMetaData(), Collections.emptyMap());
+        when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(database);
+        Map<String, ShardingSphereDatabase> databases = new LinkedHashMap<>(1, 1);
+        databases.put("foo_db", database);
+        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(databases);
         when(metaDataContexts.getMetaData().getActualDatabaseName("foo_db")).thenReturn("foo_db");
-        when(metaDataContexts.getMetaData().getDatabase("foo_db").getResource().getDataSources()).thenReturn(new HashMap<>(Collections.singletonMap("foo_ds", new MockedDataSource())));
         when(metaDataContexts.getPersistService()).thenReturn(mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS));
-        when(metaDataContexts.getPersistService().getDataSourceService().load("foo_db")).thenReturn(Collections.singletonMap("foo_ds", mock(DataSourceProperties.class)));
-        contextManager.dropResources("foo_db", Collections.singleton("foo_ds"));
-        assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResource().getDataSources().isEmpty());
+        Map<String, DataSourceProperties> dataSourcePropertiesMap = new LinkedHashMap<>(1, 1);
+        dataSourcePropertiesMap.put("ds_1", mock(DataSourceProperties.class));
+        dataSourcePropertiesMap.put("ds_2", mock(DataSourceProperties.class));
+        when(metaDataContexts.getPersistService().getDataSourceService().load("foo_db")).thenReturn(dataSourcePropertiesMap);
+        contextManager.dropResources("foo_db", Arrays.asList("ds_1", "ds_2"));
+        assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("foo_db").getResource().getDataSources().isEmpty());
     }
     
     @Test
@@ -237,7 +246,7 @@ public final class ContextManagerTest {
         when(metaDataContexts.getMetaData().getActualDatabaseName("foo_db")).thenReturn("foo_db");
         when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
         contextManager.alterDataSourceConfiguration("foo_db", Collections.singletonMap("foo_ds", new DataSourceProperties(MockedDataSource.class.getName(), createProperties("test", "test"))));
-        assertThat(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResource().getDataSources().size(), is(1));
+        assertThat(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResource().getDataSources().size(), is(3));
         assertAlteredDataSource((MockedDataSource) contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResource().getDataSources().get("foo_ds"));
     }
     
@@ -273,7 +282,9 @@ public final class ContextManagerTest {
     
     @Test
     public void assertReloadDatabase() {
-        when(metaDataContexts.getMetaData().getDatabase("foo_db").getResource().getDataSources()).thenReturn(Collections.singletonMap("foo_ds", new MockedDataSource()));
+        Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(1, 1);
+        dataSourceMap.put("foo_ds", new MockedDataSource());
+        when(metaDataContexts.getMetaData().getDatabase("foo_db").getResource().getDataSources()).thenReturn(dataSourceMap);
         when(metaDataContexts.getMetaData().getActualDatabaseName("foo_db")).thenReturn("foo_db");
         DatabaseMetaDataPersistService databaseMetaDataPersistService = mock(DatabaseMetaDataPersistService.class, RETURNS_DEEP_STUBS);
         MetaDataPersistService persistService = mock(MetaDataPersistService.class);

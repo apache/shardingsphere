@@ -249,7 +249,7 @@ public final class ContextManager implements AutoCloseable {
         Map<String, ShardingSphereDatabase> reloadDatabases = createChangedDatabases(databaseName, switchingResource, null);
         deleteTableMetaData(metaDataContexts.getMetaData().getDatabase(databaseName), reloadDatabases.get(databaseName.toLowerCase()));
         metaDataContexts.getMetaData().getDatabases().putAll(reloadDatabases);
-        metaDataContexts.getMetaData().getDatabases().putAll(reNewDatabase(metaDataContexts.getMetaData().getDatabase(databaseName), switchingResource));
+        metaDataContexts.getMetaData().getDatabases().putAll(renewDatabase(metaDataContexts.getMetaData().getDatabase(databaseName), switchingResource));
         Map<String, DataSourceProperties> toBeReversedDataSourcePropsMap = getToBeReversedDataSourcePropsMap(dataSourcePropsMap, toBeDroppedResourceNames);
         metaDataContexts.getPersistService().getDataSourceService().persist(metaDataContexts.getMetaData().getActualDatabaseName(databaseName), toBeReversedDataSourcePropsMap);
         switchingResource.closeStaleDataSources();
@@ -263,7 +263,7 @@ public final class ContextManager implements AutoCloseable {
         return dataSourcePropsMap.entrySet().stream().filter(entry -> toBeDroppedResourceNames.contains(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
     
-    private Map<String, ShardingSphereDatabase> reNewDatabase(final ShardingSphereDatabase database, final SwitchingResource resource) {
+    private Map<String, ShardingSphereDatabase> renewDatabase(final ShardingSphereDatabase database, final SwitchingResource resource) {
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
         Map<String, DataSource> newDataSource =
                 database.getResource().getDataSources().entrySet().stream().filter(entry -> !resource.getStaleDataSources().containsKey(entry.getKey()))
