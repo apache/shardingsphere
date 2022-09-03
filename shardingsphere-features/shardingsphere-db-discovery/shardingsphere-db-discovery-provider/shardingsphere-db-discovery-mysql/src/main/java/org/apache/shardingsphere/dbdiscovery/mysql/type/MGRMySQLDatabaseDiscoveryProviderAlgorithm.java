@@ -26,6 +26,7 @@ import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgori
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.SQLWrapperException;
 
 import javax.sql.DataSource;
@@ -105,9 +106,7 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
     
     private void checkPluginActive(final String databaseName, final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(QUERY_PLUGIN_STATUS)) {
-            if (!resultSet.next() || !"ACTIVE".equals(resultSet.getString("PLUGIN_STATUS"))) {
-                throw new InvalidMGRPluginException(databaseName);
-            }
+            ShardingSpherePreconditions.checkStatus(resultSet.next() && "ACTIVE".equals(resultSet.getString("PLUGIN_STATUS")), new InvalidMGRPluginException(databaseName));
         }
     }
     
