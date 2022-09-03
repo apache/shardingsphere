@@ -42,7 +42,6 @@
     <sql-case id="select_case_when" value="select relname,c.oid = oldoid as orig_oid,case relfilenode when 0 then 'none' when c.oid then 'own' when oldfilenode then 'orig' else 'OTHER' end as storage, obj_description(c.oid, 'pg_class') as desc from pg_class c left join old_oids using (relname) where relname like 'at_partitioned%' order by relname" db-types="PostgreSQL" />
     <sql-case id="select_like" value="select conname, obj_description(oid, 'pg_constraint') as desc from pg_constraint where conname like 'at_partitioned%' order by conname" db-types="PostgreSQL" />
     <sql-case id="select_keyword" value="select relname,c.oid = oldoid as orig_oid,case relfilenode when 0 then 'none' when c.oid then 'own' when oldfilenode then 'orig' else 'OTHER' end as storage, obj_description(c.oid, 'pg_class') as desc from pg_class c left join old_oids using (relname) where relname like 'at_partitioned%' order by relname" db-types="PostgreSQL" />
-    <sql-case id="alter_table_set" value="alter table alterlock set (toast.autovacuum_enabled = off)" db-types="PostgreSQL" />
     <sql-case id="create_by_mysql_source_test_case1" value="CREATE  VIEW v1 AS SELECT GROUPING(`߸߸߸߸߸߸߸߸߸߸0123456789012345678901234567890123456789`.a), GROUPING(`߸߸߸߸߸߸߸߸߸߸0123456789012345678901234567890123456789`.a), GROUPING(`߸߸߸߸߸߸߸߸߸߸0123456789012345678901234567890123456789`.a) FROM t1 AS `߸߸߸߸߸߸߸߸߸߸0123456789012345678901234567890123456789` GROUP BY a WITH ROLLUP" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case2" value="CREATE DEFINER = u1@192.129.12.11 VIEW v3 as SELECT * FROM t1" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case4" value="CREATE DEFINER=CURRENT_USER() FUNCTION should_not_parse RETURNS STRING SONAME &quot;should_not_parse.so&quot;" db-types="MySQL" />
@@ -3260,29 +3259,6 @@
     <sql-case id="alter_by_postgresql_source_test_case214" value="ALTER OPERATOR FAMILY alt_opf7 USING btree DROP OPERATOR 1 (int4, int2, int8);" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case215" value="ALTER OPERATOR FAMILY alt_opf8 USING btree ADD OPERATOR 1 &lt; (int4, int4);" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case216" value="ALTER OPERATOR FAMILY alt_opf9 USING gist ADD OPERATOR 1 &lt; (int4, int4) FOR ORDER BY float_ops;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case367" value="ALTER TABLE ONLY gtest30 ALTER COLUMN b DROP EXPRESSION;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case368" value="ALTER TABLE ab1 ALTER a SET STATISTICS -1;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case369" value="ALTER TABLE am_partitioned SET ACCESS METHOD heap2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case370" value="ALTER TABLE badcompresstbl ALTER a SET COMPRESSION I_Do_Not_Exist_Compression;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case371" value="ALTER TABLE cmdata ALTER COLUMN f1 SET COMPRESSION lz4;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case372" value="ALTER TABLE cmdata2 ALTER COLUMN f1 SET COMPRESSION default;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case373" value="ALTER TABLE cmdata2 ALTER COLUMN f1 SET COMPRESSION pglz;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case374" value="ALTER TABLE cmpart1 ALTER COLUMN f1 SET COMPRESSION pglz;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case375" value="ALTER TABLE cmpart2 ALTER COLUMN f1 SET COMPRESSION lz4;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case376" value="ALTER TABLE fd_pt1 ALTER COLUMN c8 SET STATISTICS -1;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case377" value="ALTER TABLE gtest29 ALTER COLUMN a DROP EXPRESSION IF EXISTS;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case378" value="ALTER TABLE gtest29 ALTER COLUMN a DROP EXPRESSION;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case379" value="ALTER TABLE gtest29 ALTER COLUMN b DROP EXPRESSION;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case380" value="ALTER TABLE gtest30 ALTER COLUMN b DROP EXPRESSION;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case381" value="ALTER TABLE gtest30_1 ALTER COLUMN b DROP EXPRESSION;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case382" value="ALTER TABLE heaptable SET ACCESS METHOD heap, SET ACCESS METHOD heap2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case383" value="ALTER TABLE heaptable SET ACCESS METHOD heap2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case384" value="ALTER TABLE no_index_cleanup SET (vacuum_index_cleanup = off,     toast.vacuum_index_cleanup = yes);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case385" value="ALTER TABLE no_index_cleanup SET (vacuum_index_cleanup = true,     toast.vacuum_index_cleanup = false);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case386" value="ALTER TABLE reloptions_test RESET (fillfactor=12);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case387" value="ALTER TABLE reloptions_test RESET (toast.autovacuum_vacuum_cost_delay);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case388" value="ALTER TABLE reloptions_test SET (autovacuum_enabled, fillfactor=32);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case389" value="ALTER TABLE reloptions_test SET (toast.autovacuum_vacuum_cost_delay = 24);" db-types="PostgreSQL" />
     <sql-case id="analyze_by_postgresql_source_test_case1" value="ANALYZE (nonexistent-arg) does_not_exist;" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case124" value="CREATE CONSTRAINT TRIGGER trigtest_constraint AFTER INSERT OR UPDATE OR DELETE ON foreign_schema.foreign_table_1 FOR EACH ROW EXECUTE PROCEDURE dummy_trigger();" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case183" value="CREATE FUNCTION addr_nsp.trig() RETURNS TRIGGER LANGUAGE plpgsql AS $$ BEGIN END; $$;" db-types="PostgreSQL" />
@@ -5104,10 +5080,6 @@
     <sql-case id="low_alter_by_postgresql_source_test_case56" value="alter operator family integer_ops using btree add   operator 3 = (int8alias1, int8alias1);" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case57" value="alter operator family integer_ops using btree add   operator 3 = (int8alias1, int8alias2);" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case58" value="alter operator family integer_ops using btree add   operator 3 = (int8alias2, int8alias2);" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case60" value="alter table anothertab alter column atcol1 type boolean         using case when atcol1 % 2 = 0 then true else fa alter table anothertab alter column atcol1 drop default;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case61" value="alter table anothertab alter column atcol1 type boolean         using case when atcol1 % 2 = 0 then true else fa alter table anothertab drop constraint anothertab_chk;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case62" value="alter table check_con_tbl add check (check_con_function(check_con_tbl.*));" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case63" value="alter table rename;" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case40" value="create constraint trigger parted_trig after insert on parted_constr_ancestor   deferrable   for each row execute procedure trigger_notice_ab();" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case41" value="create constraint trigger parted_trig_two after insert on parted_constr   deferrable initially deferred   for each row when (bark(new.b) AND new.a % 2 = 1)   execute procedure trigger_notice_ab();" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case42" value="create constraint trigger parted_trigger after update on parted_trigger   from parted_referenced   for each row execute procedure trigger_notice_ab();" db-types="PostgreSQL" />
