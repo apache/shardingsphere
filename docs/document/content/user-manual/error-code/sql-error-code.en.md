@@ -70,6 +70,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | HY000     | 23000       | MGR plugin is not active in database \`%s\` |
 | 44000     | 23001       | MGR is not in single primary mode in database \`%s\` |
 | 44000     | 23002       | \`%s\` is not in MGR replication group member in database \`%s\` |
+| 44000     | 23003       | Group name in MGR is not same with configured one \`%s\` in database \`%s\` |
 | HY004     | 27000       | Encrypt algorithm \`%s\` initialize failed, reason is: %s |
 | 0A000     | 27001       | The SQL clause \`%s\` is unsupported in encrypt rule |
 | 44000     | 27002       | Altered column \`%s\` must use same encrypt algorithm with previous column \`%s\` in table \`%s\` |

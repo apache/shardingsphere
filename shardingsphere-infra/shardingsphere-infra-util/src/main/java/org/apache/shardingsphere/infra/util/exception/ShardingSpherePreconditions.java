@@ -34,7 +34,7 @@ public final class ShardingSpherePreconditions {
      * @param expectedExpression expected expression
      * @param exceptionIfUnexpected exception thrown if expression is unexpected
      */
-    public static void checkStatus(final boolean expectedExpression, final ShardingSphereExternalException exceptionIfUnexpected) {
+    public static void checkState(final boolean expectedExpression, final ShardingSphereExternalException exceptionIfUnexpected) {
         if (!expectedExpression) {
             throw exceptionIfUnexpected;
         }
@@ -47,7 +47,7 @@ public final class ShardingSpherePreconditions {
      * @param exceptionIfUnexpected exception thrown if expression is unexpected
      * @throws ShardingSphereInternalException ShardingSphere internal exception
      */
-    public static void checkStatus(final boolean expectedExpression, final ShardingSphereInternalException exceptionIfUnexpected) throws ShardingSphereInternalException {
+    public static void checkState(final boolean expectedExpression, final ShardingSphereInternalException exceptionIfUnexpected) throws ShardingSphereInternalException {
         if (!expectedExpression) {
             throw exceptionIfUnexpected;
         }
