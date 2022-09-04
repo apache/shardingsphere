@@ -23,7 +23,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | HV008     | 10302       | Column index \`%d\` is out of range |
 | HY004     | 10400       | Invalid format for actual data node \`%s\` |
 | 42000     | 11000       | You have an error in your SQL syntax: %s |
-| 42000     | 11001       | configuration error |
 | 42000     | 11002       | Resource does not exist |
 | 42000     | 11003       | Rule does not exist |
 | HY000     | 11004       | File access failed, reason is: %s |
