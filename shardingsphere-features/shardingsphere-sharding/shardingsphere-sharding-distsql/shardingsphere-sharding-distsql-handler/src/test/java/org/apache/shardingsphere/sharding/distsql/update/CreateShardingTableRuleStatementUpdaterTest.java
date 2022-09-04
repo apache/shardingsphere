@@ -154,18 +154,25 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
-    public void assertCheckCreateShardingStatement2Throws() throws DistSQLException {
+    public void assertCheckCreateShardingStatementThrowsInvalidAlgorithm() throws DistSQLException {
+        ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
+        shardingRuleConfiguration.getKeyGenerators().put("snowflake_key_generator", new AlgorithmConfiguration("snowflake", new Properties()));
+        String sql = "CREATE SHARDING TABLE RULE t_order_item (DATANODES('ds_${0..1}.t_order_item_${0..1}'),"
+                + "TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(name='hash_mod',PROPERTIES('sharding-count' = '2')))),"
+                + "KEY_GENERATE_STRATEGY(COLUMN=another_id,KEY_GENERATOR=snowflake_key_generator));";
+        CreateShardingTableRuleStatement createShardingTableRuleStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
+        updater.checkSQLStatement(database, createShardingTableRuleStatement, shardingRuleConfiguration);
+    }
+    
+    @Test(expected = InvalidAlgorithmConfigurationException.class)
+    public void assertCheckCreateShardingStatementThrowsInvalidAlgorithmSecond() throws DistSQLException {
         ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
         Properties hashModProp = new Properties();
         hashModProp.setProperty("sharding-count", "6");
-        
-        // 这个table_inline是自动分配算法
-        shardingRuleConfiguration.getShardingAlgorithms().put("table_inline", new AlgorithmConfiguration("hash_mod", hashModProp));
+        shardingRuleConfiguration.getShardingAlgorithms().put("table_auto_sharding", new AlgorithmConfiguration("hash_mod", hashModProp));
         shardingRuleConfiguration.getKeyGenerators().put("snowflake_key_generator", new AlgorithmConfiguration("snowflake", new Properties()));
-        // 这里是普通的分片配置,指定了 `table_inline` 自动分片算法
-        String sql = "CREATE SHARDING TABLE RULE t_order_item ("
-                + "DATANODES('ds_${0..1}.t_order_item_${0..1}'),"
-                + "TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(name='hash_mod',PROPERTIES('sharding-count' = '6')))),"
+        String sql = "CREATE SHARDING TABLE RULE t_order_item (DATANODES('ds_${0..1}.t_order_item_${0..1}'),"
+                + "TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=table_auto_sharding),"
                 + "KEY_GENERATE_STRATEGY(COLUMN=another_id,KEY_GENERATOR=snowflake_key_generator));";
         CreateShardingTableRuleStatement createShardingTableRuleStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
         updater.checkSQLStatement(database, createShardingTableRuleStatement, shardingRuleConfiguration);
