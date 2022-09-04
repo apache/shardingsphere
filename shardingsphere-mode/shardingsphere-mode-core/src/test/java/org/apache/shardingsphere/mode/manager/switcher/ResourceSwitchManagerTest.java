@@ -60,16 +60,15 @@ public final class ResourceSwitchManagerTest {
     }
     
     private void assertNewDataSources(final SwitchingResource actual) {
-        assertThat(actual.getNewDataSources().size(), is(3));
+        assertThat(actual.getNewDataSources().size(), is(4));
         assertTrue(actual.getNewDataSources().containsKey("not_change"));
         assertTrue(actual.getNewDataSources().containsKey("new"));
         assertTrue(actual.getNewDataSources().containsKey("replace"));
+        assertTrue(actual.getNewDataSources().containsKey("delete"));
     }
     
     private void assertStaleDataSources(final Map<String, DataSource> originalDataSourceMap) throws InterruptedException {
-        assertStaleDataSource((MockedDataSource) originalDataSourceMap.get("delete"));
         assertStaleDataSource((MockedDataSource) originalDataSourceMap.get("replace"));
-        assertNotStaleDataSource((MockedDataSource) originalDataSourceMap.get("not_change"));
     }
     
     @SuppressWarnings("BusyWait")

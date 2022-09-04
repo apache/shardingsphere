@@ -46,7 +46,6 @@ public final class ResourceSwitchManager {
     
     private Map<String, DataSource> createNewDataSources(final ShardingSphereResource resource, final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {
         Map<String, DataSource> result = new LinkedHashMap<>(resource.getDataSources());
-        result.keySet().removeAll(getToBeDeletedDataSources(resource, toBeChangedDataSourceProps).keySet());
         result.putAll(createToBeChangedDataSources(resource, toBeChangedDataSourceProps));
         result.putAll(createToBeAddedDataSources(resource, toBeChangedDataSourceProps));
         return result;
@@ -72,17 +71,6 @@ public final class ResourceSwitchManager {
     }
     
     private Map<String, DataSource> getStaleDataSources(final ShardingSphereResource resource, final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {
-        Map<String, DataSource> result = new LinkedHashMap<>(resource.getDataSources().size(), 1);
-        result.putAll(getToBeDeletedDataSources(resource, toBeChangedDataSourceProps));
-        result.putAll(getToBeChangedDataSources(resource, toBeChangedDataSourceProps));
-        return result;
-    }
-    
-    private Map<String, DataSource> getToBeDeletedDataSources(final ShardingSphereResource resource, final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {
-        return resource.getDataSources().entrySet().stream().filter(entry -> !toBeChangedDataSourceProps.containsKey(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-    }
-    
-    private Map<String, DataSource> getToBeChangedDataSources(final ShardingSphereResource resource, final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {
         Map<String, DataSourceProperties> changedDataSourceProps = getChangedDataSourceProperties(resource, toBeChangedDataSourceProps);
         return resource.getDataSources().entrySet().stream().filter(entry -> changedDataSourceProps.containsKey(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
