@@ -44,7 +44,8 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | HY000     | 16001       | Failed to get DDL for table \`%s\` |
 | 42S02     | 17000       | Single table \`%s\` does not exist |
 | 42S02     | 17001       | Schema \`%s\` does not exist |
-| 0A000     | 17002       | Can not drop schema \`%s\` because of contains tables |
+| HY000     | 17002       | Can not load table with database name \`%s\` and data source name \`%s\` |
+| 0A000     | 17003       | Can not drop schema \`%s\` because of contains tables |
 | 0A000     | 17010       | DROP TABLE ... CASCADE is not supported |
 | HY000     | 20000       | Sharding algorithm class \`%s\` should be implement \`%s\` |
 | 44000     | 20001       | Can not get uniformed table structure for logic table \`%s\`, it has different meta data of actual tables are as follows: %s |
