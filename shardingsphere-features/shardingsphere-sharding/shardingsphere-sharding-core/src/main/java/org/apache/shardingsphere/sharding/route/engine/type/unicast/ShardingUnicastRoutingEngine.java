@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.sharding.exception.DataSourceIntersectionNotFoundException;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
@@ -97,7 +98,7 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
             }
         }
         if (availableDataSourceNames.isEmpty()) {
-            throw new ShardingSphereConfigurationException("Cannot find actual datasource intersection for logic tables: %s", logicTables.toArray(new String[0]));
+            throw new DataSourceIntersectionNotFoundException(logicTables);
         }
         String dataSourceName = getRandomDataSourceName(availableDataSourceNames);
         routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), tableMappers));
