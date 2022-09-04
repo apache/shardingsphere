@@ -43,10 +43,10 @@ public final class PostgreSQLDialectExceptionMapperTest {
     
     private final Class<SQLDialectException> sqlDialectExceptionClazz;
     
-    private final String psqlState;
+    private final String sqlState;
     
     @Parameters(name = "{1} -> {0}")
-    public static Collection<Object[]> getConvertParameters() {
+    public static Collection<Object[]> getParameters() {
         return Arrays.asList(new Object[][]{
                 {DatabaseCreateExistsException.class, "42P04"},
                 {InTransactionException.class, PSQLState.TRANSACTION_STATE_INVALID.getState()},
@@ -58,6 +58,6 @@ public final class PostgreSQLDialectExceptionMapperTest {
     
     @Test
     public void convert() {
-        assertThat(new PostgreSQLDialectExceptionMapper().convert(mock(sqlDialectExceptionClazz)).getSQLState(), is(psqlState));
+        assertThat(new PostgreSQLDialectExceptionMapper().convert(mock(sqlDialectExceptionClazz)).getSQLState(), is(sqlState));
     }
 }
