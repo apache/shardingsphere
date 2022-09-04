@@ -67,6 +67,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 44000     | 20023       | Can not find actual data source intersection for logic tables \`%s\` |
 | 44000     | 20024       | Can not find binding actual table, data source is \`%s\`, logic table is \`%s\`, other actual table is \`%s\` |
 | 44000     | 20025       | Can not find strategy for generate keys with table \`%s\` |
+| HY004     | 20026       | Invalid %s, datetime pattern should be \`%s\`, value is \`%s\` |
 | 42S01     | 20030       | Index \`%s\` already exists |
 | 42S02     | 20031       | Index \`%s\` does not exist |
 | 44000     | 20032       | Actual tables \`%s\` are in use |
