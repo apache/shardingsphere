@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.rule;
 
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.exception.ActualTableNotFoundException;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -53,7 +54,7 @@ public final class BindingTableRuleTest {
         assertThat(createBindingTableRule().getBindingActualTable("ds1", "Sub_Logic_Table", "LOGIC_TABLE", "table_1"), is("SUB_TABLE_1"));
     }
     
-    @Test(expected = ShardingSphereConfigurationException.class)
+    @Test(expected = ActualTableNotFoundException.class)
     public void assertGetBindingActualTablesFailureWhenNotFound() {
         createBindingTableRule().getBindingActualTable("no_ds", "Sub_Logic_Table", "LOGIC_TABLE", "table_1");
     }

@@ -63,6 +63,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 44000     | 20019       | The table inserted and the table selected must be the same or bind tables |
 | 44000     | 20020       | Inline sharding algorithms expression \`%s\` and sharding column \`%s\` do not match |
 | 44000     | 20021       | Actual data nodes must be configured for sharding table \`%s\` |
+| 44000     | 20022       | Actual table \`%s.%s\` is not in table rule configuration |
 | 42S01     | 20030       | Index \`%s\` already exists |
 | 42S02     | 20031       | Index \`%s\` does not exist |
 | 44000     | 20032       | Actual tables \`%s\` are in use |
