@@ -17,36 +17,33 @@
 
 package org.apache.shardingsphere.infra.util.exception;
 
-import java.sql.SQLException;
 import org.apache.shardingsphere.infra.util.exception.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.SQLWrapperException;
 import org.apache.shardingsphere.infra.util.exception.internal.ShardingSphereInternalException;
 import org.apache.shardingsphere.infra.util.exception.internal.fixture.ShardingSphereInternalExceptionFixture;
 import org.junit.Test;
 
+import java.sql.SQLException;
+
 public final class ShardingSpherePreconditionsTest {
     
     @Test(expected = ShardingSphereExternalException.class)
-    public void assertCheckStateThrowsExternalException() {
-        ShardingSphereExternalException exception = new SQLWrapperException(new SQLException());
-        ShardingSpherePreconditions.checkState(false, exception);
+    public void assertCheckStateToThrowsExternalException() {
+        ShardingSpherePreconditions.checkState(false, new SQLWrapperException(new SQLException()));
     }
     
-    @Test(expected = Test.None.class)
+    @Test
     public void assertCheckStateToNotThrowExternalException() {
-        ShardingSphereExternalException exception = new SQLWrapperException(new SQLException());
-        ShardingSpherePreconditions.checkState(true, exception);
+        ShardingSpherePreconditions.checkState(true, new SQLWrapperException(new SQLException()));
     }
     
     @Test(expected = ShardingSphereInternalException.class)
-    public void assertCheckStateThrowsInternalException() throws ShardingSphereInternalException {
-        ShardingSphereInternalException exception = new ShardingSphereInternalExceptionFixture("message");
-        ShardingSpherePreconditions.checkState(false, exception);
+    public void assertCheckStateToThrowsInternalException() throws ShardingSphereInternalException {
+        ShardingSpherePreconditions.checkState(false, new ShardingSphereInternalExceptionFixture("message"));
     }
     
-    @Test(expected = Test.None.class)
+    @Test
     public void assertCheckStateToNotThrowInternalException() throws ShardingSphereInternalException {
-        ShardingSphereInternalException exception = new ShardingSphereInternalExceptionFixture("message");
-        ShardingSpherePreconditions.checkState(true, exception);
+        ShardingSpherePreconditions.checkState(true, new ShardingSphereInternalExceptionFixture("message"));
     }
 }
