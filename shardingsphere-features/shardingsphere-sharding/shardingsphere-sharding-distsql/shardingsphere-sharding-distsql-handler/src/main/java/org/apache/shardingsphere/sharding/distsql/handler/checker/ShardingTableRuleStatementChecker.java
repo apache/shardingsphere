@@ -281,7 +281,8 @@ public final class ShardingTableRuleStatementChecker {
         Collection<String> currentAlgorithms = null == currentRuleConfig ? Collections.emptySet() : currentRuleConfig.getShardingAlgorithms().keySet();
         Collection<String> invalidAlgorithms = rules.stream().map(each -> Arrays.asList(each.getDatabaseStrategySegment(), each.getTableStrategySegment()))
                 .flatMap(Collection::stream).filter(Objects::nonNull).filter(each -> isInvalidStrategy(currentAlgorithms, each))
-                .map(each -> null == each.getShardingAlgorithmName() ? each.getAlgorithmSegment().getName() : each.getShardingAlgorithmName()).collect(Collectors.toList());
+                .map(each -> null != each.getShardingAlgorithmName() ? each.getShardingAlgorithmName() : (null != each.getAlgorithmSegment() ? each.getAlgorithmSegment().getName() : ""))
+                .collect(Collectors.toList());
         DistSQLException.predictionThrow(invalidAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException(databaseName, invalidAlgorithms));
     }
     
