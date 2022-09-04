@@ -25,6 +25,7 @@ import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -150,6 +151,24 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
                 + "KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME='snowflake')))";
         CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
         updater.checkSQLStatement(database, distSQLStatement, null);
+    }
+    
+    @Test(expected = InvalidAlgorithmConfigurationException.class)
+    public void assertCheckCreateShardingStatement2Throws() throws DistSQLException {
+        ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
+        Properties hashModProp = new Properties();
+        hashModProp.setProperty("sharding-count", "6");
+        
+        // 这个table_inline是自动分配算法
+        shardingRuleConfiguration.getShardingAlgorithms().put("table_inline", new AlgorithmConfiguration("hash_mod", hashModProp));
+        shardingRuleConfiguration.getKeyGenerators().put("snowflake_key_generator", new AlgorithmConfiguration("snowflake", new Properties()));
+        // 这里是普通的分片配置,指定了 `table_inline` 自动分片算法
+        String sql = "CREATE SHARDING TABLE RULE t_order_item ("
+                + "DATANODES('ds_${0..1}.t_order_item_${0..1}'),"
+                + "TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(name='hash_mod',PROPERTIES('sharding-count' = '6')))),"
+                + "KEY_GENERATE_STRATEGY(COLUMN=another_id,KEY_GENERATOR=snowflake_key_generator));";
+        CreateShardingTableRuleStatement createShardingTableRuleStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
+        updater.checkSQLStatement(database, createShardingTableRuleStatement, shardingRuleConfiguration);
     }
     
     private AutoTableRuleSegment createCompleteAutoTableRule() {

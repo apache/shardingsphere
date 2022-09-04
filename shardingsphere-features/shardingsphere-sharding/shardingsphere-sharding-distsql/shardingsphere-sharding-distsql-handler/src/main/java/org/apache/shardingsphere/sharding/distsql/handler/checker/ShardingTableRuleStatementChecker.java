@@ -84,8 +84,8 @@ public final class ShardingTableRuleStatementChecker {
     /**
      * Check create sharing table rule statement.
      *
-     * @param database database
-     * @param rules rules
+     * @param database          database
+     * @param rules             rules
      * @param currentRuleConfig current rule configuration
      * @throws DistSQLException definition violation exception
      */
@@ -97,8 +97,8 @@ public final class ShardingTableRuleStatementChecker {
     /**
      * Check alter sharing table rule statement.
      *
-     * @param database database
-     * @param rules rules
+     * @param database          database
+     * @param rules             rules
      * @param currentRuleConfig current rule configuration
      * @throws DistSQLException definition violation exception
      */
@@ -281,19 +281,21 @@ public final class ShardingTableRuleStatementChecker {
         Collection<String> currentAlgorithms = null == currentRuleConfig ? Collections.emptySet() : currentRuleConfig.getShardingAlgorithms().keySet();
         Collection<String> invalidAlgorithms = rules.stream().map(each -> Arrays.asList(each.getDatabaseStrategySegment(), each.getTableStrategySegment()))
                 .flatMap(Collection::stream).filter(Objects::nonNull).filter(each -> isInvalidStrategy(currentAlgorithms, each))
-                .map(ShardingStrategySegment::getShardingAlgorithmName).collect(Collectors.toList());
+                .map(each -> null == each.getShardingAlgorithmName() ? each.getAlgorithmSegment().getName() : each.getShardingAlgorithmName()).collect(Collectors.toList());
         DistSQLException.predictionThrow(invalidAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException(databaseName, invalidAlgorithms));
     }
     
     private static boolean isInvalidStrategy(final Collection<String> currentAlgorithms, final ShardingStrategySegment shardingStrategySegment) {
         return !ShardingStrategyType.contain(shardingStrategySegment.getType())
                 || !ShardingStrategyType.getValueOf(shardingStrategySegment.getType()).isValid(shardingStrategySegment.getShardingColumn())
-                || !isAlgorithmExists(currentAlgorithms, shardingStrategySegment);
+                || !isStandardAlgorithmExists(currentAlgorithms, shardingStrategySegment);
     }
     
-    private static boolean isAlgorithmExists(final Collection<String> currentAlgorithms, final ShardingStrategySegment shardingStrategySegment) {
+    private static boolean isStandardAlgorithmExists(final Collection<String> currentAlgorithms, final ShardingStrategySegment shardingStrategySegment) {
         if (null == shardingStrategySegment.getShardingAlgorithmName() && null != shardingStrategySegment.getAlgorithmSegment()) {
-            return true;
+            ShardingAlgorithm shardingAlgorithm = ShardingAlgorithmFactory.newInstance(
+                    new AlgorithmConfiguration(shardingStrategySegment.getAlgorithmSegment().getName(), shardingStrategySegment.getAlgorithmSegment().getProps()));
+            return !(shardingAlgorithm instanceof ShardingAutoTableAlgorithm);
         }
         return currentAlgorithms.contains(shardingStrategySegment.getShardingAlgorithmName());
     }
