@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.dialect.postgresql.mapper;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 import org.apache.shardingsphere.dialect.exception.connection.TooManyConnectionsException;
 import org.apache.shardingsphere.dialect.exception.data.InsertColumnsAndValuesMismatchedException;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.dialect.exception.transaction.InTransactionExce
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 import org.postgresql.util.PSQLState;
 
 import java.util.Arrays;
@@ -36,18 +38,14 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 @RunWith(Parameterized.class)
+@RequiredArgsConstructor
 public final class PostgreSQLDialectExceptionMapperTest {
     
     private final Class<SQLDialectException> sqlDialectExceptionClazz;
-
+    
     private final String psqlState;
-
-    public PostgreSQLDialectExceptionMapperTest(final Class<SQLDialectException> sqlDialectExceptionClazz, final String psqlState) {
-        this.sqlDialectExceptionClazz = sqlDialectExceptionClazz;
-        this.psqlState = psqlState;
-    }
-
-    @Parameterized.Parameters
+    
+    @Parameters(name = "{1} -> {0}")
     public static Collection<Object[]> getConvertParameters() {
         return Arrays.asList(new Object[][]{
                 {DatabaseCreateExistsException.class, "42P04"},
@@ -59,9 +57,7 @@ public final class PostgreSQLDialectExceptionMapperTest {
     }
     
     @Test
-    @SuppressWarnings("unchecked")
     public void convert() {
-        PostgreSQLDialectExceptionMapper dialectExceptionMapper = new PostgreSQLDialectExceptionMapper();
-        assertThat(dialectExceptionMapper.convert(mock(sqlDialectExceptionClazz)).getSQLState(), is(psqlState));
+        assertThat(new PostgreSQLDialectExceptionMapper().convert(mock(sqlDialectExceptionClazz)).getSQLState(), is(psqlState));
     }
 }
