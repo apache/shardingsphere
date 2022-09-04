@@ -17,38 +17,39 @@
 
 package org.apache.shardingsphere.parser.yaml.swapper;
 
-import static org.junit.Assert.assertEquals;
-
 import org.apache.shardingsphere.parser.yaml.config.YamlSQLParserCacheOptionRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
 public final class YamlSQLParserCacheOptionConfigurationSwapperTest {
     
-    private final YamlSQLParserCacheOptionConfigurationSwapper configurationSwapper = new YamlSQLParserCacheOptionConfigurationSwapper();
+    private final YamlSQLParserCacheOptionConfigurationSwapper cacheOptionConfigurationSwapper = new YamlSQLParserCacheOptionConfigurationSwapper();
     
-    private final CacheOption expectedData = new CacheOption(2, 5);
+    private final CacheOption cacheOption = new CacheOption(2, 5);
     
-    private final YamlSQLParserCacheOptionRuleConfiguration expectedConfiguration = new YamlSQLParserCacheOptionRuleConfiguration();
+    private final YamlSQLParserCacheOptionRuleConfiguration cacheOptionRuleConfiguration = new YamlSQLParserCacheOptionRuleConfiguration();
     
     @Before
     public void setup() {
-        expectedConfiguration.setInitialCapacity(expectedData.getInitialCapacity());
-        expectedConfiguration.setMaximumSize(expectedData.getMaximumSize());
+        cacheOptionRuleConfiguration.setInitialCapacity(cacheOption.getInitialCapacity());
+        cacheOptionRuleConfiguration.setMaximumSize(cacheOption.getMaximumSize());
     }
     
     @Test
-    public void testSwapToYamlConfiguration() {
-        YamlSQLParserCacheOptionRuleConfiguration actualResponse = configurationSwapper.swapToYamlConfiguration(expectedData);
-        assertEquals(expectedConfiguration.getInitialCapacity(), actualResponse.getInitialCapacity());
-        assertEquals(expectedConfiguration.getMaximumSize(), actualResponse.getMaximumSize());
+    public void assertSwapToYamlConfiguration() {
+        YamlSQLParserCacheOptionRuleConfiguration actual = cacheOptionConfigurationSwapper.swapToYamlConfiguration(cacheOption);
+        assertThat(actual.getInitialCapacity(), is(2));
+        assertThat(actual.getMaximumSize(), is(5L));
     }
     
     @Test
-    public void testSwapToObject() {
-        CacheOption actualResponse = configurationSwapper.swapToObject(expectedConfiguration);
-        assertEquals(expectedData.getInitialCapacity(), actualResponse.getInitialCapacity());
-        assertEquals(expectedData.getMaximumSize(), actualResponse.getMaximumSize());
+    public void assertSwapToObject() {
+        CacheOption actual = cacheOptionConfigurationSwapper.swapToObject(cacheOptionRuleConfiguration);
+        assertThat(actual.getInitialCapacity(), is(2));
+        assertThat(actual.getMaximumSize(), is(5L));
     }
 }
