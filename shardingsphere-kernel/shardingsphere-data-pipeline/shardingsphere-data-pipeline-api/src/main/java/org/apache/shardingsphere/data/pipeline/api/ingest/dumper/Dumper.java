@@ -15,24 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.metadata.model;
+package org.apache.shardingsphere.data.pipeline.api.ingest.dumper;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.metadata.PipelineColumnMetaData;
-
-import java.util.List;
+import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
 
 /**
- * Pipeline meta data of index.
+ * Dumper interface.
  */
-@RequiredArgsConstructor
-@Getter
-@ToString
-public final class PipelineIndexMetaData {
-    
-    private final String name;
-    
-    private final List<PipelineColumnMetaData> columns;
+public interface Dumper extends LifecycleExecutor {
 }

@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.dumper;
+package org.apache.shardingsphere.data.pipeline.spi.ingest.dumper;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
-
-import java.util.Optional;
 
 /**
  * Inventory dumper creator factory.
@@ -35,13 +34,12 @@ public class InventoryDumperCreatorFactory {
     }
     
     /**
-     * Get inventoryDumper creator instance.
+     * Get inventory dumper creator instance.
      *
-     * @param databaseType databaseType
-     * @return InventoryDumperCreator
+     * @param databaseType database type
+     * @return inventory dumper creator
      */
     public static InventoryDumperCreator getInstance(final String databaseType) {
-        Optional<InventoryDumperCreator> result = TypedSPIRegistry.findRegisteredService(InventoryDumperCreator.class, databaseType);
-        return result.orElseGet(DefaultInventoryDumperCreator::new);
+        return TypedSPIRegistry.findRegisteredService(InventoryDumperCreator.class, databaseType).orElseGet(() -> RequiredSPIRegistry.getRegisteredService(InventoryDumperCreator.class));
     }
 }

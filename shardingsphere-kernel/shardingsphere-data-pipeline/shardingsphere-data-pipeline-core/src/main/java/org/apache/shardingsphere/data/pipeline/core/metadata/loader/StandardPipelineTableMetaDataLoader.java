@@ -21,9 +21,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.metadata.TableName;
-import org.apache.shardingsphere.data.pipeline.api.metadata.PipelineColumnMetaData;
-import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineIndexMetaData;
-import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
+import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineIndexMetaData;
+import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 
 import java.sql.Connection;
@@ -41,25 +42,18 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Pipeline table metadata loader.
+ * Standard pipeline table metadata loader.
  */
 @RequiredArgsConstructor
 @Slf4j
-// TODO PipelineTableMetaDataLoader SPI
-public final class PipelineTableMetaDataLoader {
+public final class StandardPipelineTableMetaDataLoader implements PipelineTableMetaDataLoader {
     
-    // TODO it doesn't support ShardingSphereDataSource
+    // It doesn't support ShardingSphereDataSource
     private final PipelineDataSourceWrapper dataSource;
     
     private final Map<TableName, PipelineTableMetaData> tableMetaDataMap = new ConcurrentHashMap<>();
     
-    /**
-     * Get table metadata, load if it does not exist.
-     *
-     * @param schemaName schema name. nullable
-     * @param tableName dedicated table name, not table name pattern
-     * @return table metadata
-     */
+    @Override
     public PipelineTableMetaData getTableMetaData(final String schemaName, final String tableName) {
         PipelineTableMetaData result = tableMetaDataMap.get(new TableName(tableName));
         if (null != result) {

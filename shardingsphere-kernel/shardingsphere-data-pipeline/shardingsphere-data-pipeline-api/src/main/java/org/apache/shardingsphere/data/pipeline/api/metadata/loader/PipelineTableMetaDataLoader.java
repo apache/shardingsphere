@@ -15,30 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.dumper;
+package org.apache.shardingsphere.data.pipeline.api.metadata.loader;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
 
 /**
- * Incremental dumper creator factory.
+ * Pipeline table metadata loader.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class IncrementalDumperCreatorFactory {
-    
-    static {
-        ShardingSphereServiceLoader.register(IncrementalDumperCreator.class);
-    }
+public interface PipelineTableMetaDataLoader {
     
     /**
-     * Incremental dumper creator.
+     * Get table metadata, load if it does not exist.
      *
-     * @param databaseType database type
-     * @return Incremental dumper creator
+     * @param schemaName schema name. nullable
+     * @param tableName dedicated table name, not table name pattern
+     * @return table metadata
      */
-    public static IncrementalDumperCreator getInstance(final String databaseType) {
-        return TypedSPIRegistry.getRegisteredService(IncrementalDumperCreator.class, databaseType);
-    }
+    PipelineTableMetaData getTableMetaData(String schemaName, String tableName);
 }

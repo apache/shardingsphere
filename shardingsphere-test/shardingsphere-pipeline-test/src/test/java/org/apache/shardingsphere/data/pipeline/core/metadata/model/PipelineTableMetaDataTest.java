@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.metadata.model;
 
-import org.apache.shardingsphere.data.pipeline.api.metadata.PipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
 import org.junit.Before;
 import org.junit.Test;
 

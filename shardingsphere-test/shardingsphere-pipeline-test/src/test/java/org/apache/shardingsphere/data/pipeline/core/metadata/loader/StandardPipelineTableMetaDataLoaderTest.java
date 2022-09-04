@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.data.pipeline.core.metadata.loader;
 
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
-import org.apache.shardingsphere.data.pipeline.api.metadata.PipelineColumnMetaData;
-import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineIndexMetaData;
-import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
+import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineIndexMetaData;
+import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Before;
@@ -43,7 +44,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 // TODO use H2 to do real test
-public final class PipelineTableMetaDataLoaderTest {
+public final class StandardPipelineTableMetaDataLoaderTest {
     
     private static final String TEST_CATALOG = "catalog";
     
@@ -115,7 +116,7 @@ public final class PipelineTableMetaDataLoaderTest {
     
     @Test
     public void assertGetTableMetaData() {
-        PipelineTableMetaDataLoader metaDataLoader = new PipelineTableMetaDataLoader(dataSource);
+        PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(dataSource);
         PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(null, TEST_TABLE);
         assertColumnMetaData(tableMetaData);
         assertPrimaryKeys(tableMetaData.getPrimaryKeyColumns());
@@ -151,6 +152,6 @@ public final class PipelineTableMetaDataLoaderTest {
     @Test(expected = RuntimeException.class)
     public void assertGetTableMetaDataFailure() throws SQLException {
         when(dataSource.getConnection()).thenThrow(new SQLException(""));
-        new PipelineTableMetaDataLoader(dataSource).getTableMetaData(null, TEST_TABLE);
+        new StandardPipelineTableMetaDataLoader(dataSource).getTableMetaData(null, TEST_TABLE);
     }
 }

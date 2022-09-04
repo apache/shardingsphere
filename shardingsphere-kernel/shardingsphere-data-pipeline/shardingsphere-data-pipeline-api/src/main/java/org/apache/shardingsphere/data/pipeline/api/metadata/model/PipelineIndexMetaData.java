@@ -15,10 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.ingest.dumper;
+package org.apache.shardingsphere.data.pipeline.api.metadata.model;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+
+import java.util.List;
 
 /**
- * Incremental dumper.
+ * Pipeline meta data of index.
  */
-public interface IncrementalDumper extends Dumper {
+@RequiredArgsConstructor
+@Getter
+@ToString
+public final class PipelineIndexMetaData {
+    
+    private final String name;
+    
+    private final List<PipelineColumnMetaData> columns;
 }

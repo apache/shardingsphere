@@ -15,29 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.dumper;
+package org.apache.shardingsphere.data.pipeline.spi.ingest.dumper;
 
-import javax.sql.DataSource;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.InventoryDumper;
+import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.InventoryDumper;
+import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+
+import javax.sql.DataSource;
 
 /**
  * Inventory dumper creator.
  */
 @SingletonSPI
-public interface InventoryDumperCreator extends TypedSPI {
+public interface InventoryDumperCreator extends TypedSPI, RequiredSPI {
     
     /**
-     * Create Inventory Dumper.
-     * @param inventoryDumperConfig inventoryDumperConfig
+     * Create inventory dumper.
+     *
+     * @param inventoryDumperConfig inventory dumper configuration
      * @param channel chanel
-     * @param sourceDataSource sourceDataSource
-     * @param sourceMetaDataLoader sourceMetaDataLoader
-     * @return InventoryDumper
+     * @param sourceDataSource source data source
+     * @param sourceMetaDataLoader source meta data loader
+     * @return inventory dumper
      */
     InventoryDumper createInventoryDumper(InventoryDumperConfiguration inventoryDumperConfig, PipelineChannel channel,
                                           DataSource sourceDataSource, PipelineTableMetaDataLoader sourceMetaDataLoader);
