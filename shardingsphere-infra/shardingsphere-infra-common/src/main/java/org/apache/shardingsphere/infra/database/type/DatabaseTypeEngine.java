@@ -23,13 +23,13 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
 import org.apache.shardingsphere.infra.util.exception.sql.SQLWrapperException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
@@ -64,9 +64,7 @@ public final class DatabaseTypeEngine {
         if (configuredDatabaseType.isPresent()) {
             return configuredDatabaseType.get();
         }
-        Collection<DataSource> dataSources = databaseConfigs.values().stream()
-                .filter(each -> !each.getDataSources().isEmpty()).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList);
-        return getDatabaseType(dataSources);
+        return getDatabaseType(DataSourceStateManager.getInstance().getNonDisabledDataSources(databaseConfigs));
     }
     
     /**
@@ -76,8 +74,7 @@ public final class DatabaseTypeEngine {
      * @return storage type
      */
     public static DatabaseType getStorageType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
-        return getDatabaseType(
-                databaseConfigs.values().stream().filter(each -> !each.getDataSources().isEmpty()).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList));
+        return getDatabaseType(DataSourceStateManager.getInstance().getNonDisabledDataSources(databaseConfigs));
     }
     
     /**

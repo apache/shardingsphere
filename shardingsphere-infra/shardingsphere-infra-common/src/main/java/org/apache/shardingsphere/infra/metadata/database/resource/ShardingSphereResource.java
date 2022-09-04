@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -48,7 +49,7 @@ public final class ShardingSphereResource {
     
     public ShardingSphereResource(final Map<String, DataSource> dataSources) {
         this.dataSources = dataSources;
-        databaseType = getDatabaseType(dataSources);
+        databaseType = getDatabaseType(DataSourceStateManager.getInstance().filterDisabledDataSources(dataSources));
         dataSourceMetaDataMap = createDataSourceMetaDataMap(dataSources);
     }
     

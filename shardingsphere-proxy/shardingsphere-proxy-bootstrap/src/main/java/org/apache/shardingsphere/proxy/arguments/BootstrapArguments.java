@@ -74,6 +74,19 @@ public final class BootstrapArguments {
         return args.length < 3 ? Collections.singletonList(DEFAULT_BIND_ADDRESS) : Arrays.asList(args[2].split(","));
     }
     
+    /**
+     * Get force startup parameter.
+     *
+     * @return force parameter
+     */
+    public boolean getForce() {
+        return args.length >= 4 && parseForceParameter(args[3]);
+    }
+    
+    private boolean parseForceParameter(final String forceParam) {
+        return forceParam.trim().equals("-f");
+    }
+    
     private String paddingWithSlash(final String pathArg) {
         StringBuilder result = new StringBuilder(pathArg);
         if (!pathArg.startsWith("/")) {
