@@ -5080,6 +5080,10 @@
     <sql-case id="low_alter_by_postgresql_source_test_case56" value="alter operator family integer_ops using btree add   operator 3 = (int8alias1, int8alias1);" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case57" value="alter operator family integer_ops using btree add   operator 3 = (int8alias1, int8alias2);" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case58" value="alter operator family integer_ops using btree add   operator 3 = (int8alias2, int8alias2);" db-types="PostgreSQL" />
+    <sql-case id="low_alter_by_postgresql_source_test_case60" value="alter table anothertab alter column atcol1 type boolean         using case when atcol1 % 2 = 0 then true else fa alter table anothertab alter column atcol1 drop default;" db-types="PostgreSQL" />
+    <sql-case id="low_alter_by_postgresql_source_test_case61" value="alter table anothertab alter column atcol1 type boolean         using case when atcol1 % 2 = 0 then true else fa alter table anothertab drop constraint anothertab_chk;" db-types="PostgreSQL" />
+    <sql-case id="low_alter_by_postgresql_source_test_case62" value="alter table check_con_tbl add check (check_con_function(check_con_tbl.*));" db-types="PostgreSQL" />
+    <sql-case id="low_alter_by_postgresql_source_test_case63" value="alter table rename;" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case40" value="create constraint trigger parted_trig after insert on parted_constr_ancestor   deferrable   for each row execute procedure trigger_notice_ab();" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case41" value="create constraint trigger parted_trig_two after insert on parted_constr   deferrable initially deferred   for each row when (bark(new.b) AND new.a % 2 = 1)   execute procedure trigger_notice_ab();" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case42" value="create constraint trigger parted_trigger after update on parted_trigger   from parted_referenced   for each row execute procedure trigger_notice_ab();" db-types="PostgreSQL" />
