@@ -19,10 +19,10 @@ package org.apache.shardingsphere.singletable.datanode;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.SchemaTableNamesLoader;
+import org.apache.shardingsphere.singletable.exception.SingleTablesLoadingException;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -87,7 +87,7 @@ public final class SingleTableDataNodeLoader {
         try {
             return SchemaTableNamesLoader.loadSchemaTableNames(databaseName, databaseType, dataSource);
         } catch (final SQLException ex) {
-            throw new ShardingSphereConfigurationException("Can not load table, databaseName: %s, dataSourceName: %s", databaseName, dataSourceName);
+            throw new SingleTablesLoadingException(databaseName, dataSourceName, ex);
         }
     }
 }
