@@ -254,8 +254,10 @@ public final class ShardingRuleStatementCheckerTest {
     
     private TableRuleSegment createCompleteTableRule() {
         TableRuleSegment result = new TableRuleSegment("t_product_1", Collections.singletonList("ds_${0..1}.t_order${0..1}"));
-        result.setTableStrategySegment(new ShardingStrategySegment("hint", "product_id", "t_order_algorithm", null));
-        result.setDatabaseStrategySegment(new ShardingStrategySegment("hint", "product_id", "t_order_algorithm", null));
+        Properties props = new Properties();
+        props.setProperty("algorithm-expression", "product_${product_id % 4");
+        result.setTableStrategySegment(new ShardingStrategySegment("hint", "product_id", null, new AlgorithmSegment("inline", props)));
+        result.setDatabaseStrategySegment(new ShardingStrategySegment("hint", "product_id", null, new AlgorithmSegment("inline", props)));
         result.setKeyGenerateStrategySegment(new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())));
         return result;
     }
