@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.rule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.sharding.exception.ActualTableNotFoundException;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -60,7 +61,7 @@ public final class BindingTableRule {
         Optional<TableRule> otherLogicTableRule = Optional.ofNullable(tableRules.get(otherLogicTable.toLowerCase()));
         int index = otherLogicTableRule.map(optional -> optional.findActualTableIndex(dataSource, otherActualTable)).orElse(-1);
         if (-1 == index) {
-            throw new ShardingSphereConfigurationException("Actual table [%s].[%s] is not in table config", dataSource, otherActualTable);
+            throw new ActualTableNotFoundException(dataSource, otherActualTable);
         }
         Optional<TableRule> tableRule = Optional.ofNullable(tableRules.get(logicTable.toLowerCase()));
         if (tableRule.isPresent()) {
