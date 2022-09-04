@@ -173,7 +173,8 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getTables().add(createTableRuleConfiguration());
         result.getAutoTables().add(createAutoTableRuleConfiguration());
-        result.getShardingAlgorithms().put("t_order_algorithm", new AlgorithmConfiguration("hash_mod", createProperties("sharding-count", "4")));
+        result.getShardingAlgorithms().put("t_order_auto_algorithm", new AlgorithmConfiguration("hash_mod", createProperties("sharding-count", "4")));
+        result.getShardingAlgorithms().put("t_order_algorithm", new AlgorithmConfiguration("inline", createProperties("algorithm-expression", "product_${product_id % 2}")));
         result.getKeyGenerators().put("t_order_item_snowflake", new AlgorithmConfiguration("snowflake", new Properties()));
         return result;
     }
