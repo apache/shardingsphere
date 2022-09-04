@@ -17,15 +17,8 @@
 
 package org.apache.shardingsphere.mode.metadata;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceGeneratedDatabaseConfiguration;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseMetaDataPersistService;
@@ -33,138 +26,77 @@ import org.apache.shardingsphere.mode.metadata.persist.service.config.database.D
 import org.apache.shardingsphere.mode.metadata.persist.service.config.global.GlobalRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.config.global.PropertiesPersistService;
 import org.apache.shardingsphere.test.fixture.rule.MockedRuleConfiguration;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.sql.DataSource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Properties;
-import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MetaDataContextsFactoryTest {
+public final class MetaDataContextsFactoryTest {
     
     @Mock
-    private MetaDataPersistService mockMetadataPersistService;
+    private MetaDataPersistService metaDataPersistService;
     
     @Mock
-    private InstanceContext mockInstanceContext;
+    private DatabaseMetaDataPersistService databaseMetaDataPersistService;
     
-    @Mock
-    private ComputeNodeInstance mockComputeNodeInstance;
+    @Before
+    public void setUp() {
+        when(metaDataPersistService.getEffectiveDataSources(eq("foo_db"), Mockito.anyMap())).thenReturn(Collections.singletonMap("foo_ds", new MockedDataSource()));
+        DatabaseRulePersistService databaseRulePersistService = mockDatabaseRulePersistService();
+        when(metaDataPersistService.getDatabaseRulePersistService()).thenReturn(databaseRulePersistService);
+        GlobalRulePersistService globalRulePersistService = mockGlobalRulePersistService();
+        when(metaDataPersistService.getGlobalRuleService()).thenReturn(globalRulePersistService);
+        PropertiesPersistService propertiesPersistService = mock(PropertiesPersistService.class);
+        when(propertiesPersistService.load()).thenReturn(new Properties());
+        when(metaDataPersistService.getPropsService()).thenReturn(propertiesPersistService);
+        when(metaDataPersistService.getDatabaseMetaDataService()).thenReturn(databaseMetaDataPersistService);
+    }
     
-    @Mock
-    private JDBCInstanceMetaData mockJDBCInstanceMetadata;
+    private DatabaseRulePersistService mockDatabaseRulePersistService() {
+        DatabaseRulePersistService result = mock(DatabaseRulePersistService.class);
+        when(result.load("foo_db")).thenReturn(Collections.singleton(new MockedRuleConfiguration("database_name")));
+        return result;
+    }
     
-    @Mock
-    private DataSourceGeneratedDatabaseConfiguration dataSourceGeneratedDatabaseConfiguration;
-    
-    @Mock
-    private DatabaseRulePersistService mockDatabaseRulePersistService;
-    
-    @Mock
-    private GlobalRulePersistService mockGlobalRulePersistService;
-    
-    @Mock
-    private PropertiesPersistService mockPropertiesPersistService;
-    
-    @Mock
-    private DatabaseMetaDataPersistService mockDatabaseMetaDataPersistService;
-    
-    private final Properties mockProperties = new Properties();
-    
-    @Test
-    public void createFactoryWithJDBCInstanceMetadata() throws Exception {
-        initJDBCInstanceMock();
-        initCommonMocks();
-        
-        ContextManagerBuilderParameter parameter = getContextManagerBuilderParameter();
-        MetaDataContexts actualResponse = MetaDataContextsFactory.create(mockMetadataPersistService, parameter, mockInstanceContext);
-        
-        assertNotNull(actualResponse);
-        assertEquals(mockMetadataPersistService, actualResponse.getPersistService());
+    private GlobalRulePersistService mockGlobalRulePersistService() {
+        GlobalRulePersistService result = mock(GlobalRulePersistService.class);
+        when(result.load()).thenReturn(Collections.singleton(new MockedRuleConfiguration("global_name")));
+        return result;
     }
     
     @Test
-    public void createFactoryWithNonJDBCInstanceMetadata() throws Exception {
-        initNonJDBCInstanceMock();
-        initCommonMocks();
-        
-        ContextManagerBuilderParameter parameter = getContextManagerBuilderParameter();
-        
-        MetaDataContexts actualResponse = MetaDataContextsFactory.create(mockMetadataPersistService, parameter, mockInstanceContext);
-        
-        assertNotNull(actualResponse);
-        assertEquals(mockMetadataPersistService, actualResponse.getPersistService());
+    public void createFactoryWithJDBCInstanceMetadata() throws SQLException {
+        MetaDataContexts actual = MetaDataContextsFactory.create(metaDataPersistService, createContextManagerBuilderParameter(), mock(InstanceContext.class, RETURNS_DEEP_STUBS));
+        assertThat(actual.getPersistService(), is(metaDataPersistService));
+        // TODO assert metaData
     }
     
-    private void initJDBCInstanceMock() {
-        when(mockComputeNodeInstance.getMetaData()).thenReturn(mockJDBCInstanceMetadata);
-        when(mockInstanceContext.getInstance()).thenReturn(mockComputeNodeInstance);
+    @Test
+    public void createFactoryWithProxyInstanceMetadata() throws SQLException {
+        when(databaseMetaDataPersistService.loadAllDatabaseNames()).thenReturn(Collections.singletonList("foo_db"));
+        when(metaDataPersistService.getDatabaseMetaDataService()).thenReturn(databaseMetaDataPersistService);
+        MetaDataContexts actual = MetaDataContextsFactory.create(metaDataPersistService, createContextManagerBuilderParameter(), mock(InstanceContext.class, RETURNS_DEEP_STUBS));
+        assertThat(actual.getPersistService(), is(metaDataPersistService));
+        // TODO assert metaData
     }
     
-    private void initNonJDBCInstanceMock() {
-        when(mockComputeNodeInstance.getMetaData()).thenReturn(null);
-        when(mockInstanceContext.getInstance()).thenReturn(mockComputeNodeInstance);
-        
-        Set<String> mockDatabaseNames = new HashSet<>();
-        mockDatabaseNames.add("h2");
-        
-        when(mockDatabaseMetaDataPersistService.loadAllDatabaseNames()).thenReturn(mockDatabaseNames);
-        when(mockMetadataPersistService.getDatabaseMetaDataService()).thenReturn(mockDatabaseMetaDataPersistService);
-    }
-    
-    private ContextManagerBuilderParameter getContextManagerBuilderParameter() {
-        Map<String, DatabaseConfiguration> mockDatabaseConfigs = new HashMap<>();
-        mockDatabaseConfigs.put("h2", dataSourceGeneratedDatabaseConfiguration);
-        
-        return new ContextManagerBuilderParameter(null, mockDatabaseConfigs, new ArrayList<>(), mockProperties, new ArrayList<>(), null);
-    }
-    
-    private void initCommonMocks() {
-        Map<String, DataSource> mockEffectiveDataSources = new HashMap<>();
-        mockEffectiveDataSources.put("hikari", getHikariDataSource());
-        
-        when(mockMetadataPersistService.getEffectiveDataSources(eq("h2"), Mockito.anyMap())).thenReturn(mockEffectiveDataSources);
-        when(mockMetadataPersistService.getDatabaseRulePersistService()).thenReturn(mockDatabaseRulePersistService);
-        
-        List<RuleConfiguration> dbRuleConfigurations = new ArrayList<>();
-        dbRuleConfigurations.add(new MockedRuleConfiguration("h2RuleConfig"));
-        
-        when(mockDatabaseRulePersistService.load("h2")).thenReturn(dbRuleConfigurations);
-        when(mockMetadataPersistService.getGlobalRuleService()).thenReturn(mockGlobalRulePersistService);
-        
-        List<RuleConfiguration> globalRuleConfigurations = new ArrayList<>();
-        globalRuleConfigurations.add(new MockedRuleConfiguration("globalRuleConfig"));
-        
-        when(mockGlobalRulePersistService.load()).thenReturn(globalRuleConfigurations);
-        when(mockMetadataPersistService.getPropsService()).thenReturn(mockPropertiesPersistService);
-        when(mockPropertiesPersistService.load()).thenReturn(mockProperties);
-        when(mockMetadataPersistService.getDatabaseMetaDataService()).thenReturn(mockDatabaseMetaDataPersistService);
-        
-        Map<String, ShardingSphereSchema> schemas = new HashMap<>();
-        when(mockDatabaseMetaDataPersistService.load(eq("h2"))).thenReturn(schemas);
-    }
-    
-    private HikariDataSource getHikariDataSource() {
-        Properties props = new Properties();
-        props.setProperty("jdbcUrl", "jdbc:h2:mem:config;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
-        props.setProperty("username", "sa");
-        props.setProperty("password", "");
-        
-        HikariConfig hikariConfig = new HikariConfig(props);
-        return new HikariDataSource(hikariConfig);
+    private ContextManagerBuilderParameter createContextManagerBuilderParameter() {
+        return new ContextManagerBuilderParameter(null, 
+                Collections.singletonMap("foo_db", mock(DataSourceGeneratedDatabaseConfiguration.class)), Collections.emptyList(), new Properties(), Collections.emptyList(), null);
     }
 }
