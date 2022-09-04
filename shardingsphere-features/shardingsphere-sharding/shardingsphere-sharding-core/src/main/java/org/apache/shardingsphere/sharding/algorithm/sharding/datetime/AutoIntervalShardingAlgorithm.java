@@ -20,11 +20,11 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.datetime;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Range;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
+import org.apache.shardingsphere.sharding.exception.InvalidDatetimeFormatException;
 
 import java.text.DecimalFormat;
 import java.text.ParsePosition;
@@ -73,7 +73,7 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
         try {
             return LocalDateTime.parse(value, DATE_TIME_FORMAT);
         } catch (final DateTimeParseException ex) {
-            throw new ShardingSphereConfigurationException("Invalid %s, datetime pattern should be `yyyy-MM-dd HH:mm:ss`, value is `%s`", DATE_TIME_LOWER_KEY, value);
+            throw new InvalidDatetimeFormatException(DATE_TIME_LOWER_KEY, value, "yyyy-MM-dd HH:mm:ss");
         }
     }
     

@@ -21,7 +21,6 @@ import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
-import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -80,7 +79,7 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
         return result;
     }
     
-    private void routeWithMultipleTables(final RouteContext routeContext, final ShardingRule shardingRule) throws ShardingSphereConfigurationException {
+    private void routeWithMultipleTables(final RouteContext routeContext, final ShardingRule shardingRule) {
         List<RouteMapper> tableMappers = new ArrayList<>(logicTables.size());
         Set<String> availableDataSourceNames = Collections.emptySet();
         boolean first = true;

@@ -23,7 +23,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | HV008     | 10302       | Column index \`%d\` is out of range |
 | HY004     | 10400       | Invalid format for actual data node \`%s\` |
 | 42000     | 11000       | You have an error in your SQL syntax: %s |
-| 42000     | 11001       | configuration error |
 | 42000     | 11002       | Resource does not exist |
 | 42000     | 11003       | Rule does not exist |
 | HY000     | 11004       | File access failed, reason is: %s |
@@ -65,6 +64,9 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 44000     | 20021       | Actual data nodes must be configured for sharding table \`%s\` |
 | 44000     | 20022       | Actual table \`%s.%s\` is not in table rule configuration |
 | 44000     | 20023       | Can not find actual data source intersection for logic tables \`%s\` |
+| 44000     | 20024       | Can not find binding actual table, data source is \`%s\`, logic table is \`%s\`, other actual table is \`%s\` |
+| 44000     | 20025       | Can not find strategy for generate keys with table \`%s\` |
+| HY004     | 20026       | Invalid %s, datetime pattern should be \`%s\`, value is \`%s\` |
 | 42S01     | 20030       | Index \`%s\` already exists |
 | 42S02     | 20031       | Index \`%s\` does not exist |
 | 44000     | 20032       | Actual tables \`%s\` are in use |

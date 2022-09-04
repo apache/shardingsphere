@@ -21,10 +21,10 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
+import org.apache.shardingsphere.sharding.exception.InvalidDatetimeFormatException;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -41,10 +41,10 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalQueries;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
-import java.util.Date;
 import java.util.stream.Collectors;
 
 /**
@@ -112,7 +112,7 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         try {
             return dateTimeFormatter.parse(dateTimeValue);
         } catch (final DateTimeParseException ex) {
-            throw new ShardingSphereConfigurationException("Invalid %s, datetime pattern should be `%s`, value is `%s`", dateTimeKey, dateTimePattern, dateTimeValue);
+            throw new InvalidDatetimeFormatException(dateTimeKey, dateTimeValue, dateTimePattern);
         }
     }
     

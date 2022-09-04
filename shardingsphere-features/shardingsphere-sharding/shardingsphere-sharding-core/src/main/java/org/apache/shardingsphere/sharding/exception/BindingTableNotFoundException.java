@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.exception;
+package org.apache.shardingsphere.sharding.exception;
 
 import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Configuration exception.
+ * Binding table not found exception.
  */
-public final class ShardingSphereConfigurationException extends ShardingSphereSQLException {
+public final class BindingTableNotFoundException extends ShardingSphereSQLException {
     
-    private static final long serialVersionUID = -1360264079938958332L;
+    private static final long serialVersionUID = -8845309665057958820L;
     
-    public ShardingSphereConfigurationException(final String reason, final Object... messageArguments) {
-        super(XOpenSQLState.SYNTAX_ERROR, 11001, reason, messageArguments);
+    public BindingTableNotFoundException(final String dataSource, final String logicTable, final String otherActualTable) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 20024,
+                "Can not find binding actual table, data source is `%s`, logic table is `%s`, other actual table is `%s`", dataSource, logicTable, otherActualTable);
     }
 }
