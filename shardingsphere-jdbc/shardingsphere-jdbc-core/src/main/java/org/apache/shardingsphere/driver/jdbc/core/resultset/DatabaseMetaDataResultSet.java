@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
 import lombok.EqualsAndHashCode;
+import org.apache.shardingsphere.driver.jdbc.exception.ColumnIndexOutOfRangeException;
+import org.apache.shardingsphere.driver.jdbc.exception.ColumnLabelNotFoundException;
 import org.apache.shardingsphere.driver.jdbc.exception.ResultSetClosedException;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedDatabaseMetaDataResultSet;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtil;
@@ -361,7 +363,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     public int findColumn(final String columnLabel) throws SQLException {
         checkClosed();
         if (!columnLabelIndexMap.containsKey(columnLabel)) {
-            throw new SQLException(String.format("Can not find columnLabel %s", columnLabel));
+            throw new ColumnLabelNotFoundException(columnLabel).toSQLException();
         }
         return columnLabelIndexMap.get(columnLabel);
     }
@@ -411,7 +413,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     
     private void checkColumnIndex(final int columnIndex) throws SQLException {
         if (columnIndex < 1 || columnIndex > resultSetMetaData.getColumnCount()) {
-            throw new SQLException(String.format("ColumnIndex %d out of range from %d to %d", columnIndex, 1, resultSetMetaData.getColumnCount()));
+            throw new ColumnIndexOutOfRangeException(columnIndex).toSQLException();
         }
     }
     

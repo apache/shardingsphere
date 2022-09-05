@@ -49,7 +49,7 @@ public final class AlterSchemaStatementHandlerTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get().getValue(), is("new_schema"));
     }
-
+    
     @Test
     public void assertGetRenameSchemaForSQLServer() {
         SQLServerAlterSchemaStatement alterSchemaStatement = new SQLServerAlterSchemaStatement();

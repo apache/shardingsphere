@@ -21,6 +21,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | HY000     | 10300       | Could not support variable \`%s\` |
 | HY004     | 10301       | Invalid value \`%s\` |
 | HV008     | 10302       | Column index \`%d\` is out of range |
+| 42S02     | 10303       | Can not find column label \`%s`\ |
 | HY004     | 10400       | Invalid format for actual data node \`%s\` |
 | HY000     | 10500       | Result set has been closed |
 | 42000     | 11000       | You have an error in your SQL syntax: %s |
