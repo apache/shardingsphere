@@ -18,18 +18,17 @@
 package org.apache.shardingsphere.data.pipeline.core.execute;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
+import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJob;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPIFactory;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobPreparer;
+import org.apache.shardingsphere.data.pipeline.spi.process.JobConfigEventProcess;
+import org.apache.shardingsphere.data.pipeline.spi.process.JobConfigEventProcessFactory;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -75,16 +74,16 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
     private void processEvent(final DataChangedEvent event, final JobConfigurationPOJO jobConfigPOJO) {
         boolean isDeleted = DataChangedEvent.Type.DELETED == event.getType();
         boolean isDisabled = jobConfigPOJO.isDisabled();
+        String jobId = jobConfigPOJO.getJobName();
+        JobType jobType = PipelineJobIdUtils.parseJobType(jobId);
         if (isDeleted || isDisabled) {
-            String jobId = jobConfigPOJO.getJobName();
             log.info("jobId={}, deleted={}, disabled={}", jobId, isDeleted, isDisabled);
-            // TODO refactor: dispatch to different job types
-            MigrationJobConfiguration jobConfig = YamlMigrationJobConfigurationSwapper.swapToObject(jobConfigPOJO.getJobParameter());
+            JobConfigEventProcess process = JobConfigEventProcessFactory.getInstance(jobType);
             if (isDeleted) {
-                new MigrationJobPreparer().cleanup(jobConfig);
-            } else if (PipelineJobProgressDetector.isJobSuccessful(jobConfig.getJobShardingCount(), MigrationJobAPIFactory.getInstance().getJobProgress(jobConfig).values())) {
+                process.cleanup(jobConfigPOJO.getJobParameter());
+            } else if (process.isJobSuccessful(jobConfigPOJO.getJobParameter())) {
                 log.info("isJobSuccessful=true");
-                new MigrationJobPreparer().cleanup(jobConfig);
+                process.cleanup(jobConfigPOJO.getJobParameter());
             }
             PipelineJobCenter.stop(jobId);
             return;
