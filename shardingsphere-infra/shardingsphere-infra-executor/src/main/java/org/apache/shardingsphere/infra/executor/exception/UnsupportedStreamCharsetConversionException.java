@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.exception;
+package org.apache.shardingsphere.infra.executor.exception;
 
 import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Empty SQL exception.
+ * Unsupported stream charset conversion exception.
  */
-public final class EmptySQLException extends ShardingSphereSQLException {
+public final class UnsupportedStreamCharsetConversionException extends ShardingSphereSQLException {
     
-    private static final long serialVersionUID = -5723825491720138339L;
+    private static final long serialVersionUID = 4577091201937095156L;
     
-    public EmptySQLException() {
-        super(XOpenSQLState.GENERAL_ERROR.getValue(), 10006, "SQL String can not be NULL or empty");
+    public UnsupportedStreamCharsetConversionException(final String charsetType) {
+        super(XOpenSQLState.INVALID_DATA_TYPE, 10005, "Unsupported conversion stream charset `%s`", charsetType);
     }
 }

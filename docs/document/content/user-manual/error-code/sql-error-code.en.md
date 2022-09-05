@@ -15,7 +15,8 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 42000     | 10002       | Can not support 3-tier structure for actual data node \`%s\` with JDBC \`%s\` |
 | 42000     | 10003       | Unsupported SQL node conversion for SQL statement \`%s\` |
 | HY004     | 10004       | Unsupported conversion data type \`%s\` for value \`%s\` |
-| HY004     | 10005       | SQL String can not be NULL or empty |
+| HY004     | 10005       | Unsupported conversion stream charset \`%s\` |
+| HY004     | 10006       | SQL String can not be NULL or empty |
 | HY004     | 10100       | Can not register driver, reason is: %s |
 | 34000     | 10200       | Can not get cursor name from fetch statement |
 | HY000     | 10300       | Could not support variable \`%s\` |
