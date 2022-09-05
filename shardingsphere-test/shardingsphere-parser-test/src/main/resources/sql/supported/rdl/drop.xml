@@ -47,6 +47,8 @@
     <distsql-case id="drop-default-single-table-if-exists" value="DROP DEFAULT SINGLE TABLE RULE IF EXISTS" />
     <distsql-case id="drop-sharding-key-generator" value="DROP SHARDING KEY GENERATOR uuid_key_generator" />
     <distsql-case id="drop-sharding-key-generator-if-exists" value="DROP SHARDING KEY GENERATOR IF EXISTS uuid_key_generator" />
+    <distsql-case id="drop-sharding-auditor" value="DROP SHARDING AUDITOR sharding_key_required_auditor" />
+    <distsql-case id="drop-sharding-auditor-if-exists" value="DROP SHARDING AUDITOR IF EXISTS sharding_key_required_auditor" />
     <distsql-case id="drop-default-sharding-strategy" value="DROP DEFAULT SHARDING TABLE STRATEGY" />
     <distsql-case id="drop-default-sharding-strategy-if-exists" value="DROP DEFAULT SHARDING TABLE STRATEGY IF EXISTS" />
     <distsql-case id="drop-sharding-algorithm" value="DROP SHARDING ALGORITHM IF EXISTS t_order_hash_mod" />
