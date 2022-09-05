@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.d
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.metadata.JDBCQueryResultMetaData;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.UnsupportedDataTypeConversionException;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.stream.AbstractStreamQueryResult;
 
 import java.io.InputStream;
@@ -101,7 +102,7 @@ public final class JDBCStreamQueryResult extends AbstractStreamQueryResult {
         if (Timestamp.class == type) {
             return resultSet.getTimestamp(columnIndex, calendar);
         }
-        throw new SQLException(String.format("Unsupported type: %s", type));
+        throw new UnsupportedDataTypeConversionException(type, calendar);
     }
     
     @SuppressWarnings("deprecation")
