@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster;
 
+import org.apache.shardingsphere.infra.instance.InstanceContextAware;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -49,7 +50,10 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         persistConfigurations(persistService, parameter);
         RegistryCenter registryCenter = new RegistryCenter(repository, new EventBusContext(), parameter.getInstanceMetaData(), parameter.getDatabaseConfigs());
         InstanceContext instanceContext = buildInstanceContext(registryCenter, parameter);
-        registryCenter.getRepository().watchSessionConnection(instanceContext);
+        ClusterPersistRepository persistRepository = registryCenter.getRepository();
+        if (persistRepository instanceof InstanceContextAware) {
+            ((InstanceContextAware) persistRepository).setInstanceContext(instanceContext);
+        }
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, parameter, instanceContext);
         persistMetaData(metaDataContexts);
         ContextManager result = new ContextManager(metaDataContexts, instanceContext);

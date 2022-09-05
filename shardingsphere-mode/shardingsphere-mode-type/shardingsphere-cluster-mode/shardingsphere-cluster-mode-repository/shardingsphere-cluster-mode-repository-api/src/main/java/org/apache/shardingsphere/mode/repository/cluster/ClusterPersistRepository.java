@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.repository.cluster;
 
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
@@ -65,11 +64,4 @@ public interface ClusterPersistRepository extends PersistRepository {
      * @param listener data changed event listener
      */
     void watch(String key, DataChangedEventListener listener);
-    
-    /**
-     * Watch session connection.
-     *
-     * @param instanceContext instance context
-     */
-    void watchSessionConnection(InstanceContext instanceContext);
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.algorithm.keygen;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.InstanceAwareAlgorithm;
+import org.apache.shardingsphere.infra.instance.InstanceContextAware;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.schedule.ScheduleContext;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
@@ -71,8 +71,8 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         int taskNumber = threadNumber * 4;
         KeyGenerateAlgorithm algorithm = KeyGenerateAlgorithmFactory.newInstance(new AlgorithmConfiguration("SNOWFLAKE", new Properties()));
-        if (algorithm instanceof InstanceAwareAlgorithm) {
-            ((InstanceAwareAlgorithm) algorithm).setInstanceContext(INSTANCE);
+        if (algorithm instanceof InstanceContextAware) {
+            ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
         }
         Set<Comparable<?>> actual = new HashSet<>(taskNumber, 1);
         for (int i = 0; i < taskNumber; i++) {
@@ -85,8 +85,8 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     public void assertGenerateKeyWithSingleThread() {
         SnowflakeKeyGenerateAlgorithm.setTimeService(new FixedTimeService(1));
         KeyGenerateAlgorithm algorithm = KeyGenerateAlgorithmFactory.newInstance(new AlgorithmConfiguration("SNOWFLAKE", new Properties()));
-        if (algorithm instanceof InstanceAwareAlgorithm) {
-            ((InstanceAwareAlgorithm) algorithm).setInstanceContext(INSTANCE);
+        if (algorithm instanceof InstanceContextAware) {
+            ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
         }
         List<Comparable<?>> expected = Arrays.asList(0L, 4194305L, 4194306L, 8388608L, 8388609L, 12582913L, 12582914L, 16777216L, 16777217L, 20971521L);
         List<Comparable<?>> actual = new ArrayList<>(DEFAULT_KEY_AMOUNT);
@@ -102,8 +102,8 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
         Properties props = new Properties();
         props.setProperty("max-vibration-offset", "3");
         KeyGenerateAlgorithm algorithm = KeyGenerateAlgorithmFactory.newInstance(new AlgorithmConfiguration("SNOWFLAKE", props));
-        if (algorithm instanceof InstanceAwareAlgorithm) {
-            ((InstanceAwareAlgorithm) algorithm).setInstanceContext(INSTANCE);
+        if (algorithm instanceof InstanceContextAware) {
+            ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
         }
         assertThat(algorithm.generateKey(), is(0L));
         assertThat(algorithm.generateKey(), is(1L));
@@ -118,8 +118,8 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
         SnowflakeKeyGenerateAlgorithm.setTimeService(new TimeService());
         props.setProperty("max-vibration-offset", String.valueOf(3));
         KeyGenerateAlgorithm algorithm = KeyGenerateAlgorithmFactory.newInstance(new AlgorithmConfiguration("SNOWFLAKE", props));
-        if (algorithm instanceof InstanceAwareAlgorithm) {
-            ((InstanceAwareAlgorithm) algorithm).setInstanceContext(INSTANCE);
+        if (algorithm instanceof InstanceContextAware) {
+            ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
         }
         String actualGenerateKey0 = Long.toBinaryString(Long.parseLong(algorithm.generateKey().toString()));
         assertThat(Integer.parseInt(actualGenerateKey0.substring(actualGenerateKey0.length() - 3), 2), is(0));
@@ -142,8 +142,8 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
         TimeService timeService = new FixedTimeService(1);
         SnowflakeKeyGenerateAlgorithm.setTimeService(timeService);
         KeyGenerateAlgorithm algorithm = KeyGenerateAlgorithmFactory.newInstance(new AlgorithmConfiguration("SNOWFLAKE", new Properties()));
-        if (algorithm instanceof InstanceAwareAlgorithm) {
-            ((InstanceAwareAlgorithm) algorithm).setInstanceContext(INSTANCE);
+        if (algorithm instanceof InstanceContextAware) {
+            ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
         }
         setLastMilliseconds(algorithm, timeService.getCurrentMillis() + 2);
         List<Comparable<?>> expected = Arrays.asList(4194304L, 8388609L, 8388610L, 12582912L, 12582913L, 16777217L, 16777218L, 20971520L, 20971521L, 25165825L);
@@ -161,8 +161,8 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
         Properties props = new Properties();
         props.setProperty("max-tolerate-time-difference-milliseconds", String.valueOf(0));
         KeyGenerateAlgorithm algorithm = KeyGenerateAlgorithmFactory.newInstance(new AlgorithmConfiguration("SNOWFLAKE", props));
-        if (algorithm instanceof InstanceAwareAlgorithm) {
-            ((InstanceAwareAlgorithm) algorithm).setInstanceContext(INSTANCE);
+        if (algorithm instanceof InstanceContextAware) {
+            ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
         }
         setLastMilliseconds(algorithm, timeService.getCurrentMillis() + 2);
         List<Comparable<?>> actual = new ArrayList<>(DEFAULT_KEY_AMOUNT);
@@ -177,8 +177,8 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
         TimeService timeService = new FixedTimeService(2);
         SnowflakeKeyGenerateAlgorithm.setTimeService(timeService);
         KeyGenerateAlgorithm algorithm = KeyGenerateAlgorithmFactory.newInstance(new AlgorithmConfiguration("SNOWFLAKE", new Properties()));
-        if (algorithm instanceof InstanceAwareAlgorithm) {
-            ((InstanceAwareAlgorithm) algorithm).setInstanceContext(INSTANCE);
+        if (algorithm instanceof InstanceContextAware) {
+            ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
         }
         setLastMilliseconds(algorithm, timeService.getCurrentMillis());
         setSequence(algorithm, (1 << DEFAULT_SEQUENCE_BITS) - 1);

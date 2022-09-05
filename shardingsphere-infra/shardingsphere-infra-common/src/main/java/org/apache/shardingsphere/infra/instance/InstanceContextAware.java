@@ -15,14 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.algorithm;
-
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+package org.apache.shardingsphere.infra.instance;
 
 /**
- * Instance aware algorithm.
+ * Instance context aware.
  */
-public interface InstanceAwareAlgorithm {
+public interface InstanceContextAware {
     
     /**
      * Set instance context.
