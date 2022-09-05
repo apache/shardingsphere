@@ -96,7 +96,7 @@ public final class MetaDataContextsFactoryTest {
     }
     
     private ContextManagerBuilderParameter createContextManagerBuilderParameter() {
-        return new ContextManagerBuilderParameter(null, 
+        return new ContextManagerBuilderParameter(null,
                 Collections.singletonMap("foo_db", mock(DataSourceGeneratedDatabaseConfiguration.class)), Collections.emptyList(), new Properties(), Collections.emptyList(), null);
     }
 }
