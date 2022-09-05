@@ -26,7 +26,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -99,16 +98,16 @@ public final class DataSourceStateManager {
      */
     public Collection<DataSource> getNonDisabledDataSources(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
         String databaseName = "";
-        Map<String, DataSource> dataSourceMap = Collections.emptyMap();
+        Map<String, DataSource> dataSources = Collections.emptyMap();
         for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigs.entrySet()) {
             DatabaseConfiguration value = entry.getValue();
             if (!value.getDataSources().isEmpty()) {
                 databaseName = entry.getKey();
-                dataSourceMap = value.getDataSources();
+                dataSources = value.getDataSources();
                 break;
             }
         }
-        return filterDisabledDataSources(databaseName, dataSourceMap).values();
+        return dataSources.isEmpty() ? dataSources.values() : filterDisabledDataSources(databaseName, dataSources).values();
     }
     
     /**
@@ -119,17 +118,15 @@ public final class DataSourceStateManager {
      * @return data sources in a non-disabled state
      */
     public Map<String, DataSource> filterDisabledDataSources(final String databaseName, final Map<String, DataSource> dataSources) {
-        if (started || force) {
+        if (started || force || dataSourceNameStates.isEmpty()) {
             return dataSources;
         }
         Map<String, DataSource> result = new LinkedHashMap<>(dataSources.size(), 1);
-        Map<String, DataSourceState> disabledDataSources = getDisabledStates(databaseName, dataSources);
-        for (Entry<String, DataSource> entry : dataSources.entrySet()) {
-            String key = entry.getKey();
-            if (!disabledDataSources.containsKey(getCacheKey(databaseName, key))) {
-                result.put(key, dataSources.get(key));
+        dataSources.forEach((key, value) -> {
+            if (DataSourceState.DISABLED != dataSourceNameStates.get(getCacheKey(databaseName, key))) {
+                result.put(key, value);
             }
-        }
+        });
         return result;
     }
     
@@ -140,37 +137,13 @@ public final class DataSourceStateManager {
      * @return data sources in a non-disabled state
      */
     public Map<String, DataSource> filterDisabledDataSources(final Map<String, DataSource> dataSources) {
-        if (started || force) {
+        if (started || force || dataSourceNameStates.isEmpty()) {
             return dataSources;
         }
         Map<String, DataSource> result = new LinkedHashMap<>(dataSources.size(), 1);
-        Map<DataSource, DataSourceState> disabledDataSources = getDisabledDataSources(dataSources);
-        for (Entry<String, DataSource> entry : dataSources.entrySet()) {
-            String key = entry.getKey();
-            if (!disabledDataSources.containsKey(entry.getValue())) {
-                result.put(key, dataSources.get(key));
-            }
-        }
-        return result;
-    }
-    
-    private Map<String, DataSourceState> getDisabledStates(final String databaseName, final Map<String, DataSource> dataSources) {
-        Map<String, DataSourceState> result = new HashMap<>(dataSources.size(), 1);
         dataSources.forEach((key, value) -> {
-            DataSourceState state = dataSourceNameStates.get(getCacheKey(databaseName, key));
-            if (state == DataSourceState.DISABLED) {
-                result.put(getCacheKey(databaseName, key), state);
-            }
-        });
-        return result;
-    }
-    
-    private Map<DataSource, DataSourceState> getDisabledDataSources(final Map<String, DataSource> dataSources) {
-        Map<DataSource, DataSourceState> result = new HashMap<>(dataSources.size(), 1);
-        dataSources.forEach((key, value) -> {
-            DataSourceState state = dataSourceStates.get(value);
-            if (state == DataSourceState.DISABLED) {
-                result.put(value, state);
+            if (DataSourceState.DISABLED != dataSourceStates.get(value)) {
+                result.put(key, value);
             }
         });
         return result;
