@@ -40,10 +40,10 @@ public abstract class BaseContainerComposer implements Startable {
     }
     
     /**
-     * Get proxy JDBC URL.
+     * Get proxy data source.
      *
      * @param databaseName database name
-     * @return proxy JDBC URL
+     * @return proxy data source
      */
     public abstract DataSource getProxyDatasource(String databaseName);
     

@@ -77,12 +77,7 @@ public final class DockerContainerComposer extends BaseContainerComposer {
         proxyContainer = getContainers().registerContainer(proxyClusterContainer);
     }
     
-    /**
-     * Get proxy JDBC URL.
-     * 
-     * @param databaseName database name
-     * @return proxy JDBC URL
-     */
+    @Override
     public DataSource getProxyDatasource(final String databaseName) {
         return StorageContainerUtil.generateDataSource(DataSourceEnvironment.getURL(databaseType, proxyContainer.getHost(), proxyContainer.getFirstMappedPort(), databaseName),
                 StorageContainerConstants.USERNAME, StorageContainerConstants.PASSWORD);
