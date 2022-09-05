@@ -66,7 +66,7 @@ public final class AlterIndexStatementHandlerTest {
         Optional<IndexSegment> indexSegment = AlterIndexStatementHandler.getRenameIndexSegment(alterIndexStatement);
         assertFalse(indexSegment.isPresent());
     }
-
+    
     @Test
     public void assertGetRenameIndexSegmentForOpenGauss() {
         IndexSegment indexSegment = new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("")));
@@ -76,14 +76,14 @@ public final class AlterIndexStatementHandlerTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is(indexSegment));
     }
-
+    
     @Test
     public void assertGetSimpleTableSegmentForOtherDatabases() {
         assertFalse(AlterIndexStatementHandler.getSimpleTableSegment(new OpenGaussAlterIndexStatement()).isPresent());
         assertFalse(AlterIndexStatementHandler.getSimpleTableSegment(new OracleAlterIndexStatement()).isPresent());
         assertFalse(AlterIndexStatementHandler.getSimpleTableSegment(new PostgreSQLAlterIndexStatement()).isPresent());
     }
-
+    
     @Test
     public void assertGetRenameIndexSegmentForOtherDatabases() {
         assertFalse(AlterIndexStatementHandler.getRenameIndexSegment(new OracleAlterIndexStatement()).isPresent());
