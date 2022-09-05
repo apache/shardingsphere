@@ -89,5 +89,4 @@ public final class AlterIndexStatementHandlerTest {
         assertFalse(AlterIndexStatementHandler.getRenameIndexSegment(new OracleAlterIndexStatement()).isPresent());
         assertFalse(AlterIndexStatementHandler.getRenameIndexSegment(new SQLServerAlterIndexStatement()).isPresent());
     }
-
 }
