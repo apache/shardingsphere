@@ -29,7 +29,7 @@ algorithmName ::=
   identifier
   
 algorithmType ::=
-  identifier
+  string
 ```
 
 ### Supplement
