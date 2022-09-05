@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLDropTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.ddl.SQL92DropTableStatement;
@@ -30,42 +31,52 @@ import static org.junit.Assert.assertTrue;
 public final class DropTableStatementHandlerTest {
     
     @Test
-    public void assertContainsIfExistsForMySQL() {
+    public void assertIfExistsForMySQL() {
         assertTrue(DropTableStatementHandler.ifExists(new MySQLDropTableStatement(true)));
-    }
-    
-    @Test
-    public void assertContainsIfExistsForPostgreSQL() {
-        assertTrue(DropTableStatementHandler.ifExists(new PostgreSQLDropTableStatement(true, false)));
-    }
-    
-    @Test
-    public void assertContainsIfExistsForSQLServer() {
-        assertTrue(DropTableStatementHandler.ifExists(new SQLServerDropTableStatement(true)));
-    }
-    
-    @Test
-    public void assertNotContainsIfExistsForMySQL() {
         assertFalse(DropTableStatementHandler.ifExists(new MySQLDropTableStatement(false)));
     }
     
     @Test
-    public void assertNotContainsIfExistsForOracle() {
-        assertFalse(DropTableStatementHandler.ifExists(new OracleDropTableStatement()));
-    }
-    
-    @Test
-    public void assertNotContainsIfExistsForPostgreSQL() {
+    public void assertIfExistsForPostgreSQL() {
+        assertTrue(DropTableStatementHandler.ifExists(new PostgreSQLDropTableStatement(true, false)));
         assertFalse(DropTableStatementHandler.ifExists(new PostgreSQLDropTableStatement(false, false)));
     }
     
     @Test
-    public void assertNotContainsIfExistsForSQL92() {
+    public void assertIfExistsForSQLServer() {
+        assertTrue(DropTableStatementHandler.ifExists(new SQLServerDropTableStatement(true)));
+        assertFalse(DropTableStatementHandler.ifExists(new SQLServerDropTableStatement(false)));
+    }
+
+    @Test
+    public void assertIfExistsForGauss() {
+        assertFalse(DropTableStatementHandler.ifExists(new OpenGaussDropTableStatement(false, true)));
+        assertTrue(DropTableStatementHandler.ifExists(new OpenGaussDropTableStatement(true, true)));
+    }
+
+    @Test
+    public void assertNotExistsForOtherDatabases() {
+        assertFalse(DropTableStatementHandler.ifExists(new OracleDropTableStatement()));
         assertFalse(DropTableStatementHandler.ifExists(new SQL92DropTableStatement()));
     }
-    
+
     @Test
-    public void assertNotContainsIfExistsForSQLServer() {
-        assertFalse(DropTableStatementHandler.ifExists(new SQLServerDropTableStatement(false)));
+    public void assertContainsCascadeForPostgres() {
+        assertFalse(DropTableStatementHandler.containsCascade(new PostgreSQLDropTableStatement(false, false)));
+        assertTrue(DropTableStatementHandler.containsCascade(new PostgreSQLDropTableStatement(true, true)));
+    }
+
+    @Test
+    public void assertContainsCascadeForGauss() {
+        assertFalse(DropTableStatementHandler.containsCascade(new OpenGaussDropTableStatement(false, false)));
+        assertTrue(DropTableStatementHandler.containsCascade(new OpenGaussDropTableStatement(true, true)));
+    }
+
+    @Test
+    public void assertNotContainsCascadeForOtherDatabases() {
+        assertFalse(DropTableStatementHandler.containsCascade(new MySQLDropTableStatement(false)));
+        assertFalse(DropTableStatementHandler.containsCascade(new OracleDropTableStatement()));
+        assertFalse(DropTableStatementHandler.containsCascade(new SQL92DropTableStatement()));
+        assertFalse(DropTableStatementHandler.containsCascade(new SQLServerDropTableStatement(false)));
     }
 }
