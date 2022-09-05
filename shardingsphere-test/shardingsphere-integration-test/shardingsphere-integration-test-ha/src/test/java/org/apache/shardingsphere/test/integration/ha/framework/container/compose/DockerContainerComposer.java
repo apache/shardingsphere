@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Getter
-public final class DockerComposedContainer extends BaseComposedContainer {
+public final class DockerContainerComposer extends BaseContainerComposer {
     
     private final DatabaseType databaseType;
     
@@ -55,7 +55,7 @@ public final class DockerComposedContainer extends BaseComposedContainer {
     @Getter
     private final GovernanceContainer governanceContainer;
     
-    public DockerComposedContainer(final String scenario, final DatabaseType databaseType, final String dockerImageName) {
+    public DockerContainerComposer(final String scenario, final DatabaseType databaseType, final String dockerImageName) {
         super("");
         this.databaseType = databaseType;
         this.storageContainers = new LinkedList<>();

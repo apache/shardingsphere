@@ -30,8 +30,8 @@ import org.apache.shardingsphere.test.integration.env.container.atomic.storage.D
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.ha.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.test.integration.ha.framework.container.compose.BaseComposedContainer;
-import org.apache.shardingsphere.test.integration.ha.framework.container.compose.DockerComposedContainer;
+import org.apache.shardingsphere.test.integration.ha.framework.container.compose.BaseContainerComposer;
+import org.apache.shardingsphere.test.integration.ha.framework.container.compose.DockerContainerComposer;
 import org.apache.shardingsphere.test.integration.ha.framework.parameter.HAParameterized;
 
 import javax.sql.DataSource;
@@ -51,7 +51,7 @@ public abstract class BaseITCase {
     
     protected static final String DEFAULT_SCHEMA = "ha_test";
     
-    private final BaseComposedContainer composedContainer;
+    private final BaseContainerComposer containerComposer;
     
     private final DatabaseType databaseType;
     
@@ -61,21 +61,21 @@ public abstract class BaseITCase {
     
     public BaseITCase(final HAParameterized haParameterized) {
         databaseType = haParameterized.getDatabaseType();
-        composedContainer = new DockerComposedContainer(haParameterized.getScenario(), haParameterized.getDatabaseType(), haParameterized.getDockerImageName());
-        composedContainer.start();
+        containerComposer = new DockerContainerComposer(haParameterized.getScenario(), haParameterized.getDatabaseType(), haParameterized.getDockerImageName());
+        containerComposer.start();
         initStorageDataSources();
         initProxyDataSource();
     }
     
     private void initProxyDataSource() {
         String databaseName = (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) ? "postgres" : "";
-        ShardingSphereProxyClusterContainer proxyContainer = ((DockerComposedContainer) composedContainer).getProxyContainer();
+        ShardingSphereProxyClusterContainer proxyContainer = ((DockerContainerComposer) containerComposer).getProxyContainer();
         this.proxyDataSource = getDataSource(DataSourceEnvironment.getURL(databaseType, proxyContainer.getHost(), proxyContainer.getFirstMappedPort(),
-                composedContainer.getProxyJdbcUrl(databaseName)), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD);
+                containerComposer.getProxyJdbcUrl(databaseName)), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD);
     }
     
     private void initStorageDataSources() {
-        List<DockerStorageContainer> storageContainers = ((DockerComposedContainer) composedContainer).getStorageContainers();
+        List<DockerStorageContainer> storageContainers = ((DockerContainerComposer) containerComposer).getStorageContainers();
         this.storageDataSources = storageContainers.stream()
                 .map(storageContainer -> DataSourceEnvironment.getURL(getDatabaseType(), storageContainer.getNetworkAliases().get(0), storageContainer.getPort(), DEFAULT_SCHEMA))
                 .map(jdbcUrl -> getDataSource(jdbcUrl, StorageContainerConstants.USERNAME, StorageContainerConstants.PASSWORD))
