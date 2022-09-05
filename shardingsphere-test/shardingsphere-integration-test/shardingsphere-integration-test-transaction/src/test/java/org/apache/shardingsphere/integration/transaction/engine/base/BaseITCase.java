@@ -139,9 +139,9 @@ public abstract class BaseITCase {
     private DataSource createDataSource(final DockerStorageContainer databaseContainer, final String dataSourceName) {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
-        result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, databaseContainer.getHost(), databaseContainer.getMappedPort(databaseContainer.getPort()), dataSourceName));
+        result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, databaseContainer.getHost(), databaseContainer.getMappedPort(databaseContainer.getExposedPort()), dataSourceName));
         result.setUsername(databaseContainer.getUsername());
-        result.setPassword(databaseContainer.getUnifiedPassword());
+        result.setPassword(databaseContainer.getPassword());
         result.setMaximumPoolSize(50);
         result.setIdleTimeout(60000);
         result.setMaxLifetime(1800000);
@@ -321,7 +321,7 @@ public abstract class BaseITCase {
         if (ENV.getItEnvType() == TransactionITEnvTypeEnum.DOCKER) {
             DockerComposedContainer dockerComposedContainer = (DockerComposedContainer) composedContainer;
             DockerStorageContainer databaseContainer = dockerComposedContainer.getStorageContainer();
-            jdbcInfo = new JdbcInfoEntity(databaseContainer.getUsername(), databaseContainer.getUnifiedPassword(), databaseContainer.getPort());
+            jdbcInfo = new JdbcInfoEntity(databaseContainer.getUsername(), databaseContainer.getPassword(), databaseContainer.getExposedPort());
         } else {
             jdbcInfo = ENV.getActualDatabaseJdbcInfo(getDatabaseType());
         }
@@ -471,7 +471,7 @@ public abstract class BaseITCase {
     private String getActualJdbcUrlTemplate(final String databaseName) {
         if (ENV.getItEnvType() == TransactionITEnvTypeEnum.DOCKER) {
             final DockerStorageContainer databaseContainer = ((DockerComposedContainer) composedContainer).getStorageContainer();
-            return DataSourceEnvironment.getURL(getDatabaseType(), getDatabaseType().getType().toLowerCase() + ".host", databaseContainer.getPort(), databaseName);
+            return DataSourceEnvironment.getURL(getDatabaseType(), getDatabaseType().getType().toLowerCase() + ".host", databaseContainer.getExposedPort(), databaseName);
         } else {
             return DataSourceEnvironment.getURL(getDatabaseType(), "127.0.0.1", ENV.getActualDataSourceDefaultPort(databaseType), databaseName);
         }

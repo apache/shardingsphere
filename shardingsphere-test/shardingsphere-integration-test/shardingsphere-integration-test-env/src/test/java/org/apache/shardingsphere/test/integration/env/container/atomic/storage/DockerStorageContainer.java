@@ -76,11 +76,11 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
             withClasspathResourceMapping(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
             withClasspathResourceMapping(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
         }
-        withExposedPorts(getPort());
+        withExposedPorts(getExposedPort());
         setWaitStrategy(new JdbcConnectionWaitStrategy(
                 () -> DriverManager.getConnection(getDefaultDatabaseName().isPresent()
                         ? DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort(), getDefaultDatabaseName().get())
-                        : DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort()), getUsername(), getUnifiedPassword())));
+                        : DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort()), getUsername(), getPassword())));
     }
     
     protected final void setCommands(final String command) {
@@ -119,7 +119,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
         result.setJdbcUrl(getJdbcUrl(dataSourceName));
         result.setUsername(getUsername());
-        result.setPassword(getUnifiedPassword());
+        result.setPassword(getPassword());
         result.setMaximumPoolSize(4);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return result;
@@ -132,8 +132,10 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
      * @return JDBC URL
      */
     public String getJdbcUrl(final String dataSourceName) {
-        return DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(getPort()), dataSourceName);
+        return DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(getExposedPort()), dataSourceName);
     }
+    
+    protected abstract Optional<String> getDefaultDatabaseName();
     
     /**
      * Get username.
@@ -145,22 +147,27 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     }
     
     /**
-     * Get database port.
-     *
-     * @return database port
-     */
-    public abstract int getPort();
-    
-    /**
      * Get unified database access password.
      *
      * @return unified database access password
      */
-    public final String getUnifiedPassword() {
+    public final String getPassword() {
         return StorageContainerConstants.PASSWORD;
     }
     
-    protected abstract Optional<String> getDefaultDatabaseName();
+    /**
+     * Get database container exposed port.
+     *
+     * @return exposed database container port
+     */
+    public abstract int getExposedPort();
+    
+    /**
+     * Get database container mapped port.
+     * 
+     * @return mapped database container port
+     */
+    protected abstract int getMappedPort();
     
     @Override
     public final String getAbbreviation() {
