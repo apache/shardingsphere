@@ -25,10 +25,10 @@ import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstan
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
+import org.apache.shardingsphere.data.pipeline.core.spi.process.PipelineEventProcess;
+import org.apache.shardingsphere.data.pipeline.core.spi.process.PipelineEventProcessFactory;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJob;
-import org.apache.shardingsphere.data.pipeline.spi.process.JobConfigEventProcess;
-import org.apache.shardingsphere.data.pipeline.spi.process.JobConfigEventProcessFactory;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -72,20 +72,17 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
     }
     
     private void processEvent(final DataChangedEvent event, final JobConfigurationPOJO jobConfigPOJO) {
+        log.info("process event, key:{}, type:{}", event.getKey(), event.getType());
         boolean isDeleted = DataChangedEvent.Type.DELETED == event.getType();
         boolean isDisabled = jobConfigPOJO.isDisabled();
-        String jobId = jobConfigPOJO.getJobName();
-        JobType jobType = PipelineJobIdUtils.parseJobType(jobId);
-        if (isDeleted || isDisabled) {
-            log.info("jobId={}, deleted={}, disabled={}", jobId, isDeleted, isDisabled);
-            JobConfigEventProcess process = JobConfigEventProcessFactory.getInstance(jobType);
-            if (isDeleted) {
-                process.cleanup(jobConfigPOJO.getJobParameter());
-            } else if (process.isJobSuccessful(jobConfigPOJO.getJobParameter())) {
-                log.info("isJobSuccessful=true");
-                process.cleanup(jobConfigPOJO.getJobParameter());
-            }
-            PipelineJobCenter.stop(jobId);
+        JobType jobType = PipelineJobIdUtils.parseJobType(jobConfigPOJO.getJobName());
+        PipelineEventProcess process = PipelineEventProcessFactory.getInstance(jobType);
+        if (isDeleted) {
+            process.deleteEventHandle(jobConfigPOJO);
+            return;
+        }
+        if (isDisabled) {
+            process.disableEventHandle(jobConfigPOJO);
             return;
         }
         switch (event.getType()) {

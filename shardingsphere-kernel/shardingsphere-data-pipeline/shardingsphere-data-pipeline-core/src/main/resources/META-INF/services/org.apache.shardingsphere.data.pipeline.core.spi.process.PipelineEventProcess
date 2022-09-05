@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.core.spi.process.MigrationJobConfigEventProcess
+org.apache.shardingsphere.data.pipeline.core.spi.process.MigrationPipelineEventProcess

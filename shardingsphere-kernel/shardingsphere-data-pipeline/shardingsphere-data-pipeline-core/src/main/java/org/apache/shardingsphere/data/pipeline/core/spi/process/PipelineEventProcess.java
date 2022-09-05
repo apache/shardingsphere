@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.process;
+package org.apache.shardingsphere.data.pipeline.core.spi.process;
 
+import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
  * Job config event process.
  */
-public interface JobConfigEventProcess extends TypedSPI {
+public interface PipelineEventProcess extends TypedSPI {
     
     /**
-     * Cleanup pipeline job config.
+     * Delete event handle.
      *
-     * @param jobParameter job parameter
+     * @param jobConfigPOJO job config
      */
-    void cleanup(String jobParameter);
+    void deleteEventHandle(JobConfigurationPOJO jobConfigPOJO);
     
     /**
-     * Check job is successful.
+     * Disable event handle.
      *
-     * @param jobParameter job parameter
-     * @return true if job is successful otherwise is false
+     * @param jobConfigPOJO job config
      */
-    boolean isJobSuccessful(String jobParameter);
+    void disableEventHandle(JobConfigurationPOJO jobConfigPOJO);
 }

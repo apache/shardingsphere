@@ -17,29 +17,39 @@
 
 package org.apache.shardingsphere.data.pipeline.core.spi.process;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobPreparer;
-import org.apache.shardingsphere.data.pipeline.spi.process.JobConfigEventProcess;
+import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 
 /**
  * Migration job config event process.
  */
-public final class MigrationJobConfigEventProcess implements JobConfigEventProcess {
+@Slf4j
+public final class MigrationPipelineEventProcess implements PipelineEventProcess {
     
     @Override
-    public void cleanup(final String jobParameter) {
-        MigrationJobConfiguration jobConfig = YamlMigrationJobConfigurationSwapper.swapToObject(jobParameter);
+    public void deleteEventHandle(final JobConfigurationPOJO jobConfigPOJO) {
+        String jobId = jobConfigPOJO.getJobName();
+        log.info("delete jobId={}", jobId);
+        MigrationJobConfiguration jobConfig = YamlMigrationJobConfigurationSwapper.swapToObject(jobConfigPOJO.getJobParameter());
         new MigrationJobPreparer().cleanup(jobConfig);
+        PipelineJobCenter.stop(jobId);
     }
     
     @Override
-    public boolean isJobSuccessful(final String jobParameter) {
-        MigrationJobConfiguration jobConfig = YamlMigrationJobConfigurationSwapper.swapToObject(jobParameter);
-        return PipelineJobProgressDetector.isJobSuccessful(jobConfig.getJobShardingCount(), MigrationJobAPIFactory.getInstance().getJobProgress(jobConfig).values());
+    public void disableEventHandle(final JobConfigurationPOJO jobConfigPOJO) {
+        MigrationJobConfiguration jobConfig = YamlMigrationJobConfigurationSwapper.swapToObject(jobConfigPOJO.getJobParameter());
+        if (PipelineJobProgressDetector.isJobSuccessful(jobConfig.getJobShardingCount(), MigrationJobAPIFactory.getInstance().getJobProgress(jobConfig).values())) {
+            log.info("isJobSuccessful=true");
+            new MigrationJobPreparer().cleanup(jobConfig);
+        }
+        PipelineJobCenter.stop(jobConfigPOJO.getJobName());
     }
     
     @Override

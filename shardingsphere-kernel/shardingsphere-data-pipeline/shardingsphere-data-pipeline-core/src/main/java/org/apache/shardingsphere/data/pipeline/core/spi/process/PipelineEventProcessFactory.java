@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.process;
+package org.apache.shardingsphere.data.pipeline.core.spi.process;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -27,19 +27,19 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
  * Job config event process factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JobConfigEventProcessFactory {
+public final class PipelineEventProcessFactory {
     
     static {
-        ShardingSphereServiceLoader.register(JobConfigEventProcess.class);
+        ShardingSphereServiceLoader.register(PipelineEventProcess.class);
     }
     
     /**
-     * Get importer creator instance.
+     * Get instance.
      *
      * @param jobType job type
-     * @return importer creator
+     * @return pipeline event process
      */
-    public static JobConfigEventProcess getInstance(final JobType jobType) {
-        return TypedSPIRegistry.getRegisteredService(JobConfigEventProcess.class, jobType.getTypeName());
+    public static PipelineEventProcess getInstance(final JobType jobType) {
+        return TypedSPIRegistry.getRegisteredService(PipelineEventProcess.class, jobType.getTypeName());
     }
 }
