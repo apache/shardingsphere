@@ -17,16 +17,24 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+
+import java.util.List;
+import java.util.Optional;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.ddl.SQL92CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSelectStatement;
 import org.junit.Test;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public final class CreateTableStatementHandlerTest {
     
@@ -41,5 +49,32 @@ public final class CreateTableStatementHandlerTest {
         assertFalse(CreateTableStatementHandler.ifNotExists(new OracleCreateTableStatement()));
         assertFalse(CreateTableStatementHandler.ifNotExists(new SQLServerCreateTableStatement()));
         assertFalse(CreateTableStatementHandler.ifNotExists(new SQL92CreateTableStatement()));
+    }
+
+    @Test
+    public void assertSelectStatement() {
+        SQLServerCreateTableStatement sqlServerCreateTableStatement = new SQLServerCreateTableStatement();
+        sqlServerCreateTableStatement.setSelectStatement(new SQLServerSelectStatement());
+        Optional<SelectStatement> actual = CreateTableStatementHandler.getSelectStatement(sqlServerCreateTableStatement);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is(sqlServerCreateTableStatement.getSelectStatement().get()));
+        assertFalse(CreateTableStatementHandler.getSelectStatement(new MySQLCreateTableStatement(false)).isPresent());
+        assertFalse(CreateTableStatementHandler.getSelectStatement(new OpenGaussCreateTableStatement(false)).isPresent());
+        assertFalse(CreateTableStatementHandler.getSelectStatement(new OracleCreateTableStatement()).isPresent());
+        assertFalse(CreateTableStatementHandler.getSelectStatement(new PostgreSQLCreateTableStatement(false)).isPresent());
+        assertFalse(CreateTableStatementHandler.getSelectStatement(new SQL92CreateTableStatement()).isPresent());
+    }
+
+    @Test
+    public void assertGetColumns() {
+        SQLServerCreateTableStatement sqlServerCreateTableStatement = new SQLServerCreateTableStatement();
+        sqlServerCreateTableStatement.getColumns().add(new ColumnSegment(0, 1, new IdentifierValue("identifier")));
+        List<ColumnSegment> actual = CreateTableStatementHandler.getColumns(sqlServerCreateTableStatement);
+        assertThat(actual, is(sqlServerCreateTableStatement.getColumns()));
+        assertTrue(CreateTableStatementHandler.getColumns(new MySQLCreateTableStatement(false)).isEmpty());
+        assertTrue(CreateTableStatementHandler.getColumns(new OpenGaussCreateTableStatement(false)).isEmpty());
+        assertTrue(CreateTableStatementHandler.getColumns(new OracleCreateTableStatement()).isEmpty());
+        assertTrue(CreateTableStatementHandler.getColumns(new PostgreSQLCreateTableStatement(false)).isEmpty());
+        assertTrue(CreateTableStatementHandler.getColumns(new SQL92CreateTableStatement()).isEmpty());
     }
 }
