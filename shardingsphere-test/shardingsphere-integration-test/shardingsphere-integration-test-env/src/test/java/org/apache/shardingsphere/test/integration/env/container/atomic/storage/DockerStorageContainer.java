@@ -167,7 +167,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
      * 
      * @return mapped database container port
      */
-    protected abstract int getMappedPort();
+    public abstract int getMappedPort();
     
     @Override
     public final String getAbbreviation() {
