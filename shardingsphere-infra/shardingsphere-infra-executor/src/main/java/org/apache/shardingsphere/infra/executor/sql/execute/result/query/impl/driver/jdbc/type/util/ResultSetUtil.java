@@ -22,6 +22,7 @@ import com.google.common.primitives.Longs;
 import com.google.common.primitives.Shorts;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.executor.exception.UnsupportedDataTypeConversionException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

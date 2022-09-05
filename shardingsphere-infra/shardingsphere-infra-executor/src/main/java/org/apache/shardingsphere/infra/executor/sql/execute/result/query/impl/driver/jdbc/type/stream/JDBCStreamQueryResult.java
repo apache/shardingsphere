@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.executor.exception.UnsupportedDataTypeConversionException;
+import org.apache.shardingsphere.infra.executor.exception.UnsupportedStreamCharsetConversionException;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.metadata.JDBCQueryResultMetaData;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.UnsupportedDataTypeConversionException;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.stream.AbstractStreamQueryResult;
 
 import java.io.InputStream;
@@ -102,7 +103,7 @@ public final class JDBCStreamQueryResult extends AbstractStreamQueryResult {
         if (Timestamp.class == type) {
             return resultSet.getTimestamp(columnIndex, calendar);
         }
-        throw new UnsupportedDataTypeConversionException(type, calendar);
+        throw new UnsupportedDataTypeConversionException(type, calendar).toSQLException();
     }
     
     @SuppressWarnings("deprecation")
@@ -116,7 +117,7 @@ public final class JDBCStreamQueryResult extends AbstractStreamQueryResult {
             case "Binary":
                 return resultSet.getBinaryStream(columnIndex);
             default:
-                throw new SQLException(String.format("Unsupported type: %s", type));
+                throw new UnsupportedStreamCharsetConversionException(type).toSQLException();
         }
     }
     
