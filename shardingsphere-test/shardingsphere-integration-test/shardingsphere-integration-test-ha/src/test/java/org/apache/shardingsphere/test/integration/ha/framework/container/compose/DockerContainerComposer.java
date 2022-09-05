@@ -23,16 +23,19 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.integration.env.container.atomic.governance.GovernanceContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.governance.impl.ZookeeperContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.ContainerUtil;
+import org.apache.shardingsphere.test.integration.env.container.atomic.util.StorageContainerUtil;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.ha.framework.container.config.ProxyClusterContainerConfigurationFactory;
 import org.apache.shardingsphere.test.integration.ha.framework.container.config.StorageContainerConfigurationFactory;
 
+import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -80,17 +83,24 @@ public final class DockerContainerComposer extends BaseContainerComposer {
      * @param databaseName database name
      * @return proxy JDBC URL
      */
-    public String getProxyJdbcUrl(final String databaseName) {
-        return DataSourceEnvironment.getURL(databaseType, proxyContainer.getHost(), proxyContainer.getFirstMappedPort(), databaseName);
+    public DataSource getProxyDatasource(final String databaseName) {
+        return StorageContainerUtil.generateDataSource(DataSourceEnvironment.getURL(databaseType, proxyContainer.getHost(), proxyContainer.getFirstMappedPort(), databaseName),
+                StorageContainerConstants.USERNAME, StorageContainerConstants.PASSWORD);
     }
     
-    /**
-     * Get storage containers JDBC URL.
-     * 
-     * @param databaseName database name
-     * @return storage containers JDBC URL
-     */
-    public List<String> getJdbcUrls(final String databaseName) {
-        return storageContainers.stream().map(each -> each.getJdbcUrl(databaseName)).collect(Collectors.toList());
+    @Override
+    public List<DataSource> getExposedDatasource(final String databaseName) {
+        return getStorageContainers().stream()
+                .map(each -> DataSourceEnvironment.getURL(databaseType, each.getNetworkAliases().get(0), each.getExposedPort(), databaseName))
+                .map(each -> StorageContainerUtil.generateDataSource(each, StorageContainerConstants.USERNAME, StorageContainerConstants.PASSWORD))
+                .collect(Collectors.toList());
+    }
+    
+    @Override
+    public List<DataSource> getMappedDatasource(final String databaseName) {
+        return getStorageContainers().stream()
+                .map(each -> DataSourceEnvironment.getURL(databaseType, each.getHost(), each.getMappedPort(), databaseName))
+                .map(each -> StorageContainerUtil.generateDataSource(each, StorageContainerConstants.USERNAME, StorageContainerConstants.PASSWORD))
+                .collect(Collectors.toList());
     }
 }
