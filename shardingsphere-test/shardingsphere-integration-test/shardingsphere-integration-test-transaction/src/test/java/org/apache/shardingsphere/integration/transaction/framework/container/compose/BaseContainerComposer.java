@@ -17,27 +17,34 @@
 
 package org.apache.shardingsphere.integration.transaction.framework.container.compose;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
+import lombok.Getter;
+import org.apache.shardingsphere.test.integration.env.container.atomic.ITContainers;
+import org.testcontainers.lifecycle.Startable;
 
-/**
- * Native composed container, you need start ShardingSphere-Proxy at firstly.
- */
-public final class NativeComposedContainer extends BaseComposedContainer {
+public abstract class BaseContainerComposer implements Startable {
     
-    private final DatabaseType databaseType;
+    @Getter
+    private final ITContainers containers;
     
-    public NativeComposedContainer(final DatabaseType databaseType) {
-        this.databaseType = databaseType;
+    public BaseContainerComposer() {
+        this.containers = new ITContainers("");
     }
+    
+    /**
+     * Get proxy jdbc url.
+     *
+     * @param databaseName database name
+     * @return proxy jdbc url
+     */
+    public abstract String getProxyJdbcUrl(String databaseName);
     
     @Override
     public void start() {
-        
+        getContainers().start();
     }
     
     @Override
-    public String getProxyJdbcUrl(final String databaseName) {
-        return DataSourceEnvironment.getURL(databaseType, "localhost", 3307, databaseName);
+    public void stop() {
+        getContainers().stop();
     }
 }

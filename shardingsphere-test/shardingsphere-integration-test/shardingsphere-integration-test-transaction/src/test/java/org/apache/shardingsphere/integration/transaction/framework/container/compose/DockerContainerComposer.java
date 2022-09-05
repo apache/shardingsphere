@@ -41,7 +41,7 @@ import java.util.Objects;
  */
 @Slf4j
 @Getter
-public final class DockerComposedContainer extends BaseComposedContainer {
+public final class DockerContainerComposer extends BaseContainerComposer {
     
     private final DatabaseType databaseType;
     
@@ -53,7 +53,7 @@ public final class DockerComposedContainer extends BaseComposedContainer {
     
     private final DockerStorageContainer storageContainer;
     
-    public DockerComposedContainer(final TransactionParameterized parameterized) {
+    public DockerContainerComposer(final TransactionParameterized parameterized) {
         this.databaseType = parameterized.getDatabaseType();
         governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
         storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, parameterized.getDockerImageName(), "",

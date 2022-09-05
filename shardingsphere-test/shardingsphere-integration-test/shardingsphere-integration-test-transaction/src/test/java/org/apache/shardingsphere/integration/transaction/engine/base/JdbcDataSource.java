@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.integration.transaction.engine.base;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.integration.transaction.framework.container.compose.DockerComposedContainer;
+import org.apache.shardingsphere.integration.transaction.framework.container.compose.DockerContainerComposer;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -29,9 +29,9 @@ import java.sql.SQLException;
 @Slf4j
 public final class JdbcDataSource extends AutoDataSource {
     
-    private final DockerComposedContainer composedContainer;
+    private final DockerContainerComposer composedContainer;
     
-    public JdbcDataSource(final DockerComposedContainer composedContainer) {
+    public JdbcDataSource(final DockerContainerComposer composedContainer) {
         this.composedContainer = composedContainer;
     }
     
