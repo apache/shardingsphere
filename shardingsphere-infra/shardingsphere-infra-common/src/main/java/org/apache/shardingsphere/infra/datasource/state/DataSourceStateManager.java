@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.datasource.state;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.datasource.state.exception.DataSourceStateException;
@@ -35,13 +37,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * Data source state manager.
  */
 @Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourceStateManager {
     
     private static final DataSourceStateManager INSTANCE = new DataSourceStateManager();
     
     private final Map<String, DataSourceState> dataSourceNameStates = new ConcurrentHashMap<>();
-    
-    private final Map<DataSource, DataSourceState> dataSourceStates = new ConcurrentHashMap<>();
     
     private volatile boolean started;
     
@@ -62,7 +63,6 @@ public final class DataSourceStateManager {
     public void started() {
         started = true;
         dataSourceNameStates.clear();
-        dataSourceStates.clear();
     }
     
     /**
@@ -71,21 +71,24 @@ public final class DataSourceStateManager {
      * @param databaseName database name
      * @param dataSources data sources
      * @param storageDataSourceStates storage node data source status
+     * @param force whether to force start
      */
-    public void initStates(final String databaseName, final Map<String, DataSource> dataSources, final Map<String, DataSourceState> storageDataSourceStates) {
+    public void initStates(final String databaseName, final Map<String, DataSource> dataSources, final Map<String, DataSourceState> storageDataSourceStates, final boolean force) {
+        this.force = force;
         dataSources.forEach((key, value) -> {
             DataSourceState storageState = storageDataSourceStates.get(getCacheKey(databaseName, key));
             if (DataSourceState.DISABLED == storageState) {
                 dataSourceNameStates.put(getCacheKey(databaseName, key), storageState);
-                dataSourceStates.put(value, storageState);
             } else {
                 try (Connection ignored = value.getConnection()) {
-                    log.info("Data source connection is successful.");
+                    dataSourceNameStates.put(getCacheKey(databaseName, key), DataSourceState.ENABLED);
                 } catch (final SQLException ex) {
-                    throw new DataSourceStateException("DataSourceState", 1, "Data source status unavailable.", ex);
+                    if (this.force) {
+                        log.error("Data source status unavailable.", ex);
+                    } else {
+                        throw new DataSourceStateException("DataSourceState", 1, "Data source status unavailable.", ex);
+                    }
                 }
-                dataSourceNameStates.put(getCacheKey(databaseName, key), DataSourceState.ENABLED);
-                dataSourceStates.put(value, DataSourceState.ENABLED);
             }
         });
     }
@@ -112,40 +115,40 @@ public final class DataSourceStateManager {
     
     /**
      * Filter disabled data sources.
+     * 
+     * @param databaseName database name
+     * @param databaseConfig database config
+     * @return data sources in a non-disabled state
+     */
+    public Collection<DataSource> getNonDisabledDataSources(final String databaseName, final DatabaseConfiguration databaseConfig) {
+        return databaseConfig.getDataSources().isEmpty() ? Collections.emptyList() : filterDisabledDataSources(databaseName, databaseConfig.getDataSources()).values();
+    }
+    
+    /**
+     * Filter disabled data sources.
      *
      * @param databaseName database name
      * @param dataSources data sources
      * @return data sources in a non-disabled state
      */
     public Map<String, DataSource> filterDisabledDataSources(final String databaseName, final Map<String, DataSource> dataSources) {
-        if (started || force || dataSourceNameStates.isEmpty()) {
+        if (started) {
             return dataSources;
         }
         Map<String, DataSource> result = new LinkedHashMap<>(dataSources.size(), 1);
-        dataSources.forEach((key, value) -> {
-            if (DataSourceState.DISABLED != dataSourceNameStates.get(getCacheKey(databaseName, key))) {
-                result.put(key, value);
-            }
-        });
-        return result;
-    }
-    
-    /**
-     * Filter disabled data sources.
-     * 
-     * @param dataSources data sources
-     * @return data sources in a non-disabled state
-     */
-    public Map<String, DataSource> filterDisabledDataSources(final Map<String, DataSource> dataSources) {
-        if (started || force || dataSourceNameStates.isEmpty()) {
-            return dataSources;
+        if (force) {
+            dataSources.forEach((key, value) -> {
+                if (DataSourceState.ENABLED == dataSourceNameStates.get(getCacheKey(databaseName, key))) {
+                    result.put(key, value);
+                }
+            });
+        } else {
+            dataSources.forEach((key, value) -> {
+                if (DataSourceState.DISABLED != dataSourceNameStates.get(getCacheKey(databaseName, key))) {
+                    result.put(key, value);
+                }
+            });
         }
-        Map<String, DataSource> result = new LinkedHashMap<>(dataSources.size(), 1);
-        dataSources.forEach((key, value) -> {
-            if (DataSourceState.DISABLED != dataSourceStates.get(value)) {
-                result.put(key, value);
-            }
-        });
         return result;
     }
     

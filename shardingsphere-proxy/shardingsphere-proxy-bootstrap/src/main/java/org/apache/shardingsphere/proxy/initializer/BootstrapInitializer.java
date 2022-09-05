@@ -49,28 +49,29 @@ public final class BootstrapInitializer {
      *
      * @param yamlConfig YAML proxy configuration
      * @param port proxy port
+     * @param force force start
      * @throws SQLException SQL exception
      */
-    public void init(final YamlProxyConfiguration yamlConfig, final int port) throws SQLException {
+    public void init(final YamlProxyConfiguration yamlConfig, final int port, final boolean force) throws SQLException {
         ModeConfiguration modeConfig = null == yamlConfig.getServerConfiguration().getMode() ? null : new YamlModeConfigurationSwapper().swapToObject(yamlConfig.getServerConfiguration().getMode());
         ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
-        ContextManager contextManager = createContextManager(proxyConfig, modeConfig, port);
+        ContextManager contextManager = createContextManager(proxyConfig, modeConfig, port, force);
         ProxyContext.init(contextManager);
         contextManagerInitializedCallback(modeConfig, contextManager);
         ShardingSphereProxyVersion.setVersion(contextManager);
     }
     
-    private ContextManager createContextManager(final ProxyConfiguration proxyConfig, final ModeConfiguration modeConfig, final int port) throws SQLException {
+    private ContextManager createContextManager(final ProxyConfiguration proxyConfig, final ModeConfiguration modeConfig, final int port, final boolean force) throws SQLException {
         ContextManagerBuilderParameter parameter = new ContextManagerBuilderParameter(modeConfig, proxyConfig.getDatabaseConfigurations(),
                 proxyConfig.getGlobalConfiguration().getRules(), proxyConfig.getGlobalConfiguration().getProperties(), proxyConfig.getGlobalConfiguration().getLabels(),
-                createInstanceMetaData(proxyConfig, port));
+                createInstanceMetaData(proxyConfig, port, force));
         return ContextManagerBuilderFactory.getInstance(modeConfig).build(parameter);
     }
     
-    private InstanceMetaData createInstanceMetaData(final ProxyConfiguration proxyConfig, final int port) {
+    private InstanceMetaData createInstanceMetaData(final ProxyConfiguration proxyConfig, final int port, final boolean force) {
         String instanceType = proxyConfig.getGlobalConfiguration().getProperties().getProperty(ConfigurationPropertyKey.PROXY_INSTANCE_TYPE.getKey(),
                 ConfigurationPropertyKey.PROXY_INSTANCE_TYPE.getDefaultValue());
-        return InstanceMetaDataBuilderFactory.create(instanceType, port);
+        return InstanceMetaDataBuilderFactory.create(instanceType, port, force);
     }
     
     private void contextManagerInitializedCallback(final ModeConfiguration modeConfig, final ContextManager contextManager) {

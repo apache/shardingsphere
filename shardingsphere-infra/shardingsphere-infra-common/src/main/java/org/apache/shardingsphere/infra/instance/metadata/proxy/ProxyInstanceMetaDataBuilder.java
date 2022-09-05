@@ -33,6 +33,11 @@ public final class ProxyInstanceMetaDataBuilder implements InstanceMetaDataBuild
     }
     
     @Override
+    public InstanceMetaData build(final int port, final boolean force) {
+        return new ProxyInstanceMetaData(UUID.randomUUID().toString(), port, force);
+    }
+    
+    @Override
     public String getType() {
         return "Proxy";
     }

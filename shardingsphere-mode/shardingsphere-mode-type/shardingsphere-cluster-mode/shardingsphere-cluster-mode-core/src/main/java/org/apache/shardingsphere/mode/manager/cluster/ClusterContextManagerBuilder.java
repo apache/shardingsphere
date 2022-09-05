@@ -60,7 +60,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         RegistryCenter registryCenter = new RegistryCenter(repository, new EventBusContext(), parameter.getInstanceMetaData(), parameter.getDatabaseConfigs());
         InstanceContext instanceContext = buildInstanceContext(registryCenter, parameter);
         registryCenter.getRepository().watchSessionConnection(instanceContext);
-        checkDataSourceStates(parameter.getDatabaseConfigs(), registryCenter);
+        checkDataSourceStates(parameter.getDatabaseConfigs(), registryCenter, parameter.getInstanceMetaData().isForce());
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, parameter, instanceContext);
         persistMetaData(metaDataContexts);
         ContextManager result = new ContextManager(metaDataContexts, instanceContext);
@@ -68,12 +68,12 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         return result;
     }
     
-    private void checkDataSourceStates(final Map<String, DatabaseConfiguration> databaseConfigs, final RegistryCenter registryCenter) {
+    private void checkDataSourceStates(final Map<String, DatabaseConfiguration> databaseConfigs, final RegistryCenter registryCenter, final boolean force) {
         Map<String, StorageNodeDataSource> storageNodes = registryCenter.getStorageNodeStatusService().loadStorageNodes();
         Map<String, DataSourceState> storageDataSourceStates = getStorageDataSourceStates(storageNodes);
         databaseConfigs.forEach((key, databaseConfig) -> {
             if (null != databaseConfig.getDataSources()) {
-                DataSourceStateManager.getInstance().initStates(key, databaseConfig.getDataSources(), storageDataSourceStates);
+                DataSourceStateManager.getInstance().initStates(key, databaseConfig.getDataSources(), storageDataSourceStates, force);
             }
         });
     }

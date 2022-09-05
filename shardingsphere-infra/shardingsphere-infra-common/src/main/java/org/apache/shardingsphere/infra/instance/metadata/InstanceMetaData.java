@@ -49,4 +49,11 @@ public interface InstanceMetaData {
      * @return attributes
      */
     String getAttributes();
+    
+    /**
+     * Is force.
+     * 
+     * @return force start
+     */
+    boolean isForce();
 }

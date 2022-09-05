@@ -37,10 +37,20 @@ public final class ProxyInstanceMetaData implements InstanceMetaData {
     
     private final int port;
     
+    private final boolean force;
+    
     public ProxyInstanceMetaData(final String id, final int port) {
         this.id = id;
         ip = IpUtils.getIp();
         this.port = port;
+        this.force = false;
+    }
+    
+    public ProxyInstanceMetaData(final String id, final int port, final boolean force) {
+        this.id = id;
+        ip = IpUtils.getIp();
+        this.port = port;
+        this.force = force;
     }
     
     public ProxyInstanceMetaData(final String id, final String attributes) {
@@ -48,6 +58,7 @@ public final class ProxyInstanceMetaData implements InstanceMetaData {
         String[] attributesList = attributes.split(DELIMITER);
         ip = attributesList[0];
         port = Integer.parseInt(attributesList[1]);
+        this.force = false;
     }
     
     @Override

@@ -47,6 +47,18 @@ public final class InstanceMetaDataBuilderFactory {
     
     /**
      * Create instance meta data.
+     *
+     * @param type type
+     * @param port port 
+     * @param force force start
+     * @return created instance meta data
+     */
+    public static InstanceMetaData create(final String type, final int port, final boolean force) {
+        return TypedSPIRegistry.getRegisteredService(InstanceMetaDataBuilder.class, type).build(port, force);
+    }
+    
+    /**
+     * Create instance meta data.
      * 
      * @param instanceId instance ID
      * @param instanceType instance type 

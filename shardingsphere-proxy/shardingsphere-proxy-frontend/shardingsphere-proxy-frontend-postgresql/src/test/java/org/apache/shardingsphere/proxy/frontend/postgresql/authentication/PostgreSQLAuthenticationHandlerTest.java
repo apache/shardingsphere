@@ -138,7 +138,7 @@ public final class PostgreSQLAuthenticationHandlerTest extends ProxyContextResto
         for (int i = 0; i < 10; i++) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
             ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-            when(database.getResource()).thenReturn(new ShardingSphereResource(Collections.emptyMap()));
+            when(database.getResource()).thenReturn(new ShardingSphereResource("sharding_db", Collections.emptyMap()));
             when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
             when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
             when(schema.getTables()).thenReturn(Collections.emptyMap());

@@ -44,12 +44,14 @@ public final class DatabaseTypeEngine {
     /**
      * Get protocol type.
      * 
+     *
+     * @param databaseName database name
      * @param databaseConfig database configuration
      * @param props props
      * @return protocol type
      */
-    public static DatabaseType getProtocolType(final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) {
-        return findConfiguredDatabaseType(props).orElseGet(() -> getDatabaseType(databaseConfig.getDataSources().values()));
+    public static DatabaseType getProtocolType(final String databaseName, final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) {
+        return findConfiguredDatabaseType(props).orElseGet(() -> getDatabaseType(DataSourceStateManager.getInstance().getNonDisabledDataSources(databaseName, databaseConfig)));
     }
     
     /**
