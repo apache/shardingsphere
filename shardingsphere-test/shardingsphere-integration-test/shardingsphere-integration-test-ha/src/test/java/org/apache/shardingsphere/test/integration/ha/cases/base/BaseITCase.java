@@ -77,7 +77,7 @@ public abstract class BaseITCase {
     private void initStorageDataSources() {
         List<DockerStorageContainer> storageContainers = ((DockerComposedContainer) composedContainer).getStorageContainers();
         this.storageDataSources = storageContainers.stream()
-                .map(storageContainer -> DataSourceEnvironment.getURL(getDatabaseType(), storageContainer.getNetworkAliases().get(0), storageContainer.getPort(), DEFAULT_SCHEMA))
+                .map(storageContainer -> DataSourceEnvironment.getURL(getDatabaseType(), storageContainer.getNetworkAliases().get(0), storageContainer.getExposedPort(), DEFAULT_SCHEMA))
                 .map(jdbcUrl -> getDataSource(jdbcUrl, StorageContainerConstants.USERNAME, StorageContainerConstants.PASSWORD))
                 .collect(Collectors.toList());
     }

@@ -115,7 +115,7 @@ public abstract class BaseITCase {
         if (ENV.getItEnvType() == ITEnvTypeEnum.DOCKER) {
             DockerStorageContainer storageContainer = ((DockerComposedContainer) composedContainer).getStorageContainer();
             username = storageContainer.getUsername();
-            password = storageContainer.getUnifiedPassword();
+            password = storageContainer.getPassword();
         } else {
             username = ENV.getActualDataSourceUsername(databaseType);
             password = ENV.getActualDataSourcePassword(databaseType);
@@ -175,7 +175,7 @@ public abstract class BaseITCase {
         if (ITEnvTypeEnum.DOCKER == ENV.getItEnvType()) {
             DockerStorageContainer storageContainer = ((DockerComposedContainer) composedContainer).getStorageContainer();
             if (isInContainer) {
-                return DataSourceEnvironment.getURL(getDatabaseType(), getDatabaseType().getType().toLowerCase() + ".host", storageContainer.getPort(), databaseName);
+                return DataSourceEnvironment.getURL(getDatabaseType(), getDatabaseType().getType().toLowerCase() + ".host", storageContainer.getExposedPort(), databaseName);
             } else {
                 return DataSourceEnvironment.getURL(getDatabaseType(), storageContainer.getHost(), storageContainer.getFirstMappedPort(), databaseName);
             }

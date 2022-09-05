@@ -564,7 +564,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         }
         return result.toString();
     }
-
+    
     private String getQueryWithCipher(final Boolean queryWithCipherColumn, final YamlRuleConfiguration ruleConfig) {
         StringBuilder result = new StringBuilder();
         if (null != queryWithCipherColumn) {
