@@ -84,8 +84,8 @@ public final class ShardingTableRuleStatementChecker {
     /**
      * Check create sharing table rule statement.
      *
-     * @param database          database
-     * @param rules             rules
+     * @param database database
+     * @param rules rules
      * @param currentRuleConfig current rule configuration
      * @throws DistSQLException definition violation exception
      */
@@ -97,8 +97,8 @@ public final class ShardingTableRuleStatementChecker {
     /**
      * Check alter sharing table rule statement.
      *
-     * @param database          database
-     * @param rules             rules
+     * @param database database
+     * @param rules rules
      * @param currentRuleConfig current rule configuration
      * @throws DistSQLException definition violation exception
      */
@@ -305,7 +305,6 @@ public final class ShardingTableRuleStatementChecker {
             }
             shardingAlgorithm = ShardingAlgorithmFactory.newInstance(algorithmConfiguration);
         }
-        
         return !(shardingAlgorithm instanceof ShardingAutoTableAlgorithm);
     }
     
