@@ -22,7 +22,7 @@ import com.google.common.base.Splitter;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.instance.InstanceContextAware;
+import org.apache.shardingsphere.infra.config.algorithm.InstanceAwareAlgorithm;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -135,9 +135,9 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         Preconditions.checkArgument(isValidBindingTableConfiguration(tableRules, new BindingTableCheckedConfiguration(this.dataSourceNames, shardingAlgorithms, config.getBindingTableGroups(),
                 broadcastTables, defaultDatabaseShardingStrategyConfig, defaultTableShardingStrategyConfig, defaultShardingColumn)),
                 "Invalid binding table configuration in ShardingRuleConfiguration.");
-        keyGenerators.values().stream().filter(each -> each instanceof InstanceContextAware).forEach(each -> ((InstanceContextAware) each).setInstanceContext(instanceContext));
-        if (defaultKeyGenerateAlgorithm instanceof InstanceContextAware) {
-            ((InstanceContextAware) defaultKeyGenerateAlgorithm).setInstanceContext(instanceContext);
+        keyGenerators.values().stream().filter(each -> each instanceof InstanceAwareAlgorithm).forEach(each -> ((InstanceAwareAlgorithm) each).setInstanceContext(instanceContext));
+        if (defaultKeyGenerateAlgorithm instanceof InstanceAwareAlgorithm) {
+            ((InstanceAwareAlgorithm) defaultKeyGenerateAlgorithm).setInstanceContext(instanceContext);
         }
     }
     
@@ -162,9 +162,9 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         Preconditions.checkArgument(isValidBindingTableConfiguration(tableRules, new BindingTableCheckedConfiguration(this.dataSourceNames, shardingAlgorithms, config.getBindingTableGroups(),
                 broadcastTables, defaultDatabaseShardingStrategyConfig, defaultTableShardingStrategyConfig, defaultShardingColumn)),
                 "Invalid binding table configuration in ShardingRuleConfiguration.");
-        keyGenerators.values().stream().filter(each -> each instanceof InstanceContextAware).forEach(each -> ((InstanceContextAware) each).setInstanceContext(instanceContext));
-        if (defaultKeyGenerateAlgorithm instanceof InstanceContextAware) {
-            ((InstanceContextAware) defaultKeyGenerateAlgorithm).setInstanceContext(instanceContext);
+        keyGenerators.values().stream().filter(each -> each instanceof InstanceAwareAlgorithm).forEach(each -> ((InstanceAwareAlgorithm) each).setInstanceContext(instanceContext));
+        if (defaultKeyGenerateAlgorithm instanceof InstanceAwareAlgorithm) {
+            ((InstanceAwareAlgorithm) defaultKeyGenerateAlgorithm).setInstanceContext(instanceContext);
         }
     }
     

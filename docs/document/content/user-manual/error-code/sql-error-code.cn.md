@@ -22,6 +22,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | HY004     | 10301       | Invalid value \`%s\` |
 | HV008     | 10302       | Column index \`%d\` is out of range |
 | HY004     | 10400       | Invalid format for actual data node \`%s\` |
+| HY000     | 10500       | Result set has been closed |
 | 42000     | 11000       | You have an error in your SQL syntax: %s |
 | 42000     | 11002       | Resource does not exist |
 | 42000     | 11003       | Rule does not exist |

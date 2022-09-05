@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
 import lombok.EqualsAndHashCode;
+import org.apache.shardingsphere.driver.jdbc.exception.ResultSetClosedException;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedDatabaseMetaDataResultSet;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtil;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -404,7 +405,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     
     private void checkClosed() throws SQLException {
         if (closed) {
-            throw new SQLException("ResultSet has closed.");
+            throw new ResultSetClosedException().toSQLException();
         }
     }
     
