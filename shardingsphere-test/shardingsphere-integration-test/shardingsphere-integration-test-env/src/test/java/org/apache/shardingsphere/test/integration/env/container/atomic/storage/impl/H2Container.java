@@ -68,9 +68,8 @@ public final class H2Container extends EmbeddedStorageContainer {
     }
     
     private void executeInitSQL(final DataSource dataSource, final String initSQLFile) throws SQLException, IOException {
-        try (
-                Connection connection = dataSource.getConnection();
-                FileReader reader = new FileReader(initSQLFile)) {
+        try (Connection connection = dataSource.getConnection(); 
+             FileReader reader = new FileReader(initSQLFile)) {
             RunScript.execute(connection, reader);
         }
     }
