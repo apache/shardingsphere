@@ -17,11 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -34,6 +29,11 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.
 import org.junit.Test;
 
 import java.util.Optional;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class AlterIndexStatementHandlerTest {
     
@@ -66,7 +66,7 @@ public final class AlterIndexStatementHandlerTest {
         Optional<IndexSegment> indexSegment = AlterIndexStatementHandler.getRenameIndexSegment(alterIndexStatement);
         assertFalse(indexSegment.isPresent());
     }
-
+    
     @Test
     public void assertGetRenameIndexSegmentForOpenGauss() {
         IndexSegment indexSegment = new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("")));
@@ -76,14 +76,14 @@ public final class AlterIndexStatementHandlerTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is(indexSegment));
     }
-
+    
     @Test
     public void assertGetSimpleTableSegmentForOtherDatabases() {
         assertFalse(AlterIndexStatementHandler.getSimpleTableSegment(new OpenGaussAlterIndexStatement()).isPresent());
         assertFalse(AlterIndexStatementHandler.getSimpleTableSegment(new OracleAlterIndexStatement()).isPresent());
         assertFalse(AlterIndexStatementHandler.getSimpleTableSegment(new PostgreSQLAlterIndexStatement()).isPresent());
     }
-
+    
     @Test
     public void assertGetRenameIndexSegmentForOtherDatabases() {
         assertFalse(AlterIndexStatementHandler.getRenameIndexSegment(new OracleAlterIndexStatement()).isPresent());
