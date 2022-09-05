@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-sharding-plugin</artifactId>
-        <version>5.2.0</version>
+        <version>5.2.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-sharding-cosid</artifactId>
     <name>${project.artifactId}</name>
