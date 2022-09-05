@@ -59,14 +59,6 @@ showTableMetadata
     : SHOW TABLE METADATA tableName (COMMA tableName*)? (FROM databaseName)?
     ;
 
-showSQLParserRule
-    : SHOW SQL_PARSER RULE
-    ;
-
-alterSQLParserRule
-    : ALTER SQL_PARSER RULE sqlParserRuleDefinition
-    ;
-
 showInstanceInfo
     : SHOW INSTANCE INFO
     ;
@@ -155,10 +147,6 @@ filePath
     : STRING
     ;
 
-sqlParserRuleDefinition
-    : SQL_COMMENT_PARSE_ENABLE EQ sqlCommentParseEnable (COMMA PARSE_TREE_CACHE LP parseTreeCache RP)? (COMMA SQL_STATEMENT_CACHE LP sqlStatementCache RP)?
-    ;
-
 variableName
     : IDENTIFIER
     ;
@@ -181,34 +169,6 @@ refreshScope
 
 fromSegment
     : FROM RESOURCE resourceName (SCHEMA schemaName)?
-    ;
-
-sqlCommentParseEnable
-    : TRUE | FALSE
-    ;
-
-parseTreeCache
-    : cacheOption
-    ;
-
-sqlStatementCache
-    : cacheOption
-    ;
-
-cacheOption
-    : (INITIAL_CAPACITY EQ initialCapacity)? (COMMA? MAXIMUM_SIZE EQ maximumSize)? (COMMA? CONCURRENCY_LEVEL EQ concurrencyLevel)? 
-    ;
-
-initialCapacity
-    : INT
-    ;
-
-maximumSize
-    : INT
-    ;
-
-concurrencyLevel
-    : INT
     ;
 
 label

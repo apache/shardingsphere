@@ -15,57 +15,45 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
+package org.apache.shardingsphere.parser.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.parser.segment.CacheOptionSegment;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterSQLParserRuleStatement;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.parser.distsql.parser.segment.CacheOptionSegment;
+import org.apache.shardingsphere.parser.distsql.parser.statement.updatable.AlterSQLParserRuleStatement;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.junit.Test;
 
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-public final class AlterSQLParserRuleHandlerTest extends ProxyContextRestorer {
+public final class AlterSQLParserRuleStatementUpdaterTest {
     
     @Test
     public void assertExecute() throws SQLException {
-        ContextManager contextManager = mockContextManager();
-        AlterSQLParserRuleHandler handler = new AlterSQLParserRuleHandler();
+        AlterSQLParserRuleStatementUpdater updater = new AlterSQLParserRuleStatementUpdater();
         AlterSQLParserRuleStatement sqlStatement = new AlterSQLParserRuleStatement(true, new CacheOptionSegment(64, 512L), new CacheOptionSegment(1000, 1000L));
-        handler.init(sqlStatement, mock(ConnectionSession.class));
-        UpdateResponseHeader responseHeader = (UpdateResponseHeader) handler.execute();
-        assertThat(responseHeader.getSqlStatement(), is(sqlStatement));
-        assertAlteredRule(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class));
-    }
-    
-    private ContextManager mockContextManager() {
-        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        SQLParserRule rule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(new LinkedList<>(Collections.singleton(rule))));
-        ProxyContext.init(result);
-        return result;
-    }
-    
-    private void assertAlteredRule(final SQLParserRule actual) {
+        ShardingSphereMetaData metaData = createMetaData();
+        updater.executeUpdate(metaData, sqlStatement);
+        SQLParserRule actual = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         assertTrue(actual.isSqlCommentParseEnabled());
         assertThat(actual.getSqlStatementCache().getInitialCapacity(), is(1000));
         assertThat(actual.getSqlStatementCache().getMaximumSize(), is(1000L));
         assertThat(actual.getParseTreeCache().getInitialCapacity(), is(64));
         assertThat(actual.getParseTreeCache().getMaximumSize(), is(512L));
+    }
+    
+    private ShardingSphereMetaData createMetaData() {
+        SQLParserRule rule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
+        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(new LinkedList<>(Collections.singleton(rule)));
+        return new ShardingSphereMetaData(Collections.emptyMap(), ruleMetaData, new ConfigurationProperties(new Properties()));
     }
 }

@@ -15,20 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.segment;
+package org.apache.shardingsphere.parser.distsql.parser.statement.queryable;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableGlobalRuleRALStatement;
 
 /**
- * Cache option segment.
+ * Show SQL parser rule statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class CacheOptionSegment implements ASTNode {
-    
-    private final Integer initialCapacity;
-    
-    private final Long maximumSize;
+public final class ShowSQLParserRuleStatement extends QueryableGlobalRuleRALStatement {
 }
