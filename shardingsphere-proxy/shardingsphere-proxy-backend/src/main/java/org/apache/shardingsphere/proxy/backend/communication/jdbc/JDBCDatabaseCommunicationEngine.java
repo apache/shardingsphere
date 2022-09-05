@@ -144,14 +144,14 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
             transactionManager = new JDBCBackendTransactionManager(backendConnection);
             transactionManager.begin();
         }
-        ResponseHeader responseHeader;
+        ResponseHeader result;
         try {
-            List result = proxySQLExecutor.execute(executionContext);
+            List executeResults = proxySQLExecutor.execute(executionContext);
             refreshMetaData(executionContext);
-            Object executeResultSample = result.iterator().next();
-            responseHeader = executeResultSample instanceof QueryResult
-                    ? processExecuteQuery(executionContext, result, (QueryResult) executeResultSample)
-                    : processExecuteUpdate(executionContext, result);
+            Object executeResultSample = executeResults.iterator().next();
+            result = executeResultSample instanceof QueryResult
+                    ? processExecuteQuery(executionContext, executeResults, (QueryResult) executeResultSample)
+                    : processExecuteUpdate(executionContext, executeResults);
             if (null != transactionManager) {
                 transactionManager.commit();
             }
@@ -161,7 +161,7 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
             }
             throw ex;
         }
-        return responseHeader;
+        return result;
     }
     
     private static SQLFederationDeciderContext decide(final QueryContext queryContext, final ConfigurationProperties props, final ShardingSphereDatabase database) {
