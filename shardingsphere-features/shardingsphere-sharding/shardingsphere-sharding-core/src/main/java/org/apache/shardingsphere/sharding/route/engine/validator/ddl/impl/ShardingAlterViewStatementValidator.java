@@ -58,11 +58,11 @@ public final class ShardingAlterViewStatementValidator extends ShardingDDLStatem
     
     private void validateBroadcastShardingView(final ShardingRule shardingRule, final String originView, final String targetView) {
         if (shardingRule.isBroadcastTable(originView) ^ shardingRule.isBroadcastTable(targetView)) {
-            throw new RenamedViewWithoutSameConfigException();
+            throw new RenamedViewWithoutSameConfigException(originView, targetView);
         }
         if (shardingRule.isShardingTable(originView) || shardingRule.isShardingTable(targetView)) {
             if (!shardingRule.isAllBindingTables(Arrays.asList(originView, targetView))) {
-                throw new RenamedViewWithoutSameConfigException();
+                throw new RenamedViewWithoutSameConfigException(originView, targetView);
             }
         }
     }

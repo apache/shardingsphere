@@ -27,7 +27,7 @@ public final class RenamedViewWithoutSameConfigException extends ShardingSphereS
     
     private static final long serialVersionUID = -8276278970848162458L;
     
-    public RenamedViewWithoutSameConfigException() {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 20053, "Alter view rename .. to .. statement should have same config for origin view and new view");
+    public RenamedViewWithoutSameConfigException(final String originView, final String targetView) {
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 20034, "Alter view rename .. to .. statement should have same config for %s and %s", originView, targetView);
     }
 }
