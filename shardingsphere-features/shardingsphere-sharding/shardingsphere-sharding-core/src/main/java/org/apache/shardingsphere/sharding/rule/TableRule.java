@@ -145,7 +145,9 @@ public final class TableRule {
     }
     
     private DataNodeInfo createTableDataNode(final Collection<DataNode> actualDataNodes) {
-        String prefix = DATA_NODE_SUFFIX_PATTERN.matcher(actualDataNodes.iterator().next().getTableName()).replaceAll("");
+        String tableName = actualDataNodes.iterator().next().getTableName();
+        String prefix = tableName.startsWith(logicTable) ? logicTable + DATA_NODE_SUFFIX_PATTERN.matcher(tableName.substring(logicTable.length())).replaceAll("")
+                : DATA_NODE_SUFFIX_PATTERN.matcher(tableName).replaceAll("");
         int suffixMinLength = actualDataNodes.stream().map(each -> each.getTableName().length() - prefix.length()).min(Comparator.comparing(Integer::intValue)).orElse(1);
         return new DataNodeInfo(prefix, suffixMinLength, DEFAULT_PADDING_CHAR);
     }
