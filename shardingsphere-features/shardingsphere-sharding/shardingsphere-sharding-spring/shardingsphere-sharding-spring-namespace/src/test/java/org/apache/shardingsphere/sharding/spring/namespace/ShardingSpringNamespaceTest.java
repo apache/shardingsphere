@@ -70,7 +70,7 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
     private KeyGenerateAlgorithm keyGenerateAlgorithm;
     
     @Resource
-    private ShardingAuditAlgorithm auditorAlgorithm;
+    private ShardingAuditAlgorithm auditAlgorithm;
     
     @Resource
     private StandardShardingStrategyConfiguration dataSourceShardingStrategy;
@@ -201,17 +201,17 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
     
     @Test
     public void assertShardingAuditAlgorithm() {
-        assertThat(auditorAlgorithm.getType(), is("DML_SHARDING_CONDITIONS"));
+        assertThat(auditAlgorithm.getType(), is("DML_SHARDING_CONDITIONS"));
     }
     
     @Test
-    public void assertDefaultAuditor() {
+    public void assertDefaultAudit() {
         assertTrue(defaultAuditor.getAuditorNames().contains("auditorAlgorithm"));
         assertTrue(defaultAuditor.isAllowHintDisable());
     }
     
     @Test
-    public void assertShardingKeyAuditor() {
+    public void assertShardingKeyAudit() {
         assertTrue(shardingKeyAuditor.getAuditorNames().contains("auditorAlgorithm"));
         assertTrue(shardingKeyAuditor.isAllowHintDisable());
     }
