@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.schedule.core.strategy.type;
+package org.apache.shardingsphere.schedule.core.context;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
@@ -30,9 +30,9 @@ import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
-import org.apache.shardingsphere.schedule.core.model.CronJob;
+import org.apache.shardingsphere.infra.schedule.CronJob;
+import org.apache.shardingsphere.infra.schedule.ScheduleContext;
 import org.apache.shardingsphere.schedule.core.model.JobParameter;
-import org.apache.shardingsphere.schedule.core.strategy.ScheduleStrategy;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,11 +40,11 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
- * Cluster schedule strategy.
+ * Cluster schedule context.
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class ClusterScheduleStrategy implements ScheduleStrategy {
+public final class ClusterScheduleContext implements ScheduleContext {
     
     private static final Map<String, ScheduleJobBootstrap> SCHEDULE_JOB_BOOTSTRAP_MAP = new HashMap<>();
     

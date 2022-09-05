@@ -21,6 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.InstanceAwareAlgorithm;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.schedule.ScheduleContext;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -207,7 +208,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     public void assertSetWorkerIdFailureWhenNegative() {
         SnowflakeKeyGenerateAlgorithm algorithm = (SnowflakeKeyGenerateAlgorithm) KeyGenerateAlgorithmFactory.newInstance(new AlgorithmConfiguration("SNOWFLAKE", new Properties()));
         InstanceContext instanceContext = new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(-1L),
-                new ModeConfiguration("Standalone", null, false), mock(LockContext.class), new EventBusContext());
+                new ModeConfiguration("Standalone", null, false), mock(LockContext.class), new EventBusContext(), mock(ScheduleContext.class));
         algorithm.setInstanceContext(instanceContext);
         algorithm.generateKey();
     }
@@ -223,7 +224,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     public void assertSetWorkerIdFailureWhenOutOfRange() {
         SnowflakeKeyGenerateAlgorithm algorithm = (SnowflakeKeyGenerateAlgorithm) KeyGenerateAlgorithmFactory.newInstance(new AlgorithmConfiguration("SNOWFLAKE", new Properties()));
         InstanceContext instanceContext = new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(Long.MIN_VALUE),
-                new ModeConfiguration("Standalone", null, false), mock(LockContext.class), new EventBusContext());
+                new ModeConfiguration("Standalone", null, false), mock(LockContext.class), new EventBusContext(), mock(ScheduleContext.class));
         algorithm.setInstanceContext(instanceContext);
         algorithm.generateKey();
     }
