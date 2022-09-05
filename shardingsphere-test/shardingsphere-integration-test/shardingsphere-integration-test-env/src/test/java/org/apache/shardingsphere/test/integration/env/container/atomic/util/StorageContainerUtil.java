@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.integration.env.container.atomic.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -30,25 +31,12 @@ import java.net.ServerSocket;
 public final class StorageContainerUtil {
     
     /**
-     * Generate a random available port.
+     * Generate an available port.
      *
-     * @return random available port
+     * @return available port
      */
-    public static int generateRandomAvailableTCPPort() {
-        int retryTime = 0;
-        int result = 0;
-        while (result == 0 && retryTime < 3) {
-            try {
-                ServerSocket serverSocket = new ServerSocket(3307);
-                serverSocket.close();
-                result = serverSocket.getLocalPort();
-            } catch (final IOException e) {
-                ++retryTime;
-            }
-        }
-        if (result == 0 && retryTime == 3) {
-            throw new RuntimeException("there is no more available port could be set up for storage container.");
-        }
-        return result;
+    @SneakyThrows(IOException.class)
+    public synchronized static int generateAvailableTCPPort() {
+        return new ServerSocket(0).getLocalPort();
     }
 }
