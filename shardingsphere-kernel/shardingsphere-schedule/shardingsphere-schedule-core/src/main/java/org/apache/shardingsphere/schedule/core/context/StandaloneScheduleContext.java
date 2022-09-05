@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.schedule.core.strategy.type;
+package org.apache.shardingsphere.schedule.core.context;
 
-import org.apache.shardingsphere.schedule.core.model.CronJob;
-import org.apache.shardingsphere.schedule.core.strategy.ScheduleStrategy;
+import org.apache.shardingsphere.infra.schedule.CronJob;
+import org.apache.shardingsphere.infra.schedule.ScheduleContext;
 
 /**
- * Standalone schedule strategy.
+ * Standalone schedule context.
  */
-public final class StandaloneScheduleStrategy implements ScheduleStrategy {
+public final class StandaloneScheduleContext implements ScheduleContext {
     
     @Override
     public void startSchedule(final CronJob job) {

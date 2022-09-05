@@ -38,12 +38,10 @@ import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
+import org.apache.shardingsphere.infra.schedule.CronJob;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.metadata.storage.event.PrimaryDataSourceChangedEvent;
 import org.apache.shardingsphere.mode.metadata.storage.event.StorageNodeDataSourceChangedEvent;
-import org.apache.shardingsphere.schedule.core.ScheduleContextFactory;
-import org.apache.shardingsphere.schedule.core.model.CronJob;
-import org.apache.shardingsphere.schedule.core.strategy.ScheduleStrategy;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -82,7 +80,7 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
         discoveryTypes = getDiscoveryProviderAlgorithms(ruleConfig.getDiscoveryTypes());
         dataSourceRules = getDataSourceRules(ruleConfig.getDataSources(), ruleConfig.getDiscoveryHeartbeats());
         findPrimaryReplicaRelationship(databaseName, dataSourceMap);
-        initHeartBeatJobs(instanceContext.getInstance().getCurrentInstanceId());
+        initHeartBeatJobs();
     }
     
     public DatabaseDiscoveryRule(final String databaseName,
@@ -94,7 +92,7 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
         discoveryTypes = ruleConfig.getDiscoveryTypes();
         dataSourceRules = getDataSourceRules(ruleConfig.getDataSources(), ruleConfig.getDiscoveryHeartbeats());
         findPrimaryReplicaRelationship(databaseName, dataSourceMap);
-        initHeartBeatJobs(instanceContext.getInstance().getCurrentInstanceId());
+        initHeartBeatJobs();
     }
     
     private static Map<String, DatabaseDiscoveryProviderAlgorithm> getDiscoveryProviderAlgorithms(final Map<String, AlgorithmConfiguration> discoveryTypesConfig) {
@@ -162,27 +160,25 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
         DatabaseDiscoveryDataSourceRule dataSourceRule = dataSourceRules.get(qualifiedDatabase.getGroupName());
         Preconditions.checkState(null != dataSourceRule, "Can 't find database discovery data source rule in database `%s`.", databaseName);
         dataSourceRule.changePrimaryDataSourceName(qualifiedDatabase.getDataSourceName());
-        initHeartBeatJobs(instanceContext.getInstance().getCurrentInstanceId());
+        initHeartBeatJobs();
     }
     
     @Override
     public void closeHeartBeatJob() {
-        ScheduleStrategy scheduleStrategy = ScheduleContextFactory.getInstance().get(instanceContext.getInstance().getCurrentInstanceId());
         for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
             DatabaseDiscoveryDataSourceRule rule = entry.getValue();
-            scheduleStrategy.closeSchedule(rule.getDatabaseDiscoveryProviderAlgorithm().getType() + "-" + databaseName + "-" + rule.getGroupName());
+            instanceContext.getScheduleContext().closeSchedule(rule.getDatabaseDiscoveryProviderAlgorithm().getType() + "-" + databaseName + "-" + rule.getGroupName());
         }
     }
     
-    private void initHeartBeatJobs(final String instanceId) {
-        ScheduleStrategy scheduleStrategy = ScheduleContextFactory.getInstance().get(instanceId);
+    private void initHeartBeatJobs() {
         for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
             DatabaseDiscoveryDataSourceRule rule = entry.getValue();
             String jobName = rule.getDatabaseDiscoveryProviderAlgorithm().getType() + "-" + databaseName + "-" + rule.getGroupName();
             CronJob job = new CronJob(jobName, each -> new HeartbeatJob(databaseName, rule.getGroupName(), rule.getPrimaryDataSourceName(), rule.getDataSourceGroup(dataSourceMap),
                     rule.getDatabaseDiscoveryProviderAlgorithm(), rule.getDisabledDataSourceNames(), instanceContext.getEventBusContext()).execute(null),
                     rule.getHeartbeatProps().getProperty("keep-alive-cron"));
-            scheduleStrategy.startSchedule(job);
+            instanceContext.getScheduleContext().startSchedule(job);
         }
     }
     
