@@ -15,26 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.schedule.core.strategy;
+package org.apache.shardingsphere.data.pipeline.api.metadata.model;
 
-import org.apache.shardingsphere.schedule.core.model.CronJob;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+
+import java.util.List;
 
 /**
- * Schedule Strategy.
+ * Pipeline meta data of index.
  */
-public interface ScheduleStrategy {
+@RequiredArgsConstructor
+@Getter
+@ToString
+public final class PipelineIndexMetaData {
     
-    /**
-     * Start schedule.
-     *
-     * @param job cron job
-     */
-    void startSchedule(CronJob job);
+    private final String name;
     
-    /**
-     * close schedule.
-     *
-     * @param jobName job name
-     */
-    void closeSchedule(String jobName);
+    private final List<PipelineColumnMetaData> columns;
 }

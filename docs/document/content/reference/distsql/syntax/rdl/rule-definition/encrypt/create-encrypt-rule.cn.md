@@ -14,15 +14,12 @@ CreateEncryptRule ::=
   'CREATE' 'ENCRYPT' 'RULE' encryptDefinition ( ',' encryptDefinition )*
 
 encryptDefinition ::=
-  tableName '(' 'COLUMNS' '(' columnDefinition ( ',' columnDefinition )*  ')' ',' 'QUERY_WITH_CIPHER_COLUMN' '=' queryWithCipherColumn ')'
+  tableName '(' 'COLUMNS' '(' columnDefinition ( ',' columnDefinition )*  ')' ',' 'QUERY_WITH_CIPHER_COLUMN' '=' ( 'TRUE' | 'FALSE' ) ')'
 
 columnDefinition ::=
     'NAME' '=' columnName ',' ( 'PLAIN' '=' plainColumnName )? 'CIPHER' '=' cipherColumnName ','  'TYPE' '(' 'NAME' '=' encryptAlgorithmType ( ',' 'PROPERTIES' '(' 'key' '=' 'value' ( ',' 'key' '=' 'value' )* ')' )? ')'
 
 tableName ::=
-  identifier
-
-queryWithCipherColumn ::=
   identifier
 
 columnName ::=
@@ -35,7 +32,7 @@ cipherColumnName ::=
   identifier
 
 encryptAlgorithmType ::=
-  identifier
+  string
 ```
 
 ### 补充说明

@@ -15,10 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.ingest.dumper;
+package org.apache.shardingsphere.schedule.core.context;
+
+import org.apache.shardingsphere.infra.schedule.CronJob;
+import org.apache.shardingsphere.infra.schedule.ScheduleContext;
 
 /**
- * Inventory dumper.
+ * Standalone schedule context.
  */
-public interface InventoryDumper extends Dumper {
+public final class StandaloneScheduleContext implements ScheduleContext {
+    
+    @Override
+    public void startSchedule(final CronJob job) {
+        // TODO
+    }
+    
+    @Override
+    public void closeSchedule(final String jobName) {
+        // TODO
+    }
 }

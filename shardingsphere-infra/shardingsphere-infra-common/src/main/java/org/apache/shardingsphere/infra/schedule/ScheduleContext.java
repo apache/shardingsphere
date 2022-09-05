@@ -15,10 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.ingest.dumper;
+package org.apache.shardingsphere.infra.schedule;
 
 /**
- * Incremental dumper.
+ * Schedule Strategy.
  */
-public interface IncrementalDumper extends Dumper {
+public interface ScheduleContext {
+    
+    /**
+     * Start schedule.
+     *
+     * @param job cron job
+     */
+    void startSchedule(CronJob job);
+    
+    /**
+     * close schedule.
+     *
+     * @param jobName job name
+     */
+    void closeSchedule(String jobName);
 }

@@ -24,7 +24,7 @@ keyGeneratorName ::=
   identifier
   
 algorithmType ::=
-  identifier
+  string
 ```
 
 ### Supplement

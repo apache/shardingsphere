@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.metadata;
+package org.apache.shardingsphere.data.pipeline.api.metadata.model;
 
 import lombok.Getter;
 import lombok.NonNull;

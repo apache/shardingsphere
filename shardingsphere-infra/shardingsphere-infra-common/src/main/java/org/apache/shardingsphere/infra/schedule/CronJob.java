@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.algorithm;
+package org.apache.shardingsphere.infra.schedule;
 
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-/**
- * Instance aware algorithm.
- */
-public interface InstanceAwareAlgorithm {
+import java.util.function.Consumer;
+
+@RequiredArgsConstructor
+@Getter
+public final class CronJob {
     
-    /**
-     * Set instance context.
-     * 
-     * @param instanceContext instance context
-     */
-    void setInstanceContext(InstanceContext instanceContext);
+    private final String jobName;
+    
+    @SuppressWarnings("rawtypes")
+    private final Consumer job;
+    
+    private final String cron;
 }

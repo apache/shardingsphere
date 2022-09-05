@@ -15,23 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.schedule.core.strategy.type;
-
-import org.apache.shardingsphere.schedule.core.model.CronJob;
-import org.apache.shardingsphere.schedule.core.strategy.ScheduleStrategy;
+package org.apache.shardingsphere.data.pipeline.api.ingest.dumper;
 
 /**
- * Standalone schedule strategy.
+ * Incremental dumper.
  */
-public final class StandaloneScheduleStrategy implements ScheduleStrategy {
-    
-    @Override
-    public void startSchedule(final CronJob job) {
-        // TODO
-    }
-    
-    @Override
-    public void closeSchedule(final String jobName) {
-        // TODO
-    }
+public interface IncrementalDumper extends Dumper {
 }

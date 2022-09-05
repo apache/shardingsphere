@@ -15,24 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.metadata.model;
+package org.apache.shardingsphere.data.pipeline.api.metadata.loader;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.metadata.PipelineColumnMetaData;
-
-import java.util.List;
+import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
 
 /**
- * Pipeline meta data of index.
+ * Pipeline table metadata loader.
  */
-@RequiredArgsConstructor
-@Getter
-@ToString
-public final class PipelineIndexMetaData {
+public interface PipelineTableMetaDataLoader {
     
-    private final String name;
-    
-    private final List<PipelineColumnMetaData> columns;
+    /**
+     * Get table metadata, load if it does not exist.
+     *
+     * @param schemaName schema name. nullable
+     * @param tableName dedicated table name, not table name pattern
+     * @return table metadata
+     */
+    PipelineTableMetaData getTableMetaData(String schemaName, String tableName);
 }

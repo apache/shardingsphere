@@ -29,8 +29,9 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSource
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalJobItemContext;
-import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 
@@ -79,7 +80,7 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
         
         @Override
         protected PipelineTableMetaDataLoader initialize() throws ConcurrentException {
-            return new PipelineTableMetaDataLoader(sourceDataSourceLazyInitializer.get());
+            return new StandardPipelineTableMetaDataLoader(sourceDataSourceLazyInitializer.get());
         }
     };
     

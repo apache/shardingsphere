@@ -15,21 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.schedule.core.model;
+package org.apache.shardingsphere.data.pipeline.api.ingest.dumper;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
 
-import java.util.function.Consumer;
-
-@RequiredArgsConstructor
-@Getter
-public final class CronJob {
-    
-    private final String jobName;
-    
-    @SuppressWarnings("rawtypes")
-    private final Consumer job;
-    
-    private final String cron;
+/**
+ * Dumper interface.
+ */
+public interface Dumper extends LifecycleExecutor {
 }
