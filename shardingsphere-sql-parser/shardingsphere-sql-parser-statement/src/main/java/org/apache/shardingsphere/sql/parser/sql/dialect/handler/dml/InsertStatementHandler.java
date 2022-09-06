@@ -59,6 +59,9 @@ public final class InsertStatementHandler implements SQLStatementHandler {
         if (insertStatement instanceof OpenGaussStatement) {
             return ((OpenGaussInsertStatement) insertStatement).getOnDuplicateKeyColumns();
         }
+        if (insertStatement instanceof PostgreSQLStatement) {
+            return ((PostgreSQLInsertStatement) insertStatement).getOnDuplicateKeyColumns();
+        }
         return Optional.empty();
     }
     
