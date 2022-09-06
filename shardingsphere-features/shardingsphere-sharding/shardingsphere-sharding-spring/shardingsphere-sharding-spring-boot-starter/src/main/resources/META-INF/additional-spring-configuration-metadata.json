@@ -88,12 +88,22 @@
       "sourceType": "org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration"
     },
     {
+      "name": "spring.shardingsphere.rules.sharding.default-audit-strategy",
+      "type": "org.apache.shardingsphere.sharding.yaml.config.strategy.audit.YamlShardingAuditStrategyConfiguration",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration"
+    },
+    {
       "name": "spring.shardingsphere.rules.sharding.sharding-algorithms",
       "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration>",
       "sourceType": "org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration"
     },
     {
       "name": "spring.shardingsphere.rules.sharding.key-generators",
+      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration>",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.auditors",
       "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration>",
       "sourceType": "org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration"
     }
@@ -123,6 +133,16 @@
       "name": "spring.shardingsphere.rules.sharding.default-key-generate-strategy.key-generator-name",
       "type": "java.lang.String",
       "sourceType": "org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.default-audit-strategy.auditor-names",
+      "type": "java.util.Collection<java.lang.String>",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.strategy.audit.YamlShardingAuditStrategyConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.default-audit-strategy.allow-hint-disable",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.strategy.audit.YamlShardingAuditStrategyConfiguration"
     },
     {
       "name": "spring.shardingsphere.rules.sharding.default-table-strategy.hint.sharding-algorithm-name",
