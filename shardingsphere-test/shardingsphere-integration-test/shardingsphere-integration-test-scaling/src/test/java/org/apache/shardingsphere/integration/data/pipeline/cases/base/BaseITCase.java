@@ -152,21 +152,8 @@ public abstract class BaseITCase {
         } catch (final SQLException ex) {
             throw new IllegalStateException(ex);
         }
-        sourceDataSource = getDataSource(getActualJdbcUrlTemplate(DS_0, false), username, password);
-        proxyDataSource = getDataSource(containerComposer.getProxyJdbcUrl(PROXY_DATABASE), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD);
-    }
-    
-    private DataSource getDataSource(final String jdbcUrl, final String username, final String password) {
-        HikariDataSource result = new HikariDataSource();
-        result.setDriverClassName(DataSourceEnvironment.getDriverClassName(getDatabaseType()));
-        result.setJdbcUrl(jdbcUrl);
-        result.setUsername(username);
-        result.setPassword(password);
-        result.setMaximumPoolSize(2);
-        result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
-        return result;
         sourceDataSource = StorageContainerUtil.generateDataSource(getActualJdbcUrlTemplate(DS_0, false), username, password);
-        proxyDataSource = StorageContainerUtil.generateDataSource(composedContainer.getProxyJdbcUrl(PROXY_DATABASE), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD);
+        proxyDataSource = StorageContainerUtil.generateDataSource(containerComposer.getProxyJdbcUrl(PROXY_DATABASE), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD);
     }
     
     protected void addResource(final String distSQL) throws SQLException {
