@@ -42,11 +42,11 @@ public final class DataSourceStateManager {
     
     private static final DataSourceStateManager INSTANCE = new DataSourceStateManager();
     
-    private final Map<String, DataSourceState> dataSourceNameStates = new ConcurrentHashMap<>();
-    
-    private volatile boolean started;
+    private final Map<String, DataSourceState> dataSourceStates = new ConcurrentHashMap<>();
     
     private volatile boolean force;
+    
+    private volatile boolean initialized;
     
     /**
      * Get data source state manager.
@@ -55,14 +55,6 @@ public final class DataSourceStateManager {
      */
     public static DataSourceStateManager getInstance() {
         return INSTANCE;
-    }
-    
-    /**
-     * Mark has been started.
-     */
-    public void started() {
-        started = true;
-        dataSourceNameStates.clear();
     }
     
     /**
@@ -78,19 +70,20 @@ public final class DataSourceStateManager {
         dataSources.forEach((key, value) -> {
             DataSourceState storageState = storageDataSourceStates.get(getCacheKey(databaseName, key));
             if (DataSourceState.DISABLED == storageState) {
-                dataSourceNameStates.put(getCacheKey(databaseName, key), storageState);
+                dataSourceStates.put(getCacheKey(databaseName, key), storageState);
             } else {
                 try (Connection ignored = value.getConnection()) {
-                    dataSourceNameStates.put(getCacheKey(databaseName, key), DataSourceState.ENABLED);
+                    dataSourceStates.put(getCacheKey(databaseName, key), DataSourceState.ENABLED);
                 } catch (final SQLException ex) {
                     if (this.force) {
-                        log.error("Data source status unavailable.", ex);
+                        log.error("Data source status unavailable, ignored with the -f parameter.", ex);
                     } else {
                         throw new DataSourceStateException("DataSourceState", 1, "Data source status unavailable.", ex);
                     }
                 }
             }
         });
+        initialized = true;
     }
     
     /**
@@ -132,19 +125,19 @@ public final class DataSourceStateManager {
      * @return data sources in a non-disabled state
      */
     public Map<String, DataSource> filterDisabledDataSources(final String databaseName, final Map<String, DataSource> dataSources) {
-        if (started) {
+        if (dataSources.isEmpty() || !initialized) {
             return dataSources;
         }
         Map<String, DataSource> result = new LinkedHashMap<>(dataSources.size(), 1);
         if (force) {
             dataSources.forEach((key, value) -> {
-                if (DataSourceState.ENABLED == dataSourceNameStates.get(getCacheKey(databaseName, key))) {
+                if (DataSourceState.ENABLED == dataSourceStates.get(getCacheKey(databaseName, key))) {
                     result.put(key, value);
                 }
             });
         } else {
             dataSources.forEach((key, value) -> {
-                if (DataSourceState.DISABLED != dataSourceNameStates.get(getCacheKey(databaseName, key))) {
+                if (DataSourceState.DISABLED != dataSourceStates.get(getCacheKey(databaseName, key))) {
                     result.put(key, value);
                 }
             });
