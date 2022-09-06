@@ -139,7 +139,7 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
         SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
         JDBCBackendTransactionManager transactionManager = null;
         if (TransactionType.XA == transactionStatus.getTransactionType() && transactionStatus.isInTransaction()
-                && sqlStatement instanceof DMLStatement && !(sqlStatement instanceof SelectStatement) && executionContext.getExecutionUnits().size() > 1 ) {
+                && sqlStatement instanceof DMLStatement && !(sqlStatement instanceof SelectStatement) && executionContext.getExecutionUnits().size() > 1) {
             proxySQLExecutor.getJdbcExecutor().getJdbcExecutor().setSerial(true);
             transactionManager = new JDBCBackendTransactionManager(backendConnection);
             transactionManager.begin();
