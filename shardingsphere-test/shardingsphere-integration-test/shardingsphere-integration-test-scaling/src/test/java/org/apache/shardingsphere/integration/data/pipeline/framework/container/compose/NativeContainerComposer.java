@@ -34,7 +34,7 @@ import java.util.Properties;
 /**
  * Native composed container, you need start ShardingSphere-Proxy at firstly.
  */
-public final class NativeComposedContainer extends BaseComposedContainer {
+public final class NativeContainerComposer extends BaseContainerComposer {
     
     private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
     
@@ -42,7 +42,7 @@ public final class NativeComposedContainer extends BaseComposedContainer {
     
     private final DatabaseType databaseType;
     
-    public NativeComposedContainer(final DatabaseType databaseType) {
+    public NativeContainerComposer(final DatabaseType databaseType) {
         this.databaseType = databaseType;
     }
     

@@ -28,9 +28,9 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.command.ExtraSQLCommand;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
-import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.BaseComposedContainer;
-import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.DockerComposedContainer;
-import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.NativeComposedContainer;
+import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.BaseContainerComposer;
+import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.DockerContainerComposer;
+import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.NativeContainerComposer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.integration.data.pipeline.framework.watcher.ScalingWatcher;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.ProxyContainerConstants;
@@ -87,7 +87,7 @@ public abstract class BaseITCase {
     @Getter(AccessLevel.NONE)
     public ScalingWatcher scalingWatcher;
     
-    private final BaseComposedContainer composedContainer;
+    private final BaseContainerComposer containerComposer;
     
     private final ExtraSQLCommand extraSQLCommand;
     
@@ -107,13 +107,13 @@ public abstract class BaseITCase {
     public BaseITCase(final ScalingParameterized parameterized) {
         databaseType = parameterized.getDatabaseType();
         if (ENV.getItEnvType() == ITEnvTypeEnum.DOCKER) {
-            composedContainer = new DockerComposedContainer(parameterized.getDatabaseType(), parameterized.getDockerImageName());
+            containerComposer = new DockerContainerComposer(parameterized.getDatabaseType(), parameterized.getDockerImageName());
         } else {
-            composedContainer = new NativeComposedContainer(parameterized.getDatabaseType());
+            containerComposer = new NativeContainerComposer(parameterized.getDatabaseType());
         }
-        composedContainer.start();
+        containerComposer.start();
         if (ENV.getItEnvType() == ITEnvTypeEnum.DOCKER) {
-            DockerStorageContainer storageContainer = ((DockerComposedContainer) composedContainer).getStorageContainer();
+            DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainer();
             username = storageContainer.getUsername();
             password = storageContainer.getPassword();
         } else {
@@ -125,12 +125,12 @@ public abstract class BaseITCase {
             cleanUpDataSource();
         }
         extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BaseITCase.class.getClassLoader().getResource(parameterized.getScenario())), ExtraSQLCommand.class);
-        scalingWatcher = new ScalingWatcher(composedContainer);
+        scalingWatcher = new ScalingWatcher(containerComposer);
     }
     
     private void cleanUpDataSource() {
         for (String each : Arrays.asList(DS_0, DS_2, DS_3, DS_4)) {
-            composedContainer.cleanUpDatabase(each);
+            containerComposer.cleanUpDatabase(each);
         }
     }
     
@@ -139,7 +139,7 @@ public abstract class BaseITCase {
         if (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) {
             defaultDatabaseName = "postgres";
         }
-        String jdbcUrl = composedContainer.getProxyJdbcUrl(defaultDatabaseName);
+        String jdbcUrl = containerComposer.getProxyJdbcUrl(defaultDatabaseName);
         try (Connection connection = DriverManager.getConnection(jdbcUrl, ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD)) {
             if (ENV.getItEnvType() == ITEnvTypeEnum.NATIVE) {
                 try {
@@ -153,7 +153,7 @@ public abstract class BaseITCase {
             throw new IllegalStateException(ex);
         }
         sourceDataSource = getDataSource(getActualJdbcUrlTemplate(DS_0, false), username, password);
-        proxyDataSource = getDataSource(composedContainer.getProxyJdbcUrl(PROXY_DATABASE), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD);
+        proxyDataSource = getDataSource(containerComposer.getProxyJdbcUrl(PROXY_DATABASE), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD);
     }
     
     private DataSource getDataSource(final String jdbcUrl, final String username, final String password) {
@@ -173,7 +173,7 @@ public abstract class BaseITCase {
     
     protected String getActualJdbcUrlTemplate(final String databaseName, final boolean isInContainer) {
         if (ITEnvTypeEnum.DOCKER == ENV.getItEnvType()) {
-            DockerStorageContainer storageContainer = ((DockerComposedContainer) composedContainer).getStorageContainer();
+            DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainer();
             if (isInContainer) {
                 return DataSourceEnvironment.getURL(getDatabaseType(), getDatabaseType().getType().toLowerCase() + ".host", storageContainer.getExposedPort(), databaseName);
             } else {
