@@ -61,6 +61,7 @@ public class ShardingRuleSpringBootConfiguration {
      *
      * @param shardingAlgorithmProvider sharding algorithm provider
      * @param keyGenerateAlgorithmProvider key generate algorithm provider
+     * @param shardingAuditAlgorithmProvider sharding audit algorithm provider
      * @return sharding rule configuration
      */
     @Bean
