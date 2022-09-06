@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.metadata.persist.service.schema;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
+import org.apache.shardingsphere.infra.metadata.database.schema.SchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereView;
@@ -30,7 +31,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * View meta data persist service.
@@ -42,10 +42,9 @@ public final class ViewMetaDataPersistService implements SchemaMetaDataPersistSe
     
     @Override
     public void compareAndPersist(final String databaseName, final String schemaName, final Map<String, ShardingSphereView> loadedViews) {
-        // TODO Add ShardingSphereSchemaFactory to support getToBeAddedViews and getToBeDeletedViews.
         Map<String, ShardingSphereView> currentViews = load(databaseName, schemaName);
-        persist(databaseName, schemaName, getToBeAddedViews(loadedViews, currentViews));
-        getToBeDeletedViews(loadedViews, currentViews).forEach((key, value) -> delete(databaseName, schemaName, key));
+        persist(databaseName, schemaName, SchemaManager.getToBeAddedViews(loadedViews, currentViews));
+        SchemaManager.getToBeDeletedViews(loadedViews, currentViews).forEach((key, value) -> delete(databaseName, schemaName, key));
     }
     
     @Override
@@ -63,23 +62,6 @@ public final class ViewMetaDataPersistService implements SchemaMetaDataPersistSe
     @Override
     public void delete(final String databaseName, final String schemaName, final String viewName) {
         repository.delete(DatabaseMetaDataNode.getViewMetaDataPath(databaseName, schemaName, viewName.toLowerCase()));
-    }
-    
-    private Map<String, ShardingSphereView> getToBeAddedViews(final Map<String, ShardingSphereView> loadedViews, final Map<String, ShardingSphereView> currentViews) {
-        Map<String, ShardingSphereView> result = new LinkedHashMap<>(loadedViews.size(), 1);
-        for (Map.Entry<String, ShardingSphereView> entry : loadedViews.entrySet()) {
-            ShardingSphereView currentView = currentViews.get(entry.getKey());
-            if (null != currentView && !entry.getValue().equals(currentView)) {
-                result.put(entry.getKey(), entry.getValue());
-            } else if (null == currentView) {
-                result.put(entry.getKey(), entry.getValue());
-            }
-        }
-        return result;
-    }
-    
-    private Map<String, ShardingSphereView> getToBeDeletedViews(final Map<String, ShardingSphereView> loadedViews, final Map<String, ShardingSphereView> currentViews) {
-        return currentViews.entrySet().stream().filter(entry -> !loadedViews.containsKey(entry.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
     
     private Map<String, ShardingSphereView> getViewMetaDataByViewNames(final String databaseName, final String schemaName, final Collection<String> viewNames) {

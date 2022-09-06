@@ -54,12 +54,23 @@ public final class DatabaseMetaDataPersistServiceTest {
     private PersistRepository repository;
     
     @Test
+    public void assertPersistEmptySchemas() {
+        new DatabaseMetaDataPersistService(repository).persist("foo_db", "foo_schema", new ShardingSphereSchema());
+        verify(repository).persist(eq("/metadata/foo_db/schemas/foo_schema/tables"), anyString());
+    }
+    
+    @Test
+    public void assertCompareAndPersistEmptySchemas() {
+        new DatabaseMetaDataPersistService(repository).compareAndPersist("foo_db", "foo_schema", new ShardingSphereSchema());
+        verify(repository).persist(eq("/metadata/foo_db/schemas/foo_schema/tables"), anyString());
+    }
+    
+    @Test
     public void assertPersist() {
         ShardingSphereTable table = new YamlTableSwapper().swapToObject(YamlEngine.unmarshal(readYAML(), YamlShardingSphereTable.class));
         ShardingSphereSchema schema = new ShardingSphereSchema();
         schema.getTables().put("t_order", table);
         new DatabaseMetaDataPersistService(repository).persist("foo_db", "foo_schema", schema);
-        verify(repository).persist(eq("/metadata/foo_db/schemas/foo_schema/tables"), anyString());
         verify(repository).persist(eq("/metadata/foo_db/schemas/foo_schema/tables/t_order"), anyString());
     }
     
@@ -101,7 +112,6 @@ public final class DatabaseMetaDataPersistServiceTest {
         ShardingSphereView view = new ShardingSphereView("FOO_VIEW", "select id from foo_table");
         new DatabaseMetaDataPersistService(repository).persist("foo_db", "foo_schema",
                 new ShardingSphereSchema(Collections.singletonMap("FOO_TABLE", table), Collections.singletonMap("FOO_VIEW", view)));
-        verify(repository).persist(eq("/metadata/foo_db/schemas/foo_schema/tables"), anyString());
         verify(repository).persist(eq("/metadata/foo_db/schemas/foo_schema/tables/foo_table"), anyString());
     }
     
