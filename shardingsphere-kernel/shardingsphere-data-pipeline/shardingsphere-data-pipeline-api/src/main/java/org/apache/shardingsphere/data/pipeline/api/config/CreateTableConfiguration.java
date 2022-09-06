@@ -15,24 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
+package org.apache.shardingsphere.data.pipeline.api.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.config.CreateTableConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaTableName;
+
+import java.util.Collection;
 
 /**
- * Prepare target tables parameter.
+ * Create table configuration.
  */
 @RequiredArgsConstructor
 @Getter
-public final class PrepareTargetTablesParameter {
+@ToString
+public final class CreateTableConfiguration {
     
-    private final CreateTableConfiguration createTableConfig;
+    private final Collection<CreateTableEntry> createTableEntries;
     
-    private final PipelineDataSourceManager dataSourceManager;
-    
-    private final ShardingSphereSQLParserEngine sqlParserEngine;
+    @RequiredArgsConstructor
+    @Getter
+    @ToString(exclude = {"sourceDataSourceConfig", "targetDataSourceConfig"})
+    public static final class CreateTableEntry {
+        
+        private final PipelineDataSourceConfiguration sourceDataSourceConfig;
+        
+        private final SchemaTableName sourceName;
+        
+        private final PipelineDataSourceConfiguration targetDataSourceConfig;
+        
+        private final SchemaTableName targetName;
+    }
 }

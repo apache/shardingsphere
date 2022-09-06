@@ -17,20 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.api.config;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
-
 /**
- * Task configuration.
+ * Pipeline task configuration.
  */
-@Getter
-@RequiredArgsConstructor
-@ToString
-public final class TaskConfiguration {
-    
-    private final DumperConfiguration dumperConfig;
-    
-    private final ImporterConfiguration importerConfig;
+public interface PipelineTaskConfiguration {
 }

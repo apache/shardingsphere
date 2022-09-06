@@ -28,6 +28,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.Standa
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemIncrementalTasksProgress;
 import org.apache.shardingsphere.data.pipeline.core.check.datasource.DataSourceCheckerFactory;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.PositionInitializerFactory;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparer;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparerFactory;
@@ -38,7 +39,11 @@ import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionIniti
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -72,14 +77,27 @@ public final class PipelineJobPreparerUtils {
      *
      * @param databaseType database type
      * @param prepareTargetSchemasParameter prepare target schemas parameter
+     * @throws SQLException if prepare target schema fail
      */
-    public static void prepareTargetSchema(final String databaseType, final PrepareTargetSchemasParameter prepareTargetSchemasParameter) {
+    public static void prepareTargetSchema(final String databaseType, final PrepareTargetSchemasParameter prepareTargetSchemasParameter) throws SQLException {
         Optional<DataSourcePreparer> dataSourcePreparer = DataSourcePreparerFactory.getInstance(databaseType);
         if (!dataSourcePreparer.isPresent()) {
             log.info("dataSourcePreparer null, ignore prepare target");
             return;
         }
         dataSourcePreparer.get().prepareTargetSchemas(prepareTargetSchemasParameter);
+    }
+    
+    /**
+     * Get SQL parser engine.
+     *
+     * @param targetDatabaseName target database name
+     * @return SQL parser engine
+     */
+    public static ShardingSphereSQLParserEngine getSQLParserEngine(final String targetDatabaseName) {
+        ShardingSphereMetaData metaData = PipelineContext.getContextManager().getMetaDataContexts().getMetaData();
+        ShardingSphereDatabase database = metaData.getDatabases().get(targetDatabaseName);
+        return metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getSQLParserEngine(database.getProtocolType().getType());
     }
     
     /**

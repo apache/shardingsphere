@@ -15,24 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
+package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.api.config.CreateTableConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.PipelineTaskConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 
 /**
- * Prepare target tables parameter.
+ * Migration task configuration.
  */
-@RequiredArgsConstructor
 @Getter
-public final class PrepareTargetTablesParameter {
+@RequiredArgsConstructor
+@ToString
+public final class MigrationTaskConfiguration implements PipelineTaskConfiguration {
     
     private final CreateTableConfiguration createTableConfig;
     
-    private final PipelineDataSourceManager dataSourceManager;
+    private final DumperConfiguration dumperConfig;
     
-    private final ShardingSphereSQLParserEngine sqlParserEngine;
+    private final ImporterConfiguration importerConfig;
 }
