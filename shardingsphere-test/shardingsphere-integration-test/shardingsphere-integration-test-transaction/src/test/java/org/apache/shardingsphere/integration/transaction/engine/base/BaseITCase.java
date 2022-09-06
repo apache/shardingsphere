@@ -36,9 +36,9 @@ import org.apache.shardingsphere.integration.transaction.engine.entity.JdbcInfoE
 import org.apache.shardingsphere.integration.transaction.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.transaction.env.enums.TransactionITEnvTypeEnum;
 import org.apache.shardingsphere.integration.transaction.env.enums.TransactionTestCaseRegistry;
-import org.apache.shardingsphere.integration.transaction.framework.container.compose.BaseComposedContainer;
-import org.apache.shardingsphere.integration.transaction.framework.container.compose.DockerComposedContainer;
-import org.apache.shardingsphere.integration.transaction.framework.container.compose.NativeComposedContainer;
+import org.apache.shardingsphere.integration.transaction.framework.container.compose.BaseContainerComposer;
+import org.apache.shardingsphere.integration.transaction.framework.container.compose.DockerContainerComposer;
+import org.apache.shardingsphere.integration.transaction.framework.container.compose.NativeContainerComposer;
 import org.apache.shardingsphere.integration.transaction.framework.param.TransactionParameterized;
 import org.apache.shardingsphere.integration.transaction.util.TestCaseClassScanner;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
@@ -95,7 +95,7 @@ public abstract class BaseITCase {
     
     private static final List<Class<? extends BaseTransactionTestCase>> TEST_CASES;
     
-    private final BaseComposedContainer composedContainer;
+    private final BaseContainerComposer containerComposer;
     
     private final CommonSQLCommand commonSQLCommand;
     
@@ -115,7 +115,7 @@ public abstract class BaseITCase {
     public BaseITCase(final TransactionParameterized parameterized) {
         databaseType = parameterized.getDatabaseType();
         adapter = parameterized.getAdapter();
-        composedContainer = createAndStartComposedContainer(parameterized);
+        containerComposer = createAndStartContainerComposer(parameterized);
         commonSQLCommand = getSqlCommand();
         initActualDataSources();
         if (isProxyAdapter(parameterized)) {
@@ -126,13 +126,13 @@ public abstract class BaseITCase {
     }
     
     private void createJdbcDataSource() {
-        if (composedContainer instanceof DockerComposedContainer) {
-            DockerComposedContainer dockerComposedContainer = (DockerComposedContainer) composedContainer;
-            DockerStorageContainer databaseContainer = dockerComposedContainer.getStorageContainer();
+        if (containerComposer instanceof DockerContainerComposer) {
+            DockerContainerComposer dockerContainerComposer = (DockerContainerComposer) containerComposer;
+            DockerStorageContainer databaseContainer = dockerContainerComposer.getStorageContainer();
             Map<String, DataSource> actualDataSourceMap = databaseContainer.getActualDataSourceMap();
             actualDataSourceMap.put("ds_0", createDataSource(databaseContainer, DS_0));
             actualDataSourceMap.put("ds_1", createDataSource(databaseContainer, DS_1));
-            dataSource = new JdbcDataSource(dockerComposedContainer);
+            dataSource = new JdbcDataSource(dockerContainerComposer);
         }
     }
     
@@ -285,15 +285,15 @@ public abstract class BaseITCase {
         return JAXB.unmarshal(Objects.requireNonNull(BaseITCase.class.getClassLoader().getResource("env/common/command.xml")), CommonSQLCommand.class);
     }
     
-    private BaseComposedContainer createAndStartComposedContainer(final TransactionParameterized parameterized) {
-        final BaseComposedContainer composedContainer;
+    private BaseContainerComposer createAndStartContainerComposer(final TransactionParameterized parameterized) {
+        final BaseContainerComposer containerComposer;
         if (ENV.getItEnvType() == TransactionITEnvTypeEnum.DOCKER) {
-            composedContainer = new DockerComposedContainer(parameterized);
+            containerComposer = new DockerContainerComposer(parameterized);
         } else {
-            composedContainer = new NativeComposedContainer(parameterized.getDatabaseType());
+            containerComposer = new NativeContainerComposer(parameterized.getDatabaseType());
         }
-        composedContainer.start();
-        return composedContainer;
+        containerComposer.start();
+        return containerComposer;
     }
     
     @SneakyThrows(SQLException.class)
@@ -307,8 +307,8 @@ public abstract class BaseITCase {
     private String getJdbcUrl(final JdbcInfoEntity jdbcInfo) {
         String jdbcUrl;
         if (ENV.getItEnvType() == TransactionITEnvTypeEnum.DOCKER) {
-            DockerComposedContainer dockerComposedContainer = (DockerComposedContainer) composedContainer;
-            DockerStorageContainer databaseContainer = dockerComposedContainer.getStorageContainer();
+            DockerContainerComposer dockerContainerComposer = (DockerContainerComposer) containerComposer;
+            DockerStorageContainer databaseContainer = dockerContainerComposer.getStorageContainer();
             jdbcUrl = databaseContainer.getJdbcUrl("");
         } else {
             jdbcUrl = DataSourceEnvironment.getURL(databaseType, "localhost", jdbcInfo.getPort());
@@ -319,8 +319,8 @@ public abstract class BaseITCase {
     private JdbcInfoEntity getJdbcInfoEntity() {
         JdbcInfoEntity jdbcInfo;
         if (ENV.getItEnvType() == TransactionITEnvTypeEnum.DOCKER) {
-            DockerComposedContainer dockerComposedContainer = (DockerComposedContainer) composedContainer;
-            DockerStorageContainer databaseContainer = dockerComposedContainer.getStorageContainer();
+            DockerContainerComposer dockerContainerComposer = (DockerContainerComposer) containerComposer;
+            DockerStorageContainer databaseContainer = dockerContainerComposer.getStorageContainer();
             jdbcInfo = new JdbcInfoEntity(databaseContainer.getUsername(), databaseContainer.getPassword(), databaseContainer.getExposedPort());
         } else {
             jdbcInfo = ENV.getActualDatabaseJdbcInfo(getDatabaseType());
@@ -371,7 +371,7 @@ public abstract class BaseITCase {
         if (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) {
             defaultDatabaseName = "postgres";
         }
-        String jdbcUrl = composedContainer.getProxyJdbcUrl(defaultDatabaseName);
+        String jdbcUrl = containerComposer.getProxyJdbcUrl(defaultDatabaseName);
         if (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) {
             jdbcUrl = JDBC_URL_APPENDER.appendQueryProperties(jdbcUrl, getPostgreSQLQueryProperties());
         }
@@ -379,7 +379,7 @@ public abstract class BaseITCase {
     }
     
     protected AutoDataSource getProxyDataSource(final String databaseName) {
-        return new ProxyDataSource(composedContainer, databaseName, ENV.getProxyUserName(), ENV.getProxyPassword());
+        return new ProxyDataSource(containerComposer, databaseName, ENV.getProxyUserName(), ENV.getProxyPassword());
     }
     
     protected boolean waitShardingAlgorithmEffect(final int maxWaitTimes) {
@@ -400,14 +400,14 @@ public abstract class BaseITCase {
     @SneakyThrows
     protected void addResources() {
         if (DatabaseTypeUtil.isMySQL(databaseType)) {
-            try (Connection connection = DriverManager.getConnection(getComposedContainer().getProxyJdbcUrl(""), ENV.getProxyUserName(), ENV.getProxyPassword())) {
+            try (Connection connection = DriverManager.getConnection(getContainerComposer().getProxyJdbcUrl(""), ENV.getProxyUserName(), ENV.getProxyPassword())) {
                 executeWithLog(connection, "USE sharding_db");
                 addResources(connection);
             }
         } else {
             Properties queryProps = getPostgreSQLQueryProperties();
             try (
-                    Connection connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl("sharding_db"), queryProps),
+                    Connection connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getContainerComposer().getProxyJdbcUrl("sharding_db"), queryProps),
                             ENV.getProxyUserName(), ENV.getProxyPassword())) {
                 addResources(connection);
             }
@@ -470,7 +470,7 @@ public abstract class BaseITCase {
     
     private String getActualJdbcUrlTemplate(final String databaseName) {
         if (ENV.getItEnvType() == TransactionITEnvTypeEnum.DOCKER) {
-            final DockerStorageContainer databaseContainer = ((DockerComposedContainer) composedContainer).getStorageContainer();
+            final DockerStorageContainer databaseContainer = ((DockerContainerComposer) containerComposer).getStorageContainer();
             return DataSourceEnvironment.getURL(getDatabaseType(), getDatabaseType().getType().toLowerCase() + ".host", databaseContainer.getExposedPort(), databaseName);
         } else {
             return DataSourceEnvironment.getURL(getDatabaseType(), "127.0.0.1", ENV.getActualDataSourceDefaultPort(databaseType), databaseName);
