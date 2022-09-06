@@ -15,22 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.cases.entity;
+package org.apache.shardingsphere.integration.data.pipeline.entity;
 
 import lombok.Getter;
+import lombok.Setter;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Collection;
-import java.util.LinkedList;
 
 /**
- * Create table generator root entity for JAXB.
+ * Create table sql generator input entity for JAXB.
  */
-@XmlRootElement(name = "create-table-generator-assertions")
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
-public final class CreateTableSQLGeneratorAssertionsRootEntity {
+@Setter
+public final class CreateTableSQLGeneratorInputEntity {
     
-    @XmlElement(name = "create-table-generator-assertion")
-    private final Collection<CreateTableSQLGeneratorAssertionEntity> assertions = new LinkedList<>();
+    @XmlAttribute
+    private String table;
+    
+    @XmlElement
+    private String sql;
 }

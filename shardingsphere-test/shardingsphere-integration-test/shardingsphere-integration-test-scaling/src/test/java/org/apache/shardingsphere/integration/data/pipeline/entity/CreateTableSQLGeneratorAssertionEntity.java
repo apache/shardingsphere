@@ -15,29 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.cases.command;
+package org.apache.shardingsphere.integration.data.pipeline.entity;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Collection;
 
-@Data
-@XmlRootElement(name = "command")
+/**
+ * Create table sql generator entity for JAXB.
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExtraSQLCommand {
+@Getter
+@Setter
+public final class CreateTableSQLGeneratorAssertionEntity {
     
-    @XmlElement(name = "create-table-order")
-    private String createTableOrder;
+    @XmlAttribute(required = true)
+    private String id;
     
-    @XmlElement(name = "create-table-order-item")
-    private String createTableOrderItem;
+    @XmlElement(required = true)
+    private CreateTableSQLGeneratorInputEntity input;
     
-    @XmlElement(name = "full-insert-order")
-    private String fullInsertOrder;
-    
-    @XmlElement(name = "full-insert-order-item")
-    private String fullInsertOrderItem;
+    @XmlElement(required = true, name = "output")
+    private Collection<CreateTableSQLGeneratorOutputEntity> outputs;
 }

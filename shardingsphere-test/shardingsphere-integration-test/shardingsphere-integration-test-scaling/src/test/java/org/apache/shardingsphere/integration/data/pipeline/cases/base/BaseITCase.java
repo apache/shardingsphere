@@ -22,10 +22,12 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.cases.command.ExtraSQLCommand;
+import org.apache.shardingsphere.integration.data.pipeline.command.ExtraSQLCommand;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.BaseComposedContainer;
@@ -38,7 +40,6 @@ import org.apache.shardingsphere.test.integration.env.container.atomic.storage.D
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.junit.Rule;
-import org.opengauss.util.PSQLException;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXB;
@@ -50,13 +51,17 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @Slf4j
@@ -203,25 +208,6 @@ public abstract class BaseITCase {
         sourceExecuteWithLog(extraSQLCommand.getCreateTableOrderItem());
     }
     
-    protected void createSourceSchema(final String schemaName) throws SQLException {
-        if (DatabaseTypeUtil.isPostgreSQL(databaseType)) {
-            sourceExecuteWithLog(String.format("CREATE SCHEMA IF NOT EXISTS %s", schemaName));
-            return;
-        }
-        if (DatabaseTypeUtil.isOpenGauss(databaseType)) {
-            try {
-                sourceExecuteWithLog(String.format("CREATE SCHEMA %s", schemaName));
-            } catch (final SQLException ex) {
-                // only used for native mode.
-                if (ex instanceof PSQLException && "42P06".equals(ex.getSQLState())) {
-                    log.info("Schema {} already exists.", schemaName);
-                } else {
-                    throw ex;
-                }
-            }
-        }
-    }
-    
     protected void sourceExecuteWithLog(final String sql) throws SQLException {
         log.info("source execute :{}", sql);
         try (Connection connection = sourceDataSource.getConnection()) {
@@ -276,6 +262,26 @@ public abstract class BaseITCase {
     protected void startIncrementTask(final BaseIncrementTask baseIncrementTask) {
         setIncreaseTaskThread(new Thread(baseIncrementTask));
         getIncreaseTaskThread().start();
+    }
+    
+    protected void waitJobFinished(final String distSQL) throws InterruptedException {
+        if (null != getIncreaseTaskThread()) {
+            TimeUnit.SECONDS.timedJoin(getIncreaseTaskThread(), 60);
+        }
+        Set<String> actualStatus;
+        for (int i = 0; i < 10; i++) {
+            List<Map<String, Object>> listJobStatus = queryForListWithLog(distSQL);
+            log.info("show status result: {}", listJobStatus);
+            actualStatus = listJobStatus.stream().map(each -> each.get("status").toString()).collect(Collectors.toSet());
+            assertFalse(CollectionUtils.containsAny(actualStatus, Arrays.asList(JobStatus.PREPARING_FAILURE.name(), JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name(),
+                    JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name())));
+            if (actualStatus.size() == 1 && actualStatus.contains(JobStatus.EXECUTE_INCREMENTAL_TASK.name())) {
+                break;
+            } else if (actualStatus.size() >= 1 && actualStatus.containsAll(new HashSet<>(Arrays.asList("", JobStatus.EXECUTE_INCREMENTAL_TASK.name())))) {
+                log.warn("one of the shardingItem was not started correctly");
+            }
+            ThreadUtil.sleep(3, TimeUnit.SECONDS);
+        }
     }
     
     protected void assertGreaterThanOrderTableInitRows(final int tableInitRows, final String schema) throws SQLException {

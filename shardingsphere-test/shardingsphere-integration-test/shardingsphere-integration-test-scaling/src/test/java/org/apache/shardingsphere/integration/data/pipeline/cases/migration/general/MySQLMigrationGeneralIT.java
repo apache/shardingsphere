@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.cases.general;
+package org.apache.shardingsphere.integration.data.pipeline.cases.migration.general;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.cases.base.AbstractMigrationITCase;
+import org.apache.shardingsphere.integration.data.pipeline.cases.migration.AbstractMigrationITCase;
 import org.apache.shardingsphere.integration.data.pipeline.cases.task.MySQLIncrementTask;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingCaseHelper;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
-import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
+import org.apache.shardingsphere.integration.data.pipeline.util.AutoIncrementKeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -64,14 +64,13 @@ public final class MySQLMigrationGeneralIT extends AbstractMigrationITCase {
         }
         MySQLDatabaseType databaseType = new MySQLDatabaseType();
         for (String version : ENV.listDatabaseDockerImageNames(databaseType)) {
-            result.add(new ScalingParameterized(databaseType, version, "env/scenario/general/mysql.xml"));
+            result.add(new ScalingParameterized(databaseType, version, "env/scenario/migration/general/mysql.xml"));
         }
         return result;
     }
     
     @Test
-    @SneakyThrows
-    public void assertMigrationSuccess() {
+    public void assertMigrationSuccess() throws SQLException, InterruptedException {
         addMigrationProcessConfig();
         createSourceOrderTable();
         createSourceOrderItemTable();
@@ -80,7 +79,7 @@ public final class MySQLMigrationGeneralIT extends AbstractMigrationITCase {
         createTargetOrderTableRule();
         createTargetOrderTableEncryptRule();
         createTargetOrderItemTableRule();
-        SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
+        KeyGenerateAlgorithm keyGenerateAlgorithm = new AutoIncrementKeyGenerateAlgorithm();
         JdbcTemplate jdbcTemplate = new JdbcTemplate(getSourceDataSource());
         for (int i = 0; i < TABLE_INIT_ROW_COUNT / 1000; i++) {
             Pair<List<Object[]>, List<Object[]>> dataPair = ScalingCaseHelper.generateFullInsertData(keyGenerateAlgorithm, parameterized.getDatabaseType(), 1000);
@@ -104,8 +103,8 @@ public final class MySQLMigrationGeneralIT extends AbstractMigrationITCase {
         assertGreaterThanOrderTableInitRows(TABLE_INIT_ROW_COUNT, "");
     }
     
-    private void assertMigrationSuccessById(final String jobId) throws SQLException {
-        waitMigrationFinished(jobId);
+    private void assertMigrationSuccessById(final String jobId) throws SQLException, InterruptedException {
+        waitJobFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         assertCheckMigrationSuccess(jobId);
         stopMigrationByJobId(jobId);
     }

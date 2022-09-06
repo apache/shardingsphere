@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.cases.primarykey;
+package org.apache.shardingsphere.integration.data.pipeline.cases.migration.primarykey;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.cases.base.AbstractMigrationITCase;
+import org.apache.shardingsphere.integration.data.pipeline.cases.migration.AbstractMigrationITCase;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm;
@@ -57,19 +57,19 @@ public class TextPrimaryKeyMigrationIT extends AbstractMigrationITCase {
             return result;
         }
         for (String version : ENV.listDatabaseDockerImageNames(new MySQLDatabaseType())) {
-            result.add(new ScalingParameterized(new MySQLDatabaseType(), version, "env/scenario/primarykey/text_primary_key/mysql.xml"));
+            result.add(new ScalingParameterized(new MySQLDatabaseType(), version, "env/scenario/migration/primary_key/mysql_text_primary_key.xml"));
         }
         for (String version : ENV.listDatabaseDockerImageNames(new PostgreSQLDatabaseType())) {
-            result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), version, "env/scenario/primarykey/text_primary_key/postgresql.xml"));
+            result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), version, "env/scenario/migration/primary_key/postgresql_text_primary_key.xml"));
         }
         for (String version : ENV.listDatabaseDockerImageNames(new OpenGaussDatabaseType())) {
-            result.add(new ScalingParameterized(new OpenGaussDatabaseType(), version, "env/scenario/primarykey/text_primary_key/postgresql.xml"));
+            result.add(new ScalingParameterized(new OpenGaussDatabaseType(), version, "env/scenario/migration/primary_key/postgresql_text_primary_key.xml"));
         }
         return result;
     }
     
     @Test
-    public void assertTextPrimaryMigrationSuccess() throws SQLException {
+    public void assertTextPrimaryMigrationSuccess() throws SQLException, InterruptedException {
         createSourceOrderTable();
         batchInsertOrder();
         addMigrationProcessConfig();
@@ -78,7 +78,7 @@ public class TextPrimaryKeyMigrationIT extends AbstractMigrationITCase {
         createTargetOrderTableRule();
         startMigrationOrder();
         String jobId = listJobId().get(0);
-        waitMigrationFinished(jobId);
+        waitJobFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         stopMigrationByJobId(jobId);
         assertCheckMigrationSuccess(jobId);
         if (ENV.getItEnvType() == ITEnvTypeEnum.DOCKER) {
@@ -91,12 +91,11 @@ public class TextPrimaryKeyMigrationIT extends AbstractMigrationITCase {
     private void batchInsertOrder() throws SQLException {
         UUIDKeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
         try (Connection connection = getSourceDataSource().getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO t_order (id,order_id,user_id,status) VALUES (?,?,?,?)");
+            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO t_order (order_id,user_id,status) VALUES (?,?,?)");
             for (int i = 0; i < TABLE_INIT_ROW_COUNT; i++) {
                 preparedStatement.setObject(1, keyGenerateAlgorithm.generateKey());
                 preparedStatement.setObject(2, ThreadLocalRandom.current().nextInt(0, 6));
-                preparedStatement.setObject(3, ThreadLocalRandom.current().nextInt(0, 6));
-                preparedStatement.setObject(4, "OK");
+                preparedStatement.setObject(3, "OK");
                 preparedStatement.addBatch();
             }
             preparedStatement.executeBatch();

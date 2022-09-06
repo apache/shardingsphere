@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.cases.command;
+package org.apache.shardingsphere.integration.data.pipeline.command;
 
 import lombok.Data;
 
