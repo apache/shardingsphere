@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.integration.transaction.engine.base;
 
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -43,6 +42,7 @@ import org.apache.shardingsphere.integration.transaction.framework.param.Transac
 import org.apache.shardingsphere.integration.transaction.util.TestCaseClassScanner;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
+import org.apache.shardingsphere.test.integration.env.container.atomic.util.StorageContainerUtil;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
@@ -137,16 +137,8 @@ public abstract class BaseITCase {
     }
     
     private DataSource createDataSource(final DockerStorageContainer databaseContainer, final String dataSourceName) {
-        HikariDataSource result = new HikariDataSource();
-        result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
-        result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, databaseContainer.getHost(), databaseContainer.getMappedPort(databaseContainer.getExposedPort()), dataSourceName));
-        result.setUsername(databaseContainer.getUsername());
-        result.setPassword(databaseContainer.getPassword());
-        result.setMaximumPoolSize(50);
-        result.setIdleTimeout(60000);
-        result.setMaxLifetime(1800000);
-        result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
-        return result;
+        return StorageContainerUtil.generateDataSource(DataSourceEnvironment.getURL(databaseType, databaseContainer.getHost(), databaseContainer.getMappedPort(), dataSourceName),
+                databaseContainer.getUsername(), databaseContainer.getPassword(), 50);
     }
     
     protected boolean isProxyAdapter(final TransactionParameterized parameterized) {

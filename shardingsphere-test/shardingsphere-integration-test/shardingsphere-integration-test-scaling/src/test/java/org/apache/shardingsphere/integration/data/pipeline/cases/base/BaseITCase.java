@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.cases.base;
 
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,6 +35,7 @@ import org.apache.shardingsphere.integration.data.pipeline.framework.watcher.Sca
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
+import org.apache.shardingsphere.test.integration.env.container.atomic.util.StorageContainerUtil;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.junit.Rule;
 import org.opengauss.util.PSQLException;
@@ -165,6 +165,8 @@ public abstract class BaseITCase {
         result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return result;
+        sourceDataSource = StorageContainerUtil.generateDataSource(getActualJdbcUrlTemplate(DS_0, false), username, password);
+        proxyDataSource = StorageContainerUtil.generateDataSource(composedContainer.getProxyJdbcUrl(PROXY_DATABASE), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD);
     }
     
     protected void addResource(final String distSQL) throws SQLException {
