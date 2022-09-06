@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.driver.jdbc.core;
 
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+
 import java.rmi.server.UID;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
@@ -34,9 +36,7 @@ public final class ShardingSphereSavepoint implements Savepoint {
     }
     
     public ShardingSphereSavepoint(final String name) throws SQLException {
-        if (null == name || 0 == name.length()) {
-            throw new SQLFeatureNotSupportedException("Savepoint name can not be NULL or empty");
-        }
+        ShardingSpherePreconditions.checkState(null != name && 0 != name.length(), new SQLFeatureNotSupportedException("Savepoint name can not be NULL or empty"));
         savepointName = name;
     }
     

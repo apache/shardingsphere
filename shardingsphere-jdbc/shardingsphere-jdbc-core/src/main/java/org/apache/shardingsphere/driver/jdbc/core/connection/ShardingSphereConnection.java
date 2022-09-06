@@ -25,6 +25,7 @@ import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePrepar
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.driver.jdbc.exception.ConnectionClosedException;
 import org.apache.shardingsphere.infra.context.ConnectionContext;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.Array;
@@ -209,9 +210,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     @Override
     public Savepoint setSavepoint() throws SQLException {
         checkClose();
-        if (!isHoldTransaction()) {
-            throw new SQLFeatureNotSupportedException("Savepoint can only be used in transaction blocks.");
-        }
+        ShardingSpherePreconditions.checkState(isHoldTransaction(), new SQLFeatureNotSupportedException("Savepoint can only be used in transaction blocks."));
         return connectionManager.setSavepoint();
     }
     
@@ -225,9 +224,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     }
     
     private void checkClose() throws SQLException {
-        if (isClosed()) {
-            throw new ConnectionClosedException().toSQLException();
-        }
+        ShardingSpherePreconditions.checkState(!isClosed(), new ConnectionClosedException().toSQLException());
     }
     
     @SuppressWarnings("MagicConstant")
