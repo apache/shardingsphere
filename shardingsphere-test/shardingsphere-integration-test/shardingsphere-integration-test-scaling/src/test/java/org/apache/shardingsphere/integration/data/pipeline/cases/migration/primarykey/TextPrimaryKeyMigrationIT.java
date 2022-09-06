@@ -60,10 +60,10 @@ public class TextPrimaryKeyMigrationIT extends AbstractMigrationITCase {
             result.add(new ScalingParameterized(new MySQLDatabaseType(), version, "env/scenario/primary_key/text_primary_key/mysql.xml"));
         }
         for (String version : ENV.listDatabaseDockerImageNames(new PostgreSQLDatabaseType())) {
-            result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), version, "env/scenario/primary_key/text_primary_key/mysql.xml"));
+            result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), version, "env/scenario/primary_key/text_primary_key/postgresql.xml"));
         }
         for (String version : ENV.listDatabaseDockerImageNames(new OpenGaussDatabaseType())) {
-            result.add(new ScalingParameterized(new OpenGaussDatabaseType(), version, "env/scenario/primary_key/text_primary_key/mysql.xml"));
+            result.add(new ScalingParameterized(new OpenGaussDatabaseType(), version, "env/scenario/primary_key/text_primary_key/postgresql.xml"));
         }
         return result;
     }
