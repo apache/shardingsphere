@@ -90,7 +90,8 @@ public final class DataSourceEnvironment {
             case "H2":
                 return String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL;USER=root;PASSWORD=Root@123", dataSourceName);
             case "MySQL":
-                return String.format("jdbc:mysql://%s:%s/%s?useServerPrepStmts=true&serverTimezone=UTC&useSSL=false&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true",
+                return String.format("jdbc:mysql://%s:%s/%s?useServerPrepStmts=true&serverTimezone=UTC&useSSL=false&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true"
+                                + "&rewriteBatchedStatements=true",
                         host, port, dataSourceName);
             case "PostgreSQL":
                 return String.format("jdbc:postgresql://%s:%s/%s", host, port, dataSourceName);

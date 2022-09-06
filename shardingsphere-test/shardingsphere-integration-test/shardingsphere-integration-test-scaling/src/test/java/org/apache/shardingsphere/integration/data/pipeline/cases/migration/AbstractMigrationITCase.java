@@ -129,7 +129,7 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
         try {
             proxyExecuteWithLog(migrationDistSQLCommand.getAddMigrationProcessConfig(), 0);
         } catch (final SQLException ex) {
-            if ("58000".equals(ex.getSQLState()) || "42000".equals(ex.getSQLState())) {
+            if ("58000".equals(ex.getSQLState()) || "HY000".equals(ex.getSQLState())) {
                 log.warn(ex.getMessage());
                 return;
             }

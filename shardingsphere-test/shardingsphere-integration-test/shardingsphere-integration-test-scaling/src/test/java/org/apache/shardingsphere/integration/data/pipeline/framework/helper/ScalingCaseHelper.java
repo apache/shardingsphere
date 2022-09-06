@@ -72,7 +72,7 @@ public final class ScalingCaseHelper {
                 Object[] addObjs = {orderId, userId, generateString(6), randomInt, randomInt, randomInt,
                         randomUnsignedInt, randomUnsignedInt, randomUnsignedInt, randomUnsignedInt, generateFloat(), generateDouble(-1000, 100000),
                         BigDecimal.valueOf(generateDouble(1, 100)), now, now, now.toLocalDate(), now.toLocalTime(), Year.now().getValue(), "1", "t", "e", "s", "t", generateString(2),
-                        generateString(1), generateString(1), "1", "2", generateJsonString(1024)};
+                        generateString(1), generateString(1), "1", "2", generateJsonString(32)};
                 orderData.add(addObjs);
             } else {
                 orderData.add(new Object[]{orderId, userId, generateString(6), randomInt,
