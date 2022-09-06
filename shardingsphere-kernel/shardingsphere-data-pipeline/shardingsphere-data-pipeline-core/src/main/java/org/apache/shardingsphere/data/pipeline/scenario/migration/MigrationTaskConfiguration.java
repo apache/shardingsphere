@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config;
+package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.PipelineTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 
 /**
- * Task configuration.
+ * Migration task configuration.
  */
 @Getter
 @RequiredArgsConstructor
 @ToString
-public final class TaskConfiguration implements PipelineTaskConfiguration {
+public final class MigrationTaskConfiguration implements PipelineTaskConfiguration {
     
     private final DumperConfiguration dumperConfig;
     
