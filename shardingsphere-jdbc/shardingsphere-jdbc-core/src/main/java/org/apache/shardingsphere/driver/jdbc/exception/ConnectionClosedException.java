@@ -21,13 +21,13 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSpher
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Overall connection not enough exception.
+ * Connection closed exception.
  */
-public final class OverallConnectionNotEnoughException extends ShardingSphereSQLException {
+public final class ConnectionClosedException extends ShardingSphereSQLException {
     
-    private static final long serialVersionUID = -1297088138042287804L;
+    private static final long serialVersionUID = 8667898851939815681L;
     
-    public OverallConnectionNotEnoughException(final int desiredSize, final int actualSize) {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 10007, "Can not get %d connections one time, partition succeed connection(%d) have released", desiredSize, actualSize);
+    public ConnectionClosedException() {
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 10500, "Connection has been closed");
     }
 }
