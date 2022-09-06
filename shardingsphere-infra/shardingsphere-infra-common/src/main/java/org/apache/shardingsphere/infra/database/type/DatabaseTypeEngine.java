@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.util.exception.external.sql.SQLWrapperException;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
-import org.apache.shardingsphere.infra.util.exception.sql.SQLWrapperException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
