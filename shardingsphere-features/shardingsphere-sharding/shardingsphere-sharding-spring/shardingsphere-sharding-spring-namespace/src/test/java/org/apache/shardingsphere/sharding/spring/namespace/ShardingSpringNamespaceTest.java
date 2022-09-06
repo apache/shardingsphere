@@ -94,10 +94,10 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
     private KeyGenerateStrategyConfiguration orderKeyGenerator;
     
     @Resource
-    private ShardingAuditStrategyConfiguration defaultAuditor;
+    private ShardingAuditStrategyConfiguration defaultAudit;
     
     @Resource
-    private ShardingAuditStrategyConfiguration shardingKeyAuditor;
+    private ShardingAuditStrategyConfiguration shardingKeyAudit;
     
     @Resource
     private NoneShardingStrategyConfiguration noneStrategy;
@@ -206,14 +206,14 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
     
     @Test
     public void assertDefaultAudit() {
-        assertTrue(defaultAuditor.getAuditorNames().contains("auditorAlgorithm"));
-        assertTrue(defaultAuditor.isAllowHintDisable());
+        assertTrue(defaultAudit.getAuditorNames().contains("auditAlgorithm"));
+        assertTrue(defaultAudit.isAllowHintDisable());
     }
     
     @Test
     public void assertShardingKeyAudit() {
-        assertTrue(shardingKeyAuditor.getAuditorNames().contains("auditorAlgorithm"));
-        assertTrue(shardingKeyAuditor.isAllowHintDisable());
+        assertTrue(shardingKeyAudit.getAuditorNames().contains("auditAlgorithm"));
+        assertTrue(shardingKeyAudit.isAllowHintDisable());
     }
     
     @Test
