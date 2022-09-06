@@ -115,7 +115,7 @@ public abstract class BaseITCase {
     public BaseITCase(final TransactionParameterized parameterized) {
         databaseType = parameterized.getDatabaseType();
         adapter = parameterized.getAdapter();
-        containerComposer = createAndStartComposedContainer(parameterized);
+        containerComposer = createAndStartContainerComposer(parameterized);
         commonSQLCommand = getSqlCommand();
         initActualDataSources();
         if (isProxyAdapter(parameterized)) {
@@ -127,12 +127,12 @@ public abstract class BaseITCase {
     
     private void createJdbcDataSource() {
         if (containerComposer instanceof DockerContainerComposer) {
-            DockerContainerComposer dockerComposedContainer = (DockerContainerComposer) containerComposer;
-            DockerStorageContainer databaseContainer = dockerComposedContainer.getStorageContainer();
+            DockerContainerComposer dockerContainerComposer = (DockerContainerComposer) containerComposer;
+            DockerStorageContainer databaseContainer = dockerContainerComposer.getStorageContainer();
             Map<String, DataSource> actualDataSourceMap = databaseContainer.getActualDataSourceMap();
             actualDataSourceMap.put("ds_0", createDataSource(databaseContainer, DS_0));
             actualDataSourceMap.put("ds_1", createDataSource(databaseContainer, DS_1));
-            dataSource = new JdbcDataSource(dockerComposedContainer);
+            dataSource = new JdbcDataSource(dockerContainerComposer);
         }
     }
     
@@ -285,15 +285,15 @@ public abstract class BaseITCase {
         return JAXB.unmarshal(Objects.requireNonNull(BaseITCase.class.getClassLoader().getResource("env/common/command.xml")), CommonSQLCommand.class);
     }
     
-    private BaseContainerComposer createAndStartComposedContainer(final TransactionParameterized parameterized) {
-        final BaseContainerComposer composedContainer;
+    private BaseContainerComposer createAndStartContainerComposer(final TransactionParameterized parameterized) {
+        final BaseContainerComposer containerComposer;
         if (ENV.getItEnvType() == TransactionITEnvTypeEnum.DOCKER) {
-            composedContainer = new DockerContainerComposer(parameterized);
+            containerComposer = new DockerContainerComposer(parameterized);
         } else {
-            composedContainer = new NativeContainerComposer(parameterized.getDatabaseType());
+            containerComposer = new NativeContainerComposer(parameterized.getDatabaseType());
         }
-        composedContainer.start();
-        return composedContainer;
+        containerComposer.start();
+        return containerComposer;
     }
     
     @SneakyThrows(SQLException.class)
@@ -307,8 +307,8 @@ public abstract class BaseITCase {
     private String getJdbcUrl(final JdbcInfoEntity jdbcInfo) {
         String jdbcUrl;
         if (ENV.getItEnvType() == TransactionITEnvTypeEnum.DOCKER) {
-            DockerContainerComposer dockerComposedContainer = (DockerContainerComposer) containerComposer;
-            DockerStorageContainer databaseContainer = dockerComposedContainer.getStorageContainer();
+            DockerContainerComposer dockerContainerComposer = (DockerContainerComposer) containerComposer;
+            DockerStorageContainer databaseContainer = dockerContainerComposer.getStorageContainer();
             jdbcUrl = databaseContainer.getJdbcUrl("");
         } else {
             jdbcUrl = DataSourceEnvironment.getURL(databaseType, "localhost", jdbcInfo.getPort());
@@ -319,8 +319,8 @@ public abstract class BaseITCase {
     private JdbcInfoEntity getJdbcInfoEntity() {
         JdbcInfoEntity jdbcInfo;
         if (ENV.getItEnvType() == TransactionITEnvTypeEnum.DOCKER) {
-            DockerContainerComposer dockerComposedContainer = (DockerContainerComposer) containerComposer;
-            DockerStorageContainer databaseContainer = dockerComposedContainer.getStorageContainer();
+            DockerContainerComposer dockerContainerComposer = (DockerContainerComposer) containerComposer;
+            DockerStorageContainer databaseContainer = dockerContainerComposer.getStorageContainer();
             jdbcInfo = new JdbcInfoEntity(databaseContainer.getUsername(), databaseContainer.getPassword(), databaseContainer.getExposedPort());
         } else {
             jdbcInfo = ENV.getActualDatabaseJdbcInfo(getDatabaseType());
