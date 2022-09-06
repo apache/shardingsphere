@@ -74,6 +74,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 42S02     | 20031       | Index \`%s\` does not exist |
 | 44000     | 20032       | Actual tables \`%s\` are in use |
 | 42S01     | 20033       | View name has to bind to %s tables |
+| 0A000     | 20034       | Alter view rename .. to .. statement should have same config for \`%s\` and \`%s\` |
 | HY000     | 20050       | Routed target \`%s\` does not exist, available targets are \`%s\` |
 | HY000     | 20051       | \`%s %s\` can not route correctly for %s \`%s\` |
 | 42S02     | 20052       | Can not find data source in sharding rule, invalid actual data node \`%s\` |
