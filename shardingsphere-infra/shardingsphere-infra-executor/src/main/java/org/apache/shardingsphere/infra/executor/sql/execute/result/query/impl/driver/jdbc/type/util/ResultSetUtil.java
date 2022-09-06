@@ -23,6 +23,7 @@ import com.google.common.primitives.Shorts;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.executor.exception.UnsupportedDataTypeConversionException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -54,9 +55,7 @@ public final class ResultSetUtil {
      * @throws SQLException SQL exception
      */
     public static Object convertValue(final Object value, final Class<?> convertType) throws SQLException {
-        if (null == convertType) {
-            throw new SQLFeatureNotSupportedException("Type cannot be null");
-        }
+        ShardingSpherePreconditions.checkState(null != convertType, new SQLFeatureNotSupportedException("Type can not be null"));
         if (null == value) {
             return convertNullValue(convertType);
         }

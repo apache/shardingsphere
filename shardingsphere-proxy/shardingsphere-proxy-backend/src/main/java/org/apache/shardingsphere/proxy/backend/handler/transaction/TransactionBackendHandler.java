@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.dialect.exception.transaction.InTransactionException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.communication.TransactionManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JDBCBackendTransactionManager;
@@ -147,24 +148,19 @@ public final class TransactionBackendHandler implements ProxyBackendHandler {
     }
     
     private void handleSavepoint() throws SQLException {
-        if (!connectionSession.getTransactionStatus().isInTransaction() && isPostgreSQLOrOpenGauss()) {
-            throw new SQLFeatureNotSupportedException("SAVEPOINT can only be used in transaction blocks");
-        }
-        backendTransactionManager.setSavepoint(((SavepointStatement) tclStatement).getSavepointName());
+        ShardingSpherePreconditions.checkState(connectionSession.getTransactionStatus().isInTransaction() || !isPostgreSQLOrOpenGauss(),
+                new SQLFeatureNotSupportedException("SAVEPOINT can only be used in transaction blocks"));
     }
     
     private void handleRollbackToSavepoint() throws SQLException {
-        if (!connectionSession.getTransactionStatus().isInTransaction() && isPostgreSQLOrOpenGauss()) {
-            throw new SQLFeatureNotSupportedException("ROLLBACK TO SAVEPOINT can only be used in transaction blocks");
-        }
+        ShardingSpherePreconditions.checkState(connectionSession.getTransactionStatus().isInTransaction() || !isPostgreSQLOrOpenGauss(),
+                new SQLFeatureNotSupportedException("ROLLBACK TO SAVEPOINT can only be used in transaction blocks"));
         backendTransactionManager.rollbackTo(((RollbackStatement) tclStatement).getSavepointName().get());
     }
     
     private void handleReleaseSavepoint() throws SQLException {
-        if (!connectionSession.getTransactionStatus().isInTransaction() && isPostgreSQLOrOpenGauss()) {
-            throw new SQLFeatureNotSupportedException("RELEASE SAVEPOINT can only be used in transaction blocks");
-        }
-        backendTransactionManager.releaseSavepoint(((ReleaseSavepointStatement) tclStatement).getSavepointName());
+        ShardingSpherePreconditions.checkState(connectionSession.getTransactionStatus().isInTransaction() || !isPostgreSQLOrOpenGauss(),
+                new SQLFeatureNotSupportedException("RELEASE SAVEPOINT can only be used in transaction blocks"));
     }
     
     private boolean isPostgreSQLOrOpenGauss() {
