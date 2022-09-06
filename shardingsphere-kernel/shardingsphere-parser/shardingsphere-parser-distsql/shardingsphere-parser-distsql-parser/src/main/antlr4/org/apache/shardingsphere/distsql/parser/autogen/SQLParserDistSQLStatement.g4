@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.queryable;
+grammar SQLParserDistSQLStatement;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
+import Symbol, RALStatement;
 
-/**
- * Show SQL parser rule statement.
- */
-public final class ShowSQLParserRuleStatement extends QueryableRALStatement {
-}
+execute
+    : (showSQLParserRule
+    | alterSQLParserRule
+    ) SEMI?
+    ;

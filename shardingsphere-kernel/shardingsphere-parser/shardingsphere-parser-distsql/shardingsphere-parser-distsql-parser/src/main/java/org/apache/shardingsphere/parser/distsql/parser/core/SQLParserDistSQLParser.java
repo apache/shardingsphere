@@ -15,23 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
+package org.apache.shardingsphere.parser.distsql.parser.core;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.CacheOptionSegment;
-import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.TokenStream;
+import org.apache.shardingsphere.distsql.parser.autogen.SQLParserDistSQLStatementParser;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
 /**
- * Alter SQL parser rule statement.
+ * SQL parser for SQL parser dist SQL.
  */
-@RequiredArgsConstructor
-@Getter
-public final class AlterSQLParserRuleStatement extends UpdatableRALStatement {
+public final class SQLParserDistSQLParser extends SQLParserDistSQLStatementParser implements SQLParser {
     
-    private final Boolean sqlCommentParseEnable;
+    public SQLParserDistSQLParser(final TokenStream input) {
+        super(input);
+    }
     
-    private final CacheOptionSegment parseTreeCache;
-    
-    private final CacheOptionSegment sqlStatementCache;
+    @Override
+    public ASTNode parse() {
+        return new ParseASTNode(execute(), (CommonTokenStream) getTokenStream());
+    }
 }
