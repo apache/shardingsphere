@@ -48,7 +48,7 @@ public final class DMLShardingConditionsShardingAuditAlgorithm implements Shardi
     @Override
     public SQLCheckResult check(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, final Grantee grantee, final ShardingSphereDatabase database) {
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement) {
-            ShardingRule rule = ((List<ShardingRule>) database.getRuleMetaData().findRules(ShardingRule.class)).get(0);
+            ShardingRule rule = database.getRuleMetaData().getSingleRule(ShardingRule.class);
             if (rule.isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())
                     || sqlStatementContext.getTablesContext().getTableNames().stream().noneMatch(rule::isShardingTable)) {
                 return new SQLCheckResult(true, "");

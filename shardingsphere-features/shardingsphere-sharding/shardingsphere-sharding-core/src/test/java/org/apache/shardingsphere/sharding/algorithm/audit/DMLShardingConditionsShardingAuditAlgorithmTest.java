@@ -70,7 +70,7 @@ public final class DMLShardingConditionsShardingAuditAlgorithmTest {
     @Test
     public void assertAllBroadcastTablesCheck() {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DMLStatement.class));
-        when(database.getRuleMetaData().findRules(ShardingRule.class)).thenReturn(Collections.singletonList(rule));
+        when(database.getRuleMetaData().getSingleRule(ShardingRule.class)).thenReturn(rule);
         when(rule.isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())).thenReturn(true);
         asserCheckResult(shardingAuditAlgorithm.check(sqlStatementContext, Collections.emptyList(), mock(Grantee.class), database), true, "");
     }
@@ -78,7 +78,7 @@ public final class DMLShardingConditionsShardingAuditAlgorithmTest {
     @Test
     public void assertNotAllShardingTablesCheck() {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DMLStatement.class));
-        when(database.getRuleMetaData().findRules(ShardingRule.class)).thenReturn(Collections.singletonList(rule));
+        when(database.getRuleMetaData().getSingleRule(ShardingRule.class)).thenReturn(rule);
         when(rule.isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())).thenReturn(false);
         asserCheckResult(shardingAuditAlgorithm.check(sqlStatementContext, Collections.emptyList(), mock(Grantee.class), database), true, "");
     }
@@ -86,7 +86,7 @@ public final class DMLShardingConditionsShardingAuditAlgorithmTest {
     @Test
     public void assertEmptyShardingConditionsCheck() {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DMLStatement.class));
-        when(database.getRuleMetaData().findRules(ShardingRule.class)).thenReturn(Collections.singletonList(rule));
+        when(database.getRuleMetaData().getSingleRule(ShardingRule.class)).thenReturn(rule);
         when(rule.isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())).thenReturn(false);
         when(rule.isShardingTable("t_order")).thenReturn(true);
         asserCheckResult(shardingAuditAlgorithm.check(sqlStatementContext, Collections.emptyList(), mock(Grantee.class), database), false, "Not allow DML operation without sharding conditions");
