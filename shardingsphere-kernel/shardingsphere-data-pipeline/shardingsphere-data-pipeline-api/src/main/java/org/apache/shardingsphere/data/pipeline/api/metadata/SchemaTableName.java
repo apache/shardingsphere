@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config;
+package org.apache.shardingsphere.data.pipeline.api.metadata;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 
 /**
- * Task configuration.
+ * Schema name and table name.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 @ToString
-public final class TaskConfiguration implements PipelineTaskConfiguration {
+public class SchemaTableName {
     
-    private final DumperConfiguration dumperConfig;
+    private final IdentifierName schemaName;
     
-    private final ImporterConfiguration importerConfig;
+    private final IdentifierName tableName;
 }
