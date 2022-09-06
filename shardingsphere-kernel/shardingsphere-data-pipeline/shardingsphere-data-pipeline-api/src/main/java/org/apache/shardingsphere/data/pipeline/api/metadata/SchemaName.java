@@ -15,24 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
+package org.apache.shardingsphere.data.pipeline.api.metadata;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.config.CreateTableConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+import javax.annotation.Nullable;
 
 /**
- * Prepare target tables parameter.
+ * Schema name.
+ * <p>It might be null.</p>
+ * <p>It's case-insensitive.</p>
  */
-@RequiredArgsConstructor
-@Getter
-public final class PrepareTargetTablesParameter {
+public class SchemaName extends IdentifierName {
     
-    private final CreateTableConfiguration createTableConfig;
-    
-    private final PipelineDataSourceManager dataSourceManager;
-    
-    private final ShardingSphereSQLParserEngine sqlParserEngine;
+    public SchemaName(@Nullable final String schemaName) {
+        super(schemaName);
+    }
 }

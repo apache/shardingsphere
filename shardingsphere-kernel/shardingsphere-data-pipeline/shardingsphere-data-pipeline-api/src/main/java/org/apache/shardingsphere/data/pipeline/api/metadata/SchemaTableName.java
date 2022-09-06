@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.api.metadata;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
@@ -29,7 +30,9 @@ import lombok.ToString;
 @ToString
 public class SchemaTableName {
     
-    private final IdentifierName schemaName;
+    @NonNull
+    private final SchemaName schemaName;
     
-    private final IdentifierName tableName;
+    @NonNull
+    private final TableName tableName;
 }
