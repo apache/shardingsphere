@@ -66,10 +66,10 @@ public final class PostgreSQLMigrationGeneralIT extends AbstractMigrationITCase 
             return result;
         }
         for (String dockerImageName : ENV.listDatabaseDockerImageNames(new PostgreSQLDatabaseType())) {
-            result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), dockerImageName, "env/scenario/migration/general/postgresql.xml"));
+            result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), dockerImageName, "env/scenario/general/postgresql.xml"));
         }
         for (String dockerImageName : ENV.listDatabaseDockerImageNames(new OpenGaussDatabaseType())) {
-            result.add(new ScalingParameterized(new OpenGaussDatabaseType(), dockerImageName, "env/scenario/migration/general/postgresql.xml"));
+            result.add(new ScalingParameterized(new OpenGaussDatabaseType(), dockerImageName, "env/scenario/general/postgresql.xml"));
         }
         return result;
     }
