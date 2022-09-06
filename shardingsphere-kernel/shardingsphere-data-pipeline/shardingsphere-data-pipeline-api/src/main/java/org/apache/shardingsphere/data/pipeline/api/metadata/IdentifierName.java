@@ -33,9 +33,9 @@ public class IdentifierName {
     
     private final String lowercase;
     
-    public IdentifierName(final String tableName) {
-        this.original = tableName;
-        this.lowercase = tableName.toLowerCase();
+    public IdentifierName(final String identifierName) {
+        this.original = identifierName;
+        this.lowercase = null != identifierName ? identifierName.toLowerCase() : null;
     }
     
     // TODO table name case-sensitive for some database
