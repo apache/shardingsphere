@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.federation.optimizer.converter.exception;
 
-import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
-import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**

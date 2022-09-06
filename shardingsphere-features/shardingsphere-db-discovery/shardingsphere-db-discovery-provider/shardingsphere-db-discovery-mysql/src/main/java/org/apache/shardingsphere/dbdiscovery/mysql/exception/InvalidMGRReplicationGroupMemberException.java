@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.exception;
 
-import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
-import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Invalid MGR replication group member exception.
@@ -28,6 +28,6 @@ public final class InvalidMGRReplicationGroupMemberException extends ShardingSph
     private static final long serialVersionUID = 3766206496827463146L;
     
     public InvalidMGRReplicationGroupMemberException(final String url, final String databaseName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 23001, "`%s` is not in MGR replication group member in database `%s`", url, databaseName);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 23002, "`%s` is not in MGR replication group member in database `%s`", url, databaseName);
     }
 }

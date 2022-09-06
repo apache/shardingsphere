@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.spring.namespace.exception;
 
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereServerException;
+import org.apache.shardingsphere.infra.util.exception.external.server.ShardingSphereServerException;
 
 /**
  * Unsupported sharding algorithm type exception.

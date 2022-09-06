@@ -40,6 +40,8 @@ public final class DatabaseMetaDataNode {
     
     private static final String TABLES_NODE = "tables";
     
+    private static final String VIEWS_NODE = "views";
+    
     private static final String ACTIVE_VERSION = "active_version";
     
     private static final String VERSIONS = "versions";
@@ -97,6 +99,17 @@ public final class DatabaseMetaDataNode {
     }
     
     /**
+     * Get meta data views path.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @return views path
+     */
+    public static String getMetaDataViewsPath(final String databaseName, final String schemaName) {
+        return String.join("/", getMetaDataSchemaPath(databaseName, schemaName), VIEWS_NODE);
+    }
+    
+    /**
      * Get schema path.
      *
      * @param databaseName database name
@@ -127,6 +140,18 @@ public final class DatabaseMetaDataNode {
      */
     public static String getTableMetaDataPath(final String databaseName, final String schemaName, final String table) {
         return String.join("/", getMetaDataTablesPath(databaseName, schemaName), table);
+    }
+    
+    /**
+     * Get view meta data path.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param view view name
+     * @return view meta data path
+     */
+    public static String getViewMetaDataPath(final String databaseName, final String schemaName, final String view) {
+        return String.join("/", getMetaDataViewsPath(databaseName, schemaName), view);
     }
     
     private static String getFullMetaDataPath(final String databaseName, final String node) {

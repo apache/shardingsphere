@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.driver.jdbc.exception;
 
-import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
-import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Empty SQL exception.
@@ -28,6 +28,6 @@ public final class EmptySQLException extends ShardingSphereSQLException {
     private static final long serialVersionUID = -5723825491720138339L;
     
     public EmptySQLException() {
-        super(XOpenSQLState.GENERAL_ERROR.getValue(), 10005, "SQL String can not be NULL or empty");
+        super(XOpenSQLState.GENERAL_ERROR.getValue(), 10006, "SQL String can not be NULL or empty");
     }
 }

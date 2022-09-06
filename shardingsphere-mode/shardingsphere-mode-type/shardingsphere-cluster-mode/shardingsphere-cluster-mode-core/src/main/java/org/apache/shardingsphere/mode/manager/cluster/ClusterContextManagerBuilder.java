@@ -22,6 +22,8 @@ import com.google.common.base.Splitter;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
+import org.apache.shardingsphere.infra.instance.InstanceContextAware;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
@@ -53,13 +55,15 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     @Override
     public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
-        ScheduleContextFactory.getInstance().init(parameter.getInstanceMetaData().getId(), parameter.getModeConfiguration());
         ClusterPersistRepository repository = ClusterPersistRepositoryFactory.getInstance((ClusterPersistRepositoryConfiguration) parameter.getModeConfiguration().getRepository());
         MetaDataPersistService persistService = new MetaDataPersistService(repository);
         persistConfigurations(persistService, parameter);
         RegistryCenter registryCenter = new RegistryCenter(repository, new EventBusContext(), parameter.getInstanceMetaData(), parameter.getDatabaseConfigs());
         InstanceContext instanceContext = buildInstanceContext(registryCenter, parameter);
-        registryCenter.getRepository().watchSessionConnection(instanceContext);
+        ClusterPersistRepository persistRepository = registryCenter.getRepository();
+        if (persistRepository instanceof InstanceContextAware) {
+            ((InstanceContextAware) persistRepository).setInstanceContext(instanceContext);
+        }
         checkDataSourceStates(parameter.getDatabaseConfigs(), registryCenter, parameter.getInstanceMetaData().isForce());
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, parameter, instanceContext);
         persistMetaData(metaDataContexts);
@@ -98,7 +102,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     private InstanceContext buildInstanceContext(final RegistryCenter registryCenter, final ContextManagerBuilderParameter parameter) {
         return new InstanceContext(new ComputeNodeInstance(parameter.getInstanceMetaData()), new ClusterWorkerIdGenerator(registryCenter, parameter.getInstanceMetaData()),
-                parameter.getModeConfiguration(), new ShardingSphereLockContext(registryCenter.getLockPersistService()), registryCenter.getEventBusContext());
+                parameter.getModeConfiguration(), new ShardingSphereLockContext(registryCenter.getLockPersistService()),
+                registryCenter.getEventBusContext(), ScheduleContextFactory.newInstance(parameter.getModeConfiguration()));
     }
     
     private void persistMetaData(final MetaDataContexts metaDataContexts) {

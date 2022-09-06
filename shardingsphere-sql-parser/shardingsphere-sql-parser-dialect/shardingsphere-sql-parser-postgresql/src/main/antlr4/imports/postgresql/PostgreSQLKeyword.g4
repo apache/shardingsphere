@@ -151,6 +151,10 @@ CONCURRENTLY
     : C O N C U R R E N T L Y
     ;
 
+FINALIZE
+    : F I N A L I Z E
+    ;
+    
 CONNECT
     : C O N N E C T
     ;
@@ -1455,4 +1459,8 @@ BYPASSRLS
 
 NOBYPASSRLS
     : N O B Y P A S S R L S
+    ;
+
+ASENSITIVE
+    : A S E N S I T I V E
     ;

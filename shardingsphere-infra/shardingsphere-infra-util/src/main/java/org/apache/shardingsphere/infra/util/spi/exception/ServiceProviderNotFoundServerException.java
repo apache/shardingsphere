@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.util.spi.exception;
 
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereServerException;
+import org.apache.shardingsphere.infra.util.exception.external.server.ShardingSphereServerException;
 
 /**
  * Service provider not found exception.

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.rule.builder.global;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.schedule.ScheduleContext;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -62,7 +63,7 @@ public final class GlobalRulesBuilderTest {
     private InstanceContext buildInstanceContext() {
         ComputeNodeInstance computeNodeInstance = new ComputeNodeInstance(new JDBCInstanceMetaData(UUID.randomUUID().toString()));
         ModeConfiguration modeConfiguration = new ModeConfiguration("Standalone", null, false);
-        return new InstanceContext(computeNodeInstance, createWorkerIdGenerator(), modeConfiguration, mock(LockContext.class), new EventBusContext());
+        return new InstanceContext(computeNodeInstance, createWorkerIdGenerator(), modeConfiguration, mock(LockContext.class), new EventBusContext(), mock(ScheduleContext.class));
     }
     
     @SneakyThrows

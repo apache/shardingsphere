@@ -45,7 +45,7 @@ public final class AlgorithmProvidedDatabaseDiscoveryRuleBuilderTest {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertBuild() {
-        ScheduleContextFactory.getInstance().init("foo_id", new ModeConfiguration("Cluster", mock(PersistRepositoryConfiguration.class), false));
+        ScheduleContextFactory.newInstance(new ModeConfiguration("Cluster", mock(PersistRepositoryConfiguration.class), false));
         AlgorithmProvidedDatabaseDiscoveryRuleConfiguration algorithmProvidedRuleConfig = new AlgorithmProvidedDatabaseDiscoveryRuleConfiguration(
                 Collections.singletonList(new DatabaseDiscoveryDataSourceRuleConfiguration("name", Collections.singletonList("name"), "", "discoveryTypeName")),
                 Collections.singletonMap("ha_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties())),
@@ -55,6 +55,5 @@ public final class AlgorithmProvidedDatabaseDiscoveryRuleBuilderTest {
         when(instanceContext.getInstance().getCurrentInstanceId()).thenReturn("foo_id");
         assertThat(builder.build(algorithmProvidedRuleConfig, "",
                 Collections.singletonMap("name", new MockedDataSource()), Collections.emptyList(), instanceContext), instanceOf(DatabaseDiscoveryRule.class));
-        ScheduleContextFactory.getInstance().getScheduleStrategy().remove("foo_id");
     }
 }

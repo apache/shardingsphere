@@ -23,7 +23,7 @@ shardingAlgorithmName ::=
   identifier
   
 algorithmType ::=
-  identifier
+  string
 ```
 
 ### Supplement

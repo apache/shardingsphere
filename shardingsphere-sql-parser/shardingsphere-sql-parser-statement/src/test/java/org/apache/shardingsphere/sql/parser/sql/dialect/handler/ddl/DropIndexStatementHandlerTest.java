@@ -21,6 +21,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLDropIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerDropIndexStatement;
 import org.junit.Test;
 
@@ -59,5 +62,36 @@ public final class DropIndexStatementHandlerTest {
         SQLServerDropIndexStatement dropIndexStatement = new SQLServerDropIndexStatement(false);
         Optional<SimpleTableSegment> simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(dropIndexStatement);
         assertFalse(simpleTableSegment.isPresent());
+    }
+    
+    @Test
+    public void assertGetSimpleTableSegmentForOtherDatabases() {
+        assertFalse(DropIndexStatementHandler.getSimpleTableSegment(new OpenGaussDropIndexStatement(true)).isPresent());
+        assertFalse(DropIndexStatementHandler.getSimpleTableSegment(new OracleDropIndexStatement()).isPresent());
+        assertFalse(DropIndexStatementHandler.getSimpleTableSegment(new PostgreSQLDropIndexStatement(true)).isPresent());
+    }
+    
+    @Test
+    public void assertIfExistsForPostgres() {
+        assertFalse(DropIndexStatementHandler.ifExists(new PostgreSQLDropIndexStatement(false)));
+        assertTrue(DropIndexStatementHandler.ifExists(new PostgreSQLDropIndexStatement(true)));
+    }
+    
+    @Test
+    public void assertIfExistsForSQLServer() {
+        assertFalse(DropIndexStatementHandler.ifExists(new SQLServerDropIndexStatement(false)));
+        assertTrue(DropIndexStatementHandler.ifExists(new SQLServerDropIndexStatement(true)));
+    }
+    
+    @Test
+    public void assertIfExistsForOpenGauss() {
+        assertFalse(DropIndexStatementHandler.ifExists(new OpenGaussDropIndexStatement(false)));
+        assertTrue(DropIndexStatementHandler.ifExists(new OpenGaussDropIndexStatement(true)));
+    }
+    
+    @Test
+    public void assertIfExistsForOtherDatabases() {
+        assertFalse(DropIndexStatementHandler.ifExists(new MySQLDropIndexStatement()));
+        assertFalse(DropIndexStatementHandler.ifExists(new OracleDropIndexStatement()));
     }
 }
