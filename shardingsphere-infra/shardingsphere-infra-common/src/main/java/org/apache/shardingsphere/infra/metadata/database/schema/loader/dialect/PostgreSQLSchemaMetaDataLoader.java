@@ -124,7 +124,6 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
                 while (resultSet.next()) {
                     String schemaName = resultSet.getString("table_schema");
                     Multimap<String, ConstraintMetaData> constraintMetaData = result.computeIfAbsent(schemaName, key -> LinkedHashMultimap.create());
-                    
                     String tableName = resultSet.getString("table_name");
                     String constraintName = resultSet.getString("constraint_name");
                     String referencedTableName = resultSet.getString("refer_table_name");
