@@ -39,20 +39,6 @@ public final class DatabaseTypeUtil {
     }
     
     /**
-     * Get docker image major version.
-     *
-     * @param dockerImageName dockerImageName
-     * @return major version
-     */
-    public static String parseMajorVersion(final String dockerImageName) {
-        if (StringUtils.isBlank(dockerImageName)) {
-            return "";
-        }
-        String version = dockerImageName.split(":")[1];
-        return version.split("\\.")[0];
-    }
-    
-    /**
      * Check PostgreSQL database type.
      *
      * @param databaseType database type
@@ -70,5 +56,19 @@ public final class DatabaseTypeUtil {
      */
     public static boolean isOpenGauss(final DatabaseType databaseType) {
         return databaseType instanceof OpenGaussDatabaseType;
+    }
+    
+    /**
+     * Get docker image major version.
+     *
+     * @param dockerImageName dockerImageName
+     * @return major version
+     */
+    public static String parseMajorVersion(final String dockerImageName) {
+        if (StringUtils.isBlank(dockerImageName)) {
+            return "";
+        }
+        String version = dockerImageName.split(":")[1];
+        return version.split("\\.")[0];
     }
 }
