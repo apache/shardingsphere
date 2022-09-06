@@ -22,6 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.exception.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.infra.util.exception.internal.ShardingSphereInternalException;
 
+import java.sql.SQLException;
+
 /**
  * ShardingSphere preconditions.
  */
@@ -48,6 +50,19 @@ public final class ShardingSpherePreconditions {
      * @throws ShardingSphereInternalException ShardingSphere internal exception
      */
     public static void checkState(final boolean expectedExpression, final ShardingSphereInternalException exceptionIfUnexpected) throws ShardingSphereInternalException {
+        if (!expectedExpression) {
+            throw exceptionIfUnexpected;
+        }
+    }
+    
+    /**
+     * Ensures the truth of an expression involving the state of the calling instance.
+     *
+     * @param expectedExpression expected expression
+     * @param exceptionIfUnexpected exception thrown if expression is unexpected
+     * @throws SQLException SQL exception
+     */
+    public static void checkState(final boolean expectedExpression, final SQLException exceptionIfUnexpected) throws SQLException {
         if (!expectedExpression) {
             throw exceptionIfUnexpected;
         }

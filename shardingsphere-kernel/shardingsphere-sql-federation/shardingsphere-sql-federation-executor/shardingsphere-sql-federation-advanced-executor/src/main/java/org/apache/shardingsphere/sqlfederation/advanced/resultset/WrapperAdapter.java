@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sqlfederation.advanced.resultset;
 
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Wrapper;
 
 /**
@@ -31,7 +32,7 @@ public abstract class WrapperAdapter implements Wrapper {
         if (isWrapperFor(iface)) {
             return (T) this;
         }
-        throw new SQLException(String.format("[%s] cannot be unwrapped as [%s]", getClass().getName(), iface.getName()));
+        throw new SQLFeatureNotSupportedException(String.format("`%s` cannot be unwrapped as `%s`", getClass().getName(), iface.getName()));
     }
     
     @Override

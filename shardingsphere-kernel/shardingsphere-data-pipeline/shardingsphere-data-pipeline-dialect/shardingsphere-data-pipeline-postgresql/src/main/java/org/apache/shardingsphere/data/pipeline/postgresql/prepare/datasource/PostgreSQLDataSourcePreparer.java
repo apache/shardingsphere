@@ -20,13 +20,13 @@ package org.apache.shardingsphere.data.pipeline.postgresql.prepare.datasource;
 import com.google.common.base.Splitter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
+import org.apache.shardingsphere.data.pipeline.api.config.CreateTableConfiguration.CreateTableEntry;
+import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.AbstractDataSourcePreparer;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -37,15 +37,14 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
     
     @Override
     public void prepareTargetTables(final PrepareTargetTablesParameter parameter) throws SQLException {
-        List<String> createLogicalTableSQLs = listCreateLogicalTableSQL(parameter);
-        try (Connection targetConnection = getCachedDataSource(parameter.getTargetDataSourceConfig(), parameter.getDataSourceManager()).getConnection()) {
-            for (String createLogicalTableSQL : createLogicalTableSQLs) {
-                for (String each : Splitter.on(";").splitToList(createLogicalTableSQL).stream().filter(StringUtils::isNotBlank).collect(Collectors.toList())) {
-                    executeTargetTableSQL(targetConnection, each);
+        PipelineDataSourceManager dataSourceManager = parameter.getDataSourceManager();
+        for (CreateTableEntry each : parameter.getCreateTableConfig().getCreateTableEntries()) {
+            String createTargetTableSQL = getCreateTargetTableSQL(each, dataSourceManager, parameter.getSqlParserEngine());
+            try (Connection targetConnection = getCachedDataSource(each.getTargetDataSourceConfig(), dataSourceManager).getConnection()) {
+                for (String sql : Splitter.on(";").splitToList(createTargetTableSQL).stream().filter(StringUtils::isNotBlank).collect(Collectors.toList())) {
+                    executeTargetTableSQL(targetConnection, sql);
                 }
             }
-        } catch (final SQLException ex) {
-            throw new PipelineJobPrepareFailedException("prepare target tables failed.", ex);
         }
     }
     
