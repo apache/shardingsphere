@@ -30,6 +30,7 @@ import java.sql.Array;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Savepoint;
 import java.sql.Statement;
 
@@ -199,7 +200,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     public Savepoint setSavepoint(final String name) throws SQLException {
         checkClose();
         if (!isHoldTransaction()) {
-            throw new SQLException("Savepoint can only be used in transaction blocks.");
+            throw new SQLFeatureNotSupportedException("Savepoint can only be used in transaction blocks.");
         }
         return connectionManager.setSavepoint(name);
     }
@@ -208,7 +209,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     public Savepoint setSavepoint() throws SQLException {
         checkClose();
         if (!isHoldTransaction()) {
-            throw new SQLException("Savepoint can only be used in transaction blocks.");
+            throw new SQLFeatureNotSupportedException("Savepoint can only be used in transaction blocks.");
         }
         return connectionManager.setSavepoint();
     }

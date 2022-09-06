@@ -15,28 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.executor.advanced.resultset;
+package org.apache.shardingsphere.driver.jdbc.exception;
 
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
-import java.sql.Wrapper;
+import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Adapter for {@code java.sql.Wrapper}.
+ * Overall connection not enough exception.
  */
-public abstract class WrapperAdapter implements Wrapper {
+public final class OverallConnectionNotEnoughException extends ShardingSphereSQLException {
     
-    @SuppressWarnings("unchecked")
-    @Override
-    public final <T> T unwrap(final Class<T> iface) throws SQLException {
-        if (isWrapperFor(iface)) {
-            return (T) this;
-        }
-        throw new SQLFeatureNotSupportedException(String.format("`%s` cannot be unwrapped as `%s`", getClass().getName(), iface.getName()));
-    }
+    private static final long serialVersionUID = -1297088138042287804L;
     
-    @Override
-    public final boolean isWrapperFor(final Class<?> iface) {
-        return iface.isInstance(this);
+    public OverallConnectionNotEnoughException(final int desiredSize, final int actualSize) {
+        super(XOpenSQLState.CONNECTION_EXCEPTION.getValue(), 10007, "Can not get %d connections one time, partition succeed connection(%d) have released", desiredSize, actualSize);
     }
 }

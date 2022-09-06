@@ -55,7 +55,7 @@ public final class ResultSetUtil {
      */
     public static Object convertValue(final Object value, final Class<?> convertType) throws SQLException {
         if (null == convertType) {
-            throw new SQLException("Type cannot be null");
+            throw new SQLFeatureNotSupportedException("Type cannot be null");
         }
         if (null == value) {
             return convertNullValue(convertType);
