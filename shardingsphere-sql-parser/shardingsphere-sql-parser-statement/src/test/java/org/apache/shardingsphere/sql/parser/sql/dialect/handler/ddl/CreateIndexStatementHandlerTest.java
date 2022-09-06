@@ -40,7 +40,7 @@ public final class CreateIndexStatementHandlerTest {
         assertFalse(CreateIndexStatementHandler.ifNotExists(new OracleCreateIndexStatement()));
         assertFalse(CreateIndexStatementHandler.ifNotExists(new SQLServerCreateIndexStatement()));
     }
-
+    
     @Test
     public void assertGeneratedIndexStartIndexForPostgres() {
         PostgreSQLCreateIndexStatement postgreSQLCreateIndexStatement = new PostgreSQLCreateIndexStatement(true);
@@ -49,7 +49,7 @@ public final class CreateIndexStatementHandlerTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is(2));
     }
-
+    
     @Test
     public void assertGeneratedIndexStartIndexForOpenGauss() {
         OpenGaussCreateIndexStatement openGaussCreateIndexStatement = new OpenGaussCreateIndexStatement(true);
@@ -58,7 +58,7 @@ public final class CreateIndexStatementHandlerTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is(2));
     }
-
+    
     @Test
     public void assertGeneratedIndexStartIndexForOtherDatabases() {
         assertFalse(CreateIndexStatementHandler.getGeneratedIndexStartIndex(new MySQLCreateIndexStatement()).isPresent());
