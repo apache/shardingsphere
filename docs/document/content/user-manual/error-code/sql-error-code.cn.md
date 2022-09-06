@@ -25,7 +25,8 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | HV008     | 10302       | Column index \`%d\` is out of range |
 | 42S02     | 10303       | Can not find column label \`%s`\ |
 | HY004     | 10400       | Invalid format for actual data node \`%s\` |
-| HY000     | 10500       | Result set has been closed |
+| 08000     | 10500       | Connection has been closed |
+| 08000     | 10501       | Result set has been closed |
 | 42000     | 11000       | You have an error in your SQL syntax: %s |
 | 42000     | 11002       | Resource does not exist |
 | 42000     | 11003       | Rule does not exist |
