@@ -49,7 +49,7 @@ public final class CreateSchemaStatementHandlerTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get().getValue(), is("root"));
     }
-
+    
     @Test
     public void assertGetUsernameForSQLServerStatement() {
         SQLServerCreateSchemaStatement createSchemaStatement = new SQLServerCreateSchemaStatement();
