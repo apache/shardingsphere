@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.container.compose.mode;
 
-import org.apache.shardingsphere.test.integration.container.compose.ComposedContainer;
+import org.apache.shardingsphere.test.integration.container.compose.ContainerComposer;
 import org.apache.shardingsphere.test.integration.container.config.ProxyStandaloneContainerConfigurationFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.ITContainers;
@@ -34,7 +34,7 @@ import java.util.Map;
 /**
  * Standalone composed container.
  */
-public final class StandaloneComposedContainer implements ComposedContainer {
+public final class StandaloneContainerComposer implements ContainerComposer {
     
     private final ITContainers containers;
     
@@ -42,7 +42,7 @@ public final class StandaloneComposedContainer implements ComposedContainer {
     
     private final AdapterContainer adapterContainer;
     
-    public StandaloneComposedContainer(final ParameterizedArray parameterizedArray) {
+    public StandaloneContainerComposer(final ParameterizedArray parameterizedArray) {
         String scenario = parameterizedArray.getScenario();
         containers = new ITContainers(scenario);
         // TODO add more version of databases

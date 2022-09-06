@@ -15,43 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.framework.container.compose;
+package org.apache.shardingsphere.test.integration.container.compose;
 
-import lombok.Getter;
-import org.apache.shardingsphere.test.integration.env.container.atomic.ITContainers;
 import org.testcontainers.lifecycle.Startable;
 
-@Getter
-public abstract class BaseComposedContainer implements Startable {
-    
-    private final ITContainers containers;
-    
-    public BaseComposedContainer() {
-        containers = new ITContainers("");
-    }
-    
-    /**
-     * Get proxy jdbc url.
-     *
-     * @param databaseName database name
-     * @return proxy jdbc url
-     */
-    public abstract String getProxyJdbcUrl(String databaseName);
+import javax.sql.DataSource;
+import java.util.Map;
+
+/**
+ * Composed container.
+ */
+public interface ContainerComposer extends Startable {
     
     /**
-     * Clean up database.
+     * Get target data source.
      *
-     * @param databaseName database name
+     * @return target data source
      */
-    public abstract void cleanUpDatabase(String databaseName);
+    DataSource getTargetDataSource();
     
-    @Override
-    public void start() {
-        getContainers().start();
-    }
+    /**
+     * Get actual data source map.
+     *
+     * @return actual data source map
+     */
+    Map<String, DataSource> getActualDataSourceMap();
     
-    @Override
-    public void stop() {
-        getContainers().stop();
-    }
+    /**
+     * Get expected data source map.
+     * 
+     * @return expected data source map
+     */
+    Map<String, DataSource> getExpectedDataSourceMap();
 }

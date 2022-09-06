@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.test.integration.container.compose;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.test.integration.container.compose.mode.ClusterComposedContainer;
-import org.apache.shardingsphere.test.integration.container.compose.mode.StandaloneComposedContainer;
+import org.apache.shardingsphere.test.integration.container.compose.mode.ClusterContainerComposer;
+import org.apache.shardingsphere.test.integration.container.compose.mode.StandaloneContainerComposer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
 import javax.sql.DataSource;
@@ -29,9 +29,9 @@ import java.util.Map;
 /**
  * Composed container registry.
  */
-public final class ComposedContainerRegistry implements AutoCloseable {
+public final class ContainerComposerRegistry implements AutoCloseable {
     
-    private final Map<String, ComposedContainer> composedContainers = new HashMap<>();
+    private final Map<String, ContainerComposer> containerComposers = new HashMap<>();
     
     /**
      * Get composed container.
@@ -39,21 +39,21 @@ public final class ComposedContainerRegistry implements AutoCloseable {
      * @param parameterizedArray parameterized array
      * @return composed container
      */
-    public ComposedContainer getComposedContainer(final ParameterizedArray parameterizedArray) {
+    public ContainerComposer getContainerComposer(final ParameterizedArray parameterizedArray) {
         String key = parameterizedArray.getKey();
-        if (composedContainers.containsKey(key)) {
-            return composedContainers.get(key);
+        if (containerComposers.containsKey(key)) {
+            return containerComposers.get(key);
         }
-        synchronized (composedContainers) {
-            if (!composedContainers.containsKey(key)) {
-                composedContainers.put(key, createComposedContainer(parameterizedArray));
+        synchronized (containerComposers) {
+            if (!containerComposers.containsKey(key)) {
+                containerComposers.put(key, createContainerComposer(parameterizedArray));
             }
-            return composedContainers.get(key);
+            return containerComposers.get(key);
         }
     }
     
-    private ComposedContainer createComposedContainer(final ParameterizedArray parameterizedArray) {
-        return isClusterMode(parameterizedArray) ? new ClusterComposedContainer(parameterizedArray) : new StandaloneComposedContainer(parameterizedArray);
+    private ContainerComposer createContainerComposer(final ParameterizedArray parameterizedArray) {
+        return isClusterMode(parameterizedArray) ? new ClusterContainerComposer(parameterizedArray) : new StandaloneContainerComposer(parameterizedArray);
     }
     
     private boolean isClusterMode(final ParameterizedArray parameterizedArray) {
@@ -63,12 +63,12 @@ public final class ComposedContainerRegistry implements AutoCloseable {
     
     @Override
     public void close() {
-        for (ComposedContainer each : composedContainers.values()) {
+        for (ContainerComposer each : containerComposers.values()) {
             closeTargetDataSource(each.getTargetDataSource());
             closeActualDataSourceMap(each.getActualDataSourceMap());
             closeContainer(each);
         }
-        composedContainers.clear();
+        containerComposers.clear();
     }
     
     @SneakyThrows
@@ -87,7 +87,7 @@ public final class ComposedContainerRegistry implements AutoCloseable {
         }
     }
     
-    private void closeContainer(final ComposedContainer composedContainer) {
-        composedContainer.close();
+    private void closeContainer(final ContainerComposer containerComposer) {
+        containerComposer.close();
     }
 }

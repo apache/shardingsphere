@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.container.compose.mode;
 
-import org.apache.shardingsphere.test.integration.container.compose.ComposedContainer;
+import org.apache.shardingsphere.test.integration.container.compose.ContainerComposer;
 import org.apache.shardingsphere.test.integration.container.config.ProxyClusterContainerConfigurationFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.ITContainers;
@@ -37,7 +37,7 @@ import java.util.Map;
 /**
  * Cluster composed container.
  */
-public final class ClusterComposedContainer implements ComposedContainer {
+public final class ClusterContainerComposer implements ContainerComposer {
     
     private final ITContainers containers;
     
@@ -47,7 +47,7 @@ public final class ClusterComposedContainer implements ComposedContainer {
     
     private final AdapterContainer adapterContainer;
     
-    public ClusterComposedContainer(final ParameterizedArray parameterizedArray) {
+    public ClusterContainerComposer(final ParameterizedArray parameterizedArray) {
         String scenario = parameterizedArray.getScenario();
         containers = new ITContainers(scenario);
         // TODO support other types of governance
