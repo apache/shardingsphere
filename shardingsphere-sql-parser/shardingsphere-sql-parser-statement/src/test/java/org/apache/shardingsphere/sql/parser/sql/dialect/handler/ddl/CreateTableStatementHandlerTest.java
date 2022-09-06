@@ -50,9 +50,9 @@ public final class CreateTableStatementHandlerTest {
         assertFalse(CreateTableStatementHandler.ifNotExists(new SQLServerCreateTableStatement()));
         assertFalse(CreateTableStatementHandler.ifNotExists(new SQL92CreateTableStatement()));
     }
-
+    
     @Test
-    public void assertSelectStatement() {
+    public void assertGetSelectStatement() {
         SQLServerCreateTableStatement sqlServerCreateTableStatement = new SQLServerCreateTableStatement();
         sqlServerCreateTableStatement.setSelectStatement(new SQLServerSelectStatement());
         Optional<SelectStatement> actual = CreateTableStatementHandler.getSelectStatement(sqlServerCreateTableStatement);
@@ -64,7 +64,7 @@ public final class CreateTableStatementHandlerTest {
         assertFalse(CreateTableStatementHandler.getSelectStatement(new PostgreSQLCreateTableStatement(false)).isPresent());
         assertFalse(CreateTableStatementHandler.getSelectStatement(new SQL92CreateTableStatement()).isPresent());
     }
-
+    
     @Test
     public void assertGetColumns() {
         SQLServerCreateTableStatement sqlServerCreateTableStatement = new SQLServerCreateTableStatement();
