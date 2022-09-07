@@ -66,6 +66,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
  * Convert YAML configuration handler.
@@ -73,7 +76,7 @@ import java.util.Properties;
 public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<ConvertYamlConfigurationStatement> {
     
     private final YamlProxyDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlProxyDataSourceConfigurationSwapper();
-    
+
     @Override
     protected Collection<String> getColumnNames() {
         return Collections.singleton("distsql");
@@ -347,12 +350,12 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator());
         return result.toString();
     }
-
+    
     private void appendShardingBroadcastTableRules(final ShardingRuleConfiguration shardingRuleConfig, final StringBuilder result) {
         String broadcast = getBroadcast(shardingRuleConfig.getBroadcastTables().iterator());
         result.append(String.format(DistSQLScriptConstants.SHARDING_BROADCAST_TABLE_RULES, broadcast));
     }
-
+    
     private String getBroadcast(final Iterator<String> iterator) {
         StringBuilder result = new StringBuilder();
         while (iterator.hasNext()) {
@@ -641,16 +644,14 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
     }
     
     private Boolean isBelongToShadowRule(final String shadowName, final Collection<String> dataSourceNames) {
-        Boolean flag = Boolean.FALSE;
         Iterator<String> dataSourceNamesIter = dataSourceNames.iterator();
         while (dataSourceNamesIter.hasNext()) {
             String dataSourceName = dataSourceNamesIter.next();
             if (dataSourceName.equals(shadowName)) {
-                flag = Boolean.TRUE;
-                return flag;
+                return true;
             }
         }
-        return flag;
+        return false;
     }
     
     private String getShadowTableTypes(final Collection<String> shadowAlgorithmNames, final YamlRuleConfiguration ruleConfig) {
@@ -676,15 +677,21 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
     
     private String getTypeProperties(final Properties algorithmProperties) {
         StringBuilder result = new StringBuilder();
+        List reverseAlgorithmProperties = new ArrayList();
         Iterator<Entry<Object, Object>> propsIter = algorithmProperties.entrySet().iterator();
         while (propsIter.hasNext()) {
             Entry<Object, Object> entry = propsIter.next();
+            reverseAlgorithmProperties.add(entry);
+        }
+        ListIterator<Entry<Object, Object>> reverseIter = reverseAlgorithmProperties.listIterator(reverseAlgorithmProperties.size());
+        while (reverseIter.hasPrevious()) {
+            Entry<Object, Object> entry = reverseIter.previous();
             if (entry.getKey().equals(DistSQLScriptConstants.REGEX) || entry.getKey().equals(DistSQLScriptConstants.VALUE)) {
                 result.append(String.format(DistSQLScriptConstants.SHADOW_TABLE_TYPE_APOSTROPHE, entry.getKey(), entry.getValue()));
             } else {
                 result.append(String.format(DistSQLScriptConstants.SHADOW_TABLE_TYPE_PROPERTIES, entry.getKey(), entry.getValue()));
             }
-            if (propsIter.hasNext()) {
+            if (reverseIter.hasPrevious()) {
                 result.append(DistSQLScriptConstants.COMMA);
             }
         }

@@ -128,9 +128,9 @@ public final class DistSQLScriptConstants {
     public static final String SHARDING_BINDING_TABLE_RULES = "CREATE SHARDING BINDING TABLE RULES %s";
     
     public static final String BINDING = "(%s)";
-
+    
     public static final String SHARDING_BROADCAST_TABLE_RULES = "CREATE SHARDING BROADCAST TABLE RULES %s";
-
+    
     public static final String BROADCAST = "(%s)";
     
     public static final String CREATE_READWRITE_SPLITTING_RULE = "CREATE READWRITE_SPLITTING RULE";

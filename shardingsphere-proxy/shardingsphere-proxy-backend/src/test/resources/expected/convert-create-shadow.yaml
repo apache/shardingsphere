@@ -31,7 +31,7 @@ PROPERTIES("minPoolSize"="1","connectionTimeoutMilliseconds"="30000","maxLifetim
 CREATE SHADOW RULE shadowDataSource(
 SOURCE=ds,
 SHADOW=shadow_ds,
-t_order((TYPE(NAME="REGEX_MATCH", PROPERTIES("regex"='[1]',"column"="user_id","operation"="insert"))),(TYPE(NAME="REGEX_MATCH", PROPERTIES("regex"='[1]',"column"="user_id","operation"="select")))),
-t_order_item((TYPE(NAME="REGEX_MATCH", PROPERTIES("regex"='[1]',"column"="user_id","operation"="insert"))),(TYPE(NAME="REGEX_MATCH", PROPERTIES("regex"='[1]',"column"="user_id","operation"="update"))),(TYPE(NAME="REGEX_MATCH", PROPERTIES("regex"='[1]',"column"="user_id","operation"="select")))),
-t_address((TYPE(NAME="REGEX_MATCH", PROPERTIES("regex"='[1]',"column"="user_id","operation"="insert"))),(TYPE(NAME="REGEX_MATCH", PROPERTIES("regex"='[1]',"column"="user_id","operation"="select"))),(TYPE(NAME="SIMPLE_HINT", PROPERTIES("foo"="bar"))))
+t_order((TYPE(NAME="REGEX_MATCH", PROPERTIES("operation"="insert","column"="user_id","regex"='[1]'))),(TYPE(NAME="REGEX_MATCH", PROPERTIES("operation"="select","column"="user_id","regex"='[1]')))),
+t_order_item((TYPE(NAME="REGEX_MATCH", PROPERTIES("operation"="insert","column"="user_id","regex"='[1]'))),(TYPE(NAME="REGEX_MATCH", PROPERTIES("operation"="update","column"="user_id","regex"='[1]'))),(TYPE(NAME="REGEX_MATCH", PROPERTIES("operation"="select","column"="user_id","regex"='[1]')))),
+t_address((TYPE(NAME="REGEX_MATCH", PROPERTIES("operation"="insert","column"="user_id","regex"='[1]'))),(TYPE(NAME="REGEX_MATCH", PROPERTIES("operation"="select","column"="user_id","regex"='[1]'))),(TYPE(NAME="SIMPLE_HINT", PROPERTIES("foo"="bar"))))
 );
