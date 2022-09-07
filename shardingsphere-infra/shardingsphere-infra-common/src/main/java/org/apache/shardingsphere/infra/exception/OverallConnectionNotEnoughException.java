@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.exception;
+package org.apache.shardingsphere.infra.exception;
 
 import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
