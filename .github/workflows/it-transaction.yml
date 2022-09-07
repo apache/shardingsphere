@@ -147,3 +147,4 @@ jobs:
         run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.env.transtypes=XA -Dtransaction.it.env.xa.providers=Atomikos -Dtransaction.it.docker.opengauss.version=${{ env.opengauss_version }}
       - name: Run Transaction OpenGauss Integration Test With Narayana
         run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.env.transtypes=XA -Dtransaction.it.env.xa.providers=Narayana -Dtransaction.it.docker.opengauss.version=${{ env.opengauss_version }}
+    
