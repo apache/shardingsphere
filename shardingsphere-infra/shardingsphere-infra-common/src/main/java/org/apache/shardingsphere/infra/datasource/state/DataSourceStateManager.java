@@ -145,7 +145,7 @@ public final class DataSourceStateManager {
         return result;
     }
     
-    private String getCacheKey(final String databaseName, final String key) {
-        return databaseName + "." + key;
+    private String getCacheKey(final String databaseName, final String dataSourceName) {
+        return databaseName + "." + dataSourceName;
     }
 }

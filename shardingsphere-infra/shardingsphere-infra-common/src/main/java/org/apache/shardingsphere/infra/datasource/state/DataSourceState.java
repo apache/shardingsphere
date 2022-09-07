@@ -56,6 +56,6 @@ public enum DataSourceState {
                 return each;
             }
         }
-        return null;
+        throw new IllegalArgumentException("Illegal data source state: " + state);
     }
 }
