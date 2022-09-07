@@ -149,6 +149,11 @@ public final class EtcdRepository implements ClusterPersistRepository {
     }
     
     @Override
+    public void deleteLock(final String lockKey) {
+        etcdInternalLockHolder.getInternalLock(lockKey).unlock();
+    }
+    
+    @Override
     public void close() {
         client.close();
     }
