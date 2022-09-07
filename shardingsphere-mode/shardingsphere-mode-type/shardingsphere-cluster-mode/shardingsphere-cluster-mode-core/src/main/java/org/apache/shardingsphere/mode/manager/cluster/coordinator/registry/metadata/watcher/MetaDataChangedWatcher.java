@@ -170,10 +170,10 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
         Preconditions.checkState(databaseName.isPresent());
         Optional<String> schemaName = DatabaseMetaDataNode.getSchemaNameBySchemaPath(event.getKey());
         Preconditions.checkState(schemaName.isPresent());
-        return Optional.of(createSchemaChangedEvent(event, databaseName.get(), schemaName.get()));
+        return Optional.of(createSchemaMetaDataChangedEvent(event, databaseName.get(), schemaName.get()));
     }
     
-    private GovernanceEvent createSchemaChangedEvent(final DataChangedEvent event, final String databaseName, final String schemaName) {
+    private GovernanceEvent createSchemaMetaDataChangedEvent(final DataChangedEvent event, final String databaseName, final String schemaName) {
         Optional<String> tableName = DatabaseMetaDataNode.getTableName(event.getKey());
         Optional<String> viewName = DatabaseMetaDataNode.getViewName(event.getKey());
         Preconditions.checkState(tableName.isPresent() || viewName.isPresent());
