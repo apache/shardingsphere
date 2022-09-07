@@ -219,13 +219,14 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         if (ruleConfigs.isEmpty()) {
             return;
         }
-        for (YamlRuleConfiguration each : ruleConfigs) {
-            ShardingRuleConfiguration shardingRuleConfig = new YamlShardingRuleConfigurationSwapper().swapToObject((YamlShardingRuleConfiguration) each);
+        for (YamlRuleConfiguration ruleConfig : ruleConfigs) {
+            ShardingRuleConfiguration shardingRuleConfig = new YamlShardingRuleConfigurationSwapper().swapToObject((YamlShardingRuleConfiguration) ruleConfig);
             appendShardingAlgorithms(shardingRuleConfig, result);
             appendKeyGenerators(shardingRuleConfig, result);
             appendShardingTableRules(shardingRuleConfig, result);
             // TODO append autoTables
             appendShardingBindingTableRules(shardingRuleConfig, result);
+            appendShardingBroadcastTableRules(shardingRuleConfig, result);
         }
     }
     
@@ -339,6 +340,24 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         while (iterator.hasNext()) {
             String binding = iterator.next();
             result.append(String.format(DistSQLScriptConstants.BINDING, binding));
+            if (iterator.hasNext()) {
+                result.append(DistSQLScriptConstants.COMMA);
+            }
+        }
+        result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator());
+        return result.toString();
+    }
+
+    private void appendShardingBroadcastTableRules(final ShardingRuleConfiguration shardingRuleConfig, final StringBuilder result) {
+        String broadcast = getBroadcast(shardingRuleConfig.getBroadcastTables().iterator());
+        result.append(String.format(DistSQLScriptConstants.SHARDING_BROADCAST_TABLE_RULES, broadcast));
+    }
+
+    private String getBroadcast(final Iterator<String> iterator) {
+        StringBuilder result = new StringBuilder();
+        while (iterator.hasNext()) {
+            String broadcast = iterator.next();
+            result.append(String.format(DistSQLScriptConstants.BROADCAST, broadcast));
             if (iterator.hasNext()) {
                 result.append(DistSQLScriptConstants.COMMA);
             }
