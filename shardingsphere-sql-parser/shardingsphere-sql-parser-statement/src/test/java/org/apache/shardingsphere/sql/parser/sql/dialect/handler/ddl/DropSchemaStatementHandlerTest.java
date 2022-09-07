@@ -40,7 +40,7 @@ public final class DropSchemaStatementHandlerTest {
         dropSchemaStatement.setContainsCascade(true);
         assertTrue(DropSchemaStatementHandler.containsCascade(dropSchemaStatement));
     }
-
+    
     @Test
     public void assertIsContainsCascadeForSQLServer() {
         SQLServerDropSchemaStatement dropSchemaStatement = new SQLServerDropSchemaStatement();
