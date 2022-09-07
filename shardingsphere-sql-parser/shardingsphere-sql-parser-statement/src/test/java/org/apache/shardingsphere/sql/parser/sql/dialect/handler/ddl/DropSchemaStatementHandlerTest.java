@@ -28,21 +28,21 @@ import static org.junit.Assert.assertTrue;
 public final class DropSchemaStatementHandlerTest {
     
     @Test
-    public void assertIsContainsCascadeForPostgreSQL() {
+    public void assertContainsCascadeForPostgreSQL() {
         PostgreSQLDropSchemaStatement dropSchemaStatement = new PostgreSQLDropSchemaStatement();
         dropSchemaStatement.setContainsCascade(true);
         assertTrue(DropSchemaStatementHandler.containsCascade(dropSchemaStatement));
     }
     
     @Test
-    public void assertIsContainsCascadeForOpenGauss() {
+    public void assertContainsCascadeForOpenGauss() {
         OpenGaussDropSchemaStatement dropSchemaStatement = new OpenGaussDropSchemaStatement();
         dropSchemaStatement.setContainsCascade(true);
         assertTrue(DropSchemaStatementHandler.containsCascade(dropSchemaStatement));
     }
-
+    
     @Test
-    public void assertIsContainsCascadeForSQLServer() {
+    public void assertContainsCascadeForSQLServer() {
         SQLServerDropSchemaStatement dropSchemaStatement = new SQLServerDropSchemaStatement();
         assertFalse(DropSchemaStatementHandler.containsCascade(dropSchemaStatement));
     }
