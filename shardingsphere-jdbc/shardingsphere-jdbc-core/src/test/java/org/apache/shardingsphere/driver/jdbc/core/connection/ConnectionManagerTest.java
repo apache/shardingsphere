@@ -225,7 +225,7 @@ public final class ConnectionManagerTest {
         try {
             connectionManager.getConnections("invalid_ds", 3, ConnectionMode.CONNECTION_STRICTLY);
         } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("Can not get 3 connections one time, partition succeed connection(0) have released!"));
+            assertThat(ex.getMessage(), is("Can not get 3 connections one time, partition succeed connection(0) have released"));
         }
     }
 }

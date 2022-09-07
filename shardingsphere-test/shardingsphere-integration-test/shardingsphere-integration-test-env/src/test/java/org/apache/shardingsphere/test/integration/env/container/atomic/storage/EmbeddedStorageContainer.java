@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.test.integration.env.container.atomic.storage;
 
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.EmbeddedITContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.util.StorageContainerUtil;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.env.runtime.scenario.database.DatabaseEnvironmentManager;
 
@@ -57,7 +57,8 @@ public abstract class EmbeddedStorageContainer implements EmbeddedITContainer, S
     private Map<String, DataSource> createActualDataSourceMap() {
         Collection<String> databaseNames = DatabaseEnvironmentManager.getDatabaseNames(scenario);
         Map<String, DataSource> result = new LinkedHashMap<>(databaseNames.size(), 1);
-        databaseNames.forEach(each -> result.put(each, createDataSource(each)));
+        databaseNames.forEach(each -> result.put(each, StorageContainerUtil.generateDataSource(DataSourceEnvironment.getURL(databaseType, null, 0, scenario + each),
+                "root", "Root@123")));
         return result;
     }
     
@@ -65,18 +66,8 @@ public abstract class EmbeddedStorageContainer implements EmbeddedITContainer, S
     private Map<String, DataSource> createExpectedDataSourceMap() {
         Collection<String> databaseNames = DatabaseEnvironmentManager.getExpectedDatabaseNames(scenario);
         Map<String, DataSource> result = new LinkedHashMap<>(databaseNames.size(), 1);
-        databaseNames.forEach(each -> result.put(each, createDataSource(each)));
-        return result;
-    }
-    
-    private DataSource createDataSource(final String dataSourceName) {
-        HikariDataSource result = new HikariDataSource();
-        result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
-        result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, null, 0, scenario + dataSourceName));
-        result.setUsername("root");
-        result.setPassword("Root@123");
-        result.setMaximumPoolSize(4);
-        result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
+        databaseNames.forEach(each -> result.put(each, StorageContainerUtil.generateDataSource(DataSourceEnvironment.getURL(databaseType, null, 0, scenario + each),
+                "root", "Root@123")));
         return result;
     }
     

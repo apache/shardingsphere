@@ -49,8 +49,6 @@ execute
     | dropDefaultSingleTableRule
     | refreshTableMetadata
     | showTableMetadata
-    | showSQLParserRule
-    | alterSQLParserRule
     | exportDatabaseConfiguration
     | showRulesUsedResource
     | importDatabaseConfiguration

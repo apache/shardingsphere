@@ -21,6 +21,9 @@ import lombok.Getter;
 import org.apache.shardingsphere.test.integration.env.container.atomic.ITContainers;
 import org.testcontainers.lifecycle.Startable;
 
+import javax.sql.DataSource;
+import java.util.List;
+
 /**
  * Abstract composed container.
  */
@@ -37,12 +40,28 @@ public abstract class BaseContainerComposer implements Startable {
     }
     
     /**
-     * Get proxy JDBC URL.
+     * Get proxy data source.
      *
      * @param databaseName database name
-     * @return proxy JDBC URL
+     * @return proxy data source
      */
-    public abstract String getProxyJdbcUrl(String databaseName);
+    public abstract DataSource getProxyDatasource(String databaseName);
+    
+    /**
+     * Get Datasource with storage container exposed port and network alias.
+     * 
+     * @param databaseName database name
+     * @return list of datasource
+     */
+    public abstract List<DataSource> getExposedDatasource(String databaseName);
+    
+    /**
+     * Get Datasource with storage container mapped port and host.
+     *
+     * @param databaseName database name
+     * @return list of datasource
+     */
+    public abstract List<DataSource> getMappedDatasource(String databaseName);
     
     @Override
     public void start() {

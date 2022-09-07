@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.integration.env.container.atomic.storage.
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
 
@@ -45,8 +46,13 @@ public final class MySQLContainer extends DockerStorageContainer {
     }
     
     @Override
-    public int getPort() {
-        return 3306;
+    public int getExposedPort() {
+        return StorageContainerConstants.MYSQL_EXPOSED_PORT;
+    }
+    
+    @Override
+    public int getMappedPort() {
+        return getMappedPort(StorageContainerConstants.MYSQL_EXPOSED_PORT);
     }
     
     @Override
