@@ -15,31 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.spi.listener;
+package org.apache.shardingsphere.data.pipeline.core.spi.handler;
 
-import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+
+import java.util.Collection;
 
 /**
- * Pipeline meta data listener.
+ * Pipeline meta data listener factory.
  */
-@SingletonSPI
-public interface PipelineMetaDataListener extends TypedSPI {
+public final class PipelineMetaDataChangedHandlerFactory {
+    
+    static {
+        ShardingSphereServiceLoader.register(PipelineMetaDataChangedHandler.class);
+    }
     
     /**
-     * Get watch key of listener.
+     * Get pipeline meta data listener instance.
      *
-     * @return watch key
+     * @return pipeline meta data listener
      */
-    String getWatchKey();
-    
-    /**
-     * Handler of listener.
-     *
-     * @param event changed event
-     * @param jobConfigPOJO job config pojo
-     */
-    void handler(DataChangedEvent event, JobConfigurationPOJO jobConfigPOJO);
+    public static Collection<PipelineMetaDataChangedHandler> findAllInstance() {
+        return ShardingSphereServiceLoader.getServiceInstances(PipelineMetaDataChangedHandler.class);
+    }
 }

@@ -15,16 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.spi.listener;
+package org.apache.shardingsphere.data.pipeline.core.spi.handler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlMigrationJobConfigurationSwapper;
-import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
-import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJob;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobPreparer;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
@@ -32,22 +31,21 @@ import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBoo
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.regex.Pattern;
 
 /**
- * Migration pipeline meta data listener.
+ * Migration pipeline meta data handler.
  */
 @Slf4j
-public final class MigrationPipelineMetaDataListener implements PipelineMetaDataListener {
-    
-    private static final String JOB_PATTERN_PREFIX = DataPipelineConstants.DATA_PIPELINE_ROOT + "/jobs/(j01[0-9a-f]+)/config";
+public final class MigrationMetaDataChangedHandler implements PipelineMetaDataChangedHandler {
     
     @Override
-    public String getWatchKey() {
-        return JOB_PATTERN_PREFIX;
+    public Pattern getKeyPattern() {
+        return PipelineMetaDataNode.MIGRATION_JOB_CONFIG_PATTERN;
     }
     
     @Override
-    public void handler(final DataChangedEvent event, final JobConfigurationPOJO jobConfigPOJO) {
+    public void handle(final DataChangedEvent event, final JobConfigurationPOJO jobConfigPOJO) {
         String jobId = jobConfigPOJO.getJobName();
         if (jobConfigPOJO.isDisabled()) {
             PipelineJobCenter.stop(jobId);
@@ -60,7 +58,7 @@ public final class MigrationPipelineMetaDataListener implements PipelineMetaData
                     log.info("{} added to executing jobs failed since it already exists", jobConfigPOJO.getJobName());
                 } else {
                     log.info("{} executing jobs", jobConfigPOJO.getJobName());
-                    CompletableFuture.runAsync(() -> execute(jobConfigPOJO), PipelineContext.getPipelineExecutor());
+                    CompletableFuture.runAsync(() -> execute(jobConfigPOJO), PipelineContext.getEventListenerExecutor());
                 }
                 break;
             case DELETED:
@@ -80,10 +78,5 @@ public final class MigrationPipelineMetaDataListener implements PipelineMetaData
         OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfigPOJO.toJobConfiguration());
         oneOffJobBootstrap.execute();
         job.setOneOffJobBootstrap(oneOffJobBootstrap);
-    }
-    
-    @Override
-    public String getType() {
-        return JobType.MIGRATION.getTypeName();
     }
 }

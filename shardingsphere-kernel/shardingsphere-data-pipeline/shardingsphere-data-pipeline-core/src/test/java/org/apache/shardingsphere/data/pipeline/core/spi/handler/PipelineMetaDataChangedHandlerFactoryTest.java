@@ -15,23 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.spi.listener;
+package org.apache.shardingsphere.data.pipeline.core.spi.handler;
 
-import org.apache.shardingsphere.data.pipeline.core.fixture.FixturePipelineMetaDataListener;
 import org.junit.Test;
 
-import java.util.Optional;
+import java.util.Collection;
 
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class PipelineMetaDataListenerFactoryTest {
+public class PipelineMetaDataChangedHandlerFactoryTest {
     
     @Test
     public void assertFindInstance() {
-        Optional<PipelineMetaDataListener> actual = PipelineMetaDataListenerFactory.findInstance("FIXTURE");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(FixturePipelineMetaDataListener.class));
+        Collection<PipelineMetaDataChangedHandler> actual = PipelineMetaDataChangedHandlerFactory.findAllInstance();
+        boolean isContainMigration = false;
+        boolean isContainBarrier = false;
+        for (PipelineMetaDataChangedHandler each : actual) {
+            if (each instanceof MigrationMetaDataChangedHandler) {
+                isContainMigration = true;
+                continue;
+            }
+            if (each instanceof BarrierMetaDataChangedHandler) {
+                isContainBarrier = true;
+            }
+        }
+        assertTrue(isContainMigration);
+        assertTrue(isContainBarrier);
     }
 }

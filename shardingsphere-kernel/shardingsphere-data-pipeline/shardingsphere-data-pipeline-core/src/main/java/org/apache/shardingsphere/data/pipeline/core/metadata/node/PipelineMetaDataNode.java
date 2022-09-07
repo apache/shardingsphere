@@ -34,6 +34,11 @@ public final class PipelineMetaDataNode {
     
     public static final Pattern BARRIER_PATTERN = Pattern.compile(JOB_PATTERN_PREFIX + "/barrier/(enable|disable)/\\d+");
     
+    private static final String MIGRATION_JOB_PATTERN_PREFIX = DataPipelineConstants.DATA_PIPELINE_ROOT + "/jobs/(j01[0-9a-f]+)";
+    
+    public static final Pattern MIGRATION_JOB_CONFIG_PATTERN = Pattern.compile(MIGRATION_JOB_PATTERN_PREFIX + "/config");
+    
+    
     /**
      * Get metadata data sources path.
      *

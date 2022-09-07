@@ -15,4 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.core.spi.listener.MigrationPipelineMetaDataListener
+org.apache.shardingsphere.data.pipeline.core.spi.handler.MigrationMetaDataChangedHandler
+org.apache.shardingsphere.data.pipeline.core.spi.handler.BarrierMetaDataChangedHandler

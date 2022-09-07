@@ -41,7 +41,7 @@ public final class PipelineJobWorker {
                 return;
             }
             log.info("start worker initialization");
-            PipelineJobExecutor.registerListener();
+            PipelineJobExecutor.getInstance();
             WORKER_INITIALIZED.set(true);
             log.info("worker initialization done");
         }

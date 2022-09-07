@@ -18,21 +18,17 @@
 package org.apache.shardingsphere.data.pipeline.core.execute;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
-import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
-import org.apache.shardingsphere.data.pipeline.core.spi.listener.PipelineMetaDataListener;
-import org.apache.shardingsphere.data.pipeline.core.spi.listener.PipelineMetaDataListenerFactory;
-import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
+import org.apache.shardingsphere.data.pipeline.core.spi.handler.PipelineMetaDataChangedHandler;
+import org.apache.shardingsphere.data.pipeline.core.spi.handler.PipelineMetaDataChangedHandlerFactory;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
@@ -42,34 +38,20 @@ import java.util.regex.Pattern;
 @Slf4j
 public final class PipelineJobExecutor {
     
-    private static final Map<Pattern, PipelineMetaDataListener> LISTENER_MAP = new ConcurrentHashMap<>();
+    private static final PipelineJobExecutor INSTANCE = new PipelineJobExecutor();
     
-    /**
-     * Register listener.
-     */
-    public static void registerListener() {
-        if (!LISTENER_MAP.isEmpty()) {
-            log.info("listener already register");
-            return;
+    private final Map<Pattern, PipelineMetaDataChangedHandler> listenerMap = new ConcurrentHashMap<>();
+    
+    private PipelineJobExecutor() {
+        Collection<PipelineMetaDataChangedHandler> instances = PipelineMetaDataChangedHandlerFactory.findAllInstance();
+        for (PipelineMetaDataChangedHandler each : instances) {
+            listenerMap.put(each.getKeyPattern(), each);
         }
-        for (JobType each : JobType.values()) {
-            Optional<PipelineMetaDataListener> instance = PipelineMetaDataListenerFactory.findInstance(each.getTypeName());
-            if (!instance.isPresent()) {
-                continue;
-            }
-            PipelineMetaDataListener pipelineMetaDataListener = instance.get();
-            LISTENER_MAP.put(Pattern.compile(pipelineMetaDataListener.getWatchKey()), pipelineMetaDataListener);
-        }
-        PipelineAPIFactory.getGovernanceRepositoryAPI().watch(DataPipelineConstants.DATA_PIPELINE_ROOT, event -> {
-            if (PipelineMetaDataNode.BARRIER_PATTERN.matcher(event.getKey()).matches() && event.getType() == Type.ADDED) {
-                PipelineDistributedBarrier.getInstance().checkChildrenNodeCount(event);
-            }
-            dispatchEvent(event);
-        });
+        PipelineAPIFactory.getGovernanceRepositoryAPI().watch(DataPipelineConstants.DATA_PIPELINE_ROOT, this::dispatchEvent);
     }
     
-    private static void dispatchEvent(final DataChangedEvent event) {
-        for (Entry<Pattern, PipelineMetaDataListener> entry : LISTENER_MAP.entrySet()) {
+    private void dispatchEvent(final DataChangedEvent event) {
+        for (Entry<Pattern, PipelineMetaDataChangedHandler> entry : listenerMap.entrySet()) {
             if (entry.getKey().matcher(event.getKey()).matches()) {
                 log.info("{} job config: {}", event.getType(), event.getKey());
                 JobConfigurationPOJO jobConfigPOJO;
@@ -81,9 +63,18 @@ public final class PipelineJobExecutor {
                     log.error("analyze job config pojo failed.", ex);
                     return;
                 }
-                entry.getValue().handler(event, jobConfigPOJO);
+                entry.getValue().handle(event, jobConfigPOJO);
                 return;
             }
         }
+    }
+    
+    /**
+     * Get pipeline job executor instance.
+     *
+     * @return pipeline job executor
+     */
+    public static PipelineJobExecutor getInstance() {
+        return INSTANCE;
     }
 }

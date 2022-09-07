@@ -33,7 +33,7 @@ public final class PipelineContext {
     
     private static volatile ContextManager contextManager;
     
-    private static final ExecutorService PIPELINE_EXECUTOR = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(true).setNameFormat("Pipeline-Context-%d").build());
+    private static final ExecutorService EVENT_LISTENER_EXECUTOR = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(true).setNameFormat("Pipeline-EventListener-%d").build());
     
     /**
      * Get mode configuration.
@@ -76,7 +76,7 @@ public final class PipelineContext {
      *
      * @return pipeline executor
      */
-    public static ExecutorService getPipelineExecutor() {
-        return PIPELINE_EXECUTOR;
+    public static ExecutorService getEventListenerExecutor() {
+        return EVENT_LISTENER_EXECUTOR;
     }
 }

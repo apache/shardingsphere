@@ -15,25 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.fixture;
+package org.apache.shardingsphere.data.pipeline.core.spi.handler;
 
-import org.apache.shardingsphere.data.pipeline.core.spi.listener.PipelineMetaDataListener;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
+import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 
-public class FixturePipelineMetaDataListener implements PipelineMetaDataListener {
+import java.util.regex.Pattern;
+
+/**
+ * Barrier pipeline meta data handler, .
+ */
+@Slf4j
+public final class BarrierMetaDataChangedHandler implements PipelineMetaDataChangedHandler {
     
     @Override
-    public String getWatchKey() {
-        return null;
+    public Pattern getKeyPattern() {
+        return PipelineMetaDataNode.BARRIER_PATTERN;
     }
     
     @Override
-    public void handler(final DataChangedEvent event, final JobConfigurationPOJO jobConfigPOJO) {
-    }
-    
-    @Override
-    public String getType() {
-        return "FIXTURE";
+    public void handle(final DataChangedEvent event, final JobConfigurationPOJO jobConfigPOJO) {
+        if (event.getType() == Type.ADDED) {
+            PipelineDistributedBarrier.getInstance().checkChildrenNodeCount(event);
+        }
     }
 }
