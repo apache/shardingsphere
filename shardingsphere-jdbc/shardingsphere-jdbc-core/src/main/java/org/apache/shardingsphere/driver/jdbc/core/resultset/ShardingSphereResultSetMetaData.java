@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.jdbc.adapter.WrapperAdapter;
-import org.apache.shardingsphere.driver.jdbc.exception.SQLExceptionErrorCode;
+import org.apache.shardingsphere.driver.jdbc.exception.ColumnIndexOutOfRangeException;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
@@ -128,8 +128,7 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     private void checkColumnIndex(final int column) throws SQLException {
         List<Projection> actualProjections = ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections();
         if (column > actualProjections.size()) {
-            SQLExceptionErrorCode errorCode = SQLExceptionErrorCode.COLUMN_INDEX_OUT_OF_RANGE;
-            throw new SQLException(errorCode.getErrorMessage(), errorCode.getSqlState(), errorCode.getErrorCode());
+            throw new ColumnIndexOutOfRangeException(column).toSQLException();
         }
     }
     

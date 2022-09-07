@@ -35,9 +35,7 @@ discoveryHeartbeatName ::=
 ### 补充说明
 
 - `discoveryType` 指定数据库发现服务类型，`ShardingSphere` 内置支持 `MySQL.MGR`；
-- 重复的 `ruleName` 将无法被创建；
-- 正在被使用的 `discoveryType` 和 `discoveryHeartbeat` 无法被删除；
-- 带有 `-` 的命名在改动时需要使用 `" "`。
+- 重复的 `ruleName` 将无法被创建。
 
 ### 示例
 

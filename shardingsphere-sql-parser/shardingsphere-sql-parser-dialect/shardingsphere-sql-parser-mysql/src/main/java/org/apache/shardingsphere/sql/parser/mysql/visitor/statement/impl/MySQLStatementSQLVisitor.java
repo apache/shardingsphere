@@ -71,6 +71,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InsertV
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IntervalExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.JoinSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.JoinedTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.JsonFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.JsonFunctionNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LimitClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LimitOffsetContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LimitRowCountContext;
@@ -760,7 +762,10 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         if (null != ctx.regularFunction()) {
             return visit(ctx.regularFunction());
         }
-        throw new IllegalStateException("FunctionCallContext must have aggregationFunction, regularFunction or specialFunction.");
+        if (null != ctx.jsonFunction()) {
+            return visit(ctx.jsonFunction());
+        }
+        throw new IllegalStateException("FunctionCallContext must have aggregationFunction, regularFunction, specialFunction or jsonFunction.");
     }
     
     @Override
@@ -769,6 +774,20 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         return AggregationType.isAggregationType(aggregationType)
                 ? createAggregationSegment(ctx, aggregationType)
                 : new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
+    }
+    
+    @Override
+    public final ASTNode visitJsonFunction(final JsonFunctionContext ctx) {
+        JsonFunctionNameContext functionNameContext = ctx.jsonFunctionName();
+        String functionName;
+        if (null != functionNameContext) {
+            functionName = functionNameContext.getText();
+        } else if (null != ctx.JSON_SEPARATOR()) {
+            functionName = ctx.JSON_SEPARATOR().getText();
+        } else {
+            functionName = ctx.JSON_UNQUOTED_SEPARATOR().getText();
+        }
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), functionName, getOriginalText(ctx));
     }
     
     private ASTNode createAggregationSegment(final AggregationFunctionContext ctx, final String aggregationType) {

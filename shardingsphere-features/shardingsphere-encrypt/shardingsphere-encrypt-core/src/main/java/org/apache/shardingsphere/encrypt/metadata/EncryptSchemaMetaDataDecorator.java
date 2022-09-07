@@ -46,7 +46,7 @@ public final class EncryptSchemaMetaDataDecorator implements RuleBasedSchemaMeta
             for (TableMetaData each : entry.getValue().getTables()) {
                 tables.add(decorate(each.getName(), each, rule));
             }
-            result.put(entry.getKey(), new SchemaMetaData(entry.getKey(), tables));
+            result.put(entry.getKey(), new SchemaMetaData(entry.getKey(), tables, entry.getValue().getViews()));
         }
         return result;
     }

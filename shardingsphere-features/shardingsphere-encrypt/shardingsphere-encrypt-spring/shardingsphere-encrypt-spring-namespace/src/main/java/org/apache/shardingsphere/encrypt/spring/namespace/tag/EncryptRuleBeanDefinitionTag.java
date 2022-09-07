@@ -26,23 +26,53 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EncryptRuleBeanDefinitionTag {
     
+    /**
+     * Root tag.
+     */
     public static final String ROOT_TAG = "rule";
     
+    /**
+     * Table tag.
+     */
     public static final String TABLE_TAG = "table";
     
+    /**
+     * Column tag.
+     */
     public static final String COLUMN_TAG = "column";
     
+    /**
+     * Logic column attribute.
+     */
     public static final String LOGIC_COLUMN_ATTRIBUTE = "logic-column";
     
+    /**
+     * Cipher column attribute.
+     */
     public static final String CIPHER_COLUMN_ATTRIBUTE = "cipher-column";
     
+    /**
+     * Assisted query column attribute.
+     */
     public static final String ASSISTED_QUERY_COLUMN_ATTRIBUTE = "assisted-query-column";
     
+    /**
+     * Plain column attribute.
+     */
     public static final String PLAIN_COLUMN_ATTRIBUTE = "plain-column";
     
+    /**
+     * Encrypt algorithm ref attribute.
+     */
     public static final String ENCRYPT_ALGORITHM_REF_ATTRIBUTE = "encrypt-algorithm-ref";
     
+    /**
+     * Assisted query encrypt algorithm ref attribute.
+     */
     public static final String ASSISTED_QUERY_ENCRYPT_ALGORITHM_REF_ATTRIBUTE = "assisted-query-encrypt-algorithm-ref";
     
+    /**
+     * Query with cipher column attribute.
+     */
     public static final String QUERY_WITH_CIPHER_COLUMN = "query-with-cipher-column";
 }

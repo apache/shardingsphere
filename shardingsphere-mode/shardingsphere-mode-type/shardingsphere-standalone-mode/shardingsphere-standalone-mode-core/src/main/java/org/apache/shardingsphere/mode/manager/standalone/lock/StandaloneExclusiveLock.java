@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.mode.manager.standalone.lock;
 
-import org.apache.shardingsphere.infra.lock.LockState;
-
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
@@ -51,8 +49,8 @@ public final class StandaloneExclusiveLock extends ReentrantLock {
         }
     }
     
-    @Override
-    public boolean isLocked() {
-        return LockState.LOCKED == lockState.get();
+    private enum LockState {
+        
+        LOCKED, UNLOCKED, LOCKING
     }
 }

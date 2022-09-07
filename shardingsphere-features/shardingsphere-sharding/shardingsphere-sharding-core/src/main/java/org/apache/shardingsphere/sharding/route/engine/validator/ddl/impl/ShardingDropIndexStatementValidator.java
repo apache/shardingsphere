@@ -68,7 +68,8 @@ public final class ShardingDropIndexStatementValidator extends ShardingDDLStatem
             for (IndexSegment each : indexSegments) {
                 ShardingSphereSchema schema = each.getOwner().map(optional -> optional.getIdentifier().getValue())
                         .map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName));
-                logicTableName = schema.getAllTableNames().stream().filter(tableName -> schema.get(tableName).getIndexes().containsKey(each.getIndexName().getIdentifier().getValue())).findFirst();
+                logicTableName =
+                        schema.getAllTableNames().stream().filter(tableName -> schema.getTable(tableName).getIndexes().containsKey(each.getIndexName().getIdentifier().getValue())).findFirst();
                 logicTableName.ifPresent(optional -> validateDropIndexRouteUnit(shardingRule, routeContext, indexSegments, optional));
             }
         }

@@ -172,7 +172,7 @@ public final class ContextManagerTest {
     
     private ShardingSphereSchema createToBeAlteredSchema() {
         ShardingSphereTable beforeChangedTable = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        return new ShardingSphereSchema(Collections.singletonMap("foo_tbl", beforeChangedTable));
+        return new ShardingSphereSchema(Collections.singletonMap("foo_tbl", beforeChangedTable), Collections.emptyMap());
     }
     
     // TODO fix me
@@ -280,8 +280,8 @@ public final class ContextManagerTest {
         when(persistService.getDatabaseMetaDataService()).thenReturn(databaseMetaDataPersistService);
         when(metaDataContexts.getPersistService()).thenReturn(persistService);
         contextManager.reloadDatabase("foo_db");
-        verify(databaseMetaDataPersistService, times(1)).deleteSchema(eq("foo_db"), eq("foo_schema"));
-        verify(databaseMetaDataPersistService, times(1)).compareAndPersistMetaData(eq("foo_db"), eq("foo_db"), any(ShardingSphereSchema.class));
+        verify(databaseMetaDataPersistService, times(1)).dropSchema(eq("foo_db"), eq("foo_schema"));
+        verify(databaseMetaDataPersistService, times(1)).compareAndPersist(eq("foo_db"), eq("foo_db"), any(ShardingSphereSchema.class));
     }
     
     @Test
@@ -293,7 +293,7 @@ public final class ContextManagerTest {
         when(persistService.getDatabaseMetaDataService()).thenReturn(databaseMetaDataPersistService);
         when(metaDataContexts.getPersistService()).thenReturn(persistService);
         contextManager.reloadSchema("foo_db", "foo_schema", "foo_ds");
-        verify(databaseMetaDataPersistService, times(1)).deleteSchema(eq("foo_db"), eq("foo_schema"));
+        verify(databaseMetaDataPersistService, times(1)).dropSchema(eq("foo_db"), eq("foo_schema"));
     }
     
     @Test

@@ -1627,7 +1627,7 @@
         </projections>
         <where start-index="22" stop-index="44">
             <expr>
-                <common-expression text="order_id -&gt;&quot;$[1]&quot;" start-index="28" stop-index="44"/>
+                <function function-name="-&gt;" text="order_id -&gt;&quot;$[1]&quot;" start-index="28" stop-index="44"></function>
             </expr>
         </where>
     </select>
@@ -1641,7 +1641,21 @@
         </projections>
         <where start-index="22" stop-index="46">
             <expr>
-                <common-expression text="order_id -&gt;&gt; &quot;$[1]&quot;" start-index="28" stop-index="46"/>
+                <function function-name="-&gt;&gt;" text="order_id -&gt;&gt; &quot;$[1]&quot;" start-index="28" stop-index="46"></function>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_where_with_simple_expr_with_json_contains">
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20"/>
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <where start-index="22" stop-index="76">
+            <expr>
+                <function function-name="JSON_CONTAINS" text="JSON_CONTAINS(order_msg -> '$[*].code', 'x', '$')" start-index="28" stop-index="76"></function>
             </expr>
         </where>
     </select>

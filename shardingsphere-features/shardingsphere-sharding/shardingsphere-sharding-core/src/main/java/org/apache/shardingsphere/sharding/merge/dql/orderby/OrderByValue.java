@@ -70,7 +70,7 @@ public final class OrderByValue implements Comparable<OrderByValue> {
                                                           final ShardingSphereSchema schema, final OrderByItem eachOrderByItem) throws SQLException {
         for (SimpleTableSegment eachSimpleTableSegment : selectStatementContext.getAllTables()) {
             String tableName = eachSimpleTableSegment.getTableName().getIdentifier().getValue();
-            ShardingSphereTable table = schema.get(tableName);
+            ShardingSphereTable table = schema.getTable(tableName);
             Map<String, ShardingSphereColumn> columns = table.getColumns();
             OrderByItemSegment orderByItemSegment = eachOrderByItem.getSegment();
             if (orderByItemSegment instanceof ColumnOrderByItemSegment) {

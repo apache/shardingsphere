@@ -30,6 +30,9 @@ import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.opengauss.packet.authentication.OpenGaussAuthenticationSCRAMSha256Packet;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.dialect.postgresql.exception.authority.EmptyUsernameException;
+import org.apache.shardingsphere.dialect.postgresql.exception.authority.InvalidPasswordException;
+import org.apache.shardingsphere.dialect.postgresql.exception.protocol.ProtocolViolationException;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -43,9 +46,6 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
 import org.apache.shardingsphere.proxy.frontend.opengauss.ProxyContextRestorer;
 import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.fixture.OpenGaussAuthenticationAlgorithm;
-import org.apache.shardingsphere.dialect.postgresql.exception.InvalidAuthorizationSpecificationException;
-import org.apache.shardingsphere.dialect.postgresql.exception.PostgreSQLAuthenticationException;
-import org.apache.shardingsphere.dialect.postgresql.exception.PostgreSQLProtocolViolationException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -94,7 +94,7 @@ public final class OpenGaussAuthenticationEngineTest extends ProxyContextRestore
         assertFalse(actual.isFinished());
     }
     
-    @Test(expected = InvalidAuthorizationSpecificationException.class)
+    @Test(expected = EmptyUsernameException.class)
     public void assertUserNotSet() {
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(8, 512), StandardCharsets.UTF_8);
         payload.writeInt4(64);
@@ -104,7 +104,7 @@ public final class OpenGaussAuthenticationEngineTest extends ProxyContextRestore
         new OpenGaussAuthenticationEngine().authenticate(channelHandlerContext, payload);
     }
     
-    @Test(expected = PostgreSQLProtocolViolationException.class)
+    @Test(expected = ProtocolViolationException.class)
     public void assertAuthenticateWithNonPasswordMessage() {
         OpenGaussAuthenticationEngine authenticationEngine = new OpenGaussAuthenticationEngine();
         setAlreadyReceivedStartupMessage(authenticationEngine);
@@ -127,7 +127,7 @@ public final class OpenGaussAuthenticationEngineTest extends ProxyContextRestore
         assertLogin(password);
     }
     
-    @Test(expected = PostgreSQLAuthenticationException.class)
+    @Test(expected = InvalidPasswordException.class)
     public void assertLoginFailed() {
         assertLogin("wrong" + password);
     }

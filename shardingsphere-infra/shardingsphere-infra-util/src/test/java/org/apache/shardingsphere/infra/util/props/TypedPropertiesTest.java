@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.util.props;
 
-import org.apache.shardingsphere.infra.util.props.exception.TypedPropertiesException;
+import org.apache.shardingsphere.infra.util.props.exception.TypedPropertiesServerException;
 import org.apache.shardingsphere.infra.util.props.fixture.TypedPropertiesFixture;
 import org.apache.shardingsphere.infra.util.props.fixture.TypedPropertyKeyFixture;
 import org.junit.Test;
@@ -67,7 +67,7 @@ public final class TypedPropertiesTest {
         assertThat(actual.getValue(TypedPropertyKeyFixture.STRING_VALUE), is("value"));
     }
     
-    @Test(expected = TypedPropertiesException.class)
+    @Test(expected = TypedPropertiesServerException.class)
     public void assertGetInvalidValue() {
         Properties props = new Properties();
         props.setProperty(TypedPropertyKeyFixture.BOOLEAN_VALUE.getKey(), "test");

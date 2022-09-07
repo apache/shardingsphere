@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.constant;
 
-import org.apache.shardingsphere.dialect.exception.connection.UnknownCollationException;
+import org.apache.shardingsphere.dialect.mysql.exception.UnknownCollationException;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

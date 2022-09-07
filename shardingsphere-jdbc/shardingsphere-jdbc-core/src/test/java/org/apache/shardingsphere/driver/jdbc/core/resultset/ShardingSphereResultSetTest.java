@@ -47,6 +47,7 @@ import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
@@ -592,6 +593,13 @@ public final class ShardingSphereResultSetTest {
         LocalDateTime result = LocalDateTime.now();
         when(mergeResultSet.getValue(1, Timestamp.class)).thenReturn(Timestamp.valueOf(result));
         assertThat(shardingSphereResultSet.getObject(1, LocalDateTime.class), is(result));
+    }
+    
+    @Test
+    public void assertGetObjectWithOffsetDateTime() throws SQLException {
+        OffsetDateTime result = OffsetDateTime.now();
+        when(mergeResultSet.getValue(1, Timestamp.class)).thenReturn(result);
+        assertThat(shardingSphereResultSet.getObject(1, OffsetDateTime.class), is(result));
     }
     
     @Test

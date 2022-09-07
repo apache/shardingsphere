@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.encrypt.exception;
 
-import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
-import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Unsupported encrypt SQL exception.
@@ -28,6 +28,6 @@ public final class UnsupportedEncryptSQLException extends ShardingSphereSQLExcep
     private static final long serialVersionUID = 8391663664617661217L;
     
     public UnsupportedEncryptSQLException(final String sqlClause) {
-        super(XOpenSQLState.SYNTAX_ERROR, 24001, "The SQL clause `%s` is unsupported in encrypt rule", sqlClause);
+        super(XOpenSQLState.SYNTAX_ERROR, 27001, "The SQL clause `%s` is unsupported in encrypt rule", sqlClause);
     }
 }

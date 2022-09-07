@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.mysql.prepare.datasource;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.config.CreateTableConfiguration.CreateTableEntry;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.AbstractDataSourcePreparer;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
 
@@ -33,14 +33,13 @@ import java.sql.SQLException;
 public final class MySQLDataSourcePreparer extends AbstractDataSourcePreparer {
     
     @Override
-    public void prepareTargetTables(final PrepareTargetTablesParameter parameter) {
+    public void prepareTargetTables(final PrepareTargetTablesParameter parameter) throws SQLException {
         PipelineDataSourceManager dataSourceManager = parameter.getDataSourceManager();
-        try (Connection targetConnection = getCachedDataSource(parameter.getTargetDataSourceConfig(), dataSourceManager).getConnection()) {
-            for (String each : listCreateLogicalTableSQL(parameter)) {
-                executeTargetTableSQL(targetConnection, addIfNotExistsForCreateTableSQL(each));
+        for (CreateTableEntry each : parameter.getCreateTableConfig().getCreateTableEntries()) {
+            String createTargetTableSQL = getCreateTargetTableSQL(each, dataSourceManager, parameter.getSqlParserEngine());
+            try (Connection targetConnection = getCachedDataSource(each.getTargetDataSourceConfig(), dataSourceManager).getConnection()) {
+                executeTargetTableSQL(targetConnection, addIfNotExistsForCreateTableSQL(createTargetTableSQL));
             }
-        } catch (final SQLException ex) {
-            throw new PipelineJobPrepareFailedException("prepare target tables failed.", ex);
         }
     }
     

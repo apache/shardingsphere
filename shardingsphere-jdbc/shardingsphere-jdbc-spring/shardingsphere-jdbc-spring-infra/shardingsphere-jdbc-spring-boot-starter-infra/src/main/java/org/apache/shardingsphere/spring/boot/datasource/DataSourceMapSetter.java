@@ -24,8 +24,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
-import org.apache.shardingsphere.spring.boot.exception.DataSourceJndiNotFoundException;
-import org.apache.shardingsphere.spring.boot.exception.UnsupportedDataSourceTypeException;
+import org.apache.shardingsphere.spring.boot.exception.DataSourceJndiNotFoundServerException;
+import org.apache.shardingsphere.spring.boot.exception.UnsupportedDataSourceTypeServerException;
 import org.apache.shardingsphere.spring.boot.util.PropertyUtil;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.StandardEnvironment;
@@ -65,9 +65,9 @@ public final class DataSourceMapSetter {
             try {
                 result.put(each, getDataSource(environment, each));
             } catch (final ReflectiveOperationException ex) {
-                throw new UnsupportedDataSourceTypeException(ex);
+                throw new UnsupportedDataSourceTypeServerException(ex);
             } catch (final NamingException ex) {
-                throw new DataSourceJndiNotFoundException(ex);
+                throw new DataSourceJndiNotFoundServerException(ex);
             }
         }
         return result;

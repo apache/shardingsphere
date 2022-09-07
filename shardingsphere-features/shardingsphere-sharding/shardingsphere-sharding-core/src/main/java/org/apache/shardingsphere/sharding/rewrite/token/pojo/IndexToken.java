@@ -77,7 +77,7 @@ public final class IndexToken extends SQLToken implements Substitutable, RouteUn
     
     private Optional<String> findLogicTableNameFromMetaData(final String logicIndexName) {
         for (String each : schema.getAllTableNames()) {
-            if (schema.get(each).getIndexes().containsKey(logicIndexName)) {
+            if (schema.getTable(each).getIndexes().containsKey(logicIndexName)) {
                 return Optional.of(each);
             }
         }

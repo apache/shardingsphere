@@ -21,9 +21,9 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseExtraSQLITCase;
+import org.apache.shardingsphere.integration.data.pipeline.cases.base.AbstractMigrationITCase;
 import org.apache.shardingsphere.integration.data.pipeline.cases.task.MySQLIncrementTask;
-import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
+import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingCaseHelper;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
@@ -46,7 +46,7 @@ import static org.junit.Assert.assertThat;
  */
 @Slf4j
 @RunWith(Parameterized.class)
-public final class MySQLMigrationGeneralIT extends BaseExtraSQLITCase {
+public final class MySQLMigrationGeneralIT extends AbstractMigrationITCase {
     
     private final ScalingParameterized parameterized;
     
@@ -59,7 +59,7 @@ public final class MySQLMigrationGeneralIT extends BaseExtraSQLITCase {
     @Parameters(name = "{0}")
     public static Collection<ScalingParameterized> getParameters() {
         Collection<ScalingParameterized> result = new LinkedList<>();
-        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NONE) {
+        if (ENV.getItEnvType() == ITEnvTypeEnum.NONE) {
             return result;
         }
         MySQLDatabaseType databaseType = new MySQLDatabaseType();
@@ -75,8 +75,8 @@ public final class MySQLMigrationGeneralIT extends BaseExtraSQLITCase {
         addMigrationProcessConfig();
         createSourceOrderTable();
         createSourceOrderItemTable();
-        addSourceResource();
-        addTargetResource();
+        addMigrationSourceResource();
+        addMigrationTargetResource();
         createTargetOrderTableRule();
         createTargetOrderTableEncryptRule();
         createTargetOrderItemTableRule();
@@ -87,14 +87,14 @@ public final class MySQLMigrationGeneralIT extends BaseExtraSQLITCase {
             jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrder(), dataPair.getLeft());
             jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
         }
-        startMigrationOrder(false);
+        startMigrationOrderCopy(false);
         startMigrationOrderItem(false);
-        startIncrementTask(new MySQLIncrementTask(jdbcTemplate, keyGenerateAlgorithm, true, 20));
-        String orderJobId = getJobIdByTableName("t_order");
+        startIncrementTask(new MySQLIncrementTask(jdbcTemplate, keyGenerateAlgorithm, 20));
+        String orderJobId = getJobIdByTableName("t_order_copy");
         String orderItemJobId = getJobIdByTableName("t_order_item");
         assertMigrationSuccessById(orderJobId);
         assertMigrationSuccessById(orderItemJobId);
-        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER) {
+        if (ENV.getItEnvType() == ITEnvTypeEnum.DOCKER) {
             for (String each : listJobId()) {
                 commitMigrationByJobId(each);
             }

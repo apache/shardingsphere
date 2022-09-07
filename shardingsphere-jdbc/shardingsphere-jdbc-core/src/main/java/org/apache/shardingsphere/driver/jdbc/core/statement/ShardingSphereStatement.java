@@ -20,6 +20,7 @@ package org.apache.shardingsphere.driver.jdbc.core.statement;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.shardingsphere.dialect.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.driver.executor.DriverExecutor;
 import org.apache.shardingsphere.driver.executor.callback.ExecuteCallback;
 import org.apache.shardingsphere.driver.executor.callback.ExecuteUpdateCallback;
@@ -28,8 +29,8 @@ import org.apache.shardingsphere.driver.jdbc.adapter.AbstractStatementAdapter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.GeneratedKeysResultSet;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
+import org.apache.shardingsphere.driver.jdbc.exception.EmptySQLException;
 import org.apache.shardingsphere.driver.jdbc.exception.JDBCTransactionAcrossDatabasesException;
-import org.apache.shardingsphere.driver.jdbc.exception.SQLExceptionErrorCode;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDeciderContext;
@@ -73,7 +74,6 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.RawExecutionRule;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.infra.util.exception.sql.SQLWrapperException;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -153,8 +153,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     @Override
     public ResultSet executeQuery(final String sql) throws SQLException {
         if (Strings.isNullOrEmpty(sql)) {
-            SQLExceptionErrorCode errorCode = SQLExceptionErrorCode.SQL_STRING_NULL_OR_EMPTY;
-            throw new SQLException(errorCode.getErrorMessage(), errorCode.getSqlState(), errorCode.getErrorCode());
+            throw new EmptySQLException().toSQLException();
         }
         ResultSet result;
         try {
@@ -172,10 +171,12 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             executionContext = createExecutionContext(queryContext);
             List<QueryResult> queryResults = executeQuery0();
             MergedResult mergedResult = mergeQuery(queryResults);
-            result = new ShardingSphereResultSet(getShardingSphereResultSets(), mergedResult, this, executionContext);
-        } catch (SQLException ex) {
+            result = new ShardingSphereResultSet(getResultSets(), mergedResult, this, executionContext);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
             handleExceptionInTransaction(connection, metaDataContexts);
-            throw ex;
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getResource().getDatabaseType().getType());
         } finally {
             currentResultSet = null;
         }
@@ -204,10 +205,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         return null != trafficRule && !trafficRule.getStrategyRules().isEmpty()
                 ? new TrafficEngine(trafficRule, instanceContext).dispatch(queryContext, connection.isHoldTransaction())
                 : Optional.empty();
-    }
-    
-    private List<ResultSet> getShardingSphereResultSets() {
-        return statements.stream().map(this::getResultSet).collect(Collectors.toList());
     }
     
     private List<QueryResult> executeQuery0() throws SQLException {
@@ -254,9 +251,11 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             cacheStatements(executionGroupContext.getInputGroups());
             return executeUpdate(executionGroupContext, (actualSQL, statement) -> statement.executeUpdate(actualSQL),
                     executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
-        } catch (SQLException ex) {
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
             handleExceptionInTransaction(connection, metaDataContexts);
-            throw ex;
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getResource().getDatabaseType().getType());
         } finally {
             currentResultSet = null;
         }
@@ -283,9 +282,11 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             cacheStatements(executionGroupContext.getInputGroups());
             return executeUpdate(executionGroupContext, (actualSQL, statement) -> statement.executeUpdate(actualSQL, autoGeneratedKeys),
                     executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
-        } catch (SQLException ex) {
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
             handleExceptionInTransaction(connection, metaDataContexts);
-            throw ex;
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getResource().getDatabaseType().getType());
         } finally {
             currentResultSet = null;
         }
@@ -310,9 +311,11 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             cacheStatements(executionGroups.getInputGroups());
             return executeUpdate(executionGroups, (actualSQL, statement) -> statement.executeUpdate(actualSQL, columnIndexes),
                     executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
-        } catch (SQLException ex) {
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
             handleExceptionInTransaction(connection, metaDataContexts);
-            throw ex;
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getResource().getDatabaseType().getType());
         } finally {
             currentResultSet = null;
         }
@@ -337,9 +340,11 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             cacheStatements(executionGroupContext.getInputGroups());
             return executeUpdate(executionGroupContext, (actualSQL, statement) -> statement.executeUpdate(actualSQL, columnNames),
                     executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
-        } catch (SQLException ex) {
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
             handleExceptionInTransaction(connection, metaDataContexts);
-            throw ex;
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getResource().getDatabaseType().getType());
         } finally {
             currentResultSet = null;
         }
@@ -377,9 +382,11 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     public boolean execute(final String sql) throws SQLException {
         try {
             return execute0(sql, (actualSQL, statement) -> statement.execute(actualSQL));
-        } catch (SQLException ex) {
+            // CHECKSTYLE:OFF
+        } catch (final SQLException ex) {
+            // CHECKSTYLE:ON
             handleExceptionInTransaction(connection, metaDataContexts);
-            throw ex;
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getResource().getDatabaseType().getType());
         }
     }
     
@@ -390,9 +397,11 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                 returnGeneratedKeys = true;
             }
             return execute0(sql, (actualSQL, statement) -> statement.execute(actualSQL, autoGeneratedKeys));
-        } catch (SQLException ex) {
+            // CHECKSTYLE:OFF
+        } catch (final SQLException ex) {
+            // CHECKSTYLE:ON
             handleExceptionInTransaction(connection, metaDataContexts);
-            throw ex;
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getResource().getDatabaseType().getType());
         }
     }
     
@@ -401,9 +410,11 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         try {
             returnGeneratedKeys = true;
             return execute0(sql, (actualSQL, statement) -> statement.execute(actualSQL, columnIndexes));
-        } catch (SQLException ex) {
+            // CHECKSTYLE:OFF
+        } catch (final SQLException ex) {
+            // CHECKSTYLE:ON
             handleExceptionInTransaction(connection, metaDataContexts);
-            throw ex;
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getResource().getDatabaseType().getType());
         }
     }
     
@@ -412,9 +423,11 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         try {
             returnGeneratedKeys = true;
             return execute0(sql, (actualSQL, statement) -> statement.execute(actualSQL, columnNames));
-        } catch (SQLException ex) {
+            // CHECKSTYLE:OFF
+        } catch (final SQLException ex) {
+            // CHECKSTYLE:ON
             handleExceptionInTransaction(connection, metaDataContexts);
-            throw ex;
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getResource().getDatabaseType().getType());
         }
     }
     
@@ -550,14 +563,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             currentResultSet = new ShardingSphereResultSet(resultSets, mergedResult, this, executionContext);
         }
         return currentResultSet;
-    }
-    
-    private ResultSet getResultSet(final Statement statement) {
-        try {
-            return statement.getResultSet();
-        } catch (final SQLException ex) {
-            throw new SQLWrapperException(ex);
-        }
     }
     
     private List<ResultSet> getResultSets() throws SQLException {

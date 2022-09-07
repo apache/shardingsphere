@@ -34,14 +34,19 @@ public final class ShardingSphereSchema {
     
     private final Map<String, ShardingSphereTable> tables;
     
+    private final Map<String, ShardingSphereView> views;
+    
     @SuppressWarnings("CollectionWithoutInitialCapacity")
     public ShardingSphereSchema() {
         tables = new ConcurrentHashMap<>();
+        views = new ConcurrentHashMap<>();
     }
     
-    public ShardingSphereSchema(final Map<String, ShardingSphereTable> tables) {
+    public ShardingSphereSchema(final Map<String, ShardingSphereTable> tables, final Map<String, ShardingSphereView> views) {
         this.tables = new ConcurrentHashMap<>(tables.size(), 1);
+        this.views = new ConcurrentHashMap<>(views.size(), 1);
         tables.forEach((key, value) -> this.tables.put(key.toLowerCase(), value));
+        views.forEach((key, value) -> this.views.put(key.toLowerCase(), value));
     }
     
     /**
@@ -54,13 +59,32 @@ public final class ShardingSphereSchema {
     }
     
     /**
+     * Get all view names.
+     *
+     * @return all view names
+     */
+    public Collection<String> getAllViewNames() {
+        return views.keySet();
+    }
+    
+    /**
      * Get table meta data via table name.
      * 
      * @param tableName tableName table name
      * @return table meta data
      */
-    public ShardingSphereTable get(final String tableName) {
+    public ShardingSphereTable getTable(final String tableName) {
         return tables.get(tableName.toLowerCase());
+    }
+    
+    /**
+     * Get view meta data via view name.
+     *
+     * @param viewName viewName view name
+     * @return view meta data
+     */
+    public ShardingSphereView getView(final String viewName) {
+        return views.get(viewName.toLowerCase());
     }
     
     /**
@@ -69,8 +93,18 @@ public final class ShardingSphereSchema {
      * @param tableName table name
      * @param table table
      */
-    public void put(final String tableName, final ShardingSphereTable table) {
+    public void putTable(final String tableName, final ShardingSphereTable table) {
         tables.put(tableName.toLowerCase(), table);
+    }
+    
+    /**
+     * Add view.
+     *
+     * @param viewName view name
+     * @param view view
+     */
+    public void putView(final String viewName, final ShardingSphereView view) {
+        views.put(viewName.toLowerCase(), view);
     }
     
     /**
@@ -80,7 +114,7 @@ public final class ShardingSphereSchema {
      */
     public void putAll(final Map<String, ShardingSphereTable> tables) {
         for (Entry<String, ShardingSphereTable> entry : tables.entrySet()) {
-            put(entry.getKey(), entry.getValue());
+            putTable(entry.getKey(), entry.getValue());
         }
     }
     
@@ -89,7 +123,7 @@ public final class ShardingSphereSchema {
      *
      * @param tableName table name
      */
-    public void remove(final String tableName) {
+    public void removeTable(final String tableName) {
         tables.remove(tableName.toLowerCase());
     }
     
@@ -111,7 +145,7 @@ public final class ShardingSphereSchema {
      * @return contains column name or not
      */
     public boolean containsColumn(final String tableName, final String columnName) {
-        return containsTable(tableName) && get(tableName).getColumns().containsKey(columnName.toLowerCase());
+        return containsTable(tableName) && getTable(tableName).getColumns().containsKey(columnName.toLowerCase());
     }
     
     /**
@@ -122,7 +156,7 @@ public final class ShardingSphereSchema {
      * @return whether contains index name or not
      */
     public boolean containsIndex(final String tableName, final String indexName) {
-        return containsTable(tableName) && get(tableName).getIndexes().containsKey(indexName.toLowerCase());
+        return containsTable(tableName) && getTable(tableName).getIndexes().containsKey(indexName.toLowerCase());
     }
     
     /**
@@ -132,7 +166,7 @@ public final class ShardingSphereSchema {
      * @return column names
      */
     public List<String> getAllColumnNames(final String tableName) {
-        return containsTable(tableName) ? get(tableName).getColumnNames() : Collections.emptyList();
+        return containsTable(tableName) ? getTable(tableName).getColumnNames() : Collections.emptyList();
     }
     
     /**
@@ -142,6 +176,6 @@ public final class ShardingSphereSchema {
      * @return visible column names
      */
     public List<String> getVisibleColumnNames(final String tableName) {
-        return containsTable(tableName) ? get(tableName).getVisibleColumns() : Collections.emptyList();
+        return containsTable(tableName) ? getTable(tableName).getVisibleColumns() : Collections.emptyList();
     }
 }

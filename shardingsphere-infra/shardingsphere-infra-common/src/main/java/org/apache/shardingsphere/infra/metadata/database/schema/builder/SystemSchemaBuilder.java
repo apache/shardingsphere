@@ -77,6 +77,6 @@ public final class SystemSchemaBuilder {
             YamlShardingSphereTable metaData = new Yaml().loadAs(each, YamlShardingSphereTable.class);
             tables.put(metaData.getName(), swapper.swapToObject(metaData));
         }
-        return new ShardingSphereSchema(tables);
+        return new ShardingSphereSchema(tables, Collections.emptyMap());
     }
 }

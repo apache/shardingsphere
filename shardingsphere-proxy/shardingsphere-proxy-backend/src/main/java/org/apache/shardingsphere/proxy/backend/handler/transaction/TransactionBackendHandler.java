@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.dialect.exception.transaction.InTransactionException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.communication.TransactionManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JDBCBackendTransactionManager;
@@ -85,7 +86,7 @@ public final class TransactionBackendHandler implements ProxyBackendHandler {
                     if (connectionSession.getDatabaseType() instanceof MySQLDatabaseType) {
                         return transactionManager.commit().compose(unused -> transactionManager.begin());
                     } else if (connectionSession.getDatabaseType() instanceof PostgreSQLDatabaseType || connectionSession.getDatabaseType() instanceof OpenGaussDatabaseType) {
-                        return Future.failedFuture(new InTransactionException("There is already a transaction in progress."));
+                        return Future.failedFuture(new InTransactionException());
                     }
                 }
                 return transactionManager.begin();
@@ -140,30 +141,27 @@ public final class TransactionBackendHandler implements ProxyBackendHandler {
             if (connectionSession.getDatabaseType() instanceof MySQLDatabaseType) {
                 backendTransactionManager.commit();
             } else if (connectionSession.getDatabaseType() instanceof PostgreSQLDatabaseType || connectionSession.getDatabaseType() instanceof OpenGaussDatabaseType) {
-                throw new InTransactionException("There is already a transaction in progress.");
+                throw new InTransactionException();
             }
         }
         backendTransactionManager.begin();
     }
     
     private void handleSavepoint() throws SQLException {
-        if (!connectionSession.getTransactionStatus().isInTransaction() && isPostgreSQLOrOpenGauss()) {
-            throw new SQLFeatureNotSupportedException("SAVEPOINT can only be used in transaction blocks");
-        }
+        ShardingSpherePreconditions.checkState(connectionSession.getTransactionStatus().isInTransaction() || !isPostgreSQLOrOpenGauss(),
+                new SQLFeatureNotSupportedException("SAVEPOINT can only be used in transaction blocks"));
         backendTransactionManager.setSavepoint(((SavepointStatement) tclStatement).getSavepointName());
     }
     
     private void handleRollbackToSavepoint() throws SQLException {
-        if (!connectionSession.getTransactionStatus().isInTransaction() && isPostgreSQLOrOpenGauss()) {
-            throw new SQLFeatureNotSupportedException("ROLLBACK TO SAVEPOINT can only be used in transaction blocks");
-        }
+        ShardingSpherePreconditions.checkState(connectionSession.getTransactionStatus().isInTransaction() || !isPostgreSQLOrOpenGauss(),
+                new SQLFeatureNotSupportedException("ROLLBACK TO SAVEPOINT can only be used in transaction blocks"));
         backendTransactionManager.rollbackTo(((RollbackStatement) tclStatement).getSavepointName().get());
     }
     
     private void handleReleaseSavepoint() throws SQLException {
-        if (!connectionSession.getTransactionStatus().isInTransaction() && isPostgreSQLOrOpenGauss()) {
-            throw new SQLFeatureNotSupportedException("RELEASE SAVEPOINT can only be used in transaction blocks");
-        }
+        ShardingSpherePreconditions.checkState(connectionSession.getTransactionStatus().isInTransaction() || !isPostgreSQLOrOpenGauss(),
+                new SQLFeatureNotSupportedException("RELEASE SAVEPOINT can only be used in transaction blocks"));
         backendTransactionManager.releaseSavepoint(((ReleaseSavepointStatement) tclStatement).getSavepointName());
     }
     

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.integration.transaction.engine.base;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.integration.transaction.framework.container.compose.DockerComposedContainer;
+import org.apache.shardingsphere.integration.transaction.framework.container.compose.DockerContainerComposer;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -29,10 +29,10 @@ import java.sql.SQLException;
 @Slf4j
 public final class JdbcDataSource extends AutoDataSource {
     
-    private final DockerComposedContainer composedContainer;
+    private final DockerContainerComposer containerComposer;
     
-    public JdbcDataSource(final DockerComposedContainer composedContainer) {
-        this.composedContainer = composedContainer;
+    public JdbcDataSource(final DockerContainerComposer containerComposer) {
+        this.containerComposer = containerComposer;
     }
     
     @Override
@@ -46,7 +46,7 @@ public final class JdbcDataSource extends AutoDataSource {
     
     @Override
     public Connection getConnection(final String username, final String password) throws SQLException {
-        Connection result = composedContainer.getJdbcContainer().getTargetDataSource().getConnection();
+        Connection result = containerComposer.getJdbcContainer().getTargetDataSource().getConnection();
         synchronized (this) {
             getConnectionCache().add(result);
         }
@@ -54,6 +54,6 @@ public final class JdbcDataSource extends AutoDataSource {
     }
     
     private Connection createConnection() throws SQLException {
-        return composedContainer.getJdbcContainer().getTargetDataSource().getConnection();
+        return containerComposer.getJdbcContainer().getTargetDataSource().getConnection();
     }
 }

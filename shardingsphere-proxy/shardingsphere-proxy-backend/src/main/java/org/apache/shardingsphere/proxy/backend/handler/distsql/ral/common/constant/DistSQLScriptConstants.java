@@ -26,6 +26,22 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DistSQLScriptConstants {
     
+    public static final String RESOURCE_DB = "resource_db";
+    
+    public static final String SHARDING_DB = "sharding_db";
+    
+    public static final String READWRITE_SPLITTING_DB = "readwrite_splitting_db";
+    
+    public static final String DATABASE_DISCOVERY_DB = "database_discovery_db";
+    
+    public static final String ENCRYPT_DB = "encrypt_db";
+    
+    public static final String STANDARD = "standard";
+    
+    public static final String COMPLEX = "complex";
+    
+    public static final String HINT = "hint";
+    
     public static final String COMMA = ",";
     
     public static final String SEMI = ";";
@@ -110,4 +126,61 @@ public final class DistSQLScriptConstants {
     public static final String SHARDING_BINDING_TABLE_RULES = "CREATE SHARDING BINDING TABLE RULES %s";
     
     public static final String BINDING = "(%s)";
+    
+    public static final String CREATE_READWRITE_SPLITTING_RULE = "CREATE READWRITE_SPLITTING RULE";
+    
+    public static final String READWRITE_SPLITTING = " %s ("
+            + System.lineSeparator()
+            + "WRITE_RESOURCE=%s,"
+            + System.lineSeparator()
+            + "READ_RESOURCES(%s),"
+            + System.lineSeparator()
+            + "%s"
+            + System.lineSeparator()
+            + ")";
+    
+    public static final String READWRITE_SPLITTING_TYPE = "TYPE(NAME=\"%s\")";
+    
+    public static final String READWRITE_SPLITTING_TYPE_PROPERTIES = "TYPE(NAME=\"%s\", PROPERTIES(%s))";
+    
+    public static final String READ_RESOURCE = "%s";
+    
+    public static final String CREATE_DB_DISCOVERY = "CREATE DB_DISCOVERY RULE";
+    
+    public static final String DB_DISCOVERY = " %s ("
+            + System.lineSeparator()
+            + "RESOURCES(%s),"
+            + System.lineSeparator()
+            + "%s,"
+            + System.lineSeparator()
+            + "HEARTBEAT(PROPERTIES(%s))"
+            + System.lineSeparator()
+            + ")";
+    
+    public static final String DB_DISCOVERY_TYPE = "TYPE(NAME=\'%s\', PROPERTIES(%s))";
+    
+    public static final String DB_DISCOVERY_PROPERTY = "\'%s\'=\'%s\'";
+    
+    public static final String CREATE_ENCRYPT = "CREATE ENCRYPT RULE";
+    
+    public static final String ENCRYPT = " %s ("
+            + System.lineSeparator()
+            + "COLUMNS("
+            + System.lineSeparator()
+            + "%s"
+            + System.lineSeparator()
+            + "),"
+            + "QUERY_WITH_CIPHER_COLUMN=%s)";
+    
+    public static final String ENCRYPT_COLUMN = "(NAME=%s,%s,%s)";
+    
+    public static final String PLAIN = "PLAIN=%s";
+    
+    public static final String CIPHER = "CIPHER=%s";
+    
+    public static final String ENCRYPT_TYPE = "TYPE(NAME=\'%s\',PROPERTIES(%s))";
+    
+    public static final String ENCRYPT_TYPE_WITHOUT_PROPERTIES = "TYPE(NAME=\'%s\')";
+    
+    public static final String ENCRYPT_TYPE_PROPERTIES = "\'%s\'=\'%s\'";
 }

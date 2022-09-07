@@ -52,7 +52,7 @@ public final class AlterSchemaStatementSchemaRefresher implements MetaDataRefres
     }
     
     private void removeSchemaMetaData(final ShardingSphereDatabase database, final String schemaName) {
-        final ShardingSphereSchema schema = new ShardingSphereSchema(database.getSchema(schemaName).getTables());
+        ShardingSphereSchema schema = new ShardingSphereSchema(database.getSchema(schemaName).getTables(), database.getSchema(schemaName).getViews());
         database.removeSchema(schemaName);
         Collection<MutableDataNodeRule> rules = database.getRuleMetaData().findRules(MutableDataNodeRule.class);
         for (String each : schema.getAllTableNames()) {

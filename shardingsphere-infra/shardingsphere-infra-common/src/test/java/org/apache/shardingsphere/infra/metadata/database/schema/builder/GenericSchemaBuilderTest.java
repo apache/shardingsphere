@@ -87,14 +87,14 @@ public final class GenericSchemaBuilderTest {
         engine.when(() -> SchemaMetaDataLoaderEngine.load(any(), any())).thenReturn(createSchemaMetaDataMap(tableNames, materials));
         Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.build(tableNames, materials);
         assertThat(actual.size(), is(1));
-        assertTables(new ShardingSphereSchema(actual.values().iterator().next().getTables()).getTables());
+        assertTables(new ShardingSphereSchema(actual.values().iterator().next().getTables(), Collections.emptyMap()).getTables());
     }
     
     private Map<String, SchemaMetaData> createSchemaMetaDataMap(final Collection<String> tableNames, final GenericSchemaBuilderMaterials materials) {
         if (!tableNames.isEmpty() && (tableNames.contains("data_node_routed_table1") || tableNames.contains("data_node_routed_table2"))) {
             Collection<TableMetaData> tableMetaDataList = tableNames.stream()
                     .map(each -> new TableMetaData(each, Collections.emptyList(), Collections.emptyList(), Collections.emptyList())).collect(Collectors.toList());
-            return Collections.singletonMap(materials.getDefaultSchemaName(), new SchemaMetaData(materials.getDefaultSchemaName(), tableMetaDataList));
+            return Collections.singletonMap(materials.getDefaultSchemaName(), new SchemaMetaData(materials.getDefaultSchemaName(), tableMetaDataList, Collections.emptyList()));
         }
         return Collections.emptyMap();
     }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.util.spi.type.typed;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundException;
+import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
 import org.apache.shardingsphere.infra.util.spi.lifecycle.SPIPostProcessor;
 
 import java.util.Optional;
@@ -97,7 +97,7 @@ public final class TypedSPIRegistry {
         if (result.isPresent()) {
             return result.get();
         }
-        throw new ServiceProviderNotFoundException(spiClass, type);
+        throw new ServiceProviderNotFoundServerException(spiClass, type);
     }
     
     /**
@@ -114,6 +114,6 @@ public final class TypedSPIRegistry {
         if (result.isPresent()) {
             return result.get();
         }
-        throw new ServiceProviderNotFoundException(spiClass, type);
+        throw new ServiceProviderNotFoundServerException(spiClass, type);
     }
 }

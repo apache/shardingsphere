@@ -51,9 +51,10 @@ public final class CreateViewStatementSchemaRefresher implements MetaDataRefresh
         GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(database.getProtocolType(),
                 database.getResource().getDatabaseType(), database.getResource().getDataSources(), database.getRuleMetaData().getRules(), props, schemaName);
         Map<String, ShardingSphereSchema> schemaMap = GenericSchemaBuilder.build(Collections.singletonList(viewName), materials);
-        Optional<ShardingSphereTable> actualViewMetaData = Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.get(viewName));
+        Optional<ShardingSphereTable> actualViewMetaData = Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.getTable(viewName));
+        // TODO Put view meta data to ShardingSphereSchema 's views
         if (actualViewMetaData.isPresent()) {
-            database.getSchema(schemaName).put(viewName, actualViewMetaData.get());
+            database.getSchema(schemaName).putTable(viewName, actualViewMetaData.get());
             SchemaAlteredEvent event = new SchemaAlteredEvent(database.getName(), schemaName);
             event.getAlteredTables().add(actualViewMetaData.get());
             return Optional.of(event);

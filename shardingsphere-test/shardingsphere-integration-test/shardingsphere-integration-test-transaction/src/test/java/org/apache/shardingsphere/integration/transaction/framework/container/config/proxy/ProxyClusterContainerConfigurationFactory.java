@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 
 import java.util.HashMap;
@@ -48,8 +49,8 @@ public final class ProxyClusterContainerConfigurationFactory {
     
     private static Map<String, String> getMountedResource(final DatabaseType databaseType) {
         Map<String, String> result = new HashMap<>(2, 1);
-        result.put(String.format("/env/%s/server.yaml", databaseType.getType().toLowerCase()), "/opt/shardingsphere-proxy/conf/server.yaml");
-        result.put("/logback-test.xml", "/opt/shardingsphere-proxy/conf/logback-test.xml");
+        result.put(String.format("/env/%s/server.yaml", databaseType.getType().toLowerCase()), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "server.yaml");
+        result.put("/logback-test.xml", ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "logback.xml");
         return result;
     }
 }

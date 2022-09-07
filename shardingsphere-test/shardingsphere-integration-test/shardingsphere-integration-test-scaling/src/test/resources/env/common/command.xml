@@ -81,13 +81,17 @@
         );
     </create-target-order-item-table-rule>
     
+    <migration-order-copy-single-table>
+        MIGRATE TABLE ds_0.t_order_copy INTO sharding_db.t_order;
+    </migration-order-copy-single-table>
+    
+    <migration-order-copy-single-table-with-schema>
+        MIGRATE TABLE ds_0.test.t_order_copy INTO sharding_db.t_order;
+    </migration-order-copy-single-table-with-schema>
+    
     <migration-order-single-table>
         MIGRATE TABLE ds_0.t_order INTO sharding_db.t_order;
     </migration-order-single-table>
-    
-    <migration-order-single-table-with-schema>
-        MIGRATE TABLE ds_0.test.t_order INTO sharding_db.t_order;
-    </migration-order-single-table-with-schema>
     
     <migration-order-item-single-table>
         MIGRATE TABLE ds_0.t_order_item INTO sharding_db.t_order_item;
