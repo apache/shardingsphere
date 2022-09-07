@@ -15,30 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.cases.base;
+package org.apache.shardingsphere.integration.data.pipeline.cases.migration;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
-import org.apache.shardingsphere.integration.data.pipeline.cases.command.MigrationDistSQLCommand;
+import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseITCase;
+import org.apache.shardingsphere.integration.data.pipeline.command.MigrationDistSQLCommand;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
+import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
+import org.opengauss.util.PSQLException;
 
 import javax.xml.bind.JAXB;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -62,19 +59,38 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
         }
         String addSourceResource = migrationDistSQLCommand.getAddMigrationSourceResourceTemplate().replace("${user}", getUsername())
                 .replace("${password}", getPassword())
-                .replace("${ds0}", getActualJdbcUrlTemplate(DS_0, true));
+                .replace("${ds0}", appendBatchInsertParam(getActualJdbcUrlTemplate(DS_0, true)));
         addResource(addSourceResource);
     }
     
     protected void addMigrationTargetResource() throws SQLException {
         String addTargetResource = migrationDistSQLCommand.getAddMigrationTargetResourceTemplate().replace("${user}", getUsername())
                 .replace("${password}", getPassword())
-                .replace("${ds2}", getActualJdbcUrlTemplate(DS_2, true))
-                .replace("${ds3}", getActualJdbcUrlTemplate(DS_3, true))
-                .replace("${ds4}", getActualJdbcUrlTemplate(DS_4, true));
+                .replace("${ds2}", appendBatchInsertParam(getActualJdbcUrlTemplate(DS_2, true)))
+                .replace("${ds3}", appendBatchInsertParam(getActualJdbcUrlTemplate(DS_3, true)))
+                .replace("${ds4}", appendBatchInsertParam(getActualJdbcUrlTemplate(DS_4, true)));
         addResource(addTargetResource);
         List<Map<String, Object>> resources = queryForListWithLog("SHOW DATABASE RESOURCES from sharding_db");
         assertThat(resources.size(), is(3));
+    }
+    
+    protected void createSourceSchema(final String schemaName) throws SQLException {
+        if (DatabaseTypeUtil.isPostgreSQL(getDatabaseType())) {
+            sourceExecuteWithLog(String.format("CREATE SCHEMA IF NOT EXISTS %s", schemaName));
+            return;
+        }
+        if (DatabaseTypeUtil.isOpenGauss(getDatabaseType())) {
+            try {
+                sourceExecuteWithLog(String.format("CREATE SCHEMA %s", schemaName));
+            } catch (final SQLException ex) {
+                // only used for native mode.
+                if (ex instanceof PSQLException && "42P06".equals(ex.getSQLState())) {
+                    log.info("Schema {} already exists.", schemaName);
+                } else {
+                    throw ex;
+                }
+            }
+        }
     }
     
     protected void createTargetOrderTableRule() throws SQLException {
@@ -113,7 +129,7 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
         try {
             proxyExecuteWithLog(migrationDistSQLCommand.getAddMigrationProcessConfig(), 0);
         } catch (final SQLException ex) {
-            if ("58000".equals(ex.getSQLState()) || "42000".equals(ex.getSQLState())) {
+            if ("58000".equals(ex.getSQLState()) || "HY000".equals(ex.getSQLState())) {
                 log.warn(ex.getMessage());
                 return;
             }
@@ -143,34 +159,8 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
         return jobList.stream().filter(a -> a.get("tables").toString().equals(tableName)).findFirst().orElseThrow(() -> new RuntimeException("not find " + tableName + " table")).get("id").toString();
     }
     
-    @SneakyThrows(InterruptedException.class)
-    protected void waitMigrationFinished(final String jobId) {
-        if (null != getIncreaseTaskThread()) {
-            TimeUnit.SECONDS.timedJoin(getIncreaseTaskThread(), 60);
-        }
-        log.info("jobId: {}", jobId);
-        Set<String> actualStatus;
-        for (int i = 0; i < 10; i++) {
-            List<Map<String, Object>> showJobStatusResult = showJobStatus(jobId);
-            log.info("show migration status result: {}", showJobStatusResult);
-            actualStatus = showJobStatusResult.stream().map(each -> each.get("status").toString()).collect(Collectors.toSet());
-            assertFalse(CollectionUtils.containsAny(actualStatus, Arrays.asList(JobStatus.PREPARING_FAILURE.name(), JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name(),
-                    JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name())));
-            if (actualStatus.size() == 1 && actualStatus.contains(JobStatus.EXECUTE_INCREMENTAL_TASK.name())) {
-                break;
-            } else if (actualStatus.size() >= 1 && actualStatus.containsAll(new HashSet<>(Arrays.asList("", JobStatus.EXECUTE_INCREMENTAL_TASK.name())))) {
-                log.warn("one of the shardingItem was not started correctly");
-            }
-            ThreadUtil.sleep(3, TimeUnit.SECONDS);
-        }
-    }
-    
-    protected List<Map<String, Object>> showJobStatus(final String jobId) {
-        return queryForListWithLog(String.format("SHOW MIGRATION STATUS '%s'", jobId));
-    }
-    
     protected void assertCheckMigrationSuccess(final String jobId) {
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 5; i++) {
             if (checkJobIncrementTaskFinished(jobId)) {
                 break;
             }
@@ -186,7 +176,7 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
     }
     
     protected boolean checkJobIncrementTaskFinished(final String jobId) {
-        List<Map<String, Object>> listJobStatus = showJobStatus(jobId);
+        List<Map<String, Object>> listJobStatus = queryForListWithLog(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         log.info("list job status result: {}", listJobStatus);
         for (Map<String, Object> entry : listJobStatus) {
             if (!JobStatus.EXECUTE_INCREMENTAL_TASK.name().equalsIgnoreCase(entry.get("status").toString())) {

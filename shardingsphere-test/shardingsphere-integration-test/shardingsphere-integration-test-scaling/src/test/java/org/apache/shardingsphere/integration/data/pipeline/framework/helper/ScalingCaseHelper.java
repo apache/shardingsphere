@@ -51,35 +51,35 @@ public final class ScalingCaseHelper {
     /**
      * Generate MySQL insert data, contains full fields.
      *
-     * @param keyGenerateAlgorithm key generate algorithm
+     * @param orderIdGenerate order id generate algorithm
      * @param databaseType database type
      * @param insertRows insert rows
      * @return insert data list
      */
-    public static Pair<List<Object[]>, List<Object[]>> generateFullInsertData(final KeyGenerateAlgorithm keyGenerateAlgorithm, final DatabaseType databaseType, final int insertRows) {
+    public static Pair<List<Object[]>, List<Object[]>> generateFullInsertData(final KeyGenerateAlgorithm orderIdGenerate, final DatabaseType databaseType, final int insertRows) {
         if (insertRows < 0) {
             return Pair.of(null, null);
         }
         List<Object[]> orderData = new ArrayList<>(insertRows);
         List<Object[]> orderItemData = new ArrayList<>(insertRows);
         for (int i = 0; i < insertRows; i++) {
-            long orderId = generateSnowflakeKey();
+            Comparable<?> orderId = orderIdGenerate.generateKey();
             int userId = generateInt(0, 6);
             LocalDateTime now = LocalDateTime.now();
             int randomInt = generateInt(-100, 100);
             int randomUnsignedInt = generateInt(0, 100);
             if (databaseType instanceof MySQLDatabaseType) {
-                Object[] addObjs = {keyGenerateAlgorithm.generateKey(), orderId, userId, generateString(6), randomInt, randomInt, randomInt,
+                Object[] addObjs = {orderId, userId, generateString(6), randomInt, randomInt, randomInt,
                         randomUnsignedInt, randomUnsignedInt, randomUnsignedInt, randomUnsignedInt, generateFloat(), generateDouble(-1000, 100000),
                         BigDecimal.valueOf(generateDouble(1, 100)), now, now, now.toLocalDate(), now.toLocalTime(), Year.now().getValue(), "1", "t", "e", "s", "t", generateString(2),
-                        generateString(1), generateString(1), "1", "2", generateJsonString(1024)};
+                        generateString(1), generateString(1), "1", "2", generateJsonString(32)};
                 orderData.add(addObjs);
             } else {
-                orderData.add(new Object[]{keyGenerateAlgorithm.generateKey(), orderId, userId, generateString(6), randomInt,
+                orderData.add(new Object[]{orderId, userId, generateString(6), randomInt,
                         BigDecimal.valueOf(generateDouble(1, 100)), true, generateString(2), generateString(2), generateFloat(),
                         generateDouble(0, 1000), LocalDateTime.now(), OffsetDateTime.now()});
             }
-            orderItemData.add(new Object[]{keyGenerateAlgorithm.generateKey(), orderId, userId, "SUCCESS"});
+            orderItemData.add(new Object[]{SNOWFLAKE_KEY_GENERATE_ALGORITHM.generateKey(), orderId, userId, "SUCCESS"});
         }
         return Pair.of(orderData, orderItemData);
     }

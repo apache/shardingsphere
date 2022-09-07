@@ -17,13 +17,12 @@
 <command>
     <create-table-order>
         CREATE TABLE `T_ORDER` (
-        `id` varchar(255) NOT NULL COMMENT 'pk id',
-        `order_id` INT NOT NULL,
+        `order_id` varchar(255) NOT NULL COMMENT 'pk id',
         `user_id` INT NOT NULL,
         `status` varchar(255) NULL,
         `t_unsigned_int` int UNSIGNED NULL,
-        PRIMARY KEY ( `id` ),
-        INDEX ( `order_id` )
+        PRIMARY KEY ( `order_id` ),
+        INDEX ( `user_id` )
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     </create-table-order>
 

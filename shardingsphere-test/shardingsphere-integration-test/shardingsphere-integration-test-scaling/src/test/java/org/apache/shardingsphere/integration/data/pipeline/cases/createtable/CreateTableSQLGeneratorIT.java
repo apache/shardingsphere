@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.cases.general;
+package org.apache.shardingsphere.integration.data.pipeline.cases.createtable;
 
 import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGeneratorFactory;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.cases.entity.CreateTableSQLGeneratorAssertionEntity;
-import org.apache.shardingsphere.integration.data.pipeline.cases.entity.CreateTableSQLGeneratorAssertionsRootEntity;
-import org.apache.shardingsphere.integration.data.pipeline.cases.entity.CreateTableSQLGeneratorOutputEntity;
+import org.apache.shardingsphere.integration.data.pipeline.entity.CreateTableSQLGeneratorAssertionEntity;
+import org.apache.shardingsphere.integration.data.pipeline.entity.CreateTableSQLGeneratorAssertionsRootEntity;
+import org.apache.shardingsphere.integration.data.pipeline.entity.CreateTableSQLGeneratorOutputEntity;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
