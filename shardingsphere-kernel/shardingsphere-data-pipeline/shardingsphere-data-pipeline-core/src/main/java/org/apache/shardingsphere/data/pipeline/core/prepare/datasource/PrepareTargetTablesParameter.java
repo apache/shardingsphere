@@ -18,46 +18,21 @@
 package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
 
 import lombok.Getter;
-import lombok.NonNull;
-import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
-import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.api.config.CreateTableConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
-
-import javax.sql.DataSource;
-import java.util.Map;
 
 /**
  * Prepare target tables parameter.
  */
+@RequiredArgsConstructor
 @Getter
 public final class PrepareTargetTablesParameter {
     
-    private final String databaseName;
-    
-    private final JobDataNodeLine tablesFirstDataNodes;
-    
-    private final PipelineDataSourceConfiguration targetDataSourceConfig;
-    
-    private final Map<String, DataSource> sourceDataSourceMap;
+    private final CreateTableConfiguration createTableConfig;
     
     private final PipelineDataSourceManager dataSourceManager;
     
-    private final TableNameSchemaNameMapping tableNameSchemaNameMapping;
-    
     private final ShardingSphereSQLParserEngine sqlParserEngine;
-    
-    public PrepareTargetTablesParameter(@NonNull final String databaseName, @NonNull final PipelineDataSourceConfiguration targetDataSourceConfig,
-                                        @NonNull final Map<String, DataSource> sourceDataSourceMap, @NonNull final PipelineDataSourceManager dataSourceManager,
-                                        @NonNull final JobDataNodeLine tablesFirstDataNodes, final TableNameSchemaNameMapping tableNameSchemaNameMapping,
-                                        @NonNull final ShardingSphereSQLParserEngine sqlParserEngine) {
-        this.databaseName = databaseName;
-        this.targetDataSourceConfig = targetDataSourceConfig;
-        this.sourceDataSourceMap = sourceDataSourceMap;
-        this.tablesFirstDataNodes = tablesFirstDataNodes;
-        this.dataSourceManager = dataSourceManager;
-        this.tableNameSchemaNameMapping = tableNameSchemaNameMapping;
-        this.sqlParserEngine = sqlParserEngine;
-    }
 }

@@ -148,7 +148,15 @@
     <drop-sharding-key-generator sql-case-id="drop-sharding-key-generator-if-exists" if-exists="true">
         <key-generator>uuid_key_generator</key-generator>
     </drop-sharding-key-generator>
-    
+
+    <drop-sharding-auditor sql-case-id="drop-sharding-auditor" >
+        <auditor>sharding_key_required_auditor</auditor>
+    </drop-sharding-auditor>
+
+    <drop-sharding-auditor sql-case-id="drop-sharding-auditor-if-exists" if-exists="true">
+        <auditor>sharding_key_required_auditor</auditor>
+    </drop-sharding-auditor>
+
     <drop-default-sharding-strategy sql-case-id="drop-default-sharding-strategy" type="table"/>
     
     <drop-default-sharding-strategy sql-case-id="drop-default-sharding-strategy-if-exists" type="table" if-exists="true"/>

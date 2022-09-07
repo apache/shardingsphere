@@ -38,7 +38,7 @@ algorithmName ::=
   identifier
 
 shadowAlgorithmType ::=
-  identifier
+  string
 ```
 
 ### 补充说明

@@ -17,50 +17,16 @@
 
 package org.apache.shardingsphere.data.pipeline.api.metadata;
 
-import lombok.Getter;
 import lombok.NonNull;
-
-import java.util.Objects;
 
 /**
  * Table name.
  * <p>It might be logic table name or actual table name.</p>
  * <p>It's case-insensitive.</p>
  */
-@Getter
-public class TableName {
+public class TableName extends IdentifierName {
     
-    @NonNull
-    private final String original;
-    
-    @NonNull
-    private final String lowercase;
-    
-    public TableName(final String tableName) {
-        this.original = tableName;
-        this.lowercase = tableName.toLowerCase();
-    }
-    
-    // TODO table name case-sensitive for some database
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        final TableName tableName = (TableName) o;
-        return lowercase.equals(tableName.lowercase);
-    }
-    
-    @Override
-    public int hashCode() {
-        return Objects.hash(lowercase);
-    }
-    
-    @Override
-    public String toString() {
-        return original;
+    public TableName(@NonNull final String tableName) {
+        super(tableName);
     }
 }

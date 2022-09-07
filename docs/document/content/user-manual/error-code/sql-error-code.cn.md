@@ -15,13 +15,18 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 42000     | 10002       | Can not support 3-tier structure for actual data node \`%s\` with JDBC \`%s\` |
 | 42000     | 10003       | Unsupported SQL node conversion for SQL statement \`%s\` |
 | HY004     | 10004       | Unsupported conversion data type \`%s\` for value \`%s\` |
-| HY004     | 10005       | SQL String can not be NULL or empty |
+| HY004     | 10005       | Unsupported conversion stream charset \`%s\` |
+| HY004     | 10006       | SQL String can not be NULL or empty |
+| 08000     | 10007       | Can not get %d connections one time, partition succeed connection(%d) have released |
 | HY004     | 10100       | Can not register driver, reason is: %s |
 | 34000     | 10200       | Can not get cursor name from fetch statement |
 | HY000     | 10300       | Could not support variable \`%s\` |
 | HY004     | 10301       | Invalid value \`%s\` |
 | HV008     | 10302       | Column index \`%d\` is out of range |
+| 42S02     | 10303       | Can not find column label \`%s`\ |
 | HY004     | 10400       | Invalid format for actual data node \`%s\` |
+| 08000     | 10500       | Connection has been closed |
+| 08000     | 10501       | Result set has been closed |
 | 42000     | 11000       | You have an error in your SQL syntax: %s |
 | 42000     | 11002       | Resource does not exist |
 | 42000     | 11003       | Rule does not exist |
@@ -71,6 +76,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 42S02     | 20031       | Index \`%s\` does not exist |
 | 44000     | 20032       | Actual tables \`%s\` are in use |
 | 42S01     | 20033       | View name has to bind to %s tables |
+| 0A000     | 20034       | Alter view rename .. to .. statement should have same config for \`%s\` and \`%s\` |
 | HY000     | 20050       | Routed target \`%s\` does not exist, available targets are \`%s\` |
 | HY000     | 20051       | \`%s %s\` can not route correctly for %s \`%s\` |
 | 42S02     | 20052       | Can not find data source in sharding rule, invalid actual data node \`%s\` |

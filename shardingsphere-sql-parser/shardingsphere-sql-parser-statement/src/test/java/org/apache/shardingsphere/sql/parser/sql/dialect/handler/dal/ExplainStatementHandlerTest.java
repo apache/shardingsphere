@@ -21,6 +21,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLExplainStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dal.OpenGaussExplainStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLExplainStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dal.SQLServerExplainStatement;
 import org.junit.Test;
 
 import java.util.Optional;
@@ -43,5 +46,12 @@ public final class ExplainStatementHandlerTest {
         MySQLExplainStatement explainStatement = new MySQLExplainStatement();
         Optional<SimpleTableSegment> simpleTableSegment = ExplainStatementHandler.getSimpleTableSegment(explainStatement);
         assertFalse(simpleTableSegment.isPresent());
+    }
+    
+    @Test
+    public void assertGetSimpleTableSegmentForOtherDatabases() {
+        assertFalse(ExplainStatementHandler.getSimpleTableSegment(new OpenGaussExplainStatement()).isPresent());
+        assertFalse(ExplainStatementHandler.getSimpleTableSegment(new PostgreSQLExplainStatement()).isPresent());
+        assertFalse(ExplainStatementHandler.getSimpleTableSegment(new SQLServerExplainStatement()).isPresent());
     }
 }

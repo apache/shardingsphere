@@ -33,6 +33,9 @@ writeResourceName ::=
 
 resourceName ::=
   identifier
+    
+loadBanlancerType ::=
+  string
 ```
 
 ### 补充说明

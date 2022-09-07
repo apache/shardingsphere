@@ -31,6 +31,7 @@
     <modules>
         <module>shardingsphere-sql-federation-api</module>
         <module>shardingsphere-sql-federation-core</module>
-        <module>shardingsphere-sql-federation-provider</module>
+        <module>shardingsphere-sql-federation-executor</module>
+        <module>shardingsphere-sql-federation-optimizer</module>
     </modules>
 </project>

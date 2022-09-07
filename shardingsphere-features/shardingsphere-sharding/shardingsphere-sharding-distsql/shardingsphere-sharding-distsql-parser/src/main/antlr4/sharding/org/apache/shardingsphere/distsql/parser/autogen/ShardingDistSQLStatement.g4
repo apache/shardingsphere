@@ -52,6 +52,7 @@ execute
     | showShardingAuditors
     | createShardingAuditor
     | alterShardingAuditor
+    | dropShardingAuditor
     | showShardingDefaultShardingStrategy
     | alterDefaultShardingStrategy
     | dropDefaultShardingStrategy

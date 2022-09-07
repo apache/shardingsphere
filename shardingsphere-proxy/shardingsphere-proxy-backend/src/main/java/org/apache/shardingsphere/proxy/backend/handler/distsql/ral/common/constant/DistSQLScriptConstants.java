@@ -34,6 +34,8 @@ public final class DistSQLScriptConstants {
     
     public static final String DATABASE_DISCOVERY_DB = "database_discovery_db";
     
+    public static final String ENCRYPT_DB = "encrypt_db";
+    
     public static final String STANDARD = "standard";
     
     public static final String COMPLEX = "complex";
@@ -127,7 +129,7 @@ public final class DistSQLScriptConstants {
     
     public static final String CREATE_READWRITE_SPLITTING_RULE = "CREATE READWRITE_SPLITTING RULE";
     
-    public static final String STATIC_READWRITE_SPLITTING = " %s ("
+    public static final String READWRITE_SPLITTING = " %s ("
             + System.lineSeparator()
             + "WRITE_RESOURCE=%s,"
             + System.lineSeparator()
@@ -158,4 +160,27 @@ public final class DistSQLScriptConstants {
     public static final String DB_DISCOVERY_TYPE = "TYPE(NAME=\'%s\', PROPERTIES(%s))";
     
     public static final String DB_DISCOVERY_PROPERTY = "\'%s\'=\'%s\'";
+    
+    public static final String CREATE_ENCRYPT = "CREATE ENCRYPT RULE";
+    
+    public static final String ENCRYPT = " %s ("
+            + System.lineSeparator()
+            + "COLUMNS("
+            + System.lineSeparator()
+            + "%s"
+            + System.lineSeparator()
+            + "),"
+            + "QUERY_WITH_CIPHER_COLUMN=%s)";
+    
+    public static final String ENCRYPT_COLUMN = "(NAME=%s,%s,%s)";
+    
+    public static final String PLAIN = "PLAIN=%s";
+    
+    public static final String CIPHER = "CIPHER=%s";
+    
+    public static final String ENCRYPT_TYPE = "TYPE(NAME=\'%s\',PROPERTIES(%s))";
+    
+    public static final String ENCRYPT_TYPE_WITHOUT_PROPERTIES = "TYPE(NAME=\'%s\')";
+    
+    public static final String ENCRYPT_TYPE_PROPERTIES = "\'%s\'=\'%s\'";
 }

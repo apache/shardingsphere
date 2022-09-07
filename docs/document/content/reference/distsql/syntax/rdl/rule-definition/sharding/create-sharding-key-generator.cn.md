@@ -23,7 +23,7 @@ keyGeneratorName ::=
   identifier
   
 algorithmType ::=
-  identifier
+  string
 ```
 
 ### 补充说明

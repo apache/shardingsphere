@@ -24,7 +24,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLAlterViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerAlterViewStatement;
 import org.junit.Test;
 
 import java.util.Optional;
@@ -81,5 +83,20 @@ public final class AlterViewStatementHandlerTest {
         OpenGaussAlterViewStatement alterViewStatement = new OpenGaussAlterViewStatement();
         Optional<SimpleTableSegment> renameViewSegment = AlterViewStatementHandler.getRenameView(alterViewStatement);
         assertFalse(renameViewSegment.isPresent());
+    }
+    
+    @Test
+    public void assertGetSelectStatementForOtherDatabases() {
+        assertFalse(AlterViewStatementHandler.getSelectStatement(new OpenGaussAlterViewStatement()).isPresent());
+        assertFalse(AlterViewStatementHandler.getSelectStatement(new OracleAlterViewStatement()).isPresent());
+        assertFalse(AlterViewStatementHandler.getSelectStatement(new PostgreSQLAlterViewStatement()).isPresent());
+        assertFalse(AlterViewStatementHandler.getSelectStatement(new SQLServerAlterViewStatement()).isPresent());
+    }
+    
+    @Test
+    public void assertGetRenameViewForOtherDatabases() {
+        assertFalse(AlterViewStatementHandler.getRenameView(new MySQLAlterViewStatement()).isPresent());
+        assertFalse(AlterViewStatementHandler.getRenameView(new OracleAlterViewStatement()).isPresent());
+        assertFalse(AlterViewStatementHandler.getRenameView(new SQLServerAlterViewStatement()).isPresent());
     }
 }

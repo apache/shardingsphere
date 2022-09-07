@@ -31,10 +31,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
-import org.apache.shardingsphere.infra.federation.executor.FederationContext;
-import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
-import org.apache.shardingsphere.infra.federation.executor.FederationExecutorFactory;
-import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -60,6 +56,9 @@ import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilderEngine;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sqlfederation.factory.SQLFederationExecutorFactory;
+import org.apache.shardingsphere.sqlfederation.spi.SQLFederationContext;
+import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -143,17 +142,17 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
         KernelProcessor kernelProcessor = mock(KernelProcessor.class);
         kernelProcessorField.set(engine, kernelProcessor);
         when(backendConnection.getConnectionSession().getStatementManager()).thenReturn(new JDBCBackendStatement());
-        FederationExecutor federationExecutor = mock(FederationExecutor.class);
+        SQLFederationExecutor federationExecutor = mock(SQLFederationExecutor.class);
         try (
-                MockedStatic<FederationExecutorFactory> federationExecutorFactory = mockStatic(FederationExecutorFactory.class);
+                MockedStatic<SQLFederationExecutorFactory> federationExecutorFactory = mockStatic(SQLFederationExecutorFactory.class);
                 MockedStatic<SystemSchemaUtil> systemSchemaUtil = mockStatic(SystemSchemaUtil.class)) {
-            when(federationExecutor.executeQuery(any(DriverExecutionPrepareEngine.class), any(ProxyJDBCExecutorCallback.class), any(FederationContext.class))).thenReturn(resultSet);
+            when(federationExecutor.executeQuery(any(DriverExecutionPrepareEngine.class), any(ProxyJDBCExecutorCallback.class), any(SQLFederationContext.class))).thenReturn(resultSet);
             when(resultSet.getMetaData().getColumnCount()).thenReturn(1);
             when(resultSet.getMetaData().getColumnType(1)).thenReturn(Types.INTEGER);
             when(resultSet.next()).thenReturn(true, false);
             when(resultSet.getObject(1)).thenReturn(Integer.MAX_VALUE);
-            federationExecutorFactory.when(() -> FederationExecutorFactory.newInstance(anyString(), nullable(String.class), any(OptimizerContext.class), any(ShardingSphereRuleMetaData.class),
-                    any(ConfigurationProperties.class), any(JDBCExecutor.class), any(EventBusContext.class))).thenReturn(federationExecutor);
+            federationExecutorFactory.when(() -> SQLFederationExecutorFactory.newInstance(anyString(), nullable(String.class),
+                    any(ShardingSphereMetaData.class), any(JDBCExecutor.class), any(EventBusContext.class))).thenReturn(federationExecutor);
             systemSchemaUtil.when(() -> SystemSchemaUtil.containsSystemSchema(any(DatabaseType.class), any(), any(ShardingSphereDatabase.class))).thenReturn(true);
             engine.execute();
         }

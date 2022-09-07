@@ -19,7 +19,7 @@ databaseName: resource_db
 
 dataSources:
  ds_0:
-   url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false
+   url: jdbc:mysql://127.0.0.1:3306/demo_resource_ds_0?serverTimezone=UTC&useSSL=false
    username: root
    password: 12345678
    connectionTimeoutMilliseconds: 3000
@@ -31,7 +31,7 @@ dataSources:
       poolName: datasource-two
       autoCommit: false
  ds_1:
-   url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
+   url: jdbc:mysql://127.0.0.1:3306/demo_resource_ds_1?serverTimezone=UTC&useSSL=false
    username: root
    password: 12345678
    connectionTimeoutMilliseconds: 3000
@@ -43,7 +43,7 @@ dataSources:
       poolName: datasource-two
       autoCommit: false
  ds_2:
-   url: jdbc:mysql://127.0.0.1:3306/demo_ds_2?serverTimezone=UTC&useSSL=false
+   url: jdbc:mysql://127.0.0.1:3306/demo_resource_ds_2?serverTimezone=UTC&useSSL=false
    username: root
    password: 12345678
    connectionTimeoutMilliseconds: 3000
