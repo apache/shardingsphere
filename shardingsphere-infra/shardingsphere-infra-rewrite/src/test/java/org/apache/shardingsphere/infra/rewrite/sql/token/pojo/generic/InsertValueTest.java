@@ -34,9 +34,9 @@ public final class InsertValueTest {
     
     @Test
     public void assertToString() {
-        List<ExpressionSegment> expressionSegments = new ArrayList<>(3);
+        List<ExpressionSegment> expressionSegments = new ArrayList<>(4);
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment = new ParameterMarkerExpressionSegment(1, 1, 1);
-        ParameterMarkerExpressionSegment positionalParameterMarkerExpressionSegment = new ParameterMarkerExpressionSegment(1, 1, 1, ParameterMarkerType.DOLLAR);
+        ParameterMarkerExpressionSegment positionalParameterMarkerExpressionSegment = new ParameterMarkerExpressionSegment(1, 1, 0, ParameterMarkerType.DOLLAR);
         LiteralExpressionSegment literalExpressionSegment = new LiteralExpressionSegment(2, 2, "literals");
         ComplexExpressionSegment complexExpressionSegment = new ComplexExpressionSegment() {
             
