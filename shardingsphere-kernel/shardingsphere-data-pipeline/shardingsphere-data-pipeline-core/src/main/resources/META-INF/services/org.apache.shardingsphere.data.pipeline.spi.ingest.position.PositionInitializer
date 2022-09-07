@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.core.ingest.position.fixture.FixturePositionInitializer
+org.apache.shardingsphere.data.pipeline.core.ingest.position.DefaultPositionInitializer
