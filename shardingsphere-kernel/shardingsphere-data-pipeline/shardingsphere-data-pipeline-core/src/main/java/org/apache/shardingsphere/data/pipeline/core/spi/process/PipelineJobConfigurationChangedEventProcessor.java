@@ -17,29 +17,20 @@
 
 package org.apache.shardingsphere.data.pipeline.core.spi.process;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.job.JobType;
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 
 /**
- * Job config event process factory.
+ * Pipeline job config changed event processor.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PipelineEventProcessFactory {
-    
-    static {
-        ShardingSphereServiceLoader.register(PipelineEventProcess.class);
-    }
+public interface PipelineJobConfigurationChangedEventProcessor extends TypedSPI {
     
     /**
-     * Get instance.
+     * Process data changed event.
      *
-     * @param jobType job type
-     * @return pipeline event process
+     * @param jobConfigPOJO job config
+     * @param event event
      */
-    public static PipelineEventProcess getInstance(final JobType jobType) {
-        return TypedSPIRegistry.getRegisteredService(PipelineEventProcess.class, jobType.getTypeName());
-    }
+    void process(DataChangedEvent event, JobConfigurationPOJO jobConfigPOJO);
 }
