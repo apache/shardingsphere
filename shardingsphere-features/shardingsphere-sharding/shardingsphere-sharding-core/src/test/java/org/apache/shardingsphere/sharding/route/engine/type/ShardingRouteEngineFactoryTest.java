@@ -301,7 +301,7 @@ public final class ShardingRouteEngineFactoryTest {
     
     private ConfigurationProperties createFederationConfigurationProperties() {
         Properties props = new Properties();
-        props.setProperty(ConfigurationPropertyKey.SQL_FEDERATION_ENABLED.getKey(), String.valueOf(Boolean.TRUE));
+        props.setProperty(ConfigurationPropertyKey.SQL_FEDERATION_TYPE.getKey(), String.valueOf(Boolean.TRUE));
         return new ConfigurationProperties(props);
     }
     
