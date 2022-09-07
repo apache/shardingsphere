@@ -15,35 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.execute;
+package org.apache.shardingsphere.data.pipeline.core.spi.handler;
 
-import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Collection;
 
 /**
- * Pipeline job worker.
+ * Pipeline meta data listener factory.
  */
-@Slf4j
-public final class PipelineJobWorker {
+public final class PipelineMetaDataChangedHandlerFactory {
     
-    private static final AtomicBoolean WORKER_INITIALIZED = new AtomicBoolean(false);
+    static {
+        ShardingSphereServiceLoader.register(PipelineMetaDataChangedHandler.class);
+    }
     
     /**
-     * Initialize job worker.
+     * Get pipeline meta data listener instance.
+     *
+     * @return pipeline meta data listener
      */
-    public static void initialize() {
-        if (WORKER_INITIALIZED.get()) {
-            return;
-        }
-        synchronized (WORKER_INITIALIZED) {
-            if (WORKER_INITIALIZED.get()) {
-                return;
-            }
-            log.info("start worker initialization");
-            PipelineJobExecutor.getInstance();
-            WORKER_INITIALIZED.set(true);
-            log.info("worker initialization done");
-        }
+    public static Collection<PipelineMetaDataChangedHandler> findAllInstances() {
+        return ShardingSphereServiceLoader.getServiceInstances(PipelineMetaDataChangedHandler.class);
     }
 }

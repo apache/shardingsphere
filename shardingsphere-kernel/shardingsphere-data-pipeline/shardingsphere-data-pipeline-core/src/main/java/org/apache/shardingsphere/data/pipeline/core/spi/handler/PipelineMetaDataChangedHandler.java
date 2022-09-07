@@ -15,35 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.execute;
+package org.apache.shardingsphere.data.pipeline.core.spi.handler;
 
-import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Pattern;
 
 /**
- * Pipeline job worker.
+ * Pipeline meta data changed handler.
  */
-@Slf4j
-public final class PipelineJobWorker {
-    
-    private static final AtomicBoolean WORKER_INITIALIZED = new AtomicBoolean(false);
+@SingletonSPI
+public interface PipelineMetaDataChangedHandler {
     
     /**
-     * Initialize job worker.
+     * Get key pattern.
+     *
+     * @return key pattern
      */
-    public static void initialize() {
-        if (WORKER_INITIALIZED.get()) {
-            return;
-        }
-        synchronized (WORKER_INITIALIZED) {
-            if (WORKER_INITIALIZED.get()) {
-                return;
-            }
-            log.info("start worker initialization");
-            PipelineJobExecutor.getInstance();
-            WORKER_INITIALIZED.set(true);
-            log.info("worker initialization done");
-        }
-    }
+    Pattern getKeyPattern();
+    
+    /**
+     * Event changed handler.
+     *
+     * @param event changed event
+     */
+    void handle(DataChangedEvent event);
 }
