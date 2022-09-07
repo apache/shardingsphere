@@ -210,79 +210,79 @@
     <!--</test-case>-->
     
     <test-case sql="INSERT INTO t_shadow (order_id, user_id, order_name, type_char, type_boolean, type_smallint, type_enum, type_decimal, type_date, type_time, type_timestamp)
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);" db-types="MySQL" scenario-types="shadow,encrypt_shadow">
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);" db-types="MySQL" scenario-types="shadow,encrypt_shadow,readwrite_splitting_and_shadow">
         <assertion parameters="6:long, 1:int, pro_order:String, S:char, true:boolean, 50:smallint, summer:enum#season, 100.00:decimal, 2021-01-01:Date, 12:30:30:time, 2021-01-01 12:30:30:timestamp"
                    expected-data-file="pro_insert_order_value.xml" />
     </test-case>
     
     <test-case sql="INSERT INTO t_shadow (order_id, user_id, order_name, type_char, type_boolean, type_smallint, type_enum, type_decimal, type_date, type_time, type_timestamp)
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);" db-types="MySQL" scenario-types="shadow,encrypt_shadow">
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);" db-types="MySQL" scenario-types="shadow,encrypt_shadow,readwrite_splitting_and_shadow">
         <assertion parameters="6:long, 0:int, shadow_order:String, S:char, true:boolean, 50:smallint, summer:enum#season, 100.00:decimal, 2021-01-01:Date, 12:30:30:time, 2021-01-01 12:30:30:timestamp"
                    expected-data-file="shadow_insert_order_value.xml" />
     </test-case>
     
     <test-case sql="INSERT INTO t_shadow (order_id, user_id, order_name, type_char, type_boolean, type_smallint, type_enum, type_decimal, type_date, type_time, type_timestamp)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);" db-types="MySQL" scenario-types="shadow,encrypt_shadow">
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);" db-types="MySQL" scenario-types="shadow,encrypt_shadow,readwrite_splitting_and_shadow">
         <assertion parameters="7:long, 1:int, pro_order:String, S:char, true:boolean, 50:smallint, summer:enum#season, 100.00:decimal, 2021-01-01:Date, 12:30:30:time, 2021-01-01 12:30:30:timestamp, 8:long, 1:int, pro_order:String, S:char, true:boolean, 50:smallint, summer:enum#season, 100.00:decimal, 2021-01-01:Date, 12:30:30:time, 2021-01-01 12:30:30:timestamp"
                 expected-data-file="pro_insert_order_batch_value.xml" />
     </test-case>
     
     <test-case sql="INSERT INTO t_shadow (order_id, user_id, order_name, type_char, type_boolean, type_smallint, type_enum, type_decimal, type_date, type_time, type_timestamp)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);" db-types="MySQL" scenario-types="shadow,encrypt_shadow">
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);" db-types="MySQL" scenario-types="shadow,encrypt_shadow,readwrite_splitting_and_shadow">
         <assertion parameters="7:long, 0:int, shadow_order:String, S:char, true:boolean, 50:smallint, summer:enum#season, 100.00:decimal, 2021-01-01:Date, 12:30:30:time, 2021-01-01 12:30:30:timestamp, 8:long, 0:int, shadow_order:String, S:char, true:boolean, 50:smallint, summer:enum#season, 100.00:decimal, 2021-01-01:Date, 12:30:30:time, 2021-01-01 12:30:30:timestamp"
                    expected-data-file="shadow_insert_order_batch_value.xml" />
     </test-case>
     
     <test-case sql="UPDATE t_shadow SET order_name = ?, type_char = ?, type_boolean = ?, type_smallint = ?, type_enum = ?, type_decimal = ?, type_date = ?, type_time = ?, type_timestamp = ?
-                    WHERE user_id = ? and order_id in (?, ?)" db-types="MySQL" scenario-types="shadow,encrypt_shadow">
+                    WHERE user_id = ? and order_id in (?, ?)" db-types="MySQL" scenario-types="shadow,encrypt_shadow,readwrite_splitting_and_shadow">
         <assertion parameters="pro_order_update:String, F:char, false:boolean, 60:smallint, spring:enum#season, 120.00:decimal, 2021-01-02:Date, 13:30:30:time, 2021-01-02 13:30:30:timestamp, 1:int, 1:long, 2:long"
                    expected-data-file="pro_update_order_by_user_id.xml" />
     </test-case>
     
     <test-case sql="UPDATE t_shadow SET order_name = ?, type_char = ?, type_boolean = ?, type_smallint = ?, type_enum = ?, type_decimal = ?, type_date = ?, type_time = ?, type_timestamp = ?
-                    WHERE user_id = ? and order_id in (?, ?)" db-types="MySQL" scenario-types="shadow,encrypt_shadow">
+                    WHERE user_id = ? and order_id in (?, ?)" db-types="MySQL" scenario-types="shadow,encrypt_shadow,readwrite_splitting_and_shadow">
         <assertion parameters="shadow_order_update:String, F:char, false:boolean, 60:smallint, spring:enum#season, 120.00:decimal, 2021-01-02:Date, 13:30:30:time, 2021-01-02 13:30:30:timestamp, 0:int, 1:long, 2:long"
                    expected-data-file="shadow_update_order_by_user_id.xml" />
     </test-case>
     
-    <test-case sql="DELETE FROM t_shadow WHERE user_id = ? and order_id in (?, ?)" db-types="MySQL" scenario-types="shadow,encrypt_shadow">
+    <test-case sql="DELETE FROM t_shadow WHERE user_id = ? and order_id in (?, ?)" db-types="MySQL" scenario-types="shadow,encrypt_shadow,readwrite_splitting_and_shadow">
         <assertion parameters="1:int, 4:long, 5:long" expected-data-file="pro_delete_order_by_user_id.xml" />
     </test-case>
     
-    <test-case sql="DELETE FROM t_shadow WHERE user_id = ? and order_id in (?, ?)" db-types="MySQL" scenario-types="shadow,encrypt_shadow">
+    <test-case sql="DELETE FROM t_shadow WHERE user_id = ? and order_id in (?, ?)" db-types="MySQL" scenario-types="shadow,encrypt_shadow,readwrite_splitting_and_shadow">
         <assertion parameters="0:int, 4:long, 5:long" expected-data-file="shadow_delete_order_by_user_id.xml" />
     </test-case>
     
     <!-- FIXME Support enum types for PostgreSQL -->
     <test-case sql="INSERT INTO t_shadow (order_id, user_id, order_name, type_char, type_boolean, type_smallint, type_decimal, type_date, type_time, type_timestamp)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);" db-types="PostgreSQL" scenario-types="shadow,encrypt_shadow">
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);" db-types="PostgreSQL" scenario-types="shadow,encrypt_shadow,readwrite_splitting_and_shadow">
         <assertion parameters="6:long, 1:int, pro_order:String, S:char, true:boolean, 50:smallint, 120.00:decimal, 2021-01-01:Date, 12:30:30:time, 2021-01-01 12:30:30:timestamp"
                    expected-data-file="pro_insert_order_value.xml" />
     </test-case>
     
     <test-case sql="INSERT INTO t_shadow (order_id, user_id, order_name, type_char, type_boolean, type_smallint, type_decimal, type_date, type_time, type_timestamp)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);" db-types="PostgreSQL" scenario-types="shadow,encrypt_shadow">
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);" db-types="PostgreSQL" scenario-types="shadow,encrypt_shadow,readwrite_splitting_and_shadow">
         <assertion parameters="6:long, 0:int, shadow_order:String, S:char, true:boolean, 50:smallint, 120.00:decimal, 2021-01-01:Date, 12:30:30:time, 2021-01-01 12:30:30:timestamp"
                    expected-data-file="shadow_insert_order_value.xml" />
     </test-case>
     
     <test-case sql="UPDATE t_shadow SET order_name = ?, type_char = ?, type_boolean = ?, type_smallint = ?, type_decimal = ?, type_enum = CAST(? AS season)
-                    WHERE user_id = ? and order_id in (?, ?)" db-types="PostgreSQL" scenario-types="shadow">
+                    WHERE user_id = ? and order_id in (?, ?)" db-types="PostgreSQL" scenario-types="shadow,readwrite_splitting_and_shadow">
         <assertion parameters="pro_order_update:String, F:char, false:boolean, 60:smallint, 120.00:decimal, spring:enum#season, 1:int, 1:long, 2:long"
                    expected-data-file="pro_update_order_by_user_id.xml" />
     </test-case>
     
     <test-case sql="UPDATE t_shadow SET order_name = ?, type_char = ?, type_boolean = ?, type_smallint = ?, type_decimal = ?, type_enum = CAST(? AS season)
-                    WHERE user_id = ? and order_id in (?, ?)" db-types="PostgreSQL" scenario-types="shadow">
+                    WHERE user_id = ? and order_id in (?, ?)" db-types="PostgreSQL" scenario-types="shadow,readwrite_splitting_and_shadow">
         <assertion parameters="shadow_order_update:String, F:char, false:boolean, 60:smallint, 120.00:decimal, spring:enum#season, 0:int, 1:long, 2:long"
                    expected-data-file="shadow_update_order_by_user_id.xml" />
     </test-case>
     
-    <test-case sql="DELETE FROM t_shadow WHERE user_id = ? and order_id in (?, ?)" db-types="PostgreSQL" scenario-types="shadow,encrypt_shadow">
+    <test-case sql="DELETE FROM t_shadow WHERE user_id = ? and order_id in (?, ?)" db-types="PostgreSQL" scenario-types="shadow,encrypt_shadow,readwrite_splitting_and_shadow">
         <assertion parameters="1:int, 4:long, 5:long" expected-data-file="pro_delete_order_by_user_id.xml" />
     </test-case>
     
-    <test-case sql="DELETE FROM t_shadow WHERE user_id = ? and order_id in (?, ?)" db-types="PostgreSQL" scenario-types="shadow,encrypt_shadow">
+    <test-case sql="DELETE FROM t_shadow WHERE user_id = ? and order_id in (?, ?)" db-types="PostgreSQL" scenario-types="shadow,encrypt_shadow,readwrite_splitting_and_shadow">
         <assertion parameters="0:int, 4:long, 5:long" expected-data-file="shadow_delete_order_by_user_id.xml" />
     </test-case>
 </integration-test-cases>
