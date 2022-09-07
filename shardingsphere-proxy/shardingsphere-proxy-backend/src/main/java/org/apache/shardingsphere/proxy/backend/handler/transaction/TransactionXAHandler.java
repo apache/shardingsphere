@@ -28,6 +28,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.XAStatement;
+import org.apache.shardingsphere.transaction.exception.StartNestedXATransactionException;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -67,12 +68,12 @@ public final class TransactionXAHandler implements ProxyBackendHandler {
         switch (tclStatement.getOp()) {
             case "START":
             case "BEGIN":
-                /**
+                /*
                  * we have to let session occupy the thread when doing xa transaction.
                  * according to https://dev.mysql.com/doc/refman/5.7/en/xa-states.html XA and local transactions are mutually exclusive
                  */
                 if (connectionSession.getTransactionStatus().isInTransaction()) {
-                    throw new SQLException("can not start in a Active transaction");
+                    throw new StartNestedXATransactionException();
                 }
                 ResponseHeader header = backendHandler.execute();
                 connectionSession.getConnectionContext().getTransactionConnectionContext().setInTransaction(true);
