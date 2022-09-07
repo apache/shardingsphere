@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.recipes.locks.InterProcessSemaphoreMutex;
+import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.shardingsphere.mode.repository.cluster.lock.InternalLock;
 import org.apache.shardingsphere.mode.repository.cluster.lock.InternalLockHolder;
 
@@ -41,7 +41,7 @@ public final class ZookeeperInternalLockHolder implements InternalLockHolder {
     public synchronized InternalLock getInternalLock(final String lockKey) {
         ZookeeperInternalLock result = locks.get(lockKey);
         if (Objects.isNull(result)) {
-            result = new ZookeeperInternalLock(new InterProcessSemaphoreMutex(client, lockKey));
+            result = new ZookeeperInternalLock(new InterProcessMutex(client, lockKey));
             locks.put(lockKey, result);
         }
         return result;
