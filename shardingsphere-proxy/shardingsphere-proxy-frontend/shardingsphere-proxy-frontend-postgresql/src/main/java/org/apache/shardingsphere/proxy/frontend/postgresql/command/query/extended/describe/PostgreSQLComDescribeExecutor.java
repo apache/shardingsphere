@@ -19,13 +19,13 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.describe.PostgreSQLComDescribePacket;
+import org.apache.shardingsphere.dialect.postgresql.exception.metadata.ColumnNotFoundException;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -37,6 +37,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMod
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -113,7 +114,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         tryDescribePreparedStatementByJDBC(preparedStatement);
     }
     
-    private void describeInsertStatementByDatabaseMetaData(final PostgreSQLPreparedStatement preparedStatement) throws SQLException {
+    private void describeInsertStatementByDatabaseMetaData(final PostgreSQLPreparedStatement preparedStatement) {
         if (!preparedStatement.describeRows().isPresent()) {
             // TODO Consider the SQL `insert into table (col) values ($1) returning id`
             preparedStatement.setRowDescription(PostgreSQLNoDataPacket.getInstance());
@@ -162,12 +163,8 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
                     }
                     column = caseInsensitiveColumns.get(columnName);
                 }
-                if (null == column) {
-                    String reason = String.format("Column \"%s\" of relation \"%s\" does not exist. Please check the SQL or execute REFRESH TABLE METADATA.", columnName, logicTableName);
-                    throw new SQLException(reason, PostgreSQLVendorError.UNDEFINED_COLUMN.getSqlState().getValue());
-                }
-                PostgreSQLColumnType parameterType = PostgreSQLColumnType.valueOfJDBCType(column.getDataType());
-                preparedStatement.getParameterTypes().set(parameterMarkerIndex++, parameterType);
+                ShardingSpherePreconditions.checkState(null != column, new ColumnNotFoundException(logicTableName, columnName));
+                preparedStatement.getParameterTypes().set(parameterMarkerIndex++, PostgreSQLColumnType.valueOfJDBCType(column.getDataType()));
             }
         }
     }

@@ -49,7 +49,7 @@ public final class CallTimeRecordDataSource implements DataSource, AutoCloseable
     @Override
     public Connection getConnection() throws SQLException {
         if (5 <= count.get()) {
-            throw new SQLException("data source is not enough");
+            throw new SQLException("Data source is not enough");
         }
         count.getAndIncrement();
         return new CallTimeRecordConnection();
