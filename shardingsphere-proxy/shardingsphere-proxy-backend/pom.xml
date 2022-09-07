@@ -185,7 +185,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-federation-executor</artifactId>
+            <artifactId>shardingsphere-sql-federation-advanced-executor</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sql-federation-original-executor</artifactId>
             <version>${project.version}</version>
         </dependency>
         

@@ -33,5 +33,15 @@
             <artifactId>shardingsphere-sql-federation-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sql-federation-optimizer</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-merge</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>
