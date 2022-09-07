@@ -64,7 +64,7 @@
 <!--    <test-case sql="SHOW SHARDING TABLE RULE t_user">-->
 <!--        <assertion expected-data-file="create_sharding_rules.xml">-->
 <!--            <initial-sql sql="DROP SHARDING TABLE RULE t_user;CREATE SHARDING TABLE RULE t_user (-->
-<!--                RESOURCES(&quot;encrypt_write_ds_${0..9}&quot;),-->
+<!--                RESOURCES(&quot;write_ds_${0..9}&quot;),-->
 <!--                SHARDING_COLUMN=user_id, TYPE(NAME=MOD, PROPERTIES(&quot;sharding-count&quot;=40)))))"/>-->
 <!--            <destroy-sql sql="DROP SHARDING TABLE RULE t_user" />-->
 <!--        </assertion>-->
@@ -74,7 +74,7 @@
 <!--        <assertion expected-data-file="drop_sharding_rules.xml">-->
 <!--            <initial-sql sql="DROP SHARDING TABLE RULE t_user_item"/>-->
 <!--            <destroy-sql sql="CREATE SHARDING TABLE RULE t_user_item (-->
-<!--                RESOURCES(&quot;encrypt_write_ds_${0..9}&quot;),-->
+<!--                RESOURCES(&quot;write_ds_${0..9}&quot;),-->
 <!--                SHARDING_COLUMN=user_id, TYPE(NAME=MOD, PROPERTIES(&quot;sharding-count&quot;=40)))))" />-->
 <!--        </assertion>-->
 <!--    </test-case>-->
@@ -82,7 +82,7 @@
 <!--    <test-case sql="SHOW SHARDING BINDING TABLE RULES">-->
 <!--        <assertion expected-data-file="create_binding_rules.xml">-->
 <!--            <initial-sql sql="CREATE SHARDING TABLE RULE t_user (-->
-<!--                RESOURCES(&quot;encrypt_write_ds_${0..9}&quot;),-->
+<!--                RESOURCES(&quot;write_ds_${0..9}&quot;),-->
 <!--                SHARDING_COLUMN=user_id, TYPE(NAME=MOD, PROPERTIES(&quot;sharding-count&quot;=40)))));-->
 <!--                CREATE SHARDING BINDING TABLE RULES (t_user,t_user_item)"/>-->
 <!--            <destroy-sql sql="DROP SHARDING BINDING TABLE RULES;DROP SHARDING TABLE RULE t_user" />-->
@@ -92,7 +92,7 @@
 <!--    <test-case sql="SHOW SHARDING BINDING TABLE RULES">-->
 <!--        <assertion expected-data-file="alter_binding_rules.xml">-->
 <!--            <initial-sql sql="CREATE SHARDING TABLE RULE t_user (-->
-<!--                RESOURCES(&quot;encrypt_write_ds_${0..9}&quot;),-->
+<!--                RESOURCES(&quot;write_ds_${0..9}&quot;),-->
 <!--                SHARDING_COLUMN=user_id, TYPE(NAME=MOD, PROPERTIES(&quot;sharding-count&quot;=40)))));-->
 <!--                ALTER SHARDING BINDING TABLE RULES (t_user,t_user_item);"/>-->
 <!--            <destroy-sql sql="DROP SHARDING BINDING TABLE RULES;DROP SHARDING TABLE RULE t_user" />-->
@@ -102,7 +102,7 @@
 <!--    <test-case sql="SHOW SHARDING BINDING TABLE RULES">-->
 <!--        <assertion expected-data-file="drop_binding_rules.xml">-->
 <!--            <initial-sql sql="CREATE SHARDING TABLE RULE t_user (-->
-<!--                RESOURCES(&quot;encrypt_write_ds_${0..9}&quot;),-->
+<!--                RESOURCES(&quot;write_ds_${0..9}&quot;),-->
 <!--                SHARDING_COLUMN=user_id, TYPE(NAME=MOD, PROPERTIES(&quot;sharding-count&quot;=40)))));-->
 <!--                CREATE SHARDING BINDING TABLE RULES (t_user,t_user_item);-->
 <!--                DROP SHARDING BINDING TABLE RULES;DROP SHARDING TABLE RULE t_user"/>-->
@@ -124,7 +124,7 @@
 <!--    </test-case>-->
 <!--    -->
 <!--    <test-case sql="SHOW ENCRYPT TABLE RULE t_user">-->
-<!--        <assertion expected-data-file="create_encrypt_rule.xml">-->
+<!--        <assertion expected-data-file="create_rule.xml">-->
 <!--            <initial-sql sql="CREATE ENCRYPT RULE t_user (COLUMNS ((-->
 <!--                NAME=pwd, PLAIN=pwd_plain, CIPHER=pwd_cipher, TYPE(NAME="AES",-->
 <!--                PROPERTIES(&quot;aes-key-value&quot;='123456abc')))))"/>-->
@@ -133,7 +133,7 @@
 <!--    </test-case>-->
 <!--    -->
 <!--    <test-case sql="SHOW ENCRYPT TABLE RULE t_user">-->
-<!--        <assertion expected-data-file="alter_encrypt_rule.xml">-->
+<!--        <assertion expected-data-file="alter_rule.xml">-->
 <!--            <initial-sql sql="CREATE ENCRYPT RULE t_user (COLUMNS ((-->
 <!--                NAME=pwd, PLAIN=pwd_plain, CIPHER=pwd_cipher, TYPE(NAME="AES", PROPERTIES(&quot;aes-key-value&quot;='123456abc')))));-->
 <!--                ALTER ENCRYPT RULE t_user (COLUMNS ((NAME=pwd, PLAIN=pwd_plain, CIPHER=pwd_cipher, TYPE(NAME="AES",-->
@@ -143,7 +143,7 @@
 <!--    </test-case>-->
 <!--    -->
 <!--    <test-case sql="SHOW ENCRYPT RULES">-->
-<!--        <assertion expected-data-file="drop_encrypt_rule.xml">-->
+<!--        <assertion expected-data-file="drop_rule.xml">-->
 <!--            <initial-sql sql="CREATE ENCRYPT RULE t_user (COLUMNS ((-->
 <!--                NAME=pwd, PLAIN=pwd_plain, CIPHER=pwd_cipher, TYPE(NAME="AES",-->
 <!--                PROPERTIES(&quot;aes-key-value&quot;='123456abc')))));-->
@@ -153,18 +153,18 @@
 <!--    -->
 <!--    <test-case sql="SHOW READWRITE_SPLITTING RULES">-->
 <!--        <assertion expected-data-file="create_readwrite_splitting_rules.xml">-->
-<!--            <initial-sql sql="CREATE READWRITE_SPLITTING RULE readwrite_ds_1 (WRITE_RESOURCE=encrypt_write_ds_1,-->
-<!--            READ_RESOURCES(encrypt_read_ds_1), TYPE(NAME=ROUND_ROBIN))"/>-->
+<!--            <initial-sql sql="CREATE READWRITE_SPLITTING RULE readwrite_ds_1 (WRITE_RESOURCE=write_ds_1,-->
+<!--            READ_RESOURCES(read_ds_1), TYPE(NAME=ROUND_ROBIN))"/>-->
 <!--            <destroy-sql sql="DROP READWRITE_SPLITTING RULE readwrite_ds_1" />-->
 <!--        </assertion>-->
 <!--    </test-case>-->
 <!--    -->
 <!--    <test-case sql="SHOW READWRITE_SPLITTING RULES">-->
 <!--        <assertion expected-data-file="alter_readwrite_splitting_rules.xml">-->
-<!--            <initial-sql sql="CREATE READWRITE_SPLITTING RULE readwrite_ds_1 (WRITE_RESOURCE=encrypt_write_ds_1,-->
-<!--            READ_RESOURCES(encrypt_read_ds_1), TYPE(NAME=ROUND_ROBIN));-->
-<!--            ALTER READWRITE_SPLITTING RULE readwrite_ds_1 (WRITE_RESOURCE=encrypt_write_ds_1,-->
-<!--            READ_RESOURCES(encrypt_read_ds_1, encrypt_read_ds_2), TYPE(NAME=RANDOM,PROPERTIES(read_weight='2:1')))"/>-->
+<!--            <initial-sql sql="CREATE READWRITE_SPLITTING RULE readwrite_ds_1 (WRITE_RESOURCE=write_ds_1,-->
+<!--            READ_RESOURCES(read_ds_1), TYPE(NAME=ROUND_ROBIN));-->
+<!--            ALTER READWRITE_SPLITTING RULE readwrite_ds_1 (WRITE_RESOURCE=write_ds_1,-->
+<!--            READ_RESOURCES(read_ds_1, read_ds_2), TYPE(NAME=RANDOM,PROPERTIES(read_weight='2:1')))"/>-->
 <!--            <destroy-sql sql="DROP READWRITE_SPLITTING RULE readwrite_ds_1;" />-->
 <!--        </assertion>-->
 <!--    </test-case>-->
