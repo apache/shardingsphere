@@ -15,35 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.execute;
+package org.apache.shardingsphere.data.pipeline.core.fixture;
 
-import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.core.spi.listener.PipelineMetaDataListener;
+import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
+import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
-/**
- * Pipeline job worker.
- */
-@Slf4j
-public final class PipelineJobWorker {
+public class FixturePipelineMetaDataListener implements PipelineMetaDataListener {
     
-    private static final AtomicBoolean WORKER_INITIALIZED = new AtomicBoolean(false);
+    @Override
+    public String getWatchKey() {
+        return null;
+    }
     
-    /**
-     * Initialize job worker.
-     */
-    public static void initialize() {
-        if (WORKER_INITIALIZED.get()) {
-            return;
-        }
-        synchronized (WORKER_INITIALIZED) {
-            if (WORKER_INITIALIZED.get()) {
-                return;
-            }
-            log.info("start worker initialization");
-            PipelineJobExecutor.registerListener();
-            WORKER_INITIALIZED.set(true);
-            log.info("worker initialization done");
-        }
+    @Override
+    public void handler(final DataChangedEvent event, final JobConfigurationPOJO jobConfigPOJO) {
+    }
+    
+    @Override
+    public String getType() {
+        return "FIXTURE";
     }
 }

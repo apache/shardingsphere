@@ -15,35 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.execute;
+package org.apache.shardingsphere.data.pipeline.core.spi.listener;
 
-import lombok.extern.slf4j.Slf4j;
-
-import java.util.concurrent.atomic.AtomicBoolean;
+import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 
 /**
- * Pipeline job worker.
+ * Pipeline meta data listener.
  */
-@Slf4j
-public final class PipelineJobWorker {
-    
-    private static final AtomicBoolean WORKER_INITIALIZED = new AtomicBoolean(false);
+@SingletonSPI
+public interface PipelineMetaDataListener extends TypedSPI {
     
     /**
-     * Initialize job worker.
+     * Get watch key of listener.
+     *
+     * @return watch key
      */
-    public static void initialize() {
-        if (WORKER_INITIALIZED.get()) {
-            return;
-        }
-        synchronized (WORKER_INITIALIZED) {
-            if (WORKER_INITIALIZED.get()) {
-                return;
-            }
-            log.info("start worker initialization");
-            PipelineJobExecutor.registerListener();
-            WORKER_INITIALIZED.set(true);
-            log.info("worker initialization done");
-        }
-    }
+    String getWatchKey();
+    
+    /**
+     * Handler of listener.
+     *
+     * @param event changed event
+     * @param jobConfigPOJO job config pojo
+     */
+    void handler(DataChangedEvent event, JobConfigurationPOJO jobConfigPOJO);
 }

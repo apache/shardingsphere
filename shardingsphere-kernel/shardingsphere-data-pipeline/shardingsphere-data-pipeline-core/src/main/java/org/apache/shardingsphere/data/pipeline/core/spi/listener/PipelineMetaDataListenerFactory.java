@@ -15,35 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.execute;
+package org.apache.shardingsphere.data.pipeline.core.spi.listener;
 
-import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Optional;
 
 /**
- * Pipeline job worker.
+ * Pipeline meta data listener factory.
  */
-@Slf4j
-public final class PipelineJobWorker {
+public final class PipelineMetaDataListenerFactory {
     
-    private static final AtomicBoolean WORKER_INITIALIZED = new AtomicBoolean(false);
+    static {
+        ShardingSphereServiceLoader.register(PipelineMetaDataListener.class);
+    }
     
     /**
-     * Initialize job worker.
+     * Get pipeline meta data listener instance.
+     *
+     * @param jobTypeName job type name
+     * @return pipeline meta data listener
      */
-    public static void initialize() {
-        if (WORKER_INITIALIZED.get()) {
-            return;
-        }
-        synchronized (WORKER_INITIALIZED) {
-            if (WORKER_INITIALIZED.get()) {
-                return;
-            }
-            log.info("start worker initialization");
-            PipelineJobExecutor.registerListener();
-            WORKER_INITIALIZED.set(true);
-            log.info("worker initialization done");
-        }
+    public static Optional<PipelineMetaDataListener> findInstance(final String jobTypeName) {
+        return TypedSPIRegistry.findRegisteredService(PipelineMetaDataListener.class, jobTypeName);
     }
 }

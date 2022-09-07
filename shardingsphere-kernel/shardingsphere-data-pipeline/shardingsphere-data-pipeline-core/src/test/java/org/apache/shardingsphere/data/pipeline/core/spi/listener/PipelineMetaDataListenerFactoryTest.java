@@ -15,35 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.execute;
+package org.apache.shardingsphere.data.pipeline.core.spi.listener;
 
-import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.core.fixture.FixturePipelineMetaDataListener;
+import org.junit.Test;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Optional;
 
-/**
- * Pipeline job worker.
- */
-@Slf4j
-public final class PipelineJobWorker {
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+public class PipelineMetaDataListenerFactoryTest {
     
-    private static final AtomicBoolean WORKER_INITIALIZED = new AtomicBoolean(false);
-    
-    /**
-     * Initialize job worker.
-     */
-    public static void initialize() {
-        if (WORKER_INITIALIZED.get()) {
-            return;
-        }
-        synchronized (WORKER_INITIALIZED) {
-            if (WORKER_INITIALIZED.get()) {
-                return;
-            }
-            log.info("start worker initialization");
-            PipelineJobExecutor.registerListener();
-            WORKER_INITIALIZED.set(true);
-            log.info("worker initialization done");
-        }
+    @Test
+    public void assertFindInstance() {
+        Optional<PipelineMetaDataListener> actual = PipelineMetaDataListenerFactory.findInstance("FIXTURE");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), instanceOf(FixturePipelineMetaDataListener.class));
     }
 }
