@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.integration.transaction.engine.base;
 
+import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -64,6 +65,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -89,7 +91,7 @@ public abstract class BaseITCase {
     
     protected static final Collection<String> ALL_DS = Arrays.asList(DS_0, DS_1, DS_2);
     
-    protected static final Collection<String> ALL_XA_PROVIDERS = Arrays.asList(TransactionTestConstants.ATOMIKOS, TransactionTestConstants.BITRONIX, TransactionTestConstants.NARAYANA);
+    protected static final List<String> ALL_XA_PROVIDERS = Arrays.asList(TransactionTestConstants.ATOMIKOS, TransactionTestConstants.BITRONIX, TransactionTestConstants.NARAYANA);
     
     protected static final String SHARDING_DB = "sharding_db";
     
@@ -208,44 +210,59 @@ public abstract class BaseITCase {
     private static void addParametersByTransactionTypes(final String version, final TransactionTestCaseRegistry currentTestCaseInfo,
                                                         final Class<? extends BaseTransactionTestCase> caseClass, final TransactionTestCase annotation,
                                                         final Map<String, TransactionParameterized> parameterizedMap, final String group) {
-        for (TransactionType each : annotation.transactionTypes()) {
-            if (!ENV.getAllowTransactionTypes().isEmpty() && !ENV.getAllowTransactionTypes().contains(each.toString())) {
-                log.info("Collect transaction test case, need to run transaction types don't contain this, skip: {}-{}.", caseClass.getName(), each);
-                continue;
+        if (TransactionTestConstants.PROXY.equals(currentTestCaseInfo.getRunningAdaptor())) {
+            List<TransactionType> allowTransactionTypes = ENV.getAllowTransactionTypes().isEmpty() ? Arrays.stream(TransactionType.values()).collect(Collectors.toList())
+                    : ENV.getAllowTransactionTypes().stream().map(BaseITCase::getTransactionType).collect(Collectors.toList());
+            List<String> allowProviders = ENV.getAllowXAProviders().isEmpty() ? ALL_XA_PROVIDERS : ENV.getAllowXAProviders();
+            addTestParameters(version, currentTestCaseInfo, caseClass, allowTransactionTypes, allowProviders, parameterizedMap, group);
+        } else {
+            for (TransactionType each : annotation.transactionTypes()) {
+                if (!ENV.getAllowTransactionTypes().isEmpty() && !ENV.getAllowTransactionTypes().contains(each.toString())) {
+                    log.info("Collect transaction test case, need to run transaction types don't contain this, skip: {}-{}.", caseClass.getName(), each);
+                    continue;
+                }
+                addParametersByTransactionProvidersInJDBC(version, currentTestCaseInfo, caseClass, each, parameterizedMap, group);
             }
-            addParametersByTransactionProviders(version, currentTestCaseInfo, caseClass, each, parameterizedMap, group);
         }
     }
     
-    private static void addParametersByTransactionProviders(final String version, final TransactionTestCaseRegistry currentTestCaseInfo,
-                                                            final Class<? extends BaseTransactionTestCase> caseClass, final TransactionType transactionType,
+    private static TransactionType getTransactionType(final String each) {
+        switch (each) {
+            case "LOCAL":
+                return TransactionType.LOCAL;
+            case "XA":
+                return TransactionType.XA;
+            case "BASE":
+                return TransactionType.BASE;
+            default:
+                throw new UnsupportedOperationException("Unsupported transaction type.");
+        }
+    }
+    
+    private static void addParametersByTransactionProvidersInJDBC(final String version, final TransactionTestCaseRegistry currentTestCaseInfo,
+                                                            final Class<? extends BaseTransactionTestCase> caseClass, final TransactionType each,
                                                             final Map<String, TransactionParameterized> parameterizedMap, final String group) {
-        if (TransactionType.LOCAL.equals(transactionType)) {
-            addTestParameters(version, currentTestCaseInfo, caseClass, transactionType, "", parameterizedMap, group);
-        } else if (TransactionType.XA.equals(transactionType)) {
-            if (ENV.getAllowXAProviders().isEmpty()) {
-                for (String provider : ALL_XA_PROVIDERS) {
-                    addTestParameters(version, currentTestCaseInfo, caseClass, transactionType, provider, parameterizedMap, group);
-                }
-            } else {
-                for (String provider : ENV.getAllowXAProviders()) {
-                    addTestParameters(version, currentTestCaseInfo, caseClass, transactionType, provider, parameterizedMap, group);
-                }
+        if (TransactionType.LOCAL.equals(each)) {
+            addTestParameters(version, currentTestCaseInfo, caseClass, Lists.newArrayList(each), Lists.newArrayList(""), parameterizedMap, group);
+        } else if (TransactionType.XA.equals(each)) {
+            List<String> allowProviders = ENV.getAllowXAProviders().isEmpty() ? ALL_XA_PROVIDERS : ENV.getAllowXAProviders();
+            for (String provider : allowProviders) {
+                addTestParameters(version, currentTestCaseInfo, caseClass, Lists.newArrayList(each), Lists.newArrayList(provider), parameterizedMap, group);
             }
         }
     }
     
     private static void addTestParameters(final String version, final TransactionTestCaseRegistry currentTestCaseInfo,
-                                          final Class<? extends BaseTransactionTestCase> caseClass, final TransactionType transactionType, final String provider,
+                                          final Class<? extends BaseTransactionTestCase> caseClass, final List<TransactionType> transactionTypes, final List<String> providers,
                                           final Map<String, TransactionParameterized> parameterizedMap, final String group) {
-        String uniqueKey = getUniqueKey(currentTestCaseInfo.getDbType(), currentTestCaseInfo.getRunningAdaptor(), transactionType, provider, group);
-        parameterizedMap.putIfAbsent(uniqueKey, new TransactionParameterized(getSqlDatabaseType(currentTestCaseInfo.getDbType()), currentTestCaseInfo.getRunningAdaptor(), transactionType, provider,
+        String uniqueKey = getUniqueKey(currentTestCaseInfo.getDbType(), currentTestCaseInfo.getRunningAdaptor(), transactionTypes, providers, group);
+        parameterizedMap.putIfAbsent(uniqueKey, new TransactionParameterized(getSqlDatabaseType(currentTestCaseInfo.getDbType()), currentTestCaseInfo.getRunningAdaptor(), transactionTypes, providers,
                 getDockerImageName(currentTestCaseInfo.getDbType(), version), group, new LinkedList<>()));
         parameterizedMap.get(uniqueKey).getTransactionTestCaseClasses().add(caseClass);
     }
     
-    private static String getUniqueKey(final String dbType, final String runningAdapter, final TransactionType transactionType, final String provider, final String group) {
-        return dbType + File.separator + runningAdapter + File.separator + transactionType + File.separator + provider + File.separator + group;
+    private static String getUniqueKey(final String dbType, final String runningAdapter, final List<TransactionType> transactionTypes, final List<String> providers, final String group) {
+        return dbType + File.separator + runningAdapter + File.separator + transactionTypes + File.separator + providers + File.separator + group;
     }
     
     private static DatabaseType getSqlDatabaseType(final String databaseType) {

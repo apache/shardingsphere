@@ -74,7 +74,8 @@ public final class DockerContainerComposer extends BaseContainerComposer {
     
     private String getShardingSphereConfigResource(final TransactionParameterized parameterized) {
         String result = String.format("env/%s/%s/config-sharding-%s%s.yaml", parameterized.getAdapter().toLowerCase(),
-                parameterized.getDatabaseType().getType().toLowerCase(), parameterized.getTransactionType().toString().toLowerCase(), getTransactionProvider(parameterized.getProvider()));
+                parameterized.getDatabaseType().getType().toLowerCase(), parameterized.getTransactionTypes().get(0).toString().toLowerCase(),
+                getTransactionProvider(parameterized.getProviders().get(0)));
         log.info("Transaction IT tests use the configuration file: {}", result);
         return result;
     }

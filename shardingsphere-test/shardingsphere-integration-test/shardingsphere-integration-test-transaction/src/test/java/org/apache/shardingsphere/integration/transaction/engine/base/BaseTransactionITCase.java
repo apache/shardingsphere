@@ -211,7 +211,36 @@ public abstract class BaseTransactionITCase extends BaseITCase {
         return result;
     }
     
+    @SneakyThrows
     protected void callTestCases(final TransactionParameterized parameterized) {
+        if (TransactionTestConstants.PROXY.equalsIgnoreCase(parameterized.getAdapter())) {
+            for (TransactionType each : parameterized.getTransactionTypes()) {
+                if (TransactionType.LOCAL.equals(each)) {
+                    log.info("Call transaction IT {}, alter transaction rule {}.", parameterized, "");
+                    alterTransactionRule(each, "");
+                    doCallTestCases(parameterized, each, "");
+                } else if (TransactionType.XA.equals(each)) {
+                    for (String eachProvider : parameterized.getProviders()) {
+                        log.info("Call transaction IT {}, alter transaction rule {}.", parameterized, eachProvider);
+                        alterTransactionRule(each, eachProvider);
+                        doCallTestCases(parameterized, each, eachProvider);
+                    }
+                }
+            }
+        } else {
+            doCallTestCases(parameterized);
+        }
+    }
+    
+    private void alterTransactionRule(final TransactionType transactionType, final String each) throws SQLException {
+        if (Objects.equals(transactionType, TransactionType.LOCAL)) {
+            alterLocalTransactionRule();
+        } else if (Objects.equals(transactionType, TransactionType.XA)) {
+            alterXaTransactionRule(each);
+        }
+    }
+    
+    private void doCallTestCases(final TransactionParameterized parameterized) {
         for (Class<? extends BaseTransactionTestCase> each : parameterized.getTransactionTestCaseClasses()) {
             log.info("Transaction IT {} -> {} test begin.", parameterized, each.getSimpleName());
             try {
@@ -223,6 +252,25 @@ public abstract class BaseTransactionITCase extends BaseITCase {
                 throw new RuntimeException(ex);
             }
             log.info("Transaction IT {} -> {} test end.", parameterized, each.getSimpleName());
+            try {
+                getDataSource().close();
+            } catch (final SQLException ignored) {
+            }
+        }
+    }
+    
+    private void doCallTestCases(final TransactionParameterized parameterized, TransactionType transactionType, String provider) {
+        for (Class<? extends BaseTransactionTestCase> each : parameterized.getTransactionTestCaseClasses()) {
+            log.info("Call transaction IT {} -> {} -> {} -> {} test begin.", parameterized, transactionType, provider, each.getSimpleName());
+            try {
+                each.getConstructor(BaseTransactionITCase.class, DataSource.class).newInstance(this, getDataSource()).execute();
+                // CHECKSTYLE:OFF
+            } catch (final Exception ex) {
+                // CHECKSTYLE:ON
+                log.error(String.format("Transaction IT %s -> %s test failed", parameterized, each.getSimpleName()), ex);
+                throw new RuntimeException(ex);
+            }
+            log.info("Call transaction IT {} -> {} -> {} -> {} test end.", parameterized, transactionType, provider, each.getSimpleName());
             try {
                 getDataSource().close();
             } catch (final SQLException ignored) {
