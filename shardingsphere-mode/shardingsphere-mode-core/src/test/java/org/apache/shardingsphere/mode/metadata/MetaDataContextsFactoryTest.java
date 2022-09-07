@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mode.metadata;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -70,30 +70,27 @@ public final class MetaDataContextsFactoryTest {
     
     @Mock
     private DatabaseMetaDataPersistService databaseMetaDataPersistService;
-
+    
     @Mock
-    private ShardingSphereDatabase mockShardingSphereDb;
-
+    private ShardingSphereDatabase database;
+    
     @Mock
     private JDBCInstanceMetaData jdbcInstanceMetaData;
-
+    
     private final Properties properties = new Properties();
-
-    private final List<ShardingSphereRule> shardingSphereRules = new ArrayList<ShardingSphereRule>() {
-        {
-            add(new MockedRule());
-        }
-    };
-
+    
+    private final Collection<ShardingSphereRule> shardingSphereRules = new LinkedList<>();
+    
     private final Map<String, ShardingSphereDatabase> mockDatabases = new HashMap<>();
-
+    
     private MockedStatic<ShardingSphereDatabasesFactory> mockedDbFactory;
-
+    
     private MockedStatic<GlobalRulesBuilder> mockedGlobalRulesBuilder;
-
+    
     @Before
     public void setUp() {
-        mockDatabases.put("foo_db", mockShardingSphereDb);
+        shardingSphereRules.add(new MockedRule());
+        mockDatabases.put("foo_db", database);
         when(metaDataPersistService.getEffectiveDataSources(eq("foo_db"), Mockito.anyMap())).thenReturn(Collections.singletonMap("foo_ds", new MockedDataSource()));
         DatabaseRulePersistService databaseRulePersistService = mockDatabaseRulePersistService();
         when(metaDataPersistService.getDatabaseRulePersistService()).thenReturn(databaseRulePersistService);
@@ -106,18 +103,18 @@ public final class MetaDataContextsFactoryTest {
         mockDatabasesFactory();
         mockGlobalRulesBuilder();
     }
-
+    
     @After
     public void tearDown() {
         mockedDbFactory.close();
         mockedGlobalRulesBuilder.close();
     }
-
+    
     private void mockDatabasesFactory() {
         mockedDbFactory = mockStatic(ShardingSphereDatabasesFactory.class);
         mockedDbFactory.when(() -> ShardingSphereDatabasesFactory.create(anyMap(), any(), any())).thenReturn(mockDatabases);
     }
-
+    
     private void mockGlobalRulesBuilder() {
         mockedGlobalRulesBuilder = mockStatic(GlobalRulesBuilder.class);
         mockedGlobalRulesBuilder.when(() -> GlobalRulesBuilder.buildRules(anyCollection(), anyMap(), any(InstanceContext.class))).thenReturn(shardingSphereRules);
