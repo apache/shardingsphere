@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.cases.general;
+package org.apache.shardingsphere.integration.data.pipeline.cases.migration.general;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.cases.base.AbstractMigrationITCase;
+import org.apache.shardingsphere.integration.data.pipeline.cases.migration.AbstractMigrationITCase;
 import org.apache.shardingsphere.integration.data.pipeline.cases.task.PostgreSQLIncrementTask;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingCaseHelper;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
-import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
+import org.apache.shardingsphere.integration.data.pipeline.util.AutoIncrementKeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -49,7 +49,7 @@ import static org.junit.Assert.assertThat;
 @RunWith(Parameterized.class)
 public final class PostgreSQLMigrationGeneralIT extends AbstractMigrationITCase {
     
-    private static final SnowflakeKeyGenerateAlgorithm KEY_GENERATE_ALGORITHM = new SnowflakeKeyGenerateAlgorithm();
+    private static final KeyGenerateAlgorithm KEY_GENERATE_ALGORITHM = new AutoIncrementKeyGenerateAlgorithm();
     
     private final ScalingParameterized parameterized;
     
@@ -75,8 +75,7 @@ public final class PostgreSQLMigrationGeneralIT extends AbstractMigrationITCase 
     }
     
     @Test
-    @SneakyThrows
-    public void assertMigrationSuccess() {
+    public void assertMigrationSuccess() throws SQLException, InterruptedException {
         addMigrationProcessConfig();
         createSourceSchema(SCHEMA_NAME);
         createSourceOrderTable();
@@ -103,23 +102,23 @@ public final class PostgreSQLMigrationGeneralIT extends AbstractMigrationITCase 
         assertGreaterThanOrderTableInitRows(TABLE_INIT_ROW_COUNT, SCHEMA_NAME);
     }
     
-    private void checkOrderMigration(final JdbcTemplate jdbcTemplate) throws SQLException {
+    private void checkOrderMigration(final JdbcTemplate jdbcTemplate) throws SQLException, InterruptedException {
         startMigrationOrderCopy(true);
         startIncrementTask(new PostgreSQLIncrementTask(jdbcTemplate, SCHEMA_NAME, false, 20));
         String jobId = getJobIdByTableName("t_order_copy");
-        waitMigrationFinished(jobId);
+        waitJobFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         stopMigrationByJobId(jobId);
-        sourceExecuteWithLog(String.format("INSERT INTO %s.t_order_copy (id,order_id,user_id,status) VALUES (%s, %s, %s, '%s')", SCHEMA_NAME, KEY_GENERATE_ALGORITHM.generateKey(),
-                System.currentTimeMillis(), 1, "afterStop"));
+        sourceExecuteWithLog(String.format("INSERT INTO %s.t_order_copy (order_id,user_id,status) VALUES (%s, %s, '%s')", SCHEMA_NAME, KEY_GENERATE_ALGORITHM.generateKey(),
+                1, "afterStop"));
         startMigrationByJobId(jobId);
         assertCheckMigrationSuccess(jobId);
         stopMigrationByJobId(jobId);
     }
     
-    private void checkOrderItemMigration() throws SQLException {
+    private void checkOrderItemMigration() throws SQLException, InterruptedException {
         startMigrationOrderItem(true);
         String jobId = getJobIdByTableName("t_order_item");
-        waitMigrationFinished(jobId);
+        waitJobFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         assertCheckMigrationSuccess(jobId);
         stopMigrationByJobId(jobId);
     }

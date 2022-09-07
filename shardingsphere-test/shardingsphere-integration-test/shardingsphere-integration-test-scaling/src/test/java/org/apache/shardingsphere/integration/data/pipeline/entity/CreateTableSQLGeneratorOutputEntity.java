@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.cases.entity;
+package org.apache.shardingsphere.integration.data.pipeline.entity;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -24,18 +24,19 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import java.util.Collection;
 
 /**
- * Create table sql generator input entity for JAXB.
+ * Create table sql generator output entity for JAXB.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public final class CreateTableSQLGeneratorInputEntity {
+public final class CreateTableSQLGeneratorOutputEntity {
     
     @XmlAttribute
-    private String table;
+    private String version;
     
-    @XmlElement
-    private String sql;
+    @XmlElement(required = true, name = "sql")
+    private Collection<String> multiSQL;
 }

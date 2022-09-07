@@ -15,31 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.cases.entity;
+package org.apache.shardingsphere.integration.data.pipeline.util;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.Collection;
+import java.util.Properties;
+import java.util.concurrent.atomic.AtomicLong;
 
-/**
- * Create table sql generator entity for JAXB.
- */
-@XmlAccessorType(XmlAccessType.FIELD)
-@Getter
-@Setter
-public final class CreateTableSQLGeneratorAssertionEntity {
+public final class AutoIncrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     
-    @XmlAttribute(required = true)
-    private String id;
+    private final AtomicLong idGen = new AtomicLong(1);
     
-    @XmlElement(required = true)
-    private CreateTableSQLGeneratorInputEntity input;
+    @Override
+    public Comparable<?> generateKey() {
+        return idGen.getAndIncrement();
+    }
     
-    @XmlElement(required = true, name = "output")
-    private Collection<CreateTableSQLGeneratorOutputEntity> outputs;
+    @Override
+    public Properties getProps() {
+        return null;
+    }
+    
+    @Override
+    public void init(final Properties props) {
+    }
 }

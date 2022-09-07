@@ -101,7 +101,9 @@ public final class DatabaseMetaDataPersistService {
      * @param schema schema meta data
      */
     public void compareAndPersist(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
-        addSchema(databaseName, schemaName);
+        if (schema.getTables().isEmpty() && schema.getViews().isEmpty()) {
+            addSchema(databaseName, schemaName);
+        }
         tableMetaDataPersistService.compareAndPersist(databaseName, schemaName, schema.getTables());
         viewMetaDataPersistService.compareAndPersist(databaseName, schemaName, schema.getViews());
     }
@@ -114,9 +116,23 @@ public final class DatabaseMetaDataPersistService {
      * @param schema schema meta data
      */
     public void persist(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
-        addSchema(databaseName, schemaName);
+        if (schema.getTables().isEmpty() && schema.getViews().isEmpty()) {
+            addSchema(databaseName, schemaName);
+        }
         tableMetaDataPersistService.persist(databaseName, schemaName, schema.getTables());
         viewMetaDataPersistService.persist(databaseName, schemaName, schema.getViews());
+    }
+    
+    /**
+     * Delete schema meta data.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param schema schema meta data
+     */
+    public void delete(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
+        schema.getTables().forEach((key, value) -> tableMetaDataPersistService.delete(databaseName, schemaName, key));
+        schema.getViews().forEach((key, value) -> viewMetaDataPersistService.delete(databaseName, schemaName, key));
     }
     
     /**
