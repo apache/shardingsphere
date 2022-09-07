@@ -71,8 +71,8 @@ public final class TransactionXAHandler implements ProxyBackendHandler {
             case "START":
             case "BEGIN":
                 /*
-                 * we have to let session occupy the thread when doing xa transaction.
-                 * according to https://dev.mysql.com/doc/refman/5.7/en/xa-states.html XA and local transactions are mutually exclusive
+                 * we have to let session occupy the thread when doing xa transaction. according to https://dev.mysql.com/doc/refman/5.7/en/xa-states.html XA and local transactions are mutually
+                 * exclusive
                  */
                 ShardingSpherePreconditions.checkState(!connectionSession.getTransactionStatus().isInTransaction(), new StartNestedXATransactionException());
                 ResponseHeader header = backendHandler.execute();
