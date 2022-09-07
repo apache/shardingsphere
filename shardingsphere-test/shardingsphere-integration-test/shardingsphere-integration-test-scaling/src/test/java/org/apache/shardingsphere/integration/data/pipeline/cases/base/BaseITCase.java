@@ -26,6 +26,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
+import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.command.ExtraSQLCommand;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
@@ -55,6 +56,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -174,6 +176,15 @@ public abstract class BaseITCase {
     
     protected void addResource(final String distSQL) throws SQLException {
         proxyExecuteWithLog(distSQL, 2);
+    }
+    
+    protected String appendBatchInsertParam(final String jdbcUrl) {
+        if (DatabaseTypeUtil.isMySQL(getDatabaseType())) {
+            Properties addProps = new Properties();
+            addProps.setProperty("rewriteBatchedStatements", "true");
+            return new JdbcUrlAppender().appendQueryProperties(jdbcUrl, addProps);
+        }
+        return jdbcUrl;
     }
     
     protected String getActualJdbcUrlTemplate(final String databaseName, final boolean isInContainer) {
