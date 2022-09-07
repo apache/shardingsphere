@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.transaction;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.XAStatement
 import org.apache.shardingsphere.transaction.exception.StartNestedXATransactionException;
 
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collections;
 
 /**
@@ -72,9 +74,7 @@ public final class TransactionXAHandler implements ProxyBackendHandler {
                  * we have to let session occupy the thread when doing xa transaction.
                  * according to https://dev.mysql.com/doc/refman/5.7/en/xa-states.html XA and local transactions are mutually exclusive
                  */
-                if (connectionSession.getTransactionStatus().isInTransaction()) {
-                    throw new StartNestedXATransactionException();
-                }
+                ShardingSpherePreconditions.checkState(!connectionSession.getTransactionStatus().isInTransaction(), new StartNestedXATransactionException());
                 ResponseHeader header = backendHandler.execute();
                 connectionSession.getConnectionContext().getTransactionConnectionContext().setInTransaction(true);
                 return header;
@@ -91,7 +91,7 @@ public final class TransactionXAHandler implements ProxyBackendHandler {
                     connectionSession.getConnectionContext().clearCursorConnectionContext();
                 }
             default:
-                throw new SQLException("unrecognized XA statement " + tclStatement.getOp());
+                throw new SQLFeatureNotSupportedException(String.format("unrecognized XA statement `%s`", tclStatement.getOp()));
         }
     }
 }
