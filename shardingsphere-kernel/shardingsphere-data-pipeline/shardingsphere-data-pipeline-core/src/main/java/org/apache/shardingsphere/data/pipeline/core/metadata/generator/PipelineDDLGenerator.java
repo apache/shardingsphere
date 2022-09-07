@@ -64,24 +64,24 @@ public final class PipelineDDLGenerator {
      * @param databaseType database type
      * @param sourceDataSource source data source
      * @param schemaName schema name
-     * @param logicTableName table name
-     * @param actualTableName actual table name
+     * @param sourceTableName source table name
+     * @param targetTableName target table name
      * @param parserEngine parser engine
-     * @return DDL
+     * @return DDL SQL
      * @throws SQLException SQL exception 
      */
     public String generateLogicDDL(final DatabaseType databaseType, final DataSource sourceDataSource,
-                                   final String schemaName, final String logicTableName, final String actualTableName, final ShardingSphereSQLParserEngine parserEngine) throws SQLException {
-        log.info("generateLogicDDLSQL, databaseType={}, schemaName={}, tableName={}", databaseType.getType(), schemaName, logicTableName);
+                                   final String schemaName, final String sourceTableName, final String targetTableName, final ShardingSphereSQLParserEngine parserEngine) throws SQLException {
+        log.info("generateLogicDDLSQL, databaseType={}, schemaName={}, sourceTableName={}, targetTableName={}", databaseType.getType(), schemaName, sourceTableName, targetTableName);
         StringBuilder result = new StringBuilder();
-        for (String each : CreateTableSQLGeneratorFactory.getInstance(databaseType).generate(sourceDataSource, schemaName, actualTableName)) {
-            Optional<String> queryContext = decorate(databaseType, sourceDataSource, schemaName, logicTableName, parserEngine, each);
+        for (String each : CreateTableSQLGeneratorFactory.getInstance(databaseType).generate(sourceDataSource, schemaName, sourceTableName)) {
+            Optional<String> queryContext = decorate(databaseType, sourceDataSource, schemaName, targetTableName, parserEngine, each);
             queryContext.ifPresent(ddlSQL -> result.append(ddlSQL).append(DELIMITER).append(System.lineSeparator()));
         }
         return result.toString();
     }
     
-    private Optional<String> decorate(final DatabaseType databaseType, final DataSource dataSource, final String schemaName, final String logicTableName,
+    private Optional<String> decorate(final DatabaseType databaseType, final DataSource dataSource, final String schemaName, final String targetTableName,
                                       final ShardingSphereSQLParserEngine parserEngine, final String sql) throws SQLException {
         if (sql.trim().isEmpty()) {
             return Optional.empty();
@@ -90,7 +90,7 @@ public final class PipelineDDLGenerator {
         try (Connection connection = dataSource.getConnection()) {
             databaseName = connection.getCatalog();
         }
-        String result = decorateActualSQL(databaseName, logicTableName, parserEngine, sql.trim());
+        String result = decorateActualSQL(databaseName, targetTableName, parserEngine, sql.trim());
         // TODO remove it after set search_path is supported.
         if ("openGauss".equals(databaseType.getType())) {
             return decorateOpenGauss(databaseName, schemaName, result, parserEngine);
@@ -98,24 +98,24 @@ public final class PipelineDDLGenerator {
         return Optional.of(result);
     }
     
-    private String decorateActualSQL(final String databaseName, final String logicTableName, final ShardingSphereSQLParserEngine parserEngine, final String sql) {
+    private String decorateActualSQL(final String databaseName, final String targetTableName, final ShardingSphereSQLParserEngine parserEngine, final String sql) {
         QueryContext queryContext = getQueryContext(databaseName, parserEngine, sql);
         SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
         Map<SQLSegment, String> replaceMap = new TreeMap<>(Comparator.comparing(SQLSegment::getStartIndex));
         if (sqlStatementContext instanceof CreateTableStatementContext) {
-            appendFromIndexAndConstraint(replaceMap, logicTableName, sqlStatementContext);
-            appendFromTable(replaceMap, logicTableName, (TableAvailable) sqlStatementContext);
+            appendFromIndexAndConstraint(replaceMap, targetTableName, sqlStatementContext);
+            appendFromTable(replaceMap, targetTableName, (TableAvailable) sqlStatementContext);
         }
         if (sqlStatementContext instanceof CommentStatementContext) {
-            appendFromTable(replaceMap, logicTableName, (TableAvailable) sqlStatementContext);
+            appendFromTable(replaceMap, targetTableName, (TableAvailable) sqlStatementContext);
         }
         if (sqlStatementContext instanceof CreateIndexStatementContext) {
-            appendFromTable(replaceMap, logicTableName, (TableAvailable) sqlStatementContext);
-            appendFromIndexAndConstraint(replaceMap, logicTableName, sqlStatementContext);
+            appendFromTable(replaceMap, targetTableName, (TableAvailable) sqlStatementContext);
+            appendFromIndexAndConstraint(replaceMap, targetTableName, sqlStatementContext);
         }
         if (sqlStatementContext instanceof AlterTableStatementContext) {
-            appendFromIndexAndConstraint(replaceMap, logicTableName, sqlStatementContext);
-            appendFromTable(replaceMap, logicTableName, (TableAvailable) sqlStatementContext);
+            appendFromIndexAndConstraint(replaceMap, targetTableName, sqlStatementContext);
+            appendFromTable(replaceMap, targetTableName, (TableAvailable) sqlStatementContext);
         }
         return doDecorateActualTable(replaceMap, sql);
     }
@@ -125,12 +125,12 @@ public final class PipelineDDLGenerator {
         return new QueryContext(sqlStatementContext, sql, Collections.emptyList());
     }
     
-    private void appendFromIndexAndConstraint(final Map<SQLSegment, String> replaceMap, final String logicTableName, final SQLStatementContext<?> sqlStatementContext) {
+    private void appendFromIndexAndConstraint(final Map<SQLSegment, String> replaceMap, final String targetTableName, final SQLStatementContext<?> sqlStatementContext) {
         if (!(sqlStatementContext instanceof TableAvailable) || ((TableAvailable) sqlStatementContext).getTablesContext().getTables().isEmpty()) {
             return;
         }
         TableNameSegment tableNameSegment = ((TableAvailable) sqlStatementContext).getTablesContext().getTables().iterator().next().getTableName();
-        if (!tableNameSegment.getIdentifier().getValue().equals(logicTableName)) {
+        if (!tableNameSegment.getIdentifier().getValue().equals(targetTableName)) {
             if (sqlStatementContext instanceof IndexAvailable) {
                 for (IndexSegment each : ((IndexAvailable) sqlStatementContext).getIndexes()) {
                     String logicIndexName = IndexMetaDataUtil.getLogicIndexName(each.getIndexName().getIdentifier().getValue(), tableNameSegment.getIdentifier().getValue());
@@ -146,10 +146,10 @@ public final class PipelineDDLGenerator {
         }
     }
     
-    private void appendFromTable(final Map<SQLSegment, String> replaceMap, final String logicTableName, final TableAvailable sqlStatementContext) {
+    private void appendFromTable(final Map<SQLSegment, String> replaceMap, final String targetTableName, final TableAvailable sqlStatementContext) {
         for (SimpleTableSegment each : sqlStatementContext.getAllTables()) {
-            if (!logicTableName.equals(each.getTableName().getIdentifier().getValue())) {
-                replaceMap.put(each.getTableName(), logicTableName);
+            if (!targetTableName.equals(each.getTableName().getIdentifier().getValue())) {
+                replaceMap.put(each.getTableName(), targetTableName);
             }
         }
     }

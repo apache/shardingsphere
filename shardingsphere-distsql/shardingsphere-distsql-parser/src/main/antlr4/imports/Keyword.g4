@@ -179,10 +179,6 @@ METADATA
     : M E T A D A T A
     ;
 
-SQL_PARSER
-    : S Q L UL_ P A R S E R
-    ;
-
 AUTHORITY
     : A U T H O R I T Y
     ;
@@ -193,30 +189,6 @@ TRUE
 
 FALSE
     : F A L S E
-    ;
-
-SQL_COMMENT_PARSE_ENABLE
-    : S Q L UL_ C O M M E N T UL_ P A R S E UL_ E N A B L E
-    ;
-
-PARSE_TREE_CACHE
-    : P A R S E UL_ T R E E UL_ C A C H E
-    ;
-
-SQL_STATEMENT_CACHE
-    : S Q L UL_ S T A T E M E N T UL_ C A C H E
-    ;
-
-INITIAL_CAPACITY
-    : I N I T I A L UL_ C A P A C I T Y
-    ;
-
-MAXIMUM_SIZE
-    : M A X I M U M UL_ S I Z E
-    ;
-
-CONCURRENCY_LEVEL
-    : C O N C U R R E N C Y UL_ L E V E L
     ;
 
 IF  

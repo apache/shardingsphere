@@ -55,7 +55,7 @@ public final class OpenGaussContainer extends DockerStorageContainer {
     
     @Override
     public int getMappedPort() {
-        return this.getMappedPort(StorageContainerConstants.OPENGAUSS_EXPOSED_PORT);
+        return getMappedPort(StorageContainerConstants.OPENGAUSS_EXPOSED_PORT);
     }
     
     @Override
@@ -65,7 +65,6 @@ public final class OpenGaussContainer extends DockerStorageContainer {
     
     @Override
     public String getJdbcUrl(final String dataSourceName) {
-        return DataSourceEnvironment.getURL(getDatabaseType(), getHost(),
-                getMappedPort(getExposedPort()), StringUtils.isNotEmpty(dataSourceName) ? dataSourceName : StorageContainerConstants.USERNAME);
+        return DataSourceEnvironment.getURL(getDatabaseType(), getHost(), getMappedPort(), StringUtils.isNotEmpty(dataSourceName) ? dataSourceName : StorageContainerConstants.USERNAME);
     }
 }

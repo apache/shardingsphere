@@ -21,8 +21,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
-import org.apache.shardingsphere.test.integration.container.compose.ComposedContainer;
-import org.apache.shardingsphere.test.integration.container.compose.ComposedContainerRegistry;
+import org.apache.shardingsphere.test.integration.container.compose.ContainerComposer;
+import org.apache.shardingsphere.test.integration.container.compose.ContainerComposerRegistry;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.ShardingSphereIntegrationTestParameterized;
 import org.junit.AfterClass;
@@ -39,7 +39,7 @@ public abstract class BaseITCase {
     
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
     
-    private static final ComposedContainerRegistry COMPOSED_CONTAINER_REGISTRY = new ComposedContainerRegistry();
+    private static final ContainerComposerRegistry CONTAINER_COMPOSER_REGISTRY = new ContainerComposerRegistry();
     
     private static final int TOTAL_SUITES_COUNT = TotalSuitesCountCalculator.calculate();
     
@@ -56,7 +56,7 @@ public abstract class BaseITCase {
     private final IntegrationTestCase itCase;
     
     @Getter(AccessLevel.NONE)
-    private final ComposedContainer composedContainer;
+    private final ContainerComposer containerComposer;
     
     private Map<String, DataSource> actualDataSourceMap;
     
@@ -70,21 +70,21 @@ public abstract class BaseITCase {
         databaseType = parameterizedArray.getDatabaseType();
         itKey = parameterizedArray.getKey();
         itCase = parameterizedArray.getTestCaseContext().getTestCase();
-        composedContainer = COMPOSED_CONTAINER_REGISTRY.getComposedContainer(parameterizedArray);
+        containerComposer = CONTAINER_COMPOSER_REGISTRY.getContainerComposer(parameterizedArray);
     }
     
     @Before
     public void setUp() {
-        composedContainer.start();
-        actualDataSourceMap = composedContainer.getActualDataSourceMap();
-        targetDataSource = composedContainer.getTargetDataSource();
-        expectedDataSourceMap = composedContainer.getExpectedDataSourceMap();
+        containerComposer.start();
+        actualDataSourceMap = containerComposer.getActualDataSourceMap();
+        targetDataSource = containerComposer.getTargetDataSource();
+        expectedDataSourceMap = containerComposer.getExpectedDataSourceMap();
     }
     
     @AfterClass
     public static void closeContainers() {
         if (COMPLETED_SUITES_COUNT.incrementAndGet() == TOTAL_SUITES_COUNT) {
-            COMPOSED_CONTAINER_REGISTRY.close();
+            CONTAINER_COMPOSER_REGISTRY.close();
         }
     }
 }

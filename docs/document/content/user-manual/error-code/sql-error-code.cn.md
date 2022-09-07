@@ -17,6 +17,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | HY004     | 10004       | Unsupported conversion data type \`%s\` for value \`%s\` |
 | HY004     | 10005       | Unsupported conversion stream charset \`%s\` |
 | HY004     | 10006       | SQL String can not be NULL or empty |
+| 08000     | 10007       | Can not get %d connections one time, partition succeed connection(%d) have released |
 | HY004     | 10100       | Can not register driver, reason is: %s |
 | 34000     | 10200       | Can not get cursor name from fetch statement |
 | HY000     | 10300       | Could not support variable \`%s\` |
@@ -24,7 +25,8 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | HV008     | 10302       | Column index \`%d\` is out of range |
 | 42S02     | 10303       | Can not find column label \`%s`\ |
 | HY004     | 10400       | Invalid format for actual data node \`%s\` |
-| HY000     | 10500       | Result set has been closed |
+| 08000     | 10500       | Connection has been closed |
+| 08000     | 10501       | Result set has been closed |
 | 42000     | 11000       | You have an error in your SQL syntax: %s |
 | 42000     | 11002       | Resource does not exist |
 | 42000     | 11003       | Rule does not exist |

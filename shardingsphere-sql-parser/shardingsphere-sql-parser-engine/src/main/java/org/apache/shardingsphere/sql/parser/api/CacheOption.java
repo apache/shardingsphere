@@ -30,4 +30,9 @@ public final class CacheOption {
     private final int initialCapacity;
     
     private final long maximumSize;
+    
+    @Override
+    public String toString() {
+        return String.format("initialCapacity: %d, maximumSize: %d", initialCapacity, maximumSize);
+    }
 }

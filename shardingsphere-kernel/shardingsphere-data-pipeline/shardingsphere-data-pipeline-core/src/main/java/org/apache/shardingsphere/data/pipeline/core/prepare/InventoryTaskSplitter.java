@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.prepare;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.config.TaskConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
@@ -66,17 +66,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class InventoryTaskSplitter {
     
+    private final PipelineDataSourceWrapper sourceDataSource;
+    
+    private final DumperConfiguration dumperConfig;
+    
+    private final ImporterConfiguration importerConfig;
+    
+    private final InventoryIncrementalJobItemProgress initProgress;
+    
     private final PipelineTableMetaDataLoader metaDataLoader;
     
     private final PipelineDataSourceManager dataSourceManager;
     
     private final ExecuteEngine importerExecuteEngine;
-    
-    private final PipelineDataSourceWrapper sourceDataSource;
-    
-    private final TaskConfiguration taskConfig;
-    
-    private final InventoryIncrementalJobItemProgress initProgress;
     
     /**
      * Split inventory data to multi-tasks.
@@ -88,8 +90,8 @@ public final class InventoryTaskSplitter {
         List<InventoryTask> result = new LinkedList<>();
         PipelineChannelCreator pipelineChannelCreator = jobItemContext.getJobProcessContext().getPipelineChannelCreator();
         DefaultPipelineJobProgressListener jobProgressListener = new DefaultPipelineJobProgressListener(jobItemContext.getJobId(), jobItemContext.getShardingItem());
-        for (InventoryDumperConfiguration each : splitDumperConfig(jobItemContext, taskConfig.getDumperConfig())) {
-            result.add(new InventoryTask(each, taskConfig.getImporterConfig(), pipelineChannelCreator, dataSourceManager, sourceDataSource, metaDataLoader, importerExecuteEngine,
+        for (InventoryDumperConfiguration each : splitDumperConfig(jobItemContext, dumperConfig)) {
+            result.add(new InventoryTask(each, importerConfig, pipelineChannelCreator, dataSourceManager, sourceDataSource, metaDataLoader, importerExecuteEngine,
                     jobProgressListener));
         }
         return result;

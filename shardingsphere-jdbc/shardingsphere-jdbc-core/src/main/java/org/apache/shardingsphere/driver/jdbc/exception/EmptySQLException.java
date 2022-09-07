@@ -28,6 +28,6 @@ public final class EmptySQLException extends ShardingSphereSQLException {
     private static final long serialVersionUID = -5723825491720138339L;
     
     public EmptySQLException() {
-        super(XOpenSQLState.GENERAL_ERROR.getValue(), 10006, "SQL String can not be NULL or empty");
+        super(XOpenSQLState.GENERAL_ERROR, 10006, "SQL String can not be NULL or empty");
     }
 }

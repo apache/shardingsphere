@@ -28,6 +28,6 @@ public final class ResultSetClosedException extends ShardingSphereSQLException {
     private static final long serialVersionUID = 3931974854134322934L;
     
     public ResultSetClosedException() {
-        super(XOpenSQLState.GENERAL_ERROR.getValue(), 10500, "Result set has been closed");
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 10501, "Result set has been closed");
     }
 }

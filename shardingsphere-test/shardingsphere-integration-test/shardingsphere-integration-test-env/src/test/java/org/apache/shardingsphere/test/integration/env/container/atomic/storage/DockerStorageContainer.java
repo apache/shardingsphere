@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.integration.env.container.atomic.storage;
 
 import com.google.common.base.Strings;
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -27,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.StorageContainerConstants;
+import org.apache.shardingsphere.test.integration.env.container.atomic.util.StorageContainerUtil;
 import org.apache.shardingsphere.test.integration.env.container.wait.JdbcConnectionWaitStrategy;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.env.runtime.scenario.database.DatabaseEnvironmentManager;
@@ -115,14 +115,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
      * @return access data source
      */
     public DataSource createAccessDataSource(final String dataSourceName) {
-        HikariDataSource result = new HikariDataSource();
-        result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
-        result.setJdbcUrl(getJdbcUrl(dataSourceName));
-        result.setUsername(getUsername());
-        result.setPassword(getPassword());
-        result.setMaximumPoolSize(4);
-        result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
-        return result;
+        return StorageContainerUtil.generateDataSource(getJdbcUrl(dataSourceName), getUsername(), getPassword(), 4);
     }
     
     /**
@@ -132,7 +125,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
      * @return JDBC URL
      */
     public String getJdbcUrl(final String dataSourceName) {
-        return DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(getExposedPort()), dataSourceName);
+        return DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(), dataSourceName);
     }
     
     protected abstract Optional<String> getDefaultDatabaseName();

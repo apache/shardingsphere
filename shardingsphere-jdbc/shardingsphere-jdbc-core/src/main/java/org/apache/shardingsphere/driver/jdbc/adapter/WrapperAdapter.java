@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.invocation.MethodInvocationRecorder;
 
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
 import java.sql.Wrapper;
 
@@ -38,7 +39,7 @@ public abstract class WrapperAdapter implements Wrapper {
         if (isWrapperFor(iface)) {
             return (T) this;
         }
-        throw new SQLException(String.format("[%s] cannot be unwrapped as [%s]", getClass().getName(), iface.getName()));
+        throw new SQLFeatureNotSupportedException(String.format("`%s` cannot be unwrapped as `%s`", getClass().getName(), iface.getName()));
     }
     
     @Override
