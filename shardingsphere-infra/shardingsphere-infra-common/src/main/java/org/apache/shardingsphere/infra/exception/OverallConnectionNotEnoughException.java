@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.exception;
+package org.apache.shardingsphere.infra.exception;
 
 import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
@@ -28,6 +28,7 @@ public final class OverallConnectionNotEnoughException extends ShardingSphereSQL
     private static final long serialVersionUID = -1297088138042287804L;
     
     public OverallConnectionNotEnoughException(final int desiredSize, final int actualSize) {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 10007, "Can not get %d connections one time, partition succeed connection(%d) have released", desiredSize, actualSize);
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 10007, "Can not get %d connections one time, partition succeed connection(%d) have released. "
+                + "Please consider increasing the `maxPoolSize` of the data sources or decreasing the `max-connections-size-per-query` in properties", desiredSize, actualSize);
     }
 }
