@@ -33,7 +33,7 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Migration job config event process.
+ * Migration job config event processor.
  */
 @Slf4j
 public final class MigrationJobConfigurationChangedEventProcessor implements PipelineJobConfigurationChangedEventProcessor {
