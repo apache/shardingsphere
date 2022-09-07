@@ -23,15 +23,15 @@ import java.util.Collection;
 
 import static org.junit.Assert.assertTrue;
 
-public class PipelineMetaDataChangedHandlerFactoryTest {
+public final class PipelineMetaDataChangedHandlerFactoryTest {
     
     @Test
     public void assertFindInstance() {
-        Collection<PipelineMetaDataChangedHandler> actual = PipelineMetaDataChangedHandlerFactory.findAllInstance();
+        Collection<PipelineMetaDataChangedHandler> actual = PipelineMetaDataChangedHandlerFactory.findAllInstances();
         boolean isContainMigration = false;
         boolean isContainBarrier = false;
         for (PipelineMetaDataChangedHandler each : actual) {
-            if (each instanceof MigrationMetaDataChangedHandler) {
+            if (each instanceof JobConfigurationChangedHandler) {
                 isContainMigration = true;
                 continue;
             }

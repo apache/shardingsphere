@@ -15,27 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.spi.handler;
+package org.apache.shardingsphere.data.pipeline.core.spi.process;
 
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.data.pipeline.api.job.JobType;
+import org.junit.Test;
 
-import java.util.Collection;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.Assert.assertThat;
 
-/**
- * Pipeline meta data listener factory.
- */
-public final class PipelineMetaDataChangedHandlerFactory {
+public final class PipelineJobConfigurationChangedEventProcessorFactoryTest {
     
-    static {
-        ShardingSphereServiceLoader.register(PipelineMetaDataChangedHandler.class);
-    }
-    
-    /**
-     * Get pipeline meta data listener instance.
-     *
-     * @return pipeline meta data listener
-     */
-    public static Collection<PipelineMetaDataChangedHandler> findAllInstances() {
-        return ShardingSphereServiceLoader.getServiceInstances(PipelineMetaDataChangedHandler.class);
+    @Test
+    public void getInstance() {
+        PipelineJobConfigurationChangedEventProcessor instance = PipelineJobConfigurationChangedEventProcessorFactory.getInstance(JobType.MIGRATION);
+        assertThat(instance, instanceOf(MigrationJobConfigurationChangedEventProcessor.class));
     }
 }

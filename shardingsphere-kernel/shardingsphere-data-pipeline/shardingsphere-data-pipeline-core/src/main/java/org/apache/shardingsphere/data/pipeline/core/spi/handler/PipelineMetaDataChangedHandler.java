@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.spi.handler;
 
-import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 
@@ -40,7 +39,6 @@ public interface PipelineMetaDataChangedHandler {
      * Event changed handler.
      *
      * @param event changed event
-     * @param jobConfigPOJO job config pojo
      */
-    void handle(DataChangedEvent event, JobConfigurationPOJO jobConfigPOJO);
+    void handle(DataChangedEvent event);
 }

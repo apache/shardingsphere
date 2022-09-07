@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.core.spi.handler;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
-import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 
@@ -38,7 +37,7 @@ public final class BarrierMetaDataChangedHandler implements PipelineMetaDataChan
     }
     
     @Override
-    public void handle(final DataChangedEvent event, final JobConfigurationPOJO jobConfigPOJO) {
+    public void handle(final DataChangedEvent event) {
         if (event.getType() == Type.ADDED) {
             PipelineDistributedBarrier.getInstance().checkChildrenNodeCount(event);
         }

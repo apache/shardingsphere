@@ -15,27 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.spi.handler;
+package org.apache.shardingsphere.data.pipeline.core.spi.process;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-
-import java.util.Collection;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 /**
- * Pipeline meta data listener factory.
+ * Pipeline job config changed event processor factory.
  */
-public final class PipelineMetaDataChangedHandlerFactory {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class PipelineJobConfigurationChangedEventProcessorFactory {
     
     static {
-        ShardingSphereServiceLoader.register(PipelineMetaDataChangedHandler.class);
+        ShardingSphereServiceLoader.register(PipelineJobConfigurationChangedEventProcessor.class);
     }
     
     /**
-     * Get pipeline meta data listener instance.
+     * Get job changed event processor instance.
      *
-     * @return pipeline meta data listener
+     * @param jobType job type
+     * @return pipeline event process
      */
-    public static Collection<PipelineMetaDataChangedHandler> findAllInstances() {
-        return ShardingSphereServiceLoader.getServiceInstances(PipelineMetaDataChangedHandler.class);
+    public static PipelineJobConfigurationChangedEventProcessor getInstance(final JobType jobType) {
+        return TypedSPIRegistry.getRegisteredService(PipelineJobConfigurationChangedEventProcessor.class, jobType.getTypeName());
     }
 }

@@ -22,8 +22,6 @@ import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.core.spi.handler.PipelineMetaDataChangedHandler;
 import org.apache.shardingsphere.data.pipeline.core.spi.handler.PipelineMetaDataChangedHandlerFactory;
-import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 
 import java.util.Collection;
@@ -43,7 +41,7 @@ public final class PipelineJobExecutor {
     private final Map<Pattern, PipelineMetaDataChangedHandler> listenerMap = new ConcurrentHashMap<>();
     
     private PipelineJobExecutor() {
-        Collection<PipelineMetaDataChangedHandler> instances = PipelineMetaDataChangedHandlerFactory.findAllInstance();
+        Collection<PipelineMetaDataChangedHandler> instances = PipelineMetaDataChangedHandlerFactory.findAllInstances();
         for (PipelineMetaDataChangedHandler each : instances) {
             listenerMap.put(each.getKeyPattern(), each);
         }
@@ -53,17 +51,7 @@ public final class PipelineJobExecutor {
     private void dispatchEvent(final DataChangedEvent event) {
         for (Entry<Pattern, PipelineMetaDataChangedHandler> entry : listenerMap.entrySet()) {
             if (entry.getKey().matcher(event.getKey()).matches()) {
-                log.info("{} job config: {}", event.getType(), event.getKey());
-                JobConfigurationPOJO jobConfigPOJO;
-                try {
-                    jobConfigPOJO = YamlEngine.unmarshal(event.getValue(), JobConfigurationPOJO.class, true);
-                    // CHECKSTYLE:OFF
-                } catch (final Exception ex) {
-                    // CHECKSTYLE:ON
-                    log.error("analyze job config pojo failed.", ex);
-                    return;
-                }
-                entry.getValue().handle(event, jobConfigPOJO);
+                entry.getValue().handle(event);
                 return;
             }
         }

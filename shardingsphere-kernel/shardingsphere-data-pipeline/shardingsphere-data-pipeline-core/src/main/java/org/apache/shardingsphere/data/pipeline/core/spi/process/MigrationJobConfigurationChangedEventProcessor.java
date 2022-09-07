@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.spi.handler;
+package org.apache.shardingsphere.data.pipeline.core.spi.process;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlMigrationJobConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
-import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJob;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobPreparer;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
@@ -31,21 +31,15 @@ import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBoo
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.regex.Pattern;
 
 /**
- * Migration pipeline meta data handler.
+ * Migration job config changed event processor.
  */
 @Slf4j
-public final class MigrationMetaDataChangedHandler implements PipelineMetaDataChangedHandler {
+public final class MigrationJobConfigurationChangedEventProcessor implements PipelineJobConfigurationChangedEventProcessor {
     
     @Override
-    public Pattern getKeyPattern() {
-        return PipelineMetaDataNode.MIGRATION_JOB_CONFIG_PATTERN;
-    }
-    
-    @Override
-    public void handle(final DataChangedEvent event, final JobConfigurationPOJO jobConfigPOJO) {
+    public void process(final DataChangedEvent event, final JobConfigurationPOJO jobConfigPOJO) {
         String jobId = jobConfigPOJO.getJobName();
         if (jobConfigPOJO.isDisabled()) {
             PipelineJobCenter.stop(jobId);
@@ -78,5 +72,10 @@ public final class MigrationMetaDataChangedHandler implements PipelineMetaDataCh
         OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfigPOJO.toJobConfiguration());
         oneOffJobBootstrap.execute();
         job.setOneOffJobBootstrap(oneOffJobBootstrap);
+    }
+    
+    @Override
+    public String getType() {
+        return JobType.MIGRATION.getTypeName();
     }
 }
