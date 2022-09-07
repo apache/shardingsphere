@@ -25,9 +25,7 @@ import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJob;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobPreparer;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
@@ -52,11 +50,6 @@ public final class MigrationPipelineMetaDataListener implements PipelineMetaData
     public void handler(final DataChangedEvent event, final JobConfigurationPOJO jobConfigPOJO) {
         String jobId = jobConfigPOJO.getJobName();
         if (jobConfigPOJO.isDisabled()) {
-            MigrationJobConfiguration jobConfig = YamlMigrationJobConfigurationSwapper.swapToObject(jobConfigPOJO.getJobParameter());
-            if (PipelineJobProgressDetector.isJobSuccessful(jobConfig.getJobShardingCount(), MigrationJobAPIFactory.getInstance().getJobProgress(jobConfig).values())) {
-                log.info("isJobSuccessful=true");
-                new MigrationJobPreparer().cleanup(jobConfig);
-            }
             PipelineJobCenter.stop(jobId);
             return;
         }

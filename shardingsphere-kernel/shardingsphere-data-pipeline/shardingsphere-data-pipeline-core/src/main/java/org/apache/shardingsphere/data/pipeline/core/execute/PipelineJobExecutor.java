@@ -69,9 +69,9 @@ public final class PipelineJobExecutor {
     }
     
     private static void dispatchEvent(final DataChangedEvent event) {
-        log.info("{} job config: {}", event.getType(), event.getKey());
         for (Entry<Pattern, PipelineMetaDataListener> entry : LISTENER_MAP.entrySet()) {
             if (entry.getKey().matcher(event.getKey()).matches()) {
+                log.info("{} job config: {}", event.getType(), event.getKey());
                 JobConfigurationPOJO jobConfigPOJO;
                 try {
                     jobConfigPOJO = YamlEngine.unmarshal(event.getValue(), JobConfigurationPOJO.class, true);
