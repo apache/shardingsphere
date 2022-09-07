@@ -69,18 +69,18 @@ public final class PipelineJobExecutor {
     }
     
     private static void dispatchEvent(final DataChangedEvent event) {
-        JobConfigurationPOJO jobConfigPOJO;
         log.info("{} job config: {}", event.getType(), event.getKey());
-        try {
-            jobConfigPOJO = YamlEngine.unmarshal(event.getValue(), JobConfigurationPOJO.class, true);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            log.error("analyze job config pojo failed.", ex);
-            return;
-        }
         for (Entry<Pattern, PipelineMetaDataListener> entry : LISTENER_MAP.entrySet()) {
             if (entry.getKey().matcher(event.getKey()).matches()) {
+                JobConfigurationPOJO jobConfigPOJO;
+                try {
+                    jobConfigPOJO = YamlEngine.unmarshal(event.getValue(), JobConfigurationPOJO.class, true);
+                    // CHECKSTYLE:OFF
+                } catch (final Exception ex) {
+                    // CHECKSTYLE:ON
+                    log.error("analyze job config pojo failed.", ex);
+                    return;
+                }
                 entry.getValue().handler(event, jobConfigPOJO);
                 return;
             }
