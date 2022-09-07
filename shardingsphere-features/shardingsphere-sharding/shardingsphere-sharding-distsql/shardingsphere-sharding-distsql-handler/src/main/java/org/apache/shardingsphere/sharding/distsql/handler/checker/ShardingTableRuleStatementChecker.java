@@ -289,10 +289,10 @@ public final class ShardingTableRuleStatementChecker {
     private static boolean isInvalidStrategy(final Map<String, AlgorithmConfiguration> currentAlgorithms, final ShardingStrategySegment shardingStrategySegment) {
         return !ShardingStrategyType.contain(shardingStrategySegment.getType())
                 || !ShardingStrategyType.getValueOf(shardingStrategySegment.getType()).isValid(shardingStrategySegment.getShardingColumn())
-                || !isStandardAlgorithmExists(currentAlgorithms, shardingStrategySegment);
+                || !isAlgorithmExists(currentAlgorithms, shardingStrategySegment);
     }
     
-    private static boolean isStandardAlgorithmExists(final Map<String, AlgorithmConfiguration> currentAlgorithms, final ShardingStrategySegment shardingStrategySegment) {
+    private static boolean isAlgorithmExists(final Map<String, AlgorithmConfiguration> currentAlgorithms, final ShardingStrategySegment shardingStrategySegment) {
         ShardingAlgorithm shardingAlgorithm;
         if (null == shardingStrategySegment.getShardingAlgorithmName() && null != shardingStrategySegment.getAlgorithmSegment()) {
             shardingAlgorithm = ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration(
