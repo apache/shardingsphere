@@ -39,6 +39,5 @@
         <module>shardingsphere-infra-merge</module>
         <module>shardingsphere-infra-context</module>
         <module>shardingsphere-infra-datetime</module>
-        <module>shardingsphere-infra-federation</module>
     </modules>
 </project>
