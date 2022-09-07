@@ -15,19 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.exception;
+package org.apache.shardingsphere.data.pipeline.core.spi.handler;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+
+import java.util.Collection;
 
 /**
- * Overall connection not enough exception.
+ * Pipeline meta data listener factory.
  */
-public final class OverallConnectionNotEnoughException extends ShardingSphereSQLException {
+public final class PipelineMetaDataChangedHandlerFactory {
     
-    private static final long serialVersionUID = -1297088138042287804L;
+    static {
+        ShardingSphereServiceLoader.register(PipelineMetaDataChangedHandler.class);
+    }
     
-    public OverallConnectionNotEnoughException(final int desiredSize, final int actualSize) {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 10007, "Can not get %d connections one time, partition succeed connection(%d) have released", desiredSize, actualSize);
+    /**
+     * Get pipeline meta data listener instance.
+     *
+     * @return pipeline meta data listener
+     */
+    public static Collection<PipelineMetaDataChangedHandler> findAllInstances() {
+        return ShardingSphereServiceLoader.getServiceInstances(PipelineMetaDataChangedHandler.class);
     }
 }

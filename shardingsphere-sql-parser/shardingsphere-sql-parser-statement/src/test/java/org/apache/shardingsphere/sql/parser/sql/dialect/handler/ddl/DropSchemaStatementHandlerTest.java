@@ -19,23 +19,31 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropSchemaStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerDropSchemaStatement;
 import org.junit.Test;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public final class DropSchemaStatementHandlerTest {
     
     @Test
-    public void assertIsContainsCascadeForPostgreSQL() {
+    public void assertContainsCascadeForPostgreSQL() {
         PostgreSQLDropSchemaStatement dropSchemaStatement = new PostgreSQLDropSchemaStatement();
         dropSchemaStatement.setContainsCascade(true);
         assertTrue(DropSchemaStatementHandler.containsCascade(dropSchemaStatement));
     }
     
     @Test
-    public void assertIsContainsCascadeForOpenGauss() {
+    public void assertContainsCascadeForOpenGauss() {
         OpenGaussDropSchemaStatement dropSchemaStatement = new OpenGaussDropSchemaStatement();
         dropSchemaStatement.setContainsCascade(true);
         assertTrue(DropSchemaStatementHandler.containsCascade(dropSchemaStatement));
+    }
+    
+    @Test
+    public void assertContainsCascadeForSQLServer() {
+        SQLServerDropSchemaStatement dropSchemaStatement = new SQLServerDropSchemaStatement();
+        assertFalse(DropSchemaStatementHandler.containsCascade(dropSchemaStatement));
     }
 }

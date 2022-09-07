@@ -64,8 +64,8 @@ public final class SQLFederationDeciderEngine {
             result.setUseSQLFederation(true);
             return result;
         }
-        boolean sqlFederationEnabled = props.getValue(ConfigurationPropertyKey.SQL_FEDERATION_ENABLED);
-        if (!sqlFederationEnabled || !(sqlStatementContext instanceof SelectStatementContext)) {
+        String sqlFederationType = props.getValue(ConfigurationPropertyKey.SQL_FEDERATION_TYPE);
+        if ("NONE".equals(sqlFederationType) || !(sqlStatementContext instanceof SelectStatementContext)) {
             return result;
         }
         for (Entry<ShardingSphereRule, SQLFederationDecider> entry : deciders.entrySet()) {

@@ -18,99 +18,51 @@
 package org.apache.shardingsphere.data.pipeline.core.execute;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
-import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
-import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
-import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
-import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
-import org.apache.shardingsphere.data.pipeline.core.spi.process.PipelineEventProcess;
-import org.apache.shardingsphere.data.pipeline.core.spi.process.PipelineEventProcessFactory;
-import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJob;
-import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
-import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.data.pipeline.core.spi.handler.PipelineMetaDataChangedHandler;
+import org.apache.shardingsphere.data.pipeline.core.spi.handler.PipelineMetaDataChangedHandlerFactory;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 
-import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 /**
  * Pipeline job executor.
  */
 @Slf4j
-public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
+public final class PipelineJobExecutor {
     
-    private final ExecutorService executor = Executors.newFixedThreadPool(20);
+    private static final PipelineJobExecutor INSTANCE = new PipelineJobExecutor();
     
-    @Override
-    protected void doStart() {
-        PipelineAPIFactory.getGovernanceRepositoryAPI().watch(DataPipelineConstants.DATA_PIPELINE_ROOT, event -> {
-            if (PipelineMetaDataNode.BARRIER_PATTERN.matcher(event.getKey()).matches() && event.getType() == Type.ADDED) {
-                PipelineDistributedBarrier.getInstance().checkChildrenNodeCount(event);
+    private final Map<Pattern, PipelineMetaDataChangedHandler> listenerMap = new ConcurrentHashMap<>();
+    
+    private PipelineJobExecutor() {
+        Collection<PipelineMetaDataChangedHandler> instances = PipelineMetaDataChangedHandlerFactory.findAllInstances();
+        for (PipelineMetaDataChangedHandler each : instances) {
+            listenerMap.put(each.getKeyPattern(), each);
+        }
+        PipelineAPIFactory.getGovernanceRepositoryAPI().watch(DataPipelineConstants.DATA_PIPELINE_ROOT, this::dispatchEvent);
+    }
+    
+    private void dispatchEvent(final DataChangedEvent event) {
+        for (Entry<Pattern, PipelineMetaDataChangedHandler> entry : listenerMap.entrySet()) {
+            if (entry.getKey().matcher(event.getKey()).matches()) {
+                entry.getValue().handle(event);
+                return;
             }
-            getJobConfigPOJO(event).ifPresent(optional -> processEvent(event, optional));
-        });
-    }
-    
-    private Optional<JobConfigurationPOJO> getJobConfigPOJO(final DataChangedEvent event) {
-        try {
-            if (PipelineMetaDataNode.CONFIG_PATTERN.matcher(event.getKey()).matches()) {
-                log.info("{} job config: {}", event.getType(), event.getKey());
-                return Optional.of(YamlEngine.unmarshal(event.getValue(), JobConfigurationPOJO.class, true));
-            }
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            log.error("analyze job config pojo failed.", ex);
-        }
-        return Optional.empty();
-    }
-    
-    private void processEvent(final DataChangedEvent event, final JobConfigurationPOJO jobConfigPOJO) {
-        log.info("process event, key:{}, type:{}", event.getKey(), event.getType());
-        boolean isDeleted = DataChangedEvent.Type.DELETED == event.getType();
-        boolean isDisabled = jobConfigPOJO.isDisabled();
-        JobType jobType = PipelineJobIdUtils.parseJobType(jobConfigPOJO.getJobName());
-        PipelineEventProcess process = PipelineEventProcessFactory.getInstance(jobType);
-        if (isDeleted) {
-            process.deleteEventHandle(jobConfigPOJO);
-            return;
-        }
-        if (isDisabled) {
-            process.disableEventHandle(jobConfigPOJO);
-            return;
-        }
-        switch (event.getType()) {
-            case ADDED:
-            case UPDATED:
-                if (PipelineJobCenter.isJobExisting(jobConfigPOJO.getJobName())) {
-                    log.info("{} added to executing jobs failed since it already exists", jobConfigPOJO.getJobName());
-                } else {
-                    log.info("{} executing jobs", jobConfigPOJO.getJobName());
-                    executor.execute(() -> execute(jobConfigPOJO));
-                }
-                break;
-            default:
-                break;
         }
     }
     
-    private void execute(final JobConfigurationPOJO jobConfigPOJO) {
-        MigrationJob job = new MigrationJob();
-        PipelineJobCenter.addJob(jobConfigPOJO.getJobName(), job);
-        OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfigPOJO.toJobConfiguration());
-        oneOffJobBootstrap.execute();
-        job.setOneOffJobBootstrap(oneOffJobBootstrap);
-    }
-    
-    @Override
-    protected void doStop() {
-        executor.shutdown();
-        executor.shutdownNow();
+    /**
+     * Get pipeline job executor instance.
+     *
+     * @return pipeline job executor
+     */
+    public static PipelineJobExecutor getInstance() {
+        return INSTANCE;
     }
 }

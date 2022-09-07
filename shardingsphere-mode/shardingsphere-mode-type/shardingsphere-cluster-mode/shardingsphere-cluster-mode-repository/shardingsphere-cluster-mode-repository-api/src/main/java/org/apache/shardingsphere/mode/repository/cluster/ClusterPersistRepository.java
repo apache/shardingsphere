@@ -58,6 +58,13 @@ public interface ClusterPersistRepository extends PersistRepository {
     boolean persistLock(String lockKey, long timeoutMillis);
     
     /**
+     * Delete lock.
+     *
+     * @param lockKey lock key
+     */
+    void deleteLock(String lockKey);
+    
+    /**
      * Watch key or path of governance server.
      *
      * @param key key of data

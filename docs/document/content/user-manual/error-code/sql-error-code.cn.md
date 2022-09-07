@@ -17,7 +17,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | HY004     | 10004       | Unsupported conversion data type \`%s\` for value \`%s\` |
 | HY004     | 10005       | Unsupported conversion stream charset \`%s\` |
 | HY004     | 10006       | SQL String can not be NULL or empty |
-| 08000     | 10007       | Can not get %d connections one time, partition succeed connection(%d) have released |
+| 08000     | 10007       | Can not get %d connections one time, partition succeed connection(%d) have released. Please consider increasing the \`maxPoolSize\` of the data sources or decreasing the \`max-connections-size-per-query\` in properties |
 | HY004     | 10100       | Can not register driver, reason is: %s |
 | 34000     | 10200       | Can not get cursor name from fetch statement |
 | HY000     | 10300       | Could not support variable \`%s\` |
@@ -36,6 +36,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 25000     | 11320       | Switch transaction type failed, please terminate the current transaction |
 | 25000     | 11321       | JDBC does not support operations across multiple logical databases in transaction |
 | 25000     | 11322       | Failed to create \`%s\` XA data source |
+| 25000     | 11323       | Can not start new XA transaction in a active transaction |
 | 42S02     | 11400       | Can not get traffic execution unit |
 | 42000     | 12000       | Unsupported command: %s |
 | 44000     | 13000       | SQL check failed, error message: %s |

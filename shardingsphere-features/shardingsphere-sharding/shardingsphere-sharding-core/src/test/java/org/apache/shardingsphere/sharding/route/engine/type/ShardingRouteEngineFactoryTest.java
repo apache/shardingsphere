@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.binder.statement.ddl.CloseStatementContex
 import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
@@ -299,12 +298,6 @@ public final class ShardingRouteEngineFactoryTest {
         assertThat(actual, instanceOf(ShardingUnicastRoutingEngine.class));
     }
     
-    private ConfigurationProperties createFederationConfigurationProperties() {
-        Properties props = new Properties();
-        props.setProperty(ConfigurationPropertyKey.SQL_FEDERATION_ENABLED.getKey(), String.valueOf(Boolean.TRUE));
-        return new ConfigurationProperties(props);
-    }
-    
     @Test
     public void assertNewInstanceForSubqueryWithSameConditions() {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
@@ -314,7 +307,7 @@ public final class ShardingRouteEngineFactoryTest {
         when(shardingRule.getShardingLogicTableNames(tableNames)).thenReturn(tableNames);
         when(shardingRule.getTableRule("t_order").getActualDataSourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
         when(shardingRule.isAllShardingTables(Collections.singletonList("t_order"))).thenReturn(true);
-        ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, database, sqlStatementContext, shardingConditions, createFederationConfigurationProperties());
+        ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, database, sqlStatementContext, shardingConditions, mock(ConfigurationProperties.class));
         assertThat(actual, instanceOf(ShardingStandardRoutingEngine.class));
     }
     

@@ -424,8 +424,8 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private synchronized void deleteSchemas(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
-        getToBeDeletedSchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas()).keySet().forEach(each ->
-                metaDataContexts.getPersistService().getDatabaseMetaDataService().dropSchema(databaseName, each));
+        getToBeDeletedSchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas()).keySet()
+                .forEach(each -> metaDataContexts.getPersistService().getDatabaseMetaDataService().dropSchema(databaseName, each));
     }
     
     private Map<String, ShardingSphereSchema> getToBeDeletedSchemas(final Map<String, ShardingSphereSchema> loadedSchemas, final Map<String, ShardingSphereSchema> currentSchemas) {

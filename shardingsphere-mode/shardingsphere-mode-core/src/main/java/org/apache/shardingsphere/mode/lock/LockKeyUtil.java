@@ -30,6 +30,8 @@ public final class LockKeyUtil {
     
     private static final String LOCKS_NODE_EXCLUSIVE = "exclusive";
     
+    private static final String LOCKS_LEASES_NODE = "leases";
+    
     /**
      * Generate exclusive lock key.
      *
@@ -47,6 +49,6 @@ public final class LockKeyUtil {
      * @return locks name
      */
     public static String generateLockKeyLeases(final String lockKey) {
-        return lockKey + "/leases";
+        return lockKey + PATH_DELIMITER + LOCKS_LEASES_NODE;
     }
 }
