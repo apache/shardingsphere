@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.mysql.MySqlInventoryDumperCreator
+org.apache.shardingsphere.data.pipeline.core.ingest.dumper.DefaultInventoryDumperCreator
