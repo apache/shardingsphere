@@ -22,6 +22,10 @@ on:
     branches: [ master, dev ]
     paths:
       - '.github/workflows/it-transaction.yml'
+      - 'shardingsphere-infra/shardingsphere-infra-common/src/main/**'
+      - 'shardingsphere-mode/**/src/main/**'
+      - 'shardingsphere-proxy/**/src/main/**'
+      - 'shardingsphere-jdbc/shardingsphere-jdbc-core/src/main/**'
       - 'shardingsphere-kernel/shardingsphere-transaction/**/src/main/**'
       - 'shardingsphere-kernel/shardingsphere-transaction/**/pom.xml'
       - '!shardingsphere-test/**'
@@ -34,6 +38,10 @@ on:
     branches: [ master ]
     paths:
       - '.github/workflows/it-transaction.yml'
+      - 'shardingsphere-infra/shardingsphere-infra-common/src/main/**'
+      - 'shardingsphere-mode/**/src/main/**'
+      - 'shardingsphere-proxy/**/src/main/**'
+      - 'shardingsphere-jdbc/shardingsphere-jdbc-core/src/main/**'
       - 'shardingsphere-kernel/shardingsphere-transaction/**/src/main/**'
       - 'shardingsphere-kernel/shardingsphere-transaction/**/pom.xml'
       - '!shardingsphere-test/**'
@@ -42,6 +50,8 @@ on:
       - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-env/**'
       - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/**'
       - '!*.md'
+  schedule:
+    - cron: '0 23 */1 * *'  # once a day. UTC time
 
 concurrency:
   group: it-transaction-${{ github.workflow }}-${{ github.ref }}
@@ -58,7 +68,51 @@ jobs:
       postgresql_version: postgres:12-alpine
       opengauss_version: enmotech/opengauss:2.1.0
       mysql_version: 5.7
-    timeout-minutes: 80
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v3
+      - name: Cache Maven Repos
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: shardingsphere-it-cache-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: 8
+      - name: Build Transaction IT image
+        run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction -Pit.env.docker -DskipTests
+      - name: Run MySQL Local Transaction Integration Test
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.env.transtypes=LOCAL -Dtransaction.it.docker.mysql.version=${{ env.mysql_version }}
+      - name: Run Transaction MySQL Integration Test With Atomikos
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.env.transtypes=XA -Dtransaction.it.env.xa.providers=Atomikos -Dtransaction.it.docker.mysql.version=${{ env.mysql_version }}
+      - name: Run Transaction MySQL Integration Test With Narayana
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.env.transtypes=XA -Dtransaction.it.env.xa.providers=Narayana -Dtransaction.it.docker.mysql.version=${{ env.mysql_version }}
+      - name: Run PostgreSQL Local Transaction Integration Test
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.env.transtypes=LOCAL -Dtransaction.it.docker.postgresql.version=${{ env.postgresql_version }}
+      - name: Run Transaction PostgreSQL Integration Test With Atomikos
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.env.transtypes=XA -Dtransaction.it.env.xa.providers=Atomikos -Dtransaction.it.docker.postgresql.version=${{ env.postgresql_version }}
+      - name: Run Transaction PostgreSQL Integration Test With Narayana
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.env.transtypes=XA -Dtransaction.it.env.xa.providers=Narayana -Dtransaction.it.docker.postgresql.version=${{ env.postgresql_version }}
+      - name: Run OpenGauss Local Transaction Integration Test
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.env.transtypes=LOCAL -Dtransaction.it.docker.opengauss.version=${{ env.opengauss_version }}
+      - name: Run Transaction OpenGauss Integration Test With Atomikos
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.env.transtypes=XA -Dtransaction.it.env.xa.providers=Atomikos -Dtransaction.it.docker.opengauss.version=${{ env.opengauss_version }}
+      - name: Run Transaction OpenGauss Integration Test With Narayana
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.env.transtypes=XA -Dtransaction.it.env.xa.providers=Narayana -Dtransaction.it.docker.opengauss.version=${{ env.opengauss_version }}
+  
+  transaction-daily-it-test:
+    if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
+    name: transaction-daily-it-test
+    runs-on: ubuntu-latest
+    env:
+      postgresql_version: postgres:12-alpine
+      opengauss_version: enmotech/opengauss:2.1.0
+      mysql_version: 5.7
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v3
       - name: Cache Maven Repos
