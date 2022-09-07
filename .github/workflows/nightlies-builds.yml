@@ -15,6 +15,8 @@
 # limitations under the License.
 #
 
+name: Nightly Builds
+
 on:
   schedule:
     - cron: '0 19 */1 * *'  # once a day. UTC time
@@ -35,13 +37,14 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Set up JDK 8
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
+          distribution: 'temurin'
           java-version: 8
 
       - name: Build Project
         run: |
-          ./mvnw -B -Prelease -DskipTests clean install
+          ./mvnw -B -T1C -Prelease -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true clean install
 
       - name: rsync
         uses: burnett01/rsync-deployments@5.2

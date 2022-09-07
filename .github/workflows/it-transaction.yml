@@ -42,6 +42,8 @@ on:
       - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-env/**'
       - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/**'
       - '!*.md'
+  schedule:
+    - cron: '0 21 */1 * *'  # once a day. UTC time
 
 concurrency:
   group: it-transaction-${{ github.workflow }}-${{ github.ref }}
