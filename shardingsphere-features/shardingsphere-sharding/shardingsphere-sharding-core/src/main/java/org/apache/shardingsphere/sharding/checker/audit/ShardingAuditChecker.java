@@ -59,7 +59,7 @@ public final class ShardingAuditChecker implements SQLChecker<ShardingRule> {
                 if (auditStrategy.isAllowHintDisable() && disableAuditNames.contains(auditorName.toLowerCase())) {
                     continue;
                 }
-                SQLCheckResult result = rule.getAuditors().get(auditorName).check(sqlStatementContext, parameters, grantee, databases.get(currentDatabase));
+                SQLCheckResult result = rule.getAuditors().get(auditorName).check(sqlStatementContext, parameters, grantee, databases.get(currentDatabase.toLowerCase()));
                 if (!result.isPassed()) {
                     return result;
                 }

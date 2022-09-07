@@ -28,6 +28,6 @@ public final class TypedPropertiesExceptionTest {
     
     @Test
     public void assertGetMessage() {
-        assertThat(new TypedPropertiesException(Arrays.asList("foo_msg", "bar_msg")).getMessage(), is("PROPS-00001: foo_msg" + System.lineSeparator() + "bar_msg"));
+        assertThat(new TypedPropertiesServerException(Arrays.asList("foo_msg", "bar_msg")).getMessage(), is("PROPS-00001: foo_msg" + System.lineSeparator() + "bar_msg"));
     }
 }

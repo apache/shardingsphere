@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.dialect.postgresql.mapper;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 import org.apache.shardingsphere.dialect.exception.connection.TooManyConnectionsException;
 import org.apache.shardingsphere.dialect.exception.data.InsertColumnsAndValuesMismatchedException;
@@ -24,6 +25,9 @@ import org.apache.shardingsphere.dialect.exception.data.InvalidParameterValueExc
 import org.apache.shardingsphere.dialect.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.dialect.exception.transaction.InTransactionException;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 import org.postgresql.util.PSQLState;
 
 import java.util.Arrays;
@@ -33,9 +37,16 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
+@RunWith(Parameterized.class)
+@RequiredArgsConstructor
 public final class PostgreSQLDialectExceptionMapperTest {
     
-    private Collection<Object[]> getConvertParameters() {
+    private final Class<SQLDialectException> sqlDialectExceptionClazz;
+    
+    private final String sqlState;
+    
+    @Parameters(name = "{1} -> {0}")
+    public static Collection<Object[]> getParameters() {
         return Arrays.asList(new Object[][]{
                 {DatabaseCreateExistsException.class, "42P04"},
                 {InTransactionException.class, PSQLState.TRANSACTION_STATE_INVALID.getState()},
@@ -46,11 +57,7 @@ public final class PostgreSQLDialectExceptionMapperTest {
     }
     
     @Test
-    @SuppressWarnings("unchecked")
     public void convert() {
-        PostgreSQLDialectExceptionMapper dialectExceptionMapper = new PostgreSQLDialectExceptionMapper();
-        for (Object[] item : getConvertParameters()) {
-            assertThat(dialectExceptionMapper.convert(mock((Class<SQLDialectException>) item[0])).getSQLState(), is(null == item[1] ? null : item[1]));
-        }
+        assertThat(new PostgreSQLDialectExceptionMapper().convert(mock(sqlDialectExceptionClazz)).getSQLState(), is(sqlState));
     }
 }

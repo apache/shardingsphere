@@ -21,6 +21,7 @@ import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 import com.google.common.primitives.Shorts;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.executor.exception.UnsupportedDataTypeConversionException;
 import org.junit.Test;
 
 import java.math.BigDecimal;

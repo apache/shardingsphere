@@ -21,10 +21,10 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.infra.datanode.DataNodeUtil;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -33,6 +33,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerate
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
+import org.apache.shardingsphere.sharding.exception.ActualDataNodesMissedWithShardingTableException;
 import org.apache.shardingsphere.sharding.exception.DataNodeGenerateException;
 
 import java.util.Collection;
@@ -239,9 +240,8 @@ public final class TableRule {
     }
     
     private void checkRule(final List<String> dataNodes) {
-        if (isEmptyDataNodes(dataNodes) && null != tableShardingStrategyConfig && !(tableShardingStrategyConfig instanceof NoneShardingStrategyConfiguration)) {
-            throw new ShardingSphereConfigurationException("ActualDataNodes must be configured if want to shard tables for logicTable [%s]", logicTable);
-        }
+        ShardingSpherePreconditions.checkState(!isEmptyDataNodes(dataNodes) || null == tableShardingStrategyConfig || tableShardingStrategyConfig instanceof NoneShardingStrategyConfiguration,
+                new ActualDataNodesMissedWithShardingTableException(logicTable));
     }
     
     /**

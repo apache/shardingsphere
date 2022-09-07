@@ -19,7 +19,7 @@ package org.apache.shardingsphere.dialect.postgresql.message;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.sql.vendor.VendorError;
+import org.apache.shardingsphere.infra.util.exception.external.sql.vendor.VendorError;
 import org.postgresql.util.ServerErrorMessage;
 
 /**

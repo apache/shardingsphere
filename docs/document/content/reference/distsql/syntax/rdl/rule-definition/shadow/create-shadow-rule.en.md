@@ -38,7 +38,7 @@ algorithmName ::=
   identifier
 
 shadowAlgorithmType ::=
-  identifier
+  string
 ```
 
 ### Supplement

@@ -33,10 +33,6 @@ public final class ShardingSphereView {
     
     private final String viewDefinition;
     
-    public ShardingSphereView() {
-        this("", "");
-    }
-    
     public ShardingSphereView(final String name, final String viewDefinition) {
         this.name = name;
         this.viewDefinition = viewDefinition;

@@ -21,11 +21,11 @@ import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
-import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.sharding.exception.DataSourceIntersectionNotFoundException;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
@@ -79,7 +79,7 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
         return result;
     }
     
-    private void routeWithMultipleTables(final RouteContext routeContext, final ShardingRule shardingRule) throws ShardingSphereConfigurationException {
+    private void routeWithMultipleTables(final RouteContext routeContext, final ShardingRule shardingRule) {
         List<RouteMapper> tableMappers = new ArrayList<>(logicTables.size());
         Set<String> availableDataSourceNames = Collections.emptySet();
         boolean first = true;
@@ -97,7 +97,7 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
             }
         }
         if (availableDataSourceNames.isEmpty()) {
-            throw new ShardingSphereConfigurationException("Cannot find actual datasource intersection for logic tables: %s", logicTables.toArray(new String[0]));
+            throw new DataSourceIntersectionNotFoundException(logicTables);
         }
         String dataSourceName = getRandomDataSourceName(availableDataSourceNames);
         routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), tableMappers));

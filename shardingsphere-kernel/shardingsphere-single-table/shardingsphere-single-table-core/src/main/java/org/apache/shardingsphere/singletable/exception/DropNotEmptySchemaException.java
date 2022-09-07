@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.singletable.exception;
 
-import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
-import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Drop not empty schema exception.
@@ -28,6 +28,6 @@ public final class DropNotEmptySchemaException extends ShardingSphereSQLExceptio
     private static final long serialVersionUID = 5285619119572894557L;
     
     public DropNotEmptySchemaException(final String schemaName) {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 17002, "Can not drop schema `%s` because of contains tables", schemaName);
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 17003, "Can not drop schema `%s` because of contains tables", schemaName);
     }
 }

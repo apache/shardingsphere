@@ -111,12 +111,21 @@ public final class LocalTransactionManager implements TransactionManager<Void> {
         return null;
     }
     
-    private void throwSQLExceptionIfNecessary(final Collection<SQLException> exceptions) throws SQLException {
+    private Void throwSQLExceptionIfNecessary(final Collection<SQLException> exceptions) throws SQLException {
         if (exceptions.isEmpty()) {
-            return;
+            return null;
         }
-        SQLException ex = new SQLException("");
-        exceptions.forEach(ex::setNextException);
+        SQLException ex = null;
+        int count = 0;
+        for (SQLException each : exceptions) {
+            if (0 == count) {
+                ex = each;
+            } else {
+                // TODO use recursion to setNextException with chain, not overlap
+                ex.setNextException(each);
+            }
+            count++;
+        }
         throw ex;
     }
 }

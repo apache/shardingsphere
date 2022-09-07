@@ -57,8 +57,10 @@ public final class MySQLHAGeneralIT extends BaseITCase {
     
     @Test
     public void assertProxyJdbcConnection() {
-        List<DataSource> dataSourceList = getStorageDataSources();
+        List<DataSource> mappedDataSources = getMappedDataSources();
+        List<DataSource> exposedDataSources = getExposedDataSources();
         // TODO add the MySQL HA logic here.
-        dataSourceList.forEach(each -> log.info(each.toString()));
+        mappedDataSources.forEach(each -> log.info(each.toString()));
+        exposedDataSources.forEach(each -> log.info(each.toString()));
     }
 }

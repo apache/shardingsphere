@@ -70,7 +70,7 @@ public final class PostgreSQLProxyTransactionIT extends BaseTransactionITCase {
     @SneakyThrows(SQLException.class)
     public void after() {
         getDataSource().close();
-        getComposedContainer().close();
+        getContainerComposer().close();
     }
     
     @Test

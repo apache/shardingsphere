@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.proxy.frontend.exception;
 
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
-import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.internal.ShardingSphereInternalException;
+import org.apache.shardingsphere.infra.util.exception.external.server.ShardingSphereServerException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -30,8 +30,7 @@ public final class ExpectedExceptionsTest {
     
     @Test
     public void assertIsExpected() {
-        assertTrue(ExpectedExceptions.isExpected(ShardingSphereException.class));
-        assertTrue(ExpectedExceptions.isExpected(ShardingSphereInsideException.class));
+        assertTrue(ExpectedExceptions.isExpected(ShardingSphereServerException.class));
         assertTrue(ExpectedExceptions.isExpected(SQLDialectException.class));
         assertTrue(ExpectedExceptions.isExpected(ShardingSphereSQLException.class));
     }
@@ -40,5 +39,6 @@ public final class ExpectedExceptionsTest {
     public void assertIsNotExpected() {
         assertFalse(ExpectedExceptions.isExpected(Exception.class));
         assertFalse(ExpectedExceptions.isExpected(IllegalArgumentException.class));
+        assertFalse(ExpectedExceptions.isExpected(ShardingSphereInternalException.class));
     }
 }

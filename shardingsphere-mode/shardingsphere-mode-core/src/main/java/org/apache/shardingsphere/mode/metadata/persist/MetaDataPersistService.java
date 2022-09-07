@@ -86,7 +86,7 @@ public final class MetaDataPersistService {
             Map<String, DataSourceProperties> dataSourcePropertiesMap = getDataSourcePropertiesMap(entry.getValue().getDataSources());
             Collection<RuleConfiguration> ruleConfigurations = entry.getValue().getRuleConfigurations();
             if (dataSourcePropertiesMap.isEmpty() && ruleConfigurations.isEmpty()) {
-                databaseMetaDataService.persistDatabase(databaseName);
+                databaseMetaDataService.addDatabase(databaseName);
             } else {
                 dataSourceService.persist(databaseName, getDataSourcePropertiesMap(entry.getValue().getDataSources()), isOverwrite);
                 databaseRulePersistService.persist(databaseName, entry.getValue().getRuleConfigurations(), isOverwrite);

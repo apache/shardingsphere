@@ -20,9 +20,9 @@ package org.apache.shardingsphere.integration.data.pipeline.framework.watcher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.BaseComposedContainer;
-import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.MigrationComposedContainer;
-import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.NativeComposedContainer;
+import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.BaseContainerComposer;
+import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.DockerContainerComposer;
+import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.NativeContainerComposer;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.CuratorZookeeperRepository;
@@ -38,11 +38,11 @@ import java.util.Properties;
 @Slf4j
 public class ScalingWatcher extends TestWatcher {
     
-    private final BaseComposedContainer composedContainer;
+    private final BaseContainerComposer containerComposer;
     
     @Override
     protected void failed(final Throwable e, final Description description) {
-        if (composedContainer instanceof NativeComposedContainer) {
+        if (containerComposer instanceof NativeContainerComposer) {
             super.failed(e, description);
             return;
         }
@@ -50,11 +50,11 @@ public class ScalingWatcher extends TestWatcher {
     }
     
     private void outputZookeeperData() {
-        MigrationComposedContainer migrationComposedContainer = (MigrationComposedContainer) composedContainer;
-        DatabaseType databaseType = migrationComposedContainer.getStorageContainer().getDatabaseType();
+        DockerContainerComposer dockerContainerComposer = (DockerContainerComposer) containerComposer;
+        DatabaseType databaseType = dockerContainerComposer.getStorageContainer().getDatabaseType();
         String namespace = "it_db_" + databaseType.getType().toLowerCase();
         ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration("ZooKeeper", namespace,
-                migrationComposedContainer.getGovernanceContainer().getServerLists(), new Properties());
+                dockerContainerComposer.getGovernanceContainer().getServerLists(), new Properties());
         ClusterPersistRepository zookeeperRepository = new CuratorZookeeperRepository();
         zookeeperRepository.init(config);
         List<String> childrenKeys = zookeeperRepository.getChildrenKeys("/");
@@ -80,6 +80,6 @@ public class ScalingWatcher extends TestWatcher {
     
     @Override
     protected void finished(final Description description) {
-        composedContainer.close();
+        containerComposer.close();
     }
 }

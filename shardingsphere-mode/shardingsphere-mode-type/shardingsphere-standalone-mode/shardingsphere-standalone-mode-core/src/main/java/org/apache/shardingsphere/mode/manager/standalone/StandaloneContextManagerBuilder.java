@@ -43,7 +43,6 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     
     @Override
     public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
-        ScheduleContextFactory.getInstance().init(parameter.getInstanceMetaData().getId(), parameter.getModeConfiguration());
         StandalonePersistRepository repository = StandalonePersistRepositoryFactory.getInstance(parameter.getModeConfiguration().getRepository());
         MetaDataPersistService persistService = new MetaDataPersistService(repository);
         persistConfigurations(persistService, parameter);
@@ -61,7 +60,8 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     
     private InstanceContext buildInstanceContext(final ContextManagerBuilderParameter parameter) {
         return new InstanceContext(new ComputeNodeInstance(parameter.getInstanceMetaData()),
-                new StandaloneWorkerIdGenerator(), parameter.getModeConfiguration(), new ShardingSphereLockContext(new StandaloneLockPersistService()), new EventBusContext());
+                new StandaloneWorkerIdGenerator(), parameter.getModeConfiguration(), new ShardingSphereLockContext(new StandaloneLockPersistService()),
+                new EventBusContext(), ScheduleContextFactory.newInstance(parameter.getModeConfiguration()));
     }
     
     @Override

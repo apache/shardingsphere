@@ -22,7 +22,8 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
+import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.StorageContainerConstants;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,7 +41,7 @@ public final class IntegrationTestEnvironment {
     
     private final Properties props;
     
-    private final ScalingITEnvTypeEnum itEnvType;
+    private final ITEnvTypeEnum itEnvType;
     
     private final List<String> mysqlVersions;
     
@@ -50,7 +51,7 @@ public final class IntegrationTestEnvironment {
     
     private IntegrationTestEnvironment() {
         props = loadProperties();
-        itEnvType = ScalingITEnvTypeEnum.valueOf(StringUtils.defaultIfBlank(props.getProperty("scaling.it.env.type").toUpperCase(), ScalingITEnvTypeEnum.NONE.name()));
+        itEnvType = ITEnvTypeEnum.valueOf(StringUtils.defaultIfBlank(props.getProperty("scaling.it.env.type").toUpperCase(), ITEnvTypeEnum.NONE.name()));
         mysqlVersions = Arrays.stream(props.getOrDefault("scaling.it.docker.mysql.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
         postgresVersions = Arrays.stream(props.getOrDefault("scaling.it.docker.postgresql.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
         openGaussVersions = Arrays.stream(props.getOrDefault("scaling.it.docker.opengauss.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
@@ -96,11 +97,11 @@ public final class IntegrationTestEnvironment {
     public int getActualDataSourceDefaultPort(final DatabaseType databaseType) {
         switch (databaseType.getType()) {
             case "MySQL":
-                return Integer.parseInt(props.getOrDefault("scaling.it.native.mysql.port", 3306).toString());
+                return Integer.parseInt(props.getOrDefault("scaling.it.native.mysql.port", StorageContainerConstants.MYSQL_EXPOSED_PORT).toString());
             case "PostgreSQL":
-                return Integer.parseInt(props.getOrDefault("scaling.it.native.postgresql.port", 5432).toString());
+                return Integer.parseInt(props.getOrDefault("scaling.it.native.postgresql.port", StorageContainerConstants.POSTGRESQL_EXPOSED_PORT).toString());
             case "openGauss":
-                return Integer.parseInt(props.getOrDefault("scaling.it.native.opengauss.port", 5432).toString());
+                return Integer.parseInt(props.getOrDefault("scaling.it.native.opengauss.port", StorageContainerConstants.OPENGAUSS_EXPOSED_PORT).toString());
             default:
                 throw new IllegalArgumentException("Unsupported database type: " + databaseType.getType());
         }
@@ -152,7 +153,7 @@ public final class IntegrationTestEnvironment {
      */
     public List<String> listDatabaseDockerImageNames(final DatabaseType databaseType) {
         // Native mode needn't use docker image, just return a list which contain one item
-        if (getItEnvType() == ScalingITEnvTypeEnum.NATIVE) {
+        if (getItEnvType() == ITEnvTypeEnum.NATIVE) {
             return databaseType.getType().equalsIgnoreCase(getNativeDatabaseType()) ? Collections.singletonList("") : Collections.emptyList();
         }
         switch (databaseType.getType()) {

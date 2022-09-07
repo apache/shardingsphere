@@ -140,11 +140,11 @@ public final class IntegrationTestEnvironment {
     public int getActualDataSourceDefaultPort(final DatabaseType databaseType) {
         switch (databaseType.getType()) {
             case "MySQL":
-                return Integer.parseInt(props.getOrDefault("transaction.it.native.mysql.port", 3306).toString());
+                return Integer.parseInt(props.getOrDefault("transaction.it.native.mysql.port", StorageContainerConstants.MYSQL_EXPOSED_PORT).toString());
             case "PostgreSQL":
-                return Integer.parseInt(props.getOrDefault("transaction.it.native.postgresql.port", 5432).toString());
+                return Integer.parseInt(props.getOrDefault("transaction.it.native.postgresql.port", StorageContainerConstants.POSTGRESQL_EXPOSED_PORT).toString());
             case "openGauss":
-                return Integer.parseInt(props.getOrDefault("transaction.it.native.opengauss.port", 5432).toString());
+                return Integer.parseInt(props.getOrDefault("transaction.it.native.opengauss.port", StorageContainerConstants.OPENGAUSS_EXPOSED_PORT).toString());
             default:
                 throw new IllegalArgumentException("Unsupported database type: " + databaseType.getType());
         }

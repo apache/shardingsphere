@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.database;
 
 import lombok.Getter;
-import org.apache.shardingsphere.proxy.exception.DatabaseServerLoadingException;
+import org.apache.shardingsphere.proxy.exception.DatabaseServerLoadingServerException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -41,7 +41,7 @@ public final class DatabaseServerInfo {
             databaseName = databaseMetaData.getDatabaseProductName();
             databaseVersion = databaseMetaData.getDatabaseProductVersion();
         } catch (final SQLException ex) {
-            throw new DatabaseServerLoadingException(ex);
+            throw new DatabaseServerLoadingServerException(ex);
         }
     }
     
