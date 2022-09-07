@@ -15,18 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.datasource.creator;
+package org.apache.shardingsphere.data.pipeline.api;
 
-import org.apache.shardingsphere.data.pipeline.core.datasource.creator.fixture.FixturePipelineDataSourceCreator;
+import org.apache.shardingsphere.data.pipeline.api.job.JobType;
+import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPIImpl;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
-public final class PipelineDataSourceCreatorFactoryTest {
+public final class PipelineAPIFactoryTest {
     
     @Test
-    public void assertGetInstance() {
-        assertThat(PipelineDataSourceCreatorFactory.getInstance("FIXTURE"), instanceOf(FixturePipelineDataSourceCreator.class));
+    public void assertGetPipelineJobAPI() {
+        assertThat(PipelineAPIFactory.getPipelineJobAPI(JobType.MIGRATION), instanceOf(MigrationJobAPIImpl.class));
     }
 }

@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.ingest.position;
+package org.apache.shardingsphere.data.pipeline.core.datasource.creator;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.DefaultPositionInitializer;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.MySQLPositionInitializer;
-import org.apache.shardingsphere.data.pipeline.opengauss.ingest.OpenGaussPositionInitializer;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLPositionInitializer;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.creator.impl.StandardPipelineDataSourceCreator;
+import org.apache.shardingsphere.driver.data.pipeline.datasource.creator.ShardingSpherePipelineDataSourceCreator;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -30,16 +30,16 @@ import java.util.Collection;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
-public final class PositionInitializerFactoryTest {
+public final class PipelineDataSourceCreatorFactoryTest {
     
     @Test
     public void assertGetInstance() {
-        Collection<Pair<String, Class<? extends PositionInitializer>>> paramResult = Arrays.asList(
-                Pair.of("MySQL", MySQLPositionInitializer.class), Pair.of("PostgreSQL", PostgreSQLPositionInitializer.class),
-                Pair.of("openGauss", OpenGaussPositionInitializer.class), Pair.of("Oracle", DefaultPositionInitializer.class)
+        Collection<Pair<String, Class<? extends PipelineDataSourceCreator>>> paramResult = Arrays.asList(
+                Pair.of(StandardPipelineDataSourceConfiguration.TYPE, StandardPipelineDataSourceCreator.class),
+                Pair.of(ShardingSpherePipelineDataSourceConfiguration.TYPE, ShardingSpherePipelineDataSourceCreator.class)
         );
-        for (Pair<String, Class<? extends PositionInitializer>> each : paramResult) {
-            PositionInitializer actual = PositionInitializerFactory.getInstance(each.getKey());
+        for (Pair<String, Class<? extends PipelineDataSourceCreator>> each : paramResult) {
+            PipelineDataSourceCreator actual = PipelineDataSourceCreatorFactory.getInstance(each.getKey());
             assertThat(actual, instanceOf(each.getValue()));
         }
     }
