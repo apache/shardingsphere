@@ -58,41 +58,14 @@ public final class QueryOptimizePlannerFactory {
     }
     
     /**
-     * Create new instance of hep planner without calc rules.
-     *
-     * @return hep planner instance
-     */
-    public static RelOptPlanner createHepPlannerWithoutCalc() {
-        HepProgramBuilder builder = new HepProgramBuilder();
-        builder.addGroupBegin().addRuleCollection(getFilterRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
-        builder.addGroupBegin().addRuleCollection(getProjectRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
-        builder.addGroupBegin().addRuleInstance(CoreRules.PROJECT_MERGE).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
-        builder.addMatchLimit(DEFAULT_MATCH_LIMIT);
-        return new HepPlanner(builder.build());
-    }
-    
-    /**
-     * Create new instance of hep planner with calc rules.
-     *
-     * @return hep planner instance
-     */
-    public static RelOptPlanner createHepPlannerWithCalc() {
-        HepProgramBuilder builder = new HepProgramBuilder();
-        builder.addGroupBegin().addRuleCollection(getCalcRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
-        builder.addMatchLimit(DEFAULT_MATCH_LIMIT);
-        return new HepPlanner(builder.build());
-    }
-    
-    /**
      * Create new instance of hep planner.
      *
      * @return hep planner instance
      */
     public static RelOptPlanner createHepPlanner() {
         HepProgramBuilder builder = new HepProgramBuilder();
-        builder.addGroupBegin().addRuleCollection(getSubQueryRules()).addGroupEnd().addMatchOrder(HepMatchOrder.DEPTH_FIRST);
-        builder.addGroupBegin().addRuleCollection(getProjectRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
         builder.addGroupBegin().addRuleCollection(getFilterRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
+        builder.addGroupBegin().addRuleCollection(getProjectRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
         builder.addGroupBegin().addRuleCollection(getCalcRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
         builder.addMatchLimit(DEFAULT_MATCH_LIMIT);
         return new HepPlanner(builder.build());
