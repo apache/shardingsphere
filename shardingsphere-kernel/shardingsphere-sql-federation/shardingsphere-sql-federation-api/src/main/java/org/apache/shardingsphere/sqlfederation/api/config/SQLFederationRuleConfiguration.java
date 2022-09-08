@@ -29,4 +29,8 @@ import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration
 public final class SQLFederationRuleConfiguration implements GlobalRuleConfiguration {
     
     private String sqlFederationType;
+    
+    public SQLFederationRuleConfiguration(final String sqlFederationType) {
+        this.sqlFederationType = sqlFederationType;
+    }
 }

@@ -155,7 +155,7 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
             when(resultSet.getObject(1)).thenReturn(Integer.MAX_VALUE);
             federationExecutorFactory.when(() -> SQLFederationExecutorFactory.getInstance(anyString())).thenReturn(federationExecutor);
             systemSchemaUtil.when(() -> SystemSchemaUtil.containsSystemSchema(any(DatabaseType.class), any(), any(ShardingSphereDatabase.class))).thenReturn(true);
-            SQLFederationRule sqlFederationRule = new SQLFederationRule(createFederationRuleConfig());
+            SQLFederationRule sqlFederationRule = new SQLFederationRule(new SQLFederationRuleConfiguration("ORIGINAL"));
             when(globalRuleMetaData.getSingleRule(SQLFederationRule.class)).thenReturn(sqlFederationRule);
             engine.execute();
         }
@@ -166,12 +166,6 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
         assertFalse(engine.next());
         engine.close();
         verify(federationExecutor).close();
-    }
-    
-    private static SQLFederationRuleConfiguration createFederationRuleConfig() {
-        SQLFederationRuleConfiguration result = new SQLFederationRuleConfiguration();
-        result.setSqlFederationType("ORIGINAL");
-        return result;
     }
     
     @Test

@@ -28,7 +28,7 @@ public final class DefaultSQLFederationRuleConfigurationBuilder implements Defau
     
     @Override
     public SQLFederationRuleConfiguration build() {
-        return new SQLFederationRuleConfiguration();
+        return new SQLFederationRuleConfiguration("NONE");
     }
     
     @Override
