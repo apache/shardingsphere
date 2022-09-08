@@ -201,18 +201,18 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         ExecutionUnit executionUnitSample = executionContext.getExecutionUnits().iterator().next();
         JDBCBackendConnection backendConnection = (JDBCBackendConnection) connectionSession.getBackendConnection();
         Connection connection = backendConnection.getConnections(executionUnitSample.getDataSourceName(), 1, ConnectionMode.CONNECTION_STRICTLY).iterator().next();
-        try (PreparedStatement physicPreparedStatement = connection.prepareStatement(executionUnitSample.getSqlUnit().getSql())) {
-            populateParameterTypes(logicPreparedStatement, physicPreparedStatement);
-            populateColumnTypes(logicPreparedStatement, physicPreparedStatement);
+        try (PreparedStatement actualPreparedStatement = connection.prepareStatement(executionUnitSample.getSqlUnit().getSql())) {
+            populateParameterTypes(logicPreparedStatement, actualPreparedStatement);
+            populateColumnTypes(logicPreparedStatement, actualPreparedStatement);
         }
     }
     
-    private void populateParameterTypes(final PostgreSQLPreparedStatement logicPreparedStatement, final PreparedStatement physicPreparedStatement) throws SQLException {
+    private void populateParameterTypes(final PostgreSQLPreparedStatement logicPreparedStatement, final PreparedStatement actualPreparedStatement) throws SQLException {
         if (0 == logicPreparedStatement.getSqlStatement().getParameterCount()
                 || logicPreparedStatement.getParameterTypes().stream().noneMatch(each -> PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED == each)) {
             return;
         }
-        ParameterMetaData parameterMetaData = physicPreparedStatement.getParameterMetaData();
+        ParameterMetaData parameterMetaData = actualPreparedStatement.getParameterMetaData();
         for (int i = 0; i < logicPreparedStatement.getSqlStatement().getParameterCount(); i++) {
             if (PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED == logicPreparedStatement.getParameterTypes().get(i)) {
                 logicPreparedStatement.getParameterTypes().set(i, PostgreSQLColumnType.valueOfJDBCType(parameterMetaData.getParameterType(i + 1)));
@@ -220,11 +220,11 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         }
     }
     
-    private void populateColumnTypes(final PostgreSQLPreparedStatement logicPreparedStatement, final PreparedStatement physicPreparedStatement) throws SQLException {
+    private void populateColumnTypes(final PostgreSQLPreparedStatement logicPreparedStatement, final PreparedStatement actualPreparedStatement) throws SQLException {
         if (logicPreparedStatement.describeRows().isPresent()) {
             return;
         }
-        ResultSetMetaData resultSetMetaData = physicPreparedStatement.getMetaData();
+        ResultSetMetaData resultSetMetaData = actualPreparedStatement.getMetaData();
         if (null == resultSetMetaData) {
             logicPreparedStatement.setRowDescription(PostgreSQLNoDataPacket.getInstance());
             return;
