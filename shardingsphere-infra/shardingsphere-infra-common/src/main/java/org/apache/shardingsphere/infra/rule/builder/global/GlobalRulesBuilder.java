@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.rule.builder.global;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -43,14 +44,15 @@ public final class GlobalRulesBuilder {
      * @param globalRuleConfigs global rule configurations
      * @param databases databases
      * @param instanceContext instance context
+     * @param props props
      * @return built rules
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static Collection<ShardingSphereRule> buildRules(final Collection<RuleConfiguration> globalRuleConfigs,
-                                                            final Map<String, ShardingSphereDatabase> databases, final InstanceContext instanceContext) {
+    public static Collection<ShardingSphereRule> buildRules(final Collection<RuleConfiguration> globalRuleConfigs, final Map<String, ShardingSphereDatabase> databases,
+                                                            final InstanceContext instanceContext, final ConfigurationProperties props) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         for (Entry<RuleConfiguration, GlobalRuleBuilder> entry : getRuleBuilderMap(globalRuleConfigs).entrySet()) {
-            result.add(entry.getValue().build(entry.getKey(), databases, instanceContext));
+            result.add(entry.getValue().build(entry.getKey(), databases, instanceContext, props));
         }
         return result;
     }

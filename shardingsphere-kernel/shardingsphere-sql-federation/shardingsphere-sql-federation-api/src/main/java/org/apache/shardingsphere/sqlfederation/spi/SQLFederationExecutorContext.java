@@ -28,11 +28,11 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * SQL federation context.
+ * SQL federation executor context.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SQLFederationContext {
+public final class SQLFederationExecutorContext {
     
     private final Collection<ExecutionUnit> executionUnits = new LinkedList<>();
     

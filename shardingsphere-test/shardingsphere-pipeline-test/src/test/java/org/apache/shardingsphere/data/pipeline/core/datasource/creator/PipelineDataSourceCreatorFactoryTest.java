@@ -36,8 +36,7 @@ public final class PipelineDataSourceCreatorFactoryTest {
     public void assertGetInstance() {
         Collection<Pair<String, Class<? extends PipelineDataSourceCreator>>> paramResult = Arrays.asList(
                 Pair.of(StandardPipelineDataSourceConfiguration.TYPE, StandardPipelineDataSourceCreator.class),
-                Pair.of(ShardingSpherePipelineDataSourceConfiguration.TYPE, ShardingSpherePipelineDataSourceCreator.class)
-        );
+                Pair.of(ShardingSpherePipelineDataSourceConfiguration.TYPE, ShardingSpherePipelineDataSourceCreator.class));
         for (Pair<String, Class<? extends PipelineDataSourceCreator>> each : paramResult) {
             PipelineDataSourceCreator actual = PipelineDataSourceCreatorFactory.getInstance(each.getKey());
             assertThat(actual, instanceOf(each.getValue()));

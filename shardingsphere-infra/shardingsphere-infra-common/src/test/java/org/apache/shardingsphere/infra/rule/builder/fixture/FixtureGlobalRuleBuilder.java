@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.rule.builder.fixture;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRuleBuilder;
@@ -26,7 +27,8 @@ import java.util.Map;
 public final class FixtureGlobalRuleBuilder implements GlobalRuleBuilder<FixtureGlobalRuleConfiguration> {
     
     @Override
-    public FixtureGlobalRule build(final FixtureGlobalRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases, final InstanceContext instanceContext) {
+    public FixtureGlobalRule build(final FixtureGlobalRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases, final InstanceContext instanceContext,
+                                   final ConfigurationProperties props) {
         return new FixtureGlobalRule();
     }
     

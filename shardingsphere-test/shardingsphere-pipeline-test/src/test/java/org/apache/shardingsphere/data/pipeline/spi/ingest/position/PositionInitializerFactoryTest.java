@@ -36,8 +36,7 @@ public final class PositionInitializerFactoryTest {
     public void assertGetInstance() {
         Collection<Pair<String, Class<? extends PositionInitializer>>> paramResult = Arrays.asList(
                 Pair.of("MySQL", MySQLPositionInitializer.class), Pair.of("PostgreSQL", PostgreSQLPositionInitializer.class),
-                Pair.of("openGauss", OpenGaussPositionInitializer.class), Pair.of("Oracle", DefaultPositionInitializer.class)
-        );
+                Pair.of("openGauss", OpenGaussPositionInitializer.class), Pair.of("Oracle", DefaultPositionInitializer.class));
         for (Pair<String, Class<? extends PositionInitializer>> each : paramResult) {
             PositionInitializer actual = PositionInitializerFactory.getInstance(each.getKey());
             assertThat(actual, instanceOf(each.getValue()));

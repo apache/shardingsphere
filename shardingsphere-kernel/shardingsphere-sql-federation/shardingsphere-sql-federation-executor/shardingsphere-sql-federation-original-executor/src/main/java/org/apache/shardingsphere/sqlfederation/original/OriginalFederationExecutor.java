@@ -34,8 +34,8 @@ import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContex
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.filter.FilterableDatabase;
 import org.apache.shardingsphere.sqlfederation.original.table.FilterableTableScanExecutor;
-import org.apache.shardingsphere.sqlfederation.spi.SQLFederationContext;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
+import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -69,6 +69,8 @@ public final class OriginalFederationExecutor implements SQLFederationExecutor {
     
     private EventBusContext eventBusContext;
     
+    private Connection connection;
+    
     private Statement statement;
     
     static {
@@ -92,23 +94,23 @@ public final class OriginalFederationExecutor implements SQLFederationExecutor {
     
     @Override
     public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
-                                  final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationContext federationContext) throws SQLException {
-        Connection connection = createConnection(prepareEngine, callback, federationContext);
+                                  final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) throws SQLException {
+        connection = createConnection(prepareEngine, callback, federationContext);
         PreparedStatement preparedStatement = connection.prepareStatement(SQLUtil.trimSemicolon(federationContext.getQueryContext().getSql()));
         setParameters(preparedStatement, federationContext.getQueryContext().getParameters());
-        this.statement = preparedStatement;
+        statement = preparedStatement;
         return preparedStatement.executeQuery();
     }
     
     private Connection createConnection(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
-                                        final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationContext federationContext) throws SQLException {
+                                        final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) throws SQLException {
         Connection result = DriverManager.getConnection(CONNECTION_URL, optimizerContext.getParserContexts().get(databaseName).getDialectProps());
         addSchema(result.unwrap(CalciteConnection.class), prepareEngine, callback, federationContext);
         return result;
     }
     
     private void addSchema(final CalciteConnection connection, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
-                           final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationContext federationContext) throws SQLException {
+                           final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) throws SQLException {
         CommonTableScanExecutorContext executorContext = new CommonTableScanExecutorContext(databaseName, schemaName, props, federationContext);
         FilterableTableScanExecutor executor = new FilterableTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, globalRuleMetaData, executorContext, eventBusContext);
         FilterableDatabase database = new FilterableDatabase(federationContext.getDatabases().get(databaseName.toLowerCase()), executor);
@@ -133,7 +135,6 @@ public final class OriginalFederationExecutor implements SQLFederationExecutor {
     @Override
     public void close() throws SQLException {
         if (null != statement && !statement.isClosed()) {
-            Connection connection = statement.getConnection();
             statement.close();
             connection.close();
         }
