@@ -594,6 +594,10 @@ svn del -m "Archiving release ${PREVIOUS.RELEASE.VERSION}" https://dist.apache.o
 - shadow-${RELEASE.VERSION}.xsd  
 - database-discovery.xsd
 - database-discovery-${RELEASE.VERSION}.xsd
+- sql-parser.xsd
+- sql-parser-${RELEASE.VERSION}.xsd
+- sql-translator.xsd
+- sql-translator-${RELEASE.VERSION}.xsd
 
 ### 7. 官网首页增加发布版本文档入口
 
