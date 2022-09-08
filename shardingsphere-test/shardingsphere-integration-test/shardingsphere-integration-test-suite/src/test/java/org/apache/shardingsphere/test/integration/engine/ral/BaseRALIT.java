@@ -130,12 +130,10 @@ public abstract class BaseRALIT extends SingleITCase {
         int columnIndex = 1;
         for (String each : expected.splitValues("|")) {
             String columnLabel = actualMetaData.getColumnLabel(columnIndex);
-            if (notAssertionColumns.contains(columnLabel)) {
-                columnIndex++;
-            } else {
+            if (!notAssertionColumns.contains(columnLabel)) {
                 assertObjectValue(actual, columnIndex, columnLabel, each);
-                columnIndex++;
             }
+            columnIndex++;
         }
     }
     
