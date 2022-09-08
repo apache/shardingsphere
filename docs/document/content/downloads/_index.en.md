@@ -11,7 +11,7 @@ extracss = true
 Apache ShardingSphere is released as source code tarballs with corresponding binary tarballs for convenience.
 The downloads are distributed via mirror sites and should be checked for tampering using GPG or SHA-512.
 
-##### Apache ShardingSphere - Version: 5.2.0 ( Release Date: Sept 5th, 2022 )
+##### Apache ShardingSphere - Version: 5.2.0 ( Release Date: Sept 8th, 2022 )
 
 - Source Codes: [<u>SRC</u>](https://www.apache.org/dyn/closer.lua/shardingsphere/5.2.0/apache-shardingsphere-5.2.0-src.zip) ( [<u>ASC</u>](https://downloads.apache.org/shardingsphere/5.2.0/apache-shardingsphere-5.2.0-src.zip.asc), [<u>SHA512</u>](https://downloads.apache.org/shardingsphere/5.2.0/apache-shardingsphere-5.2.0-src.zip.sha512) )
 - ShardingSphere-JDBC Binary Distribution: [<u>TAR</u>](https://www.apache.org/dyn/closer.lua/shardingsphere/5.2.0/apache-shardingsphere-5.2.0-shardingsphere-jdbc-bin.tar.gz) ( [<u>ASC</u>](https://downloads.apache.org/shardingsphere/5.2.0/apache-shardingsphere-5.2.0-shardingsphere-jdbc-bin.tar.gz.asc), [<u>SHA512</u>](https://downloads.apache.org/shardingsphere/5.2.0/apache-shardingsphere-5.2.0-shardingsphere-jdbc-bin.tar.gz.sha512) )
