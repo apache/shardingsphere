@@ -53,7 +53,7 @@ public final class DockerContainerComposer extends BaseContainerComposer {
         storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, dockerImageName,
                 "", StorageContainerConfigurationFactory.newInstance(databaseType)));
         AdaptorContainerConfiguration containerConfig = ScalingProxyClusterContainerConfigurationFactory.newInstance(databaseType, dockerImageName);
-        ShardingSphereProxyClusterContainer proxyClusterContainer = (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance(EnvironmentConstants.CLUSTER_MODE, 
+        ShardingSphereProxyClusterContainer proxyClusterContainer = (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance(EnvironmentConstants.CLUSTER_MODE,
                 AdapterContainerConstants.PROXY, databaseType, storageContainer, "", containerConfig);
         proxyClusterContainer.dependsOn(governanceContainer, storageContainer);
         proxyContainer = getContainers().registerContainer(proxyClusterContainer);

@@ -61,8 +61,8 @@ public final class DockerContainerComposer extends BaseContainerComposer {
                 StorageContainerConfigurationFactory.newInstance(databaseType)));
         if (AdapterContainerConstants.PROXY.equalsIgnoreCase(parameterized.getAdapter())) {
             jdbcContainer = null;
-            proxyContainer = (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance(EnvironmentConstants.CLUSTER_MODE, AdapterContainerConstants.PROXY, databaseType, storageContainer, "",
-                    ProxyClusterContainerConfigurationFactory.newInstance(databaseType));
+            proxyContainer = (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance(EnvironmentConstants.CLUSTER_MODE, AdapterContainerConstants.PROXY,
+                    databaseType, storageContainer, "", ProxyClusterContainerConfigurationFactory.newInstance(databaseType));
             proxyContainer.dependsOn(governanceContainer, storageContainer);
             getContainers().registerContainer(proxyContainer);
         } else {
