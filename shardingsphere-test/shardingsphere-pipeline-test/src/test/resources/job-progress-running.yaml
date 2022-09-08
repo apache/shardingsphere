@@ -16,8 +16,8 @@
 #
 #
 
+dataSourceName: ds_0
 incremental:
-  dataSourceName: ds_0
   delay:
     lastEventTimestamps: 0
     latestActiveTimeMillis: 0
