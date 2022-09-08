@@ -57,11 +57,11 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
     
     private final Promise<Object> authResultCallback;
     
-    private ServerInfo serverInfo;
+    private volatile ServerInfo serverInfo;
     
-    private byte[] seed;
+    private volatile byte[] seed;
     
-    private boolean publicKeyRequested;
+    private volatile boolean publicKeyRequested;
     
     @SneakyThrows
     @Override
