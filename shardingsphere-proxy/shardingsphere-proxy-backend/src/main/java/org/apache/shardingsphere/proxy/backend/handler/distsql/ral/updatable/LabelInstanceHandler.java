@@ -19,6 +19,8 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.LabelInstanceStatement;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.exception.external.sql.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsChangedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -39,9 +41,8 @@ public final class LabelInstanceHandler extends UpdatableRALBackendHandler<Label
     @Override
     public void update(final ContextManager contextManager) {
         MetaDataPersistService persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService();
-        if (null == persistService || null == persistService.getRepository() || persistService.getRepository() instanceof StandalonePersistRepository) {
-            throw new UnsupportedOperationException("Labels can only be added in cluster mode");
-        }
+        ShardingSpherePreconditions.checkState(null != persistService && null != persistService.getRepository() && !(persistService.getRepository() instanceof StandalonePersistRepository),
+                new UnsupportedSQLOperationException("Labels can only be added in cluster mode"));
         String instanceId = getSqlStatement().getInstanceId();
         Optional<ComputeNodeInstance> computeNodeInstance = contextManager.getInstanceContext().getComputeNodeInstanceById(instanceId);
         if (computeNodeInstance.isPresent()) {

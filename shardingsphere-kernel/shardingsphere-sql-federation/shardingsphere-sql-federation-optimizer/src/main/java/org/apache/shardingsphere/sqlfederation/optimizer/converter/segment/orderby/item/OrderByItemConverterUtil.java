@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.orde
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.shardingsphere.infra.util.exception.external.sql.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
@@ -38,7 +39,7 @@ public final class OrderByItemConverterUtil {
     /**
      * Convert order by items to sql node.
      * 
-     * @param orderByItems order by item list
+     * @param orderByItems order by items
      * @return SQL nodes converted by order by item
      */
     public static Collection<SqlNode> convert(final Collection<OrderByItemSegment> orderByItems) {
@@ -51,7 +52,7 @@ public final class OrderByItemConverterUtil {
             } else if (each instanceof IndexOrderByItemSegment) {
                 new IndexOrderByItemConverter().convert((IndexOrderByItemSegment) each).ifPresent(result::add);
             } else if (each instanceof TextOrderByItemSegment) {
-                throw new UnsupportedOperationException("unsupported TextOrderByItemSegment");
+                throw new UnsupportedSQLOperationException("unsupported TextOrderByItemSegment");
             }
         }
         return result;

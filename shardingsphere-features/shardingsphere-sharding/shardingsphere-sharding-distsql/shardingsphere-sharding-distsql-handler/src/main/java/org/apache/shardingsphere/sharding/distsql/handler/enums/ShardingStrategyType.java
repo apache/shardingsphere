@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.enums;
 
+import org.apache.shardingsphere.infra.util.exception.external.sql.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
@@ -162,15 +163,15 @@ public enum ShardingStrategyType {
     public static ShardingStrategyType getValueOf(final String name) {
         try {
             return valueOf(name.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new UnsupportedOperationException(String.format("unsupported strategy type %s", name));
+        } catch (final IllegalArgumentException ex) {
+            throw new UnsupportedSQLOperationException(String.format("unsupported strategy type %s", name));
         }
     }
     
     /**
      * Returns the sharding strategy type.
      *
-     * @param shardingStrategyConfig Implementation class of sharding strategy configuration
+     * @param shardingStrategyConfig implementation class of sharding strategy configuration
      * @return sharding strategy type
      */
     public static ShardingStrategyType getValueOf(final ShardingStrategyConfiguration shardingStrategyConfig) {

@@ -94,3 +94,4 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | HY004     | 28000       | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type |
 | 42000     | 28003       | Insert value of index \`%s\` can not support for shadow |
 | HY004     | 30000       | Unknown exception: %s |
+| 0A000     | 30001       | Unsupported operation: %s |

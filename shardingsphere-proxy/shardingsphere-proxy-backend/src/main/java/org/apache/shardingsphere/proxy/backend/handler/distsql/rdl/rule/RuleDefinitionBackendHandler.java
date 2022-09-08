@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionUpdater;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionUpdaterFactory;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.exception.external.sql.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.DatabaseRequiredBackendHandler;
@@ -90,7 +91,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         } else if (updater instanceof RuleDefinitionDropUpdater) {
             processDrop(result, sqlStatement, (RuleDefinitionDropUpdater) updater, currentRuleConfig);
         } else {
-            throw new UnsupportedOperationException(String.format("Cannot support RDL updater type `%s`", updater.getClass().getCanonicalName()));
+            throw new UnsupportedSQLOperationException(String.format("Cannot support RDL updater type `%s`", updater.getClass().getCanonicalName()));
         }
         ProxyContext.getInstance().getContextManager().alterRuleConfiguration(database.getName(), result);
         return result;

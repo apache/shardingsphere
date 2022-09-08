@@ -15,15 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.state.impl;
+package org.apache.shardingsphere.infra.util.exception.external.sql;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.UnsupportedSQLOperationException;
-import org.junit.Test;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
-public final class LockProxyStateTest {
+/**
+ * Unsupported SQL operation exception.
+ */
+public final class UnsupportedSQLOperationException extends ShardingSphereSQLException {
     
-    @Test(expected = UnsupportedSQLOperationException.class)
-    public void assertExecute() {
-        new LockProxyState().execute(null, null, null, null);
+    private static final long serialVersionUID = -4387122733989386705L;
+    
+    public UnsupportedSQLOperationException(final String reason) {
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 30001, "Unsupported SQL operation: %s", reason);
     }
 }
