@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.integration.transaction.engine.base;
 
-import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -57,6 +56,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -243,11 +243,11 @@ public abstract class BaseITCase {
                                                             final Class<? extends BaseTransactionTestCase> caseClass, final TransactionType each,
                                                             final Map<String, TransactionParameterized> parameterizedMap, final String group) {
         if (TransactionType.LOCAL.equals(each)) {
-            addTestParameters(version, currentTestCaseInfo, caseClass, Lists.newArrayList(each), Lists.newArrayList(""), parameterizedMap, group);
+            addTestParameters(version, currentTestCaseInfo, caseClass, Collections.singletonList(each), Collections.singletonList(""), parameterizedMap, group);
         } else if (TransactionType.XA.equals(each)) {
             List<String> allowProviders = ENV.getAllowXAProviders().isEmpty() ? ALL_XA_PROVIDERS : ENV.getAllowXAProviders();
             for (String provider : allowProviders) {
-                addTestParameters(version, currentTestCaseInfo, caseClass, Lists.newArrayList(each), Lists.newArrayList(provider), parameterizedMap, group);
+                addTestParameters(version, currentTestCaseInfo, caseClass, Collections.singletonList(each), Collections.singletonList(provider), parameterizedMap, group);
             }
         }
     }
