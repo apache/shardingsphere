@@ -15,32 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.transaction.engine.constants;
+package org.apache.shardingsphere.test.integration.env.container.atomic.constants;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Constants for transaction test.
+ * Environment constant.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TransactionTestConstants {
+public final class EnvironmentConstants {
     
-    public static final String MYSQL = "mysql";
+    public static final String CLUSTER_MODE = "Cluster";
     
-    public static final String OPENGAUSS = "OpenGauss";
+    public static final String STANDALONE_MODE = "Standalone";
     
-    public static final String POSTGRESQL = "PostgreSQL";
-    
-    public static final String ACCOUNT = "account";
-    
-    public static final String DEFAULT_TYPE = "default_type";
-    
-    public static final String PROVIDER_TYPE = "provider_type";
-    
-    public static final String ATOMIKOS = "Atomikos";
-    
-    public static final String NARAYANA = "Narayana";
-    
-    public static final String BITRONIX = "Bitronix";
+    public static final int DEFAULT_FULL_CONTAINER_QUANTITY = 8;
 }
