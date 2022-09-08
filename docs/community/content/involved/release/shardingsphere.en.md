@@ -604,6 +604,10 @@ The list of files to be uploaded is as follows:
 - shadow-${RELEASE.VERSION}.xsd
 - database-discovery.xsd
 - database-discovery-${RELEASE.VERSION}.xsd
+- sql-parser.xsd
+- sql-parser-${RELEASE.VERSION}.xsd
+- sql-translator.xsd
+- sql-translator-${RELEASE.VERSION}.xsd
 
 ### 7. Add entrance of documents of the new release into home page
 
