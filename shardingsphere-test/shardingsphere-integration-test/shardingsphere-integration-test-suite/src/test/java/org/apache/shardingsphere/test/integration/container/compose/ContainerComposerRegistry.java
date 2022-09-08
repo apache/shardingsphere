@@ -31,10 +31,10 @@ import java.util.Map;
  */
 public final class ContainerComposerRegistry implements AutoCloseable {
     
-    private final Map<String, ContainerComposer> containerComposers = new HashMap<>();
+    private final Map<String, ContainerComposer> containerComposers = new HashMap<>(8, 1);
     
     /**
-     * Get composed container.
+     * Get container composer.
      *
      * @param parameterizedArray parameterized array
      * @return composed container
@@ -75,6 +75,8 @@ public final class ContainerComposerRegistry implements AutoCloseable {
     private void closeTargetDataSource(final DataSource targetDataSource) {
         if (targetDataSource instanceof AutoCloseable) {
             ((AutoCloseable) targetDataSource).close();
+        } else {
+            throw new RuntimeException("targetDataSource is not AutoCloseable");
         }
     }
     
@@ -83,6 +85,8 @@ public final class ContainerComposerRegistry implements AutoCloseable {
         for (DataSource each : actualDataSourceMap.values()) {
             if (each instanceof AutoCloseable) {
                 ((AutoCloseable) each).close();
+            } else {
+                throw new RuntimeException("actualDataSource is not AutoCloseable");
             }
         }
     }
