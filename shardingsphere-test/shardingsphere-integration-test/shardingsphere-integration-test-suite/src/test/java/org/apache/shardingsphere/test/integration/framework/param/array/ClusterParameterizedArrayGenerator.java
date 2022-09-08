@@ -49,7 +49,7 @@ public final class ClusterParameterizedArrayGenerator {
     /**
      * Get case parameterized array.
      *
-     * @param sqlCommandType SQL command type
+     * @param sqlCommandType SQL commandEnvironmentConstants type
      * @return case parameterized array
      */
     public static Collection<ParameterizedArray> getCaseParameterized(final SQLCommandType sqlCommandType) {

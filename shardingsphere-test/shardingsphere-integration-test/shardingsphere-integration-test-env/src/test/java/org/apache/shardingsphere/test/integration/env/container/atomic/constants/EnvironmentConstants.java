@@ -26,9 +26,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EnvironmentConstants {
     
-    public static String CLUSTER_MODE = "Cluster";
+    public static final String CLUSTER_MODE = "Cluster";
     
-    public static String STANDALONE_MODE = "Standalone";
+    public static final String STANDALONE_MODE = "Standalone";
     
-    public static int DEFAULT_FULL_CONTAINER_QUANTITY = 8;
+    public static final int DEFAULT_FULL_CONTAINER_QUANTITY = 8;
 }
