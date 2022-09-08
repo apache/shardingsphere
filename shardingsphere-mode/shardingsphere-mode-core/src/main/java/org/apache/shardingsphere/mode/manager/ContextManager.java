@@ -274,6 +274,20 @@ public final class ContextManager implements AutoCloseable {
         switchingResource.closeStaleDataSources();
     }
     
+    private Map<String, DataSourceProperties> getToBeDeletedDataSourcePropsMap(final Map<String, DataSourceProperties> dataSourcePropsMap, final Collection<String> toBeDroppedResourceNames) {
+        return dataSourcePropsMap.entrySet().stream().filter(entry -> toBeDroppedResourceNames.contains(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+    }
+    
+    private Map<String, ShardingSphereDatabase> renewDatabase(final ShardingSphereDatabase database, final SwitchingResource resource) {
+        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
+        Map<String, DataSource> newDataSource =
+                database.getResource().getDataSources().entrySet().stream().filter(entry -> !resource.getStaleDataSources().containsKey(entry.getKey()))
+                        .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+        result.put(database.getName().toLowerCase(),
+                new ShardingSphereDatabase(database.getName(), database.getProtocolType(), new ShardingSphereResource(newDataSource), database.getRuleMetaData(), database.getSchemas()));
+        return result;
+    }
+    
     private Map<String, DataSourceProperties> getToBeReversedDataSourcePropsMap(final Map<String, DataSourceProperties> dataSourcePropsMap, final Collection<String> toBeDroppedResourceNames) {
         return dataSourcePropsMap.entrySet().stream().filter(entry -> !toBeDroppedResourceNames.contains(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
@@ -459,8 +473,8 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private void compareAndPersistMetaData(final MetaDataContexts metaDataContexts) {
-        metaDataContexts.getMetaData().getDatabases().values().forEach(
-                each -> each.getSchemas().forEach((schemaName, schema) -> metaDataContexts.getPersistService().getDatabaseMetaDataService().compareAndPersist(each.getName(), schemaName, schema)));
+        metaDataContexts.getMetaData().getDatabases().values().forEach(each -> each.getSchemas()
+                .forEach((schemaName, schema) -> metaDataContexts.getPersistService().getDatabaseMetaDataService().compareAndPersist(each.getName(), schemaName, schema)));
     }
     
     /**
