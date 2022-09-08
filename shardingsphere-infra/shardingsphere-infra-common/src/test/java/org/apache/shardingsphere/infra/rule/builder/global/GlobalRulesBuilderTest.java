@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.rule.builder.global;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.schedule.ScheduleContext;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
@@ -49,14 +50,16 @@ public final class GlobalRulesBuilderTest {
     @Test
     public void assertBuildRules() {
         Collection<ShardingSphereRule> shardingSphereRules = GlobalRulesBuilder
-                .buildRules(Collections.singletonList(new FixtureGlobalRuleConfiguration()), Collections.singletonMap("logic_db", buildShardingSphereDatabase()), buildInstanceContext());
+                .buildRules(Collections.singletonList(new FixtureGlobalRuleConfiguration()), Collections.singletonMap("logic_db", buildShardingSphereDatabase()), buildInstanceContext(),
+                        mock(ConfigurationProperties.class));
         assertThat(shardingSphereRules.size(), is(1));
     }
     
     @Test
     public void assertBuildRulesClassType() {
         Collection<ShardingSphereRule> shardingSphereRules = GlobalRulesBuilder
-                .buildRules(Collections.singletonList(new FixtureGlobalRuleConfiguration()), Collections.singletonMap("logic_db", buildShardingSphereDatabase()), buildInstanceContext());
+                .buildRules(Collections.singletonList(new FixtureGlobalRuleConfiguration()), Collections.singletonMap("logic_db", buildShardingSphereDatabase()), buildInstanceContext(),
+                        mock(ConfigurationProperties.class));
         assertTrue(shardingSphereRules.toArray()[0] instanceof FixtureGlobalRule);
     }
     

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.rule.builder.global;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -40,7 +41,8 @@ public interface GlobalRuleBuilder<T extends RuleConfiguration> extends RuleBuil
      * @param ruleConfig rule configuration
      * @param databases databases
      * @param instanceContext instance context
+     * @param props props
      * @return global rule
      */
-    GlobalRule build(T ruleConfig, Map<String, ShardingSphereDatabase> databases, InstanceContext instanceContext);
+    GlobalRule build(T ruleConfig, Map<String, ShardingSphereDatabase> databases, InstanceContext instanceContext, ConfigurationProperties props);
 }

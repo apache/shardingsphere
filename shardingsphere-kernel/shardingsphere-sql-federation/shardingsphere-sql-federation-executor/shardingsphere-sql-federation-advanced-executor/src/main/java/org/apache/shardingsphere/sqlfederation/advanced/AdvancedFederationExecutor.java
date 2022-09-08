@@ -54,7 +54,7 @@ import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContex
 import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContextFactory;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.TranslatableSchema;
 import org.apache.shardingsphere.sqlfederation.optimizer.planner.QueryOptimizePlannerFactory;
-import org.apache.shardingsphere.sqlfederation.spi.SQLFederationContext;
+import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
 
 import java.sql.Connection;
@@ -99,7 +99,7 @@ public final class AdvancedFederationExecutor implements SQLFederationExecutor {
     
     @Override
     public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
-                                  final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationContext federationContext) throws SQLException {
+                                  final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) throws SQLException {
         SQLStatementContext<?> sqlStatementContext = federationContext.getQueryContext().getSqlStatementContext();
         Preconditions.checkArgument(sqlStatementContext instanceof SelectStatementContext, "SQL statement context must be select statement context.");
         ShardingSphereSchema schema = federationContext.getDatabases().get(databaseName.toLowerCase()).getSchema(schemaName);
@@ -120,7 +120,7 @@ public final class AdvancedFederationExecutor implements SQLFederationExecutor {
     }
     
     private TranslatableSchema createTranslatableSchema(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final ShardingSphereSchema schema,
-                                                        final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationContext federationContext) {
+                                                        final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) {
         CommonTableScanExecutorContext executorContext = new CommonTableScanExecutorContext(databaseName, schemaName, props, federationContext);
         TranslatableTableScanExecutor executor = new TranslatableTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, globalRuleMetaData, executorContext, eventBusContext);
         return new TranslatableSchema(schemaName, schema, executor);

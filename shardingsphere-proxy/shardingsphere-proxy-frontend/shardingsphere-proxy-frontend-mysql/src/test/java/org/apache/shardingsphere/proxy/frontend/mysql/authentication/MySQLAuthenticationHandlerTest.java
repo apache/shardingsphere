@@ -153,7 +153,7 @@ public final class MySQLAuthenticationHandlerTest extends ProxyContextRestorer {
     
     private ShardingSphereRuleMetaData buildGlobalRuleMetaData(final ShardingSphereUser user, final boolean isNeedSuper) throws NoSuchFieldException, IllegalAccessException {
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.singletonList(user), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()));
-        AuthorityRule rule = new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap(), mock(InstanceContext.class));
+        AuthorityRule rule = new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap(), mock(InstanceContext.class), props);
         if (!isNeedSuper) {
             Field authorityRegistryField = AuthorityRule.class.getDeclaredField("authorityRegistry");
             AuthorityRegistry authorityRegistry = mock(AuthorityRegistry.class);

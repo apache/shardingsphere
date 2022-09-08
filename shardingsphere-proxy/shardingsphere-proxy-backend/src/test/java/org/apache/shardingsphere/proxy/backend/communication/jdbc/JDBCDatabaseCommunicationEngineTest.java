@@ -57,7 +57,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sqlfederation.factory.SQLFederationExecutorFactory;
-import org.apache.shardingsphere.sqlfederation.spi.SQLFederationContext;
+import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
 import org.junit.Before;
 import org.junit.Test;
@@ -146,7 +146,7 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
         try (
                 MockedStatic<SQLFederationExecutorFactory> federationExecutorFactory = mockStatic(SQLFederationExecutorFactory.class);
                 MockedStatic<SystemSchemaUtil> systemSchemaUtil = mockStatic(SystemSchemaUtil.class)) {
-            when(federationExecutor.executeQuery(any(DriverExecutionPrepareEngine.class), any(ProxyJDBCExecutorCallback.class), any(SQLFederationContext.class))).thenReturn(resultSet);
+            when(federationExecutor.executeQuery(any(DriverExecutionPrepareEngine.class), any(ProxyJDBCExecutorCallback.class), any(SQLFederationExecutorContext.class))).thenReturn(resultSet);
             when(resultSet.getMetaData().getColumnCount()).thenReturn(1);
             when(resultSet.getMetaData().getColumnType(1)).thenReturn(Types.INTEGER);
             when(resultSet.next()).thenReturn(true, false);

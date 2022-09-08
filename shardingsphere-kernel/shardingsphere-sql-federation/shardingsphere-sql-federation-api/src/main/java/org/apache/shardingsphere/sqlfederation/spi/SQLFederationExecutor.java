@@ -57,7 +57,7 @@ public interface SQLFederationExecutor extends TypedSPI, RequiredSPI, AutoClosea
      * @throws SQLException SQL exception
      */
     ResultSet executeQuery(DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
-                           JDBCExecutorCallback<? extends ExecuteResult> callback, SQLFederationContext federationContext) throws SQLException;
+                           JDBCExecutorCallback<? extends ExecuteResult> callback, SQLFederationExecutorContext federationContext) throws SQLException;
     
     /**
      * Get result set.

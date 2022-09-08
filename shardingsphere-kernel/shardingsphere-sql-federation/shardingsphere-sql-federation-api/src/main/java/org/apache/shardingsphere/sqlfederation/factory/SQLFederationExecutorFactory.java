@@ -19,10 +19,6 @@ package org.apache.shardingsphere.sqlfederation.factory;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
@@ -46,23 +42,5 @@ public final class SQLFederationExecutorFactory {
      */
     public static SQLFederationExecutor getInstance(final String type) {
         return TypedSPIRegistry.findRegisteredService(SQLFederationExecutor.class, type).orElse(RequiredSPIRegistry.getRegisteredService(SQLFederationExecutor.class));
-    }
-    
-    /**
-     * Create new instance of federation executor factory.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param metaData ShardingSphere meta data
-     * @param jdbcExecutor jdbc executor
-     * @param eventBusContext event bus context
-     * @return created instance
-     */
-    public static SQLFederationExecutor newInstance(final String databaseName, final String schemaName, final ShardingSphereMetaData metaData, final JDBCExecutor jdbcExecutor,
-                                                    final EventBusContext eventBusContext) {
-        String sqlFederationType = metaData.getProps().getValue(ConfigurationPropertyKey.SQL_FEDERATION_TYPE);
-        SQLFederationExecutor result = getInstance(sqlFederationType);
-        result.init(databaseName, schemaName, metaData, jdbcExecutor, eventBusContext);
-        return result;
     }
 }
