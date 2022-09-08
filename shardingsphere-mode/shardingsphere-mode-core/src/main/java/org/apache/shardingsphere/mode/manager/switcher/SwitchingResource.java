@@ -35,6 +35,7 @@ public final class SwitchingResource {
     @Getter
     private final Map<String, DataSource> newDataSources;
     
+    @Getter
     private final Map<String, DataSource> staleDataSources;
     
     /**

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCrea
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 
 import javax.sql.DataSource;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -42,6 +43,17 @@ public final class ResourceSwitchManager {
      */
     public SwitchingResource create(final ShardingSphereResource resource, final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {
         return new SwitchingResource(resource, createNewDataSources(resource, toBeChangedDataSourceProps), getStaleDataSources(resource, toBeChangedDataSourceProps));
+    }
+    
+    /**
+     * Create switching resource.
+     *
+     * @param resource resource
+     * @param toBeDeletedDataSourceProps to be deleted data source properties map
+     * @return created switching resource
+     */
+    public SwitchingResource createByDropResource(final ShardingSphereResource resource, final Map<String, DataSourceProperties> toBeDeletedDataSourceProps) {
+        return new SwitchingResource(resource, Collections.emptyMap(), getStaleDataSources(resource.getDataSources(), toBeDeletedDataSourceProps));
     }
     
     private Map<String, DataSource> createNewDataSources(final ShardingSphereResource resource, final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {
@@ -73,9 +85,12 @@ public final class ResourceSwitchManager {
     
     private Map<String, DataSource> getStaleDataSources(final ShardingSphereResource resource, final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {
         Map<String, DataSource> result = new LinkedHashMap<>(resource.getDataSources().size(), 1);
-        result.putAll(getToBeDeletedDataSources(resource, toBeChangedDataSourceProps));
         result.putAll(getToBeChangedDataSources(resource, toBeChangedDataSourceProps));
         return result;
+    }
+    
+    private Map<String, DataSource> getStaleDataSources(final Map<String, DataSource> dataSources, final Map<String, DataSourceProperties> toBeDeletedDataSourceProps) {
+        return dataSources.entrySet().stream().filter(entry -> toBeDeletedDataSourceProps.containsKey(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
     
     private Map<String, DataSource> getToBeDeletedDataSources(final ShardingSphereResource resource, final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {

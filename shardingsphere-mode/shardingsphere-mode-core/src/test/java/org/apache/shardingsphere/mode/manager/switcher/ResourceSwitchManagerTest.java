@@ -47,7 +47,6 @@ public final class ResourceSwitchManagerTest {
         Map<String, DataSource> result = new HashMap<>(3, 1);
         result.put("not_change", new MockedDataSource());
         result.put("replace", new MockedDataSource());
-        result.put("delete", new MockedDataSource());
         return result;
     }
     
@@ -67,7 +66,6 @@ public final class ResourceSwitchManagerTest {
     }
     
     private void assertStaleDataSources(final Map<String, DataSource> originalDataSourceMap) throws InterruptedException {
-        assertStaleDataSource((MockedDataSource) originalDataSourceMap.get("delete"));
         assertStaleDataSource((MockedDataSource) originalDataSourceMap.get("replace"));
         assertNotStaleDataSource((MockedDataSource) originalDataSourceMap.get("not_change"));
     }
