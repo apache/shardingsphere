@@ -62,7 +62,7 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
         try {
             loadTableMetaData(schemaName, tableName);
         } catch (final SQLException ex) {
-            throw new RuntimeException(String.format("Load metadata for table '%s' failed", tableName), ex);
+            throw new RuntimeException(String.format("Load metadata for schema '%s' and table '%s' failed", schemaName, tableName), ex);
         }
         result = tableMetaDataMap.get(new TableName(tableName));
         if (null == result) {

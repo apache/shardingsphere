@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.position;
+package org.apache.shardingsphere.data.pipeline.spi.ingest.position;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 /**
@@ -40,6 +40,6 @@ public final class PositionInitializerFactory {
      * @return got instance
      */
     public static PositionInitializer getInstance(final String databaseType) {
-        return TypedSPIRegistry.getRegisteredService(PositionInitializer.class, databaseType);
+        return TypedSPIRegistry.findRegisteredService(PositionInitializer.class, databaseType).orElseGet(() -> RequiredSPIRegistry.getRegisteredService(PositionInitializer.class));
     }
 }

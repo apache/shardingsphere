@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.position.fixture;
+package org.apache.shardingsphere.data.pipeline.core.ingest.position;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
@@ -23,7 +23,10 @@ import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionIniti
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
-public final class FixturePositionInitializer implements PositionInitializer {
+/**
+ * Default position initializer.
+ */
+public final class DefaultPositionInitializer implements PositionInitializer {
     
     @Override
     public IngestPosition<?> init(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
@@ -36,7 +39,7 @@ public final class FixturePositionInitializer implements PositionInitializer {
     }
     
     @Override
-    public String getType() {
-        return "FIXTURE";
+    public boolean isDefault() {
+        return true;
     }
 }

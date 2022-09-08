@@ -15,18 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
+package org.apache.shardingsphere.data.pipeline.core.datasource.creator;
 
-import org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm.fixture.FixturePipelineSQLBuilder;
-import org.junit.Test;
+import javax.sql.DataSource;
+import java.sql.SQLException;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-
-public final class PipelineSQLBuilderFactoryTest {
+public final class FixturePipelineDataSourceCreator implements PipelineDataSourceCreator {
     
-    @Test
-    public void assertGetInstance() {
-        assertThat(PipelineSQLBuilderFactory.getInstance("FIXTURE"), instanceOf(FixturePipelineSQLBuilder.class));
+    @Override
+    public DataSource createPipelineDataSource(final Object pipelineDataSourceConfig) throws SQLException {
+        return null;
+    }
+    
+    @Override
+    public String getType() {
+        return "FIXTURE";
     }
 }
