@@ -45,7 +45,7 @@ public final class ParameterizedArrayFactory {
         Collection<AssertionParameterizedArray> result = new LinkedList<>();
         for (String each : ENV.getRunModes()) {
             if ("Standalone".equalsIgnoreCase(each)) {
-                if (distSQLCommandType(sqlCommandType)) {
+                if (isDistSQLCommandType(sqlCommandType)) {
                     result.addAll(ProxyStandaloneParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType));
                 } else {
                     result.addAll(JdbcStandaloneParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType));
@@ -67,7 +67,7 @@ public final class ParameterizedArrayFactory {
         Collection<ParameterizedArray> result = new LinkedList<>();
         for (String each : ENV.getRunModes()) {
             if ("Standalone".equalsIgnoreCase(each)) {
-                if (distSQLCommandType(sqlCommandType)) {
+                if (isDistSQLCommandType(sqlCommandType)) {
                     result.addAll(ProxyStandaloneParameterizedArrayGenerator.getCaseParameterized(sqlCommandType));
                 } else {
                     result.addAll(JdbcStandaloneParameterizedArrayGenerator.getCaseParameterized(sqlCommandType));
@@ -79,7 +79,7 @@ public final class ParameterizedArrayFactory {
         return result;
     }
     
-    private static boolean distSQLCommandType(final SQLCommandType sqlCommandType) {
+    private static boolean isDistSQLCommandType(final SQLCommandType sqlCommandType) {
         return SQLCommandType.RDL == sqlCommandType || SQLCommandType.RAL == sqlCommandType || SQLCommandType.RQL == sqlCommandType;
     }
 }
