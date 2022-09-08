@@ -23,6 +23,8 @@ import org.apache.shardingsphere.integration.data.pipeline.framework.container.c
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.AdapterContainerConstants;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.EnvironmentConstants;
 import org.apache.shardingsphere.test.integration.env.container.atomic.governance.GovernanceContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.governance.impl.ZookeeperContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
@@ -51,8 +53,8 @@ public final class DockerContainerComposer extends BaseContainerComposer {
         storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, dockerImageName,
                 "", StorageContainerConfigurationFactory.newInstance(databaseType)));
         AdaptorContainerConfiguration containerConfig = ScalingProxyClusterContainerConfigurationFactory.newInstance(databaseType, dockerImageName);
-        ShardingSphereProxyClusterContainer proxyClusterContainer =
-                (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance("Cluster", "proxy", databaseType, storageContainer, "", containerConfig);
+        ShardingSphereProxyClusterContainer proxyClusterContainer = (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance(EnvironmentConstants.CLUSTER_MODE, 
+                AdapterContainerConstants.PROXY, databaseType, storageContainer, "", containerConfig);
         proxyClusterContainer.dependsOn(governanceContainer, storageContainer);
         proxyContainer = getContainers().registerContainer(proxyClusterContainer);
     }

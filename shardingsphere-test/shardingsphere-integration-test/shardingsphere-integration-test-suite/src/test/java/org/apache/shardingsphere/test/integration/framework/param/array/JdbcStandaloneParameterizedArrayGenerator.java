@@ -22,6 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.AdapterContainerConstants;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.EnvironmentConstants;
 import org.apache.shardingsphere.test.integration.env.runtime.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
@@ -35,7 +37,7 @@ import java.util.Collections;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JdbcStandaloneParameterizedArrayGenerator {
     
-    private static final Collection<String> ADAPTERS = Collections.singleton("jdbc");
+    private static final Collection<String> ADAPTERS = Collections.singleton(AdapterContainerConstants.JDBC);
     
     private static final Collection<DatabaseType> DATABASE_TYPES = Collections.singleton(DatabaseTypeFactory.getInstance("H2"));
     
@@ -48,7 +50,7 @@ public final class JdbcStandaloneParameterizedArrayGenerator {
      * @return assertion parameterized array
      */
     public static Collection<AssertionParameterizedArray> getAssertionParameterized(final SQLCommandType sqlCommandType) {
-        return new ParameterizedArrayGenerator(ADAPTERS, ENV.getScenarios(), "Standalone", DATABASE_TYPES).getAssertionParameterized(sqlCommandType);
+        return new ParameterizedArrayGenerator(ADAPTERS, ENV.getScenarios(), EnvironmentConstants.STANDALONE_MODE, DATABASE_TYPES).getAssertionParameterized(sqlCommandType);
     }
     
     /**
@@ -58,6 +60,6 @@ public final class JdbcStandaloneParameterizedArrayGenerator {
      * @return case parameterized array
      */
     public static Collection<ParameterizedArray> getCaseParameterized(final SQLCommandType sqlCommandType) {
-        return new ParameterizedArrayGenerator(ADAPTERS, ENV.getScenarios(), "Standalone", DATABASE_TYPES).getCaseParameterized(sqlCommandType);
+        return new ParameterizedArrayGenerator(ADAPTERS, ENV.getScenarios(), EnvironmentConstants.STANDALONE_MODE, DATABASE_TYPES).getCaseParameterized(sqlCommandType);
     }
 }

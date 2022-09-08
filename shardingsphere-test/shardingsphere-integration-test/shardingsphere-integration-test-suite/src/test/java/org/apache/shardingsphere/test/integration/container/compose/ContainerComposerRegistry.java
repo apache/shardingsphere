@@ -20,6 +20,8 @@ package org.apache.shardingsphere.test.integration.container.compose;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.integration.container.compose.mode.ClusterContainerComposer;
 import org.apache.shardingsphere.test.integration.container.compose.mode.StandaloneContainerComposer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.AdapterContainerConstants;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.EnvironmentConstants;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
 import javax.sql.DataSource;
@@ -31,7 +33,7 @@ import java.util.Map;
  */
 public final class ContainerComposerRegistry implements AutoCloseable {
     
-    private final Map<String, ContainerComposer> containerComposers = new HashMap<>(8, 1);
+    private final Map<String, ContainerComposer> containerComposers = new HashMap<>(EnvironmentConstants.DEFAULT_FULL_CONTAINER_QUANTITY, 1);
     
     /**
      * Get container composer.
@@ -58,7 +60,7 @@ public final class ContainerComposerRegistry implements AutoCloseable {
     
     private boolean isClusterMode(final ParameterizedArray parameterizedArray) {
         // TODO cluster mode often throw exception sometimes, issue is #15517
-        return "Cluster".equalsIgnoreCase(parameterizedArray.getMode()) && "proxy".equalsIgnoreCase(parameterizedArray.getAdapter());
+        return EnvironmentConstants.CLUSTER_MODE.equalsIgnoreCase(parameterizedArray.getMode()) && AdapterContainerConstants.PROXY.equalsIgnoreCase(parameterizedArray.getAdapter());
     }
     
     @Override

@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
  * Storage container constants.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class StorageContainerConstants {
+public final class StorageContainerConstants {
     
     public static final int MYSQL_EXPOSED_PORT = 3306;
     
