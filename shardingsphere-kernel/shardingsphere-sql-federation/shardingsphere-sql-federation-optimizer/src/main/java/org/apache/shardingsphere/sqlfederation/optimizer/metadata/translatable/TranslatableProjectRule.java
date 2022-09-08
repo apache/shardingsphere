@@ -26,7 +26,7 @@ import org.apache.calcite.rex.RexInputRef;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.tools.RelBuilderFactory;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,23 +45,22 @@ public class TranslatableProjectRule extends RelOptRule {
         LogicalProject project = call.rel(0);
         TranslatableTableScan scan = call.rel(1);
         int[] fields = getProjectFields(project.getProjects());
-        List expressions = project.getProjects();
-        int number = project.getProjects().size();
-        if (fields.length == 0) {
+        List<RexNode> expressions = project.getProjects();
+        if (0 == fields.length) {
             return;
-        } else if (fields.length == number) {
+        }
+        if (fields.length == expressions.size()) {
             call.transformTo(new TranslatableTableScan(scan.getCluster(), scan.getTable(), scan.getTranslatableTable(), scan.getFilters(), fields));
         } else {
-            TranslatableTableScan tableScan = new TranslatableTableScan(scan.getCluster(), scan.getTable(), scan.getTranslatableTable(), scan.getFilters(), fields, number, expressions);
+            TranslatableTableScan tableScan = new TranslatableTableScan(scan.getCluster(), scan.getTable(), scan.getTranslatableTable(), scan.getFilters(), fields, expressions.size(), expressions);
             RelNode logicalProject = LogicalProject.create(tableScan, project.getHints(), project.getProjects(), project.getRowType());
             call.transformTo(logicalProject);
         }
     }
     
     private int[] getProjectFields(final List<RexNode> rexNodes) {
-        List<Integer> rexInputRefs = new LinkedList<>();
-        for (int index = 0; index < rexNodes.size(); index++) {
-            RexNode exp = rexNodes.get(index);
+        List<Integer> rexInputRefs = new ArrayList<>();
+        for (RexNode exp : rexNodes) {
             if (exp instanceof RexInputRef) {
                 rexInputRefs.add(((RexInputRef) exp).getIndex());
             }
