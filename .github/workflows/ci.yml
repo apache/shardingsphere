@@ -57,7 +57,6 @@ env:
 
 jobs:
   linux:
-    if: github.repository == 'apache/shardingsphere'
     name: JDK ${{ matrix.java_version }} - on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
@@ -88,7 +87,6 @@ jobs:
   
   
   shardingsphere-example-generator:
-    if: github.repository == 'apache/shardingsphere'
     name: ShardingSphere example generator
     runs-on: ubuntu-latest
     steps:
