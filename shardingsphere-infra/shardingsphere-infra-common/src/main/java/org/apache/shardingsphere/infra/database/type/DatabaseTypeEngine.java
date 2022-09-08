@@ -51,7 +51,7 @@ public final class DatabaseTypeEngine {
      * @return protocol type
      */
     public static DatabaseType getProtocolType(final String databaseName, final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) {
-        return findConfiguredDatabaseType(props).orElseGet(() -> getDatabaseType(DataSourceStateManager.getInstance().getNonDisabledDataSources(databaseName, databaseConfig)));
+        return findConfiguredDatabaseType(props).orElseGet(() -> getDatabaseType(DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, databaseConfig)));
     }
     
     /**
@@ -66,7 +66,7 @@ public final class DatabaseTypeEngine {
         if (configuredDatabaseType.isPresent()) {
             return configuredDatabaseType.get();
         }
-        return getDatabaseType(DataSourceStateManager.getInstance().getNonDisabledDataSources(databaseConfigs));
+        return getDatabaseType(DataSourceStateManager.getInstance().getEnabledDataSources(databaseConfigs));
     }
     
     /**
@@ -76,7 +76,7 @@ public final class DatabaseTypeEngine {
      * @return storage type
      */
     public static DatabaseType getStorageType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
-        return getDatabaseType(DataSourceStateManager.getInstance().getNonDisabledDataSources(databaseConfigs));
+        return getDatabaseType(DataSourceStateManager.getInstance().getEnabledDataSources(databaseConfigs));
     }
     
     /**

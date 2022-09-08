@@ -48,7 +48,7 @@ public final class ShardingSphereDatabasesFactory {
     public static ShardingSphereDatabase create(final String databaseName, final DatabaseConfiguration databaseConfig,
                                                 final ConfigurationProperties props, final InstanceContext instanceContext) throws SQLException {
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseName, databaseConfig, props);
-        DatabaseType storageType = DatabaseTypeEngine.getDatabaseType(DataSourceStateManager.getInstance().getNonDisabledDataSources(databaseName, databaseConfig));
+        DatabaseType storageType = DatabaseTypeEngine.getDatabaseType(DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, databaseConfig));
         return ShardingSphereDatabase.create(databaseName, protocolType, storageType, databaseConfig, props, instanceContext);
     }
     

@@ -87,12 +87,12 @@ public final class DataSourceStateManager {
     }
     
     /**
-     * Filter disabled data sources.
+     * Get enabled data sources.
      *
      * @param databaseConfigs database config
-     * @return data sources in a non-disabled state
+     * @return enabled data sources
      */
-    public Collection<DataSource> getNonDisabledDataSources(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
+    public Collection<DataSource> getEnabledDataSources(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
         String databaseName = "";
         Map<String, DataSource> dataSources = Collections.emptyMap();
         for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigs.entrySet()) {
@@ -103,28 +103,28 @@ public final class DataSourceStateManager {
                 break;
             }
         }
-        return dataSources.isEmpty() ? dataSources.values() : filterDisabledDataSources(databaseName, dataSources).values();
+        return dataSources.isEmpty() ? dataSources.values() : getEnabledDataSourceMap(databaseName, dataSources).values();
     }
     
     /**
-     * Filter disabled data sources.
+     * Get enabled data sources.
      * 
      * @param databaseName database name
      * @param databaseConfig database config
-     * @return data sources in a non-disabled state
+     * @return enabled data sources
      */
-    public Collection<DataSource> getNonDisabledDataSources(final String databaseName, final DatabaseConfiguration databaseConfig) {
-        return databaseConfig.getDataSources().isEmpty() ? Collections.emptyList() : filterDisabledDataSources(databaseName, databaseConfig.getDataSources()).values();
+    public Collection<DataSource> getEnabledDataSources(final String databaseName, final DatabaseConfiguration databaseConfig) {
+        return databaseConfig.getDataSources().isEmpty() ? Collections.emptyList() : getEnabledDataSourceMap(databaseName, databaseConfig.getDataSources()).values();
     }
     
     /**
-     * Filter disabled data sources.
+     * Get enabled data source map.
      *
      * @param databaseName database name
      * @param dataSources data sources
-     * @return data sources in a non-disabled state
+     * @return enabled data source map
      */
-    public Map<String, DataSource> filterDisabledDataSources(final String databaseName, final Map<String, DataSource> dataSources) {
+    public Map<String, DataSource> getEnabledDataSourceMap(final String databaseName, final Map<String, DataSource> dataSources) {
         if (dataSources.isEmpty() || !initialized) {
             return dataSources;
         }

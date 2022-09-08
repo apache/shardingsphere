@@ -52,7 +52,7 @@ public final class ShardingSphereResource {
     public ShardingSphereResource(final String databaseName, final Map<String, DataSource> dataSources) {
         this.databaseName = databaseName;
         this.dataSources = dataSources;
-        databaseType = getDatabaseType(DataSourceStateManager.getInstance().filterDisabledDataSources(databaseName, dataSources));
+        databaseType = getDatabaseType(DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, dataSources));
         dataSourceMetaDataMap = createDataSourceMetaDataMap(dataSources);
     }
     

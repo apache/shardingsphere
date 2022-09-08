@@ -71,7 +71,7 @@ public final class SingleTableRule implements DatabaseRule, DataNodeContainedRul
     public SingleTableRule(final SingleTableRuleConfiguration ruleConfig, final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
         configuration = ruleConfig;
         defaultDataSource = ruleConfig.getDefaultDataSource().orElse(null);
-        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().filterDisabledDataSources(databaseName, dataSourceMap);
+        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, dataSourceMap);
         Map<String, DataSource> aggregateDataSourceMap = getAggregateDataSourceMap(enabledDataSources, builtRules);
         dataSourceNames = aggregateDataSourceMap.keySet();
         singleTableDataNodes = SingleTableDataNodeLoader.load(databaseName, DatabaseTypeEngine.getDatabaseType(enabledDataSources.values()), aggregateDataSourceMap, getLoadedTables(builtRules));
