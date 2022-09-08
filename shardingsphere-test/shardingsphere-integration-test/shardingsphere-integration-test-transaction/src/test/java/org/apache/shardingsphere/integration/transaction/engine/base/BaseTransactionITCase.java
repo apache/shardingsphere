@@ -30,6 +30,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -259,8 +260,11 @@ public abstract class BaseTransactionITCase extends BaseITCase {
         }
     }
     
-    private void doCallTestCases(final TransactionParameterized parameterized, TransactionType transactionType, String provider) {
+    private void doCallTestCases(final TransactionParameterized parameterized, final TransactionType transactionType, final String provider) {
         for (Class<? extends BaseTransactionTestCase> each : parameterized.getTransactionTestCaseClasses()) {
+            if (!Arrays.asList(each.getAnnotation(TransactionTestCase.class).transactionTypes()).contains(transactionType)) {
+                return;
+            }
             log.info("Call transaction IT {} -> {} -> {} -> {} test begin.", parameterized, transactionType, provider, each.getSimpleName());
             try {
                 each.getConstructor(BaseTransactionITCase.class, DataSource.class).newInstance(this, getDataSource()).execute();
