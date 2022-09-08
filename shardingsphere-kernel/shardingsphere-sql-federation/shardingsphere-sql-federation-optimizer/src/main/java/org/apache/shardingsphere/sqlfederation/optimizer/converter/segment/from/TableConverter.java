@@ -18,14 +18,15 @@
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.from;
 
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.from.impl.JoinTableConverter;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.from.impl.SimpleTableConverter;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.from.impl.SubqueryTableConverter;
+import org.apache.shardingsphere.infra.util.exception.external.sql.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.from.impl.JoinTableConverter;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.from.impl.SimpleTableConverter;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.from.impl.SubqueryTableConverter;
 
 import java.util.Optional;
 
@@ -46,6 +47,6 @@ public final class TableConverter implements SQLSegmentConverter<TableSegment, S
         } else if (segment instanceof SubqueryTableSegment) {
             return new SubqueryTableConverter().convert((SubqueryTableSegment) segment).map(optional -> optional);
         }
-        throw new UnsupportedOperationException("Unsupported segment type: " + segment.getClass());
+        throw new UnsupportedSQLOperationException("Unsupported segment type: " + segment.getClass());
     }
 }

@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.infra.util.exception.external.sql.UnsupportedSQLOperationException;
 
 /**
  * Pipeline data source configuration factory.
@@ -42,7 +43,7 @@ public final class PipelineDataSourceConfigurationFactory {
             case ShardingSpherePipelineDataSourceConfiguration.TYPE:
                 return new ShardingSpherePipelineDataSourceConfiguration(parameter);
             default:
-                throw new UnsupportedOperationException(String.format("Unsupported data source type '%s'", type));
+                throw new UnsupportedSQLOperationException(String.format("Unsupported data source type `%s`", type));
         }
     }
 }

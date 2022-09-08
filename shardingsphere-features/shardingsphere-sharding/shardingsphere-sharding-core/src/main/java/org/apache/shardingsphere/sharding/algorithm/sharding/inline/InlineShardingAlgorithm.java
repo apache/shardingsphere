@@ -22,6 +22,8 @@ import groovy.lang.Closure;
 import groovy.lang.MissingMethodException;
 import groovy.util.Expando;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.exception.external.sql.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
@@ -77,10 +79,9 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
-        if (allowRangeQuery) {
-            return availableTargetNames;
-        }
-        throw new UnsupportedOperationException("Since the property of `" + ALLOW_RANGE_QUERY_KEY + "` is false, inline sharding algorithm can not tackle with range query.");
+        ShardingSpherePreconditions.checkState(allowRangeQuery,
+                new UnsupportedSQLOperationException(String.format("Since the property of `%s` is false, inline sharding algorithm can not tackle with range query", ALLOW_RANGE_QUERY_KEY)));
+        return availableTargetNames;
     }
     
     private Closure<?> createClosure() {
