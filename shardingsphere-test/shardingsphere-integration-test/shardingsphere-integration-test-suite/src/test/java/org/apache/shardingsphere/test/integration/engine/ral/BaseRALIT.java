@@ -31,9 +31,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -87,13 +89,21 @@ public abstract class BaseRALIT extends SingleITCase {
     
     protected final void assertResultSet(final ResultSet resultSet) throws SQLException {
         assertMetaData(resultSet.getMetaData(), getExpectedColumns());
-        assertRows(resultSet, getDataSet().getRows());
+        assertRows(resultSet, getNotAssertionColumns(), getDataSet().getRows());
     }
     
     private Collection<DataSetColumn> getExpectedColumns() {
         Collection<DataSetColumn> result = new LinkedList<>();
         for (DataSetMetaData each : getDataSet().getMetaDataList()) {
             result.addAll(each.getColumns());
+        }
+        return result;
+    }
+    
+    private Collection<String> getNotAssertionColumns() {
+        Collection<String> result = new LinkedList<>();
+        for (DataSetMetaData each : getDataSet().getMetaDataList()) {
+            result.addAll(each.getColumns().stream().filter(column -> "false".equals(column.getAssertion())).map(DataSetColumn::getName).collect(Collectors.toList()));
         }
         return result;
     }
@@ -106,23 +116,27 @@ public abstract class BaseRALIT extends SingleITCase {
         }
     }
     
-    private void assertRows(final ResultSet actual, final List<DataSetRow> expected) throws SQLException {
+    private void assertRows(final ResultSet actual, final Collection<String> notAssertionColumns, final List<DataSetRow> expected) throws SQLException {
         int rowCount = 0;
         ResultSetMetaData actualMetaData = actual.getMetaData();
         while (actual.next()) {
             assertTrue("Size of actual result set is different with size of expected dat set rows.", rowCount < expected.size());
-            assertRow(actual, actualMetaData, expected.get(rowCount));
+            assertRow(actual, notAssertionColumns, actualMetaData, expected.get(rowCount));
             rowCount++;
         }
         assertThat("Size of actual result set is different with size of expected dat set rows.", rowCount, is(expected.size()));
     }
     
-    private void assertRow(final ResultSet actual, final ResultSetMetaData actualMetaData, final DataSetRow expected) throws SQLException {
+    private void assertRow(final ResultSet actual, final Collection<String> notAssertionColumns, final ResultSetMetaData actualMetaData, final DataSetRow expected) throws SQLException {
         int columnIndex = 1;
         for (String each : expected.splitValues("|")) {
             String columnLabel = actualMetaData.getColumnLabel(columnIndex);
-            assertObjectValue(actual, columnIndex, columnLabel, each);
-            columnIndex++;
+            if (notAssertionColumns.contains(columnLabel)) {
+                columnIndex++;
+            } else {
+                assertObjectValue(actual, columnIndex, columnLabel, each);
+                columnIndex++;
+            }
         }
     }
     
