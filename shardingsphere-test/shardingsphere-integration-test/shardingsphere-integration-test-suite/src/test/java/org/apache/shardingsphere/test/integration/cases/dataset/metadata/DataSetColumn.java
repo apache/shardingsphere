@@ -35,5 +35,8 @@ public final class DataSetColumn {
     private String name;
     
     @XmlAttribute
+    private String assertion;
+    
+    @XmlAttribute
     private String type;
 }
