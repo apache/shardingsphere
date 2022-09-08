@@ -219,6 +219,18 @@ public final class DatabaseMetaDataNode {
     }
     
     /**
+     * Get view meta data path.
+     *
+     * @param viewMetaDataPath view meta data path
+     * @return view name
+     */
+    public static Optional<String> getViewName(final String viewMetaDataPath) {
+        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)/([\\w\\-]+)/([\\w\\-]+)/views" + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(viewMetaDataPath);
+        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
+    }
+    
+    /**
      * Get active version path.
      * 
      * @param databaseName database name

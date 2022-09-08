@@ -39,6 +39,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
@@ -145,11 +146,15 @@ public final class ContextManager implements AutoCloseable {
      * @param databaseName database name
      * @param schemaName schema name
      * @param toBeDeletedTableName to be deleted table name
+     * @param toBeDeletedViewName to be deleted view name
      */
-    public synchronized void alterSchema(final String databaseName, final String schemaName, final String toBeDeletedTableName) {
-        if (metaDataContexts.getMetaData().containsDatabase(databaseName)) {
-            Optional.ofNullable(toBeDeletedTableName).ifPresent(optional -> dropTable(databaseName, schemaName, optional));
+    public synchronized void alterSchema(final String databaseName, final String schemaName, final String toBeDeletedTableName,
+                                         final String toBeDeletedViewName) {
+        if (!metaDataContexts.getMetaData().containsDatabase(databaseName) || !metaDataContexts.getMetaData().getDatabase(databaseName).containsSchema(schemaName)) {
+            return;
         }
+        Optional.ofNullable(toBeDeletedTableName).ifPresent(optional -> dropTable(databaseName, schemaName, optional));
+        Optional.ofNullable(toBeDeletedViewName).ifPresent(optional -> dropView(databaseName, schemaName, optional));
     }
     
     /**
@@ -158,35 +163,48 @@ public final class ContextManager implements AutoCloseable {
      * @param databaseName database name
      * @param schemaName schema name
      * @param toBeChangedTable to be changed table
+     * @param toBeChangedView to be changed view
      */
-    public synchronized void alterSchema(final String databaseName, final String schemaName, final ShardingSphereTable toBeChangedTable) {
-        if (metaDataContexts.getMetaData().containsDatabase(databaseName)) {
-            Optional.ofNullable(toBeChangedTable).ifPresent(optional -> alterTable(databaseName, schemaName, optional));
+    public synchronized void alterSchema(final String databaseName, final String schemaName, final ShardingSphereTable toBeChangedTable,
+                                         final ShardingSphereView toBeChangedView) {
+        if (!metaDataContexts.getMetaData().containsDatabase(databaseName) || !metaDataContexts.getMetaData().getDatabase(databaseName).containsSchema(schemaName)) {
+            return;
         }
+        Optional.ofNullable(toBeChangedTable).ifPresent(optional -> alterTable(databaseName, schemaName, optional));
+        Optional.ofNullable(toBeChangedView).ifPresent(optional -> alterView(databaseName, schemaName, optional));
+    }
+    
+    private synchronized void dropTable(final String databaseName, final String schemaName, final String toBeDeletedTableName) {
+        metaDataContexts.getMetaData().getDatabase(databaseName).getSchema(schemaName).removeTable(toBeDeletedTableName);
+        metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules().stream().filter(each -> each instanceof MutableDataNodeRule).findFirst()
+                .ifPresent(optional -> ((MutableDataNodeRule) optional).remove(schemaName, toBeDeletedTableName));
+    }
+    
+    private synchronized void dropView(final String databaseName, final String schemaName, final String toBeDeletedViewName) {
+        metaDataContexts.getMetaData().getDatabase(databaseName).getSchema(schemaName).removeView(toBeDeletedViewName);
+        metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules().stream().filter(each -> each instanceof MutableDataNodeRule).findFirst()
+                .ifPresent(optional -> ((MutableDataNodeRule) optional).remove(schemaName, toBeDeletedViewName));
     }
     
     private synchronized void alterTable(final String databaseName, final String schemaName, final ShardingSphereTable beBoChangedTable) {
-        alterTable(metaDataContexts.getMetaData().getDatabase(databaseName), schemaName, beBoChangedTable);
-    }
-    
-    private synchronized void alterTable(final ShardingSphereDatabase database, final String schemaName, final ShardingSphereTable beBoChangedTable) {
+        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
         if (!containsMutableDataNodeRule(database, beBoChangedTable.getName())) {
             database.reloadRules(MutableDataNodeRule.class);
         }
         database.getSchema(schemaName).putTable(beBoChangedTable.getName(), beBoChangedTable);
     }
     
+    private synchronized void alterView(final String databaseName, final String schemaName, final ShardingSphereView beBoChangedView) {
+        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
+        if (!containsMutableDataNodeRule(database, beBoChangedView.getName())) {
+            database.reloadRules(MutableDataNodeRule.class);
+        }
+        database.getSchema(schemaName).putView(beBoChangedView.getName(), beBoChangedView);
+    }
+    
     private boolean containsMutableDataNodeRule(final ShardingSphereDatabase database, final String tableName) {
         return database.getRuleMetaData().findRules(DataNodeContainedRule.class).stream()
                 .filter(each -> !(each instanceof MutableDataNodeRule)).anyMatch(each -> each.getAllTables().contains(tableName));
-    }
-    
-    private void dropTable(final String databaseName, final String schemaName, final String toBeDeletedTableName) {
-        if (metaDataContexts.getMetaData().getDatabase(databaseName).containsSchema(schemaName)) {
-            metaDataContexts.getMetaData().getDatabase(databaseName).getSchema(schemaName).removeTable(toBeDeletedTableName);
-            metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules().stream().filter(each -> each instanceof MutableDataNodeRule)
-                    .findFirst().ifPresent(optional -> ((MutableDataNodeRule) optional).remove(schemaName, toBeDeletedTableName));
-        }
     }
     
     /**

@@ -15,32 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.event;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereView;
-
-import java.util.ArrayList;
-import java.util.Collection;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * Schema altered event.
+ * Table meta data changed event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SchemaAlteredEvent implements MetaDataRefreshedEvent {
+public final class TableMetaDataChangedEvent implements GovernanceEvent {
     
     private final String databaseName;
     
     private final String schemaName;
     
-    private final Collection<ShardingSphereTable> alteredTables = new ArrayList<>();
+    private final ShardingSphereTable changedTableMetaData;
     
-    private final Collection<ShardingSphereView> alteredViews = new ArrayList<>();
-    
-    private final Collection<String> droppedTables = new ArrayList<>();
-    
-    private final Collection<String> droppedViews = new ArrayList<>();
+    private final String deletedTable;
 }
