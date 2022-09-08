@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.datasource.creator;
+package org.apache.shardingsphere.transaction.exception;
 
-import org.apache.shardingsphere.data.pipeline.core.datasource.creator.fixture.FixturePipelineDataSourceCreator;
-import org.junit.Test;
+import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-
-public final class PipelineDataSourceCreatorFactoryTest {
+/**
+ * Start nested XA transaction exception.
+ */
+public final class StartNestedXATransactionException extends ShardingSphereSQLException {
     
-    @Test
-    public void assertGetInstance() {
-        assertThat(PipelineDataSourceCreatorFactory.getInstance("FIXTURE"), instanceOf(FixturePipelineDataSourceCreator.class));
+    private static final long serialVersionUID = 7761100591709104351L;
+    
+    public StartNestedXATransactionException() {
+        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 11323, "Can not start new XA transaction in a active transaction");
     }
 }

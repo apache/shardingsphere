@@ -17,16 +17,29 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.position;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.fixture.FixturePositionInitializer;
-import org.junit.Test;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
+import javax.sql.DataSource;
+import java.sql.SQLException;
 
-public final class PositionInitializerFactoryTest {
+/**
+ * Default position initializer.
+ */
+public final class DefaultPositionInitializer implements PositionInitializer {
     
-    @Test
-    public void assertGetInstance() {
-        assertThat(PositionInitializerFactory.getInstance("FIXTURE"), instanceOf(FixturePositionInitializer.class));
+    @Override
+    public IngestPosition<?> init(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
+        return null;
+    }
+    
+    @Override
+    public IngestPosition<?> init(final String data) {
+        return null;
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
     }
 }

@@ -23,11 +23,11 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * Schema changed event.
+ * Table meta data changed event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SchemaChangedEvent implements GovernanceEvent {
+public final class TableMetaDataChangedEvent implements GovernanceEvent {
     
     private final String databaseName;
     

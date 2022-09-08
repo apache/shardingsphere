@@ -51,7 +51,7 @@ public enum PostgreSQLVendorError implements VendorError {
     
     INVALID_CATALOG_NAME(XOpenSQLState.INVALID_CATALOG_NAME, "database \"%s\" does not exist"),
     
-    UNDEFINED_COLUMN(PostgreSQLState.UNDEFINED_COLUMN, "undefined_column"),
+    UNDEFINED_COLUMN(PostgreSQLState.UNDEFINED_COLUMN, "Column \"%s\" of table \"%s\" does not exist"),
     
     DATA_SOURCE_REJECTED_CONNECTION_ATTEMPT(XOpenSQLState.DATA_SOURCE_REJECTED_CONNECTION_ATTEMPT, "server rejected establishment of sql connection"),
     

@@ -46,6 +46,7 @@ import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.sql.SqlKind;
 import org.codehaus.groovy.runtime.InvokerHelper;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -61,11 +62,26 @@ public class TranslatableTableScan extends TableScan implements EnumerableRel {
     
     private final List<RexNode> filters;
     
+    private final int number;
+    
+    private final List<RexNode> expressions;
+    
     public TranslatableTableScan(final RelOptCluster cluster, final RelOptTable table, final FederationTranslatableTable translatableTable, final int[] fields) {
         super(cluster, cluster.traitSetOf(EnumerableConvention.INSTANCE), ImmutableList.of(), table);
         this.translatableTable = translatableTable;
         this.fields = fields;
+        this.number = fields.length;
         this.filters = null;
+        this.expressions = new ArrayList<>();
+    }
+    
+    public TranslatableTableScan(final RelOptCluster cluster, final RelOptTable table, final FederationTranslatableTable translatableTable, final int[] fields, final int number) {
+        super(cluster, cluster.traitSetOf(EnumerableConvention.INSTANCE), ImmutableList.of(), table);
+        this.translatableTable = translatableTable;
+        this.fields = fields;
+        this.number = number;
+        this.filters = null;
+        this.expressions = new ArrayList<>();
     }
     
     public TranslatableTableScan(final RelOptCluster cluster, final RelOptTable table, final FederationTranslatableTable translatableTable,
@@ -73,18 +89,30 @@ public class TranslatableTableScan extends TableScan implements EnumerableRel {
         super(cluster, cluster.traitSetOf(EnumerableConvention.INSTANCE), ImmutableList.of(), table);
         this.translatableTable = translatableTable;
         this.fields = fields;
+        this.number = fields.length;
         this.filters = filters;
+        this.expressions = new ArrayList<>();
+    }
+    
+    public TranslatableTableScan(final RelOptCluster cluster, final RelOptTable table, final FederationTranslatableTable translatableTable,
+                                 final List<RexNode> filters, final int[] fields, final int number, final List<RexNode> expressions) {
+        super(cluster, cluster.traitSetOf(EnumerableConvention.INSTANCE), ImmutableList.of(), table);
+        this.translatableTable = translatableTable;
+        this.fields = fields;
+        this.number = number;
+        this.filters = filters;
+        this.expressions = expressions;
     }
     
     @Override
     public RelNode copy(final RelTraitSet traitSet, final List<RelNode> inputs) {
-        return new TranslatableTableScan(getCluster(), table, translatableTable, fields);
+        return new TranslatableTableScan(getCluster(), table, translatableTable, fields, number);
     }
     
     @Override
     public String toString() {
         if (null != filters) {
-            String[] filterValues = new String[fields.length];
+            String[] filterValues = new String[number];
             addFilter(filters, filterValues);
             return "TranslatableTableScan{translatableTable=" + translatableTable + ", fields=" + Arrays.toString(fields) + ", filters=" + Arrays.toString(filterValues) + '}';
         }
@@ -94,7 +122,7 @@ public class TranslatableTableScan extends TableScan implements EnumerableRel {
     @Override
     public RelWriter explainTerms(final RelWriter relWriter) {
         if (null != filters) {
-            String[] filterValues = new String[fields.length];
+            String[] filterValues = new String[number];
             addFilter(filters, filterValues);
             return super.explainTerms(relWriter).item("fields", Primitive.asList(fields)).item("filters", Primitive.asList(filterValues));
         }
@@ -120,7 +148,7 @@ public class TranslatableTableScan extends TableScan implements EnumerableRel {
     
     @Override
     public RelOptCost computeSelfCost(final RelOptPlanner planner, final RelMetadataQuery mq) {
-        return super.computeSelfCost(planner, mq).multiplyBy(((double) fields.length + 2D) / ((double) table.getRowType().getFieldCount() + 2D));
+        return super.computeSelfCost(planner, mq).multiplyBy(((double) number + 2D) / ((double) table.getRowType().getFieldCount() + 2D));
     }
     
     /**
@@ -133,7 +161,7 @@ public class TranslatableTableScan extends TableScan implements EnumerableRel {
     public Result implement(final EnumerableRelImplementor implementor, final Prefer pref) {
         PhysType physType = PhysTypeImpl.of(implementor.getTypeFactory(), getRowType(), pref.preferArray());
         if (null != filters) {
-            String[] filterValues = new String[fields.length];
+            String[] filterValues = new String[number];
             addFilter(filters, filterValues);
             return implementor.result(physType, Blocks.toBlock(Expressions.call(table.getExpression(FederationTranslatableTable.class),
                     "projectAndFilter", implementor.getRootExpression(), Expressions.constant(filterValues), Expressions.constant(fields))));

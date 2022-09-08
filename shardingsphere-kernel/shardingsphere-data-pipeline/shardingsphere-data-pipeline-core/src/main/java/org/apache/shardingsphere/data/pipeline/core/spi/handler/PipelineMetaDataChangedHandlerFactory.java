@@ -15,28 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.position.fixture;
+package org.apache.shardingsphere.data.pipeline.core.spi.handler;
 
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
+import java.util.Collection;
 
-public final class FixturePositionInitializer implements PositionInitializer {
+/**
+ * Pipeline meta data listener factory.
+ */
+public final class PipelineMetaDataChangedHandlerFactory {
     
-    @Override
-    public IngestPosition<?> init(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
-        return null;
+    static {
+        ShardingSphereServiceLoader.register(PipelineMetaDataChangedHandler.class);
     }
     
-    @Override
-    public IngestPosition<?> init(final String data) {
-        return null;
-    }
-    
-    @Override
-    public String getType() {
-        return "FIXTURE";
+    /**
+     * Get pipeline meta data listener instance.
+     *
+     * @return pipeline meta data listener
+     */
+    public static Collection<PipelineMetaDataChangedHandler> findAllInstances() {
+        return ShardingSphereServiceLoader.getServiceInstances(PipelineMetaDataChangedHandler.class);
     }
 }

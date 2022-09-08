@@ -15,19 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core;
+package org.apache.shardingsphere.data.pipeline.core.spi.process;
 
-import org.apache.shardingsphere.data.pipeline.core.fixture.MigrationJobAPIFixture;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPIFactory;
-import org.junit.Test;
+import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-
-public final class MigrationJobAPIFactoryTest {
+/**
+ * Pipeline job config changed event processor.
+ */
+public interface PipelineJobConfigurationChangedEventProcessor extends TypedSPI {
     
-    @Test
-    public void assertGetInstance() {
-        assertThat(MigrationJobAPIFactory.getInstance(), instanceOf(MigrationJobAPIFixture.class));
-    }
+    /**
+     * Process data changed event.
+     *
+     * @param jobConfigPOJO job config
+     * @param event event
+     */
+    void process(DataChangedEvent event, JobConfigurationPOJO jobConfigPOJO);
 }
