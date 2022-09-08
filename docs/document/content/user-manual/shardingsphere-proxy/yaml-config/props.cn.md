@@ -25,7 +25,7 @@ Apache ShardingSphere 提供属性配置的方式配置系统级配置。本节�
 | proxy-frontend-executor-size (?)    | int      | Proxy 前端 Netty 线程池线程数量，默认值 0 代表使用 Netty 默认值。                                                                                           | 0        | 否      |
 | proxy-backend-executor-suitable (?) | String   | 可选选项：OLAP、OLTP。OLTP 选项可能会减少向客户端写入数据包的时间开销，但如果客户端连接数超过 `proxy-frontend-executor-size`，尤其是执行慢 SQL 时，它可能会增加 SQL 执行的延迟甚至阻塞其他客户端的连接。        | OLAP     | 是      |
 | proxy-frontend-max-connections (?)  | int      | 允许连接 Proxy 的最大客户端数量，默认值 0 代表不限制。                                                                                                       | 0        | 是      |
-| sql-federation-type (?)             | String   | 联邦查询执行器类型，包括：NONE，ORIGINAL，ADVANCED。                                                                                                   | NONE    | 是      |
+| sql-federation-type (?)             | String   | 联邦查询执行器类型，包括：NONE，ORIGINAL，ADVANCED。                                                                                                   | NONE    | 否      |
 | proxy-mysql-default-version (?)     | String   | Proxy 通过配置文件指定 MySQL 的版本号,默认版本：5.7.22。                                                                                                 | 5.7.22   | 否      |
 | proxy-default-port (?)              | String   | Proxy 通过配置文件指定默认端口。                                                                                                                    | 3307     | 否      |
 | proxy-netty-backlog (?)             | int      | Proxy 通过配置文件指定默认netty back_log参数。                                                                                                      | 1024     | 否      |
