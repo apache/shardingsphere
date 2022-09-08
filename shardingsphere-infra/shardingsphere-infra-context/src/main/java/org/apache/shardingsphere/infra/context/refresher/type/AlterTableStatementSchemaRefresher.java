@@ -50,17 +50,17 @@ public final class AlterTableStatementSchemaRefresher implements MetaDataRefresh
             String renameTable = sqlStatement.getRenameTable().get().getTableName().getIdentifier().getValue();
             putTableMetaData(database, logicDataSourceNames, schemaName, renameTable, props);
             removeTableMetaData(database, schemaName, tableName);
-            event.getAlteredTables().add(database.getSchema(schemaName).get(renameTable));
+            event.getAlteredTables().add(database.getSchema(schemaName).getTable(renameTable));
             event.getDroppedTables().add(tableName);
         } else {
             putTableMetaData(database, logicDataSourceNames, schemaName, tableName, props);
-            event.getAlteredTables().add(database.getSchema(schemaName).get(tableName));
+            event.getAlteredTables().add(database.getSchema(schemaName).getTable(tableName));
         }
         return Optional.of(event);
     }
     
     private void removeTableMetaData(final ShardingSphereDatabase database, final String schemaName, final String tableName) {
-        database.getSchema(schemaName).remove(tableName);
+        database.getSchema(schemaName).removeTable(tableName);
         database.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.remove(schemaName, tableName));
     }
     
@@ -72,8 +72,8 @@ public final class AlterTableStatementSchemaRefresher implements MetaDataRefresh
         GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(database.getProtocolType(),
                 database.getResource().getDatabaseType(), database.getResource().getDataSources(), database.getRuleMetaData().getRules(), props, schemaName);
         Map<String, ShardingSphereSchema> schemaMap = GenericSchemaBuilder.build(Collections.singletonList(tableName), materials);
-        Optional<ShardingSphereTable> actualTableMetaData = Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.get(tableName));
-        actualTableMetaData.ifPresent(optional -> database.getSchema(schemaName).put(tableName, optional));
+        Optional<ShardingSphereTable> actualTableMetaData = Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.getTable(tableName));
+        actualTableMetaData.ifPresent(optional -> database.getSchema(schemaName).putTable(tableName, optional));
     }
     
     private boolean containsInImmutableDataNodeContainedRule(final String tableName, final ShardingSphereDatabase database) {

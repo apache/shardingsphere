@@ -316,7 +316,7 @@ cp -f ~/shardingsphere/shardingsphere-agent/shardingsphere-agent-distribution/ta
 ### 4. 提交 Apache SVN
 
 ```shell
-svn add *
+svn add * --parents
 svn --username=${APACHE LDAP 用户名} commit -m "release ${RELEASE.VERSION}"
 ```
 
@@ -434,7 +434,7 @@ Hello ShardingSphere Community,
 This is a call for vote to release Apache ShardingSphere version ${RELEASE.VERSION}
 
 Release notes:
-https://github.com/apache/shardingsphere/blob/master/RELEASE-NOTES.md
+https://github.com/apache/shardingsphere/blob/${RELEASE.VERSION}-release/RELEASE-NOTES.md
 
 The release candidates:
 https://dist.apache.org/repos/dist/dev/shardingsphere/${RELEASE.VERSION}/
@@ -483,6 +483,8 @@ Checklist for reference:
 
 [ ] No compiled archives bundled in source archive.
 ```
+
+> 注意：`Release Commit ID` 使用发布分支上与 `prepare release ${RELEASE.VERSION}` 日志对应的 commit id。 
 
 2. 宣布投票结果模板：
 
@@ -592,6 +594,10 @@ svn del -m "Archiving release ${PREVIOUS.RELEASE.VERSION}" https://dist.apache.o
 - shadow-${RELEASE.VERSION}.xsd  
 - database-discovery.xsd
 - database-discovery-${RELEASE.VERSION}.xsd
+- sql-parser.xsd
+- sql-parser-${RELEASE.VERSION}.xsd
+- sql-translator.xsd
+- sql-translator-${RELEASE.VERSION}.xsd
 
 ### 7. 官网首页增加发布版本文档入口
 

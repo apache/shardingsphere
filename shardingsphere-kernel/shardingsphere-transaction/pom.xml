@@ -31,5 +31,6 @@
         <module>shardingsphere-transaction-api</module>
         <module>shardingsphere-transaction-core</module>
         <module>shardingsphere-transaction-type</module>
+        <module>shardingsphere-transaction-distsql</module>
     </modules>
 </project>

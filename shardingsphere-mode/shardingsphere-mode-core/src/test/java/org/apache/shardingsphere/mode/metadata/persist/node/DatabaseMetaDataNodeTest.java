@@ -58,6 +58,11 @@ public class DatabaseMetaDataNodeTest {
     }
     
     @Test
+    public void assertGetMetaDataViewsPath() {
+        assertThat(DatabaseMetaDataNode.getMetaDataViewsPath("sharding_db", "sharding_schema"), is("/metadata/sharding_db/schemas/sharding_schema/views"));
+    }
+    
+    @Test
     public void assertGetDatabaseNameByDatabasePath() {
         Optional<String> actualSchemaName = DatabaseMetaDataNode.getDatabaseNameByDatabasePath("/metadata/logic_db/schemas/logic_schema");
         assertTrue(actualSchemaName.isPresent());
@@ -69,6 +74,13 @@ public class DatabaseMetaDataNodeTest {
         Optional<String> actualTableName = DatabaseMetaDataNode.getTableName("/metadata/logic_db/schemas/logic_schema/tables/t_order");
         assertTrue(actualTableName.isPresent());
         assertThat(actualTableName.get(), is("t_order"));
+    }
+    
+    @Test
+    public void assertGetViewName() {
+        Optional<String> actualViewName = DatabaseMetaDataNode.getViewName("/metadata/logic_db/schemas/logic_schema/views/foo_view");
+        assertTrue(actualViewName.isPresent());
+        assertThat(actualViewName.get(), is("foo_view"));
     }
     
     @Test
@@ -105,6 +117,11 @@ public class DatabaseMetaDataNodeTest {
     @Test
     public void assertGetTableMetaDataPath() {
         assertThat(DatabaseMetaDataNode.getTableMetaDataPath("logic_db", "logic_schema", "order"), is("/metadata/logic_db/schemas/logic_schema/tables/order"));
+    }
+    
+    @Test
+    public void assertGetViewMetaDataPath() {
+        assertThat(DatabaseMetaDataNode.getViewMetaDataPath("logic_db", "logic_schema", "order_view"), is("/metadata/logic_db/schemas/logic_schema/views/order_view"));
     }
     
     @Test

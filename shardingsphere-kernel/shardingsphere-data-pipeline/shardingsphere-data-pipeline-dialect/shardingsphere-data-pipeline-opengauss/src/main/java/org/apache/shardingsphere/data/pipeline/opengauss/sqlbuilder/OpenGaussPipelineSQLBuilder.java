@@ -49,7 +49,7 @@ public final class OpenGaussPipelineSQLBuilder extends AbstractPipelineSQLBuilde
     
     @Override
     public String buildInsertSQL(final String schemaName, final DataRecord dataRecord, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
-        return super.buildInsertSQL(schemaName, dataRecord, shardingColumnsMap) + buildConflictSQL(shardingColumnsMap);
+        return super.buildInsertSQL(schemaName, dataRecord, shardingColumnsMap) + buildConflictSQL(dataRecord, shardingColumnsMap);
     }
     
     @Override
@@ -57,9 +57,17 @@ public final class OpenGaussPipelineSQLBuilder extends AbstractPipelineSQLBuilde
         return record.getColumns().stream().filter(each -> !(each.isUniqueKey() || isShardingColumn(shardingColumnsMap, record.getTableName(), each.getName()))).collect(Collectors.toList());
     }
     
-    private String buildConflictSQL(final Map<LogicTableName, Set<String>> shardingColumnsMap) {
-        // TODO there need return ON DUPLICATE KEY UPDATE NOTHING after support this syntax.
-        return "";
+    private String buildConflictSQL(final DataRecord dataRecord, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
+        StringBuilder result = new StringBuilder(" ON DUPLICATE KEY UPDATE ");
+        for (int i = 0; i < dataRecord.getColumnCount(); i++) {
+            Column column = dataRecord.getColumn(i);
+            if (column.isUniqueKey() || isShardingColumn(shardingColumnsMap, dataRecord.getTableName(), column.getName())) {
+                continue;
+            }
+            result.append(quote(column.getName())).append("=EXCLUDED.").append(quote(column.getName())).append(",");
+        }
+        result.setLength(result.length() - 1);
+        return result.toString();
     }
     
     @Override

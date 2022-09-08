@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.test.integration.env.container.atomic.adapter.impl;
 
-import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.ProxyContainerConstants;
+import org.apache.shardingsphere.test.integration.env.container.atomic.util.StorageContainerUtil;
 import org.apache.shardingsphere.test.integration.env.container.wait.JdbcConnectionWaitStrategy;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.testcontainers.containers.BindMode;
@@ -79,20 +79,10 @@ public final class ShardingSphereProxyClusterContainer extends DockerITContainer
     public DataSource getTargetDataSource(final String serverLists) {
         DataSource dataSource = targetDataSourceProvider.get();
         if (Objects.isNull(dataSource)) {
-            targetDataSourceProvider.set(createProxyDataSource());
+            targetDataSourceProvider.set(StorageContainerUtil.generateDataSource(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), config.getProxyDataSourceName()),
+                    ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD));
         }
         return targetDataSourceProvider.get();
-    }
-    
-    private DataSource createProxyDataSource() {
-        HikariDataSource result = new HikariDataSource();
-        result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
-        result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), config.getProxyDataSourceName()));
-        result.setUsername(ProxyContainerConstants.USERNAME);
-        result.setPassword(ProxyContainerConstants.PASSWORD);
-        result.setMaximumPoolSize(2);
-        result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
-        return result;
     }
     
     @Override

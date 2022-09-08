@@ -17,7 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="create_publication" value="CREATE PUBLICATION mypublication FOR TABLE users, departments;" db-types="openGauss" />
-    <sql-case id="create_publication_for_all_tables" value="CREATE PUBLICATION alltables FOR ALL TABLES;" db-types="openGauss" />
-    <sql-case id="create_publication_with_statement" value="CREATE PUBLICATION insert_only FOR TABLE mydata WITH (publish = 'insert');" db-types="openGauss" />
+    <sql-case id="create_publication" value="CREATE PUBLICATION mypublication FOR TABLE users, departments;" db-types="openGauss, PostgreSQL" />
+    <sql-case id="create_publication_for_all_tables" value="CREATE PUBLICATION alltables FOR ALL TABLES;" db-types="openGauss, PostgreSQL" />
+    <sql-case id="create_publication_with_statement" value="CREATE PUBLICATION insert_only FOR TABLE mydata WITH (publish = 'insert');" db-types="openGauss, PostgreSQL" />
 </sql-cases>

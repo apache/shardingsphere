@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.database.type.dialect;
 
 import org.apache.shardingsphere.infra.database.metadata.dialect.OpenGaussDataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
@@ -64,9 +65,8 @@ public final class OpenGaussDatabaseType implements SchemaSupportedDatabaseType 
     
     @Override
     public void handleRollbackOnly(final boolean rollbackOnly, final SQLStatement statement) throws SQLException {
-        if (rollbackOnly && !(statement instanceof CommitStatement) && !(statement instanceof RollbackStatement)) {
-            throw new SQLFeatureNotSupportedException("Current transaction is aborted, commands ignored until end of transaction block.");
-        }
+        ShardingSpherePreconditions.checkState(!rollbackOnly || statement instanceof CommitStatement || statement instanceof RollbackStatement,
+                new SQLFeatureNotSupportedException("Current transaction is aborted, commands ignored until end of transaction block."));
     }
     
     @Override

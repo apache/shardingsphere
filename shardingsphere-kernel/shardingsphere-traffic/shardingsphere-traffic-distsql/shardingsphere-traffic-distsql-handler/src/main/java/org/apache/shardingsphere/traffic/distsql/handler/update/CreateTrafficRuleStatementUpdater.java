@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.update.GlobalRuleRALUpdater;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -47,10 +48,10 @@ import java.util.stream.Collectors;
 public final class CreateTrafficRuleStatementUpdater implements GlobalRuleRALUpdater {
     
     @Override
-    public void executeUpdate(final ShardingSphereRuleMetaData ruleMetaData, final SQLStatement sqlStatement) throws DistSQLException {
+    public void executeUpdate(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) throws DistSQLException {
         CreateTrafficRuleStatement statement = (CreateTrafficRuleStatement) sqlStatement;
-        check(ruleMetaData, statement);
-        replaceNewRule(ruleMetaData, statement);
+        check(metaData.getGlobalRuleMetaData(), statement);
+        replaceNewRule(metaData.getGlobalRuleMetaData(), statement);
     }
     
     private void check(final ShardingSphereRuleMetaData ruleMetaData, final CreateTrafficRuleStatement sqlStatement) throws DistSQLException {

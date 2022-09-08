@@ -74,9 +74,28 @@ else
     echo "unadapted java version, please notice..."
 fi
 
+DEFAULT_CGROUP_MEM_OPTS=""
+if [ "$int_version" = '8' ] ; then
+	DEFAULT_CGROUP_MEM_OPTS=" -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:InitialRAMPercentage=80.0 -XX:MinRAMPercentage=80.0 -XX:MaxRAMPercentage=80.0 "
+else
+	DEFAULT_CGROUP_MEM_OPTS=" -XX:InitialRAMPercentage=80.0 -XX:MinRAMPercentage=80.0 -XX:MaxRAMPercentage=80.0 "
+fi
+
+CGROUP_MEM_OPTS="${CGROUP_MEM_OPTS:-${DEFAULT_CGROUP_MEM_OPTS}}"
+
 JAVA_OPTS=" -Djava.awt.headless=true "
 
-JAVA_MEM_OPTS=" -server -Xmx2g -Xms2g -Xmn1g -Xss1m -XX:AutoBoxCacheMax=4096 -XX:+UseNUMA -XX:+DisableExplicitGC -XX:LargePageSizeInBytes=128m ${VERSION_OPTS} -Dio.netty.leakDetection.level=DISABLED "
+DEFAULT_JAVA_MEM_COMMON_OPTS=" -Xmx2g -Xms2g -Xmn1g "
+if [ -n "${IS_DOCKER}" ]; then
+	JAVA_MEM_COMMON_OPTS="${CGROUP_MEM_OPTS}"
+else
+	JAVA_MEM_COMMON_OPTS="${JAVA_MEM_COMMON_OPTS:-${DEFAULT_JAVA_MEM_COMMON_OPTS}}"
+fi
+
+JAVA_MEM_OPTS=" -server ${JAVA_MEM_COMMON_OPTS} -Xss1m -XX:AutoBoxCacheMax=4096 -XX:+UseNUMA -XX:+DisableExplicitGC -XX:LargePageSizeInBytes=128m ${VERSION_OPTS} -Dio.netty.leakDetection.level=DISABLED "
+
+
+
 
 MAIN_CLASS=org.apache.shardingsphere.proxy.Bootstrap
 
@@ -160,7 +179,7 @@ MAIN_CLASS="${MAIN_CLASS} ${PORT} ${CONF_PATH} ${ADDRESSES}"
 echo "The classpath is ${CLASS_PATH}"
 echo "main class ${MAIN_CLASS}"
 
-if [ "${IS_DOCKER}" ]; then
+if [ -n "${IS_DOCKER}" ]; then
   exec $JAVA ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} ${MAIN_CLASS}
   exit 0
 fi

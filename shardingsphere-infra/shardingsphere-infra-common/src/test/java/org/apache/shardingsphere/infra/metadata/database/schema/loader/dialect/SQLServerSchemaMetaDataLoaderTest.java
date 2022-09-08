@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.Col
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ViewMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoaderFactory;
 import org.junit.Test;
@@ -71,6 +72,8 @@ public final class SQLServerSchemaMetaDataLoaderTest {
     
     private static final String LOAD_INDEX_META_DATA = "SELECT a.name AS INDEX_NAME, c.name AS TABLE_NAME FROM sys.indexes a"
             + " JOIN sys.objects c ON a.object_id = c.object_id WHERE a.index_id NOT IN (0, 255) AND c.name IN ('tbl')";
+    
+    private static final String LOAD_VIEW_META_DATA = "SELECT TABLE_NAME, VIEW_DEFINITION FROM INFORMATION_SCHEMA.VIEWS WHERE TABLE_CATALOG = ?";
     
     @Test
     public void assertLoadWithoutTablesWithHighVersion() throws SQLException {
@@ -142,6 +145,18 @@ public final class SQLServerSchemaMetaDataLoaderTest {
         assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false, true)));
     }
     
+    @Test
+    public void assertLoadViewMetaData() throws SQLException {
+        DataSource dataSource = mockDataSource();
+        ResultSet resultSet = mockViewMetaDataResultSet();
+        when(dataSource.getConnection().prepareStatement(LOAD_VIEW_META_DATA)
+                .executeQuery()).thenReturn(resultSet);
+        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.singletonList("tbl"), "sharding_db");
+        ViewMetaData actualViewMetaData = actual.iterator().next().getViews().iterator().next();
+        assertThat(actualViewMetaData.getName(), is("v_order"));
+        assertThat(actualViewMetaData.getViewDefinition(), is("create view v_order as select * from t_order;"));
+    }
+    
     private DataSource mockDataSource() throws SQLException {
         DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
         ResultSet typeInfoResultSet = mockTypeInfoResultSet();
@@ -175,6 +190,14 @@ public final class SQLServerSchemaMetaDataLoaderTest {
         when(result.next()).thenReturn(true, false);
         when(result.getString("INDEX_NAME")).thenReturn("id");
         when(result.getString("TABLE_NAME")).thenReturn("tbl");
+        return result;
+    }
+    
+    private ResultSet mockViewMetaDataResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, false);
+        when(result.getString("TABLE_NAME")).thenReturn("v_order");
+        when(result.getString("VIEW_DEFINITION")).thenReturn("create view v_order as select * from t_order;");
         return result;
     }
     

@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Scaling Job status.
+ * Job status.
  */
 @RequiredArgsConstructor
 @Getter

@@ -18,6 +18,9 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.subscriber;
 
 import com.google.common.eventbus.Subscribe;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.AddSchemaEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.AlterSchemaEvent;
@@ -26,6 +29,9 @@ import org.apache.shardingsphere.infra.metadata.database.schema.event.DropSchema
 import org.apache.shardingsphere.infra.metadata.database.schema.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseMetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Schema meta data registry subscriber.
@@ -47,8 +53,13 @@ public final class SchemaMetaDataRegistrySubscriber {
      */
     @Subscribe
     public void update(final SchemaAlteredEvent event) {
-        event.getAlteredTables().forEach(each -> persistService.persistTable(event.getDatabaseName(), event.getSchemaName(), each));
-        event.getDroppedTables().forEach(each -> persistService.deleteTable(event.getDatabaseName(), event.getSchemaName(), each));
+        String databaseName = event.getDatabaseName();
+        String schemaName = event.getSchemaName();
+        Map<String, ShardingSphereTable> tables = event.getAlteredTables().stream().collect(Collectors.toMap(ShardingSphereTable::getName, table -> table));
+        Map<String, ShardingSphereView> views = event.getAlteredViews().stream().collect(Collectors.toMap(ShardingSphereView::getName, table -> table));
+        persistService.persist(databaseName, schemaName, new ShardingSphereSchema(tables, views));
+        event.getDroppedTables().forEach(each -> persistService.getTableMetaDataPersistService().delete(databaseName, schemaName, each));
+        event.getDroppedViews().forEach(each -> persistService.getViewMetaDataPersistService().delete(databaseName, schemaName, each));
     }
     
     /**
@@ -58,7 +69,7 @@ public final class SchemaMetaDataRegistrySubscriber {
      */
     @Subscribe
     public void addSchema(final AddSchemaEvent event) {
-        persistService.persistSchema(event.getDatabaseName(), event.getSchemaName());
+        persistService.addSchema(event.getDatabaseName(), event.getSchemaName());
     }
     
     /**
@@ -68,8 +79,8 @@ public final class SchemaMetaDataRegistrySubscriber {
      */
     @Subscribe
     public void alterSchema(final AlterSchemaEvent event) {
-        persistService.compareAndPersistMetaData(event.getDatabaseName(), event.getRenameSchemaName(), event.getSchema());
-        persistService.deleteSchema(event.getDatabaseName(), event.getSchemaName());
+        persistService.compareAndPersist(event.getDatabaseName(), event.getRenameSchemaName(), event.getSchema());
+        persistService.dropSchema(event.getDatabaseName(), event.getSchemaName());
     }
     
     /**
@@ -79,7 +90,7 @@ public final class SchemaMetaDataRegistrySubscriber {
      */
     @Subscribe
     public void dropSchema(final DropSchemaEvent event) {
-        event.getSchemaNames().forEach(each -> persistService.deleteSchema(event.getDatabaseName(), each));
+        event.getSchemaNames().forEach(each -> persistService.dropSchema(event.getDatabaseName(), each));
     }
     
     /**

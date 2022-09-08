@@ -75,6 +75,7 @@
     <sql-case id="select_where_with_simple_expr_with_odbc_escape_syntax" value="SELECT * FROM t_order WHERE {ts ?}" db-types="MySQL" />
     <sql-case id="select_where_with_simple_expr_with_json_extract_sign" value="SELECT * FROM t_order WHERE order_id -&gt;&quot;$[1]&quot;" db-types="MySQL" />
     <sql-case id="select_where_with_simple_expr_with_json_unquote_extract_sign" value="SELECT * FROM t_order WHERE order_id -&gt;&gt; &quot;$[1]&quot;" db-types="MySQL" />
+    <sql-case id="select_where_with_simple_expr_with_json_contains" value="SELECT * FROM t_order WHERE JSON_CONTAINS(order_msg -> '$[*].code', 'x', '$') " db-types="MySQL" />
     <sql-case id="select_where_with_simple_expr_with_match" value="SELECT * FROM t_order WHERE MATCH (order_id) AGAINST (? IN NATURAL LANGUAGE MODE)" db-types="MySQL" />
     <sql-case id="select_where_with_simple_expr_with_case" value="SELECT * FROM t_order WHERE CASE WHEN order_id &gt; ? THEN ? ELSE ? END" db-types="MySQL" />
     <sql-case id="select_where_with_expr_with_not_with_order_by" value="SELECT last_name, job_id, salary, department_id FROM employees WHERE NOT (job_id = 'PU_CLERK' AND department_id = 30) ORDER BY last_name" db-types="Oracle" />

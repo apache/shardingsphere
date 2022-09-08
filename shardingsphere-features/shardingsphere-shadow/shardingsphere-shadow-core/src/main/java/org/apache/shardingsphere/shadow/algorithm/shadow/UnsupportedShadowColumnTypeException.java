@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shadow.algorithm.shadow;
 
-import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
-import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Unsupported shadow column type exception.
@@ -28,6 +28,6 @@ public final class UnsupportedShadowColumnTypeException extends ShardingSphereSQ
     private static final long serialVersionUID = 8144277065388645946L;
     
     public UnsupportedShadowColumnTypeException(final String tableName, final String columnName, final Class<?> type) {
-        super(XOpenSQLState.INVALID_DATA_TYPE, 25000, "Shadow column `%s` of table `%s` does not support `%s` type", columnName, tableName, type.getName());
+        super(XOpenSQLState.INVALID_DATA_TYPE, 28000, "Shadow column `%s` of table `%s` does not support `%s` type", columnName, tableName, type.getName());
     }
 }

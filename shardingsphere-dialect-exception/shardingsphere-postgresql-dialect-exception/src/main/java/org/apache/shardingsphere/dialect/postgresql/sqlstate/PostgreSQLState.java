@@ -19,7 +19,7 @@ package org.apache.shardingsphere.dialect.postgresql.sqlstate;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.SQLState;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.SQLState;
 
 /**
  * PostgreSQL SQL state.
@@ -29,6 +29,8 @@ import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.SQLState;
 public enum PostgreSQLState implements SQLState {
     
     PROTOCOL_VIOLATION("08P01"),
+    
+    SYNTAX_ERROR("42601"),
     
     DUPLICATE_DATABASE("42P04"),
     

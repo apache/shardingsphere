@@ -29,8 +29,8 @@ import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.InvalidValueException;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.UnsupportedVariableException;
+import org.apache.shardingsphere.proxy.backend.exception.InvalidValueException;
+import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableException;
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
@@ -77,7 +77,7 @@ public final class SetVariableHandler extends UpdatableRALBackendHandler<SetVari
     private Object getValue(final ConfigurationPropertyKey propertyKey, final String value) {
         try {
             return new TypedPropertyValue(propertyKey, value).getValue();
-        } catch (TypedPropertyValueException ex) {
+        } catch (final TypedPropertyValueException ex) {
             throw new InvalidValueException(value);
         }
     }

@@ -34,6 +34,7 @@
         <module>shardingsphere-transaction</module>
         <module>shardingsphere-schedule</module>
         <module>shardingsphere-data-pipeline</module>
+        <module>shardingsphere-sql-federation</module>
         <module>shardingsphere-sql-translator</module>
         <module>shardingsphere-traffic</module>
     </modules>

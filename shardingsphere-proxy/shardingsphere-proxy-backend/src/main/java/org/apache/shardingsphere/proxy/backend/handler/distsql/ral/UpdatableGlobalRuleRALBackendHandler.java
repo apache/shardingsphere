@@ -43,7 +43,7 @@ public final class UpdatableGlobalRuleRALBackendHandler implements ProxyBackendH
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        updater.executeUpdate(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData(), sqlStatement);
+        updater.executeUpdate(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(), sqlStatement);
         persistNewRuleConfigurations();
         return new UpdateResponseHeader(sqlStatement);
     }

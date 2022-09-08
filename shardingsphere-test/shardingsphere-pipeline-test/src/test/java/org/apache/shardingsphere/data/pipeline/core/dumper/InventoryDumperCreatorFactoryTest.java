@@ -17,61 +17,59 @@
 
 package org.apache.shardingsphere.data.pipeline.core.dumper;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.InventoryDumper;
 import org.apache.shardingsphere.data.pipeline.core.fixture.FixtureInventoryDumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.SimpleMemoryPipelineChannel;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.InventoryDumperCreatorFactory;
-import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.DefaultInventoryDumper;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.MySQLInventoryDumper;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLInventoryDumper;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.InventoryDumper;
-import org.junit.Before;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.InventoryDumperCreatorFactory;
 import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 
 public final class InventoryDumperCreatorFactoryTest {
     
-    private PipelineDataSourceWrapper dataSource;
-    
-    @Before
-    public void setUp() {
-        PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
-        InventoryDumperConfiguration dumperConfig = mockInventoryDumperConfiguration();
-        dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
-    }
-    
     @Test
-    public void assertInventoryDumperCreatorForMysql() {
-        InventoryDumper actual = InventoryDumperCreatorFactory.getInstance("MySql")
-                .createInventoryDumper(mockInventoryDumperConfiguration(), new SimpleMemoryPipelineChannel(100), dataSource, new PipelineTableMetaDataLoader(dataSource));
+    public void assertInventoryDumperCreatorForMySQL() {
+        InventoryDumper actual = createInventoryDumper("MySQL");
         assertThat(actual, instanceOf(MySQLInventoryDumper.class));
     }
     
     @Test
     public void assertInventoryDumperCreatorForPostgreSQL() {
-        InventoryDumper actual = InventoryDumperCreatorFactory.getInstance("PostgreSQL")
-                .createInventoryDumper(mockInventoryDumperConfiguration(), new SimpleMemoryPipelineChannel(100), dataSource, new PipelineTableMetaDataLoader(dataSource));
+        InventoryDumper actual = createInventoryDumper("PostgreSQL");
         assertThat(actual, instanceOf(PostgreSQLInventoryDumper.class));
     }
     
     @Test
     public void assertInventoryDumperCreatorForOpenGauss() {
-        InventoryDumper actual = InventoryDumperCreatorFactory.getInstance("openGauss")
-                .createInventoryDumper(mockInventoryDumperConfiguration(), new SimpleMemoryPipelineChannel(100), dataSource, new PipelineTableMetaDataLoader(dataSource));
+        InventoryDumper actual = createInventoryDumper("openGauss");
         assertThat(actual, instanceOf(PostgreSQLInventoryDumper.class));
     }
     
     @Test
+    public void assertInventoryDumperCreatorForOracle() {
+        InventoryDumper actual = createInventoryDumper("Oracle");
+        assertThat(actual, instanceOf(DefaultInventoryDumper.class));
+    }
+    
+    @Test
     public void assertInventoryDumperCreatorForFixture() {
-        InventoryDumper actual = InventoryDumperCreatorFactory.getInstance("Fixture")
-                .createInventoryDumper(mockInventoryDumperConfiguration(), new SimpleMemoryPipelineChannel(100), dataSource, new PipelineTableMetaDataLoader(dataSource));
+        InventoryDumper actual = createInventoryDumper("Fixture");
         assertThat(actual, instanceOf(FixtureInventoryDumper.class));
+    }
+    
+    private InventoryDumper createInventoryDumper(final String databaseType) {
+        PipelineDataSourceWrapper dataSource = null;
+        return InventoryDumperCreatorFactory.getInstance(databaseType)
+                .createInventoryDumper(mockInventoryDumperConfiguration(), new SimpleMemoryPipelineChannel(100), dataSource, new StandardPipelineTableMetaDataLoader(dataSource));
     }
     
     private InventoryDumperConfiguration mockInventoryDumperConfiguration() {

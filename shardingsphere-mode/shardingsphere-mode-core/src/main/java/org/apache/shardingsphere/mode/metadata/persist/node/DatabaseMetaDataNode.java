@@ -40,6 +40,8 @@ public final class DatabaseMetaDataNode {
     
     private static final String TABLES_NODE = "tables";
     
+    private static final String VIEWS_NODE = "views";
+    
     private static final String ACTIVE_VERSION = "active_version";
     
     private static final String VERSIONS = "versions";
@@ -97,6 +99,17 @@ public final class DatabaseMetaDataNode {
     }
     
     /**
+     * Get meta data views path.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @return views path
+     */
+    public static String getMetaDataViewsPath(final String databaseName, final String schemaName) {
+        return String.join("/", getMetaDataSchemaPath(databaseName, schemaName), VIEWS_NODE);
+    }
+    
+    /**
      * Get schema path.
      *
      * @param databaseName database name
@@ -127,6 +140,18 @@ public final class DatabaseMetaDataNode {
      */
     public static String getTableMetaDataPath(final String databaseName, final String schemaName, final String table) {
         return String.join("/", getMetaDataTablesPath(databaseName, schemaName), table);
+    }
+    
+    /**
+     * Get view meta data path.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param view view name
+     * @return view meta data path
+     */
+    public static String getViewMetaDataPath(final String databaseName, final String schemaName, final String view) {
+        return String.join("/", getMetaDataViewsPath(databaseName, schemaName), view);
     }
     
     private static String getFullMetaDataPath(final String databaseName, final String node) {
@@ -190,6 +215,18 @@ public final class DatabaseMetaDataNode {
     public static Optional<String> getTableName(final String tableMetaDataPath) {
         Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)/([\\w\\-]+)/([\\w\\-]+)/tables" + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(tableMetaDataPath);
+        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
+    }
+    
+    /**
+     * Get view meta data path.
+     *
+     * @param viewMetaDataPath view meta data path
+     * @return view name
+     */
+    public static Optional<String> getViewName(final String viewMetaDataPath) {
+        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)/([\\w\\-]+)/([\\w\\-]+)/views" + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(viewMetaDataPath);
         return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
     }
     

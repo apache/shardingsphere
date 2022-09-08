@@ -21,12 +21,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.schedule.core.strategy.ScheduleStrategy;
-import org.apache.shardingsphere.schedule.core.strategy.type.ClusterScheduleStrategy;
-import org.apache.shardingsphere.schedule.core.strategy.type.StandaloneScheduleStrategy;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import org.apache.shardingsphere.infra.schedule.ScheduleContext;
+import org.apache.shardingsphere.schedule.core.context.ClusterScheduleContext;
+import org.apache.shardingsphere.schedule.core.context.StandaloneScheduleContext;
 
 /**
  * Schedule context factory.
@@ -35,38 +32,15 @@ import java.util.concurrent.ConcurrentHashMap;
 @Getter
 public final class ScheduleContextFactory {
     
-    private static final ScheduleContextFactory INSTANCE = new ScheduleContextFactory();
-    
-    private final Map<String, ScheduleStrategy> scheduleStrategy = new ConcurrentHashMap<>();
-    
     /**
-     * Get instance.
+     * Create new instance of schedule context.
      *
-     * @return singleton instance
-     */
-    public static ScheduleContextFactory getInstance() {
-        return INSTANCE;
-    }
-    
-    /**
-     * Init schedule context.
-     * 
-     * @param instanceId instance id
      * @param modeConfig mode configuration
+     * @return Schedule context instance
      */
-    public void init(final String instanceId, final ModeConfiguration modeConfig) {
-        scheduleStrategy.put(instanceId, "Cluster".equalsIgnoreCase(modeConfig.getType()) && "ZooKeeper".equalsIgnoreCase(modeConfig.getRepository().getType())
-                ? new ClusterScheduleStrategy(modeConfig.getRepository().getProps().getProperty("server-lists"), modeConfig.getRepository().getProps().getProperty("namespace"))
-                : new StandaloneScheduleStrategy());
-    }
-    
-    /**
-     * Get schedule strategy.
-     * 
-     * @param instanceId instance id
-     * @return get schedule strategy
-     */
-    public ScheduleStrategy get(final String instanceId) {
-        return scheduleStrategy.get(instanceId);
+    public static ScheduleContext newInstance(final ModeConfiguration modeConfig) {
+        return "Cluster".equalsIgnoreCase(modeConfig.getType()) && "ZooKeeper".equalsIgnoreCase(modeConfig.getRepository().getType())
+                ? new ClusterScheduleContext(modeConfig.getRepository().getProps().getProperty("server-lists"), modeConfig.getRepository().getProps().getProperty("namespace"))
+                : new StandaloneScheduleContext();
     }
 }

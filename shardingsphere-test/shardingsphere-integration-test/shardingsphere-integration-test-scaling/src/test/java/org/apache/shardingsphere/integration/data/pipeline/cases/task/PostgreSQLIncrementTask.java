@@ -54,11 +54,11 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
     public void run() {
         int executeCount = 0;
         while (executeCount < executeCountLimit && !Thread.currentThread().isInterrupted()) {
-            Object orderPrimaryKey = insertOrder();
+            Object orderId = insertOrder();
             if (executeCount % 2 == 0) {
-                jdbcTemplate.update(prefixSchema("DELETE FROM ${schema}t_order WHERE id = ?", schema), orderPrimaryKey);
+                jdbcTemplate.update(prefixSchema("DELETE FROM ${schema}t_order_copy WHERE order_id = ?", schema), orderId);
             } else {
-                updateOrderByPrimaryKey(orderPrimaryKey);
+                updateOrderByPrimaryKey(orderId);
             }
             if (incrementOrderItemTogether) {
                 Object orderItemPrimaryKey = insertOrderItem();
@@ -73,8 +73,8 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
     private Object insertOrder() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         String status = random.nextInt() % 2 == 0 ? null : "NOT-NULL";
-        Object[] orderInsertDate = new Object[]{KEY_GENERATE_ALGORITHM.generateKey(), ScalingCaseHelper.generateSnowflakeKey(), random.nextInt(0, 6), status};
-        jdbcTemplate.update(prefixSchema("INSERT INTO ${schema}t_order (id,order_id,user_id,status) VALUES (?, ?, ?, ?)", schema), orderInsertDate);
+        Object[] orderInsertDate = new Object[]{KEY_GENERATE_ALGORITHM.generateKey(), random.nextInt(0, 6), status};
+        jdbcTemplate.update(prefixSchema("INSERT INTO ${schema}t_order_copy (order_id,user_id,status) VALUES (?, ?, ?)", schema), orderInsertDate);
         return orderInsertDate[0];
     }
     
@@ -88,7 +88,7 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
     
     private void updateOrderByPrimaryKey(final Object primaryKey) {
         Object[] updateData = {"updated" + Instant.now().getEpochSecond(), primaryKey};
-        jdbcTemplate.update(prefixSchema("UPDATE ${schema}t_order SET status = ? WHERE id = ?", schema), updateData);
+        jdbcTemplate.update(prefixSchema("UPDATE ${schema}t_order_copy SET status = ? WHERE order_id = ?", schema), updateData);
     }
     
     private String prefixSchema(final String sql, final String schema) {

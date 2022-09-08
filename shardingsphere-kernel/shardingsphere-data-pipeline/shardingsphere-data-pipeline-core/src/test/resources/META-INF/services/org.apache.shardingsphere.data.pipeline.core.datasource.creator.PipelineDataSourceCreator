@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.core.datasource.creator.fixture.FixturePipelineDataSourceCreator
+org.apache.shardingsphere.data.pipeline.core.datasource.creator.FixturePipelineDataSourceCreator

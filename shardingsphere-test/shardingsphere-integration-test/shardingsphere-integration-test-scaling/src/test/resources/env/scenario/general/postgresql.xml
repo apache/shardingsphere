@@ -16,8 +16,7 @@
   -->
 <command>
     <create-table-order>
-        CREATE TABLE test.t_order (
-        id int8 NOT NULL,
+        CREATE TABLE test.t_order_copy (
         order_id int8 NOT NULL,
         user_id int4 NOT NULL,
         status varchar ( 50 ) NULL,
@@ -36,7 +35,7 @@
         t_time TIME NULL,
         t_timestmap timestamp NULL,
         t_timestamptz timestamptz NULL,
-        PRIMARY KEY ( id )
+        PRIMARY KEY ( order_id )
         )
     </create-table-order>
     
@@ -56,19 +55,11 @@
     
     <full-insert-order>
         INSERT INTO
-        test.t_order(id,order_id,user_id,status,t_int2,t_numeric,t_bool,t_char,t_varchar,t_float,t_double,t_timestmap,t_timestamptz)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
+        test.t_order_copy(order_id,user_id,status,t_int2,t_numeric,t_bool,t_char,t_varchar,t_float,t_double,t_timestmap,t_timestamptz)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
     </full-insert-order>
     
     <full-insert-order-item>
         INSERT INTO test.t_order_item(item_id,order_id,user_id,status) VALUES(?,?,?,?)
     </full-insert-order-item>
-
-    <update-table-order-status>
-        UPDATE test.t_order SET status= 'unlock'
-    </update-table-order-status>
-
-    <create-index-status>
-        CREATE INDEX "idx_user_status" ON test.t_order ( status )
-    </create-index-status>
 </command>

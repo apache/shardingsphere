@@ -67,7 +67,7 @@ public final class MetaDataContextsFactory {
         ConfigurationProperties props = new ConfigurationProperties(persistService.getPropsService().load());
         Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(effectiveDatabaseConfigs, props, instanceContext);
         databases.putAll(reloadDatabases(databases, persistService));
-        ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases, instanceContext));
+        ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases, instanceContext, props));
         return new MetaDataContexts(persistService, new ShardingSphereMetaData(databases, globalMetaData, props));
     }
     
@@ -87,7 +87,7 @@ public final class MetaDataContextsFactory {
     private static Map<String, ShardingSphereDatabase> reloadDatabases(final Map<String, ShardingSphereDatabase> databases, final MetaDataPersistService persistService) {
         Map<String, ShardingSphereDatabase> result = new ConcurrentHashMap<>(databases.size(), 1);
         databases.forEach((key, value) -> {
-            Map<String, ShardingSphereSchema> schemas = persistService.getDatabaseMetaDataService().load(key);
+            Map<String, ShardingSphereSchema> schemas = persistService.getDatabaseMetaDataService().loadSchemas(key);
             result.put(key.toLowerCase(), new ShardingSphereDatabase(value.getName(),
                     value.getProtocolType(), value.getResource(), value.getRuleMetaData(), schemas.isEmpty() ? value.getSchemas() : schemas));
         });

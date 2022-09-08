@@ -31,6 +31,6 @@
         <module>shardingsphere-parser-api</module>
         <module>shardingsphere-parser-core</module>
         <module>shardingsphere-parser-spring</module>
+        <module>shardingsphere-parser-distsql</module>
     </modules>
-    
 </project>

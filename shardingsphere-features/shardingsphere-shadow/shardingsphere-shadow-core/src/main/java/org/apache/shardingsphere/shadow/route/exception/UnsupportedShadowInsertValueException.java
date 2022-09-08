@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shadow.route.exception;
 
-import org.apache.shardingsphere.infra.util.exception.sql.ShardingSphereSQLException;
-import org.apache.shardingsphere.infra.util.exception.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Unsupported shadow insert value exception.
@@ -28,6 +28,6 @@ public final class UnsupportedShadowInsertValueException extends ShardingSphereS
     private static final long serialVersionUID = -5987403907441367171L;
     
     public UnsupportedShadowInsertValueException(final int columnIndex) {
-        super(XOpenSQLState.SYNTAX_ERROR, 25003, "Insert value of index `%s` can not support for shadow", String.valueOf(columnIndex));
+        super(XOpenSQLState.SYNTAX_ERROR, 28003, "Insert value of index `%s` can not support for shadow", String.valueOf(columnIndex));
     }
 }

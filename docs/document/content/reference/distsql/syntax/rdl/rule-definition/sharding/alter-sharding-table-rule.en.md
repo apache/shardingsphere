@@ -42,6 +42,9 @@ columnName ::=
 
 algorithmName ::=
   identifier
+    
+strategyType ::=
+  string
 ```
 
 ### Supplement

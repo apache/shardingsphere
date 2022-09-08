@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.context.refresher.type;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
@@ -40,8 +41,12 @@ public final class DropViewStatementSchemaRefresher implements MetaDataRefresher
                                                     final String schemaName, final DropViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         SchemaAlteredEvent event = new SchemaAlteredEvent(database.getName(), schemaName);
         sqlStatement.getViews().forEach(each -> {
-            database.getSchema(schemaName).remove(each.getTableName().getIdentifier().getValue());
-            event.getDroppedTables().add(each.getTableName().getIdentifier().getValue());
+            ShardingSphereSchema schema = database.getSchema(schemaName);
+            String viewName = each.getTableName().getIdentifier().getValue();
+            schema.removeTable(viewName);
+            event.getDroppedTables().add(viewName);
+            schema.removeView(viewName);
+            event.getDroppedViews().add(viewName);
         });
         Collection<MutableDataNodeRule> rules = database.getRuleMetaData().findRules(MutableDataNodeRule.class);
         for (SimpleTableSegment each : sqlStatement.getViews()) {

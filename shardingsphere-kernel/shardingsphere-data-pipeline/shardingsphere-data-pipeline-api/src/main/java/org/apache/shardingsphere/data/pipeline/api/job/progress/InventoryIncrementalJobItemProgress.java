@@ -32,6 +32,8 @@ public final class InventoryIncrementalJobItemProgress implements PipelineJobIte
     
     private String sourceDatabaseType;
     
+    private String dataSourceName;
+    
     private boolean active;
     
     private JobItemInventoryTasksProgress inventory;

@@ -28,7 +28,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Drop Resource statement assert.
+ * Drop migration source resource statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DropMigrationSourceResourceStatementAssert {
@@ -37,8 +37,8 @@ public final class DropMigrationSourceResourceStatementAssert {
      * Assert drop migration source resource statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual drop resource statement
-     * @param expected expected drop resource statement test case
+     * @param actual actual drop migration source resource statement
+     * @param expected expected drop migration source resource statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropMigrationSourceResourceStatement actual, final DropMigrationSourceResourceStatementTestCase expected) {
         if (null == expected.getDataSources()) {

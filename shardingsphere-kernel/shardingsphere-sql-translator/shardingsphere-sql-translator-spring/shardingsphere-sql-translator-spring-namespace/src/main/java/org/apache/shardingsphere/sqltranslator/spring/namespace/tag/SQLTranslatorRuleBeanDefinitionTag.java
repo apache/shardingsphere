@@ -26,9 +26,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLTranslatorRuleBeanDefinitionTag {
     
+    /**
+     * Root tag.
+     */
     public static final String ROOT_TAG = "rule";
     
-    public static final String SQL_TRANSLATOR_TYPE = "type";
+    /**
+     * SQL translator type attribute.
+     */
+    public static final String SQL_TRANSLATOR_TYPE_ATTRIBUTE = "type";
     
-    public static final String SQL_USE_ORIGINAL_SQL_WHEN_TRANSLATING_FAILED = "use-original-sql-when-translating-failed";
+    /**
+     * Use original SQL when translating failed attribute.
+     */
+    public static final String SQL_USE_ORIGINAL_SQL_WHEN_TRANSLATING_FAILED_ATTRIBUTE = "use-original-sql-when-translating-failed";
 }

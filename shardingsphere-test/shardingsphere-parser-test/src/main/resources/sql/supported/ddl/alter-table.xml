@@ -41,7 +41,7 @@
     <sql-case id="alter_table_add_columns_float_point_type_mysql" value="ALTER TABLE t_order ADD column4 FLOAT(10,2), ADD column5 DOUBLE(10,2)" db-types="MySQL" />
     <sql-case id="alter_table_add_columns_float_point_type_oracle" value="ALTER TABLE t_order ADD (column4 FLOAT(10), column5 double precision)" db-types="Oracle" />
     <sql-case id="alter_table_add_columns_bit_type" value="ALTER TABLE t_order ADD column4 bit" db-types="MySQL,PostgreSQL,openGauss,SQLServer" />
-    <sql-case id="alter_table_add_columns_date_type_mysql" value="ALTER TABLE t_order ADD column4 YEAR" db-types="MySQL" />
+    <sql-case id="alter_table_add_columns_date_type_mysql" value="ALTER TABLE t_order ADD column4 YEAR" db-types="MySQL,PostgreSQL" />
     <sql-case id="alter_table_add_columns_date_type_oracle" value="ALTER TABLE t_order ADD (column4 DATE, column5 DATETIME, column6 TIMESTAMP, column7 TIMESTAMP WITH TIME ZONE)" db-types="Oracle" />
     <sql-case id="alter_table_add_columns_date_type" value="ALTER TABLE t_order ADD column4 DATE, ADD column5 DATETIME, ADD column6 TIMESTAMP, ADD column7 TIME" db-types="MySQL,PostgreSQL,openGauss" />
     <sql-case id="alter_table_add_columns_string_type" value="ALTER TABLE t_order ADD column4 CHAR, ADD column5 VARCHAR(32), ADD column6 TEXT" db-types="MySQL,PostgreSQL,openGauss,SQLServer" />
@@ -57,7 +57,7 @@
     <sql-case id="alter_table_modify_column_with_first" value="ALTER TABLE t_order MODIFY status VARCHAR(20) FIRST" db-types="MySQL" />
     <sql-case id="alter_table_modify_column_with_after" value="ALTER TABLE t_order MODIFY status VARCHAR(20) AFTER order_id" db-types="MySQL" />
     <sql-case id="alter_table_modify_column_with_first_after" value="ALTER TABLE t_order MODIFY status VARCHAR(20) FIRST, MODIFY user_id INT AFTER status" db-types="MySQL" />
-    <sql-case id="alter_table_drop_column" value="ALTER TABLE t_order DROP COLUMN user_id" />
+    <sql-case id="alter_table_drop_column" value="ALTER TABLE t_order DROP COLUMN user_id" db-types="PostgreSQL"/>
     <sql-case id="alter_table_drop_columns" value="ALTER TABLE t_order DROP user_id, DROP column5" db-types="MySQL,PostgreSQL,openGauss" />
     <sql-case id="alter_table_change_column" value="ALTER TABLE t_order CHANGE user_id column4 VARCHAR(10)" db-types="MySQL" />
     <sql-case id="alter_table_add_primary_key" value="ALTER TABLE t_order ADD CONSTRAINT pk_user_id PRIMARY KEY (user_id)" />
@@ -110,7 +110,7 @@
     <sql-case id="alter_table_alter_column_for_sqlserver" value="ALTER TABLE t_order ALTER COLUMN column4 VARCHAR(20)" db-types="SQLServer" />
     <sql-case id="alter_table_set_schema" value="ALTER TABLE t_order SET SCHEMA yourschema" db-types="PostgreSQL,openGauss" />
     <sql-case id="alter_table_attach_partition" value="ALTER TABLE t_order ATTACH PARTITION measurement_y2016m07 FOR VALUES FROM ('2016-07-01') TO ('2016-08-01')" db-types="PostgreSQL,openGauss" />
-    <sql-case id="alter_table_detach_partition" value="ALTER TABLE t_order ATTACH PARTITION measurement_y2016m07 FOR VALUES FROM ('2016-07-01') TO ('2016-08-01')" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_table_detach_partition" value="ALTER TABLE t_order DETACH PARTITION measurement_y2016m07" db-types="PostgreSQL" />
     <sql-case id="alter_table_in_hash_partitioned_table" value="ALTER TABLE t_order ATTACH PARTITION orders_p4 FOR VALUES WITH (MODULUS 4, REMAINDER 3)" db-types="PostgreSQL,openGauss" />
     <sql-case id="alter_table_with_optimize_memory_read" value="ALTER TABLE t_log MEMOPTIMIZE FOR READ ADD (name VARCHAR(10))" db-types="Oracle" />
     <sql-case id="alter_table_with_no_optimize_memory_write" value="ALTER TABLE t_log NO MEMOPTIMIZE FOR WRITE ADD (name VARCHAR(10))" db-types="Oracle" />
@@ -148,4 +148,10 @@
     <sql-case id="alter_table_modify_column_with_invisible" value="ALTER TABLE t_order MODIFY COLUMN status VARCHAR(10) INVISIBLE" db-types="MySQL" />
     <sql-case id="alter_table_alter_column_set_visible" value="ALTER TABLE t_order ALTER COLUMN status SET VISIBLE" db-types="MySQL" />
     <sql-case id="alter_table_alter_column_set_invisible" value="ALTER TABLE t_order ALTER COLUMN status SET INVISIBLE" db-types="MySQL" />
+    <sql-case id="alter_table_set_statistics" value="ALTER TABLE t_order ALTER COLUMN status SET STATISTICS -1" db-types="PostgreSQL" />
+    <sql-case id="alter_table_set_compression" value="ALTER TABLE t_order ALTER COLUMN f1 SET COMPRESSION lz4;" db-types="PostgreSQL" />
+    <sql-case id="alter_table_set" value="ALTER TABLE t_order SET (fillfactor = 10)" db-types="PostgreSQL" />
+    <sql-case id="alter_table_reset" value="ALTER TABLE t_order RESET (fillfactor = 12)" db-types="PostgreSQL" />
+    <sql-case id="alter_table_set_access_method" value="ALTER TABLE t_order SET ACCESS METHOD heap, SET ACCESS METHOD heap2" db-types="PostgreSQL" />
+    <sql-case id="alter_table_drop_expression" value="ALTER TABLE t_order ALTER COLUMN a DROP EXPRESSION;" db-types="PostgreSQL" />
 </sql-cases>

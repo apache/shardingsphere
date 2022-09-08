@@ -33,6 +33,7 @@
         <module>shardingsphere-integration-test-suite</module>
         <module>shardingsphere-integration-test-scaling</module>
         <module>shardingsphere-integration-test-transaction</module>
+        <module>shardingsphere-integration-test-ha</module>
     </modules>
     
     <properties>

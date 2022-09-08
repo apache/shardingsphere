@@ -19,9 +19,11 @@ package org.apache.shardingsphere.infra.yaml.schema.swapper;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereSchema;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
+import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereView;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -37,9 +39,12 @@ public final class YamlSchemaSwapper implements YamlConfigurationSwapper<YamlSha
     @Override
     public YamlShardingSphereSchema swapToYamlConfiguration(final ShardingSphereSchema schema) {
         Map<String, YamlShardingSphereTable> tables = schema.getAllTableNames().stream()
-                .collect(Collectors.toMap(each -> each, each -> swapYamlTable(schema.get(each)), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                .collect(Collectors.toMap(each -> each, each -> swapYamlTable(schema.getTable(each)), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        Map<String, YamlShardingSphereView> views = schema.getAllViewNames().stream()
+                .collect(Collectors.toMap(each -> each, each -> swapYamlView(schema.getView(each)), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         YamlShardingSphereSchema result = new YamlShardingSphereSchema();
         result.setTables(tables);
+        result.setViews(views);
         return result;
     }
     
@@ -49,8 +54,11 @@ public final class YamlSchemaSwapper implements YamlConfigurationSwapper<YamlSha
     }
     
     private ShardingSphereSchema swapSchema(final YamlShardingSphereSchema schema) {
-        return new ShardingSphereSchema(null == schema.getTables() || schema.getTables().isEmpty() ? new LinkedHashMap<>()
-                : schema.getTables().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> swapTable(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
+        Map<String, ShardingSphereTable> tables = null == schema.getTables() || schema.getTables().isEmpty() ? new LinkedHashMap<>()
+                : schema.getTables().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> swapTable(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        Map<String, ShardingSphereView> views = null == schema.getViews() || schema.getViews().isEmpty() ? new LinkedHashMap<>()
+                : schema.getViews().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> swapView(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return new ShardingSphereSchema(tables, views);
     }
     
     private ShardingSphereTable swapTable(final YamlShardingSphereTable table) {
@@ -59,5 +67,13 @@ public final class YamlSchemaSwapper implements YamlConfigurationSwapper<YamlSha
     
     private YamlShardingSphereTable swapYamlTable(final ShardingSphereTable table) {
         return new YamlTableSwapper().swapToYamlConfiguration(table);
+    }
+    
+    private ShardingSphereView swapView(final YamlShardingSphereView view) {
+        return new YamlViewSwapper().swapToObject(view);
+    }
+    
+    private YamlShardingSphereView swapYamlView(final ShardingSphereView view) {
+        return new YamlViewSwapper().swapToYamlConfiguration(view);
     }
 }

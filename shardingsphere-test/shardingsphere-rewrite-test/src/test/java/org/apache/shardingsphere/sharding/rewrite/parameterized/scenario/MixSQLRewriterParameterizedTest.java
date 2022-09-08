@@ -73,12 +73,12 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
         when(accountTable.getColumns()).thenReturn(createColumns());
         when(accountTable.getIndexes()).thenReturn(Collections.singletonMap("index_name", new ShardingSphereIndex("index_name")));
         when(result.containsTable("t_account")).thenReturn(true);
-        when(result.get("t_account")).thenReturn(accountTable);
+        when(result.getTable("t_account")).thenReturn(accountTable);
         ShardingSphereTable accountBakTable = mock(ShardingSphereTable.class);
         when(accountBakTable.getColumns()).thenReturn(createColumns());
         when(result.containsTable("t_account_bak")).thenReturn(true);
-        when(result.get("t_account_bak")).thenReturn(accountBakTable);
-        when(result.get("t_account_detail")).thenReturn(mock(ShardingSphereTable.class));
+        when(result.getTable("t_account_bak")).thenReturn(accountBakTable);
+        when(result.getTable("t_account_detail")).thenReturn(mock(ShardingSphereTable.class));
         when(result.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
         when(result.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
         when(result.getVisibleColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "password", "amount"));

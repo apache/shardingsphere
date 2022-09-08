@@ -25,8 +25,8 @@ import lombok.ToString;
 import java.util.Collection;
 
 /**
- * Schema meta data.
- */
+* Schema meta data.
+*/
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
@@ -36,4 +36,6 @@ public final class SchemaMetaData {
     private final String name;
     
     private final Collection<TableMetaData> tables;
+    
+    private final Collection<ViewMetaData> views;
 }

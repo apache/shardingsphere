@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterTransactionRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.DiscardDistSQLStatement;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
 
 /**
- * Discard dist sql statement handler.
+ * Discard dist SQL statement handler.
  */
-public final class DiscardDistSQLHandler extends UpdatableRALBackendHandler<AlterTransactionRuleStatement> {
+public final class DiscardDistSQLHandler extends UpdatableRALBackendHandler<DiscardDistSQLStatement> {
     
     @Override
     protected void update(final ContextManager contextManager) {

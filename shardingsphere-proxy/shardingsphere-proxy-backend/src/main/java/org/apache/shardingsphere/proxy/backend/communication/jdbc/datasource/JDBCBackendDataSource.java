@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.datasource.registry.GlobalDataSourceRegistry;
+import org.apache.shardingsphere.infra.exception.OverallConnectionNotEnoughException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.proxy.backend.communication.BackendDataSource;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -96,8 +97,7 @@ public final class JDBCBackendDataSource implements BackendDataSource {
                 for (Connection each : result) {
                     each.close();
                 }
-                throw new SQLException(String.format("Could not get %d connections at once. The %d obtained connections have been released. "
-                        + "Please consider increasing the `maxPoolSize` of the data sources or decreasing the `max-connections-size-per-query` in props.", connectionSize, result.size()), ex);
+                throw new OverallConnectionNotEnoughException(connectionSize, result.size());
             }
         }
         return result;

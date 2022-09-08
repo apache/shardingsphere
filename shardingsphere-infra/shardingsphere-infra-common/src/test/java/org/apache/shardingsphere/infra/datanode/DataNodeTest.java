@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.datanode;
 
-import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.infra.exception.InvalidDataNodesFormatException;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -34,17 +34,17 @@ public final class DataNodeTest {
         assertThat(dataNode.getTableName(), is("tbl_0"));
     }
     
-    @Test(expected = ShardingSphereConfigurationException.class)
+    @Test(expected = InvalidDataNodesFormatException.class)
     public void assertNewInValidDataNodeWithoutDelimiter() {
         new DataNode("ds_0tbl_0");
     }
     
-    @Test(expected = ShardingSphereConfigurationException.class)
+    @Test(expected = InvalidDataNodesFormatException.class)
     public void assertNewInValidDataNodeWithTwoDelimiters() {
         new DataNode("ds_0.db_0.tbl_0.tbl_1");
     }
     
-    @Test(expected = ShardingSphereConfigurationException.class)
+    @Test(expected = InvalidDataNodesFormatException.class)
     public void assertNewValidDataNodeWithInvalidDelimiter() {
         new DataNode("ds_0,tbl_0");
     }
@@ -68,12 +68,12 @@ public final class DataNodeTest {
         assertThat(new DataNode("ds_0.tbl_0").toString(), is("DataNode(dataSourceName=ds_0, tableName=tbl_0, schemaName=null)"));
     }
     
-    @Test(expected = ShardingSphereConfigurationException.class)
+    @Test(expected = InvalidDataNodesFormatException.class)
     public void assertEmptyDataSourceDataNode() {
         new DataNode(".tbl_0");
     }
     
-    @Test(expected = ShardingSphereConfigurationException.class)
+    @Test(expected = InvalidDataNodesFormatException.class)
     public void assertEmptyTableDataNode() {
         new DataNode("ds_0.");
     }

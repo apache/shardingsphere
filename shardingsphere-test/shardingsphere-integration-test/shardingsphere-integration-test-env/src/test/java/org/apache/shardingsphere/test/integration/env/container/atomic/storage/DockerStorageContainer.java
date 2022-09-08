@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.integration.env.container.atomic.storage;
 
 import com.google.common.base.Strings;
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -27,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.StorageContainerConstants;
+import org.apache.shardingsphere.test.integration.env.container.atomic.util.StorageContainerUtil;
 import org.apache.shardingsphere.test.integration.env.container.wait.JdbcConnectionWaitStrategy;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.env.runtime.scenario.database.DatabaseEnvironmentManager;
@@ -76,11 +76,11 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
             withClasspathResourceMapping(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
             withClasspathResourceMapping(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
         }
-        withExposedPorts(getPort());
+        withExposedPorts(getExposedPort());
         setWaitStrategy(new JdbcConnectionWaitStrategy(
                 () -> DriverManager.getConnection(getDefaultDatabaseName().isPresent()
                         ? DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort(), getDefaultDatabaseName().get())
-                        : DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort()), getUsername(), getUnifiedPassword())));
+                        : DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort()), getUsername(), getPassword())));
     }
     
     protected final void setCommands(final String command) {
@@ -110,34 +110,29 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     /**
      * Create access data source.
-     * 
+     *
      * @param dataSourceName data source name
      * @return access data source
      */
     public DataSource createAccessDataSource(final String dataSourceName) {
-        HikariDataSource result = new HikariDataSource();
-        result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
-        result.setJdbcUrl(getJdbcUrl(dataSourceName));
-        result.setUsername(getUsername());
-        result.setPassword(getUnifiedPassword());
-        result.setMaximumPoolSize(4);
-        result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
-        return result;
+        return StorageContainerUtil.generateDataSource(getJdbcUrl(dataSourceName), getUsername(), getPassword(), 4);
     }
     
     /**
      * Get JDBC URL.
-     * 
+     *
      * @param dataSourceName datasource name
      * @return JDBC URL
      */
     public String getJdbcUrl(final String dataSourceName) {
-        return DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(getPort()), dataSourceName);
+        return DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(), dataSourceName);
     }
+    
+    protected abstract Optional<String> getDefaultDatabaseName();
     
     /**
      * Get username.
-     * 
+     *
      * @return username
      */
     public final String getUsername() {
@@ -145,22 +140,27 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     }
     
     /**
-     * Get database port.
-     *
-     * @return database port
-     */
-    public abstract int getPort();
-    
-    /**
      * Get unified database access password.
      *
      * @return unified database access password
      */
-    public final String getUnifiedPassword() {
+    public final String getPassword() {
         return StorageContainerConstants.PASSWORD;
     }
     
-    protected abstract Optional<String> getDefaultDatabaseName();
+    /**
+     * Get database container exposed port.
+     *
+     * @return exposed database container port
+     */
+    public abstract int getExposedPort();
+    
+    /**
+     * Get database container mapped port.
+     * 
+     * @return mapped database container port
+     */
+    public abstract int getMappedPort();
     
     @Override
     public final String getAbbreviation() {

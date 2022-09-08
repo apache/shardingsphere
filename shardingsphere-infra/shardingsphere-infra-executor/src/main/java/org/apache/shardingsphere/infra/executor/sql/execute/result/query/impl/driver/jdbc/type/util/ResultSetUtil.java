@@ -22,6 +22,8 @@ import com.google.common.primitives.Longs;
 import com.google.common.primitives.Shorts;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.executor.exception.UnsupportedDataTypeConversionException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -34,6 +36,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
@@ -52,9 +55,7 @@ public final class ResultSetUtil {
      * @throws SQLException SQL exception
      */
     public static Object convertValue(final Object value, final Class<?> convertType) throws SQLException {
-        if (null == convertType) {
-            throw new SQLException("Type cannot be null");
-        }
+        ShardingSpherePreconditions.checkState(null != convertType, new SQLFeatureNotSupportedException("Type can not be null"));
         if (null == value) {
             return convertNullValue(convertType);
         }
@@ -147,6 +148,9 @@ public final class ResultSetUtil {
         }
         if (LocalTime.class.equals(convertType)) {
             return timestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+        }
+        if (OffsetDateTime.class.equals(convertType)) {
+            return timestamp.toInstant().atZone(ZoneId.systemDefault()).toOffsetDateTime();
         }
         return value;
     }

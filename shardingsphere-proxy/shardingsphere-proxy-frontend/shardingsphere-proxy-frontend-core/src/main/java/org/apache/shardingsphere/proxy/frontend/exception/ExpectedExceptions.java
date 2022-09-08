@@ -19,11 +19,9 @@ package org.apache.shardingsphere.proxy.frontend.exception;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.DistSQLException;
-import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
+import org.apache.shardingsphere.dialect.exception.SQLDialectException;
+import org.apache.shardingsphere.infra.util.exception.external.server.ShardingSphereServerException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -37,11 +35,9 @@ public final class ExpectedExceptions {
     private static final Collection<Class<? extends Exception>> EXCEPTIONS = new HashSet<>();
     
     static {
-        EXCEPTIONS.add(ShardingSphereException.class);
-        EXCEPTIONS.add(ShardingSphereInsideException.class);
-        EXCEPTIONS.add(ShardingSphereConfigurationException.class);
-        EXCEPTIONS.add(SQLParsingException.class);
-        EXCEPTIONS.add(DistSQLException.class);
+        EXCEPTIONS.add(ShardingSphereServerException.class);
+        EXCEPTIONS.add(ShardingSphereSQLException.class);
+        EXCEPTIONS.add(SQLDialectException.class);
     }
     
     /**

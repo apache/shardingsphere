@@ -35,7 +35,7 @@ import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * Query result set for traffic rule..
+ * Query result set for traffic rule.
  */
 public final class TrafficRulesQueryResultSet implements GlobalRuleDistSQLResultSet {
     
@@ -55,10 +55,9 @@ public final class TrafficRulesQueryResultSet implements GlobalRuleDistSQLResult
     
     @Override
     public void init(final ShardingSphereRuleMetaData ruleMetaData, final SQLStatement sqlStatement) {
-        Optional<TrafficRule> rule = ruleMetaData.findSingleRule(TrafficRule.class);
         ShowTrafficRulesStatement statement = (ShowTrafficRulesStatement) sqlStatement;
         Optional<String> ruleName = Optional.ofNullable(statement.getRuleName());
-        rule.ifPresent(optional -> data = buildData(optional.getConfiguration(), ruleName).iterator());
+        ruleMetaData.findSingleRule(TrafficRule.class).ifPresent(optional -> data = buildData(optional.getConfiguration(), ruleName).iterator());
     }
     
     private Collection<Collection<Object>> buildData(final TrafficRuleConfiguration ruleConfig, final Optional<String> ruleName) {

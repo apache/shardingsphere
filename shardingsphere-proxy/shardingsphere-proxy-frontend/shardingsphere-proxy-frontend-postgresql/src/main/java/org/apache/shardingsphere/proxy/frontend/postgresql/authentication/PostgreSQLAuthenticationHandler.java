@@ -18,8 +18,11 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.authentication;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
+import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.dialect.postgresql.exception.authority.InvalidPasswordException;
+import org.apache.shardingsphere.dialect.postgresql.exception.authority.PrivilegeNotGrantedException;
+import org.apache.shardingsphere.dialect.postgresql.exception.authority.UnknownUsernameException;
 import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -43,24 +46,23 @@ public final class PostgreSQLAuthenticationHandler {
      * @param databaseName database name
      * @param md5Salt MD5 salt
      * @param passwordMessagePacket password message packet
-     * @return PostgreSQL login result
      */
-    public PostgreSQLLoginResult login(final String username, final String databaseName, final byte[] md5Salt, final PostgreSQLPasswordMessagePacket passwordMessagePacket) {
+    public void login(final String username, final String databaseName, final byte[] md5Salt, final PostgreSQLPasswordMessagePacket passwordMessagePacket) {
         String digest = passwordMessagePacket.getDigest();
         Grantee grantee = new Grantee(username, "%");
         if (!Strings.isNullOrEmpty(databaseName) && !ProxyContext.getInstance().databaseExists(databaseName)) {
-            return new PostgreSQLLoginResult(PostgreSQLVendorError.INVALID_CATALOG_NAME, String.format("database \"%s\" does not exist", databaseName));
+            throw new UnknownDatabaseException(databaseName);
         }
         if (!SQLCheckEngine.check(grantee, getRules(databaseName))) {
-            return new PostgreSQLLoginResult(PostgreSQLVendorError.INVALID_AUTHORIZATION_SPECIFICATION, String.format("unknown username: %s", username));
+            throw new UnknownUsernameException(username);
         }
         PostgreSQLAuthenticator authenticator = getAuthenticator(username, grantee.getHostname());
         if (!SQLCheckEngine.check(grantee, (a, b) -> authenticator.authenticate((ShardingSphereUser) a, (Object[]) b), new Object[]{digest, md5Salt}, getRules(databaseName))) {
-            return new PostgreSQLLoginResult(PostgreSQLVendorError.INVALID_PASSWORD, String.format("password authentication failed for user \"%s\"", username));
+            throw new InvalidPasswordException(username);
         }
-        return null == databaseName || SQLCheckEngine.check(databaseName, getRules(databaseName), grantee)
-                ? new PostgreSQLLoginResult(PostgreSQLVendorError.SUCCESSFUL_COMPLETION, null)
-                : new PostgreSQLLoginResult(PostgreSQLVendorError.PRIVILEGE_NOT_GRANTED, String.format("Access denied for user '%s' to database '%s'", username, databaseName));
+        if (null != databaseName && !SQLCheckEngine.check(databaseName, getRules(databaseName), grantee)) {
+            throw new PrivilegeNotGrantedException(username, databaseName);
+        }
     }
     
     private Collection<ShardingSphereRule> getRules(final String databaseName) {

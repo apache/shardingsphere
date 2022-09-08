@@ -59,6 +59,9 @@ public final class CommonSQLCommand {
     @XmlElement(name = "create-three-data-source-account-table-rule")
     private String createThreeDataSourceAccountTableRule;
     
+    @XmlElement(name = "create-address-broadcast-table-rule")
+    private String createAddressBroadcastTableRule;
+    
     @XmlElement(name = "alter-local-transaction-rule")
     private String alterLocalTransactionRule;
     
@@ -79,4 +82,7 @@ public final class CommonSQLCommand {
     
     @XmlElement(name = "create-order-item-table")
     private String createOrderItemTable;
+    
+    @XmlElement(name = "create-address-table")
+    private String createAddressTable;
 }

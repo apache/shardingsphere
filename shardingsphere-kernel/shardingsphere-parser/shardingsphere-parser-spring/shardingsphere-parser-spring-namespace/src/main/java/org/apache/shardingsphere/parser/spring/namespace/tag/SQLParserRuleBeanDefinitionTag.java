@@ -26,17 +26,38 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLParserRuleBeanDefinitionTag {
     
+    /**
+     * Root tag.
+     */
     public static final String ROOT_TAG = "rule";
     
-    public static final String SQL_COMMENT_PARSER_ENABLE = "sql-comment-parse-enable";
+    /**
+     * SQL comment parse enable attribute.
+     */
+    public static final String SQL_COMMENT_PARSER_ENABLE_ATTRIBUTE = "sql-comment-parse-enable";
     
-    public static final String SQL_STATEMENT_CACHE_REF = "sql-statement-cache-ref";
+    /**
+     * SQL statement cache ref attribute.
+     */
+    public static final String SQL_STATEMENT_CACHE_REF_ATTRIBUTE = "sql-statement-cache-ref";
     
-    public static final String PARSE_TREE_CACHE_REF = "parse-tree-cache-ref";
+    /**
+     * Parse tree cache ref attribute.
+     */
+    public static final String PARSE_TREE_CACHE_REF_ATTRIBUTE = "parse-tree-cache-ref";
     
-    public static final String INITIAL_CAPACITY = "initial-capacity";
+    /**
+     * Initial capacity attribute.
+     */
+    public static final String INITIAL_CAPACITY_ATTRIBUTE = "initial-capacity";
     
-    public static final String MAXIMUM_SIZE = "maximum-size";
+    /**
+     * Maximum size attribute.
+     */
+    public static final String MAXIMUM_SIZE_ATTRIBUTE = "maximum-size";
     
-    public static final String CACHE_OPTION = "cache-option";
+    /**
+     * Cache option attribute.
+     */
+    public static final String CACHE_OPTION_ATTRIBUTE = "cache-option";
 }

@@ -39,7 +39,6 @@ public final class MigrateTableUpdater implements RALUpdater<MigrateTableStateme
         log.info("start migrate job by {}", sqlStatement);
         String targetDatabaseName = ObjectUtils.defaultIfNull(sqlStatement.getTargetDatabaseName(), databaseName);
         Preconditions.checkNotNull(targetDatabaseName, "Target database name is null. You could define it in DistSQL or select a database.");
-        Preconditions.checkArgument(sqlStatement.getSourceTableName().equalsIgnoreCase(sqlStatement.getTargetTableName()), "Source table name and target table name must be the same for now.");
         CreateMigrationJobParameter createMigrationJobParameter = new CreateMigrationJobParameter(sqlStatement.getSourceResourceName(), sqlStatement.getSourceSchemaName(),
                 sqlStatement.getSourceTableName(), targetDatabaseName, sqlStatement.getTargetTableName());
         JOB_API.createJobAndStart(createMigrationJobParameter);

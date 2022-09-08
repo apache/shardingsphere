@@ -19,7 +19,9 @@ package org.apache.shardingsphere.infra.rule.builder.global;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.schedule.ScheduleContext;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -48,21 +50,23 @@ public final class GlobalRulesBuilderTest {
     @Test
     public void assertBuildRules() {
         Collection<ShardingSphereRule> shardingSphereRules = GlobalRulesBuilder
-                .buildRules(Collections.singletonList(new FixtureGlobalRuleConfiguration()), Collections.singletonMap("logic_db", buildShardingSphereDatabase()), buildInstanceContext());
+                .buildRules(Collections.singletonList(new FixtureGlobalRuleConfiguration()), Collections.singletonMap("logic_db", buildShardingSphereDatabase()), buildInstanceContext(),
+                        mock(ConfigurationProperties.class));
         assertThat(shardingSphereRules.size(), is(1));
     }
     
     @Test
     public void assertBuildRulesClassType() {
         Collection<ShardingSphereRule> shardingSphereRules = GlobalRulesBuilder
-                .buildRules(Collections.singletonList(new FixtureGlobalRuleConfiguration()), Collections.singletonMap("logic_db", buildShardingSphereDatabase()), buildInstanceContext());
+                .buildRules(Collections.singletonList(new FixtureGlobalRuleConfiguration()), Collections.singletonMap("logic_db", buildShardingSphereDatabase()), buildInstanceContext(),
+                        mock(ConfigurationProperties.class));
         assertTrue(shardingSphereRules.toArray()[0] instanceof FixtureGlobalRule);
     }
     
     private InstanceContext buildInstanceContext() {
         ComputeNodeInstance computeNodeInstance = new ComputeNodeInstance(new JDBCInstanceMetaData(UUID.randomUUID().toString()));
         ModeConfiguration modeConfiguration = new ModeConfiguration("Standalone", null, false);
-        return new InstanceContext(computeNodeInstance, createWorkerIdGenerator(), modeConfiguration, mock(LockContext.class), new EventBusContext());
+        return new InstanceContext(computeNodeInstance, createWorkerIdGenerator(), modeConfiguration, mock(LockContext.class), new EventBusContext(), mock(ScheduleContext.class));
     }
     
     @SneakyThrows

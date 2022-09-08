@@ -5,7 +5,7 @@ weight = 2
 
 ## Description
 
-The `CREATE SHADOW RULE` syntax is used to create a default shadow rule.
+The `CREATE SHADOW RULE` syntax is used to create a shadow rule.
 
 ### Syntax
 
@@ -38,7 +38,7 @@ algorithmName ::=
   identifier
 
 shadowAlgorithmType ::=
-  identifier
+  string
 ```
 
 ### Supplement

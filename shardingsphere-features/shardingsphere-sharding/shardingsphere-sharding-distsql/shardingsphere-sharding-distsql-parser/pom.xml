@@ -63,7 +63,7 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>antlr-scaling</id>
+                        <id>antlr-migration</id>
                         <goals>
                             <goal>antlr4</goal>
                         </goals>

@@ -60,10 +60,10 @@ public final class MySQLDataSourcePreparerTest {
     private PipelineDataSourceConfiguration targetPipelineDataSourceConfig;
     
     @Mock
-    private ShardingSpherePipelineDataSourceConfiguration sourceScalingDataSourceConfig;
+    private ShardingSpherePipelineDataSourceConfiguration sourceDataSourceConfig;
     
     @Mock
-    private ShardingSpherePipelineDataSourceConfiguration targetScalingDataSourceConfig;
+    private ShardingSpherePipelineDataSourceConfiguration targetDataSourceConfig;
     
     @Mock
     private PipelineDataSourceWrapper sourceDataSourceWrapper;
@@ -74,8 +74,8 @@ public final class MySQLDataSourcePreparerTest {
     @Before
     public void setUp() throws SQLException {
         PipelineDataSourceManager mockPipelineDataSourceManager = mock(PipelineDataSourceManager.class);
-        when(mockPipelineDataSourceManager.getDataSource(same(sourceScalingDataSourceConfig))).thenReturn(sourceDataSourceWrapper);
-        when(mockPipelineDataSourceManager.getDataSource(same(targetScalingDataSourceConfig))).thenReturn(targetDataSourceWrapper);
+        when(mockPipelineDataSourceManager.getDataSource(same(sourceDataSourceConfig))).thenReturn(sourceDataSourceWrapper);
+        when(mockPipelineDataSourceManager.getDataSource(same(targetDataSourceConfig))).thenReturn(targetDataSourceWrapper);
         when(prepareTargetTablesParameter.getDataSourceManager()).thenReturn(mockPipelineDataSourceManager);
         when(jobConfig.getSource()).thenReturn(sourcePipelineDataSourceConfig);
         when(jobConfig.getSource().getType()).thenReturn("ShardingSphereJDBC");
@@ -83,16 +83,15 @@ public final class MySQLDataSourcePreparerTest {
         when(jobConfig.getTarget()).thenReturn(targetPipelineDataSourceConfig);
         when(jobConfig.getTarget().getType()).thenReturn("ShardingSphereJDBC");
         when(jobConfig.getTarget().getParameter()).thenReturn("target");
-        when(prepareTargetTablesParameter.getDatabaseName()).thenReturn("test_db");
     }
     
     @Test
     public void assertGetConnection() throws SQLException {
         try (MockedStatic<PipelineDataSourceConfigurationFactory> mockedStaticPipelineDataSourceConfigurationFactory = mockStatic(PipelineDataSourceConfigurationFactory.class)) {
             mockedStaticPipelineDataSourceConfigurationFactory.when(() -> PipelineDataSourceConfigurationFactory.newInstance(eq("ShardingSphereJDBC"), eq("source")))
-                    .thenReturn(sourceScalingDataSourceConfig);
+                    .thenReturn(sourceDataSourceConfig);
             mockedStaticPipelineDataSourceConfigurationFactory.when(() -> PipelineDataSourceConfigurationFactory.newInstance(eq("ShardingSphereJDBC"), eq("target")))
-                    .thenReturn(targetScalingDataSourceConfig);
+                    .thenReturn(targetDataSourceConfig);
             new MySQLDataSourcePreparer().prepareTargetTables(prepareTargetTablesParameter);
             verify(sourceDataSourceWrapper).getConnection();
             verify(targetDataSourceWrapper).getConnection();
@@ -103,9 +102,9 @@ public final class MySQLDataSourcePreparerTest {
     public void assertThrowPrepareFailedException() throws SQLException {
         try (MockedStatic<PipelineDataSourceConfigurationFactory> mockedStaticPipelineDataSourceConfigurationFactory = mockStatic(PipelineDataSourceConfigurationFactory.class)) {
             mockedStaticPipelineDataSourceConfigurationFactory.when(() -> PipelineDataSourceConfigurationFactory.newInstance(eq("ShardingSphereJDBC"), eq("source")))
-                    .thenReturn(sourceScalingDataSourceConfig);
+                    .thenReturn(sourceDataSourceConfig);
             mockedStaticPipelineDataSourceConfigurationFactory.when(() -> PipelineDataSourceConfigurationFactory.newInstance(eq("ShardingSphereJDBC"), eq("target")))
-                    .thenReturn(targetScalingDataSourceConfig);
+                    .thenReturn(targetDataSourceConfig);
             when(sourceDataSourceWrapper.getConnection()).thenThrow(SQLException.class);
             new MySQLDataSourcePreparer().prepareTargetTables(prepareTargetTablesParameter);
         }

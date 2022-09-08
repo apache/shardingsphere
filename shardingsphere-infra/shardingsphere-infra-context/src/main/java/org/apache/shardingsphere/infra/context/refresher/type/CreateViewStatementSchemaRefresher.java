@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
@@ -51,11 +52,14 @@ public final class CreateViewStatementSchemaRefresher implements MetaDataRefresh
         GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(database.getProtocolType(),
                 database.getResource().getDatabaseType(), database.getResource().getDataSources(), database.getRuleMetaData().getRules(), props, schemaName);
         Map<String, ShardingSphereSchema> schemaMap = GenericSchemaBuilder.build(Collections.singletonList(viewName), materials);
-        Optional<ShardingSphereTable> actualViewMetaData = Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.get(viewName));
-        if (actualViewMetaData.isPresent()) {
-            database.getSchema(schemaName).put(viewName, actualViewMetaData.get());
+        Optional<ShardingSphereTable> actualTableMetaData = Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.getTable(viewName));
+        Optional<ShardingSphereView> actualViewMetaData = Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.getView(viewName));
+        if (actualTableMetaData.isPresent() && actualViewMetaData.isPresent()) {
+            database.getSchema(schemaName).putTable(viewName, actualTableMetaData.get());
+            database.getSchema(schemaName).putView(viewName, actualViewMetaData.get());
             SchemaAlteredEvent event = new SchemaAlteredEvent(database.getName(), schemaName);
-            event.getAlteredTables().add(actualViewMetaData.get());
+            event.getAlteredTables().add(actualTableMetaData.get());
+            event.getAlteredViews().add(actualViewMetaData.get());
             return Optional.of(event);
         }
         return Optional.empty();
