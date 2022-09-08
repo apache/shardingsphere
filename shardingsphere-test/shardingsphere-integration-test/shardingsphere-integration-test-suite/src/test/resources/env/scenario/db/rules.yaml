@@ -75,4 +75,4 @@ rules:
       type: IT.FIXTURE
 
 props:
-  sql-federation-type: ORIGINAL
+  sql-federation-type: ADVANCED
