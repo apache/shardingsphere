@@ -134,7 +134,7 @@ public final class AdvancedFederationExecutor implements SQLFederationExecutor {
         SqlValidator validator = OptimizerPlannerContextFactory.createValidator(catalogReader, relDataTypeFactory, connectionConfig);
         SqlToRelConverter converter = OptimizerPlannerContextFactory.createConverter(catalogReader, validator, relDataTypeFactory);
         RelNode bestPlan =
-                new ShardingSphereOptimizer(converter, QueryOptimizePlannerFactory.createHepPlannerWithoutCalc(), QueryOptimizePlannerFactory.createHepPlannerWithCalc()).optimize(sqlStatement);
+                new ShardingSphereOptimizer(converter, QueryOptimizePlannerFactory.createHepPlanner()).optimize(sqlStatement);
         Bindable<Object[]> executablePlan = EnumerableInterpretable.toBindable(Collections.emptyMap(), null, (EnumerableRel) bestPlan, EnumerableRel.Prefer.ARRAY);
         return executablePlan.bind(new CommonExecuteDataContext(validator, converter, parameters));
     }
