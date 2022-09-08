@@ -15,56 +15,56 @@
 -- limitations under the License.
 --
 
-CREATE DATABASE encrypt_write_ds_0;
-CREATE DATABASE encrypt_write_ds_1;
-CREATE DATABASE encrypt_write_ds_2;
-CREATE DATABASE encrypt_write_ds_3;
-CREATE DATABASE encrypt_write_ds_4;
-CREATE DATABASE encrypt_write_ds_5;
-CREATE DATABASE encrypt_write_ds_6;
-CREATE DATABASE encrypt_write_ds_7;
-CREATE DATABASE encrypt_write_ds_8;
-CREATE DATABASE encrypt_write_ds_9;
-CREATE DATABASE encrypt_read_ds_0;
-CREATE DATABASE encrypt_read_ds_1;
-CREATE DATABASE encrypt_read_ds_2;
-CREATE DATABASE encrypt_read_ds_3;
-CREATE DATABASE encrypt_read_ds_4;
-CREATE DATABASE encrypt_read_ds_5;
-CREATE DATABASE encrypt_read_ds_6;
-CREATE DATABASE encrypt_read_ds_7;
-CREATE DATABASE encrypt_read_ds_8;
-CREATE DATABASE encrypt_read_ds_9;
+CREATE DATABASE write_ds_0;
+CREATE DATABASE write_ds_1;
+CREATE DATABASE write_ds_2;
+CREATE DATABASE write_ds_3;
+CREATE DATABASE write_ds_4;
+CREATE DATABASE write_ds_5;
+CREATE DATABASE write_ds_6;
+CREATE DATABASE write_ds_7;
+CREATE DATABASE write_ds_8;
+CREATE DATABASE write_ds_9;
+CREATE DATABASE read_ds_0;
+CREATE DATABASE read_ds_1;
+CREATE DATABASE read_ds_2;
+CREATE DATABASE read_ds_3;
+CREATE DATABASE read_ds_4;
+CREATE DATABASE read_ds_5;
+CREATE DATABASE read_ds_6;
+CREATE DATABASE read_ds_7;
+CREATE DATABASE read_ds_8;
+CREATE DATABASE read_ds_9;
 
 CREATE DATABASE rdl_test_0;
 CREATE DATABASE rdl_test_1;
 CREATE DATABASE rdl_test_2;
 
-GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_0 TO test_user;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_1 TO test_user;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_2 TO test_user;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_3 TO test_user;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_4 TO test_user;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_5 TO test_user;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_6 TO test_user;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_7 TO test_user;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_8 TO test_user;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_9 TO test_user;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_read_ds_0 TO test_user;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_read_ds_1 TO test_user;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_read_ds_2 TO test_user;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_read_ds_3 TO test_user;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_read_ds_4 TO test_user;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_read_ds_5 TO test_user;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_read_ds_6 TO test_user;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_read_ds_7 TO test_user;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_read_ds_8 TO test_user;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_read_ds_9 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE write_ds_0 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE write_ds_1 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE write_ds_2 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE write_ds_3 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE write_ds_4 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE write_ds_5 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE write_ds_6 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE write_ds_7 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE write_ds_8 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE write_ds_9 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE read_ds_0 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE read_ds_1 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE read_ds_2 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE read_ds_3 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE read_ds_4 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE read_ds_5 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE read_ds_6 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE read_ds_7 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE read_ds_8 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE read_ds_9 TO test_user;
 GRANT ALL PRIVILEGES ON DATABASE rdl_test_0 TO test_user;
 GRANT ALL PRIVILEGES ON DATABASE rdl_test_1 TO test_user;
 GRANT ALL PRIVILEGES ON DATABASE rdl_test_2 TO test_user;
 
-\c encrypt_write_ds_0
+\c write_ds_0
 
 DROP TABLE IF EXISTS t_user_0;
 DROP TABLE IF EXISTS t_user_item_0;
@@ -90,7 +90,7 @@ CREATE INDEX user_index_t_user_10 ON t_user_10 (user_id);
 CREATE INDEX user_index_t_user_20 ON t_user_20 (user_id);
 CREATE INDEX user_index_t_user_30 ON t_user_30 (user_id);
 
-\c encrypt_write_ds_1
+\c write_ds_1
 
 DROP TABLE IF EXISTS t_user_1;
 DROP TABLE IF EXISTS t_user_item_1;
@@ -114,7 +114,7 @@ CREATE INDEX user_index_t_user_11 ON t_user_11 (user_id);
 CREATE INDEX user_index_t_user_21 ON t_user_21 (user_id);
 CREATE INDEX user_index_t_user_31 ON t_user_31 (user_id);
 
-\c encrypt_write_ds_2
+\c write_ds_2
 
 DROP TABLE IF EXISTS t_user_2;
 DROP TABLE IF EXISTS t_user_item_2;
@@ -138,7 +138,7 @@ CREATE INDEX user_index_t_user_12 ON t_user_12 (user_id);
 CREATE INDEX user_index_t_user_22 ON t_user_22 (user_id);
 CREATE INDEX user_index_t_user_32 ON t_user_32 (user_id);
 
-\c encrypt_write_ds_3
+\c write_ds_3
 
 DROP TABLE IF EXISTS t_user_3;
 DROP TABLE IF EXISTS t_user_item_3;
@@ -162,7 +162,7 @@ CREATE INDEX user_index_t_user_13 ON t_user_13 (user_id);
 CREATE INDEX user_index_t_user_23 ON t_user_23 (user_id);
 CREATE INDEX user_index_t_user_33 ON t_user_33 (user_id);
 
-\c encrypt_write_ds_4
+\c write_ds_4
 
 DROP TABLE IF EXISTS t_user_4;
 DROP TABLE IF EXISTS t_user_item_4;
@@ -186,7 +186,7 @@ CREATE INDEX user_index_t_user_14 ON t_user_14 (user_id);
 CREATE INDEX user_index_t_user_24 ON t_user_24 (user_id);
 CREATE INDEX user_index_t_user_34 ON t_user_34 (user_id);
 
-\c encrypt_write_ds_5
+\c write_ds_5
 
 DROP TABLE IF EXISTS t_user_5;
 DROP TABLE IF EXISTS t_user_item_5;
@@ -210,7 +210,7 @@ CREATE INDEX user_index_t_user_15 ON t_user_15 (user_id);
 CREATE INDEX user_index_t_user_25 ON t_user_25 (user_id);
 CREATE INDEX user_index_t_user_35 ON t_user_35 (user_id);
 
-\c encrypt_write_ds_6
+\c write_ds_6
 
 DROP TABLE IF EXISTS t_user_6;
 DROP TABLE IF EXISTS t_user_item_6;
@@ -234,7 +234,7 @@ CREATE INDEX user_index_t_user_16 ON t_user_16 (user_id);
 CREATE INDEX user_index_t_user_26 ON t_user_26 (user_id);
 CREATE INDEX user_index_t_user_36 ON t_user_36 (user_id);
 
-\c encrypt_write_ds_7
+\c write_ds_7
 
 DROP TABLE IF EXISTS t_user_7;
 DROP TABLE IF EXISTS t_user_item_7;
@@ -258,7 +258,7 @@ CREATE INDEX user_index_t_user_17 ON t_user_17 (user_id);
 CREATE INDEX user_index_t_user_27 ON t_user_27 (user_id);
 CREATE INDEX user_index_t_user_37 ON t_user_37 (user_id);
 
-\c encrypt_write_ds_8
+\c write_ds_8
 
 DROP TABLE IF EXISTS t_user_8;
 DROP TABLE IF EXISTS t_user_item_8;
@@ -282,7 +282,7 @@ CREATE INDEX user_index_t_user_18 ON t_user_18 (user_id);
 CREATE INDEX user_index_t_user_28 ON t_user_28 (user_id);
 CREATE INDEX user_index_t_user_38 ON t_user_38 (user_id);
 
-\c encrypt_write_ds_9
+\c write_ds_9
 
 DROP TABLE IF EXISTS t_user_9;
 DROP TABLE IF EXISTS t_user_item_9;
@@ -306,7 +306,7 @@ CREATE INDEX user_index_t_user_19 ON t_user_19 (user_id);
 CREATE INDEX user_index_t_user_29 ON t_user_29 (user_id);
 CREATE INDEX user_index_t_user_39 ON t_user_39 (user_id);
 
-\c encrypt_read_ds_0
+\c read_ds_0
 
 DROP TABLE IF EXISTS t_user_0;
 DROP TABLE IF EXISTS t_user_item_0;
@@ -332,7 +332,7 @@ CREATE INDEX user_index_t_user_10 ON t_user_10 (user_id);
 CREATE INDEX user_index_t_user_20 ON t_user_20 (user_id);
 CREATE INDEX user_index_t_user_30 ON t_user_30 (user_id);
 
-\c encrypt_read_ds_1
+\c read_ds_1
 
 DROP TABLE IF EXISTS t_user_1;
 DROP TABLE IF EXISTS t_user_item_1;
@@ -356,7 +356,7 @@ CREATE INDEX user_index_t_user_11 ON t_user_11 (user_id);
 CREATE INDEX user_index_t_user_21 ON t_user_21 (user_id);
 CREATE INDEX user_index_t_user_31 ON t_user_31 (user_id);
 
-\c encrypt_read_ds_2
+\c read_ds_2
 
 DROP TABLE IF EXISTS t_user_2;
 DROP TABLE IF EXISTS t_user_item_2;
@@ -380,7 +380,7 @@ CREATE INDEX user_index_t_user_12 ON t_user_12 (user_id);
 CREATE INDEX user_index_t_user_22 ON t_user_22 (user_id);
 CREATE INDEX user_index_t_user_32 ON t_user_32 (user_id);
 
-\c encrypt_read_ds_3
+\c read_ds_3
 
 DROP TABLE IF EXISTS t_user_3;
 DROP TABLE IF EXISTS t_user_item_3;
@@ -404,7 +404,7 @@ CREATE INDEX user_index_t_user_13 ON t_user_13 (user_id);
 CREATE INDEX user_index_t_user_23 ON t_user_23 (user_id);
 CREATE INDEX user_index_t_user_33 ON t_user_33 (user_id);
 
-\c encrypt_read_ds_4
+\c read_ds_4
 
 DROP TABLE IF EXISTS t_user_4;
 DROP TABLE IF EXISTS t_user_item_4;
@@ -428,7 +428,7 @@ CREATE INDEX user_index_t_user_14 ON t_user_14 (user_id);
 CREATE INDEX user_index_t_user_24 ON t_user_24 (user_id);
 CREATE INDEX user_index_t_user_34 ON t_user_34 (user_id);
 
-\c encrypt_read_ds_5
+\c read_ds_5
 
 DROP TABLE IF EXISTS t_user_5;
 DROP TABLE IF EXISTS t_user_item_5;
@@ -452,7 +452,7 @@ CREATE INDEX user_index_t_user_15 ON t_user_15 (user_id);
 CREATE INDEX user_index_t_user_25 ON t_user_25 (user_id);
 CREATE INDEX user_index_t_user_35 ON t_user_35 (user_id);
 
-\c encrypt_read_ds_6
+\c read_ds_6
 
 DROP TABLE IF EXISTS t_user_6;
 DROP TABLE IF EXISTS t_user_item_6;
@@ -476,7 +476,7 @@ CREATE INDEX user_index_t_user_16 ON t_user_16 (user_id);
 CREATE INDEX user_index_t_user_26 ON t_user_26 (user_id);
 CREATE INDEX user_index_t_user_36 ON t_user_36 (user_id);
 
-\c encrypt_read_ds_7
+\c read_ds_7
 
 DROP TABLE IF EXISTS t_user_7;
 DROP TABLE IF EXISTS t_user_item_7;
@@ -500,7 +500,7 @@ CREATE INDEX user_index_t_user_17 ON t_user_17 (user_id);
 CREATE INDEX user_index_t_user_27 ON t_user_27 (user_id);
 CREATE INDEX user_index_t_user_37 ON t_user_37 (user_id);
 
-\c encrypt_read_ds_8
+\c read_ds_8
 
 DROP TABLE IF EXISTS t_user_8;
 DROP TABLE IF EXISTS t_user_item_8;
@@ -524,7 +524,7 @@ CREATE INDEX user_index_t_user_18 ON t_user_18 (user_id);
 CREATE INDEX user_index_t_user_28 ON t_user_28 (user_id);
 CREATE INDEX user_index_t_user_38 ON t_user_38 (user_id);
 
-\c encrypt_read_ds_9
+\c read_ds_9
 
 DROP TABLE IF EXISTS t_user_9;
 DROP TABLE IF EXISTS t_user_item_9;
