@@ -32,6 +32,8 @@ public final class YamlInventoryIncrementalJobItemProgress implements YamlConfig
     
     private String sourceDatabaseType;
     
+    private String dataSourceName;
+    
     private YamlJobItemInventoryTasksProgress inventory;
     
     private YamlJobItemIncrementalTasksProgress incremental;

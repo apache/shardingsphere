@@ -33,7 +33,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-@ToString(exclude = "dataSourceConfig")
+@ToString(exclude = { "dataSourceConfig", "tableNameSchemaNameMapping" })
 // TODO it should be final and not extends by sub-class
 // TODO fields final
 public class DumperConfiguration {

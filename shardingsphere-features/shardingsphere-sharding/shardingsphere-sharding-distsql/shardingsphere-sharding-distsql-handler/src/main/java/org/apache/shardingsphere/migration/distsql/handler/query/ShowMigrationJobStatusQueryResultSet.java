@@ -48,7 +48,7 @@ public final class ShowMigrationJobStatusQueryResultSet implements DatabaseDistS
                     Collection<Object> result = new LinkedList<>();
                     result.add(entry.getKey());
                     if (null != entry.getValue()) {
-                        result.add(entry.getValue().getIncremental().getDataSourceName());
+                        result.add(entry.getValue().getDataSourceName());
                         result.add(entry.getValue().getStatus());
                         result.add(entry.getValue().isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
                         result.add(entry.getValue().getInventory().getInventoryFinishedPercentage());
