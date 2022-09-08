@@ -17,31 +17,33 @@
 
 package org.apache.shardingsphere.data.pipeline.core.context;
 
-import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
-import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
-import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
-
-import java.util.Collection;
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineProcessContext;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
+import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 
 /**
- * Inventory incremental job item context.
+ * Inventory incremental process context.
  */
-public interface InventoryIncrementalJobItemContext extends PipelineJobItemContext {
-    
-    @Override
-    InventoryIncrementalProcessContext getJobProcessContext();
+public interface InventoryIncrementalProcessContext extends PipelineProcessContext {
     
     /**
-     * Get inventory tasks.
+     * Get pipeline channel creator.
      *
-     * @return inventory tasks
+     * @return pipeline channel creator
      */
-    Collection<InventoryTask> getInventoryTasks();
+    PipelineChannelCreator getPipelineChannelCreator();
     
     /**
-     * Get incremental tasks.
+     * Get job read rate limit algorithm.
      *
-     * @return incremental tasks
+     * @return job read rate limit algorithm
      */
-    Collection<IncrementalTask> getIncrementalTasks();
+    JobRateLimitAlgorithm getReadRateLimitAlgorithm();
+    
+    /**
+     * Get job write rate limit algorithm.
+     *
+     * @return job write rate limit algorithm
+     */
+    JobRateLimitAlgorithm getWriteRateLimitAlgorithm();
 }
