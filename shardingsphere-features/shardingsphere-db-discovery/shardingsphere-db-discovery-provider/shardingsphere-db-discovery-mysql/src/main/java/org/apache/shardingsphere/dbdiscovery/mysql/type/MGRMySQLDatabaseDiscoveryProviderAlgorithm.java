@@ -88,7 +88,7 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
         return CompletableFuture.runAsync(() -> {
             try {
                 checkSingleDataSourceEnvironment(databaseName, dataSource);
-            } catch (SQLException ex) {
+            } catch (final SQLException ex) {
                 throw new SQLWrapperException(ex);
             }
         }, executorService);
