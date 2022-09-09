@@ -36,11 +36,12 @@ import org.apache.calcite.schema.Schemas;
 import org.apache.calcite.schema.Statistic;
 import org.apache.calcite.schema.TranslatableTable;
 import org.apache.calcite.schema.impl.AbstractTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.util.exception.external.sql.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TranslatableScanNodeExecutorContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.statistic.FederationStatistic;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 
 import java.lang.reflect.Type;
 
@@ -96,7 +97,7 @@ public final class FederationTranslatableTable extends AbstractTable implements 
     
     @Override
     public <T> Queryable<T> asQueryable(final QueryProvider queryProvider, final SchemaPlus schema, final String tableName) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedSQLOperationException("asQueryable");
     }
     
     @Override

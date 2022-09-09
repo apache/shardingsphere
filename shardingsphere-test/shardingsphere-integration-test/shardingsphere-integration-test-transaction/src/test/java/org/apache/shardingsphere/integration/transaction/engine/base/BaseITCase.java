@@ -40,6 +40,7 @@ import org.apache.shardingsphere.integration.transaction.framework.container.com
 import org.apache.shardingsphere.integration.transaction.framework.container.compose.NativeContainerComposer;
 import org.apache.shardingsphere.integration.transaction.framework.param.TransactionParameterized;
 import org.apache.shardingsphere.integration.transaction.util.TestCaseClassScanner;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.AdapterContainerConstants;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.StorageContainerUtil;
@@ -144,7 +145,7 @@ public abstract class BaseITCase {
     }
     
     protected boolean isProxyAdapter(final TransactionParameterized parameterized) {
-        return parameterized.getAdapter().equalsIgnoreCase(TransactionTestConstants.PROXY);
+        return parameterized.getAdapter().equalsIgnoreCase(AdapterContainerConstants.PROXY);
     }
     
     protected static Collection<TransactionParameterized> getTransactionParameterizedList(final Class<? extends BaseTransactionITCase> testCaseClass) {

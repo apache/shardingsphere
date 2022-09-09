@@ -15,18 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema;
 
-import org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm.fixture.FixturePipelineSQLBuilder;
-import org.junit.Test;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereView;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-
-public final class PipelineSQLBuilderFactoryTest {
+/**
+ * View meta data changed event.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class ViewMetaDataChangedEvent implements GovernanceEvent {
     
-    @Test
-    public void assertGetInstance() {
-        assertThat(PipelineSQLBuilderFactory.getInstance("FIXTURE"), instanceOf(FixturePipelineSQLBuilder.class));
-    }
+    private final String databaseName;
+    
+    private final String schemaName;
+    
+    private final ShardingSphereView changedViewMetaData;
+    
+    private final String deletedView;
 }

@@ -33,6 +33,8 @@ import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfigura
 @ToString
 public final class MigrationTaskConfiguration implements PipelineTaskConfiguration {
     
+    private final String dataSourceName;
+    
     private final CreateTableConfiguration createTableConfig;
     
     private final DumperConfiguration dumperConfig;

@@ -18,15 +18,19 @@
 package org.apache.shardingsphere.sqlfederation.api.config;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 
 /**
  * SQL federation rule configuration.
  */
-@RequiredArgsConstructor
 @Getter
+@Setter
 public final class SQLFederationRuleConfiguration implements GlobalRuleConfiguration {
     
-    private final String sqlFederationType;
+    private String sqlFederationType;
+    
+    public SQLFederationRuleConfiguration(final String sqlFederationType) {
+        this.sqlFederationType = sqlFederationType;
+    }
 }

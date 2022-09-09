@@ -15,31 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.position;
+package org.apache.shardingsphere.data.pipeline.core.spi.process;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
+import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 /**
- * Position initializer factory.
+ * Pipeline job config changed event processor factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PositionInitializerFactory {
+public final class PipelineJobConfigurationChangedEventProcessorFactory {
     
     static {
-        ShardingSphereServiceLoader.register(PositionInitializer.class);
+        ShardingSphereServiceLoader.register(PipelineJobConfigurationChangedEventProcessor.class);
     }
     
     /**
-     * Get instance of position initializer.
+     * Get job changed event processor instance.
      *
-     * @param databaseType database type
-     * @return got instance
+     * @param jobType job type
+     * @return pipeline event process
      */
-    public static PositionInitializer getInstance(final String databaseType) {
-        return TypedSPIRegistry.getRegisteredService(PositionInitializer.class, databaseType);
+    public static PipelineJobConfigurationChangedEventProcessor getInstance(final JobType jobType) {
+        return TypedSPIRegistry.getRegisteredService(PipelineJobConfigurationChangedEventProcessor.class, jobType.getTypeName());
     }
 }

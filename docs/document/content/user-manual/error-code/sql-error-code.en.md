@@ -36,6 +36,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 25000     | 11320       | Switch transaction type failed, please terminate the current transaction |
 | 25000     | 11321       | JDBC does not support operations across multiple logical databases in transaction |
 | 25000     | 11322       | Failed to create \`%s\` XA data source |
+| 25000     | 11323       | Can not start new XA transaction in a active transaction |
 | 42S02     | 11400       | Can not get traffic execution unit |
 | 42000     | 12000       | Unsupported command: %s |
 | 44000     | 13000       | SQL check failed, error message: %s |
@@ -93,3 +94,4 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | HY004     | 28000       | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type |
 | 42000     | 28003       | Insert value of index \`%s\` can not support for shadow |
 | HY004     | 30000       | Unknown exception: %s |
+| 0A000     | 30001       | Unsupported operation: %s |

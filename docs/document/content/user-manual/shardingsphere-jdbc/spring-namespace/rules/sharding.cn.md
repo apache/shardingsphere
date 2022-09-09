@@ -9,7 +9,7 @@ weight = 1
 
 ## 参数解释
 
-命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-5.1.2.xsd](http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-5.1.2.xsd)
+命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-5.2.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-5.2.0.xsd)
 
 \<sharding:rule />
 

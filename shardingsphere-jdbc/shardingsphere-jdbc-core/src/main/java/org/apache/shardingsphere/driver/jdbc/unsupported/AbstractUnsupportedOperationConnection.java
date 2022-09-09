@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.driver.jdbc.unsupported;
 
 import org.apache.shardingsphere.driver.jdbc.adapter.WrapperAdapter;
+import org.apache.shardingsphere.infra.util.exception.external.sql.UnsupportedSQLOperationException;
 
 import java.sql.Blob;
 import java.sql.CallableStatement;
@@ -119,11 +120,11 @@ public abstract class AbstractUnsupportedOperationConnection extends WrapperAdap
     
     @Override
     public final void setClientInfo(final String name, final String value) {
-        throw new UnsupportedOperationException("setClientInfo name value");
+        throw new UnsupportedSQLOperationException("setClientInfo name value");
     }
     
     @Override
     public final void setClientInfo(final Properties props) {
-        throw new UnsupportedOperationException("setClientInfo properties");
+        throw new UnsupportedSQLOperationException("setClientInfo properties");
     }
 }

@@ -15,30 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.spi;
+package org.apache.shardingsphere.transaction.exception;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.QueryContext;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
+import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * SQL federation context.
+ * Start nested XA transaction exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class SQLFederationContext {
+public final class StartNestedXATransactionException extends ShardingSphereSQLException {
     
-    private final Collection<ExecutionUnit> executionUnits = new LinkedList<>();
+    private static final long serialVersionUID = 7761100591709104351L;
     
-    private final boolean preview;
-    
-    private final QueryContext queryContext;
-    
-    private final Map<String, ShardingSphereDatabase> databases;
+    public StartNestedXATransactionException() {
+        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 11323, "Can not start new XA transaction in a active transaction");
+    }
 }

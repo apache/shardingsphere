@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
+import org.apache.shardingsphere.infra.util.exception.external.sql.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.callback.impl.ProxyPreparedStatementExecutorCallback;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.callback.impl.ProxyStatementExecutorCallback;
@@ -54,6 +55,6 @@ public final class ProxyJDBCExecutorCallbackFactory {
         if (JDBCDriverType.PREPARED_STATEMENT.equals(type)) {
             return new ProxyPreparedStatementExecutorCallback(protocolType, databaseType, sqlStatement, databaseCommunicationEngine, isReturnGeneratedKeys, isExceptionThrown, isFetchMetaData);
         }
-        throw new UnsupportedOperationException(String.format("Unsupported driver type: `%s`", type));
+        throw new UnsupportedSQLOperationException(String.format("Unsupported driver type: `%s`", type));
     }
 }

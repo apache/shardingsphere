@@ -19,12 +19,14 @@ package org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable;
 
 import org.apache.calcite.plan.RelOptRule;
 import org.apache.calcite.plan.RelOptRuleCall;
+import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.rex.RexInputRef;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.tools.RelBuilderFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,21 +45,29 @@ public class TranslatableProjectRule extends RelOptRule {
         LogicalProject project = call.rel(0);
         TranslatableTableScan scan = call.rel(1);
         int[] fields = getProjectFields(project.getProjects());
-        if (fields == null) {
+        List<RexNode> expressions = project.getProjects();
+        if (0 == fields.length) {
             return;
         }
-        call.transformTo(new TranslatableTableScan(scan.getCluster(), scan.getTable(), scan.getTranslatableTable(), scan.getFilters(), fields));
+        if (fields.length == expressions.size()) {
+            call.transformTo(new TranslatableTableScan(scan.getCluster(), scan.getTable(), scan.getTranslatableTable(), scan.getFilters(), fields));
+        } else {
+            TranslatableTableScan tableScan = new TranslatableTableScan(scan.getCluster(), scan.getTable(), scan.getTranslatableTable(), scan.getFilters(), fields, expressions.size(), expressions);
+            RelNode logicalProject = LogicalProject.create(tableScan, project.getHints(), project.getProjects(), project.getRowType());
+            call.transformTo(logicalProject);
+        }
     }
     
     private int[] getProjectFields(final List<RexNode> rexNodes) {
-        final int[] result = new int[rexNodes.size()];
-        for (int index = 0; index < rexNodes.size(); index++) {
-            RexNode exp = rexNodes.get(index);
+        List<Integer> rexInputRefs = new ArrayList<>();
+        for (RexNode exp : rexNodes) {
             if (exp instanceof RexInputRef) {
-                result[index] = ((RexInputRef) exp).getIndex();
-            } else {
-                return null;
+                rexInputRefs.add(((RexInputRef) exp).getIndex());
             }
+        }
+        int[] result = new int[rexInputRefs.size()];
+        for (int index = 0; index < rexInputRefs.size(); index++) {
+            result[index] = rexInputRefs.get(index);
         }
         return result;
     }

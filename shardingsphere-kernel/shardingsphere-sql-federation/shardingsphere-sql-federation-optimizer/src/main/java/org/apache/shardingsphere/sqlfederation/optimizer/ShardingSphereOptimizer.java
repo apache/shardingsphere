@@ -23,8 +23,8 @@ import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.SQLNodeConverterEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.SQLNodeConverterEngine;
 
 /**
  * ShardingSphere optimizer.
@@ -34,9 +34,7 @@ public final class ShardingSphereOptimizer {
     
     private final SqlToRelConverter converter;
     
-    private final RelOptPlanner hepPlannerWithoutCalc;
-    
-    private final RelOptPlanner hepPlannerWithCalc;
+    private final RelOptPlanner hepPlanner;
     
     /**
      * Optimize query execution plan.
@@ -47,9 +45,8 @@ public final class ShardingSphereOptimizer {
     public RelNode optimize(final SQLStatement sqlStatement) {
         SqlNode sqlNode = SQLNodeConverterEngine.convert(sqlStatement);
         RelNode logicPlan = converter.convertQuery(sqlNode, true, true).rel;
-        RelNode ruleBasedPlan = optimizeWithRBO(logicPlan, hepPlannerWithoutCalc);
-        RelNode costBasedPlan = optimizeWithCBO(ruleBasedPlan, converter);
-        return optimizeWithRBO(costBasedPlan, hepPlannerWithCalc);
+        RelNode ruleBasedPlan = optimizeWithRBO(logicPlan, hepPlanner);
+        return optimizeWithCBO(ruleBasedPlan, converter);
     }
     
     private static RelNode optimizeWithRBO(final RelNode logicPlan, final RelOptPlanner hepPlanner) {

@@ -51,7 +51,6 @@ public final class TableMetaDataPersistService implements SchemaMetaDataPersistS
     public void persist(final String databaseName, final String schemaName, final Map<String, ShardingSphereTable> tables) {
         tables.forEach((key, value) -> repository.persist(DatabaseMetaDataNode.getTableMetaDataPath(databaseName, schemaName, key.toLowerCase()),
                 YamlEngine.marshal(new YamlTableSwapper().swapToYamlConfiguration(value))));
-        
     }
     
     @Override

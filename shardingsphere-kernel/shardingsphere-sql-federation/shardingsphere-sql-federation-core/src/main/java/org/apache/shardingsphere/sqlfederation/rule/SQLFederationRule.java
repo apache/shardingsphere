@@ -18,20 +18,43 @@
 package org.apache.shardingsphere.sqlfederation.rule;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
+import org.apache.shardingsphere.sqlfederation.factory.SQLFederationExecutorFactory;
+import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
 
 /**
  * SQL federation rule.
  */
-@Getter
 public final class SQLFederationRule implements GlobalRule {
     
+    @Getter
     private final SQLFederationRuleConfiguration configuration;
+    
+    private final SQLFederationExecutor sqlFederationExecutor;
     
     public SQLFederationRule(final SQLFederationRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
-        // TODO lode SQLFederationExecutor by sqlFederationType
+        sqlFederationExecutor = SQLFederationExecutorFactory.getInstance(ruleConfig.getSqlFederationType());
+    }
+    
+    /**
+     * Get SQL federation executor.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param metaData ShardingSphere meta data
+     * @param jdbcExecutor jdbc executor
+     * @param eventBusContext event bus context
+     * @return created instance
+     */
+    public SQLFederationExecutor getSQLFederationExecutor(final String databaseName, final String schemaName, final ShardingSphereMetaData metaData,
+                                                          final JDBCExecutor jdbcExecutor, final EventBusContext eventBusContext) {
+        sqlFederationExecutor.init(databaseName, schemaName, metaData, jdbcExecutor, eventBusContext);
+        return sqlFederationExecutor;
     }
     
     @Override

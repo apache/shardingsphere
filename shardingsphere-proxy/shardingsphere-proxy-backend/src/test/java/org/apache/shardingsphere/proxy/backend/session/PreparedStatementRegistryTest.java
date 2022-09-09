@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.session;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.util.exception.external.sql.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Test;
 
@@ -43,17 +44,17 @@ public final class PreparedStatementRegistryTest {
         
         @Override
         public String getSql() {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedSQLOperationException("");
         }
         
         @Override
         public SQLStatement getSqlStatement() {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedSQLOperationException("");
         }
         
         @Override
         public Optional<SQLStatementContext<?>> getSqlStatementContext() {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedSQLOperationException("");
         }
     }
 }

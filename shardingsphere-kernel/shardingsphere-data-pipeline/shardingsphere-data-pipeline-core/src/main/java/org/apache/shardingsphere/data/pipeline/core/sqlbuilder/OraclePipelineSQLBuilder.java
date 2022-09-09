@@ -21,6 +21,7 @@ import lombok.NonNull;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
+import org.apache.shardingsphere.infra.util.exception.external.sql.UnsupportedSQLOperationException;
 
 import java.util.Map;
 import java.util.Set;
@@ -32,7 +33,7 @@ public final class OraclePipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     
     @Override
     public String buildCreateSchemaSQL(final String schemaName) {
-        throw new UnsupportedOperationException("Not supported for now");
+        throw new UnsupportedSQLOperationException("buildCreateSchemaSQL");
     }
     
     @Override

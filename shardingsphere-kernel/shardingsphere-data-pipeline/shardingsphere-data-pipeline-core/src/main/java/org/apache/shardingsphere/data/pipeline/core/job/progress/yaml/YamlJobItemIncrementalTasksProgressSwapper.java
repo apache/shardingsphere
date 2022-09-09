@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
 
-import java.util.Collections;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemIncrementalTasksProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.PositionInitializerFactory;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializerFactory;
 
 /**
  * YAML job item incremental tasks progress swapper.
@@ -37,15 +36,14 @@ public final class YamlJobItemIncrementalTasksProgressSwapper {
         if (null == progress) {
             return new YamlJobItemIncrementalTasksProgress();
         }
-        return progress.getIncrementalTaskProgressMap()
-                .entrySet().stream()
-                .map(entry -> {
-                    YamlJobItemIncrementalTasksProgress result = new YamlJobItemIncrementalTasksProgress();
-                    result.setDataSourceName(entry.getKey());
-                    result.setPosition(entry.getValue().getPosition().toString());
-                    result.setDelay(entry.getValue().getIncrementalTaskDelay());
-                    return result;
-                }).findAny().orElse(new YamlJobItemIncrementalTasksProgress());
+        IncrementalTaskProgress incrementalTaskProgress = progress.getIncrementalTaskProgress();
+        if (null == incrementalTaskProgress) {
+            return new YamlJobItemIncrementalTasksProgress();
+        }
+        YamlJobItemIncrementalTasksProgress result = new YamlJobItemIncrementalTasksProgress();
+        result.setPosition(progress.getIncrementalTaskProgress().getPosition().toString());
+        result.setDelay(progress.getIncrementalTaskProgress().getIncrementalTaskDelay());
+        return result;
     }
     
     /**
@@ -57,12 +55,12 @@ public final class YamlJobItemIncrementalTasksProgressSwapper {
      */
     public JobItemIncrementalTasksProgress swapToObject(final String databaseType, final YamlJobItemIncrementalTasksProgress yamlProgress) {
         if (null == yamlProgress) {
-            return new JobItemIncrementalTasksProgress(Collections.emptyMap());
+            return new JobItemIncrementalTasksProgress(null);
         }
         IncrementalTaskProgress taskProgress = new IncrementalTaskProgress();
         // TODO databaseType
         taskProgress.setPosition(PositionInitializerFactory.getInstance(databaseType).init(yamlProgress.getPosition()));
         taskProgress.setIncrementalTaskDelay(yamlProgress.getDelay());
-        return new JobItemIncrementalTasksProgress(Collections.singletonMap(yamlProgress.getDataSourceName(), taskProgress));
+        return new JobItemIncrementalTasksProgress(taskProgress);
     }
 }

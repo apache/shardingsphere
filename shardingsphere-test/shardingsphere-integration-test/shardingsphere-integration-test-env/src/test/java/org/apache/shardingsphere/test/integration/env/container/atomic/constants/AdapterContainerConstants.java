@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.position;
+package org.apache.shardingsphere.test.integration.env.container.atomic.constants;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.fixture.FixturePositionInitializer;
-import org.junit.Test;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-
-public final class PositionInitializerFactoryTest {
+/**
+ * Adapter container constants.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class AdapterContainerConstants {
     
-    @Test
-    public void assertGetInstance() {
-        assertThat(PositionInitializerFactory.getInstance("FIXTURE"), instanceOf(FixturePositionInitializer.class));
-    }
+    public static final String PROXY = "proxy";
+    
+    public static final String JDBC = "jdbc";
 }

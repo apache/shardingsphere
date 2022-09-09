@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sqlfederation.common.table;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.sqlfederation.spi.SQLFederationContext;
+import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
 
 /**
  * Translatable table scan executor context.
@@ -35,5 +35,5 @@ public final class CommonTableScanExecutorContext {
     
     private final ConfigurationProperties props;
     
-    private final SQLFederationContext federationContext;
+    private final SQLFederationExecutorContext federationContext;
 }

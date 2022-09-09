@@ -15,22 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.datasource.creator.fixture;
+package org.apache.shardingsphere.data.pipeline.api;
 
-import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreator;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPIImpl;
+import org.junit.Test;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 
-public final class FixturePipelineDataSourceCreator implements PipelineDataSourceCreator {
+public final class PipelineJobPublicAPIFactoryTest {
     
-    @Override
-    public DataSource createPipelineDataSource(final Object pipelineDataSourceConfig) throws SQLException {
-        return null;
-    }
-    
-    @Override
-    public String getType() {
-        return "FIXTURE";
+    @Test
+    public void assertGetMigrationJobPublicAPI() {
+        assertThat(PipelineJobPublicAPIFactory.getMigrationJobPublicAPI(), instanceOf(MigrationJobAPIImpl.class));
     }
 }

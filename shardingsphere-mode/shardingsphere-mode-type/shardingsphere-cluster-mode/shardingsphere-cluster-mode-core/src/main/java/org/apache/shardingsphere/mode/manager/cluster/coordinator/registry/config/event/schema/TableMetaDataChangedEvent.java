@@ -15,18 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.datasource.creator;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema;
 
-import org.apache.shardingsphere.data.pipeline.core.datasource.creator.fixture.FixturePipelineDataSourceCreator;
-import org.junit.Test;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-
-public final class PipelineDataSourceCreatorFactoryTest {
+/**
+ * Table meta data changed event.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class TableMetaDataChangedEvent implements GovernanceEvent {
     
-    @Test
-    public void assertGetInstance() {
-        assertThat(PipelineDataSourceCreatorFactory.getInstance("FIXTURE"), instanceOf(FixturePipelineDataSourceCreator.class));
-    }
+    private final String databaseName;
+    
+    private final String schemaName;
+    
+    private final ShardingSphereTable changedTableMetaData;
+    
+    private final String deletedTable;
 }

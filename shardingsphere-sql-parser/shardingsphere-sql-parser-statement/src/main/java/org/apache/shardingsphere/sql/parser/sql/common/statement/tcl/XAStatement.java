@@ -23,7 +23,7 @@ import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Set xa statement.
+ * XA statement.
  */
 @Getter
 @Setter

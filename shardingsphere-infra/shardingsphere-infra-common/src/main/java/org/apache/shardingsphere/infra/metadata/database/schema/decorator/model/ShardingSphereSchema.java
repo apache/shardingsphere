@@ -128,6 +128,15 @@ public final class ShardingSphereSchema {
     }
     
     /**
+     * Remove view meta data.
+     *
+     * @param viewName view name
+     */
+    public void removeView(final String viewName) {
+        views.remove(viewName.toLowerCase());
+    }
+    
+    /**
      * Judge contains table from table meta data or not.
      *
      * @param tableName table name

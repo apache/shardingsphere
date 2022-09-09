@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLParameterDescriptionPacket;
@@ -27,6 +26,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.Pos
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.describe.PostgreSQLComDescribePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.dialect.postgresql.exception.metadata.ColumnNotFoundException;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
@@ -35,6 +35,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+import org.apache.shardingsphere.infra.util.exception.external.sql.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -215,8 +216,8 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
         assertThat(actualPacketsIterator.next(), is(PostgreSQLNoDataPacket.getInstance()));
     }
     
-    @Test
-    public void assertDescribePreparedStatementInsertWithUndefinedColumns() {
+    @Test(expected = ColumnNotFoundException.class)
+    public void assertDescribePreparedStatementInsertWithUndefinedColumns() throws SQLException {
         when(packet.getType()).thenReturn('S');
         final String statementId = "S_2";
         when(packet.getName()).thenReturn(statementId);
@@ -227,14 +228,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
             parameterTypes.add(PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED);
         }
         connectionSession.getPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLPreparedStatement(sql, sqlStatement, null, parameterTypes));
-        SQLException actual = null;
-        try {
-            executor.execute();
-        } catch (final SQLException ex) {
-            actual = ex;
-        }
-        assertThat(actual.getSQLState(), is(PostgreSQLVendorError.UNDEFINED_COLUMN.getSqlState().getValue()));
-        assertThat(actual.getMessage(), is("Column \"undefined_column\" of relation \"t_order\" does not exist. Please check the SQL or execute REFRESH TABLE METADATA."));
+        executor.execute();
     }
     
     @Test
@@ -303,7 +297,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
         return (List<PostgreSQLColumnDescription>) columnDescriptionsField.get(packet);
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = UnsupportedSQLOperationException.class)
     public void assertDescribeUnknownType() throws SQLException {
         new PostgreSQLComDescribeExecutor(connectionContext, packet, connectionSession).execute();
     }

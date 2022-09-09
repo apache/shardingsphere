@@ -32,6 +32,7 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.Delet
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.UpdateRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.WriteRowEvent;
+import org.apache.shardingsphere.infra.util.exception.external.sql.UnsupportedSQLOperationException;
 
 import java.util.List;
 
@@ -67,7 +68,7 @@ public final class WalEventConverter {
         } else if (event instanceof PlaceholderEvent) {
             return createPlaceholderRecord(event);
         }
-        throw new UnsupportedOperationException("");
+        throw new UnsupportedSQLOperationException("");
     }
     
     private boolean filter(final AbstractWalEvent event) {
@@ -79,9 +80,7 @@ public final class WalEventConverter {
     }
     
     private boolean isRowEvent(final AbstractWalEvent event) {
-        return event instanceof WriteRowEvent
-                || event instanceof UpdateRowEvent
-                || event instanceof DeleteRowEvent;
+        return event instanceof WriteRowEvent || event instanceof UpdateRowEvent || event instanceof DeleteRowEvent;
     }
     
     private PlaceholderRecord createPlaceholderRecord(final AbstractWalEvent event) {

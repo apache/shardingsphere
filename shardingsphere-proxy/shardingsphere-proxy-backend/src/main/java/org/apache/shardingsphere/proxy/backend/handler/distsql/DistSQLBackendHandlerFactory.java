@@ -24,12 +24,13 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rul.RULStatement;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.infra.util.exception.external.sql.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.RALBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.RDLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.RQLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.RULBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.sql.SQLException;
 
@@ -60,6 +61,6 @@ public final class DistSQLBackendHandlerFactory {
         if (sqlStatement instanceof RULStatement) {
             return RULBackendHandlerFactory.newInstance((RULStatement) sqlStatement, connectionSession);
         }
-        throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
+        throw new UnsupportedSQLOperationException(sqlStatement.getClass().getCanonicalName());
     }
 }

@@ -15,25 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema;
+package org.apache.shardingsphere.infra.util.exception.external.sql;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Schema changed event.
+ * Unsupported SQL operation exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class SchemaChangedEvent implements GovernanceEvent {
+public final class UnsupportedSQLOperationException extends ShardingSphereSQLException {
     
-    private final String databaseName;
+    private static final long serialVersionUID = -4387122733989386705L;
     
-    private final String schemaName;
-    
-    private final ShardingSphereTable changedTableMetaData;
-    
-    private final String deletedTable;
+    public UnsupportedSQLOperationException(final String reason) {
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 30001, "Unsupported SQL operation: %s", reason);
+    }
 }

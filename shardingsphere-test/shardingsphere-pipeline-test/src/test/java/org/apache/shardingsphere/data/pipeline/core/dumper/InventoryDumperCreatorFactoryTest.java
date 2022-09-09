@@ -24,6 +24,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.Standa
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.InventoryDumper;
 import org.apache.shardingsphere.data.pipeline.core.fixture.FixtureInventoryDumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.SimpleMemoryPipelineChannel;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.DefaultInventoryDumper;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.MySQLInventoryDumper;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLInventoryDumper;
@@ -51,6 +52,12 @@ public final class InventoryDumperCreatorFactoryTest {
     public void assertInventoryDumperCreatorForOpenGauss() {
         InventoryDumper actual = createInventoryDumper("openGauss");
         assertThat(actual, instanceOf(PostgreSQLInventoryDumper.class));
+    }
+    
+    @Test
+    public void assertInventoryDumperCreatorForOracle() {
+        InventoryDumper actual = createInventoryDumper("Oracle");
+        assertThat(actual, instanceOf(DefaultInventoryDumper.class));
     }
     
     @Test

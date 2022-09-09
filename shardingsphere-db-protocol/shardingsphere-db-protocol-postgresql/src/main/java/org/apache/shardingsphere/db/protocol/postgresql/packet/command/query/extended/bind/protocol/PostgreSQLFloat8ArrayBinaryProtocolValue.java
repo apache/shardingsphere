@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.infra.util.exception.external.sql.UnsupportedSQLOperationException;
 
 /**
  * Binary protocol value for float8 array for PostgreSQL.
@@ -28,7 +29,7 @@ public final class PostgreSQLFloat8ArrayBinaryProtocolValue implements PostgreSQ
     
     @Override
     public int getColumnLength(final Object value) {
-        throw new UnsupportedOperationException("PostgreSQLFloat8ArrayBinaryProtocolValue.getColumnLength()");
+        throw new UnsupportedSQLOperationException("PostgreSQLFloat8ArrayBinaryProtocolValue.getColumnLength()");
     }
     
     @Override
@@ -40,6 +41,6 @@ public final class PostgreSQLFloat8ArrayBinaryProtocolValue implements PostgreSQ
     
     @Override
     public void write(final PostgreSQLPacketPayload payload, final Object value) {
-        throw new UnsupportedOperationException("PostgreSQLFloat8ArrayBinaryProtocolValue.write()");
+        throw new UnsupportedSQLOperationException("PostgreSQLFloat8ArrayBinaryProtocolValue.write()");
     }
 }
