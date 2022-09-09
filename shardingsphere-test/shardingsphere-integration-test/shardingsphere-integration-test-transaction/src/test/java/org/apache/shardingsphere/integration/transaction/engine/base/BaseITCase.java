@@ -211,7 +211,7 @@ public abstract class BaseITCase {
     private static void addParametersByTransactionTypes(final String version, final TransactionTestCaseRegistry currentTestCaseInfo,
                                                         final Class<? extends BaseTransactionTestCase> caseClass, final TransactionTestCase annotation,
                                                         final Map<String, TransactionParameterized> parameterizedMap, final String group) {
-        if (TransactionTestConstants.PROXY.equals(currentTestCaseInfo.getRunningAdaptor())) {
+        if (AdapterContainerConstants.PROXY.equals(currentTestCaseInfo.getRunningAdaptor())) {
             List<TransactionType> allowTransactionTypes = ENV.getAllowTransactionTypes().isEmpty() ? Arrays.stream(TransactionType.values()).collect(Collectors.toList())
                     : ENV.getAllowTransactionTypes().stream().map(BaseITCase::getTransactionType).collect(Collectors.toList());
             List<String> allowProviders = ENV.getAllowXAProviders().isEmpty() ? ALL_XA_PROVIDERS : ENV.getAllowXAProviders();
@@ -241,8 +241,8 @@ public abstract class BaseITCase {
     }
     
     private static void addParametersByTransactionProvidersInJDBC(final String version, final TransactionTestCaseRegistry currentTestCaseInfo,
-                                                            final Class<? extends BaseTransactionTestCase> caseClass, final TransactionType each,
-                                                            final Map<String, TransactionParameterized> parameterizedMap, final String group) {
+                                                                  final Class<? extends BaseTransactionTestCase> caseClass, final TransactionType each,
+                                                                  final Map<String, TransactionParameterized> parameterizedMap, final String group) {
         if (TransactionType.LOCAL.equals(each)) {
             addTestParameters(version, currentTestCaseInfo, caseClass, Collections.singletonList(each), Collections.singletonList(""), parameterizedMap, group);
         } else if (TransactionType.XA.equals(each)) {

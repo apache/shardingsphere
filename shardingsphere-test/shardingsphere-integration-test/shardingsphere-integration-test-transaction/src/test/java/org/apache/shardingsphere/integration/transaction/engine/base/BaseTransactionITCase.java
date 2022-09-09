@@ -23,6 +23,7 @@ import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.integration.transaction.framework.param.TransactionParameterized;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.AdapterContainerConstants;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import javax.sql.DataSource;
@@ -214,7 +215,7 @@ public abstract class BaseTransactionITCase extends BaseITCase {
     
     @SneakyThrows
     protected void callTestCases(final TransactionParameterized parameterized) {
-        if (TransactionTestConstants.PROXY.equalsIgnoreCase(parameterized.getAdapter())) {
+        if (AdapterContainerConstants.PROXY.equalsIgnoreCase(parameterized.getAdapter())) {
             for (TransactionType each : parameterized.getTransactionTypes()) {
                 if (TransactionType.LOCAL.equals(each)) {
                     log.info("Call transaction IT {}, alter transaction rule {}.", parameterized, "");
