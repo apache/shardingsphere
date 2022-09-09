@@ -23,6 +23,7 @@ import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransact
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.AdapterContainerConstants;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -32,7 +33,7 @@ import java.sql.SQLException;
  * Integration test of add resource.
  */
 @Slf4j
-@TransactionTestCase(adapters = TransactionTestConstants.PROXY, group = "addResource")
+@TransactionTestCase(adapters = AdapterContainerConstants.PROXY, group = "addResource")
 public final class AddResourceTestCase extends BaseTransactionTestCase {
     
     public AddResourceTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {

@@ -9,7 +9,7 @@ Spring Namespace's data encryption configuration applies to the traditional Spri
 
 ## Parameters
 
-Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt-5.1.2.xsd](http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt-5.1.2.xsd)
+Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt-5.2.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt-5.2.0.xsd)
 
 \<encrypt:rule />
 

@@ -18,18 +18,7 @@
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression;
 
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.BetweenExpressionConverter;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.BinaryOperationExpressionConverter;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.ColumnConverter;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.ExistsSubqueryExpressionConverter;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.FunctionConverter;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.InExpressionConverter;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.ListExpressionConverter;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.LiteralExpressionConverter;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.ParameterMarkerExpressionConverter;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.SubqueryExpressionConverter;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.projection.impl.AggregationProjectionConverter;
+import org.apache.shardingsphere.infra.util.exception.external.sql.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
@@ -43,6 +32,18 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.L
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.BetweenExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.BinaryOperationExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.ColumnConverter;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.ExistsSubqueryExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.FunctionConverter;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.InExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.ListExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.LiteralExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.ParameterMarkerExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.SubqueryExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.projection.impl.AggregationProjectionConverter;
 
 import java.util.Optional;
 
@@ -60,9 +61,9 @@ public final class ExpressionConverter implements SQLSegmentConverter<Expression
             return new LiteralExpressionConverter().convert((LiteralExpressionSegment) segment);
         } else if (segment instanceof CommonExpressionSegment) {
             // TODO
-            throw new UnsupportedOperationException("unsupported CommonExpressionSegment");
+            throw new UnsupportedSQLOperationException("unsupported CommonExpressionSegment");
         } else if (segment instanceof ListExpression) {
-            return new ListExpressionConverter().convert((ListExpression) segment).map(optional -> optional);
+            return new ListExpressionConverter().convert((ListExpression) segment);
         } else if (segment instanceof BinaryOperationExpression) {
             return new BinaryOperationExpressionConverter().convert((BinaryOperationExpression) segment).map(optional -> optional);
         } else if (segment instanceof ColumnSegment) {
@@ -76,12 +77,12 @@ public final class ExpressionConverter implements SQLSegmentConverter<Expression
         } else if (segment instanceof BetweenExpression) {
             return new BetweenExpressionConverter().convert((BetweenExpression) segment).map(optional -> optional);
         } else if (segment instanceof ParameterMarkerExpressionSegment) {
-            return new ParameterMarkerExpressionConverter().convert((ParameterMarkerExpressionSegment) segment).map(optional -> optional);
+            return new ParameterMarkerExpressionConverter().convert((ParameterMarkerExpressionSegment) segment);
         } else if (segment instanceof FunctionSegment) {
-            return new FunctionConverter().convert((FunctionSegment) segment).map(optional -> optional);
+            return new FunctionConverter().convert((FunctionSegment) segment);
         } else if (segment instanceof AggregationProjectionSegment) {
             return new AggregationProjectionConverter().convert((AggregationProjectionSegment) segment).map(optional -> optional);
         }
-        throw new UnsupportedOperationException("unsupported TableSegment type: " + segment.getClass());
+        throw new UnsupportedSQLOperationException("unsupported TableSegment type: " + segment.getClass());
     }
 }

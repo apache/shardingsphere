@@ -46,6 +46,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.que
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.netty.ChannelAttrInitializer;
+import org.apache.shardingsphere.infra.util.exception.external.sql.UnsupportedSQLOperationException;
 
 import java.net.InetSocketAddress;
 import java.util.Objects;
@@ -185,7 +186,7 @@ public final class MySQLClient {
             case "CRC32":
                 return 4;
             default:
-                throw new UnsupportedOperationException(checksumType);
+                throw new UnsupportedSQLOperationException(checksumType);
         }
     }
     

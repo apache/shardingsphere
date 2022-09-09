@@ -28,6 +28,9 @@ import java.util.Collection;
  */
 public interface InventoryIncrementalJobItemContext extends PipelineJobItemContext {
     
+    @Override
+    InventoryIncrementalProcessContext getJobProcessContext();
+    
     /**
      * Get inventory tasks.
      *

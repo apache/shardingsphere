@@ -20,8 +20,8 @@ package org.apache.shardingsphere.integration.transaction.engine.postgresql;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
-import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.integration.transaction.framework.param.TransactionParameterized;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.AdapterContainerConstants;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.After;
 import org.junit.Before;
@@ -57,7 +57,7 @@ public final class PostgreSQLProxyTransactionIT extends BaseTransactionITCase {
     @Before
     @SneakyThrows(SQLException.class)
     public void before() {
-        if (TransactionTestConstants.PROXY.equalsIgnoreCase(parameterized.getAdapter())) {
+        if (AdapterContainerConstants.PROXY.equalsIgnoreCase(parameterized.getAdapter())) {
             if (Objects.equals(parameterized.getTransactionType(), TransactionType.LOCAL)) {
                 alterLocalTransactionRule();
             } else if (Objects.equals(parameterized.getTransactionType(), TransactionType.XA)) {

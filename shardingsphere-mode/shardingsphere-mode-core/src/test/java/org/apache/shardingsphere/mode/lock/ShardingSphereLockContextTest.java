@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.lock;
 
 import org.apache.shardingsphere.infra.lock.LockDefinition;
+import org.apache.shardingsphere.infra.util.exception.external.sql.UnsupportedSQLOperationException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -63,7 +64,7 @@ public final class ShardingSphereLockContextTest {
         verify(lockPersistService).unlock(lockDefinition);
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = UnsupportedSQLOperationException.class)
     public void assertIsLocked() {
         assertTrue(lockContext.isLocked(lockDefinition));
     }

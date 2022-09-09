@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.migration.distsql.handler.update;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.AddMigrationSourceResourceException;
@@ -30,6 +29,8 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.exception.external.sql.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.migration.distsql.statement.AddMigrationSourceResourceStatement;
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ResourceSegmentsConverter;
 
@@ -40,7 +41,6 @@ import java.util.Map;
 /**
  * Add migration source resource updater.
  */
-@Slf4j
 public final class AddMigrationSourceResourceUpdater implements RALUpdater<AddMigrationSourceResourceStatement> {
     
     private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
@@ -48,9 +48,8 @@ public final class AddMigrationSourceResourceUpdater implements RALUpdater<AddMi
     @Override
     public void executeUpdate(final String databaseName, final AddMigrationSourceResourceStatement sqlStatement) {
         List<DataSourceSegment> dataSources = new ArrayList<>(sqlStatement.getDataSources());
-        if (dataSources.stream().anyMatch(each -> each instanceof HostnameAndPortBasedDataSourceSegment)) {
-            throw new UnsupportedOperationException("Not currently support add hostname and port, please use url");
-        }
+        ShardingSpherePreconditions.checkState(dataSources.stream().noneMatch(each -> each instanceof HostnameAndPortBasedDataSourceSegment),
+                new UnsupportedSQLOperationException("Not currently support add hostname and port, please use url"));
         URLBasedDataSourceSegment urlBasedDataSourceSegment = (URLBasedDataSourceSegment) dataSources.get(0);
         DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(urlBasedDataSourceSegment.getUrl());
         Map<String, DataSourceProperties> sourcePropertiesMap = ResourceSegmentsConverter.convert(databaseType, dataSources);

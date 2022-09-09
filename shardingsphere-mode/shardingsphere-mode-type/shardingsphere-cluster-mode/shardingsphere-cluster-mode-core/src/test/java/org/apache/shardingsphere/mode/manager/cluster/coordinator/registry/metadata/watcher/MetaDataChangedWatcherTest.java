@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.watcher;
 
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema.SchemaChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema.TableMetaDataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.junit.Test;
@@ -66,7 +66,7 @@ public final class MetaDataChangedWatcherTest {
     }
     
     @Test
-    public void assertCreateDeletedEvent() {
+    public void assertCreateDatabaseDeletedEvent() {
         String key = "/metadata/sharding_db";
         String value = "encrypt_db";
         Optional<GovernanceEvent> actual = createEvent(key, value, Type.DELETED);
@@ -115,7 +115,21 @@ public final class MetaDataChangedWatcherTest {
         String key = "/metadata/sharding_db/schemas/sharding_schema/tables/t_order";
         Optional<GovernanceEvent> actual = createEvent(key, "{}", Type.DELETED);
         assertTrue(actual.isPresent());
-        assertThat(((SchemaChangedEvent) actual.get()).getDeletedTable(), is("t_order"));
+        assertThat(((TableMetaDataChangedEvent) actual.get()).getDeletedTable(), is("t_order"));
+    }
+    
+    @Test
+    public void assertCreateViewMetaDataChangedEvent() {
+        String key = "/metadata/sharding_db/schemas/sharding_schema/views/foo_view";
+        Optional<GovernanceEvent> actual = createEvent(key, "{}", Type.UPDATED);
+        assertTrue(actual.isPresent());
+    }
+    
+    @Test
+    public void assertCreateViewMetaDataDeletedEvent() {
+        String key = "/metadata/sharding_db/schemas/sharding_schema/views/foo_view";
+        Optional<GovernanceEvent> actual = createEvent(key, "{}", Type.DELETED);
+        assertTrue(actual.isPresent());
     }
     
     private Optional<GovernanceEvent> createEvent(final String key, final String value, final Type type) {

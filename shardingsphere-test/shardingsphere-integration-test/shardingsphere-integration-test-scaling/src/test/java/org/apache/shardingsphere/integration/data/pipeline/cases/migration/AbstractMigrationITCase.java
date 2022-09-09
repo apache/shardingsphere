@@ -107,9 +107,9 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
     
     protected void startMigrationOrderCopy(final boolean withSchema) throws SQLException {
         if (withSchema) {
-            proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderCopySingleTableWithSchema(), 1);
+            proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderCopySingleTableWithSchema(), 4);
         } else {
-            proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderCopySingleTable(), 1);
+            proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderCopySingleTable(), 4);
         }
     }
     

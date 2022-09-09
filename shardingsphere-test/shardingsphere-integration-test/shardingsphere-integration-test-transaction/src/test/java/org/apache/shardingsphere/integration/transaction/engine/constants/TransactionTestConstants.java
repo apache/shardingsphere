@@ -32,10 +32,6 @@ public final class TransactionTestConstants {
     
     public static final String POSTGRESQL = "PostgreSQL";
     
-    public static final String JDBC = "jdbc";
-    
-    public static final String PROXY = "proxy";
-    
     public static final String ACCOUNT = "account";
     
     public static final String DEFAULT_TYPE = "default_type";

@@ -72,6 +72,10 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     }
     
     @Override
+    public void deleteLock(final String lockKey) {
+    }
+    
+    @Override
     public void close() {
         REGISTRY_DATA.clear();
     }

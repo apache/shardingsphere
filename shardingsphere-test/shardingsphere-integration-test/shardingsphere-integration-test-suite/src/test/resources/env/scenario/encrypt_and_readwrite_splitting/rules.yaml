@@ -66,4 +66,4 @@ rules:
           encryptorName: aes_encryptor
 
 props:
-  sql-federation-enabled: true
+  sql-federation-type: ORIGINAL

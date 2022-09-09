@@ -633,4 +633,8 @@
         <assertion parameters="1:int" expected-data-source-name="prod_dataset" />
         <assertion parameters="0:int" expected-data-source-name="encrypt_shadow_dataset" />
     </test-case>
+
+    <test-case sql="SELECT order_id, user_id, order_name, type_char, type_boolean, type_smallint, type_enum, type_decimal, type_date, type_time, type_timestamp FROM t_shadow WHERE user_id = ?" db-types="MySQL,PostgreSQL" scenario-types="readwrite_splitting_and_shadow">
+        <assertion parameters="1:int" expected-data-source-name="read_dataset" />
+    </test-case>
 </integration-test-cases>

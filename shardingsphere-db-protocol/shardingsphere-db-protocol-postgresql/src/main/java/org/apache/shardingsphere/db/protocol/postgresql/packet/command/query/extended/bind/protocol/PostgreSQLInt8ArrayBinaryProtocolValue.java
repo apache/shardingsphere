@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.infra.util.exception.external.sql.UnsupportedSQLOperationException;
 
 /**
  * Binary protocol value for int8 array for PostgreSQL.
@@ -28,7 +29,7 @@ public final class PostgreSQLInt8ArrayBinaryProtocolValue implements PostgreSQLB
     
     @Override
     public int getColumnLength(final Object value) {
-        throw new UnsupportedOperationException("PostgreSQLInt8ArrayBinaryProtocolValue.getColumnLength()");
+        throw new UnsupportedSQLOperationException("PostgreSQLInt8ArrayBinaryProtocolValue.getColumnLength()");
     }
     
     @Override
@@ -40,6 +41,6 @@ public final class PostgreSQLInt8ArrayBinaryProtocolValue implements PostgreSQLB
     
     @Override
     public void write(final PostgreSQLPacketPayload payload, final Object value) {
-        throw new UnsupportedOperationException("PostgreSQLInt8ArrayBinaryProtocolValue.write()");
+        throw new UnsupportedSQLOperationException("PostgreSQLInt8ArrayBinaryProtocolValue.write()");
     }
 }

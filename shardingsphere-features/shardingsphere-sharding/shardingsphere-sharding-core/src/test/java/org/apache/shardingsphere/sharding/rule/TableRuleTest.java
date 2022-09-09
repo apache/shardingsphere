@@ -191,6 +191,16 @@ public final class TableRuleTest {
     }
     
     @Test
+    public void assertGetTableDataNodeWhenLogicTableEndWithNumber() {
+        ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("t_order0", "ds_0.t_order0_0,ds_0.t_order0_1");
+        TableRule tableRule = new TableRule(shardingTableRuleConfig, Arrays.asList("ds_0", "ds_1"), "order_id");
+        DataNodeInfo actual = tableRule.getTableDataNode();
+        assertThat(actual.getPrefix(), is("t_order0_"));
+        assertThat(actual.getPaddingChar(), is('0'));
+        assertThat(actual.getSuffixMinLength(), is(1));
+    }
+    
+    @Test
     public void assertGetDataSourceDataNode() {
         ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("t_order", "ds_0.t_order,ds_1.t_order");
         TableRule tableRule = new TableRule(shardingTableRuleConfig, Arrays.asList("ds_0", "ds_1"), "order_id");
