@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.transaction.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Switch type in transaction exception.
  */
-public final class SwitchTypeInTransactionException extends ShardingSphereSQLException {
+public final class SwitchTypeInTransactionException extends KernelSQLException {
     
     private static final long serialVersionUID = 5333976223578960845L;
     

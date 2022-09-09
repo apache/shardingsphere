@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.driver.jdbc.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Column index out of range exception.
  */
-public final class ColumnIndexOutOfRangeException extends ShardingSphereSQLException {
+public final class ColumnIndexOutOfRangeException extends KernelSQLException {
     
     private static final long serialVersionUID = 3599337605134702447L;
     

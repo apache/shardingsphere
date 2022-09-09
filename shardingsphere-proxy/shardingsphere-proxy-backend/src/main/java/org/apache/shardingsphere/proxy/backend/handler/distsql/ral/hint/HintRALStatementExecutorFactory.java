@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.HintRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.hint.ClearHintStatement;
-import org.apache.shardingsphere.infra.util.exception.external.sql.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.executor.AddShardingHintDatabaseValueExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.executor.AddShardingHintTableValueExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.executor.ClearHintExecutor;

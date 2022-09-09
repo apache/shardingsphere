@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.datasource.swapper;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 
 /**
  * XA data source initialize exception.
  */
-public final class XADataSourceInitializeException extends ShardingSphereSQLException {
+public final class XADataSourceInitializeException extends KernelSQLException {
     
     private static final long serialVersionUID = -4515239569528215614L;
     

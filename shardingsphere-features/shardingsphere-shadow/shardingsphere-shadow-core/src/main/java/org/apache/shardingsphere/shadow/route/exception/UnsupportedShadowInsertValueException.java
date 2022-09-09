@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.shadow.route.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Unsupported shadow insert value exception.
  */
-public final class UnsupportedShadowInsertValueException extends ShardingSphereSQLException {
+public final class UnsupportedShadowInsertValueException extends FeatureSQLException {
     
     private static final long serialVersionUID = -5987403907441367171L;
     

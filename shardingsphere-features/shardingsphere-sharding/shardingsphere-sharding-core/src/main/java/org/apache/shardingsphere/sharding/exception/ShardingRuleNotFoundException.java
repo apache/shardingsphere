@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 import java.util.Collection;
@@ -25,7 +25,7 @@ import java.util.Collection;
 /**
  * Sharding rule not found exception.
  */
-public final class ShardingRuleNotFoundException extends ShardingSphereSQLException {
+public final class ShardingRuleNotFoundException extends FeatureSQLException {
     
     private static final long serialVersionUID = 142299282103233064L;
     

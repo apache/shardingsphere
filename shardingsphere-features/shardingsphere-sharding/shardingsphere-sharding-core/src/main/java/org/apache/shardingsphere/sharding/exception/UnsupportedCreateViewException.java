@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Unsupported create view exception.
  */
-public final class UnsupportedCreateViewException extends ShardingSphereSQLException {
+public final class UnsupportedCreateViewException extends FeatureSQLException {
     
     private static final long serialVersionUID = -321126834428609310L;
     

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.MariaDBDatabaseType
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
-import org.apache.shardingsphere.infra.util.exception.external.sql.SQLWrapperException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 

@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Invalid MGR group name configuration exception.
  */
-public final class InvalidMGRGroupNameConfigurationException extends ShardingSphereSQLException {
+public final class InvalidMGRGroupNameConfigurationException extends FeatureSQLException {
     
     private static final long serialVersionUID = -2585442998454509788L;
     

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.util.exception;
 
 import org.apache.shardingsphere.infra.util.exception.external.ShardingSphereExternalException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.SQLWrapperException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.util.exception.internal.ShardingSphereInternalException;
 import org.apache.shardingsphere.infra.util.exception.internal.fixture.ShardingSphereInternalExceptionFixture;
 import org.junit.Test;

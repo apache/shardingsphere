@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.driver.jdbc.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Empty SQL exception.
  */
-public final class EmptySQLException extends ShardingSphereSQLException {
+public final class EmptySQLException extends KernelSQLException {
     
     private static final long serialVersionUID = -5723825491720138339L;
     

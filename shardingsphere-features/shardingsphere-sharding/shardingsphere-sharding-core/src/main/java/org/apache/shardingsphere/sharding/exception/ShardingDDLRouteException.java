@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 import java.util.Collection;
@@ -25,7 +25,7 @@ import java.util.Collection;
 /**
  * Sharding DDL route exception.
  */
-public final class ShardingDDLRouteException extends ShardingSphereSQLException {
+public final class ShardingDDLRouteException extends FeatureSQLException {
     
     private static final long serialVersionUID = 1611718269096645289L;
     

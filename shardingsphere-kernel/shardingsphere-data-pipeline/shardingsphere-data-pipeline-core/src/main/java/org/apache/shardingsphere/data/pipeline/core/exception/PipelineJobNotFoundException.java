@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.data.pipeline.core.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Pipeline job not found exception.
  */
-public final class PipelineJobNotFoundException extends ShardingSphereSQLException {
+public final class PipelineJobNotFoundException extends KernelSQLException {
     
     private static final long serialVersionUID = -903289953649758722L;
     

@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.shadow.algorithm.shadow;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Unsupported shadow column type exception.
  */
-public final class UnsupportedShadowColumnTypeException extends ShardingSphereSQLException {
+public final class UnsupportedShadowColumnTypeException extends FeatureSQLException {
     
     private static final long serialVersionUID = 8144277065388645946L;
     

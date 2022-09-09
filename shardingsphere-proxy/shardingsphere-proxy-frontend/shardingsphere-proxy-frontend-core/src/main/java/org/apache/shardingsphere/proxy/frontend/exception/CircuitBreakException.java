@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.proxy.frontend.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Circuit break exception.
  */
-public final class CircuitBreakException extends ShardingSphereSQLException {
+public final class CircuitBreakException extends KernelSQLException {
     
     private static final long serialVersionUID = 6339672680026286798L;
     

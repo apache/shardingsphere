@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Work id assigned exception.
  */
-public final class WorkIdAssignedException extends ShardingSphereSQLException {
+public final class WorkIdAssignedException extends KernelSQLException {
     
     private static final long serialVersionUID = 4782736481041926266L;
     

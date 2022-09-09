@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.lock;
 
 import org.apache.shardingsphere.infra.lock.LockDefinition;
-import org.apache.shardingsphere.infra.util.exception.external.sql.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.junit.Before;
 import org.junit.Test;
 
