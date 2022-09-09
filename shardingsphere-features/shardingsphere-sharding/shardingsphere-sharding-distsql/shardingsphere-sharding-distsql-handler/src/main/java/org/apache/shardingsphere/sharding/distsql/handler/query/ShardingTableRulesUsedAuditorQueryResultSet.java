@@ -54,12 +54,12 @@ public final class ShardingTableRulesUsedAuditorQueryResultSet implements Databa
         }
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) rule.getConfiguration();
         config.getTables().forEach(each -> {
-            if (null != each.getKeyGenerateStrategy() && statement.getAuditorName().get().equals(each.getKeyGenerateStrategy().getKeyGeneratorName())) {
+            if (null != each.getAuditStrategy() && each.getAuditStrategy().getAuditorNames().contains(statement.getAuditorName().get())) {
                 result.add(Arrays.asList("table", each.getLogicTable()));
             }
         });
         config.getAutoTables().forEach(each -> {
-            if (null != each.getKeyGenerateStrategy() && statement.getAuditorName().get().equals(each.getKeyGenerateStrategy().getKeyGeneratorName())) {
+            if (null != each.getAuditStrategy() && each.getAuditStrategy().getAuditorNames().contains(statement.getAuditorName().get())) {
                 result.add(Arrays.asList("auto_table", each.getLogicTable()));
             }
         });

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableRulesUsedAuditorQueryResultSet;
@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
@@ -74,7 +75,6 @@ public final class ShowShardingTableRulesUsedAuditorQueryResultSetTest {
         result.getShardingAlgorithms().put("database_inline", createShardingInlineAlgorithmConfiguration("ds_${user_id % 2}"));
         result.getShardingAlgorithms().put("t_order_inline", createShardingInlineAlgorithmConfiguration("t_order_${order_id % 2}"));
         result.getShardingAlgorithms().put("auto_mod", createShardingAutoModAlgorithmConfiguration());
-        result.getKeyGenerators().put("snowflake", createKeyGeneratorConfiguration());
         result.getAuditors().put("shardingKeyAudit", createAuditorConfiguration());
         return result;
     }
@@ -82,14 +82,14 @@ public final class ShowShardingTableRulesUsedAuditorQueryResultSetTest {
     private ShardingAutoTableRuleConfiguration createShardingAutoTableRuleConfiguration() {
         ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("t_order_auto", "ds_0, ds_1");
         result.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "auto_mod"));
-        result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake"));
+        result.setAuditStrategy(new ShardingAuditStrategyConfiguration(Arrays.asList("shardingKeyAudit"), true));
         return result;
     }
     
     private ShardingTableRuleConfiguration createShardingTableRuleConfiguration() {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${0..1}");
         result.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_inline"));
-        result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake"));
+        result.setAuditStrategy(new ShardingAuditStrategyConfiguration(Arrays.asList("shardingKeyAudit"), true));
         return result;
     }
     
@@ -103,10 +103,6 @@ public final class ShowShardingTableRulesUsedAuditorQueryResultSetTest {
         Properties props = new Properties();
         props.put("sharding-count", 4);
         return new AlgorithmConfiguration("MOD", props);
-    }
-    
-    private AlgorithmConfiguration createKeyGeneratorConfiguration() {
-        return new AlgorithmConfiguration("SNOWFLAKE", new Properties());
     }
     
     private AlgorithmConfiguration createAuditorConfiguration() {

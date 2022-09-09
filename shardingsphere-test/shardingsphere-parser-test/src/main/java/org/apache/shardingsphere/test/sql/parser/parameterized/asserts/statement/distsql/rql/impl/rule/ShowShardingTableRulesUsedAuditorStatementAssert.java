@@ -51,9 +51,9 @@ public final class ShowShardingTableRulesUsedAuditorStatementAssert {
         } else {
             assertFalse(assertContext.getText("Actual database should not exist."), actual.getDatabase().isPresent());
         }
-        if (!Strings.isNullOrEmpty(expected.getAuditor())) {
+        if (!expected.getAuditors().isEmpty()) {
             assertTrue(assertContext.getText("Actual auditor should exist."), actual.getAuditorName().isPresent());
-            assertThat(assertContext.getText("Auditor assertion error:"), actual.getAuditorName().get(), is(expected.getAuditor()));
+            assertThat(assertContext.getText("Auditor assertion error:"), actual.getAuditorName().get(), is(expected.getAuditors()));
         } else {
             assertFalse(assertContext.getText("Actual auditor should not exist."), actual.getAuditorName().isPresent());
         }
