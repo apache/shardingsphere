@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.api.job;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
+import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
@@ -35,20 +36,29 @@ public enum JobType {
     
     private static final Map<String, JobType> CODE_JOB_TYPE_MAP;
     
+    private static final Map<String, JobType> NAME_JOB_TYPE_MAP;
+    
     static {
         CODE_JOB_TYPE_MAP = Arrays.stream(JobType.values()).collect(Collectors.toMap(JobType::getTypeCode, each -> each));
+        NAME_JOB_TYPE_MAP = Arrays.stream(JobType.values()).collect(Collectors.toMap(JobType::getUppercaseTypeName, each -> each));
     }
     
     private final String typeName;
     
     private final String lowercaseTypeName;
     
+    /**
+     * Used in DistSQL.
+     */
+    private final String uppercaseTypeName;
+    
     private final String typeCode;
     
     JobType(final String typeName, final String typeCode) {
         Preconditions.checkArgument(StringUtils.isAlpha(typeName), "type name must be character of [a-z]");
         this.typeName = typeName;
-        this.lowercaseTypeName = typeName.toLowerCase();
+        lowercaseTypeName = typeName.toLowerCase();
+        uppercaseTypeName = typeName.toUpperCase();
         Preconditions.checkArgument(typeCode.length() == 2, "code length is not 2");
         this.typeCode = typeCode;
     }
@@ -61,5 +71,15 @@ public enum JobType {
      */
     public static JobType valueOfByCode(final String typeCode) {
         return CODE_JOB_TYPE_MAP.get(typeCode);
+    }
+    
+    /**
+     * Value of by type name.
+     *
+     * @param typeName type name
+     * @return job type, might be null
+     */
+    public static JobType valueOfByTypeName(@NonNull final String typeName) {
+        return NAME_JOB_TYPE_MAP.get(typeName.toLowerCase());
     }
 }
