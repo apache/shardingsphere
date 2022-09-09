@@ -19,13 +19,17 @@ package org.apache.shardingsphere.sharding.spring.namespace.handler;
 
 import org.apache.shardingsphere.sharding.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean;
 import org.apache.shardingsphere.sharding.spring.namespace.factorybean.ShardingAlgorithmFactoryBean;
+import org.apache.shardingsphere.sharding.spring.namespace.factorybean.ShardingAuditAlgorithmFactoryBean;
 import org.apache.shardingsphere.sharding.spring.namespace.parser.rule.ShardingRuleBeanDefinitionParser;
 import org.apache.shardingsphere.sharding.spring.namespace.parser.strategy.KeyGenerateStrategyBeanDefinitionParser;
+import org.apache.shardingsphere.sharding.spring.namespace.parser.strategy.ShardingAuditStrategyBeanDefinitionParser;
 import org.apache.shardingsphere.sharding.spring.namespace.parser.strategy.ShardingStrategyBeanDefinitionParser;
 import org.apache.shardingsphere.sharding.spring.namespace.tag.algorithm.KeyGenerateAlgorithmBeanDefinitionTag;
 import org.apache.shardingsphere.sharding.spring.namespace.tag.algorithm.ShardingAlgorithmBeanDefinitionTag;
+import org.apache.shardingsphere.sharding.spring.namespace.tag.algorithm.ShardingAuditAlgorithmBeanDefinitionTag;
 import org.apache.shardingsphere.sharding.spring.namespace.tag.rule.ShardingRuleBeanDefinitionTag;
 import org.apache.shardingsphere.sharding.spring.namespace.tag.strategy.KeyGenerateStrategyBeanDefinitionTag;
+import org.apache.shardingsphere.sharding.spring.namespace.tag.strategy.ShardingAuditStrategyBeanDefinitionTag;
 import org.apache.shardingsphere.sharding.spring.namespace.tag.strategy.ShardingStrategyBeanDefinitionTag;
 import org.apache.shardingsphere.spring.namespace.parser.ShardingSphereAlgorithmBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
@@ -45,5 +49,7 @@ public final class ShardingNamespaceHandler extends NamespaceHandlerSupport {
         registerBeanDefinitionParser(ShardingAlgorithmBeanDefinitionTag.ROOT_TAG, new ShardingSphereAlgorithmBeanDefinitionParser(ShardingAlgorithmFactoryBean.class));
         registerBeanDefinitionParser(KeyGenerateStrategyBeanDefinitionTag.ROOT_TAG, new KeyGenerateStrategyBeanDefinitionParser());
         registerBeanDefinitionParser(KeyGenerateAlgorithmBeanDefinitionTag.ROOT_TAG, new ShardingSphereAlgorithmBeanDefinitionParser(KeyGenerateAlgorithmFactoryBean.class));
+        registerBeanDefinitionParser(ShardingAuditStrategyBeanDefinitionTag.ROOT_TAG, new ShardingAuditStrategyBeanDefinitionParser());
+        registerBeanDefinitionParser(ShardingAuditAlgorithmBeanDefinitionTag.ROOT_TAG, new ShardingSphereAlgorithmBeanDefinitionParser(ShardingAuditAlgorithmFactoryBean.class));
     }
 }

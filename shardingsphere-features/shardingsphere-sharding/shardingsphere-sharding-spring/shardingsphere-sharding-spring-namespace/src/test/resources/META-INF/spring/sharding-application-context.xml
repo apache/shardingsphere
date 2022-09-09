@@ -54,6 +54,19 @@
     
     <sharding:key-generate-strategy id="defaultKeyGenerator" column="id" algorithm-ref="uuidAlgorithm" />
     <sharding:key-generate-strategy id="orderKeyGenerator" column="order_id" algorithm-ref="uuidAlgorithm" />
+
+    <sharding:audit-algorithm id="auditAlgorithm" type="DML_SHARDING_CONDITIONS" />
+
+    <sharding:audit-strategy id="defaultAudit" allow-hint-disable="true">
+        <sharding:auditors>
+            <sharding:auditor algorithm-ref="auditAlgorithm" />
+        </sharding:auditors>
+    </sharding:audit-strategy>
+    <sharding:audit-strategy id="shardingKeyAudit" allow-hint-disable="true">
+        <sharding:auditors>
+            <sharding:auditor algorithm-ref="auditAlgorithm" />
+        </sharding:auditors>
+    </sharding:audit-strategy>
     
     <sharding:rule id="simpleRule">
         <sharding:table-rules>
@@ -61,9 +74,9 @@
         </sharding:table-rules>
     </sharding:rule>
     
-    <sharding:rule id="complexRule" default-key-generate-strategy-ref="defaultKeyGenerator">
+    <sharding:rule id="complexRule" default-key-generate-strategy-ref="defaultKeyGenerator" default-audit-strategy-ref="defaultAudit">
         <sharding:table-rules>
-            <sharding:table-rule logic-table="t_order" actual-data-nodes="ds_$->{0..1}.t_order_$->{0..3}" database-strategy-ref="dataSourceShardingStrategy" table-strategy-ref="orderTableShardingStrategy" key-generate-strategy-ref="orderKeyGenerator" />
+            <sharding:table-rule logic-table="t_order" actual-data-nodes="ds_$->{0..1}.t_order_$->{0..3}" database-strategy-ref="dataSourceShardingStrategy" table-strategy-ref="orderTableShardingStrategy" key-generate-strategy-ref="orderKeyGenerator" audit-strategy-ref="shardingKeyAudit" />
         </sharding:table-rules>
     </sharding:rule>
     
