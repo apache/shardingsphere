@@ -165,7 +165,7 @@ Update the following file in release branch, and submit a PR to release branch:
 https://github.com/apache/shardingsphere/blob/${RELEASE.VERSION}-release/RELEASE-NOTES.md
 ```
 
-Update the POM of the module `examples`, changing the version from ${CURRENT.VERSION} to ${RELEASE.VERSION}, and submit a PR to release branch.
+Update the POM of the module `examples`, changing the version from ${DEVELOPMENT.VERSION} to ${RELEASE.VERSION}, and submit a PR to release branch.
 
 ### 3. Update the download page
 
@@ -199,7 +199,7 @@ Specifying version of xsd instead of using `sharding.xsd`, is to make legacy doc
 
 ### 5. Update README files
 
-Update `${PREVIOUS.RELEASE.VERSION}` to `${RELEASE.VERSION}` in README.md and README_ZH.md
+Update `${RELEASE.VERSION}` and `${NEXT.RELEASE.VERSION}` in README.md and README_ZH.md.
 
 ## Apache Maven Central Repository Release
 
@@ -615,12 +615,16 @@ Refer to:
 - [English home page](https://github.com/apache/shardingsphere-doc/blob/10fb1b5f610fe2cac00c66abe2df7a8cc30c2a18/index.html#L88-L126)
 - [Chinese home page](https://github.com/apache/shardingsphere-doc/blob/10fb1b5f610fe2cac00c66abe2df7a8cc30c2a18/index_zh.html#L88-L125)
 
-### 8. Merge release branch to `master` and delete release branch on GitHub
+### 8. Update Example Version
+
+Update the POM of the module examples, changing the version from ${RELEASE.VERSION} to ${NEXT.DEVELOPMENT.VERSION}, and submit a PR to release branch.
+
+### 9. Merge release branch to `master` and delete release branch on GitHub
 
 After confirmed that download links of new release in download pages are available, create a Pull Request on GitHub to merge `${RELEASE.VERSION}-release` into `master.
 If code conflicted, you may merge `master` into `${RELEASE.VERSION}-release` before merging Pull Request.
 
-### 9. Announce release completed by email
+### 10. Announce release completed by email
 
 Send e-mail to `dev@shardingsphere.apache.org` and `announce@apache.org` to announce the release is finished
 
