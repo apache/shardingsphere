@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 
 /**
  * Sharding value data type exception.
  */
-public final class ShardingValueDataTypeException extends FeatureSQLException {
+public final class ShardingValueDataTypeException extends ShardingSQLException {
     
     private static final long serialVersionUID = -4833106947304679015L;
     

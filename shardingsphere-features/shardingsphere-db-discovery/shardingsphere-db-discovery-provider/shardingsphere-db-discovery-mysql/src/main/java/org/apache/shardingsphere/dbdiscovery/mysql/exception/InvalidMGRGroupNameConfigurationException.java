@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Invalid MGR group name configuration exception.
  */
-public final class InvalidMGRGroupNameConfigurationException extends FeatureSQLException {
+public final class InvalidMGRGroupNameConfigurationException extends DBDiscoverySQLException {
     
     private static final long serialVersionUID = -2585442998454509788L;
     
     public InvalidMGRGroupNameConfigurationException(final String groupName, final String databaseName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3003, "Group name in MGR is not same with configured one `%s` in database `%s`", groupName, databaseName);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3, "Group name in MGR is not same with configured one `%s` in database `%s`", groupName, databaseName);
     }
 }

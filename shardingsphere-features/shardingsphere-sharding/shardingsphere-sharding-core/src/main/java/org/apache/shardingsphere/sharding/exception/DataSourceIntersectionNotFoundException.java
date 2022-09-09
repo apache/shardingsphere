@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 import java.util.Collection;
@@ -25,7 +24,7 @@ import java.util.Collection;
 /**
  * Data source intersection not found exception.
  */
-public final class DataSourceIntersectionNotFoundException extends FeatureSQLException {
+public final class DataSourceIntersectionNotFoundException extends ShardingSQLException {
     
     private static final long serialVersionUID = -2142571707728236489L;
     
