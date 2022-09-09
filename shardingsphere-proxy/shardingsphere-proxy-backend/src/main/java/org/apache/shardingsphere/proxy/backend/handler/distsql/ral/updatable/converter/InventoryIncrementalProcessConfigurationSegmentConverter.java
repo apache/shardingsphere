@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.co
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.distsql.parser.segment.MigrationProcessConfigurationSegment;
+import org.apache.shardingsphere.distsql.parser.segment.InventoryIncrementalProcessConfigurationSegment;
 import org.apache.shardingsphere.distsql.parser.segment.ReadOrWriteSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
@@ -28,18 +28,18 @@ import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineReadCon
 import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineWriteConfiguration;
 
 /**
- * Migration process configuration segment converter.
+ * Inventory incremental process configuration segment converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MigrationProcessConfigurationSegmentConverter {
+public final class InventoryIncrementalProcessConfigurationSegmentConverter {
     
     /**
      * Convert to pipeline process configuration.
      *
-     * @param segment migration process configuration segment
+     * @param segment process configuration segment
      * @return pipeline process configuration
      */
-    public static PipelineProcessConfiguration convert(final MigrationProcessConfigurationSegment segment) {
+    public static PipelineProcessConfiguration convert(final InventoryIncrementalProcessConfigurationSegment segment) {
         PipelineReadConfiguration readConfig = convertToReadConfiguration(segment.getReadSegment());
         PipelineWriteConfiguration writeConfig = convertToWriteConfiguration(segment.getWriteSegment());
         AlgorithmConfiguration streamChannel = convertToAlgorithm(segment.getStreamChannel());

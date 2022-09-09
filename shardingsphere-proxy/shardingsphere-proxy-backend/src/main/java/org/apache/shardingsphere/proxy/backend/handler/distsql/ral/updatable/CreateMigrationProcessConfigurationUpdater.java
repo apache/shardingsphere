@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.CreateMigrationProcessConfigurationStatement;
 import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.converter.MigrationProcessConfigurationSegmentConverter;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.converter.InventoryIncrementalProcessConfigurationSegmentConverter;
 
 /**
  * Create migration process configuration updater.
@@ -33,7 +33,7 @@ public final class CreateMigrationProcessConfigurationUpdater implements RALUpda
     
     @Override
     public void executeUpdate(final String databaseName, final CreateMigrationProcessConfigurationStatement sqlStatement) {
-        PipelineProcessConfiguration processConfig = MigrationProcessConfigurationSegmentConverter.convert(sqlStatement.getMigrationProcessConfigurationSegment());
+        PipelineProcessConfiguration processConfig = InventoryIncrementalProcessConfigurationSegmentConverter.convert(sqlStatement.getProcessConfigSegment());
         JOB_API.createProcessConfiguration(processConfig);
     }
     

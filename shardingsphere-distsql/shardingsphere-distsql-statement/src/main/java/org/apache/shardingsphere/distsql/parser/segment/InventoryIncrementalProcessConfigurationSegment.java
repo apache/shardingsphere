@@ -22,11 +22,11 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 /**
- * Migration process configuration segment.
+ * Inventory incremental process configuration segment.
  */
 @Getter
 @Setter
-public final class MigrationProcessConfigurationSegment implements ASTNode {
+public final class InventoryIncrementalProcessConfigurationSegment implements ASTNode {
     
     private ReadOrWriteSegment readSegment;
     

@@ -96,18 +96,18 @@ showMigrationProcessConfiguration
     ;
 
 createMigrationProcessConfiguration
-    : CREATE MIGRATION PROCESS CONFIGURATION migrationProcessConfiguration?
+    : CREATE MIGRATION PROCESS CONFIGURATION inventoryIncrementalProcessConfiguration?
     ;
 
 alterMigrationProcessConfiguration
-    : ALTER MIGRATION PROCESS CONFIGURATION migrationProcessConfiguration?
+    : ALTER MIGRATION PROCESS CONFIGURATION inventoryIncrementalProcessConfiguration?
     ;
 
 dropMigrationProcessConfiguration
     : DROP MIGRATION PROCESS CONFIGURATION confPath
     ;
 
-migrationProcessConfiguration
+inventoryIncrementalProcessConfiguration
     : LP readDefinition? (COMMA? writeDefinition)? (COMMA? streamChannel)? RP
     ;
 
