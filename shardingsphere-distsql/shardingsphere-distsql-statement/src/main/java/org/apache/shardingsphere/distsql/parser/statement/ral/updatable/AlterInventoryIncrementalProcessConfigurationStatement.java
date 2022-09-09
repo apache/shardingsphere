@@ -23,11 +23,13 @@ import org.apache.shardingsphere.distsql.parser.segment.InventoryIncrementalProc
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 
 /**
- * Alter migration process configuration statement.
+ * Alter inventory incremental process configuration statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterMigrationProcessConfigurationStatement extends UpdatableScalingRALStatement {
+public final class AlterInventoryIncrementalProcessConfigurationStatement extends UpdatableScalingRALStatement {
+    
+    private final String jobTypeName;
     
     private final InventoryIncrementalProcessConfigurationSegment processConfigSegment;
 }

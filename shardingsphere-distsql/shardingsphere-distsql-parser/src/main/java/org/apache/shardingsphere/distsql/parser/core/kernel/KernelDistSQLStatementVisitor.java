@@ -91,7 +91,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowSQLT
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTableMetadataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterInstanceStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterMigrationProcessConfigurationStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterInventoryIncrementalProcessConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ApplyDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.CreateInventoryIncrementalProcessConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.DiscardDistSQLStatement;
@@ -372,7 +372,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     public ASTNode visitAlterMigrationProcessConfiguration(final AlterMigrationProcessConfigurationContext ctx) {
         InventoryIncrementalProcessConfigurationSegment segment = null == ctx.inventoryIncrementalProcessConfiguration() ? null
                 : (InventoryIncrementalProcessConfigurationSegment) visit(ctx.inventoryIncrementalProcessConfiguration());
-        return new AlterMigrationProcessConfigurationStatement(segment);
+        return new AlterInventoryIncrementalProcessConfigurationStatement("MIGRATION", segment);
     }
     
     @Override

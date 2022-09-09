@@ -16,5 +16,5 @@
 #
 
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.CreateInventoryIncrementalProcessConfigurationUpdater
-org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.AlterMigrationProcessConfigurationUpdater
+org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.AlterInventoryIncrementalProcessConfigurationUpdater
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.DropPipelineProcessConfigurationUpdater
