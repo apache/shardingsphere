@@ -17,25 +17,24 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
+import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.DropMigrationProcessConfigurationStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.DropPipelineProcessConfigurationStatement;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
 
 /**
- * Drop migration process configuration updater.
+ * Drop pipeline process configuration updater.
  */
-public final class DropMigrationProcessConfigurationUpdater implements RALUpdater<DropMigrationProcessConfigurationStatement> {
-    
-    private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
+public final class DropPipelineProcessConfigurationUpdater implements RALUpdater<DropPipelineProcessConfigurationStatement> {
     
     @Override
-    public void executeUpdate(final String databaseName, final DropMigrationProcessConfigurationStatement sqlStatement) {
-        JOB_API.dropProcessConfiguration(sqlStatement.getConfPath());
+    public void executeUpdate(final String databaseName, final DropPipelineProcessConfigurationStatement sqlStatement) {
+        PipelineJobPublicAPI jobAPI = PipelineJobPublicAPIFactory.getPipelineJobPublicAPI(sqlStatement.getJobTypeName());
+        jobAPI.dropProcessConfiguration(sqlStatement.getConfPath());
     }
     
     @Override
     public String getType() {
-        return DropMigrationProcessConfigurationStatement.class.getName();
+        return DropPipelineProcessConfigurationStatement.class.getName();
     }
 }

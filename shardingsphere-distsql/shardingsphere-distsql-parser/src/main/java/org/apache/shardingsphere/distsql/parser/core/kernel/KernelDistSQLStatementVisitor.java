@@ -95,7 +95,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterMig
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ApplyDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.CreateMigrationProcessConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.DiscardDistSQLStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.DropMigrationProcessConfigurationStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.DropPipelineProcessConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.LabelInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.PrepareDistSQLStatement;
@@ -377,7 +377,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitDropMigrationProcessConfiguration(final KernelDistSQLStatementParser.DropMigrationProcessConfigurationContext ctx) {
-        return new DropMigrationProcessConfigurationStatement(getIdentifierValue(ctx.confPath()));
+        return new DropPipelineProcessConfigurationStatement("MIGRATION", getIdentifierValue(ctx.confPath()));
     }
     
     @Override

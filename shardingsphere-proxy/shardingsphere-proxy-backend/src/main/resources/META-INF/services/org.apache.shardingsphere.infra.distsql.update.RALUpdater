@@ -17,4 +17,4 @@
 
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.CreateMigrationProcessConfigurationUpdater
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.AlterMigrationProcessConfigurationUpdater
-org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.DropMigrationProcessConfigurationUpdater
+org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.DropPipelineProcessConfigurationUpdater

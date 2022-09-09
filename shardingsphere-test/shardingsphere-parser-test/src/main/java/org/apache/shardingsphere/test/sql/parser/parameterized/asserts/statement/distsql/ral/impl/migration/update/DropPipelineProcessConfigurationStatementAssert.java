@@ -17,26 +17,26 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.migration.update;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.DropMigrationProcessConfigurationStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.DropPipelineProcessConfigurationStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.DropMigrationProcessConfigurationStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.DropPipelineProcessConfigurationStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * Drop migration process configuration statement assert.
+ * Drop pipeline process configuration statement assert.
  */
-public final class DropMigrationProcessConfigurationStatementAssert {
+public final class DropPipelineProcessConfigurationStatementAssert {
     
     /**
-     * Assert drop migration process configuration statement is correct with expected parser result.
+     * Assert drop pipeline process configuration statement is correct with expected parser result.
      *
      * @param assertContext assert context
      * @param actual actual statement
      * @param expected expected statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final DropMigrationProcessConfigurationStatement actual, final DropMigrationProcessConfigurationStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final DropPipelineProcessConfigurationStatement actual, final DropPipelineProcessConfigurationStatementTestCase expected) {
         assertThat(assertContext.getText("conf path does not match"), actual.getConfPath(), is(expected.getConfPath()));
     }
 }

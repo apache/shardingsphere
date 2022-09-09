@@ -15,18 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Drop migration process configuration statement.
+ * Drop pipeline process configuration test case.
  */
-@RequiredArgsConstructor
 @Getter
-public final class DropMigrationProcessConfigurationStatement extends UpdatableScalingRALStatement {
+@Setter
+public final class DropPipelineProcessConfigurationStatementTestCase extends SQLParserTestCase {
     
-    private final String confPath;
+    @XmlElement(name = "conf-path")
+    private String confPath;
 }
