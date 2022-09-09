@@ -30,8 +30,4 @@ public abstract class KernelSQLException extends ShardingSphereSQLException {
     public KernelSQLException(final SQLState sqlState, final int vendorCode, final String reason, final Object... messageArguments) {
         super(sqlState, vendorCode, reason, messageArguments);
     }
-    
-    public KernelSQLException(final String sqlState, final int vendorCode, final String reason, final Object... messageArguments) {
-        super(sqlState, vendorCode, reason, messageArguments);
-    }
 }

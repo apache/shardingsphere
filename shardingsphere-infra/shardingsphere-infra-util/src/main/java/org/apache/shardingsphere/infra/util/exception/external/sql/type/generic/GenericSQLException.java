@@ -30,8 +30,4 @@ public abstract class GenericSQLException extends ShardingSphereSQLException {
     public GenericSQLException(final SQLState sqlState, final int vendorCode, final String reason, final Object... messageArguments) {
         super(sqlState, vendorCode, reason, messageArguments);
     }
-    
-    public GenericSQLException(final String sqlState, final int vendorCode, final String reason, final Object... messageArguments) {
-        super(sqlState, vendorCode, reason, messageArguments);
-    }
 }

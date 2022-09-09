@@ -30,8 +30,4 @@ public abstract class FeatureSQLException extends ShardingSphereSQLException {
     public FeatureSQLException(final SQLState sqlState, final int vendorCode, final String reason, final Object... messageArguments) {
         super(sqlState, vendorCode, reason, messageArguments);
     }
-    
-    public FeatureSQLException(final String sqlState, final int vendorCode, final String reason, final Object... messageArguments) {
-        super(sqlState, vendorCode, reason, messageArguments);
-    }
 }
