@@ -20,8 +20,17 @@ package org.apache.shardingsphere.test.runner.parallel;
 /**
  * Parallel runner executor.
  */
-public interface ParallelRunnerExecutor {
-    
+public interface ParallelRunnerExecutor<T> {
+
+    /**
+     * Execute child statement.
+     *
+     *
+     * @param childStatement child statement
+     */
+    void execute(T key, Runnable childStatement);
+
+
     /**
      * Execute child statement.
      *

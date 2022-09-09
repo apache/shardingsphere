@@ -29,7 +29,7 @@ public final class ParallelRunnerScheduler implements RunnerScheduler {
     
     private final ParallelLevel parallelLevel;
     
-    private final ParallelRunnerExecutorFactory executorFactory = new ParallelRunnerExecutorFactory();
+    private final DefaultParallelRunnerExecutorFactory executorFactory = new DefaultParallelRunnerExecutorFactory();
     
     @Override
     public void schedule(final Runnable childStatement) {
@@ -38,6 +38,6 @@ public final class ParallelRunnerScheduler implements RunnerScheduler {
     
     @Override
     public void finished() {
-        executorFactory.getAllExecutors().forEach(ParallelRunnerExecutor::finished);
+        executorFactory.getAllExecutors().forEach(each -> ((ParallelRunnerExecutor)each).finished());
     }
 }

@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.integration.framework.runner.parallel.imp
 
 import lombok.EqualsAndHashCode;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
-import org.apache.shardingsphere.test.integration.framework.runner.parallel.ParallelRunnerExecutor;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
+import org.apache.shardingsphere.test.runner.parallel.impl.DefaultParallelRunnerExecutor;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -32,12 +32,10 @@ import java.util.concurrent.Future;
 /**
  * Parallel runner executor with scenario.
  */
-public final class ScenarioParallelRunnerExecutor implements ParallelRunnerExecutor {
+public final class ScenarioParallelRunnerExecutor extends DefaultParallelRunnerExecutor<ParameterizedArray> {
     
     private final Map<ScenarioKey, ExecutorServiceManager> executorServiceManagers = new ConcurrentHashMap<>();
-    
-    private final Collection<Future<?>> taskFeatures = new LinkedList<>();
-    
+
     @Override
     public void execute(final ParameterizedArray parameterizedArray, final Runnable childStatement) {
         taskFeatures.add(getExecutorService(new ScenarioKey(parameterizedArray)).getExecutorService().submit(childStatement));

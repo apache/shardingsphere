@@ -17,39 +17,18 @@
 
 package org.apache.shardingsphere.test.integration.framework.runner.parallel.impl;
 
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
-import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
-import org.apache.shardingsphere.test.integration.framework.runner.parallel.ParallelRunnerExecutor;
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
+import org.apache.shardingsphere.test.runner.parallel.impl.DefaultParallelRunnerExecutor;
+
 
 /**
  * Parallel runner executor with case.
  */
-public final class CaseParallelRunnerExecutor implements ParallelRunnerExecutor {
-    
-    // TODO ExecutorEngine.execute and callback
-    private final ExecutorServiceManager executorServiceManager = ExecutorEngine.createExecutorEngineWithCPU().getExecutorServiceManager();
-    
-    private final Collection<Future<?>> taskFeatures = new LinkedList<>();
+public final class CaseParallelRunnerExecutor extends DefaultParallelRunnerExecutor<ParameterizedArray> {
     
     @Override
     public void execute(final ParameterizedArray parameterizedArray, final Runnable childStatement) {
-        taskFeatures.add(executorServiceManager.getExecutorService().submit(childStatement));
-    }
-    
-    @Override
-    public void finished() {
-        taskFeatures.forEach(each -> {
-            try {
-                each.get();
-            } catch (final InterruptedException | ExecutionException ignored) {
-            }
-        });
-        executorServiceManager.getExecutorService().shutdownNow();
+        execute(childStatement);
     }
 }
