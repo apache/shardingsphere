@@ -103,7 +103,7 @@ public final class MySQLMigrationGeneralIT extends AbstractMigrationITCase {
     
     private void assertMigrationSuccessById(final String jobId) throws SQLException, InterruptedException {
         waitJobFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
-        assertCheckMigrationSuccess(jobId);
+        assertCheckMigrationSuccess(jobId, "DATA_MATCH");
         stopMigrationByJobId(jobId);
     }
 }
