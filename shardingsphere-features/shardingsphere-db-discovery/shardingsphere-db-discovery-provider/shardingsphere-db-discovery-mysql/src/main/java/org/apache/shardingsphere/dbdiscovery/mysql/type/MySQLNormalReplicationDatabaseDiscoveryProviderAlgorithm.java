@@ -79,7 +79,7 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm impl
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return isPrimaryInstance(dataSource);
-            } catch (SQLException ex) {
+            } catch (final SQLException ex) {
                 throw new SQLWrapperException(ex);
             }
         }, executorService);
