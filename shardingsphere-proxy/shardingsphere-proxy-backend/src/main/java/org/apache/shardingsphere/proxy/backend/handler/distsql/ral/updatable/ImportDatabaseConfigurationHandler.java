@@ -97,7 +97,7 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
         addResources(databaseName, yamlConfig.getDataSources());
         try {
             addRules(databaseName, yamlConfig.getRules());
-        } catch (DistSQLException ex) {
+        } catch (final DistSQLException ex) {
             dropDatabase(databaseName);
             throw ex;
         }
