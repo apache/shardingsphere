@@ -73,6 +73,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatement
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShowShardingTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShowShardingTableRulesUsedAlgorithmContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShowShardingTableRulesUsedKeyGeneratorContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShowShardingTableRulesUsedAuditorContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShowUnusedShardingAlgorithmsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShowUnusedShardingAuditorsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShowUnusedShardingKeyGeneratorsContext;
@@ -525,6 +526,11 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     @Override
     public ASTNode visitShowShardingTableRulesUsedKeyGenerator(final ShowShardingTableRulesUsedKeyGeneratorContext ctx) {
         return new ShowShardingTableRulesUsedKeyGeneratorStatement(getIdentifierValue(ctx.keyGeneratorName()), null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
+    }
+    
+    @Override
+    public ASTNode visitShowShardingTableRulesUsedAuditor(final ShowShardingTableRulesUsedAuditorContext ctx) {
+        return new ShowShardingTableRulesUsedKeyGeneratorStatement(getIdentifierValue(ctx.auditorName()), null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
     }
     
     @Override
