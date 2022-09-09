@@ -34,7 +34,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 25000     | 11321       | JDBC does not support operations across multiple logical databases in transaction |
 | 25000     | 11322       | Failed to create \`%s\` XA data source |
 | 25000     | 11323       | Can not start new XA transaction in a active transaction |
-| 42000     | 12000       | Unsupported command: %s |
 | 44000     | 13000       | SQL check failed, error message: %s |
 | HY000     | 14000       | The table \`%s\` of schema \`%s\` is locked |
 | HY000     | 14001       | The table \`%s\` of schema \`%s\` lock wait timeout of %s ms exceeded |
@@ -95,3 +94,4 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 42000     | 28001       | Insert value of index \`%s\` can not support for shadow |
 | HY004     | 30000       | Unknown exception: %s |
 | 0A000     | 30001       | Unsupported operation: %s |
+| 42000     | 30002       | Unsupported command: %s |
