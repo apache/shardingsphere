@@ -28,6 +28,6 @@ public final class UnsupportedCreateViewException extends FeatureSQLException {
     private static final long serialVersionUID = -321126834428609310L;
     
     public UnsupportedCreateViewException() {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 20015, "The CREATE VIEW statement contains unsupported query statement");
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 15, "The CREATE VIEW statement contains unsupported query statement");
     }
 }

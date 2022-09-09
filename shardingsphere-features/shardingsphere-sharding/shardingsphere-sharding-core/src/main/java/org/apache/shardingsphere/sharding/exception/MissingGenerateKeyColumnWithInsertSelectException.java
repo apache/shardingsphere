@@ -28,6 +28,6 @@ public final class MissingGenerateKeyColumnWithInsertSelectException extends Fea
     private static final long serialVersionUID = 568269722599010228L;
     
     public MissingGenerateKeyColumnWithInsertSelectException() {
-        super(XOpenSQLState.SYNTAX_ERROR, 20018, "INSERT INTO ... SELECT can not support applying key generator with absent generate key column");
+        super(XOpenSQLState.SYNTAX_ERROR, 18, "INSERT INTO ... SELECT can not support applying key generator with absent generate key column");
     }
 }

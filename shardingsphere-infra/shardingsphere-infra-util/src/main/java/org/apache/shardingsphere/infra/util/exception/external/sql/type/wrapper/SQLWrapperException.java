@@ -29,6 +29,6 @@ public final class SQLWrapperException extends ShardingSphereSQLException {
     private static final long serialVersionUID = 8983736995662464009L;
     
     public SQLWrapperException(final SQLException cause) {
-        super(cause.getSQLState(), cause.getErrorCode(), cause.getMessage());
+        super(cause.getSQLState(), 0, cause.getErrorCode(), cause.getMessage());
     }
 }

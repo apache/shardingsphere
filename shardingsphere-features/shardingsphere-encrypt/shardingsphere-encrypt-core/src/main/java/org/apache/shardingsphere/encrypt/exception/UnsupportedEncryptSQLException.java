@@ -28,6 +28,6 @@ public final class UnsupportedEncryptSQLException extends FeatureSQLException {
     private static final long serialVersionUID = 8391663664617661217L;
     
     public UnsupportedEncryptSQLException(final String sqlClause) {
-        super(XOpenSQLState.SYNTAX_ERROR, 27001, "The SQL clause `%s` is unsupported in encrypt rule", sqlClause);
+        super(XOpenSQLState.SYNTAX_ERROR, 7001, "The SQL clause `%s` is unsupported in encrypt rule", sqlClause);
     }
 }

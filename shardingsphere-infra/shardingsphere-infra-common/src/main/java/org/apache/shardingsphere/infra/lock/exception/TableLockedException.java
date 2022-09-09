@@ -28,6 +28,6 @@ public final class TableLockedException extends KernelSQLException {
     private static final long serialVersionUID = 2622020743612706932L;
     
     public TableLockedException(final String databaseName, final String schemaName, final String tableNames) {
-        super(XOpenSQLState.GENERAL_ERROR, 14000, "The table `%s` of schema `%s` is locked in database `%s`", tableNames, schemaName, databaseName);
+        super(XOpenSQLState.GENERAL_ERROR, 4000, "The table `%s` of schema `%s` is locked in database `%s`", tableNames, schemaName, databaseName);
     }
 }

@@ -28,6 +28,6 @@ public final class StartNestedXATransactionException extends KernelSQLException 
     private static final long serialVersionUID = 7761100591709104351L;
     
     public StartNestedXATransactionException() {
-        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 11323, "Can not start new XA transaction in a active transaction");
+        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 1323, "Can not start new XA transaction in a active transaction");
     }
 }

@@ -28,6 +28,6 @@ public abstract class KernelSQLException extends ShardingSphereSQLException {
     private static final long serialVersionUID = -6554922589499988153L;
     
     public KernelSQLException(final SQLState sqlState, final int vendorCode, final String reason, final Object... messageArguments) {
-        super(sqlState, vendorCode, reason, messageArguments);
+        super(sqlState, 1, vendorCode, reason, messageArguments);
     }
 }

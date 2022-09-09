@@ -28,6 +28,6 @@ public final class MismatchedInlineShardingAlgorithmExpressionAndColumnException
     private static final long serialVersionUID = 1306301016127278233L;
     
     public MismatchedInlineShardingAlgorithmExpressionAndColumnException(final String algorithmExpression, final String columnName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 20020, "Inline sharding algorithms expression `%s` and sharding column `%s` do not match", algorithmExpression, columnName);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 20, "Inline sharding algorithms expression `%s` and sharding column `%s` do not match", algorithmExpression, columnName);
     }
 }

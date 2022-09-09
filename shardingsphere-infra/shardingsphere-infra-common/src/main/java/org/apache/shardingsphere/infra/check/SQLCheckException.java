@@ -28,6 +28,6 @@ public final class SQLCheckException extends KernelSQLException {
     private static final long serialVersionUID = 4183020614721058122L;
     
     public SQLCheckException(final String errorMessage) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 13000, "SQL check failed, error message: %s", errorMessage);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3000, "SQL check failed, error message: %s", errorMessage);
     }
 }

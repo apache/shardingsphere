@@ -28,6 +28,6 @@ public final class InvalidMGRPluginException extends FeatureSQLException {
     private static final long serialVersionUID = 1703082683321097037L;
     
     public InvalidMGRPluginException(final String databaseName) {
-        super(XOpenSQLState.GENERAL_ERROR, 23000, "MGR plugin is not active in database `%s`", databaseName);
+        super(XOpenSQLState.GENERAL_ERROR, 3000, "MGR plugin is not active in database `%s`", databaseName);
     }
 }

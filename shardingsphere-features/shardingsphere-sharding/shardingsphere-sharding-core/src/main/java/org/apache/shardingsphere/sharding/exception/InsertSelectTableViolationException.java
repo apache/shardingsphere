@@ -28,6 +28,6 @@ public final class InsertSelectTableViolationException extends FeatureSQLExcepti
     private static final long serialVersionUID = 1221612068163533037L;
     
     public InsertSelectTableViolationException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 20019, "The table inserted and the table selected must be the same or bind tables");
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 19, "The table inserted and the table selected must be the same or bind tables");
     }
 }

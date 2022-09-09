@@ -25,6 +25,6 @@ public final class UnsupportedTranslatedSQLException extends SQLTranslationExcep
     private static final long serialVersionUID = -1419778194546662319L;
     
     public UnsupportedTranslatedSQLException(final String sql) {
-        super(11201, "Translation error, SQL is: %s", sql);
+        super(1201, "Translation error, SQL is: %s", sql);
     }
 }

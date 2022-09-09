@@ -30,6 +30,6 @@ public final class DataSourceIntersectionNotFoundException extends FeatureSQLExc
     private static final long serialVersionUID = -2142571707728236489L;
     
     public DataSourceIntersectionNotFoundException(final Collection<String> logicTables) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 20023, "Can not find actual data source intersection for logic tables `%s`", logicTables);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 23, "Can not find actual data source intersection for logic tables `%s`", logicTables);
     }
 }

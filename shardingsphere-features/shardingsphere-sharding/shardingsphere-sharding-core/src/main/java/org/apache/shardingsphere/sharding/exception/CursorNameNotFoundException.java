@@ -28,6 +28,6 @@ public final class CursorNameNotFoundException extends KernelSQLException {
     private static final long serialVersionUID = 3124329832945598311L;
     
     public CursorNameNotFoundException() {
-        super(XOpenSQLState.INVALID_CURSOR_NAME, 10200, "Can not get cursor name from fetch statement");
+        super(XOpenSQLState.INVALID_CURSOR_NAME, 200, "Can not get cursor name from fetch statement");
     }
 }

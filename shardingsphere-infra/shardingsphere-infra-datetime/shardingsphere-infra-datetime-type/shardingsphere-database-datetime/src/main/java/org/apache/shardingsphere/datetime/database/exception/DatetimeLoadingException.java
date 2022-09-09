@@ -30,6 +30,6 @@ public final class DatetimeLoadingException extends KernelSQLException {
     private static final long serialVersionUID = 7844267165522132993L;
     
     public DatetimeLoadingException(final SQLException cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 14011, "Load datetime from database failed, reason: %s", cause.getMessage());
+        super(XOpenSQLState.GENERAL_ERROR, 4011, "Load datetime from database failed, reason: %s", cause.getMessage());
     }
 }

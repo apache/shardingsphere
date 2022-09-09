@@ -27,6 +27,6 @@ public final class UnsupportedSQLOperationException extends GenericSQLException 
     private static final long serialVersionUID = -4387122733989386705L;
     
     public UnsupportedSQLOperationException(final String reason) {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 30001, "Unsupported SQL operation: %s", reason);
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 1, "Unsupported SQL operation: %s", reason);
     }
 }
