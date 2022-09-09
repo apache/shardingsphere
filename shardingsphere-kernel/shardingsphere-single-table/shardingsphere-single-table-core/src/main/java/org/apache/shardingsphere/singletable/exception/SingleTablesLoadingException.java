@@ -30,6 +30,6 @@ public final class SingleTablesLoadingException extends KernelSQLException {
     private static final long serialVersionUID = 698261896187918188L;
     
     public SingleTablesLoadingException(final String databaseName, final String dataSourceName, final SQLException cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 17002, "Can not load table with database name `%s` and data source name `%s`, reason is: %s", databaseName, dataSourceName, cause.getMessage());
+        super(XOpenSQLState.GENERAL_ERROR, 7002, "Can not load table with database name `%s` and data source name `%s`, reason is: %s", databaseName, dataSourceName, cause.getMessage());
     }
 }

@@ -28,6 +28,6 @@ public final class WorkIdAssignedException extends KernelSQLException {
     private static final long serialVersionUID = 4782736481041926266L;
     
     public WorkIdAssignedException() {
-        super(XOpenSQLState.GENERAL_ERROR, 15000, "Work ID assigned failed, which can not exceed 1024");
+        super(XOpenSQLState.GENERAL_ERROR, 5000, "Work ID assigned failed, which can not exceed 1024");
     }
 }

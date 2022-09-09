@@ -29,6 +29,6 @@ public final class XADataSourceInitializeException extends KernelSQLException {
     private static final long serialVersionUID = -4515239569528215614L;
     
     public XADataSourceInitializeException(final XADataSourceDefinition xaDataSourceDefinition) {
-        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 11322, "Failed to create `%s` XA data source", xaDataSourceDefinition.getType());
+        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 1322, "Failed to create `%s` XA data source", xaDataSourceDefinition.getType());
     }
 }

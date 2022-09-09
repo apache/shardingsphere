@@ -28,6 +28,6 @@ public final class SQLParsingException extends KernelSQLException {
     private static final long serialVersionUID = -6408790652103666096L;
     
     public SQLParsingException(final String sql) {
-        super(XOpenSQLState.SYNTAX_ERROR, 11000, "You have an error in your SQL syntax: %s", sql);
+        super(XOpenSQLState.SYNTAX_ERROR, 1000, "You have an error in your SQL syntax: %s", sql);
     }
 }

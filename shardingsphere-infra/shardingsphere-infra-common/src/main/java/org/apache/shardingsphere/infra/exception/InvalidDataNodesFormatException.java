@@ -28,6 +28,6 @@ public final class InvalidDataNodesFormatException extends KernelSQLException {
     private static final long serialVersionUID = 192279170808654743L;
     
     public InvalidDataNodesFormatException(final String dataNode) {
-        super(XOpenSQLState.INVALID_DATA_TYPE, 10400, "Invalid format for actual data node `%s`", dataNode);
+        super(XOpenSQLState.INVALID_DATA_TYPE, 400, "Invalid format for actual data node `%s`", dataNode);
     }
 }

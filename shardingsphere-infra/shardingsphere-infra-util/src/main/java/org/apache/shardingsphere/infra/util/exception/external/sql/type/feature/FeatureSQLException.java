@@ -28,6 +28,6 @@ public abstract class FeatureSQLException extends ShardingSphereSQLException {
     private static final long serialVersionUID = -3748977692432149265L;
     
     public FeatureSQLException(final SQLState sqlState, final int vendorCode, final String reason, final Object... messageArguments) {
-        super(sqlState, vendorCode, reason, messageArguments);
+        super(sqlState, 2, vendorCode, reason, messageArguments);
     }
 }

@@ -30,6 +30,6 @@ public final class FileIOException extends KernelSQLException {
     private static final long serialVersionUID = 1104839422339487793L;
     
     public FileIOException(final IOException cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 11004, "File access failed, reason is: %s", cause.getMessage());
+        super(XOpenSQLState.GENERAL_ERROR, 1004, "File access failed, reason is: %s", cause.getMessage());
     }
 }

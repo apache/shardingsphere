@@ -30,6 +30,6 @@ public final class ShardingRuleNotFoundException extends FeatureSQLException {
     private static final long serialVersionUID = 142299282103233064L;
     
     public ShardingRuleNotFoundException(final Collection<String> logicTables) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 20003, "Can not find table rule with logic tables `%s`", logicTables.toString());
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3, "Can not find table rule with logic tables `%s`", logicTables.toString());
     }
 }

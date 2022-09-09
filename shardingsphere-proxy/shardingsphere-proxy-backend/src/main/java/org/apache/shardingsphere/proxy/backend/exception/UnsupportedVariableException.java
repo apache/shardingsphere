@@ -28,6 +28,6 @@ public final class UnsupportedVariableException extends KernelSQLException {
     private static final long serialVersionUID = 1955281568807066737L;
     
     public UnsupportedVariableException(final String variable) {
-        super(XOpenSQLState.GENERAL_ERROR, 10301, "Could not support variable `%s`", variable);
+        super(XOpenSQLState.GENERAL_ERROR, 301, "Could not support variable `%s`", variable);
     }
 }

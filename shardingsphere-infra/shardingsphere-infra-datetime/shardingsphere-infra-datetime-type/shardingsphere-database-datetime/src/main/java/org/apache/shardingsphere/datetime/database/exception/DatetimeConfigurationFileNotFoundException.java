@@ -28,6 +28,6 @@ public final class DatetimeConfigurationFileNotFoundException extends KernelSQLE
     private static final long serialVersionUID = 4820838154441059833L;
     
     public DatetimeConfigurationFileNotFoundException(final String configurationFile) {
-        super(XOpenSQLState.GENERAL_ERROR, 14010, "Can not find `%s` file for datetime initialize", configurationFile);
+        super(XOpenSQLState.GENERAL_ERROR, 4010, "Can not find `%s` file for datetime initialize", configurationFile);
     }
 }

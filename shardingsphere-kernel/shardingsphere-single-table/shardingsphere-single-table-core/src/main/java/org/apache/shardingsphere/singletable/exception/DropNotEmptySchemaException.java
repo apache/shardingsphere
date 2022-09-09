@@ -28,6 +28,6 @@ public final class DropNotEmptySchemaException extends KernelSQLException {
     private static final long serialVersionUID = 5285619119572894557L;
     
     public DropNotEmptySchemaException(final String schemaName) {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 17003, "Can not drop schema `%s` because of contains tables", schemaName);
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 7003, "Can not drop schema `%s` because of contains tables", schemaName);
     }
 }

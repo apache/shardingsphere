@@ -31,6 +31,6 @@ public final class UnsupportedActualDataNodeStructureException extends KernelSQL
     private static final long serialVersionUID = -8921823916974492519L;
     
     public UnsupportedActualDataNodeStructureException(final DataNode dataNode, final Collection<String> jdbcUrlPrefixes) {
-        super(XOpenSQLState.SYNTAX_ERROR, 10002, "Can not support 3-tier structure for actual data node `%s` with JDBC `%s`", dataNode.format(), jdbcUrlPrefixes.toString());
+        super(XOpenSQLState.SYNTAX_ERROR, 2, "Can not support 3-tier structure for actual data node `%s` with JDBC `%s`", dataNode.format(), jdbcUrlPrefixes.toString());
     }
 }

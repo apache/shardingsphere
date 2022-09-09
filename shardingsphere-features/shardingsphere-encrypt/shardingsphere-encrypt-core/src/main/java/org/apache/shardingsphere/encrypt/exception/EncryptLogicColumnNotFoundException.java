@@ -28,6 +28,6 @@ public final class EncryptLogicColumnNotFoundException extends FeatureSQLExcepti
     private static final long serialVersionUID = 3934531389314348880L;
     
     public EncryptLogicColumnNotFoundException(final String actualColumn) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 27004, "Can not find logic encrypt column by `%s`", actualColumn);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 7004, "Can not find logic encrypt column by `%s`", actualColumn);
     }
 }

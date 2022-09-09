@@ -30,6 +30,6 @@ public final class DropInUsedTablesException extends FeatureSQLException {
     private static final long serialVersionUID = 8939233348292246498L;
     
     public DropInUsedTablesException(final Collection<String> inUsedTables) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 20032, "Actual tables `%s` are in use", inUsedTables.toString());
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 32, "Actual tables `%s` are in use", inUsedTables.toString());
     }
 }

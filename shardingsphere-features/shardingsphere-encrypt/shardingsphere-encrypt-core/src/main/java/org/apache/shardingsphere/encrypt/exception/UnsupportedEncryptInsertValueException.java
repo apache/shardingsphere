@@ -28,6 +28,6 @@ public final class UnsupportedEncryptInsertValueException extends FeatureSQLExce
     private static final long serialVersionUID = 5004882561157380582L;
     
     public UnsupportedEncryptInsertValueException(final int columnIndex) {
-        super(XOpenSQLState.SYNTAX_ERROR, 27003, "Insert value of index `%s` can not support for encrypt", String.valueOf(columnIndex));
+        super(XOpenSQLState.SYNTAX_ERROR, 7003, "Insert value of index `%s` can not support for encrypt", String.valueOf(columnIndex));
     }
 }

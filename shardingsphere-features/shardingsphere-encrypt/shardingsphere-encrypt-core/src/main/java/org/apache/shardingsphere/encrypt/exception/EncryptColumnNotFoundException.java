@@ -28,6 +28,6 @@ public final class EncryptColumnNotFoundException extends FeatureSQLException {
     private static final long serialVersionUID = -8481487069938556675L;
     
     public EncryptColumnNotFoundException(final String tableName, final String columnName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 27005, "Fail to find encrypt column `%s` from table `%s`", columnName, tableName);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 7005, "Fail to find encrypt column `%s` from table `%s`", columnName, tableName);
     }
 }

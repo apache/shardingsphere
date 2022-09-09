@@ -31,7 +31,7 @@ public final class InconsistentShardingTableMetaDataException extends FeatureSQL
     private static final long serialVersionUID = -5450346946223396192L;
     
     public InconsistentShardingTableMetaDataException(final String logicTableName, final Collection<TableMetaDataViolation> violations) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 20001, createReason(violations), logicTableName);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 1, createReason(violations), logicTableName);
     }
     
     private static String createReason(final Collection<TableMetaDataViolation> violations) {

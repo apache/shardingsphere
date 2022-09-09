@@ -28,6 +28,6 @@ public final class ResourceNotExistedException extends KernelSQLException {
     private static final long serialVersionUID = 4146100333670404924L;
     
     public ResourceNotExistedException() {
-        super(XOpenSQLState.SYNTAX_ERROR, 11002, "Resource does not exist");
+        super(XOpenSQLState.SYNTAX_ERROR, 1002, "Resource does not exist");
     }
 }

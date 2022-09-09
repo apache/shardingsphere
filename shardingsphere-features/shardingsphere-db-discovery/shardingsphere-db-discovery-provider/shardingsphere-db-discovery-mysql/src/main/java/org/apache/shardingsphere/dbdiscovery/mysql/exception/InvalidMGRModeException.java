@@ -28,6 +28,6 @@ public final class InvalidMGRModeException extends FeatureSQLException {
     private static final long serialVersionUID = -2190741601319220590L;
     
     public InvalidMGRModeException(final String databaseName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 23001, "MGR is not in single primary mode in database `%s`", databaseName);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3001, "MGR is not in single primary mode in database `%s`", databaseName);
     }
 }

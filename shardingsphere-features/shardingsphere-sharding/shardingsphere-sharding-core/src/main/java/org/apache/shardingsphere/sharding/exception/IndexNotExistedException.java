@@ -28,6 +28,6 @@ public final class IndexNotExistedException extends FeatureSQLException {
     private static final long serialVersionUID = 206503570677185269L;
     
     public IndexNotExistedException(final String indexName) {
-        super(XOpenSQLState.NOT_FOUND, 20031, "Index `%s` does not exist", indexName);
+        super(XOpenSQLState.NOT_FOUND, 31, "Index `%s` does not exist", indexName);
     }
 }

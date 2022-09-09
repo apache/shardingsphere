@@ -28,6 +28,6 @@ public final class RenamedViewWithoutSameConfigException extends FeatureSQLExcep
     private static final long serialVersionUID = -8276278970848162458L;
     
     public RenamedViewWithoutSameConfigException(final String originView, final String targetView) {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 20034, "Alter view rename .. to .. statement should have same config for %s and %s", originView, targetView);
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 34, "Alter view rename .. to .. statement should have same config for %s and %s", originView, targetView);
     }
 }
