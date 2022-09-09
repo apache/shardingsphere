@@ -33,7 +33,7 @@ import java.util.Map;
  */
 public final class ContainerComposerRegistry implements AutoCloseable {
     
-    private final Map<String, ContainerComposer> containerComposers = new HashMap<>(EnvironmentConstants.DEFAULT_FULL_CONTAINER_QUANTITY, 1);
+    private final Map<String, ContainerComposer> containerComposers = new HashMap<>(EnvironmentConstants.MAX_CONTAINER_QUANTITY, 1);
     
     /**
      * Get container composer.
