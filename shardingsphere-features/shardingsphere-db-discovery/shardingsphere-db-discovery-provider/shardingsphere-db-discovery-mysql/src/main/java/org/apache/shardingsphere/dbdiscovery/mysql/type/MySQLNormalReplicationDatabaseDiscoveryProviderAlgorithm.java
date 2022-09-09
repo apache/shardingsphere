@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
-import org.apache.shardingsphere.infra.util.exception.external.sql.SQLWrapperException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -79,7 +79,7 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm impl
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return isPrimaryInstance(dataSource);
-            } catch (SQLException ex) {
+            } catch (final SQLException ex) {
                 throw new SQLWrapperException(ex);
             }
         }, executorService);

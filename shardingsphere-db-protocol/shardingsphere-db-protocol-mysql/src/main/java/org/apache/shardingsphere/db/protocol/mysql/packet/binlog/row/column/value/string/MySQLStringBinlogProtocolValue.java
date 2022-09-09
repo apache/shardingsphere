@@ -21,6 +21,7 @@ import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnTyp
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.MySQLBinlogProtocolValue;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 
 import java.io.Serializable;
 
@@ -46,15 +47,12 @@ public final class MySQLStringBinlogProtocolValue implements MySQLBinlogProtocol
             case MYSQL_TYPE_STRING:
                 return payload.readStringFix(readActualLength(length, payload));
             default:
-                throw new UnsupportedOperationException("");
+                throw new UnsupportedSQLOperationException(MySQLBinaryColumnType.valueOf(type).toString());
         }
     }
     
     private int readActualLength(final int length, final MySQLPacketPayload payload) {
-        if (length < 256) {
-            return payload.getByteBuf().readUnsignedByte();
-        }
-        return payload.getByteBuf().readUnsignedShortLE();
+        return length < 256 ? payload.getByteBuf().readUnsignedByte() : payload.getByteBuf().readUnsignedShortLE();
     }
     
     private Serializable readEnumValue(final int meta, final MySQLPacketPayload payload) {
@@ -64,7 +62,7 @@ public final class MySQLStringBinlogProtocolValue implements MySQLBinlogProtocol
             case 2:
                 return payload.readInt2();
             default:
-                throw new UnsupportedOperationException("MySQL Enum meta in binlog only include value 1 or 2, but actual is " + meta);
+                throw new UnsupportedSQLOperationException(String.format("MySQL Enum meta in binlog only include value 1 or 2, but actual is %s", meta));
         }
     }
 }

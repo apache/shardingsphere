@@ -38,6 +38,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -88,7 +89,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
             case 'P':
                 return Collections.singletonList(connectionContext.getPortal(packet.getName()).describe());
             default:
-                throw new UnsupportedOperationException("Unsupported describe type: " + packet.getType());
+                throw new UnsupportedSQLOperationException("Unsupported describe type: " + packet.getType());
         }
     }
     
@@ -109,9 +110,9 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     private void tryDescribePreparedStatement(final PostgreSQLPreparedStatement preparedStatement) throws SQLException {
         if (preparedStatement.getSqlStatement() instanceof InsertStatement) {
             describeInsertStatementByDatabaseMetaData(preparedStatement);
-            return;
+        } else {
+            tryDescribePreparedStatementByJDBC(preparedStatement);
         }
-        tryDescribePreparedStatementByJDBC(preparedStatement);
     }
     
     private void describeInsertStatementByDatabaseMetaData(final PostgreSQLPreparedStatement preparedStatement) {

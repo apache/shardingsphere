@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Generate key strategy not found exception.
  */
-public final class GenerateKeyStrategyNotFoundException extends ShardingSphereSQLException {
+public final class GenerateKeyStrategyNotFoundException extends FeatureSQLException {
     
     private static final long serialVersionUID = 7456922260524630374L;
     

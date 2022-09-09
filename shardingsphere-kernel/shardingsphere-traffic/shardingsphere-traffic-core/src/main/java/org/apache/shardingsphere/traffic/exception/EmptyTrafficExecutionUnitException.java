@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.traffic.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Empty traffic execution unit exception.
  */
-public final class EmptyTrafficExecutionUnitException extends ShardingSphereSQLException {
+public final class EmptyTrafficExecutionUnitException extends KernelSQLException {
     
     private static final long serialVersionUID = 1871625745475813160L;
     

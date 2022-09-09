@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.hint.SQLHintExtractor;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
@@ -74,7 +75,7 @@ public class CommonSQLStatementContext<T extends SQLStatement> implements SQLSta
         if (sqlStatement instanceof OpenGaussStatement) {
             return DatabaseTypeFactory.getInstance("openGauss");
         }
-        throw new UnsupportedOperationException(sqlStatement.getClass().getName());
+        throw new UnsupportedSQLOperationException(sqlStatement.getClass().getName());
     }
     
     /**

@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.singletable.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Schema not found exception.
  */
-public final class SchemaNotFoundException extends ShardingSphereSQLException {
+public final class SchemaNotFoundException extends KernelSQLException {
     
     private static final long serialVersionUID = 2722045034640737328L;
     

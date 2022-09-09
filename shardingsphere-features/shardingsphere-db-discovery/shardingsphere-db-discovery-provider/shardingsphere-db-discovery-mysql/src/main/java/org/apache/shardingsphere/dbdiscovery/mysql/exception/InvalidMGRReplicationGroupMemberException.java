@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Invalid MGR replication group member exception.
  */
-public final class InvalidMGRReplicationGroupMemberException extends ShardingSphereSQLException {
+public final class InvalidMGRReplicationGroupMemberException extends FeatureSQLException {
     
     private static final long serialVersionUID = 3766206496827463146L;
     

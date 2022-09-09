@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.driver.jdbc.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Connection closed exception.
  */
-public final class ConnectionClosedException extends ShardingSphereSQLException {
+public final class ConnectionClosedException extends KernelSQLException {
     
     private static final long serialVersionUID = 8667898851939815681L;
     

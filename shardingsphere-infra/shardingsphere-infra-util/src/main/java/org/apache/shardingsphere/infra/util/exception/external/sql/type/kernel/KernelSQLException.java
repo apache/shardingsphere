@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.exception.external.sql;
+package org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel;
 
-import java.sql.SQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.SQLState;
 
 /**
- * SQL wrapper exception.
+ * Kernel SQL exception.
  */
-public final class SQLWrapperException extends ShardingSphereSQLException {
+public abstract class KernelSQLException extends ShardingSphereSQLException {
     
-    private static final long serialVersionUID = 8983736995662464009L;
+    private static final long serialVersionUID = -6554922589499988153L;
     
-    public SQLWrapperException(final SQLException cause) {
-        super(cause.getSQLState(), cause.getErrorCode(), cause.getMessage());
+    public KernelSQLException(final SQLState sqlState, final int vendorCode, final String reason, final Object... messageArguments) {
+        super(sqlState, vendorCode, reason, messageArguments);
     }
 }

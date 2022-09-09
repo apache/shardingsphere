@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.infra.lock.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Table locked exception.
  */
-public final class TableLockedException extends ShardingSphereSQLException {
+public final class TableLockedException extends KernelSQLException {
     
     private static final long serialVersionUID = 2622020743612706932L;
     

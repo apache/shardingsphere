@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.infra.database.metadata;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Unrecognized database URL exception.
  */
-public final class UnrecognizedDatabaseURLException extends ShardingSphereSQLException {
+public final class UnrecognizedDatabaseURLException extends KernelSQLException {
     
     private static final long serialVersionUID = -1551117178863766353L;
     

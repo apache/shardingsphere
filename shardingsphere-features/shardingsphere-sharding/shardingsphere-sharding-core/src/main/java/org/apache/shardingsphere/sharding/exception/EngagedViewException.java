@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Engaged view exception.
  */
-public final class EngagedViewException extends ShardingSphereSQLException {
+public final class EngagedViewException extends FeatureSQLException {
     
     private static final long serialVersionUID = -8312969473716234951L;
     

@@ -15,18 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.exception.external.sql;
+package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
- * Unknown SQL exception.
+ * Show unused sharding auditors statement.
  */
-public final class UnknownSQLException extends ShardingSphereSQLException {
+public final class ShowUnusedShardingAuditorsStatement extends ShowRulesStatement {
     
-    private static final long serialVersionUID = -7357918573504734977L;
-    
-    public UnknownSQLException(final Exception cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 30000, "Unknown exception: %s", cause.getMessage());
+    public ShowUnusedShardingAuditorsStatement(final DatabaseSegment database) {
+        super(database);
     }
 }

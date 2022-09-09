@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.encrypt.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Encrypt algorithm initialization exception.
  */
-public final class EncryptAlgorithmInitializationException extends ShardingSphereSQLException {
+public final class EncryptAlgorithmInitializationException extends FeatureSQLException {
     
     private static final long serialVersionUID = -2004166948563207100L;
     

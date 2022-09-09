@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 import java.io.IOException;
@@ -25,7 +25,7 @@ import java.io.IOException;
 /**
  * File IO exception.
  */
-public final class FileIOException extends ShardingSphereSQLException {
+public final class FileIOException extends KernelSQLException {
     
     private static final long serialVersionUID = 1104839422339487793L;
     

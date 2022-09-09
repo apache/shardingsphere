@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Unsupported prepare route to same data source exception.
  */
-public final class UnsupportedPrepareRouteToSameDataSourceException extends ShardingSphereSQLException {
+public final class UnsupportedPrepareRouteToSameDataSourceException extends FeatureSQLException {
     
     private static final long serialVersionUID = -451667286925533523L;
     

@@ -23,6 +23,8 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.GroupedDataReco
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineUnexpectedDataRecordOrderException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -98,9 +100,7 @@ public final class DataRecordMerger {
             dataRecords.put(dataRecord.getKey(), dataRecord);
             return;
         }
-        if (IngestDataChangeType.DELETE.equals(beforeDataRecord.getType())) {
-            throw new UnsupportedOperationException();
-        }
+        ShardingSpherePreconditions.checkState(!IngestDataChangeType.DELETE.equals(beforeDataRecord.getType()), new UnsupportedSQLOperationException("Not Delete"));
         if (checkUpdatedPrimaryKey(dataRecord)) {
             dataRecords.remove(dataRecord.getOldKey());
         }
@@ -129,9 +129,7 @@ public final class DataRecordMerger {
             for (int i = 0; i < dataRecord.getColumnCount(); i++) {
                 mergedDataRecord.addColumn(new Column(
                         dataRecord.getColumn(i).getName(),
-                        dataRecord.getColumn(i).isUniqueKey()
-                                ? beforeDataRecord.getColumn(i).getOldValue()
-                                : beforeDataRecord.getColumn(i).getValue(),
+                        dataRecord.getColumn(i).isUniqueKey() ? beforeDataRecord.getColumn(i).getOldValue() : beforeDataRecord.getColumn(i).getValue(),
                         true,
                         dataRecord.getColumn(i).isUniqueKey()));
             }

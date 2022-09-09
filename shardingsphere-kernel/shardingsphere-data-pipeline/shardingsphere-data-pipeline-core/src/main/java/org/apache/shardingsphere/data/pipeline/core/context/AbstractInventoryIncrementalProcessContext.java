@@ -22,7 +22,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
-import org.apache.shardingsphere.data.pipeline.api.context.PipelineProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineProcessConfigurationUtils;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
@@ -35,11 +34,11 @@ import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineReadCon
 import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineWriteConfiguration;
 
 /**
- * Abstract pipeline process context.
+ * Abstract inventory incremental process context.
  */
 @Getter
 @Slf4j
-public abstract class AbstractPipelineProcessContext implements PipelineProcessContext {
+public abstract class AbstractInventoryIncrementalProcessContext implements InventoryIncrementalProcessContext {
     
     private final PipelineProcessConfiguration pipelineProcessConfig;
     
@@ -55,7 +54,7 @@ public abstract class AbstractPipelineProcessContext implements PipelineProcessC
     
     private final LazyInitializer<ExecuteEngine> importerExecuteEngineLazyInitializer;
     
-    public AbstractPipelineProcessContext(final String jobId, final PipelineProcessConfiguration originalProcessConfig) {
+    public AbstractInventoryIncrementalProcessContext(final String jobId, final PipelineProcessConfiguration originalProcessConfig) {
         PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.convertWithDefaultValue(originalProcessConfig);
         this.pipelineProcessConfig = processConfig;
         PipelineReadConfiguration readConfig = processConfig.getRead();

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.singletable.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 import java.sql.SQLException;
@@ -25,7 +25,7 @@ import java.sql.SQLException;
 /**
  * Single tables loading exception.
  */
-public final class SingleTablesLoadingException extends ShardingSphereSQLException {
+public final class SingleTablesLoadingException extends KernelSQLException {
     
     private static final long serialVersionUID = 698261896187918188L;
     

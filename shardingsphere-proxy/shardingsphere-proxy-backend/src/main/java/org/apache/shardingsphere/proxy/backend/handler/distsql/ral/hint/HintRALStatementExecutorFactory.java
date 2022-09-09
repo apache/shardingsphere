@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.HintRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.hint.ClearHintStatement;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.executor.AddShardingHintDatabaseValueExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.executor.AddShardingHintTableValueExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.executor.ClearHintExecutor;
@@ -31,6 +31,7 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.executor
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.executor.SetShardingHintDatabaseValueExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.executor.ShowReadwriteSplittingHintStatusExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.executor.ShowShardingHintStatusExecutor;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.ClearReadwriteSplittingHintStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.SetReadwriteSplittingHintStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.ShowReadwriteSplittingHintStatusStatement;
@@ -84,6 +85,6 @@ public final class HintRALStatementExecutorFactory {
         if (sqlStatement instanceof ClearShardingHintStatement) {
             return new ClearShardingHintExecutor();
         }
-        throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
+        throw new UnsupportedSQLOperationException(sqlStatement.getClass().getCanonicalName());
     }
 }

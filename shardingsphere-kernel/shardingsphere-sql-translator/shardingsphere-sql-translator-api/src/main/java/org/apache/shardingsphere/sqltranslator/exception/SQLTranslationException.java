@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sqltranslator.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * SQL translation exception.
  */
-public abstract class SQLTranslationException extends ShardingSphereSQLException {
+public abstract class SQLTranslationException extends KernelSQLException {
     
     private static final long serialVersionUID = -7227697280221442049L;
     

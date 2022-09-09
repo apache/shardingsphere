@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 import java.util.Collection;
@@ -25,7 +25,7 @@ import java.util.Collection;
 /**
  * DML with multiple sharding tables exception.
  */
-public final class DMLWithMultipleShardingTablesException extends ShardingSphereSQLException {
+public final class DMLWithMultipleShardingTablesException extends FeatureSQLException {
     
     private static final long serialVersionUID = -7368310216924145478L;
     

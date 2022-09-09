@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Sharding algorithm class implementation exception.
  */
-public final class ShardingAlgorithmClassImplementationException extends ShardingSphereSQLException {
+public final class ShardingAlgorithmClassImplementationException extends FeatureSQLException {
     
     private static final long serialVersionUID = 3053033454701332815L;
     
     public ShardingAlgorithmClassImplementationException(final String shardingAlgorithmClassName, final Class<?> superShardingAlgorithmClass) {
-        super(XOpenSQLState.GENERAL_ERROR, 11400, "Sharding algorithm class `%s` should be implement `%s`", shardingAlgorithmClassName, superShardingAlgorithmClass.getName());
+        super(XOpenSQLState.GENERAL_ERROR, 20000, "Sharding algorithm class `%s` should be implement `%s`", shardingAlgorithmClassName, superShardingAlgorithmClass.getName());
     }
 }

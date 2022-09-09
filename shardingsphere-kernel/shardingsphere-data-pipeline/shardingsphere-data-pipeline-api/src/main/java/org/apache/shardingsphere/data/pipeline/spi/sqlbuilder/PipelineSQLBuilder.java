@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.spi.sqlbuilder;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
@@ -41,7 +42,7 @@ public interface PipelineSQLBuilder extends TypedSPI, RequiredSPI {
      * @return create schema SQL
      */
     default String buildCreateSchemaSQL(String schemaName) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedSQLOperationException("buildCreateSchemaSQL");
     }
     
     /**
