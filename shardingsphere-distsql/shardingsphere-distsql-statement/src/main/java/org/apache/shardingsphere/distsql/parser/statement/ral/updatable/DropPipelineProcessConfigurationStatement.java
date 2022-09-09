@@ -19,15 +19,16 @@ package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.MigrationProcessConfigurationSegment;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 
 /**
- * Alter migration process configuration statement.
+ * Drop pipeline process configuration statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterMigrationProcessConfigurationStatement extends UpdatableScalingRALStatement {
+public final class DropPipelineProcessConfigurationStatement extends UpdatableScalingRALStatement {
     
-    private final MigrationProcessConfigurationSegment migrationProcessConfigurationSegment;
+    private final String jobTypeName;
+    
+    private final String confPath;
 }

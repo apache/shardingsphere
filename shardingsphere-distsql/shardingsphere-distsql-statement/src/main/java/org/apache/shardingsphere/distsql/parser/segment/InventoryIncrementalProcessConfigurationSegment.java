@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration;
+package org.apache.shardingsphere.distsql.parser.segment;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlElement;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 /**
- * Drop migration process configuration test case.
+ * Inventory incremental process configuration segment.
  */
 @Getter
 @Setter
-public final class DropMigrationProcessConfigurationStatementTestCase extends SQLParserTestCase {
+public final class InventoryIncrementalProcessConfigurationSegment implements ASTNode {
     
-    @XmlElement(name = "conf-path")
-    private String confPath;
+    private ReadOrWriteSegment readSegment;
+    
+    private ReadOrWriteSegment writeSegment;
+    
+    private AlgorithmSegment streamChannel;
 }

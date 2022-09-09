@@ -19,14 +19,17 @@ package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.InventoryIncrementalProcessConfigurationSegment;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 
 /**
- * Drop migration process configuration statement.
+ * Create inventory incremental process configuration statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DropMigrationProcessConfigurationStatement extends UpdatableScalingRALStatement {
+public final class CreateInventoryIncrementalProcessConfigurationStatement extends UpdatableScalingRALStatement {
     
-    private final String confPath;
+    private final String jobTypeName;
+    
+    private final InventoryIncrementalProcessConfigurationSegment processConfigSegment;
 }

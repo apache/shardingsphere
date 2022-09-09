@@ -17,28 +17,27 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
+import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterMigrationProcessConfigurationStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterInventoryIncrementalProcessConfigurationStatement;
 import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.converter.MigrationProcessConfigurationSegmentConverter;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.converter.InventoryIncrementalProcessConfigurationSegmentConverter;
 
 /**
- * Alter migration process configuration updater.
+ * Alter inventory incremental process configuration updater.
  */
-public final class AlterMigrationProcessConfigurationUpdater implements RALUpdater<AlterMigrationProcessConfigurationStatement> {
-    
-    private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
+public final class AlterInventoryIncrementalProcessConfigurationUpdater implements RALUpdater<AlterInventoryIncrementalProcessConfigurationStatement> {
     
     @Override
-    public void executeUpdate(final String databaseName, final AlterMigrationProcessConfigurationStatement sqlStatement) {
-        PipelineProcessConfiguration processConfig = MigrationProcessConfigurationSegmentConverter.convert(sqlStatement.getMigrationProcessConfigurationSegment());
-        JOB_API.alterProcessConfiguration(processConfig);
+    public void executeUpdate(final String databaseName, final AlterInventoryIncrementalProcessConfigurationStatement sqlStatement) {
+        PipelineJobPublicAPI jobAPI = PipelineJobPublicAPIFactory.getPipelineJobPublicAPI(sqlStatement.getJobTypeName());
+        PipelineProcessConfiguration processConfig = InventoryIncrementalProcessConfigurationSegmentConverter.convert(sqlStatement.getProcessConfigSegment());
+        jobAPI.alterProcessConfiguration(processConfig);
     }
     
     @Override
     public String getType() {
-        return AlterMigrationProcessConfigurationStatement.class.getName();
+        return AlterInventoryIncrementalProcessConfigurationStatement.class.getName();
     }
 }
