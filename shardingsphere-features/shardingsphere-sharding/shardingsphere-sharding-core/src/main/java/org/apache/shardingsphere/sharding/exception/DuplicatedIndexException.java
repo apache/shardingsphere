@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Duplicated index exception.
  */
-public final class DuplicatedIndexException extends FeatureSQLException {
+public final class DuplicatedIndexException extends ShardingSQLException {
     
     private static final long serialVersionUID = 2884666477007627873L;
     

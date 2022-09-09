@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 import java.util.Collection;
@@ -25,7 +24,7 @@ import java.util.Collection;
 /**
  * Drop in used tables exception.
  */
-public final class DropInUsedTablesException extends FeatureSQLException {
+public final class DropInUsedTablesException extends ShardingSQLException {
     
     private static final long serialVersionUID = 8939233348292246498L;
     

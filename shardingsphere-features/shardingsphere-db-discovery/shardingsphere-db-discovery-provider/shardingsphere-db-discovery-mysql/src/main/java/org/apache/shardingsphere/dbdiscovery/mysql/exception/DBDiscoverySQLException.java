@@ -15,18 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.exception;
+package org.apache.shardingsphere.dbdiscovery.mysql.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.SQLState;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 
 /**
- * Unsupported encrypt insert value exception.
+ * Database discovery SQL exception.
  */
-public final class UnsupportedEncryptInsertValueException extends EncryptSQLException {
+public abstract class DBDiscoverySQLException extends FeatureSQLException {
     
-    private static final long serialVersionUID = 5004882561157380582L;
+    private static final long serialVersionUID = 2693931450412858590L;
     
-    public UnsupportedEncryptInsertValueException(final int columnIndex) {
-        super(XOpenSQLState.SYNTAX_ERROR, 3, "Insert value of index `%s` can not support for encrypt", String.valueOf(columnIndex));
+    private static final int FEATURE_CODE = 3;
+    
+    public DBDiscoverySQLException(final SQLState sqlState, final int vendorCode, final String reason, final Object... messageArguments) {
+        super(sqlState, FEATURE_CODE, vendorCode, reason, messageArguments);
     }
 }

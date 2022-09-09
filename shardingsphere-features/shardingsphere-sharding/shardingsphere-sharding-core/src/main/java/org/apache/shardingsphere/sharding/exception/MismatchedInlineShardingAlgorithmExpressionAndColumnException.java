@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Mismatched inline sharding algorithm's expression and column exception.
  */
-public final class MismatchedInlineShardingAlgorithmExpressionAndColumnException extends FeatureSQLException {
+public final class MismatchedInlineShardingAlgorithmExpressionAndColumnException extends ShardingSQLException {
     
     private static final long serialVersionUID = 1306301016127278233L;
     

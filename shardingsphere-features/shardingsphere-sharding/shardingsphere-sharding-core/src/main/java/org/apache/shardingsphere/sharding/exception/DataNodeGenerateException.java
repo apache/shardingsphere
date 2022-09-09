@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Data node generate exception.
  */
-public final class DataNodeGenerateException extends FeatureSQLException {
+public final class DataNodeGenerateException extends ShardingSQLException {
     
     private static final long serialVersionUID = -1000865538051567910L;
     

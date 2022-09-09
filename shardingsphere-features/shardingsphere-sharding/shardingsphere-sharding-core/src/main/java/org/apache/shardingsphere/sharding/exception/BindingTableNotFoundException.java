@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Binding table not found exception.
  */
-public final class BindingTableNotFoundException extends FeatureSQLException {
+public final class BindingTableNotFoundException extends ShardingSQLException {
     
     private static final long serialVersionUID = -8845309665057958820L;
     

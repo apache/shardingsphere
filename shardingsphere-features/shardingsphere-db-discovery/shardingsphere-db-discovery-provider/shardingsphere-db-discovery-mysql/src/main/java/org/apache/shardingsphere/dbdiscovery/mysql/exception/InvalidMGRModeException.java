@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Invalid MGR mode exception.
  */
-public final class InvalidMGRModeException extends FeatureSQLException {
+public final class InvalidMGRModeException extends DBDiscoverySQLException {
     
     private static final long serialVersionUID = -2190741601319220590L;
     
     public InvalidMGRModeException(final String databaseName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3001, "MGR is not in single primary mode in database `%s`", databaseName);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 1, "MGR is not in single primary mode in database `%s`", databaseName);
     }
 }

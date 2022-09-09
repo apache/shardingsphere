@@ -19,7 +19,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | HY004     | 10006       | SQL String can not be NULL or empty |
 | 08000     | 10007       | Can not get %d connections one time, partition succeed connection(%d) have released. Please consider increasing the \`maxPoolSize\` of the data sources or decreasing the \`max-connections-size-per-query\` in properties |
 | HY004     | 10100       | Can not register driver, reason is: %s |
-| 34000     | 10200       | Can not get cursor name from fetch statement |
 | HY000     | 10300       | Could not support variable \`%s\` |
 | HY004     | 10301       | Invalid value \`%s\` |
 | HV008     | 10302       | Column index \`%d\` is out of range |
@@ -81,6 +80,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | HY000     | 20050       | Routed target \`%s\` does not exist, available targets are \`%s\` |
 | HY000     | 20051       | \`%s %s\` can not route correctly for %s \`%s\` |
 | 42S02     | 20052       | Can not find data source in sharding rule, invalid actual data node \`%s\` |
+| 34000     | 20053       | Can not get cursor name from fetch statement |
 | HY000     | 23000       | MGR plugin is not active in database \`%s\` |
 | 44000     | 23001       | MGR is not in single primary mode in database \`%s\` |
 | 44000     | 23002       | \`%s\` is not in MGR replication group member in database \`%s\` |
@@ -92,6 +92,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 44000     | 27004       | Can not find logic encrypt column by \`%s\` |
 | 44000     | 27005       | Fail to find encrypt column \`%s\` from table \`%s\` |
 | HY004     | 28000       | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type |
-| 42000     | 28003       | Insert value of index \`%s\` can not support for shadow |
+| 42000     | 28001       | Insert value of index \`%s\` can not support for shadow |
 | HY004     | 30000       | Unknown exception: %s |
 | 0A000     | 30001       | Unsupported operation: %s |

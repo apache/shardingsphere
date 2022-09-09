@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.sharding.metadata.TableMetaDataViolation;
 
@@ -26,7 +25,7 @@ import java.util.Collection;
 /**
  * Inconsistent sharding table meta data exception.
  */
-public final class InconsistentShardingTableMetaDataException extends FeatureSQLException {
+public final class InconsistentShardingTableMetaDataException extends ShardingSQLException {
     
     private static final long serialVersionUID = -5450346946223396192L;
     

@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Index not existed exception.
  */
-public final class IndexNotExistedException extends FeatureSQLException {
+public final class IndexNotExistedException extends ShardingSQLException {
     
     private static final long serialVersionUID = 206503570677185269L;
     

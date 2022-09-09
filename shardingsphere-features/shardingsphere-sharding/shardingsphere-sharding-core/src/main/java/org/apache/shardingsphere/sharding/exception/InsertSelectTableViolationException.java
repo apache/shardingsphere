@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Insert select table violation exception.
  */
-public final class InsertSelectTableViolationException extends FeatureSQLException {
+public final class InsertSelectTableViolationException extends ShardingSQLException {
     
     private static final long serialVersionUID = 1221612068163533037L;
     
