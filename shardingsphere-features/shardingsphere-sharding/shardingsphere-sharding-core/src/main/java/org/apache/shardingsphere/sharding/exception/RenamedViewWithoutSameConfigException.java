@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Unsupported rename view exception.
  */
-public final class RenamedViewWithoutSameConfigException extends ShardingSphereSQLException {
+public final class RenamedViewWithoutSameConfigException extends FeatureSQLException {
     
     private static final long serialVersionUID = -8276278970848162458L;
     

@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.driver.jdbc.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * JDBC transaction across databases exception.
  */
-public final class JDBCTransactionAcrossDatabasesException extends ShardingSphereSQLException {
+public final class JDBCTransactionAcrossDatabasesException extends KernelSQLException {
     
     private static final long serialVersionUID = 3294968323117604702L;
     

@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.transaction.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Start nested XA transaction exception.
  */
-public final class StartNestedXATransactionException extends ShardingSphereSQLException {
+public final class StartNestedXATransactionException extends KernelSQLException {
     
     private static final long serialVersionUID = 7761100591709104351L;
     

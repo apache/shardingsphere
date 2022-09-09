@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Unsupported sharding operation exception.
  */
-public final class UnsupportedShardingOperationException extends ShardingSphereSQLException {
+public final class UnsupportedShardingOperationException extends FeatureSQLException {
     
     private static final long serialVersionUID = 1009938372927671322L;
     

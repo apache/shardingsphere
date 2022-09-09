@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Actual data nodes missed with sharding table exception.
  */
-public final class ActualDataNodesMissedWithShardingTableException extends ShardingSphereSQLException {
+public final class ActualDataNodesMissedWithShardingTableException extends FeatureSQLException {
     
     private static final long serialVersionUID = 1691113459377955727L;
     

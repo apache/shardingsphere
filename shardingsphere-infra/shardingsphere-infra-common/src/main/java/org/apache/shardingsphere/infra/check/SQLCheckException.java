@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.infra.check;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * SQL check exception.
  */
-public final class SQLCheckException extends ShardingSphereSQLException {
+public final class SQLCheckException extends KernelSQLException {
     
     private static final long serialVersionUID = 4183020614721058122L;
     

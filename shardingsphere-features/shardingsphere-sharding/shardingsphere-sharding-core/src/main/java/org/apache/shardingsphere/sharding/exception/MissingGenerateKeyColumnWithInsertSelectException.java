@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Missing generate key column with insert select exception.
  */
-public final class MissingGenerateKeyColumnWithInsertSelectException extends ShardingSphereSQLException {
+public final class MissingGenerateKeyColumnWithInsertSelectException extends FeatureSQLException {
     
     private static final long serialVersionUID = 568269722599010228L;
     

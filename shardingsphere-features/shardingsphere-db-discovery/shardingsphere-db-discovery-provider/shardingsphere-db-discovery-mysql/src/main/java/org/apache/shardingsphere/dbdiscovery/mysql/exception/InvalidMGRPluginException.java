@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Invalid MGR plugin exception.
  */
-public final class InvalidMGRPluginException extends ShardingSphereSQLException {
+public final class InvalidMGRPluginException extends FeatureSQLException {
     
     private static final long serialVersionUID = 1703082683321097037L;
     

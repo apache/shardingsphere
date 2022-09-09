@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Empty sharding route result exception.
  */
-public final class EmptyShardingRouteResultException extends ShardingSphereSQLException {
+public final class EmptyShardingRouteResultException extends FeatureSQLException {
     
     private static final long serialVersionUID = -6548076668933945656L;
     

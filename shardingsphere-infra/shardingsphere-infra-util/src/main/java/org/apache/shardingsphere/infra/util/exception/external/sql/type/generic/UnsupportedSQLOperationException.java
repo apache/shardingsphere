@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.exception.external.sql;
+package org.apache.shardingsphere.infra.util.exception.external.sql.type.generic;
 
-import java.sql.SQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * SQL wrapper exception.
+ * Unsupported SQL operation exception.
  */
-public final class SQLWrapperException extends ShardingSphereSQLException {
+public final class UnsupportedSQLOperationException extends GenericSQLException {
     
-    private static final long serialVersionUID = 8983736995662464009L;
+    private static final long serialVersionUID = -4387122733989386705L;
     
-    public SQLWrapperException(final SQLException cause) {
-        super(cause.getSQLState(), cause.getErrorCode(), cause.getMessage());
+    public UnsupportedSQLOperationException(final String reason) {
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 30001, "Unsupported SQL operation: %s", reason);
     }
 }

@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.encrypt.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Unsupported encrypt insert value exception.
  */
-public final class UnsupportedEncryptInsertValueException extends ShardingSphereSQLException {
+public final class UnsupportedEncryptInsertValueException extends FeatureSQLException {
     
     private static final long serialVersionUID = 5004882561157380582L;
     

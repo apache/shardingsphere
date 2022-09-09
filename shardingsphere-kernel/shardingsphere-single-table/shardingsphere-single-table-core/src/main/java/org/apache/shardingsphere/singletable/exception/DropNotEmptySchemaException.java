@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.singletable.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Drop not empty schema exception.
  */
-public final class DropNotEmptySchemaException extends ShardingSphereSQLException {
+public final class DropNotEmptySchemaException extends KernelSQLException {
     
     private static final long serialVersionUID = 5285619119572894557L;
     

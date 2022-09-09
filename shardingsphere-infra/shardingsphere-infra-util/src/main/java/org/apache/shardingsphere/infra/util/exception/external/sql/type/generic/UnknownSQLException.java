@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.exception.external.sql;
+package org.apache.shardingsphere.infra.util.exception.external.sql.type.generic;
 
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Unknown SQL exception.
  */
-public final class UnknownSQLException extends ShardingSphereSQLException {
+public final class UnknownSQLException extends GenericSQLException {
     
     private static final long serialVersionUID = -7357918573504734977L;
     

@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.infra.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Overall connection not enough exception.
  */
-public final class OverallConnectionNotEnoughException extends ShardingSphereSQLException {
+public final class OverallConnectionNotEnoughException extends KernelSQLException {
     
     private static final long serialVersionUID = -1297088138042287804L;
     
