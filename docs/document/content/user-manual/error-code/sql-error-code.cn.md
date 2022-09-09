@@ -30,8 +30,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 42000     | 11002       | Resource does not exist |
 | 42000     | 11003       | Rule does not exist |
 | HY000     | 11004       | File access failed, reason is: %s |
-| 42000     | 11200       | Can not support database \`%s\` in SQL translation |
-| 42000     | 11201       | Translation error, SQL is: %s |
 | 25000     | 11320       | Switch transaction type failed, please terminate the current transaction |
 | 25000     | 11321       | JDBC does not support operations across multiple logical databases in transaction |
 | 25000     | 11322       | Failed to create \`%s\` XA data source |
@@ -85,6 +83,8 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 44000     | 23001       | MGR is not in single primary mode in database \`%s\` |
 | 44000     | 23002       | \`%s\` is not in MGR replication group member in database \`%s\` |
 | 44000     | 23003       | Group name in MGR is not same with configured one \`%s\` in database \`%s\` |
+| 42000     | 24000       | Can not support database \`%s\` in SQL translation |
+| 42000     | 24001       | Translation error, SQL is: %s |
 | HY004     | 27000       | Encrypt algorithm \`%s\` initialize failed, reason is: %s |
 | 0A000     | 27001       | The SQL clause \`%s\` is unsupported in encrypt rule |
 | 44000     | 27002       | Altered column \`%s\` must use same encrypt algorithm with previous column \`%s\` in table \`%s\` |

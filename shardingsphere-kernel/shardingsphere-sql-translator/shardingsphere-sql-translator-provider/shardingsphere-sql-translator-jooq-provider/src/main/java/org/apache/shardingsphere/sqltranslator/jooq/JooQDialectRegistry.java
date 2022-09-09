@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sqltranslator.exception.SQLTranslationException;
 import org.apache.shardingsphere.sqltranslator.exception.UnsupportedTranslatedDatabaseException;
 import org.jooq.SQLDialect;
@@ -54,9 +55,7 @@ public final class JooQDialectRegistry {
      */
     public static SQLDialect getSQLDialect(final DatabaseType databaseType) throws SQLTranslationException {
         SQLDialect result = DATABASE_DIALECT_MAP.get(databaseType);
-        if (null == result) {
-            throw new UnsupportedTranslatedDatabaseException(databaseType);
-        }
+        ShardingSpherePreconditions.checkState(null != result, new UnsupportedTranslatedDatabaseException(databaseType));
         return result;
     }
 }
