@@ -20,9 +20,9 @@ package org.apache.shardingsphere.test.integration.engine.dql;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.test.integration.engine.SingleITCase;
+import org.apache.shardingsphere.test.integration.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.integration.env.runtime.scenario.path.ScenarioDataPath.Type;
-import org.apache.shardingsphere.test.integration.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.junit.Before;
 
@@ -38,7 +38,6 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -82,17 +81,7 @@ public abstract class BaseDQLIT extends SingleITCase {
     private void assertMetaData(final ResultSetMetaData actualResultSetMetaData, final ResultSetMetaData expectedResultSetMetaData) throws SQLException {
         assertThat(actualResultSetMetaData.getColumnCount(), is(expectedResultSetMetaData.getColumnCount()));
         for (int i = 0; i < actualResultSetMetaData.getColumnCount(); i++) {
-            try {
-                assertThat(actualResultSetMetaData.getColumnLabel(i + 1).toLowerCase(), is(expectedResultSetMetaData.getColumnLabel(i + 1).toLowerCase()));
-            } catch (final AssertionError ex) {
-                // FIXME #15594 Expected: is "order_id", but: was "order_id0"
-                try {
-                    assertThat(actualResultSetMetaData.getColumnLabel(i + 1).toLowerCase(), is(expectedResultSetMetaData.getColumnLabel(i + 1).toLowerCase() + "0"));
-                } catch (final AssertionError otherEx) {
-                    // FIXME #15594 Expected: is "sum(order_id_sharding)0", but: was "expr$1"
-                    assertThat(actualResultSetMetaData.getColumnLabel(i + 1).toLowerCase(), startsWith("expr$"));
-                }
-            }
+            assertThat(actualResultSetMetaData.getColumnLabel(i + 1).toLowerCase(), is(expectedResultSetMetaData.getColumnLabel(i + 1).toLowerCase()));
         }
     }
     
