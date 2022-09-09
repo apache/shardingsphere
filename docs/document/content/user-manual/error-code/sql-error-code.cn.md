@@ -34,7 +34,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 25000     | 11321       | JDBC does not support operations across multiple logical databases in transaction |
 | 25000     | 11322       | Failed to create \`%s\` XA data source |
 | 25000     | 11323       | Can not start new XA transaction in a active transaction |
-| 42S02     | 11400       | Can not get traffic execution unit |
 | 42000     | 12000       | Unsupported command: %s |
 | 44000     | 13000       | SQL check failed, error message: %s |
 | HY000     | 14000       | The table \`%s\` of schema \`%s\` is locked |
@@ -85,6 +84,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 44000     | 23003       | Group name in MGR is not same with configured one \`%s\` in database \`%s\` |
 | 42000     | 24000       | Can not support database \`%s\` in SQL translation |
 | 42000     | 24001       | Translation error, SQL is: %s |
+| 42S02     | 25000       | Can not get traffic execution unit |
 | HY004     | 27000       | Encrypt algorithm \`%s\` initialize failed, reason is: %s |
 | 0A000     | 27001       | The SQL clause \`%s\` is unsupported in encrypt rule |
 | 44000     | 27002       | Altered column \`%s\` must use same encrypt algorithm with previous column \`%s\` in table \`%s\` |
