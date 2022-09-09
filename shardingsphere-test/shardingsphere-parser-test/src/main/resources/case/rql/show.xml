@@ -111,6 +111,10 @@
         <database name="databaseName" start-index="41" stop-index="52"/>
     </show-unused-sharding-key-generators>
 
+    <show-unused-sharding-auditors sql-case-id="show-unused-sharding-auditors">
+        <database name="databaseName" start-index="35" stop-index="46"/>
+    </show-unused-sharding-auditors>
+
     <count-database-rules sql-case-id="count-database-rules">
         <database name="databaseName" start-index="26" stop-index="37"/>
     </count-database-rules>
