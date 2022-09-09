@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sqltranslator.exception;
 
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+
 /**
  * Unsupported translated SQL exception.
  */
@@ -25,6 +27,6 @@ public final class UnsupportedTranslatedSQLException extends SQLTranslationExcep
     private static final long serialVersionUID = -1419778194546662319L;
     
     public UnsupportedTranslatedSQLException(final String sql) {
-        super(1201, "Translation error, SQL is: %s", sql);
+        super(XOpenSQLState.SYNTAX_ERROR, 1, "Translation error, SQL is: %s", sql);
     }
 }

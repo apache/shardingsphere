@@ -29,7 +29,7 @@ public abstract class ShadowSQLException extends FeatureSQLException {
     
     private static final int FEATURE_CODE = 8;
     
-    public ShadowSQLException(final SQLState sqlState, final int vendorCode, final String reason, final Object... messageArguments) {
-        super(sqlState, FEATURE_CODE, vendorCode, reason, messageArguments);
+    public ShadowSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArguments) {
+        super(sqlState, FEATURE_CODE, errorCode, reason, messageArguments);
     }
 }
