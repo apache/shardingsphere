@@ -38,7 +38,7 @@ public final class PipelineJobPublicAPIFactory {
      * @return got instance
      */
     public static PipelineJobPublicAPI getPipelineJobPublicAPI(@NonNull final String jobTypeName) {
-        return TypedSPIRegistry.getRegisteredService(PipelineJobPublicAPI.class, jobTypeName.toUpperCase());
+        return TypedSPIRegistry.getRegisteredService(PipelineJobPublicAPI.class, jobTypeName);
     }
     
     /**
