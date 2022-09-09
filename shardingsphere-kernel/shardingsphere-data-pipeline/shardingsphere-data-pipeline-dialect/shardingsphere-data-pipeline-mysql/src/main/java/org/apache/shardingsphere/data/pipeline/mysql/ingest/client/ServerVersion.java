@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.client;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,15 +27,16 @@ import java.util.regex.Pattern;
  * Server Version.
  */
 @Getter
+@Slf4j
 public final class ServerVersion {
     
     private static final Pattern VERSION_PATTERN = Pattern.compile("^(\\d+)\\.(\\d+)\\.(\\d+).*");
     
-    private int major;
+    private final int major;
     
-    private int minor;
+    private final int minor;
     
-    private int series;
+    private final int series;
     
     public ServerVersion(final String version) {
         Matcher matcher = VERSION_PATTERN.matcher(version);
@@ -42,6 +44,11 @@ public final class ServerVersion {
             major = Short.parseShort(matcher.group(1));
             minor = Short.parseShort(matcher.group(2));
             series = Short.parseShort(matcher.group(3));
+        } else {
+            log.info("Could not match MySQL server version {}", version);
+            major = 0;
+            minor = 0;
+            series = 0;
         }
     }
     

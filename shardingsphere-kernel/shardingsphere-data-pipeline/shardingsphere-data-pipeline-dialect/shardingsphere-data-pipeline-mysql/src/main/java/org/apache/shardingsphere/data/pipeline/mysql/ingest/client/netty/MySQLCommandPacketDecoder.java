@@ -41,9 +41,9 @@ public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
         ResponsePacket, FieldPacket, RowDataPacket
     }
     
-    private States currentState = States.ResponsePacket;
+    private volatile States currentState = States.ResponsePacket;
     
-    private InternalResultSet internalResultSet;
+    private volatile InternalResultSet internalResultSet;
     
     @Override
     protected void decode(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out) {

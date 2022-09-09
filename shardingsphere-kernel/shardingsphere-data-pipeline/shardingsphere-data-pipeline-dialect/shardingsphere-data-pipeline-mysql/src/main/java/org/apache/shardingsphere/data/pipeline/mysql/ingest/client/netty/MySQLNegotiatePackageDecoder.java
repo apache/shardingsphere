@@ -37,7 +37,7 @@ import java.util.List;
  */
 public final class MySQLNegotiatePackageDecoder extends ByteToMessageDecoder {
     
-    private boolean handshakeReceived;
+    private volatile boolean handshakeReceived;
     
     @Override
     protected void decode(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out) {
