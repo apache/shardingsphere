@@ -24,7 +24,6 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import java.util.Collection;
 
 /**
  * Show sharding table rules used auditor statement test case.
@@ -33,8 +32,8 @@ import java.util.Collection;
 @Setter
 public final class ShowShardingTableRulesUsedAuditorStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute(name = "auditors")
-    private Collection<String> auditors;
+    @XmlAttribute(name = "auditor")
+    private String auditor;
     
     @XmlElement
     private ExpectedDatabase database;
