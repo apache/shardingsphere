@@ -21,7 +21,6 @@ import org.apache.shardingsphere.test.runner.ShardingSphereParallelTestParameter
 import org.apache.shardingsphere.test.sql.parser.parameterized.engine.SQLParserParameterizedTest;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql.SQLCaseType;
 import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Collection;
