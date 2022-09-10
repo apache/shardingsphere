@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.runner.parallel;
 
-import org.apache.shardingsphere.test.parallel.ParallelScheduler;
+import org.apache.shardingsphere.test.runner.parallel.annotaion.ParallelLevel;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.InitializationError;
 
@@ -35,7 +35,7 @@ public class ParallelRunner extends BlockJUnit4ClassRunner {
      */
     public ParallelRunner(final Class<?> klass) throws InitializationError {
         super(klass);
-        setScheduler(new ParallelScheduler());
+        setScheduler(new ParallelRunnerScheduler(ParallelLevel.DEFAULT, new DefaultParallelRunnerExecutorFactory()));
     }
     
 }

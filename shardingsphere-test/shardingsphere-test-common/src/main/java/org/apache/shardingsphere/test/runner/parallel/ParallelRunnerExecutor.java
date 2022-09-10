@@ -21,16 +21,15 @@ package org.apache.shardingsphere.test.runner.parallel;
  * Parallel runner executor.
  */
 public interface ParallelRunnerExecutor<T> {
-
+    
     /**
      * Execute child statement.
      *
-     *
+     * @param key exector key
      * @param childStatement child statement
      */
     void execute(T key, Runnable childStatement);
-
-
+    
     /**
      * Execute child statement.
      *

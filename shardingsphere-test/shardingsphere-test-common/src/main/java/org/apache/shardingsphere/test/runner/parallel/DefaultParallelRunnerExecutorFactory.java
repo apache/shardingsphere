@@ -30,13 +30,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * Parallel runner executor factory.
  */
 public class DefaultParallelRunnerExecutorFactory<T> implements ParallelRunnerExecutorFactory<T> {
-
+    
     private final Map<T, ParallelRunnerExecutor> executors = new ConcurrentHashMap<>();
-
-    private volatile ParallelRunnerExecutor defaultExecutor ;
-
+    
+    private volatile ParallelRunnerExecutor defaultExecutor;
+    
     @Override
-    public ParallelRunnerExecutor getExecutor(T key, ParallelLevel parallelLevel) {
+    public ParallelRunnerExecutor getExecutor(final T key, final ParallelLevel parallelLevel) {
         if (executors.containsKey(key)) {
             return executors.get(key);
         }
@@ -46,7 +46,7 @@ public class DefaultParallelRunnerExecutorFactory<T> implements ParallelRunnerEx
         }
         return executors.get(key);
     }
-
+    
     /**
      * Get parallel runner executor.
      *
@@ -54,20 +54,25 @@ public class DefaultParallelRunnerExecutorFactory<T> implements ParallelRunnerEx
      * @return parallel runner executor
      */
     public ParallelRunnerExecutor getExecutor(final ParallelLevel parallelLevel) {
-        if(null == defaultExecutor){
-            synchronized (ParallelRunnerExecutor.class){
-                if(null == defaultExecutor){
+        if (null == defaultExecutor) {
+            synchronized (ParallelRunnerExecutor.class) {
+                if (null == defaultExecutor) {
                     defaultExecutor = new DefaultParallelRunnerExecutor();
                 }
             }
         }
         return defaultExecutor;
     }
-
+    
+    /**
+     * create executor instance by parallel level.
+     * @param parallelLevel parallel level
+     * @return executor by parallel level
+     */
     public ParallelRunnerExecutor newInstance(final ParallelLevel parallelLevel) {
         return new DefaultParallelRunnerExecutor();
     }
-
+    
     /**
      * Get all executors.
      *
@@ -75,10 +80,10 @@ public class DefaultParallelRunnerExecutorFactory<T> implements ParallelRunnerEx
      */
     public Collection<ParallelRunnerExecutor> getAllExecutors() {
         List<ParallelRunnerExecutor> executors = new LinkedList<>(this.executors.values());
-        if(null != defaultExecutor){
+        if (null != defaultExecutor) {
             executors.add(defaultExecutor);
         }
         return executors;
     }
-
+    
 }

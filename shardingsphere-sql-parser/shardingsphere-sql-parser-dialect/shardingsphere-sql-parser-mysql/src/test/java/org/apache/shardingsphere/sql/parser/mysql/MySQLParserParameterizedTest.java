@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.mysql;
 
+import org.apache.shardingsphere.test.runner.ShardingSphereParallelTestParameterized;
 import org.apache.shardingsphere.test.sql.parser.parameterized.engine.SQLParserParameterizedTest;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql.SQLCaseType;
 import org.junit.runner.RunWith;
@@ -25,7 +26,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Collection;
 
-@RunWith(Parameterized.class)
+@RunWith(ShardingSphereParallelTestParameterized.class)
 public final class MySQLParserParameterizedTest extends SQLParserParameterizedTest {
     
     public MySQLParserParameterizedTest(final String sqlCaseId, final String databaseType, final SQLCaseType sqlCaseType) {

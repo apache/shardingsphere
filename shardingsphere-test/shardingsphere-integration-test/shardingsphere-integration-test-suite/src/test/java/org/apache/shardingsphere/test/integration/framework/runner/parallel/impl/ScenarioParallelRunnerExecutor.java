@@ -21,13 +21,9 @@ import lombok.EqualsAndHashCode;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.runner.parallel.impl.DefaultParallelRunnerExecutor;
-
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 /**
  * Parallel runner executor with scenario.
@@ -35,10 +31,10 @@ import java.util.concurrent.Future;
 public final class ScenarioParallelRunnerExecutor extends DefaultParallelRunnerExecutor<ParameterizedArray> {
     
     private final Map<ScenarioKey, ExecutorServiceManager> executorServiceManagers = new ConcurrentHashMap<>();
-
+    
     @Override
     public void execute(final ParameterizedArray parameterizedArray, final Runnable childStatement) {
-        taskFeatures.add(getExecutorService(new ScenarioKey(parameterizedArray)).getExecutorService().submit(childStatement));
+        getTaskFeatures().add(getExecutorService(new ScenarioKey(parameterizedArray)).getExecutorService().submit(childStatement));
     }
     
     private ExecutorServiceManager getExecutorService(final ScenarioKey scenarioKey) {
@@ -55,7 +51,7 @@ public final class ScenarioParallelRunnerExecutor extends DefaultParallelRunnerE
     
     @Override
     public void finished() {
-        taskFeatures.forEach(each -> {
+        getTaskFeatures().forEach(each -> {
             try {
                 each.get();
             } catch (final InterruptedException | ExecutionException ignored) {
