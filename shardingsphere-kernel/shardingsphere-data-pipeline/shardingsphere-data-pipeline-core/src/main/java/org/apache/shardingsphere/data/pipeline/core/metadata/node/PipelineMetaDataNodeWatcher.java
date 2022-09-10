@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.execute;
+package org.apache.shardingsphere.data.pipeline.core.metadata.node;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
@@ -31,16 +31,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 /**
- * Pipeline job executor.
+ * Pipeline metaData nodeWatcher.
  */
 @Slf4j
-public final class PipelineJobExecutor {
+public final class PipelineMetaDataNodeWatcher {
     
-    private static final PipelineJobExecutor INSTANCE = new PipelineJobExecutor();
+    private static final PipelineMetaDataNodeWatcher INSTANCE = new PipelineMetaDataNodeWatcher();
     
     private final Map<Pattern, PipelineMetaDataChangedHandler> listenerMap = new ConcurrentHashMap<>();
     
-    private PipelineJobExecutor() {
+    private PipelineMetaDataNodeWatcher() {
         Collection<PipelineMetaDataChangedHandler> instances = PipelineMetaDataChangedHandlerFactory.findAllInstances();
         for (PipelineMetaDataChangedHandler each : instances) {
             listenerMap.put(each.getKeyPattern(), each);
@@ -58,11 +58,11 @@ public final class PipelineJobExecutor {
     }
     
     /**
-     * Get pipeline job executor instance.
+     * Get pipeline metaData nodeWatcher instance.
      *
-     * @return pipeline job executor
+     * @return pipeline metaData nodeWatcher
      */
-    public static PipelineJobExecutor getInstance() {
+    public static PipelineMetaDataNodeWatcher getInstance() {
         return INSTANCE;
     }
 }
