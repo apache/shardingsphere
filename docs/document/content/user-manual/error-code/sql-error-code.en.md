@@ -166,8 +166,8 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 | SQL State | Vendor Code | Reason |
 | --------- | ----------- | ------ |
-| HY004     | 28000       | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type |
-| 42000     | 28001       | Insert value of index \`%s\` can not support for shadow |
+| 42000     | 28010       | Insert value of index \`%s\` can not support for shadow |
+| HY004     | 28020       | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type |
 
 ## Other Exception
 
