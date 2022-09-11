@@ -142,8 +142,8 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
-| 42000     | 24000       | Can not support database \`%s\` in SQL translation |
-| 42000     | 24001       | Translation error, SQL is: %s |
+| 42000     | 24020       | Can not support database \`%s\` in SQL translation |
+| 42000     | 24021       | Translation error, SQL is: %s |
 
 ### 流量治理
 

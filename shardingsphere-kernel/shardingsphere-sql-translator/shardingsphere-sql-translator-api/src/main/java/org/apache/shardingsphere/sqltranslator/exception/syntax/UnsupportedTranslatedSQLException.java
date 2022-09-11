@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqltranslator.exception;
+package org.apache.shardingsphere.sqltranslator.exception.syntax;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.sqltranslator.exception.SQLTranslationException;
 
 /**
- * Unsupported translated database exception.
+ * Unsupported translated SQL exception.
  */
-public final class UnsupportedTranslatedDatabaseException extends SQLTranslationException {
+public final class UnsupportedTranslatedSQLException extends SQLTranslationException {
     
-    private static final long serialVersionUID = -8311552562051028033L;
+    private static final long serialVersionUID = -1419778194546662319L;
     
-    public UnsupportedTranslatedDatabaseException(final DatabaseType databaseType) {
-        super(XOpenSQLState.SYNTAX_ERROR, 0, "Can not support database `%s` in SQL translation", databaseType.getType());
+    public UnsupportedTranslatedSQLException(final String sql) {
+        super(XOpenSQLState.SYNTAX_ERROR, 21, "Translation error, SQL is: %s", sql);
     }
 }

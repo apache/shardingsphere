@@ -142,8 +142,8 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 | SQL State | Vendor Code | Reason |
 | --------- | ----------- | ------ |
-| 42000     | 24000       | Can not support database \`%s\` in SQL translation |
-| 42000     | 24001       | Translation error, SQL is: %s |
+| 42000     | 24020       | Can not support database \`%s\` in SQL translation |
+| 42000     | 24021       | Translation error, SQL is: %s |
 
 ### Traffic Management
 
