@@ -20,18 +20,18 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | HY004     | 10003       | Invalid format for actual data node \`%s\` |
 | 42000     | 10004       | Unsupported SQL node conversion for SQL statement \`%s\` |
 | 42000     | 10010       | Rule does not exist |
-| 42S02     | 10020       | Single table \`%s\` does not exist |
-| 42S02     | 10021       | Schema \`%s\` does not exist |
+| 42S02     | 10020       | Schema \`%s\` does not exist |
+| 42S02     | 10021       | Single table \`%s\` does not exist |
 | HY000     | 10022       | Can not load table with database name \`%s\` and data source name \`%s\` |
-| 0A000     | 10023       | Can not drop schema \`%s\` because of contains tables |
+| 0A000     | 11030       | Can not drop schema \`%s\` because of contains tables |
 
 ### Data
 
 | SQL State | Vendor Code | Reason |
 | --------- | ----------- | ------ |
-| HY004     | 11001       | Invalid value \`%s\` |
-| HY004     | 11005       | Unsupported conversion stream charset \`%s\` |
-| HY004     | 11006       | Unsupported conversion data type \`%s\` for value \`%s\` |
+| HY004     | 11000       | Invalid value \`%s\` |
+| HY004     | 11001       | Unsupported conversion data type \`%s\` for value \`%s\` |
+| HY004     | 11010       | Unsupported conversion stream charset \`%s\` |
 
 ### Syntax
 
@@ -40,29 +40,29 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 42000     | 12000       | You have an error in your SQL syntax: %s |
 | 42000     | 12001       | SQL String can not be NULL or empty |
 | 42000     | 12002       | Could not support variable \`%s\` |
-| 0A000     | 12003       | DROP TABLE ... CASCADE is not supported |
-| 42S02     | 12004       | Can not find column label \`%s\` |
-| HV008     | 12005       | Column index \`%d\` is out of range |
+| 42S02     | 12003       | Can not find column label \`%s\` |
+| HV008     | 12004       | Column index \`%d\` is out of range |
+| 0A000     | 12010       | DROP TABLE ... CASCADE is not supported |
 
 ### Connection
 
 | SQL State | Vendor Code | Reason |
 | --------- | ----------- | ------ |
-| 01000     | 13000       | Circuit break open, the request has been ignored |
-| 08000     | 13001       | Can not get %d connections one time, partition succeed connection(%d) have released. Please consider increasing the \`maxPoolSize\` of the data sources or decreasing the \`max-connections-size-per-query\` in properties |
-| 08000     | 13002       | Connection has been closed |
-| 08000     | 13003       | Result set has been closed |
-| HY000     | 13004       | Load datetime from database failed, reason: %s |
-| HY004     | 13010       | Can not register driver, reason is: %s |
+| 08000     | 13000       | Can not register driver, reason is: %s |
+| 01000     | 13010       | Circuit break open, the request has been ignored |
+| 08000     | 13020       | Can not get %d connections one time, partition succeed connection(%d) have released. Please consider increasing the \`maxPoolSize\` of the data sources or decreasing the \`max-connections-size-per-query\` in properties |
+| 08000     | 13030       | Connection has been closed |
+| 08000     | 13031       | Result set has been closed |
+| HY000     | 13090       | Load datetime from database failed, reason: %s |
 
 ### Transaction
 
 | SQL State | Vendor Code | Reason |
 | --------- | ----------- | ------ |
 | 25000     | 14000       | Switch transaction type failed, please terminate the current transaction |
-| 25000     | 14001       | Can not start new XA transaction in a active transaction |
-| 25000     | 14002       | Failed to create \`%s\` XA data source |
-| 25000     | 14003       | JDBC does not support operations across multiple logical databases in transaction |
+| 25000     | 14100       | JDBC does not support operations across multiple logical databases in transaction |
+| 25000     | 14200       | Can not start new XA transaction in a active transaction |
+| 25000     | 14201       | Failed to create \`%s\` XA data source |
 
 ### Lock
 

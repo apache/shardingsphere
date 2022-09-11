@@ -28,6 +28,6 @@ public final class UnsupportedStreamCharsetConversionException extends DataSQLEx
     private static final long serialVersionUID = 4577091201937095156L;
     
     public UnsupportedStreamCharsetConversionException(final String charsetType) {
-        super(XOpenSQLState.INVALID_DATA_TYPE, 5, "Unsupported conversion stream charset `%s`", charsetType);
+        super(XOpenSQLState.INVALID_DATA_TYPE, 10, "Unsupported conversion stream charset `%s`", charsetType);
     }
 }

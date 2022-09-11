@@ -28,6 +28,6 @@ public final class UnsupportedDropCascadeTableException extends SyntaxSQLExcepti
     private static final long serialVersionUID = -5995575055241171117L;
     
     public UnsupportedDropCascadeTableException() {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 3, "DROP TABLE ... CASCADE is not supported");
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 10, "DROP TABLE ... CASCADE is not supported");
     }
 }

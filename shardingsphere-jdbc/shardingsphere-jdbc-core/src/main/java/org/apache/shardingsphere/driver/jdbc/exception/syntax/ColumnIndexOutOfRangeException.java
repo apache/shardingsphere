@@ -28,6 +28,6 @@ public final class ColumnIndexOutOfRangeException extends SyntaxSQLException {
     private static final long serialVersionUID = 3599337605134702447L;
     
     public ColumnIndexOutOfRangeException(final int columnIndex) {
-        super(XOpenSQLState.INVALID_COLUMN_NUMBER, 5, "Column index `%d` is out of range", columnIndex);
+        super(XOpenSQLState.INVALID_COLUMN_NUMBER, 4, "Column index `%d` is out of range", columnIndex);
     }
 }

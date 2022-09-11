@@ -28,6 +28,6 @@ public final class ConnectionClosedException extends ConnectionSQLException {
     private static final long serialVersionUID = 8667898851939815681L;
     
     public ConnectionClosedException() {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 2, "Connection has been closed");
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 30, "Connection has been closed");
     }
 }
