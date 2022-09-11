@@ -27,6 +27,6 @@ public final class EncryptAlgorithmInitializationException extends EncryptSQLExc
     private static final long serialVersionUID = -2004166948563207100L;
     
     public EncryptAlgorithmInitializationException(final String encryptorType, final String reason) {
-        super(XOpenSQLState.GENERAL_ERROR, 0, "Encrypt algorithm `%s` initialization failed, reason is: %s", encryptorType, reason);
+        super(XOpenSQLState.GENERAL_ERROR, 80, "Encrypt algorithm `%s` initialization failed, reason is: %s", encryptorType, reason);
     }
 }
