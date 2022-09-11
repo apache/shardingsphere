@@ -175,4 +175,4 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | --------- | ----------- | ------ |
 | HY004     | 30000       | Unknown exception: %s |
 | 0A000     | 30001       | Unsupported operation: %s |
-| 42000     | 30002       | Unsupported command: %s |
+| 0A000     | 30002       | Unsupported command: %s |

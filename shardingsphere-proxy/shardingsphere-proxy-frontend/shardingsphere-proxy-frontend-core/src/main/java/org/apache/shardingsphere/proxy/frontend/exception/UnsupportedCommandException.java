@@ -28,6 +28,6 @@ public final class UnsupportedCommandException extends GenericSQLException {
     private static final long serialVersionUID = 8010680371699936338L;
     
     public UnsupportedCommandException(final String commandType) {
-        super(XOpenSQLState.SYNTAX_ERROR, 2, "Unsupported command: %s", commandType);
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 2, "Unsupported command: %s", commandType);
     }
 }
