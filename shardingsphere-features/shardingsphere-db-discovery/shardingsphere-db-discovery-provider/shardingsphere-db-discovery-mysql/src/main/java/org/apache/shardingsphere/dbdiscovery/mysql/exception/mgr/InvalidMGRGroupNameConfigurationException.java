@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.mysql.exception;
+package org.apache.shardingsphere.dbdiscovery.mysql.exception.mgr;
 
+import org.apache.shardingsphere.dbdiscovery.mysql.exception.DBDiscoverySQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
@@ -27,6 +28,6 @@ public final class InvalidMGRGroupNameConfigurationException extends DBDiscovery
     private static final long serialVersionUID = -2585442998454509788L;
     
     public InvalidMGRGroupNameConfigurationException(final String groupName, final String databaseName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3, "Group name in MGR is not same with configured one `%s` in database `%s`", groupName, databaseName);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 83, "Group name in MGR is not same with configured one `%s` in database `%s`", groupName, databaseName);
     }
 }

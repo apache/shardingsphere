@@ -133,10 +133,10 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
-| HY000     | 23000       | MGR plugin is not active in database \`%s\` |
-| 44000     | 23001       | MGR is not in single primary mode in database \`%s\` |
-| 44000     | 23002       | \`%s\` is not in MGR replication group member in database \`%s\` |
-| 44000     | 23003       | Group name in MGR is not same with configured one \`%s\` in database \`%s\` |
+| HY000     | 23080       | MGR plugin is not active in database \`%s\` |
+| 44000     | 23081       | MGR is not in single primary mode in database \`%s\` |
+| 44000     | 23082       | \`%s\` is not in MGR replication group member in database \`%s\` |
+| 44000     | 23083       | Group name in MGR is not same with configured one \`%s\` in database \`%s\` |
 
 ### SQL 方言转换
 
