@@ -28,6 +28,6 @@ public final class UnsupportedVariableException extends SyntaxSQLException {
     private static final long serialVersionUID = 1955281568807066737L;
     
     public UnsupportedVariableException(final String variable) {
-        super(XOpenSQLState.GENERAL_ERROR, 5, "Could not support variable `%s`", variable);
+        super(XOpenSQLState.SYNTAX_ERROR, 2, "Could not support variable `%s`", variable);
     }
 }

@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.exception;
+package org.apache.shardingsphere.driver.jdbc.exception.syntax;
 
 import org.apache.shardingsphere.infra.exception.SyntaxSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Column label not found exception.
+ * Empty SQL exception.
  */
-public final class ColumnLabelNotFoundException extends SyntaxSQLException {
+public final class EmptySQLException extends SyntaxSQLException {
     
-    private static final long serialVersionUID = -4634399403612501335L;
+    private static final long serialVersionUID = -5723825491720138339L;
     
-    public ColumnLabelNotFoundException(final String columnLabel) {
-        super(XOpenSQLState.NOT_FOUND, 3, "Can not find column label `%s`", columnLabel);
+    public EmptySQLException() {
+        super(XOpenSQLState.SYNTAX_ERROR, 1, "SQL String can not be NULL or empty");
     }
 }

@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.exception;
+package org.apache.shardingsphere.driver.jdbc.exception.syntax;
 
-import org.apache.shardingsphere.infra.exception.ConnectionSQLException;
+import org.apache.shardingsphere.infra.exception.SyntaxSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Result set closed exception.
+ * Column index out of range exception.
  */
-public final class ResultSetClosedException extends ConnectionSQLException {
+public final class ColumnIndexOutOfRangeException extends SyntaxSQLException {
     
-    private static final long serialVersionUID = 3931974854134322934L;
+    private static final long serialVersionUID = 3599337605134702447L;
     
-    public ResultSetClosedException() {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 3, "Result set has been closed");
+    public ColumnIndexOutOfRangeException(final int columnIndex) {
+        super(XOpenSQLState.INVALID_COLUMN_NUMBER, 5, "Column index `%d` is out of range", columnIndex);
     }
 }

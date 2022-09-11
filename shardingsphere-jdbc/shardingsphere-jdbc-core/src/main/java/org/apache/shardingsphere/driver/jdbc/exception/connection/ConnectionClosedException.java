@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.exception;
+package org.apache.shardingsphere.driver.jdbc.exception.connection;
 
-import org.apache.shardingsphere.infra.exception.SyntaxSQLException;
+import org.apache.shardingsphere.infra.exception.ConnectionSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Empty SQL exception.
+ * Connection closed exception.
  */
-public final class EmptySQLException extends SyntaxSQLException {
+public final class ConnectionClosedException extends ConnectionSQLException {
     
-    private static final long serialVersionUID = -5723825491720138339L;
+    private static final long serialVersionUID = 8667898851939815681L;
     
-    public EmptySQLException() {
-        super(XOpenSQLState.GENERAL_ERROR, 10, "SQL String can not be NULL or empty");
+    public ConnectionClosedException() {
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 2, "Connection has been closed");
     }
 }
