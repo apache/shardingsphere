@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.exception;
+package org.apache.shardingsphere.encrypt.exception.algorithm;
 
+import org.apache.shardingsphere.encrypt.exception.EncryptSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Unsupported shadow column type exception.
+ * Encrypt algorithm initialization exception.
  */
-public final class UnsupportedShadowColumnTypeException extends ShadowSQLException {
+public final class EncryptAlgorithmInitializationException extends EncryptSQLException {
     
-    private static final long serialVersionUID = 8144277065388645946L;
+    private static final long serialVersionUID = -2004166948563207100L;
     
-    public UnsupportedShadowColumnTypeException(final String tableName, final String columnName, final Class<?> type) {
-        super(XOpenSQLState.INVALID_DATA_TYPE, 10, "Shadow column `%s` of table `%s` does not support `%s` type", columnName, tableName, type.getName());
+    public EncryptAlgorithmInitializationException(final String encryptorType, final String reason) {
+        super(XOpenSQLState.GENERAL_ERROR, 80, "Encrypt algorithm `%s` initialization failed, reason is: %s", encryptorType, reason);
     }
 }

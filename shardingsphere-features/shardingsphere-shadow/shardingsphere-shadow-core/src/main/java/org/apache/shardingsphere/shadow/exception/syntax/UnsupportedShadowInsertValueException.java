@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.exception;
+package org.apache.shardingsphere.shadow.exception.syntax;
 
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.shadow.exception.ShadowSQLException;
 
 /**
  * Unsupported shadow insert value exception.

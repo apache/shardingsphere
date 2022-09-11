@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.exception.EncryptColumnAlterException;
-import org.apache.shardingsphere.encrypt.exception.EncryptColumnNotFoundException;
+import org.apache.shardingsphere.encrypt.exception.metadata.EncryptColumnAlterException;
+import org.apache.shardingsphere.encrypt.exception.metadata.EncryptColumnNotFoundException;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptAlterTableToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;

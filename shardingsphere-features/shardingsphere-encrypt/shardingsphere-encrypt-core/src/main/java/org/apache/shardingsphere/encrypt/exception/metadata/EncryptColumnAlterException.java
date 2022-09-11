@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.exception;
+package org.apache.shardingsphere.encrypt.exception.metadata;
 
+import org.apache.shardingsphere.encrypt.exception.EncryptSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Encrypt column not found exception.
+ * Encrypt column alter exception.
  */
-public final class EncryptColumnNotFoundException extends EncryptSQLException {
+public final class EncryptColumnAlterException extends EncryptSQLException {
     
-    private static final long serialVersionUID = -8481487069938556675L;
+    private static final long serialVersionUID = -8920381230872401155L;
     
-    public EncryptColumnNotFoundException(final String tableName, final String columnName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 5, "Fail to find encrypt column `%s` from table `%s`", columnName, tableName);
+    public EncryptColumnAlterException(final String table, final String alteredColumn, final String previousColumn) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 2, "Altered column `%s` must use same encrypt algorithm with previous column `%s` in table `%s`", alteredColumn, previousColumn, table);
     }
 }

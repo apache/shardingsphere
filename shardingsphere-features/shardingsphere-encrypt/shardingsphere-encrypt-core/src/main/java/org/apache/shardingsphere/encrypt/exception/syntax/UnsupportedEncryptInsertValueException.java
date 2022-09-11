@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.exception;
+package org.apache.shardingsphere.encrypt.exception.syntax;
 
+import org.apache.shardingsphere.encrypt.exception.EncryptSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Encrypt column alter exception.
+ * Unsupported encrypt insert value exception.
  */
-public final class EncryptColumnAlterException extends EncryptSQLException {
+public final class UnsupportedEncryptInsertValueException extends EncryptSQLException {
     
-    private static final long serialVersionUID = -8920381230872401155L;
+    private static final long serialVersionUID = 5004882561157380582L;
     
-    public EncryptColumnAlterException(final String table, final String alteredColumn, final String previousColumn) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 2, "Altered column `%s` must use same encrypt algorithm with previous column `%s` in table `%s`", alteredColumn, previousColumn, table);
+    public UnsupportedEncryptInsertValueException(final int columnIndex) {
+        super(XOpenSQLState.SYNTAX_ERROR, 20, "Insert value of index `%s` can not support for encrypt", String.valueOf(columnIndex));
     }
 }

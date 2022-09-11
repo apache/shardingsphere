@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.exception;
+package org.apache.shardingsphere.shadow.exception.data;
 
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.shadow.exception.ShadowSQLException;
 
 /**
- * Encrypt logic column not found exception.
+ * Unsupported shadow column type exception.
  */
-public final class EncryptLogicColumnNotFoundException extends EncryptSQLException {
+public final class UnsupportedShadowColumnTypeException extends ShadowSQLException {
     
-    private static final long serialVersionUID = 3934531389314348880L;
+    private static final long serialVersionUID = 8144277065388645946L;
     
-    public EncryptLogicColumnNotFoundException(final String actualColumn) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, "Can not find logic encrypt column by `%s`", actualColumn);
+    public UnsupportedShadowColumnTypeException(final String tableName, final String columnName, final Class<?> type) {
+        super(XOpenSQLState.INVALID_DATA_TYPE, 10, "Shadow column `%s` of table `%s` does not support `%s` type", columnName, tableName, type.getName());
     }
 }

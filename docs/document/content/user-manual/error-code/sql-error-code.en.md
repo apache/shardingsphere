@@ -155,12 +155,12 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 | SQL State | Vendor Code | Reason |
 | --------- | ----------- | ------ |
-| HY004     | 27000       | Encrypt algorithm \`%s\` initialize failed, reason is: %s |
-| 0A000     | 27001       | The SQL clause \`%s\` is unsupported in encrypt rule |
+| 44000     | 27000       | Can not find logic encrypt column by \`%s\` |
+| 44000     | 27001       | Fail to find encrypt column \`%s\` from table \`%s\` |
 | 44000     | 27002       | Altered column \`%s\` must use same encrypt algorithm with previous column \`%s\` in table \`%s\` |
-| 42000     | 27003       | Insert value of index \`%s\` can not support for encrypt |
-| 44000     | 27004       | Can not find logic encrypt column by \`%s\` |
-| 44000     | 27005       | Fail to find encrypt column \`%s\` from table \`%s\` |
+| 42000     | 27020       | Insert value of index \`%s\` can not support for encrypt |
+| 0A000     | 27021       | The SQL clause \`%s\` is unsupported in encrypt rule |
+| HY004     | 27080       | Encrypt algorithm \`%s\` initialization failed, reason is: %s |
 
 ### Shadow Database
 
