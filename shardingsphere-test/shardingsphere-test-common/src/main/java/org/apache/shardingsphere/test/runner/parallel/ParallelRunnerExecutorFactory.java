@@ -21,13 +21,14 @@ import org.apache.shardingsphere.test.runner.parallel.annotaion.ParallelLevel;
 import java.util.Collection;
 
 /**
- * executor factory.
+ * Parallel Runner Executor factory.
  * @param <T> key type which bind to executor
  */
 public interface ParallelRunnerExecutorFactory<T> {
     
     /**
-     * get executor factory by key and parallel level.
+     * Get executor factory by key and parallel level.
+     *
      * @param key key bind to the factory
      * @param parallelLevel parallel level
      * @return executor by key and parallel level
@@ -35,7 +36,8 @@ public interface ParallelRunnerExecutorFactory<T> {
     ParallelRunnerExecutor getExecutor(T key, ParallelLevel parallelLevel);
     
     /**
-     * get factory by parallel level.
+     * Get factory by parallel level.
+     *
      * @param parallelLevel parallel level
      * @return executor by parallel level
      */

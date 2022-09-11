@@ -35,7 +35,6 @@ import java.util.concurrent.Future;
  */
 public class DefaultParallelRunnerExecutor<T> implements ParallelRunnerExecutor<T> {
     
-    @Getter
     private final Collection<Future<?>> taskFeatures = new LinkedList<>();
     
     @Getter
@@ -67,7 +66,8 @@ public class DefaultParallelRunnerExecutor<T> implements ParallelRunnerExecutor<
     }
     
     /**
-     * get executor service by key.
+     * Get executor service by key.
+     *
      * @param key key bind to the executor service
      * @return executor service
      */
