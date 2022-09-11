@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.rule;
 
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.exception.EncryptLogicColumnNotFoundException;
+import org.apache.shardingsphere.encrypt.exception.metadata.EncryptLogicColumnNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.exception;
+package org.apache.shardingsphere.shadow.exception.syntax;
 
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.shadow.exception.ShadowSQLException;
 
 /**
- * Encrypt algorithm initialization exception.
+ * Unsupported shadow insert value exception.
  */
-public final class EncryptAlgorithmInitializationException extends EncryptSQLException {
+public final class UnsupportedShadowInsertValueException extends ShadowSQLException {
     
-    private static final long serialVersionUID = -2004166948563207100L;
+    private static final long serialVersionUID = -5987403907441367171L;
     
-    public EncryptAlgorithmInitializationException(final String encryptorType, final String reason) {
-        super(XOpenSQLState.GENERAL_ERROR, 80, "Encrypt algorithm `%s` initialization failed, reason is: %s", encryptorType, reason);
+    public UnsupportedShadowInsertValueException(final int columnIndex) {
+        super(XOpenSQLState.SYNTAX_ERROR, 20, "Insert value of index `%s` can not support for shadow", String.valueOf(columnIndex));
     }
 }

@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.exception;
+package org.apache.shardingsphere.shadow.exception.data;
 
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.shadow.exception.ShadowSQLException;
 
 /**
  * Unsupported shadow column type exception.

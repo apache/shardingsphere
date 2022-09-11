@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.algorithm;
 
 import lombok.Getter;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.shardingsphere.encrypt.exception.EncryptAlgorithmInitializationException;
+import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 

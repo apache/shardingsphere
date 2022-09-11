@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.exception;
+package org.apache.shardingsphere.encrypt.exception.metadata;
 
+import org.apache.shardingsphere.encrypt.exception.EncryptSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Unsupported shadow insert value exception.
+ * Encrypt logic column not found exception.
  */
-public final class UnsupportedShadowInsertValueException extends ShadowSQLException {
+public final class EncryptLogicColumnNotFoundException extends EncryptSQLException {
     
-    private static final long serialVersionUID = -5987403907441367171L;
+    private static final long serialVersionUID = 3934531389314348880L;
     
-    public UnsupportedShadowInsertValueException(final int columnIndex) {
-        super(XOpenSQLState.SYNTAX_ERROR, 20, "Insert value of index `%s` can not support for shadow", String.valueOf(columnIndex));
+    public EncryptLogicColumnNotFoundException(final String actualColumn) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, "Can not find logic encrypt column by `%s`", actualColumn);
     }
 }

@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.exception;
+package org.apache.shardingsphere.encrypt.exception.algorithm;
 
+import org.apache.shardingsphere.encrypt.exception.EncryptSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Encrypt column alter exception.
+ * Encrypt algorithm initialization exception.
  */
-public final class EncryptColumnAlterException extends EncryptSQLException {
+public final class EncryptAlgorithmInitializationException extends EncryptSQLException {
     
-    private static final long serialVersionUID = -8920381230872401155L;
+    private static final long serialVersionUID = -2004166948563207100L;
     
-    public EncryptColumnAlterException(final String table, final String alteredColumn, final String previousColumn) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 2, "Altered column `%s` must use same encrypt algorithm with previous column `%s` in table `%s`", alteredColumn, previousColumn, table);
+    public EncryptAlgorithmInitializationException(final String encryptorType, final String reason) {
+        super(XOpenSQLState.GENERAL_ERROR, 80, "Encrypt algorithm `%s` initialization failed, reason is: %s", encryptorType, reason);
     }
 }

@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.exception;
+package org.apache.shardingsphere.encrypt.exception.metadata;
 
+import org.apache.shardingsphere.encrypt.exception.EncryptSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Encrypt logic column not found exception.
+ * Encrypt column not found exception.
  */
-public final class EncryptLogicColumnNotFoundException extends EncryptSQLException {
+public final class EncryptColumnNotFoundException extends EncryptSQLException {
     
-    private static final long serialVersionUID = 3934531389314348880L;
+    private static final long serialVersionUID = -8481487069938556675L;
     
-    public EncryptLogicColumnNotFoundException(final String actualColumn) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, "Can not find logic encrypt column by `%s`", actualColumn);
+    public EncryptColumnNotFoundException(final String tableName, final String columnName) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 1, "Fail to find encrypt column `%s` from table `%s`", columnName, tableName);
     }
 }
