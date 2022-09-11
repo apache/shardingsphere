@@ -28,6 +28,6 @@ public final class CursorNameNotFoundException extends ShardingSQLException {
     private static final long serialVersionUID = 3124329832945598311L;
     
     public CursorNameNotFoundException() {
-        super(XOpenSQLState.INVALID_CURSOR_NAME, 32, "Can not get cursor name from fetch statement");
+        super(XOpenSQLState.INVALID_CURSOR_NAME, 62, "Can not get cursor name from fetch statement");
     }
 }
