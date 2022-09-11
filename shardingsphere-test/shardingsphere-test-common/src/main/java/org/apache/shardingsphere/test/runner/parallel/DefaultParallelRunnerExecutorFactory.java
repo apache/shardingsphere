@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Parallel runner executor factory.
+ * Default parallel runner executor factory.
  */
 public class DefaultParallelRunnerExecutorFactory<T> implements ParallelRunnerExecutorFactory<T> {
     
@@ -55,7 +55,7 @@ public class DefaultParallelRunnerExecutorFactory<T> implements ParallelRunnerEx
      */
     public ParallelRunnerExecutor getExecutor(final ParallelLevel parallelLevel) {
         if (null == defaultExecutor) {
-            synchronized (ParallelRunnerExecutor.class) {
+            synchronized (DefaultParallelRunnerExecutorFactory.class) {
                 if (null == defaultExecutor) {
                     defaultExecutor = new DefaultParallelRunnerExecutor();
                 }
@@ -65,7 +65,8 @@ public class DefaultParallelRunnerExecutorFactory<T> implements ParallelRunnerEx
     }
     
     /**
-     * create executor instance by parallel level.
+     * Create executor instance by parallel level.
+     *
      * @param parallelLevel parallel level
      * @return executor by parallel level
      */
@@ -85,5 +86,4 @@ public class DefaultParallelRunnerExecutorFactory<T> implements ParallelRunnerEx
         }
         return executors;
     }
-    
 }

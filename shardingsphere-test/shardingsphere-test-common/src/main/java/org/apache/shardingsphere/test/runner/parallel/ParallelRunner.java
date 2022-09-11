@@ -22,7 +22,7 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.InitializationError;
 
 /**
- * parallel runner for junit.
+ * Parallel runner for junit.
  */
 public class ParallelRunner extends BlockJUnit4ClassRunner {
     
@@ -37,5 +37,4 @@ public class ParallelRunner extends BlockJUnit4ClassRunner {
         super(klass);
         setScheduler(new ParallelRunnerScheduler(ParallelLevel.DEFAULT, new DefaultParallelRunnerExecutorFactory()));
     }
-    
 }

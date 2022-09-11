@@ -22,13 +22,15 @@ import lombok.Getter;
 import org.apache.shardingsphere.test.runner.parallel.ParallelRunnerExecutor;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
- * default parallel executor.
+ * Default parallel runner executor.
  * @param <T> key type bind to parallel executor
  */
 public class DefaultParallelRunnerExecutor<T> implements ParallelRunnerExecutor<T> {
@@ -36,22 +38,51 @@ public class DefaultParallelRunnerExecutor<T> implements ParallelRunnerExecutor<
     @Getter
     private final Collection<Future<?>> taskFeatures = new LinkedList<>();
     
-    private final ExecutorService executorService;
+    @Getter
+    private final Map<Object, ExecutorService> executorServiceMap = new ConcurrentHashMap<>();
     
-    public DefaultParallelRunnerExecutor() {
-        executorService = Executors.newFixedThreadPool(
-                Runtime.getRuntime().availableProcessors(),
-                new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-ParallelTestThread-%d").build());
-    }
+    private volatile ExecutorService defaultExecutorService;
     
     @Override
     public void execute(final T key, final Runnable childStatement) {
-        
+        taskFeatures.add(getExecutorService(key).submit(childStatement));
     }
     
     @Override
     public void execute(final Runnable childStatement) {
-        taskFeatures.add(executorService.submit(childStatement));
+        taskFeatures.add(getExecutorService().submit(childStatement));
+    }
+    
+    private ExecutorService getExecutorService() {
+        if (null == defaultExecutorService) {
+            synchronized (DefaultParallelRunnerExecutor.class) {
+                if (null == defaultExecutorService) {
+                    defaultExecutorService = Executors.newFixedThreadPool(
+                            Runtime.getRuntime().availableProcessors(),
+                            new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-ParallelTestThread-%d").build());
+                }
+            }
+        }
+        return defaultExecutorService;
+    }
+    
+    /**
+     * get executor service by key.
+     * @param key key bind to the executor service
+     * @return executor service
+     */
+    public ExecutorService getExecutorService(final T key) {
+        if (executorServiceMap.containsKey(key)) {
+            return executorServiceMap.get(key);
+        }
+        String threadPoolNameFormat = String.join("-", "ShardingSphere-KeyedParallelTestThread", key.toString(), "%d");
+        ExecutorService executorService = Executors.newFixedThreadPool(
+                Runtime.getRuntime().availableProcessors(),
+                new ThreadFactoryBuilder().setDaemon(true).setNameFormat(threadPoolNameFormat).build());
+        if (null != executorServiceMap.putIfAbsent(key, executorService)) {
+            executorService.shutdownNow();
+        }
+        return executorServiceMap.get(key);
     }
     
     @Override
@@ -62,6 +93,9 @@ public class DefaultParallelRunnerExecutor<T> implements ParallelRunnerExecutor<
             } catch (final InterruptedException | ExecutionException ignored) {
             }
         });
-        executorService.shutdownNow();
+        executorServiceMap.values().forEach(each -> each.shutdownNow());
+        if (null != defaultExecutorService) {
+            defaultExecutorService.shutdownNow();
+        }
     }
 }

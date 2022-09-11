@@ -25,7 +25,7 @@ import org.apache.shardingsphere.test.runner.parallel.ParallelRunnerExecutor;
 import org.apache.shardingsphere.test.runner.parallel.annotaion.ParallelLevel;
 
 /**
- * Parallel runner executor factory.
+ * Database type parallel runner executor factory.
  */
 public final class DatabaseTypeParallelRunnerExecutorFactory extends DefaultParallelRunnerExecutorFactory<DatabaseType> {
     
