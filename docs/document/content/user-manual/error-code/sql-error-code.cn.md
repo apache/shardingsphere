@@ -29,68 +29,68 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
-| HY004     | 11001       | Invalid value \`%s\` |
-| HY004     | 11005       | Unsupported conversion stream charset \`%s\` |
-| HY004     | 11006       | Unsupported conversion data type \`%s\` for value \`%s\` |
+| HY004     | 10101       | Invalid value \`%s\` |
+| HY004     | 10105       | Unsupported conversion stream charset \`%s\` |
+| HY004     | 10106       | Unsupported conversion data type \`%s\` for value \`%s\` |
 
 ### 语法
 
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
-| 42000     | 12000       | You have an error in your SQL syntax: %s |
-| 42000     | 12001       | SQL String can not be NULL or empty |
-| 42000     | 12002       | Could not support variable \`%s\` |
-| 0A000     | 12003       | DROP TABLE ... CASCADE is not supported |
-| 42S02     | 12004       | Can not find column label \`%s\` |
-| HV008     | 12005       | Column index \`%d\` is out of range |
+| 42000     | 10200       | You have an error in your SQL syntax: %s |
+| 42000     | 10201       | SQL String can not be NULL or empty |
+| 42000     | 10202       | Could not support variable \`%s\` |
+| 0A000     | 10203       | DROP TABLE ... CASCADE is not supported |
+| 42S02     | 10204       | Can not find column label \`%s\` |
+| HV008     | 10205       | Column index \`%d\` is out of range |
 
 ### 连接
 
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
-| 01000     | 13000       | Circuit break open, the request has been ignored |
-| 08000     | 13001       | Can not get %d connections one time, partition succeed connection(%d) have released. Please consider increasing the \`maxPoolSize\` of the data sources or decreasing the \`max-connections-size-per-query\` in properties |
-| 08000     | 13002       | Connection has been closed |
-| 08000     | 13003       | Result set has been closed |
-| HY000     | 13004       | Load datetime from database failed, reason: %s |
-| HY004     | 13010       | Can not register driver, reason is: %s |
+| 01000     | 10300       | Circuit break open, the request has been ignored |
+| 08000     | 10301       | Can not get %d connections one time, partition succeed connection(%d) have released. Please consider increasing the \`maxPoolSize\` of the data sources or decreasing the \`max-connections-size-per-query\` in properties |
+| 08000     | 10302       | Connection has been closed |
+| 08000     | 10303       | Result set has been closed |
+| HY000     | 10304       | Load datetime from database failed, reason: %s |
+| HY004     | 10310       | Can not register driver, reason is: %s |
 
 ### 事务
 
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
-| 25000     | 14000       | Switch transaction type failed, please terminate the current transaction |
-| 25000     | 14001       | Can not start new XA transaction in a active transaction |
-| 25000     | 14002       | Failed to create \`%s\` XA data source |
-| 25000     | 14003       | JDBC does not support operations across multiple logical databases in transaction |
+| 25000     | 10400       | Switch transaction type failed, please terminate the current transaction |
+| 25000     | 10401       | Can not start new XA transaction in a active transaction |
+| 25000     | 10402       | Failed to create \`%s\` XA data source |
+| 25000     | 10403       | JDBC does not support operations across multiple logical databases in transaction |
 
 ### 锁
 
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
-| HY000     | 15000       | The table \`%s\` of schema \`%s\` is locked |
-| HY000     | 15001       | The table \`%s\` of schema \`%s\` lock wait timeout of \`%s\` milliseconds exceeded |
+| HY000     | 10500       | The table \`%s\` of schema \`%s\` is locked |
+| HY000     | 10501       | The table \`%s\` of schema \`%s\` lock wait timeout of \`%s\` milliseconds exceeded |
 
 ### 审计
 
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
-| 44000     | 16000       | SQL check failed, error message: %s |
+| 44000     | 10600       | SQL check failed, error message: %s |
 
 ### 集群
 
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
-| HY000     | 17000       | Work ID assigned failed, which can not exceed 1024 |
-| HY000     | 17001       | Can not find \`%s\` file for datetime initialize |
-| HY000     | 17002       | File access failed, reason is: %s |
+| HY000     | 10700       | Work ID assigned failed, which can not exceed 1024 |
+| HY000     | 10701       | Can not find \`%s\` file for datetime initialize |
+| HY000     | 10702       | File access failed, reason is: %s |
 
 ### 迁移
 
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
-| HY000     | 18000       | Can not find pipeline job \`%s\` |
-| HY000     | 18001       | Failed to get DDL for table \`%s\` |
+| HY000     | 10800       | Can not find pipeline job \`%s\` |
+| HY000     | 10801       | Failed to get DDL for table \`%s\` |
 
 ## 功能异常
 
@@ -133,41 +133,41 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
-| HY000     | 23080       | MGR plugin is not active in database \`%s\` |
-| 44000     | 23081       | MGR is not in single primary mode in database \`%s\` |
-| 44000     | 23082       | \`%s\` is not in MGR replication group member in database \`%s\` |
-| 44000     | 23083       | Group name in MGR is not same with configured one \`%s\` in database \`%s\` |
+| HY000     | 20380       | MGR plugin is not active in database \`%s\` |
+| 44000     | 20381       | MGR is not in single primary mode in database \`%s\` |
+| 44000     | 20382       | \`%s\` is not in MGR replication group member in database \`%s\` |
+| 44000     | 20383       | Group name in MGR is not same with configured one \`%s\` in database \`%s\` |
 
 ### SQL 方言转换
 
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
-| 42000     | 24020       | Can not support database \`%s\` in SQL translation |
-| 42000     | 24021       | Translation error, SQL is: %s |
+| 42000     | 20420       | Can not support database \`%s\` in SQL translation |
+| 42000     | 20421       | Translation error, SQL is: %s |
 
 ### 流量治理
 
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
-| 42S02     | 25000       | Can not get traffic execution unit |
+| 42S02     | 20500       | Can not get traffic execution unit |
 
 ### 数据加密
 
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
-| 44000     | 27000       | Can not find logic encrypt column by \`%s\` |
-| 44000     | 27001       | Fail to find encrypt column \`%s\` from table \`%s\` |
-| 44000     | 27002       | Altered column \`%s\` must use same encrypt algorithm with previous column \`%s\` in table \`%s\` |
-| 42000     | 27020       | Insert value of index \`%s\` can not support for encrypt |
-| 0A000     | 27021       | The SQL clause \`%s\` is unsupported in encrypt rule |
-| HY004     | 27080       | Encrypt algorithm \`%s\` initialization failed, reason is: %s |
+| 44000     | 20700       | Can not find logic encrypt column by \`%s\` |
+| 44000     | 20701       | Fail to find encrypt column \`%s\` from table \`%s\` |
+| 44000     | 20702       | Altered column \`%s\` must use same encrypt algorithm with previous column \`%s\` in table \`%s\` |
+| 42000     | 20720       | Insert value of index \`%s\` can not support for encrypt |
+| 0A000     | 20721       | The SQL clause \`%s\` is unsupported in encrypt rule |
+| HY004     | 20780       | Encrypt algorithm \`%s\` initialization failed, reason is: %s |
 
 ### 影子库
 
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
-| HY004     | 28010       | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type |
-| 42000     | 28020       | Insert value of index \`%s\` can not support for shadow |
+| HY004     | 20810       | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type |
+| 42000     | 20820       | Insert value of index \`%s\` can not support for shadow |
 
 ## 其他异常
 

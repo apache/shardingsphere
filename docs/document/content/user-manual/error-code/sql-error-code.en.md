@@ -133,41 +133,41 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 | SQL State | Vendor Code | Reason |
 | --------- | ----------- | ------ |
-| HY000     | 23080       | MGR plugin is not active in database \`%s\` |
-| 44000     | 23081       | MGR is not in single primary mode in database \`%s\` |
-| 44000     | 23082       | \`%s\` is not in MGR replication group member in database \`%s\` |
-| 44000     | 23083       | Group name in MGR is not same with configured one \`%s\` in database \`%s\` |
+| HY000     | 20380       | MGR plugin is not active in database \`%s\` |
+| 44000     | 20381       | MGR is not in single primary mode in database \`%s\` |
+| 44000     | 20382       | \`%s\` is not in MGR replication group member in database \`%s\` |
+| 44000     | 20383       | Group name in MGR is not same with configured one \`%s\` in database \`%s\` |
 
 ### SQL Dialect Translator
 
 | SQL State | Vendor Code | Reason |
 | --------- | ----------- | ------ |
-| 42000     | 24020       | Can not support database \`%s\` in SQL translation |
-| 42000     | 24021       | Translation error, SQL is: %s |
+| 42000     | 20420       | Can not support database \`%s\` in SQL translation |
+| 42000     | 20421       | Translation error, SQL is: %s |
 
 ### Traffic Management
 
 | SQL State | Vendor Code | Reason |
 | --------- | ----------- | ------ |
-| 42S02     | 25000       | Can not get traffic execution unit |
+| 42S02     | 20500       | Can not get traffic execution unit |
 
 ### Data Encrypt
 
 | SQL State | Vendor Code | Reason |
 | --------- | ----------- | ------ |
-| 44000     | 27000       | Can not find logic encrypt column by \`%s\` |
-| 44000     | 27001       | Fail to find encrypt column \`%s\` from table \`%s\` |
-| 44000     | 27002       | Altered column \`%s\` must use same encrypt algorithm with previous column \`%s\` in table \`%s\` |
-| 42000     | 27020       | Insert value of index \`%s\` can not support for encrypt |
-| 0A000     | 27021       | The SQL clause \`%s\` is unsupported in encrypt rule |
-| HY004     | 27080       | Encrypt algorithm \`%s\` initialization failed, reason is: %s |
+| 44000     | 20700       | Can not find logic encrypt column by \`%s\` |
+| 44000     | 20701       | Fail to find encrypt column \`%s\` from table \`%s\` |
+| 44000     | 20702       | Altered column \`%s\` must use same encrypt algorithm with previous column \`%s\` in table \`%s\` |
+| 42000     | 20720       | Insert value of index \`%s\` can not support for encrypt |
+| 0A000     | 20721       | The SQL clause \`%s\` is unsupported in encrypt rule |
+| HY004     | 20780       | Encrypt algorithm \`%s\` initialization failed, reason is: %s |
 
 ### Shadow Database
 
 | SQL State | Vendor Code | Reason |
 | --------- | ----------- | ------ |
-| HY004     | 28010       | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type |
-| 42000     | 28020       | Insert value of index \`%s\` can not support for shadow |
+| HY004     | 20810       | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type |
+| 42000     | 20820       | Insert value of index \`%s\` can not support for shadow |
 
 ## Other Exception
 

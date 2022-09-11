@@ -30,10 +30,6 @@ public abstract class KernelSQLException extends ShardingSphereSQLException {
     private static final int TYPE_OFFSET = 1;
     
     public KernelSQLException(final SQLState sqlState, final int kernelCode, final int errorCode, final String reason, final Object... messageArguments) {
-        super(sqlState, TYPE_OFFSET, generateErrorCode(kernelCode, errorCode), reason, messageArguments);
-    }
-    
-    private static int generateErrorCode(final int kernelCode, final int errorCode) {
-        return (kernelCode < 10 ? kernelCode * 1000 : kernelCode * 100) + errorCode;
+        super(sqlState, TYPE_OFFSET, kernelCode * 100 + errorCode, reason, messageArguments);
     }
 }
