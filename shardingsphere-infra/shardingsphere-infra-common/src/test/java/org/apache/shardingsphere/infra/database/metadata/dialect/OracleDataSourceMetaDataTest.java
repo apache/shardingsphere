@@ -33,7 +33,7 @@ public final class OracleDataSourceMetaDataTest {
         assertThat(actual.getCatalog(), is("ds_0"));
         assertThat(actual.getSchema(), is("test"));
     }
-
+    
     @Test
     public void assertNewConstructorWithDomainPort() {
         OracleDataSourceMetaData actual = new OracleDataSourceMetaData("jdbc:oracle:oci:@axxx.frex.cc:9999/ds_0", "test");
@@ -113,7 +113,7 @@ public final class OracleDataSourceMetaDataTest {
     public void assertNewConstructorFailure() {
         new OracleDataSourceMetaData("jdbc:oracle:xxxxxxxx", "test");
     }
-
+    
     @Test
     public void assertNewConstructorWithConnectDescriptorUrlWithExtraSpaces() {
         OracleDataSourceMetaData actual = new OracleDataSourceMetaData("jdbc:oracle:thin:@(DESCRIPTION = description"
