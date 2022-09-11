@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.driver.jdbc.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
+import org.apache.shardingsphere.infra.exception.SyntaxSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Column label not found exception.
  */
-public final class ColumnLabelNotFoundException extends KernelSQLException {
+public final class ColumnLabelNotFoundException extends SyntaxSQLException {
     
     private static final long serialVersionUID = -4634399403612501335L;
     
     public ColumnLabelNotFoundException(final String columnLabel) {
-        super(XOpenSQLState.NOT_FOUND, 303, "Can not find column label `%s`", columnLabel);
+        super(XOpenSQLState.NOT_FOUND, 3, "Can not find column label `%s`", columnLabel);
     }
 }

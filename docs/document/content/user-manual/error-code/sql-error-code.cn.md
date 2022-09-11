@@ -10,43 +10,43 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
-| 01000     | 10000       | Circuit break open, the request has been ignored |
 | 08000     | 10001       | The URL \`%s\` is not recognized, please refer to the pattern \`%s\` |
 | 42000     | 10002       | Can not support 3-tier structure for actual data node \`%s\` with JDBC \`%s\` |
 | 42000     | 10003       | Unsupported SQL node conversion for SQL statement \`%s\` |
-| HY004     | 10004       | Unsupported conversion data type \`%s\` for value \`%s\` |
-| HY004     | 10005       | Unsupported conversion stream charset \`%s\` |
-| HY004     | 10006       | SQL String can not be NULL or empty |
-| 08000     | 10007       | Can not get %d connections one time, partition succeed connection(%d) have released. Please consider increasing the \`maxPoolSize\` of the data sources or decreasing the \`max-connections-size-per-query\` in properties |
-| HY004     | 10100       | Can not register driver, reason is: %s |
-| HY000     | 10300       | Could not support variable \`%s\` |
-| HY004     | 10301       | Invalid value \`%s\` |
-| HV008     | 10302       | Column index \`%d\` is out of range |
-| 42S02     | 10303       | Can not find column label \`%s\` |
-| HY004     | 10400       | Invalid format for actual data node \`%s\` |
-| 08000     | 10500       | Connection has been closed |
-| 08000     | 10501       | Result set has been closed |
-| 42000     | 11000       | You have an error in your SQL syntax: %s |
-| 42000     | 11002       | Resource does not exist |
-| 42000     | 11003       | Rule does not exist |
-| HY000     | 11004       | File access failed, reason is: %s |
-| 25000     | 11320       | Switch transaction type failed, please terminate the current transaction |
-| 25000     | 11321       | JDBC does not support operations across multiple logical databases in transaction |
-| 25000     | 11322       | Failed to create \`%s\` XA data source |
-| 25000     | 11323       | Can not start new XA transaction in a active transaction |
-| 44000     | 13000       | SQL check failed, error message: %s |
-| HY000     | 14000       | The table \`%s\` of schema \`%s\` is locked |
-| HY000     | 14001       | The table \`%s\` of schema \`%s\` lock wait timeout of %s ms exceeded |
-| HY000     | 14010       | Can not find \`%s\` file for datetime initialize |
-| HY000     | 14011       | Load datetime from database failed, reason: %s |
-| HY000     | 15000       | Work ID assigned failed, which can not exceed 1024 |
-| HY000     | 16000       | Can not find pipeline job \`%s\` |
-| HY000     | 16001       | Failed to get DDL for table \`%s\` |
-| 42S02     | 17000       | Single table \`%s\` does not exist |
-| 42S02     | 17001       | Schema \`%s\` does not exist |
-| HY000     | 17002       | Can not load table with database name \`%s\` and data source name \`%s\` |
-| 0A000     | 17003       | Can not drop schema \`%s\` because of contains tables |
-| 0A000     | 17010       | DROP TABLE ... CASCADE is not supported |
+| 42000     | 10012       | Resource does not exist |
+| 42000     | 10013       | Rule does not exist |
+| HY004     | 10014       | Invalid format for actual data node \`%s\` |
+| 42S02     | 10020       | Single table \`%s\` does not exist |
+| 42S02     | 10021       | Schema \`%s\` does not exist |
+| HY000     | 10022       | Can not load table with database name \`%s\` and data source name \`%s\` |
+| 0A000     | 10023       | Can not drop schema \`%s\` because of contains tables |
+| HY004     | 11001       | Invalid value \`%s\` |
+| HY004     | 11005       | Unsupported conversion stream charset \`%s\` |
+| HY004     | 11006       | Unsupported conversion data type \`%s\` for value \`%s\` |
+| 42000     | 12000       | You have an error in your SQL syntax: %s |
+| HV008     | 12002       | Column index \`%d\` is out of range |
+| 42S02     | 12003       | Can not find column label \`%s\` |
+| 0A000     | 12004       | DROP TABLE ... CASCADE is not supported |
+| HY000     | 12005       | Could not support variable \`%s\` |
+| HY004     | 12010       | SQL String can not be NULL or empty |
+| 01000     | 13000       | Circuit break open, the request has been ignored |
+| 08000     | 13001       | Can not get %d connections one time, partition succeed connection(%d) have released. Please consider increasing the \`maxPoolSize\` of the data sources or decreasing the \`max-connections-size-per-query\` in properties |
+| 08000     | 13002       | Connection has been closed |
+| 08000     | 13003       | Result set has been closed |
+| HY000     | 13004       | Load datetime from database failed, reason: %s |
+| HY004     | 13010       | Can not register driver, reason is: %s |
+| 25000     | 14000       | Switch transaction type failed, please terminate the current transaction |
+| 25000     | 14001       | Can not start new XA transaction in a active transaction |
+| 25000     | 14002       | Failed to create \`%s\` XA data source |
+| 25000     | 14003       | JDBC does not support operations across multiple logical databases in transaction |
+| HY000     | 15000       | The table \`%s\` of schema \`%s\` is locked |
+| HY000     | 15001       | The table \`%s\` of schema \`%s\` lock wait timeout of \`%s\` milliseconds exceeded |
+| 44000     | 16000       | SQL check failed, error message: %s |
+| HY000     | 17000       | Work ID assigned failed, which can not exceed 1024 |
+| HY000     | 17001       | Can not find \`%s\` file for datetime initialize |
+| HY000     | 17002       | File access failed, reason is: %s |
+| HY000     | 18000       | Can not find pipeline job \`%s\` |
+| HY000     | 18001       | Failed to get DDL for table \`%s\` |
 | HY000     | 20000       | Sharding algorithm class \`%s\` should be implement \`%s\` |
 | 44000     | 20001       | Can not get uniformed table structure for logic table \`%s\`, it has different meta data of actual tables are as follows: %s |
 | 42S02     | 20002       | Can not get route result, please check your sharding rule configuration |

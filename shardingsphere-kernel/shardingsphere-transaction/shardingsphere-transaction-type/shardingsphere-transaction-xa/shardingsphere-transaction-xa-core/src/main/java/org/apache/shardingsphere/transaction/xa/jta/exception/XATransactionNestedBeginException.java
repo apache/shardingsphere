@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.exception;
+package org.apache.shardingsphere.transaction.xa.jta.exception;
 
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.transaction.exception.TransactionSQLException;
 
 /**
- * Pipeline job not found exception.
+ * XA transaction nested begin exception.
  */
-public final class PipelineJobNotFoundException extends PipelineSQLException {
+public final class XATransactionNestedBeginException extends TransactionSQLException {
     
-    private static final long serialVersionUID = -903289953649758722L;
+    private static final long serialVersionUID = 7761100591709104351L;
     
-    public PipelineJobNotFoundException(final String jobId) {
-        super(XOpenSQLState.GENERAL_ERROR, 0, "Can not find pipeline job `%s`", jobId);
+    public XATransactionNestedBeginException() {
+        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 1, "Can not start new XA transaction in a active transaction");
     }
 }

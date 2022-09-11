@@ -15,18 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.exception;
+package org.apache.shardingsphere.transaction.xa.jta.exception;
 
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.transaction.exception.TransactionSQLException;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 
 /**
- * Pipeline job not found exception.
+ * XA data source initialize exception.
  */
-public final class PipelineJobNotFoundException extends PipelineSQLException {
+public final class XADataSourceInitializeException extends TransactionSQLException {
     
-    private static final long serialVersionUID = -903289953649758722L;
+    private static final long serialVersionUID = -4515239569528215614L;
     
-    public PipelineJobNotFoundException(final String jobId) {
-        super(XOpenSQLState.GENERAL_ERROR, 0, "Can not find pipeline job `%s`", jobId);
+    public XADataSourceInitializeException(final XADataSourceDefinition xaDataSourceDefinition) {
+        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 2, "Failed to create `%s` XA data source", xaDataSourceDefinition.getType());
     }
 }

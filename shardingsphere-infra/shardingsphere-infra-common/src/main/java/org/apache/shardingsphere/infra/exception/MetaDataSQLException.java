@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.xa.jta.datasource.swapper;
+package org.apache.shardingsphere.infra.exception;
 
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.SQLState;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 
 /**
- * XA data source initialize exception.
+ * Meta data SQL exception.
  */
-public final class XADataSourceInitializeException extends KernelSQLException {
+public abstract class MetaDataSQLException extends KernelSQLException {
     
-    private static final long serialVersionUID = -4515239569528215614L;
+    private static final long serialVersionUID = 884884613851959565L;
     
-    public XADataSourceInitializeException(final XADataSourceDefinition xaDataSourceDefinition) {
-        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 1322, "Failed to create `%s` XA data source", xaDataSourceDefinition.getType());
+    private static final int KERNEL_CODE = 0;
+    
+    public MetaDataSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArguments) {
+        super(sqlState, KERNEL_CODE, errorCode, reason, messageArguments);
     }
 }

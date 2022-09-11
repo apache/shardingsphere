@@ -21,6 +21,7 @@ import com.google.common.base.CaseFormat;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
+import org.apache.shardingsphere.transaction.xa.jta.exception.XADataSourceInitializeException;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;

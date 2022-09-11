@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.driver.jdbc.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
+import org.apache.shardingsphere.infra.exception.SyntaxSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Empty SQL exception.
  */
-public final class EmptySQLException extends KernelSQLException {
+public final class EmptySQLException extends SyntaxSQLException {
     
     private static final long serialVersionUID = -5723825491720138339L;
     
     public EmptySQLException() {
-        super(XOpenSQLState.GENERAL_ERROR, 6, "SQL String can not be NULL or empty");
+        super(XOpenSQLState.GENERAL_ERROR, 10, "SQL String can not be NULL or empty");
     }
 }
