@@ -14,12 +14,12 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 | SQL State | Vendor Code | Reason |
 | --------- | ----------- | ------ |
+| 42000     | 10000       | Resource does not exist |
 | 08000     | 10001       | The URL \`%s\` is not recognized, please refer to the pattern \`%s\` |
 | 42000     | 10002       | Can not support 3-tier structure for actual data node \`%s\` with JDBC \`%s\` |
-| 42000     | 10003       | Unsupported SQL node conversion for SQL statement \`%s\` |
-| 42000     | 10012       | Resource does not exist |
-| 42000     | 10013       | Rule does not exist |
-| HY004     | 10014       | Invalid format for actual data node \`%s\` |
+| HY004     | 10003       | Invalid format for actual data node \`%s\` |
+| 42000     | 10004       | Unsupported SQL node conversion for SQL statement \`%s\` |
+| 42000     | 10010       | Rule does not exist |
 | 42S02     | 10020       | Single table \`%s\` does not exist |
 | 42S02     | 10021       | Schema \`%s\` does not exist |
 | HY000     | 10022       | Can not load table with database name \`%s\` and data source name \`%s\` |
