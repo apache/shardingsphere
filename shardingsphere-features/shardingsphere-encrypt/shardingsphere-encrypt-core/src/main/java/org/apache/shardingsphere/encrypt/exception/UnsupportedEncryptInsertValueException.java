@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.encrypt.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Unsupported encrypt insert value exception.
  */
-public final class UnsupportedEncryptInsertValueException extends ShardingSphereSQLException {
+public final class UnsupportedEncryptInsertValueException extends EncryptSQLException {
     
     private static final long serialVersionUID = 5004882561157380582L;
     
     public UnsupportedEncryptInsertValueException(final int columnIndex) {
-        super(XOpenSQLState.SYNTAX_ERROR, 27003, "Insert value of index `%s` can not support for encrypt", String.valueOf(columnIndex));
+        super(XOpenSQLState.SYNTAX_ERROR, 3, "Insert value of index `%s` can not support for encrypt", String.valueOf(columnIndex));
     }
 }

@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Unsupported prepare route to same data source exception.
  */
-public final class UnsupportedPrepareRouteToSameDataSourceException extends ShardingSphereSQLException {
+public final class UnsupportedPrepareRouteToSameDataSourceException extends ShardingSQLException {
     
     private static final long serialVersionUID = -451667286925533523L;
     
     public UnsupportedPrepareRouteToSameDataSourceException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 20017, "PREPARE statement can not support sharding tables route to same data sources");
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 17, "PREPARE statement can not support sharding tables route to same data sources");
     }
 }

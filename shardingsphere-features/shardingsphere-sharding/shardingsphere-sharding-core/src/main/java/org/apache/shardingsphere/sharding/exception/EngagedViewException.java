@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Engaged view exception.
  */
-public final class EngagedViewException extends ShardingSphereSQLException {
+public final class EngagedViewException extends ShardingSQLException {
     
     private static final long serialVersionUID = -8312969473716234951L;
     
     public EngagedViewException(final String shardingType) {
-        super(XOpenSQLState.DUPLICATE, 20033, "View name has to bind to %s tables", shardingType);
+        super(XOpenSQLState.DUPLICATE, 33, "View name has to bind to %s tables", shardingType);
     }
 }

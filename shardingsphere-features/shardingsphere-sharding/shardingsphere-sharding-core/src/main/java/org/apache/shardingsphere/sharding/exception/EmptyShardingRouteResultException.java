@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Empty sharding route result exception.
  */
-public final class EmptyShardingRouteResultException extends ShardingSphereSQLException {
+public final class EmptyShardingRouteResultException extends ShardingSQLException {
     
     private static final long serialVersionUID = -6548076668933945656L;
     
     public EmptyShardingRouteResultException() {
-        super(XOpenSQLState.NOT_FOUND, 20002, "Can not get route result, please check your sharding rule configuration");
+        super(XOpenSQLState.NOT_FOUND, 2, "Can not get route result, please check your sharding rule configuration");
     }
 }

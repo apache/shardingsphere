@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.proxy.backend.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Unsupported variable exception.
  */
-public final class UnsupportedVariableException extends ShardingSphereSQLException {
+public final class UnsupportedVariableException extends KernelSQLException {
     
     private static final long serialVersionUID = 1955281568807066737L;
     
     public UnsupportedVariableException(final String variable) {
-        super(XOpenSQLState.GENERAL_ERROR, 10301, "Could not support variable `%s`", variable);
+        super(XOpenSQLState.GENERAL_ERROR, 301, "Could not support variable `%s`", variable);
     }
 }

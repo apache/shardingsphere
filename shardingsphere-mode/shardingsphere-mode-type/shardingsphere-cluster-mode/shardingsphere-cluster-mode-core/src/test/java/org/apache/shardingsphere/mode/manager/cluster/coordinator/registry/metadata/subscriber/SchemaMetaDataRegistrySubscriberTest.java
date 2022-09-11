@@ -37,10 +37,10 @@ import java.lang.reflect.Field;
 import java.util.Collections;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.anyMap;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class SchemaMetaDataRegistrySubscriberTest {
@@ -66,9 +66,8 @@ public final class SchemaMetaDataRegistrySubscriberTest {
         event.getDroppedTables().add("foo_table");
         when(persistService.getTableMetaDataPersistService()).thenReturn(mock(TableMetaDataPersistService.class));
         schemaMetaDataRegistrySubscriber.update(event);
-        TableMetaDataPersistService tableMetaDataPersistService = persistService.getTableMetaDataPersistService();
-        verify(tableMetaDataPersistService).persist(anyString(), anyString(), anyMap());
-        verify(tableMetaDataPersistService).delete("foo_db", "foo_schema", "foo_table");
+        verify(persistService).persist(anyString(), anyString(), any());
+        verify(persistService.getTableMetaDataPersistService()).delete("foo_db", "foo_schema", "foo_table");
     }
     
     @Test

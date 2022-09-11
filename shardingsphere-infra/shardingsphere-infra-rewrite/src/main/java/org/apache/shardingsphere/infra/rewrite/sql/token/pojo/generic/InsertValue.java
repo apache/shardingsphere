@@ -51,7 +51,7 @@ public class InsertValue {
         ExpressionSegment expressionSegment = values.get(index);
         if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
             ParameterMarkerExpressionSegment segment = (ParameterMarkerExpressionSegment) expressionSegment;
-            return ParameterMarkerType.QUESTION == segment.getParameterMarkerType() ? "?" : "$" + segment.getParameterMarkerIndex();
+            return ParameterMarkerType.QUESTION == segment.getParameterMarkerType() ? "?" : "$" + (segment.getParameterMarkerIndex() + 1);
         } else if (expressionSegment instanceof LiteralExpressionSegment) {
             Object literals = ((LiteralExpressionSegment) expressionSegment).getLiterals();
             return literals instanceof String ? "'" + ((LiteralExpressionSegment) expressionSegment).getLiterals() + "'" : literals.toString();

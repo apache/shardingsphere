@@ -17,18 +17,17 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Binding table not found exception.
  */
-public final class BindingTableNotFoundException extends ShardingSphereSQLException {
+public final class BindingTableNotFoundException extends ShardingSQLException {
     
     private static final long serialVersionUID = -8845309665057958820L;
     
     public BindingTableNotFoundException(final String dataSource, final String logicTable, final String otherActualTable) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 20024,
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 24,
                 "Can not find binding actual table, data source is `%s`, logic table is `%s`, other actual table is `%s`", dataSource, logicTable, otherActualTable);
     }
 }

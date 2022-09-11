@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
  * Optimization SQL node convert exception.
  */
-public final class OptimizationSQLNodeConvertException extends ShardingSphereSQLException {
+public final class OptimizationSQLNodeConvertException extends KernelSQLException {
     
     private static final long serialVersionUID = -5486229929620713984L;
     
     public OptimizationSQLNodeConvertException(final SQLStatement statement) {
-        super(XOpenSQLState.SYNTAX_ERROR, 10003, "Unsupported SQL node conversion for SQL statement `%s`", statement.toString());
+        super(XOpenSQLState.SYNTAX_ERROR, 3, "Unsupported SQL node conversion for SQL statement `%s`", statement.toString());
     }
 }

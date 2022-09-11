@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.singletable.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Unsupported drop cascade table exception.
  */
-public final class UnsupportedDropCascadeTableException extends ShardingSphereSQLException {
+public final class UnsupportedDropCascadeTableException extends KernelSQLException {
     
     private static final long serialVersionUID = -5995575055241171117L;
     
     public UnsupportedDropCascadeTableException() {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 17010, "DROP TABLE ... CASCADE is not supported");
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 7010, "DROP TABLE ... CASCADE is not supported");
     }
 }

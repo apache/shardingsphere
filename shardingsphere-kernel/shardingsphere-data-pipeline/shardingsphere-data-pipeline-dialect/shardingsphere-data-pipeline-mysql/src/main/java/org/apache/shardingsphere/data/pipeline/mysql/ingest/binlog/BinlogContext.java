@@ -34,7 +34,7 @@ import java.util.Map;
 public final class BinlogContext {
     
     @Setter
-    private String fileName;
+    private volatile String fileName;
     
     private final int checksumLength;
     

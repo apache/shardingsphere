@@ -63,7 +63,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.infra.util.exception.external.sql.SQLWrapperException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.common.row.CommonRowEnumerator;
 import org.apache.shardingsphere.sqlfederation.common.row.EmptyRowEnumerator;
@@ -76,7 +76,7 @@ import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecu
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.filter.FilterableSchema;
 import org.apache.shardingsphere.sqlfederation.optimizer.planner.QueryOptimizePlannerFactory;
 import org.apache.shardingsphere.sqlfederation.common.SQLDialectFactory;
-import org.apache.shardingsphere.sqlfederation.spi.SQLFederationContext;
+import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -116,7 +116,7 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
         String schemaName = executorContext.getSchemaName();
         DatabaseType databaseType = DatabaseTypeEngine.getTrunkDatabaseType(optimizerContext.getParserContexts().get(databaseName).getDatabaseType().getType());
         SqlString sqlString = createSQLString(table, (FilterableScanNodeExecutorContext) scanContext, SQLDialectFactory.getSQLDialect(databaseType));
-        SQLFederationContext federationContext = executorContext.getFederationContext();
+        SQLFederationExecutorContext federationContext = executorContext.getFederationContext();
         QueryContext queryContext = createQueryContext(federationContext.getDatabases(), sqlString, databaseType);
         ShardingSphereDatabase database = federationContext.getDatabases().get(databaseName.toLowerCase());
         // TODO need to get session context

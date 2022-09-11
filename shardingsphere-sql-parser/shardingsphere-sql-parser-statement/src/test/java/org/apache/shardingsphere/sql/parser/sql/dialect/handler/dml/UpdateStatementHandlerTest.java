@@ -20,6 +20,11 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussUpdateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleUpdateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLUpdateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92UpdateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerUpdateStatement;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -58,5 +63,23 @@ public final class UpdateStatementHandlerTest {
         MySQLUpdateStatement updateStatement = new MySQLUpdateStatement();
         Optional<LimitSegment> limitSegment = UpdateStatementHandler.getLimitSegment(updateStatement);
         assertFalse(limitSegment.isPresent());
+    }
+    
+    @Test
+    public void assertGetOrderBySegmentForOtherDatabases() {
+        assertFalse(UpdateStatementHandler.getOrderBySegment(new OpenGaussUpdateStatement()).isPresent());
+        assertFalse(UpdateStatementHandler.getOrderBySegment(new OracleUpdateStatement()).isPresent());
+        assertFalse(UpdateStatementHandler.getOrderBySegment(new PostgreSQLUpdateStatement()).isPresent());
+        assertFalse(UpdateStatementHandler.getOrderBySegment(new SQL92UpdateStatement()).isPresent());
+        assertFalse(UpdateStatementHandler.getOrderBySegment(new SQLServerUpdateStatement()).isPresent());
+    }
+    
+    @Test
+    public void assertGetLimitSegmentForOtherDatabases() {
+        assertFalse(UpdateStatementHandler.getLimitSegment(new OpenGaussUpdateStatement()).isPresent());
+        assertFalse(UpdateStatementHandler.getLimitSegment(new OracleUpdateStatement()).isPresent());
+        assertFalse(UpdateStatementHandler.getLimitSegment(new PostgreSQLUpdateStatement()).isPresent());
+        assertFalse(UpdateStatementHandler.getLimitSegment(new SQL92UpdateStatement()).isPresent());
+        assertFalse(UpdateStatementHandler.getLimitSegment(new SQLServerUpdateStatement()).isPresent());
     }
 }

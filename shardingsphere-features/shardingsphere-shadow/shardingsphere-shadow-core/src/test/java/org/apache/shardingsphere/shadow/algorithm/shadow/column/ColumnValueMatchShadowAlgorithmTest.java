@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.algorithm.shadow.column;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.shadow.algorithm.shadow.UnsupportedShadowColumnTypeException;
+import org.apache.shardingsphere.shadow.exception.UnsupportedShadowColumnTypeException;
 import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
 import org.junit.Test;
 

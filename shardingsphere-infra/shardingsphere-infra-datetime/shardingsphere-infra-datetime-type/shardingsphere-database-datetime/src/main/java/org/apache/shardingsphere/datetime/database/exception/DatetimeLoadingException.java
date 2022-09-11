@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.datetime.database.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 import java.sql.SQLException;
@@ -25,11 +25,11 @@ import java.sql.SQLException;
 /**
  * Datetime loading exception.
  */
-public final class DatetimeLoadingException extends ShardingSphereSQLException {
+public final class DatetimeLoadingException extends KernelSQLException {
     
     private static final long serialVersionUID = 7844267165522132993L;
     
     public DatetimeLoadingException(final SQLException cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 14011, "Load datetime from database failed, reason: %s", cause.getMessage());
+        super(XOpenSQLState.GENERAL_ERROR, 4011, "Load datetime from database failed, reason: %s", cause.getMessage());
     }
 }

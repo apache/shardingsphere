@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Null sharding value exception.
  */
-public final class NullShardingValueException extends ShardingSphereSQLException {
+public final class NullShardingValueException extends ShardingSQLException {
     
     private static final long serialVersionUID = -6223086772479822057L;
     
     public NullShardingValueException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 20010, "Sharding value can't be null in insert statement");
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 10, "Sharding value can't be null in insert statement");
     }
 }

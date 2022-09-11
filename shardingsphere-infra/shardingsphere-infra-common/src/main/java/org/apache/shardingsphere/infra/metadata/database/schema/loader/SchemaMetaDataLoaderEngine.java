@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.Tab
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ViewMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoaderFactory;
-import org.apache.shardingsphere.infra.util.exception.external.sql.UnknownSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnknownSQLException;
 
 import java.sql.SQLException;
 import java.util.Collection;

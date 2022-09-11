@@ -533,6 +533,40 @@
         </on-duplicate-key-columns>
     </insert>
 
+    <insert sql-case-id="insert_on_duplicate_key_update_with_placeholders_postgres" parameters="1, 1, 'init', 'init'">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="46">
+            <column name="order_id" start-index="21" stop-index="28" />
+            <column name="user_id" start-index="31" stop-index="37" />
+            <column name="status" start-index="40" stop-index="45" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="0" start-index="56" stop-index="56" />
+                    <literal-expression value="1" start-index="56" stop-index="56" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="1" start-index="59" stop-index="59" />
+                    <literal-expression value="1" start-index="59" stop-index="59" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="2" start-index="62" stop-index="62" />
+                    <literal-expression value="init" start-index="62" stop-index="67" />
+                </assignment-value>
+            </value>
+        </values>
+        <on-duplicate-key-columns start-index="65" stop-index="111" literal-start-index="70" literal-stop-index="121">
+            <assignment start-index="102" stop-index="107" literal-start-index="107" literal-stop-index="121">
+                <column name="status" start-index="102" stop-index="107" literal-start-index="107" literal-stop-index="112" />
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="3" start-index="111" stop-index="111" />
+                    <literal-expression value="init" start-index="116" stop-index="121" />
+                </assignment-value>
+            </assignment>
+        </on-duplicate-key-columns>
+    </insert>
+
     <insert sql-case-id="insert_set_with_all_placeholders_for_table_identifier" parameters="1, 1, 'init'">
         <table name="t_order" start-index="12" stop-index="18" />
         <set start-index="20" stop-index="84" literal-stop-index="89">

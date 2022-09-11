@@ -31,4 +31,9 @@ public final class DefaultPipelineSQLBuilder extends AbstractPipelineSQLBuilder 
     public String getRightIdentifierQuoteString() {
         return "";
     }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
+    }
 }

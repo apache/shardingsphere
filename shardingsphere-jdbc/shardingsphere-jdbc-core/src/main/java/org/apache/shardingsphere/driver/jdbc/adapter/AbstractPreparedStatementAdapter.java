@@ -20,7 +20,7 @@ package org.apache.shardingsphere.driver.jdbc.adapter;
 import com.google.common.io.CharStreams;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
-import org.apache.shardingsphere.infra.util.exception.external.sql.UnknownSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnknownSQLException;
 
 import java.io.IOException;
 import java.io.InputStream;

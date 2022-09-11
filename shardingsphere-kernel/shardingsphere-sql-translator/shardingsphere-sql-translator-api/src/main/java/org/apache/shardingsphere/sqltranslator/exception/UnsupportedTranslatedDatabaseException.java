@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sqltranslator.exception;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Unsupported translated database exception.
@@ -27,6 +28,6 @@ public final class UnsupportedTranslatedDatabaseException extends SQLTranslation
     private static final long serialVersionUID = -8311552562051028033L;
     
     public UnsupportedTranslatedDatabaseException(final DatabaseType databaseType) {
-        super(11200, "Can not support database `%s` in SQL translation", databaseType.getType());
+        super(XOpenSQLState.SYNTAX_ERROR, 0, "Can not support database `%s` in SQL translation", databaseType.getType());
     }
 }

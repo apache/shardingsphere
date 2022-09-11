@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Index not existed exception.
  */
-public final class IndexNotExistedException extends ShardingSphereSQLException {
+public final class IndexNotExistedException extends ShardingSQLException {
     
     private static final long serialVersionUID = 206503570677185269L;
     
     public IndexNotExistedException(final String indexName) {
-        super(XOpenSQLState.NOT_FOUND, 20031, "Index `%s` does not exist", indexName);
+        super(XOpenSQLState.NOT_FOUND, 31, "Index `%s` does not exist", indexName);
     }
 }

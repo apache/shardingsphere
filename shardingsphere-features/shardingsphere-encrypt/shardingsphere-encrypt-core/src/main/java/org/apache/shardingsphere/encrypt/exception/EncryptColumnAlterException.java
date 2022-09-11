@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.encrypt.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Encrypt column alter exception.
  */
-public final class EncryptColumnAlterException extends ShardingSphereSQLException {
+public final class EncryptColumnAlterException extends EncryptSQLException {
     
     private static final long serialVersionUID = -8920381230872401155L;
     
     public EncryptColumnAlterException(final String table, final String alteredColumn, final String previousColumn) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 27002, "Altered column `%s` must use same encrypt algorithm with previous column `%s` in table `%s`", alteredColumn, previousColumn, table);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 2, "Altered column `%s` must use same encrypt algorithm with previous column `%s` in table `%s`", alteredColumn, previousColumn, table);
     }
 }

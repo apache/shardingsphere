@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.algorithm.shadow.validator;
 
-import org.apache.shardingsphere.shadow.algorithm.shadow.UnsupportedShadowColumnTypeException;
+import org.apache.shardingsphere.shadow.exception.UnsupportedShadowColumnTypeException;
 import org.junit.Test;
 
 import java.util.Date;

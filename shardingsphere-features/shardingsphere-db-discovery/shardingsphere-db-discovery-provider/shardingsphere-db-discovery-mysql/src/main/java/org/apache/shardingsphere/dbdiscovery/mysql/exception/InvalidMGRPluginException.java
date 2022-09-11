@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Invalid MGR plugin exception.
  */
-public final class InvalidMGRPluginException extends ShardingSphereSQLException {
+public final class InvalidMGRPluginException extends DBDiscoverySQLException {
     
     private static final long serialVersionUID = 1703082683321097037L;
     
     public InvalidMGRPluginException(final String databaseName) {
-        super(XOpenSQLState.GENERAL_ERROR, 23000, "MGR plugin is not active in database `%s`", databaseName);
+        super(XOpenSQLState.GENERAL_ERROR, 0, "MGR plugin is not active in database `%s`", databaseName);
     }
 }

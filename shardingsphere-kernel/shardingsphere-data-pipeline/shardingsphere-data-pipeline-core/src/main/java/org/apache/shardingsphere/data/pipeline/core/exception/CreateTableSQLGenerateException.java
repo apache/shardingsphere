@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.data.pipeline.core.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Create table SQL generate exception.
  */
-public final class CreateTableSQLGenerateException extends ShardingSphereSQLException {
+public final class CreateTableSQLGenerateException extends KernelSQLException {
     
     private static final long serialVersionUID = -219467568498936298L;
     
     public CreateTableSQLGenerateException(final String tableName) {
-        super(XOpenSQLState.GENERAL_ERROR, 16001, "Failed to get DDL for table `%s`", tableName);
+        super(XOpenSQLState.GENERAL_ERROR, 6001, "Failed to get DDL for table `%s`", tableName);
     }
 }

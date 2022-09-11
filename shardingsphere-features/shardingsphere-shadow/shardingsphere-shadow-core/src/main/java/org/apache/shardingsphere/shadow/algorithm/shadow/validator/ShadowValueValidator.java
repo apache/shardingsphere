@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shadow.algorithm.shadow.validator;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.shadow.algorithm.shadow.UnsupportedShadowColumnTypeException;
+import org.apache.shardingsphere.shadow.exception.UnsupportedShadowColumnTypeException;
 
 import java.util.Date;
 import java.util.HashSet;

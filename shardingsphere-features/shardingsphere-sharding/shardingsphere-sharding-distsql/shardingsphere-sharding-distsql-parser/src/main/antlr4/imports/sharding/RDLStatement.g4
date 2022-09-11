@@ -99,6 +99,10 @@ alterShardingAuditor
     : ALTER SHARDING AUDITOR auditorDefinition (COMMA auditorDefinition)*
     ;
 
+dropShardingAuditor
+    : DROP SHARDING AUDITOR ifExists? auditorName (COMMA auditorName)*
+    ;
+
 shardingTableRuleDefinition
     : (shardingAutoTableRule | shardingTableRule)
     ;

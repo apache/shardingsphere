@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.driver.jdbc.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Result set closed exception.
  */
-public final class ResultSetClosedException extends ShardingSphereSQLException {
+public final class ResultSetClosedException extends KernelSQLException {
     
     private static final long serialVersionUID = 3931974854134322934L;
     
     public ResultSetClosedException() {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 10501, "Result set has been closed");
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 501, "Result set has been closed");
     }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 import java.sql.SQLException;
@@ -25,11 +25,11 @@ import java.sql.SQLException;
 /**
  * Driver register exception.
  */
-public final class DriverRegisterException extends ShardingSphereSQLException {
+public final class DriverRegisterException extends KernelSQLException {
     
     private static final long serialVersionUID = -8091239932993280564L;
     
     public DriverRegisterException(final SQLException cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 10100, "Can not register driver, reason is: %s", cause.getMessage());
+        super(XOpenSQLState.GENERAL_ERROR, 100, "Can not register driver, reason is: %s", cause.getMessage());
     }
 }

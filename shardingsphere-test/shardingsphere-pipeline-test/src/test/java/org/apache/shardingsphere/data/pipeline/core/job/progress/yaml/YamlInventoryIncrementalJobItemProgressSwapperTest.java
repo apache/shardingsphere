@@ -37,12 +37,12 @@ public final class YamlInventoryIncrementalJobItemProgressSwapperTest {
         YamlInventoryIncrementalJobItemProgress actual = SWAPPER.swapToYamlConfiguration(progress);
         assertThat(actual.getStatus(), is("RUNNING"));
         assertThat(actual.getSourceDatabaseType(), is("H2"));
+        assertThat(actual.getDataSourceName(), is("ds_0"));
         assertThat(actual.getInventory().getFinished().length, is(2));
         assertArrayEquals(actual.getInventory().getFinished(), new String[]{"ds0.t_2", "ds0.t_1"});
         assertThat(actual.getInventory().getUnfinished().size(), is(2));
         assertThat(actual.getInventory().getUnfinished().get("ds1.t_2"), is("i,1,2"));
         assertThat(actual.getInventory().getUnfinished().get("ds1.t_1"), is(""));
-        assertThat(actual.getIncremental().getDataSourceName(), is("ds0"));
         assertThat(actual.getIncremental().getPosition().length(), is(0));
     }
     
@@ -60,7 +60,7 @@ public final class YamlInventoryIncrementalJobItemProgressSwapperTest {
         assertNotNull(progress.getInventory());
         assertNotNull(progress.getIncremental());
         assertThat(progress.getInventory().getInventoryFinishedPercentage(), is(0));
-        assertThat(progress.getIncremental().getDataSourceName(), is(""));
+        assertThat(progress.getDataSourceName(), is("ds_0"));
         assertThat(progress.getIncremental().getIncrementalLatestActiveTimeMillis(), is(0L));
         YamlInventoryIncrementalJobItemProgress actual = SWAPPER.swapToYamlConfiguration(progress);
         assertNotNull(actual.getInventory());
@@ -75,7 +75,7 @@ public final class YamlInventoryIncrementalJobItemProgressSwapperTest {
         assertNotNull(progress.getInventory());
         assertNotNull(progress.getIncremental());
         assertThat(progress.getInventory().getInventoryFinishedPercentage(), is(0));
-        assertThat(progress.getIncremental().getDataSourceName(), is("ds_0"));
+        assertThat(progress.getDataSourceName(), is("ds_0"));
         assertThat(progress.getIncremental().getIncrementalLatestActiveTimeMillis(), is(0L));
         YamlInventoryIncrementalJobItemProgress actual = SWAPPER.swapToYamlConfiguration(progress);
         assertNotNull(actual.getInventory());

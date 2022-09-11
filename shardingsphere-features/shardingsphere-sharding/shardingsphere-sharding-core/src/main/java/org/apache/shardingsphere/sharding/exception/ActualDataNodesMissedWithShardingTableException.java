@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Actual data nodes missed with sharding table exception.
  */
-public final class ActualDataNodesMissedWithShardingTableException extends ShardingSphereSQLException {
+public final class ActualDataNodesMissedWithShardingTableException extends ShardingSQLException {
     
     private static final long serialVersionUID = 1691113459377955727L;
     
     public ActualDataNodesMissedWithShardingTableException(final String tableName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 20021, "Actual data nodes must be configured for sharding table `%s`", tableName);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 21, "Actual data nodes must be configured for sharding table `%s`", tableName);
     }
 }

@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Cursor name not found exception.
  */
-public final class CursorNameNotFoundException extends ShardingSphereSQLException {
+public final class CursorNameNotFoundException extends ShardingSQLException {
     
     private static final long serialVersionUID = 3124329832945598311L;
     
     public CursorNameNotFoundException() {
-        super(XOpenSQLState.INVALID_CURSOR_NAME, 10200, "Can not get cursor name from fetch statement");
+        super(XOpenSQLState.INVALID_CURSOR_NAME, 53, "Can not get cursor name from fetch statement");
     }
 }

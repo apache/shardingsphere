@@ -21,9 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
-
-import java.util.Optional;
 
 /**
  * Pipeline SQL builder factory.
@@ -42,7 +41,6 @@ public final class PipelineSQLBuilderFactory {
      * @return got instance
      */
     public static PipelineSQLBuilder getInstance(final String databaseType) {
-        Optional<PipelineSQLBuilder> result = TypedSPIRegistry.findRegisteredService(PipelineSQLBuilder.class, databaseType, null);
-        return result.orElseGet(DefaultPipelineSQLBuilder::new);
+        return TypedSPIRegistry.findRegisteredService(PipelineSQLBuilder.class, databaseType, null).orElseGet(() -> RequiredSPIRegistry.getRegisteredService(PipelineSQLBuilder.class));
     }
 }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 import java.util.Collection;
@@ -25,11 +24,11 @@ import java.util.Collection;
 /**
  * Drop in used tables exception.
  */
-public final class DropInUsedTablesException extends ShardingSphereSQLException {
+public final class DropInUsedTablesException extends ShardingSQLException {
     
     private static final long serialVersionUID = 8939233348292246498L;
     
     public DropInUsedTablesException(final Collection<String> inUsedTables) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 20032, "Actual tables `%s` are in use", inUsedTables.toString());
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 32, "Actual tables `%s` are in use", inUsedTables.toString());
     }
 }

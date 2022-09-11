@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Invalid datetime format exception.
  */
-public final class InvalidDatetimeFormatException extends ShardingSphereSQLException {
+public final class InvalidDatetimeFormatException extends ShardingSQLException {
     
     private static final long serialVersionUID = 4472952142748467059L;
     
     public InvalidDatetimeFormatException(final String dateTimeKey, final String dateTimeValue, final String dateTimePattern) {
-        super(XOpenSQLState.INVALID_DATA_TYPE, 20026, "Invalid %s, datetime pattern should be `%s`, value is `%s`", dateTimeKey, dateTimePattern, dateTimeValue);
+        super(XOpenSQLState.INVALID_DATA_TYPE, 26, "Invalid %s, datetime pattern should be `%s`, value is `%s`", dateTimeKey, dateTimePattern, dateTimeValue);
     }
 }

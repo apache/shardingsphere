@@ -77,6 +77,13 @@ public class DatabaseMetaDataNodeTest {
     }
     
     @Test
+    public void assertGetViewName() {
+        Optional<String> actualViewName = DatabaseMetaDataNode.getViewName("/metadata/logic_db/schemas/logic_schema/views/foo_view");
+        assertTrue(actualViewName.isPresent());
+        assertThat(actualViewName.get(), is("foo_view"));
+    }
+    
+    @Test
     public void assertGetSchemaName() {
         Optional<String> actualSchemaName = DatabaseMetaDataNode.getSchemaName("/metadata/logic_db/schemas/logic_schema");
         assertTrue(actualSchemaName.isPresent());

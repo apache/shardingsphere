@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Missing generate key column with insert select exception.
  */
-public final class MissingGenerateKeyColumnWithInsertSelectException extends ShardingSphereSQLException {
+public final class MissingGenerateKeyColumnWithInsertSelectException extends ShardingSQLException {
     
     private static final long serialVersionUID = 568269722599010228L;
     
     public MissingGenerateKeyColumnWithInsertSelectException() {
-        super(XOpenSQLState.SYNTAX_ERROR, 20018, "INSERT INTO ... SELECT can not support applying key generator with absent generate key column");
+        super(XOpenSQLState.SYNTAX_ERROR, 18, "INSERT INTO ... SELECT can not support applying key generator with absent generate key column");
     }
 }

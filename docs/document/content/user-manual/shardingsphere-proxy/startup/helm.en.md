@@ -5,7 +5,7 @@ weight = 3
 
 ## Background
 
-Use [Helm](https://helm.sh/) to provide guidance for the installation of ShardingSphere-Proxy instance in a Kubernetes cluster.
+Use [Helm](https://helm.sh/) to provide guidance for the installation of ShardingSphere-Proxy instance in a Kubernetes cluster. For more details, please checkout [ShardingSphere-on-Cloud](https://github.com/apache/shardingsphere-on-cloud).
 
 ## Requirements
 
@@ -25,7 +25,7 @@ Use [Helm](https://helm.sh/) to provide guidance for the installation of Shardin
 helm repo add shardingsphere https://shardingsphere.apache.org/charts
 ```
 
-1. Install ShardingSphere-Proxy charts:
+2. Install ShardingSphere-Proxy charts:
 
 ```shell
 helm install shardingsphere-proxy shardingsphere/shardingsphere-proxy
@@ -36,16 +36,19 @@ helm install shardingsphere-proxy shardingsphere/shardingsphere-proxy
 1. Charts will be installed with default configuration if the following commands are executed:
 
 ```shell
-cd shardingsphere-proxy/charts/governance
-helm dependency build 
-cd ../..
-helm dependency build 
-cd ..
-helm install shardingsphere-proxy shardingsphere-proxy
+ git clone https://github.com/apache/shardingsphere-on-cloud.git
+ cd charts/shardingsphere-proxy/charts/governance
+ helm dependency build 
+ cd ../..
+ helm dependency build 
+ cd ..
+ helm install shardingsphere-proxy shardingsphere-proxy
 ```
-1. Please refer to the configuration items description below for more details:
 
-1. Execute `helm list` to acquire all installed releases.
+Note:
+
+1. Please refer to the configuration items description below for more details:
+2. Execute `helm list` to acquire all installed releases.
 
 ### Uninstall
 

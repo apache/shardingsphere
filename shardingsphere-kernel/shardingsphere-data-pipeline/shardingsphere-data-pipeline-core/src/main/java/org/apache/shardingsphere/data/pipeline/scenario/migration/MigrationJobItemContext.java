@@ -49,6 +49,8 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
     
     private final int shardingItem;
     
+    private final String dataSourceName;
+    
     private volatile boolean stopping;
     
     private volatile JobStatus status = JobStatus.RUNNING;
@@ -88,6 +90,7 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
         this.jobConfig = jobConfig;
         jobId = jobConfig.getJobId();
         this.shardingItem = shardingItem;
+        this.dataSourceName = taskConfig.getDataSourceName();
         this.initProgress = initProgress;
         this.jobProcessContext = jobProcessContext;
         this.taskConfig = taskConfig;

@@ -27,6 +27,7 @@ import org.apache.shardingsphere.integration.transaction.engine.opengauss.OpenGa
 import org.apache.shardingsphere.integration.transaction.engine.opengauss.OpenGaussProxyTransactionIT;
 import org.apache.shardingsphere.integration.transaction.engine.postgresql.PostgreSQLJdbcTransactionIT;
 import org.apache.shardingsphere.integration.transaction.engine.postgresql.PostgreSQLProxyTransactionIT;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.AdapterContainerConstants;
 
 /**
  * Transaction test case registry.
@@ -35,17 +36,17 @@ import org.apache.shardingsphere.integration.transaction.engine.postgresql.Postg
 @Getter
 public enum TransactionTestCaseRegistry {
     
-    MySQL_JDBC_IT(MySQLJdbcTransactionIT.class, TransactionTestConstants.MYSQL, TransactionTestConstants.JDBC),
+    MySQL_JDBC_IT(MySQLJdbcTransactionIT.class, TransactionTestConstants.MYSQL, AdapterContainerConstants.JDBC),
     
-    MySQL_PROXY_IT(MySQLProxyTransactionIT.class, TransactionTestConstants.MYSQL, TransactionTestConstants.PROXY),
+    MySQL_PROXY_IT(MySQLProxyTransactionIT.class, TransactionTestConstants.MYSQL, AdapterContainerConstants.PROXY),
     
-    OPENGAUSS_JDBC_IT(OpenGaussJdbcTransactionIT.class, TransactionTestConstants.OPENGAUSS, TransactionTestConstants.JDBC),
+    OPENGAUSS_JDBC_IT(OpenGaussJdbcTransactionIT.class, TransactionTestConstants.OPENGAUSS, AdapterContainerConstants.JDBC),
     
-    OPENGAUSS_PROXY_IT(OpenGaussProxyTransactionIT.class, TransactionTestConstants.OPENGAUSS, TransactionTestConstants.PROXY),
+    OPENGAUSS_PROXY_IT(OpenGaussProxyTransactionIT.class, TransactionTestConstants.OPENGAUSS, AdapterContainerConstants.PROXY),
     
-    POSTGRESQL_JDBC_IT(PostgreSQLJdbcTransactionIT.class, TransactionTestConstants.POSTGRESQL, TransactionTestConstants.JDBC),
+    POSTGRESQL_JDBC_IT(PostgreSQLJdbcTransactionIT.class, TransactionTestConstants.POSTGRESQL, AdapterContainerConstants.JDBC),
     
-    POSTGRESQL_PROXY_IT(PostgreSQLProxyTransactionIT.class, TransactionTestConstants.POSTGRESQL, TransactionTestConstants.PROXY);
+    POSTGRESQL_PROXY_IT(PostgreSQLProxyTransactionIT.class, TransactionTestConstants.POSTGRESQL, AdapterContainerConstants.PROXY);
     
     private final Class<? extends BaseTransactionITCase> testCaseClass;
     

@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Unsupported sharding operation exception.
  */
-public final class UnsupportedShardingOperationException extends ShardingSphereSQLException {
+public final class UnsupportedShardingOperationException extends ShardingSQLException {
     
     private static final long serialVersionUID = 1009938372927671322L;
     
     public UnsupportedShardingOperationException(final String operation, final String tableName) {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 20013, "Can not support operation `%s` with sharding table `%s`", operation, tableName);
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 13, "Can not support operation `%s` with sharding table `%s`", operation, tableName);
     }
 }

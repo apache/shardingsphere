@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.infra.lock.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Table lock wait timeout exception.
  */
-public final class TableLockWaitTimeoutException extends ShardingSphereSQLException {
+public final class TableLockWaitTimeoutException extends KernelSQLException {
     
     private static final long serialVersionUID = 2599713085782288003L;
     
     public TableLockWaitTimeoutException(final String schemaName, final String tableName, final long timeoutMilliseconds) {
-        super(XOpenSQLState.GENERAL_ERROR, 14001, "The table `%s` of schema `%s` lock wait timeout of %s ms exceeded", tableName, schemaName, String.valueOf(timeoutMilliseconds));
+        super(XOpenSQLState.GENERAL_ERROR, 4001, "The table `%s` of schema `%s` lock wait timeout of %s ms exceeded", tableName, schemaName, String.valueOf(timeoutMilliseconds));
     }
 }

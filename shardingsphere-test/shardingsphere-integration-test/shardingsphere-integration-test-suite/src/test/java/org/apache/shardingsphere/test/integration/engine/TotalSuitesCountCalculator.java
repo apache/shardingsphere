@@ -19,6 +19,8 @@ package org.apache.shardingsphere.test.integration.engine;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.AdapterContainerConstants;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.EnvironmentConstants;
 import org.apache.shardingsphere.test.integration.env.runtime.IntegrationTestEnvironment;
 
 /**
@@ -60,10 +62,10 @@ public final class TotalSuitesCountCalculator {
     }
     
     private static boolean isRunDCL() {
-        return ENV.getRunModes().contains("Cluster");
+        return ENV.getRunModes().contains(EnvironmentConstants.CLUSTER_MODE);
     }
     
     private static boolean isRunProxy() {
-        return ENV.getRunModes().contains("Cluster") && ENV.getClusterEnvironment().getAdapters().contains("proxy");
+        return ENV.getRunModes().contains(EnvironmentConstants.CLUSTER_MODE) && ENV.getClusterEnvironment().getAdapters().contains(AdapterContainerConstants.PROXY);
     }
 }

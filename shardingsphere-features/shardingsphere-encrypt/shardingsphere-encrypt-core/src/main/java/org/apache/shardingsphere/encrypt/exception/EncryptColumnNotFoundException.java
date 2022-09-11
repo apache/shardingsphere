@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.encrypt.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Encrypt column not found exception.
  */
-public final class EncryptColumnNotFoundException extends ShardingSphereSQLException {
+public final class EncryptColumnNotFoundException extends EncryptSQLException {
     
     private static final long serialVersionUID = -8481487069938556675L;
     
     public EncryptColumnNotFoundException(final String tableName, final String columnName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 27005, "Fail to find encrypt column `%s` from table `%s`", columnName, tableName);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 5, "Fail to find encrypt column `%s` from table `%s`", columnName, tableName);
     }
 }

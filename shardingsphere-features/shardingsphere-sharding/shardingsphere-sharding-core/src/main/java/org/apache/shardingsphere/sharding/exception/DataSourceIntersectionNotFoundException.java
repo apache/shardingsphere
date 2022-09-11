@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 import java.util.Collection;
@@ -25,11 +24,11 @@ import java.util.Collection;
 /**
  * Data source intersection not found exception.
  */
-public final class DataSourceIntersectionNotFoundException extends ShardingSphereSQLException {
+public final class DataSourceIntersectionNotFoundException extends ShardingSQLException {
     
     private static final long serialVersionUID = -2142571707728236489L;
     
     public DataSourceIntersectionNotFoundException(final Collection<String> logicTables) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 20023, "Can not find actual data source intersection for logic tables `%s`", logicTables);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 23, "Can not find actual data source intersection for logic tables `%s`", logicTables);
     }
 }

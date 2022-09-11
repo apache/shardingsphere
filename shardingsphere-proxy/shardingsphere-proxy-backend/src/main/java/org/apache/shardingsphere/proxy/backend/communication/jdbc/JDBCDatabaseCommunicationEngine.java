@@ -49,9 +49,9 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryRespon
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.sharding.merge.common.IteratorStreamMergedResult;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
-import org.apache.shardingsphere.sqlfederation.factory.SQLFederationExecutorFactory;
-import org.apache.shardingsphere.sqlfederation.spi.SQLFederationContext;
+import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
+import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -145,7 +145,8 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
         String databaseName = backendConnection.getConnectionSession().getDatabaseName();
         DatabaseType databaseType = getQueryContext().getSqlStatementContext().getDatabaseType();
         String schemaName = getQueryContext().getSqlStatementContext().getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(databaseType, databaseName));
-        federationExecutor = SQLFederationExecutorFactory.newInstance(databaseName, schemaName, metaDataContexts.getMetaData(),
+        SQLFederationRule sqlFederationRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class);
+        federationExecutor = sqlFederationRule.getSQLFederationExecutor(databaseName, schemaName, metaDataContexts.getMetaData(),
                 new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), backendConnection.isSerialExecute()),
                 ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext());
     }
@@ -158,7 +159,7 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
         ProxyJDBCExecutorCallback callback = ProxyJDBCExecutorCallbackFactory.newInstance(getDriverType(), protocolType, databaseType,
                 queryContext.getSqlStatementContext().getSqlStatement(), this, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown(), true);
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(isReturnGeneratedKeys, metaDataContexts);
-        SQLFederationContext context = new SQLFederationContext(false, queryContext, metaDataContexts.getMetaData().getDatabases());
+        SQLFederationExecutorContext context = new SQLFederationExecutorContext(false, queryContext, metaDataContexts.getMetaData().getDatabases());
         return federationExecutor.executeQuery(prepareEngine, callback, context);
     }
     

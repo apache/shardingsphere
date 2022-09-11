@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.traffic.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Empty traffic execution unit exception.
  */
-public final class EmptyTrafficExecutionUnitException extends ShardingSphereSQLException {
+public final class EmptyTrafficExecutionUnitException extends TrafficException {
     
     private static final long serialVersionUID = 1871625745475813160L;
     
     public EmptyTrafficExecutionUnitException() {
-        super(XOpenSQLState.NOT_FOUND, 11400, "Can not get traffic execution unit");
+        super(XOpenSQLState.NOT_FOUND, 0, "Can not get traffic execution unit");
     }
 }

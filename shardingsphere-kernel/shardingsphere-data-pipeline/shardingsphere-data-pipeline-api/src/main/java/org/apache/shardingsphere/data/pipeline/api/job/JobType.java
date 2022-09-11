@@ -48,7 +48,7 @@ public enum JobType {
     JobType(final String typeName, final String typeCode) {
         Preconditions.checkArgument(StringUtils.isAlpha(typeName), "type name must be character of [a-z]");
         this.typeName = typeName;
-        this.lowercaseTypeName = typeName.toLowerCase();
+        lowercaseTypeName = typeName.toLowerCase();
         Preconditions.checkArgument(typeCode.length() == 2, "code length is not 2");
         this.typeCode = typeCode;
     }

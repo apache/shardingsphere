@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 import java.util.Collection;
@@ -25,11 +24,11 @@ import java.util.Collection;
 /**
  * Sharding route algorithm exception.
  */
-public final class ShardingRouteAlgorithmException extends ShardingSphereSQLException {
+public final class ShardingRouteAlgorithmException extends ShardingSQLException {
     
     private static final long serialVersionUID = -1935526748399934543L;
     
     public ShardingRouteAlgorithmException(final String routedTargetName, final Collection<String> availableTargetNames) {
-        super(XOpenSQLState.GENERAL_ERROR, 20050, "Routed target `%s` does not exist, available targets are `%s`", routedTargetName, availableTargetNames.toString());
+        super(XOpenSQLState.GENERAL_ERROR, 50, "Routed target `%s` does not exist, available targets are `%s`", routedTargetName, availableTargetNames.toString());
     }
 }

@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Unsupported create view exception.
  */
-public final class UnsupportedCreateViewException extends ShardingSphereSQLException {
+public final class UnsupportedCreateViewException extends ShardingSQLException {
     
     private static final long serialVersionUID = -321126834428609310L;
     
     public UnsupportedCreateViewException() {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 20015, "The CREATE VIEW statement contains unsupported query statement");
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 15, "The CREATE VIEW statement contains unsupported query statement");
     }
 }

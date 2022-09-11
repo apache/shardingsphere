@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.sharding.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * DML multiple data nodes with limit Exception.
  */
-public final class DMLMultipleDataNodesWithLimitException extends ShardingSphereSQLException {
+public final class DMLMultipleDataNodesWithLimitException extends ShardingSQLException {
     
     private static final long serialVersionUID = -203240151021113065L;
     
     public DMLMultipleDataNodesWithLimitException(final String operation) {
-        super(XOpenSQLState.SYNTAX_ERROR, 20016, "%s ... LIMIT can not support route to multiple data nodes", operation);
+        super(XOpenSQLState.SYNTAX_ERROR, 16, "%s ... LIMIT can not support route to multiple data nodes", operation);
     }
 }
