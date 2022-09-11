@@ -175,4 +175,4 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | --------- | ----------- | ------ |
 | HY004     | 30000       | Unknown exception: %s |
 | 0A000     | 30001       | Unsupported operation: %s |
-| 42000     | 30002       | Unsupported command: %s |
+| 0A000     | 30002       | Unsupported command: %s |
