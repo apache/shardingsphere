@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.driver.jdbc.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.transaction.exception.TransactionSQLException;
 
 /**
  * JDBC transaction across databases exception.
  */
-public final class JDBCTransactionAcrossDatabasesException extends KernelSQLException {
+public final class JDBCTransactionAcrossDatabasesException extends TransactionSQLException {
     
     private static final long serialVersionUID = 3294968323117604702L;
     
     public JDBCTransactionAcrossDatabasesException() {
-        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 1321, "JDBC does not support operations across multiple logical databases in transaction");
+        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 3, "JDBC does not support operations across multiple logical databases in transaction");
     }
 }

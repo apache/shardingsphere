@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.infra.executor.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
+import org.apache.shardingsphere.infra.exception.DataSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Unsupported stream charset conversion exception.
  */
-public final class UnsupportedStreamCharsetConversionException extends KernelSQLException {
+public final class UnsupportedStreamCharsetConversionException extends DataSQLException {
     
     private static final long serialVersionUID = 4577091201937095156L;
     

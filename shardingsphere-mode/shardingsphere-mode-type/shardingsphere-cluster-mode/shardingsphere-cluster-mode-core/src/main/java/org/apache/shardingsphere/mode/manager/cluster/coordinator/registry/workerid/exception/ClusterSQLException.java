@@ -15,18 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.exception;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.SQLState;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 
 /**
- * Pipeline job not found exception.
+ * Cluster SQL exception.
  */
-public final class PipelineJobNotFoundException extends PipelineSQLException {
+public abstract class ClusterSQLException extends KernelSQLException {
     
-    private static final long serialVersionUID = -903289953649758722L;
+    private static final long serialVersionUID = -2839102961922546497L;
     
-    public PipelineJobNotFoundException(final String jobId) {
-        super(XOpenSQLState.GENERAL_ERROR, 0, "Can not find pipeline job `%s`", jobId);
+    private static final int KERNEL_CODE = 7;
+    
+    public ClusterSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArguments) {
+        super(sqlState, KERNEL_CODE, errorCode, reason, messageArguments);
     }
 }

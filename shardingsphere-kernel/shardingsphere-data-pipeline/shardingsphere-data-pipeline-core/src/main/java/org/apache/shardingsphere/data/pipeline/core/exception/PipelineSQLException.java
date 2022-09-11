@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.exception;
+package org.apache.shardingsphere.data.pipeline.core.exception;
 
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.SQLState;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Start nested XA transaction exception.
+ * Pipeline SQL exception.
  */
-public final class StartNestedXATransactionException extends KernelSQLException {
+public abstract class PipelineSQLException extends KernelSQLException {
     
-    private static final long serialVersionUID = 7761100591709104351L;
+    private static final long serialVersionUID = 139616805450096292L;
     
-    public StartNestedXATransactionException() {
-        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 1323, "Can not start new XA transaction in a active transaction");
+    private static final int KERNEL_CODE = 8;
+    
+    public PipelineSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArguments) {
+        super(sqlState, KERNEL_CODE, errorCode, reason, messageArguments);
     }
 }

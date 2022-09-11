@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
+import org.apache.shardingsphere.infra.exception.DataSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 import java.util.Objects;
@@ -25,11 +25,11 @@ import java.util.Objects;
 /**
  * Unsupported data type conversion exception.
  */
-public final class UnsupportedDataTypeConversionException extends KernelSQLException {
+public final class UnsupportedDataTypeConversionException extends DataSQLException {
     
     private static final long serialVersionUID = 4808672149254705863L;
     
     public UnsupportedDataTypeConversionException(final Class<?> convertType, final Object value) {
-        super(XOpenSQLState.INVALID_DATA_TYPE, 4, "Unsupported conversion data type `%s` for value `%s`", convertType.getName(), Objects.toString(value));
+        super(XOpenSQLState.INVALID_DATA_TYPE, 6, "Unsupported conversion data type `%s` for value `%s`", convertType.getName(), Objects.toString(value));
     }
 }
