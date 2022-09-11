@@ -28,6 +28,6 @@ public final class UnsupportedTranslatedSQLException extends SQLTranslationExcep
     private static final long serialVersionUID = -1419778194546662319L;
     
     public UnsupportedTranslatedSQLException(final String sql) {
-        super(XOpenSQLState.SYNTAX_ERROR, 21, "Translation error, SQL is: %s", sql);
+        super(XOpenSQLState.SYNTAX_ERROR, 41, "Translation error, SQL is: %s", sql);
     }
 }

@@ -29,6 +29,6 @@ public final class UnsupportedTranslatedDatabaseException extends SQLTranslation
     private static final long serialVersionUID = -8311552562051028033L;
     
     public UnsupportedTranslatedDatabaseException(final DatabaseType databaseType) {
-        super(XOpenSQLState.SYNTAX_ERROR, 20, "Can not support database `%s` in SQL translation", databaseType.getType());
+        super(XOpenSQLState.SYNTAX_ERROR, 40, "Can not support database `%s` in SQL translation", databaseType.getType());
     }
 }

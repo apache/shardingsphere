@@ -108,22 +108,22 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 42S01     | 20007       | Index \`%s\` already exists |
 | 42S02     | 20008       | Index \`%s\` does not exist |
 | 42S01     | 20009       | View name has to bind to %s tables |
-| 44000     | 20010       | Sharding value can't be null in insert statement |
-| HY004     | 20011       | Found different types for sharding value \`%s\` |
-| HY004     | 20012       | Invalid %s, datetime pattern should be \`%s\`, value is \`%s\` |
-| 0A000     | 20020       | Can not support operation \`%s\` with sharding table \`%s\` |
-| 44000     | 20021       | Can not update sharding value for table \`%s\` |
-| 0A000     | 20022       | The CREATE VIEW statement contains unsupported query statement |
-| 44000     | 20023       | PREPARE statement can not support sharding tables route to same data sources |
-| 44000     | 20024       | The table inserted and the table selected must be the same or bind tables |
-| 0A000     | 20025       | Can not support DML operation with multiple tables \`%s\` |
-| 42000     | 20026       | %s ... LIMIT can not support route to multiple data nodes |
-| 44000     | 20027       | Can not find actual data source intersection for logic tables \`%s\` |
-| 42000     | 20028       | INSERT INTO ... SELECT can not support applying key generator with absent generate key column |
-| 0A000     | 20029       | Alter view rename .. to .. statement should have same config for \`%s\` and \`%s\` |
-| HY000     | 20030       | \`%s %s\` can not route correctly for %s \`%s\` |
-| 42S02     | 20031       | Can not get route result, please check your sharding rule configuration |
-| 34000     | 20032       | Can not get cursor name from fetch statement |
+| 44000     | 20020       | Sharding value can't be null in insert statement |
+| HY004     | 20021       | Found different types for sharding value \`%s\` |
+| HY004     | 20022       | Invalid %s, datetime pattern should be \`%s\`, value is \`%s\` |
+| 0A000     | 20040       | Can not support operation \`%s\` with sharding table \`%s\` |
+| 44000     | 20041       | Can not update sharding value for table \`%s\` |
+| 0A000     | 20042       | The CREATE VIEW statement contains unsupported query statement |
+| 44000     | 20043       | PREPARE statement can not support sharding tables route to same data sources |
+| 44000     | 20044       | The table inserted and the table selected must be the same or bind tables |
+| 0A000     | 20045       | Can not support DML operation with multiple tables \`%s\` |
+| 42000     | 20046       | %s ... LIMIT can not support route to multiple data nodes |
+| 44000     | 20047       | Can not find actual data source intersection for logic tables \`%s\` |
+| 42000     | 20048       | INSERT INTO ... SELECT can not support applying key generator with absent generate key column |
+| 0A000     | 20049       | Alter view rename .. to .. statement should have same config for \`%s\` and \`%s\` |
+| HY000     | 20060       | \`%s %s\` can not route correctly for %s \`%s\` |
+| 42S02     | 20061       | Can not get route result, please check your sharding rule configuration |
+| 34000     | 20062       | Can not get cursor name from fetch statement |
 | HY000     | 20080       | Sharding algorithm class \`%s\` should be implement \`%s\` |
 | HY000     | 20081       | Routed target \`%s\` does not exist, available targets are \`%s\` |
 | 44000     | 20082       | Inline sharding algorithms expression \`%s\` and sharding column \`%s\` do not match |
@@ -142,8 +142,8 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
-| 42000     | 20420       | Can not support database \`%s\` in SQL translation |
-| 42000     | 20421       | Translation error, SQL is: %s |
+| 42000     | 20440       | Can not support database \`%s\` in SQL translation |
+| 42000     | 20441       | Translation error, SQL is: %s |
 
 ### 流量治理
 
@@ -158,16 +158,16 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 44000     | 20700       | Can not find logic encrypt column by \`%s\` |
 | 44000     | 20701       | Fail to find encrypt column \`%s\` from table \`%s\` |
 | 44000     | 20702       | Altered column \`%s\` must use same encrypt algorithm with previous column \`%s\` in table \`%s\` |
-| 42000     | 20720       | Insert value of index \`%s\` can not support for encrypt |
-| 0A000     | 20721       | The SQL clause \`%s\` is unsupported in encrypt rule |
+| 42000     | 20740       | Insert value of index \`%s\` can not support for encrypt |
+| 0A000     | 20741       | The SQL clause \`%s\` is unsupported in encrypt rule |
 | HY004     | 20780       | Encrypt algorithm \`%s\` initialization failed, reason is: %s |
 
 ### 影子库
 
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
-| HY004     | 20810       | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type |
-| 42000     | 20820       | Insert value of index \`%s\` can not support for shadow |
+| HY004     | 20820       | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type |
+| 42000     | 20840       | Insert value of index \`%s\` can not support for shadow |
 
 ## 其他异常
 

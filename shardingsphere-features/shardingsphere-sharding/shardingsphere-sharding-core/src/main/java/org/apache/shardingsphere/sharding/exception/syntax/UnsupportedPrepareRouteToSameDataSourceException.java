@@ -28,6 +28,6 @@ public final class UnsupportedPrepareRouteToSameDataSourceException extends Shar
     private static final long serialVersionUID = -451667286925533523L;
     
     public UnsupportedPrepareRouteToSameDataSourceException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 23, "PREPARE statement can not support sharding tables route to same data sources");
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 43, "PREPARE statement can not support sharding tables route to same data sources");
     }
 }

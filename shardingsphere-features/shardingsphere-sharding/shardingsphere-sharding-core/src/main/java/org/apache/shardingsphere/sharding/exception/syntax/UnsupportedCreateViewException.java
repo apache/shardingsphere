@@ -28,6 +28,6 @@ public final class UnsupportedCreateViewException extends ShardingSQLException {
     private static final long serialVersionUID = -321126834428609310L;
     
     public UnsupportedCreateViewException() {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 22, "The CREATE VIEW statement contains unsupported query statement");
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 42, "The CREATE VIEW statement contains unsupported query statement");
     }
 }

@@ -28,6 +28,6 @@ public final class InvalidDatetimeFormatException extends ShardingSQLException {
     private static final long serialVersionUID = 4472952142748467059L;
     
     public InvalidDatetimeFormatException(final String dateTimeKey, final String dateTimeValue, final String dateTimePattern) {
-        super(XOpenSQLState.INVALID_DATA_TYPE, 12, "Invalid %s, datetime pattern should be `%s`, value is `%s`", dateTimeKey, dateTimePattern, dateTimeValue);
+        super(XOpenSQLState.INVALID_DATA_TYPE, 22, "Invalid %s, datetime pattern should be `%s`, value is `%s`", dateTimeKey, dateTimePattern, dateTimeValue);
     }
 }
