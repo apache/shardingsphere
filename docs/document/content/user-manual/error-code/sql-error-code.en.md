@@ -24,11 +24,11 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | HY004     | 11005       | Unsupported conversion stream charset \`%s\` |
 | HY004     | 11006       | Unsupported conversion data type \`%s\` for value \`%s\` |
 | 42000     | 12000       | You have an error in your SQL syntax: %s |
-| HV008     | 12002       | Column index \`%d\` is out of range |
-| 42S02     | 12003       | Can not find column label \`%s\` |
-| 0A000     | 12004       | DROP TABLE ... CASCADE is not supported |
-| HY000     | 12005       | Could not support variable \`%s\` |
-| HY004     | 12010       | SQL String can not be NULL or empty |
+| 42000     | 12001       | SQL String can not be NULL or empty |
+| 42000     | 12002       | Could not support variable \`%s\` |
+| 0A000     | 12003       | DROP TABLE ... CASCADE is not supported |
+| 42S02     | 12004       | Can not find column label \`%s\` |
+| HV008     | 12005       | Column index \`%d\` is out of range |
 | 01000     | 13000       | Circuit break open, the request has been ignored |
 | 08000     | 13001       | Can not get %d connections one time, partition succeed connection(%d) have released. Please consider increasing the \`maxPoolSize\` of the data sources or decreasing the \`max-connections-size-per-query\` in properties |
 | 08000     | 13002       | Connection has been closed |

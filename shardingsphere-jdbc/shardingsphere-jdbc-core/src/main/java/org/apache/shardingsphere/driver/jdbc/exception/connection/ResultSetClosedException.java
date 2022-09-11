@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.exception;
+package org.apache.shardingsphere.driver.jdbc.exception.connection;
 
 import org.apache.shardingsphere.infra.exception.ConnectionSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Connection closed exception.
+ * Result set closed exception.
  */
-public final class ConnectionClosedException extends ConnectionSQLException {
+public final class ResultSetClosedException extends ConnectionSQLException {
     
-    private static final long serialVersionUID = 8667898851939815681L;
+    private static final long serialVersionUID = 3931974854134322934L;
     
-    public ConnectionClosedException() {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 2, "Connection has been closed");
+    public ResultSetClosedException() {
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 3, "Result set has been closed");
     }
 }
