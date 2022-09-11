@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.mysql.exception;
+package org.apache.shardingsphere.dbdiscovery.mysql.exception.mgr;
 
+import org.apache.shardingsphere.dbdiscovery.mysql.exception.DBDiscoverySQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Invalid MGR mode exception.
+ * Invalid MGR replication group member exception.
  */
-public final class InvalidMGRModeException extends DBDiscoverySQLException {
+public final class InvalidMGRReplicationGroupMemberException extends DBDiscoverySQLException {
     
-    private static final long serialVersionUID = -2190741601319220590L;
+    private static final long serialVersionUID = 3766206496827463146L;
     
-    public InvalidMGRModeException(final String databaseName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 1, "MGR is not in single primary mode in database `%s`", databaseName);
+    public InvalidMGRReplicationGroupMemberException(final String url, final String databaseName) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 82, "`%s` is not in MGR replication group member in database `%s`", url, databaseName);
     }
 }

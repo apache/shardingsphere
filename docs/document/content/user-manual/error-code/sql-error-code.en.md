@@ -133,10 +133,10 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 | SQL State | Vendor Code | Reason |
 | --------- | ----------- | ------ |
-| HY000     | 23000       | MGR plugin is not active in database \`%s\` |
-| 44000     | 23001       | MGR is not in single primary mode in database \`%s\` |
-| 44000     | 23002       | \`%s\` is not in MGR replication group member in database \`%s\` |
-| 44000     | 23003       | Group name in MGR is not same with configured one \`%s\` in database \`%s\` |
+| HY000     | 23080       | MGR plugin is not active in database \`%s\` |
+| 44000     | 23081       | MGR is not in single primary mode in database \`%s\` |
+| 44000     | 23082       | \`%s\` is not in MGR replication group member in database \`%s\` |
+| 44000     | 23083       | Group name in MGR is not same with configured one \`%s\` in database \`%s\` |
 
 ### SQL Dialect Translator
 
