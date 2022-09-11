@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.exception;
+package org.apache.shardingsphere.traffic.exception.metadata;
 
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.traffic.exception.TrafficException;
 
 /**
  * Empty traffic execution unit exception.
