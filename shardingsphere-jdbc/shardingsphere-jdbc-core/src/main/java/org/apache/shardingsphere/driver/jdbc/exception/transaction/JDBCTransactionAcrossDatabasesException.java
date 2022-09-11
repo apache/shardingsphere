@@ -28,6 +28,6 @@ public final class JDBCTransactionAcrossDatabasesException extends TransactionSQ
     private static final long serialVersionUID = 3294968323117604702L;
     
     public JDBCTransactionAcrossDatabasesException() {
-        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 3, "JDBC does not support operations across multiple logical databases in transaction");
+        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 100, "JDBC does not support operations across multiple logical databases in transaction");
     }
 }

@@ -29,21 +29,11 @@ public final class KernelSQLExceptionTest {
     
     @SuppressWarnings("serial")
     @Test
-    public void assertNewKernelSQLExceptionSQLExceptionWithSingleDigitalForKernelCode() {
+    public void assertNewKernelSQLExceptionSQLException() {
         SQLException actual = new KernelSQLException(XOpenSQLState.GENERAL_ERROR, 1, 1, "reason") {
         }.toSQLException();
         assertThat(actual.getSQLState(), is(XOpenSQLState.GENERAL_ERROR.getValue()));
-        assertThat(actual.getErrorCode(), is(10101));
-        assertThat(actual.getMessage(), is("reason"));
-    }
-    
-    @SuppressWarnings("serial")
-    @Test
-    public void assertNewKernelSQLExceptionSQLExceptionWithDoubleDigitalForKernelCode() {
-        SQLException actual = new KernelSQLException(XOpenSQLState.GENERAL_ERROR, 99, 10, "reason") {
-        }.toSQLException();
-        assertThat(actual.getSQLState(), is(XOpenSQLState.GENERAL_ERROR.getValue()));
-        assertThat(actual.getErrorCode(), is(19910));
+        assertThat(actual.getErrorCode(), is(11001));
         assertThat(actual.getMessage(), is("reason"));
     }
 }

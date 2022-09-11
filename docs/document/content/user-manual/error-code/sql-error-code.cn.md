@@ -14,83 +14,83 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
+| 42000     | 10000       | Resource does not exist |
 | 08000     | 10001       | The URL \`%s\` is not recognized, please refer to the pattern \`%s\` |
 | 42000     | 10002       | Can not support 3-tier structure for actual data node \`%s\` with JDBC \`%s\` |
-| 42000     | 10003       | Unsupported SQL node conversion for SQL statement \`%s\` |
-| 42000     | 10012       | Resource does not exist |
-| 42000     | 10013       | Rule does not exist |
-| HY004     | 10014       | Invalid format for actual data node \`%s\` |
-| 42S02     | 10020       | Single table \`%s\` does not exist |
-| 42S02     | 10021       | Schema \`%s\` does not exist |
+| HY004     | 10003       | Invalid format for actual data node \`%s\` |
+| 42000     | 10004       | Unsupported SQL node conversion for SQL statement \`%s\` |
+| 42000     | 10010       | Rule does not exist |
+| 42S02     | 10020       | Schema \`%s\` does not exist |
+| 42S02     | 10021       | Single table \`%s\` does not exist |
 | HY000     | 10022       | Can not load table with database name \`%s\` and data source name \`%s\` |
-| 0A000     | 10023       | Can not drop schema \`%s\` because of contains tables |
+| 0A000     | 11030       | Can not drop schema \`%s\` because of contains tables |
 
 ### 数据
 
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
-| HY004     | 10101       | Invalid value \`%s\` |
-| HY004     | 10105       | Unsupported conversion stream charset \`%s\` |
-| HY004     | 10106       | Unsupported conversion data type \`%s\` for value \`%s\` |
+| HY004     | 11000       | Invalid value \`%s\` |
+| HY004     | 11001       | Unsupported conversion data type \`%s\` for value \`%s\` |
+| HY004     | 11010       | Unsupported conversion stream charset \`%s\` |
 
 ### 语法
 
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
-| 42000     | 10200       | You have an error in your SQL syntax: %s |
-| 42000     | 10201       | SQL String can not be NULL or empty |
-| 42000     | 10202       | Could not support variable \`%s\` |
-| 0A000     | 10203       | DROP TABLE ... CASCADE is not supported |
-| 42S02     | 10204       | Can not find column label \`%s\` |
-| HV008     | 10205       | Column index \`%d\` is out of range |
+| 42000     | 12000       | You have an error in your SQL syntax: %s |
+| 42000     | 12001       | SQL String can not be NULL or empty |
+| 42000     | 12002       | Could not support variable \`%s\` |
+| 42S02     | 12003       | Can not find column label \`%s\` |
+| HV008     | 12004       | Column index \`%d\` is out of range |
+| 0A000     | 12010       | DROP TABLE ... CASCADE is not supported |
 
 ### 连接
 
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
-| 01000     | 10300       | Circuit break open, the request has been ignored |
-| 08000     | 10301       | Can not get %d connections one time, partition succeed connection(%d) have released. Please consider increasing the \`maxPoolSize\` of the data sources or decreasing the \`max-connections-size-per-query\` in properties |
-| 08000     | 10302       | Connection has been closed |
-| 08000     | 10303       | Result set has been closed |
-| HY000     | 10304       | Load datetime from database failed, reason: %s |
-| HY004     | 10310       | Can not register driver, reason is: %s |
+| 08000     | 13000       | Can not register driver, reason is: %s |
+| 01000     | 13010       | Circuit break open, the request has been ignored |
+| 08000     | 13020       | Can not get %d connections one time, partition succeed connection(%d) have released. Please consider increasing the \`maxPoolSize\` of the data sources or decreasing the \`max-connections-size-per-query\` in properties |
+| 08000     | 13030       | Connection has been closed |
+| 08000     | 13031       | Result set has been closed |
+| HY000     | 13090       | Load datetime from database failed, reason: %s |
 
 ### 事务
 
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
-| 25000     | 10400       | Switch transaction type failed, please terminate the current transaction |
-| 25000     | 10401       | Can not start new XA transaction in a active transaction |
-| 25000     | 10402       | Failed to create \`%s\` XA data source |
-| 25000     | 10403       | JDBC does not support operations across multiple logical databases in transaction |
+| 25000     | 14000       | Switch transaction type failed, please terminate the current transaction |
+| 25000     | 14100       | JDBC does not support operations across multiple logical databases in transaction |
+| 25000     | 14200       | Can not start new XA transaction in a active transaction |
+| 25000     | 14201       | Failed to create \`%s\` XA data source |
 
 ### 锁
 
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
-| HY000     | 10500       | The table \`%s\` of schema \`%s\` is locked |
-| HY000     | 10501       | The table \`%s\` of schema \`%s\` lock wait timeout of \`%s\` milliseconds exceeded |
+| HY000     | 15000       | The table \`%s\` of schema \`%s\` is locked |
+| HY000     | 15001       | The table \`%s\` of schema \`%s\` lock wait timeout of \`%s\` milliseconds exceeded |
 
 ### 审计
 
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
-| 44000     | 10600       | SQL check failed, error message: %s |
+| 44000     | 16000       | SQL check failed, error message: %s |
 
 ### 集群
 
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
-| HY000     | 10700       | Work ID assigned failed, which can not exceed 1024 |
-| HY000     | 10701       | Can not find \`%s\` file for datetime initialize |
-| HY000     | 10702       | File access failed, reason is: %s |
+| HY000     | 17000       | Work ID assigned failed, which can not exceed 1024 |
+| HY000     | 17001       | Can not find \`%s\` file for datetime initialize |
+| HY000     | 17002       | File access failed, reason is: %s |
 
 ### 迁移
 
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
-| HY000     | 10800       | Can not find pipeline job \`%s\` |
-| HY000     | 10801       | Failed to get DDL for table \`%s\` |
+| HY000     | 18000       | Can not find pipeline job \`%s\` |
+| HY000     | 18001       | Failed to get DDL for table \`%s\` |
 
 ## 功能异常
 
