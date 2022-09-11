@@ -33,7 +33,7 @@ public final class KernelSQLExceptionTest {
         SQLException actual = new KernelSQLException(XOpenSQLState.GENERAL_ERROR, 1, 1, "reason") {
         }.toSQLException();
         assertThat(actual.getSQLState(), is(XOpenSQLState.GENERAL_ERROR.getValue()));
-        assertThat(actual.getErrorCode(), is(11001));
+        assertThat(actual.getErrorCode(), is(10101));
         assertThat(actual.getMessage(), is("reason"));
     }
     
