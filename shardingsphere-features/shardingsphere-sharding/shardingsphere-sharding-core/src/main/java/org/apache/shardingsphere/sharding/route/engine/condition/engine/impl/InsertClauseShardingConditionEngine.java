@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.infra.datetime.DatetimeService;
 import org.apache.shardingsphere.infra.datetime.DatetimeServiceFactory;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.sharding.exception.NullShardingValueException;
+import org.apache.shardingsphere.sharding.exception.data.NullShardingValueException;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngine;

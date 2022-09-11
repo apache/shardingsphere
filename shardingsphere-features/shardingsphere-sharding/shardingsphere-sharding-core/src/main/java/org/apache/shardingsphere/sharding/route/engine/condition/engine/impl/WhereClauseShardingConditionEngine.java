@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
-import org.apache.shardingsphere.sharding.exception.ShardingValueDataTypeException;
+import org.apache.shardingsphere.sharding.exception.data.ShardingValueDataTypeException;
 import org.apache.shardingsphere.sharding.route.engine.condition.AlwaysFalseShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
