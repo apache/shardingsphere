@@ -166,8 +166,8 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
-| HY004     | 28000       | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type |
-| 42000     | 28001       | Insert value of index \`%s\` can not support for shadow |
+| HY004     | 28010       | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type |
+| 42000     | 28020       | Insert value of index \`%s\` can not support for shadow |
 
 ## 其他异常
 

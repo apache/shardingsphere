@@ -27,6 +27,6 @@ public final class UnsupportedShadowInsertValueException extends ShadowSQLExcept
     private static final long serialVersionUID = -5987403907441367171L;
     
     public UnsupportedShadowInsertValueException(final int columnIndex) {
-        super(XOpenSQLState.SYNTAX_ERROR, 1, "Insert value of index `%s` can not support for shadow", String.valueOf(columnIndex));
+        super(XOpenSQLState.SYNTAX_ERROR, 20, "Insert value of index `%s` can not support for shadow", String.valueOf(columnIndex));
     }
 }
