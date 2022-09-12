@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.exception;
+package org.apache.shardingsphere.data.pipeline.core.exception.data;
+
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 
 /**
- * Pipeline job ignored exception.
+ * Pipeline unexpected data record order exception.
  */
-public final class PipelineIgnoredException extends RuntimeException {
+public final class PipelineUnexpectedDataRecordOrderException extends RuntimeException {
     
-    private static final long serialVersionUID = -606723977923290937L;
+    private static final long serialVersionUID = 6023695604738387750L;
     
-    public PipelineIgnoredException(final String message) {
-        super(message);
-    }
-    
-    public PipelineIgnoredException(final String message, final Throwable cause) {
-        super(message, cause);
+    public PipelineUnexpectedDataRecordOrderException(final DataRecord beforeDataRecord, final DataRecord afterDataRecord) {
+        super("beforeDataRecord=" + beforeDataRecord + ", afterDataRecord=" + afterDataRecord);
     }
 }

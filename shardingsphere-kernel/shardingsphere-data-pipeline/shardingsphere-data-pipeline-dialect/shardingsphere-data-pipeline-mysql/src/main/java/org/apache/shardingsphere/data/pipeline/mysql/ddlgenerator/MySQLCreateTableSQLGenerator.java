@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ddlgenerator;
 
-import org.apache.shardingsphere.data.pipeline.core.exception.CreateTableSQLGenerateException;
+import org.apache.shardingsphere.data.pipeline.core.exception.syntax.CreateTableSQLGenerateException;
 import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGenerator;
 
 import javax.sql.DataSource;

@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.exception;
+package org.apache.shardingsphere.data.pipeline.core.exception.connection;
 
 /**
- * Pipeline verify failed exception.
+ * Drop migration source resource exception.
  */
-public final class PipelineVerifyFailedException extends RuntimeException {
+public final class DropMigrationSourceResourceException extends RuntimeException {
     
-    private static final long serialVersionUID = 2854259384634892428L;
+    private static final long serialVersionUID = -7133815271017274299L;
     
-    public PipelineVerifyFailedException(final String message) {
+    public DropMigrationSourceResourceException(final String message) {
         super(message);
     }
 }

@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.exception;
+package org.apache.shardingsphere.data.pipeline.core.exception.metadata;
+
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Add migration source resource exception.
+ * Create exists process configuration exception.
  */
-public final class AddMigrationSourceResourceException extends RuntimeException {
+public final class CreateExistsProcessConfigurationException extends PipelineSQLException {
     
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 8134085267509955091L;
     
-    public AddMigrationSourceResourceException(final String message) {
-        super(message);
-    }
-    
-    public AddMigrationSourceResourceException(final Throwable cause) {
-        super(cause);
+    public CreateExistsProcessConfigurationException() {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 1, "Created process configuration already existed");
     }
 }

@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.exception;
+package org.apache.shardingsphere.data.pipeline.core.exception.metadata;
+
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Drop migration source resource exception.
+ * Alter not exist process configuration exception.
  */
-public final class DropMigrationSourceResourceException extends RuntimeException {
+public final class AlterNotExistProcessConfigurationException extends PipelineSQLException {
     
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 8799641580689564088L;
     
-    public DropMigrationSourceResourceException(final String message) {
-        super(message);
-    }
-    
-    public DropMigrationSourceResourceException(final Throwable cause) {
-        super(cause);
+    public AlterNotExistProcessConfigurationException() {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 2, "Altered process configuration does not exist");
     }
 }

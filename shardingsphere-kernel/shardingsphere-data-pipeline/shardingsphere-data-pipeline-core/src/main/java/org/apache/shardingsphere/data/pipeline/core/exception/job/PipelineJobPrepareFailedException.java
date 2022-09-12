@@ -15,18 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.exception;
-
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+package org.apache.shardingsphere.data.pipeline.core.exception.job;
 
 /**
- * Create table SQL generate exception.
+ * Pipeline job prepare failed exception.
  */
-public final class CreateTableSQLGenerateException extends PipelineSQLException {
+public final class PipelineJobPrepareFailedException extends RuntimeException {
     
-    private static final long serialVersionUID = -219467568498936298L;
+    private static final long serialVersionUID = 1409505606319197767L;
     
-    public CreateTableSQLGenerateException(final String tableName) {
-        super(XOpenSQLState.GENERAL_ERROR, 1, "Failed to get DDL for table `%s`", tableName);
+    public PipelineJobPrepareFailedException(final String message) {
+        super(message);
+    }
+    
+    public PipelineJobPrepareFailedException(final String message, final Throwable cause) {
+        super(message, cause);
     }
 }
