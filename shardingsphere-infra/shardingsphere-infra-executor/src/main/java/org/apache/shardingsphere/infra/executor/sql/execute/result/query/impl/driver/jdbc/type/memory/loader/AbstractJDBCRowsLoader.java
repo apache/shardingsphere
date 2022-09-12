@@ -67,7 +67,7 @@ public abstract class AbstractJDBCRowsLoader implements JDBCRowsLoader {
                     return resultSet.getLong(columnIndex);
                 }
                 BigDecimal bigDecimal = resultSet.getBigDecimal(columnIndex);
-                return bigDecimal == null ? null : bigDecimal.toBigInteger();
+                return null == bigDecimal ? null : bigDecimal.toBigInteger();
             case Types.NUMERIC:
             case Types.DECIMAL:
                 return resultSet.getBigDecimal(columnIndex);
