@@ -67,4 +67,29 @@ public final class ShardingSpherePreconditions {
             throw exceptionIfUnexpected;
         }
     }
+    
+    /**
+     * Ensures that an object reference passed as a parameter to the calling method is not null.
+     *
+     * @param reference object reference to be checked
+     * @param exceptionIfUnexpected exception thrown if object is null
+     */
+    public static void checkNotNull(final Object reference, final ShardingSphereExternalException exceptionIfUnexpected) {
+        if (null == reference) {
+            throw exceptionIfUnexpected;
+        }
+    }
+    
+    /**
+     * Ensures that an object reference passed as a parameter to the calling method is not null.
+     *
+     * @param reference object reference to be checked
+     * @param exceptionIfUnexpected exception thrown if object is null
+     * @throws ShardingSphereInternalException ShardingSphere internal exception
+     */
+    public static void checkNotNull(final Object reference, final ShardingSphereInternalException exceptionIfUnexpected) throws ShardingSphereInternalException {
+        if (null == reference) {
+            throw exceptionIfUnexpected;
+        }
+    }
 }
