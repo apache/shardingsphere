@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCre
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.spring.boot.exception.DataSourceJndiNotFoundServerException;
-import org.apache.shardingsphere.spring.boot.exception.UnsupportedDataSourceTypeServerException;
 import org.apache.shardingsphere.spring.boot.util.PropertyUtil;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.StandardEnvironment;
@@ -64,8 +63,6 @@ public final class DataSourceMapSetter {
         for (String each : getDataSourceNames(environment)) {
             try {
                 result.put(each, getDataSource(environment, each));
-            } catch (final ReflectiveOperationException ex) {
-                throw new UnsupportedDataSourceTypeServerException(ex);
             } catch (final NamingException ex) {
                 throw new DataSourceJndiNotFoundServerException(ex);
             }
@@ -84,7 +81,7 @@ public final class DataSourceMapSetter {
     }
     
     @SuppressWarnings("unchecked")
-    private static DataSource getDataSource(final Environment environment, final String dataSourceName) throws ReflectiveOperationException, NamingException {
+    private static DataSource getDataSource(final Environment environment, final String dataSourceName) throws NamingException {
         Map<String, Object> dataSourceProps = PropertyUtil.handle(environment, String.join("", PREFIX, dataSourceName), Map.class);
         Preconditions.checkState(!dataSourceProps.isEmpty(), "Wrong datasource [%s] properties.", dataSourceName);
         if (dataSourceProps.containsKey(JNDI_NAME)) {

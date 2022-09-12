@@ -21,14 +21,12 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 
-import java.sql.SQLException;
-
 import static org.mockito.Mockito.mock;
 
 public final class ContextManagerBuilderFixture implements ContextManagerBuilder {
     
     @Override
-    public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
+    public ContextManager build(final ContextManagerBuilderParameter parameter) {
         return mock(ContextManager.class);
     }
     

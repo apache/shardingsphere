@@ -80,7 +80,7 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     private ConnectionSession connectionSession;
     
     @Before
-    public void setUp() throws IllegalAccessException, NoSuchFieldException {
+    public void setUp() {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(getDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);

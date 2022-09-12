@@ -136,7 +136,6 @@ public final class VertxBackendDataSource implements BackendDataSource {
             case "mysql":
                 return createMySQLPool(value, uri);
             case "postgresql":
-                throw new UnsupportedSQLOperationException("For now");
             case "opengauss":
                 throw new UnsupportedSQLOperationException("For now");
             default:

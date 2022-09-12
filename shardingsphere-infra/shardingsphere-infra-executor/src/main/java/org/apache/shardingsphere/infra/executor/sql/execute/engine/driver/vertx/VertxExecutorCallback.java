@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.dr
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.vertx.VertxQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -41,7 +40,7 @@ import java.util.Map;
 public final class VertxExecutorCallback implements ExecutorCallback<VertxExecutionUnit, Future<ExecuteResult>> {
     
     @Override
-    public Collection<Future<ExecuteResult>> execute(final Collection<VertxExecutionUnit> inputs, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
+    public Collection<Future<ExecuteResult>> execute(final Collection<VertxExecutionUnit> inputs, final boolean isTrunkThread, final Map<String, Object> dataMap) {
         List<Future<ExecuteResult>> result = new ArrayList<>(inputs.size());
         for (VertxExecutionUnit each : inputs) {
             Future<RowSet<Row>> future = each.getStorageResource().compose(preparedQuery -> preparedQuery.execute(Tuple.from(each.getExecutionUnit().getSqlUnit().getParameters())));

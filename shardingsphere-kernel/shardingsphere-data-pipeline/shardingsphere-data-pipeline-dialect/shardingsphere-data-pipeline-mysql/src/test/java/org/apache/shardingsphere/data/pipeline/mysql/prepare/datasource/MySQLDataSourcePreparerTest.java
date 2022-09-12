@@ -72,7 +72,7 @@ public final class MySQLDataSourcePreparerTest {
     private PipelineDataSourceWrapper targetDataSourceWrapper;
     
     @Before
-    public void setUp() throws SQLException {
+    public void setUp() {
         PipelineDataSourceManager mockPipelineDataSourceManager = mock(PipelineDataSourceManager.class);
         when(mockPipelineDataSourceManager.getDataSource(same(sourceDataSourceConfig))).thenReturn(sourceDataSourceWrapper);
         when(mockPipelineDataSourceManager.getDataSource(same(targetDataSourceConfig))).thenReturn(targetDataSourceWrapper);

@@ -24,14 +24,12 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStat
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.AddResourceBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.AlterResourceBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.DropResourceBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.RuleDefinitionBackendHandler;
-
-import java.sql.SQLException;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 /**
  * RDL backend handler factory.
@@ -45,9 +43,8 @@ public final class RDLBackendHandlerFactory {
      * @param sqlStatement RDL statement
      * @param connectionSession connection session
      * @return RDL backend handler
-     * @throws SQLException SQL exception
      */
-    public static ProxyBackendHandler newInstance(final RDLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
+    public static ProxyBackendHandler newInstance(final RDLStatement sqlStatement, final ConnectionSession connectionSession) {
         if (sqlStatement instanceof AddResourceStatement) {
             return new AddResourceBackendHandler((AddResourceStatement) sqlStatement, connectionSession);
         }
