@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
+import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -75,22 +76,19 @@ public final class PostgreSQLByteConverter {
         short sign = readShort2(bytes, pos + 4);
         short scale = readShort2(bytes, pos + 6);
         validator(sign, scale);
-        if (sign == NUMERIC_NAN) {
+        if (NUMERIC_NAN == sign) {
             return Double.NaN;
         }
         short len = readShort2(bytes, pos);
-        if (len == 0) {
+        if (0 == len) {
             return new BigDecimal(BigInteger.ZERO, scale);
         }
         short weight = readShort2(bytes, pos + 2);
         if (weight < 0) {
             ++weight;
             return initBigDecimalNoneWeight(bytes, pos, len, weight, sign, scale);
-        } else if (scale == 0) {
-            return initBigDecimalNoneScale(bytes, pos, len, weight, sign);
-        } else {
-            return initBigDecimal(bytes, pos, len, weight, sign, scale);
         }
+        return 0 == scale ? initBigDecimalNoneScale(bytes, pos, len, weight, sign) : initBigDecimal(bytes, pos, len, weight, sign, scale);
     }
     
     /**
@@ -114,7 +112,7 @@ public final class PostgreSQLByteConverter {
             unscaled = unscaled.multiply(tenPower(mod));
             scale = 0;
         }
-        if (scale == 0) {
+        if (0 == scale) {
             weight = initShortValuesNoneScaled(shortStacks, unscaled, weight);
         } else {
             weight = initShortValuesScaled(shortStacks, unscaled, scale);
@@ -133,7 +131,7 @@ public final class PostgreSQLByteConverter {
         BigInteger tempUnscaled = unscaled;
         BigInteger maxInteger = BigInteger.valueOf(Long.MAX_VALUE);
         while (unscaled.compareTo(maxInteger) > 0) {
-            final BigInteger[] pair = unscaled.divideAndRemainder(BI_TEN_THOUSAND);
+            BigInteger[] pair = unscaled.divideAndRemainder(BI_TEN_THOUSAND);
             tempUnscaled = pair[0];
             shortStacks.push(pair[1].shortValue());
             ++result;
@@ -143,7 +141,7 @@ public final class PostgreSQLByteConverter {
             shortStacks.push((short) (unscaledLong % 10000));
             unscaledLong = unscaledLong / 10000L;
             ++result;
-        } while (unscaledLong != 0);
+        } while (0 != unscaledLong);
         return result;
     }
     
@@ -155,7 +153,7 @@ public final class PostgreSQLByteConverter {
         if (!BigInteger.ZERO.equals(decimal)) {
             int mod = scale % 4;
             int segments = scale / 4;
-            if (mod != 0) {
+            if (0 != mod) {
                 decimal = decimal.multiply(tenPower(4 - mod));
                 ++segments;
             }
@@ -214,7 +212,7 @@ public final class PostgreSQLByteConverter {
         if (weight < 0) {
             effectiveScale += 4 * weight;
         }
-        for (int i = 1; i < len && d == 0; ++i) {
+        for (int i = 1; i < len && 0 == d; ++i) {
             effectiveScale -= 4;
             idx += 2;
             d = readShort2(bytes, idx);
@@ -253,7 +251,7 @@ public final class PostgreSQLByteConverter {
             if (null == unscaledBI) {
                 unscaledInt += d;
             } else {
-                if (d != 0) {
+                if (0 != d) {
                     unscaledBI = unscaledBI.add(BigInteger.valueOf(d));
                 }
             }
@@ -286,7 +284,7 @@ public final class PostgreSQLByteConverter {
                 unscaledInt += d;
             } else {
                 unscaledBI = unscaledBI.multiply(BI_TEN_THOUSAND);
-                if (d != 0) {
+                if (0 != d) {
                     unscaledBI = unscaledBI.add(BigInteger.valueOf(d));
                 }
             }
@@ -298,7 +296,7 @@ public final class PostgreSQLByteConverter {
             unscaledBI = unscaledBI.negate();
         }
         final int bigDecScale = (len - (weight + 1)) * 4;
-        return bigDecScale == 0 ? new BigDecimal(unscaledBI) : new BigDecimal(unscaledBI, bigDecScale);
+        return 0 == bigDecScale ? new BigDecimal(unscaledBI) : new BigDecimal(unscaledBI, bigDecScale);
     }
     
     private static Number initBigDecimal(final byte[] bytes, final int pos, final short len, final short weight, final short sign, final short scale) {
@@ -340,7 +338,7 @@ public final class PostgreSQLByteConverter {
             if (null == unscaledBI) {
                 unscaledInt += d;
             } else {
-                if (d != 0) {
+                if (0 != d) {
                     unscaledBI = unscaledBI.add(BigInteger.valueOf(d));
                 }
             }
@@ -354,14 +352,14 @@ public final class PostgreSQLByteConverter {
         if (effectiveScale > 0) {
             unscaledBI = unscaledBI.multiply(tenPower(effectiveScale));
         }
-        if (sign == NUMERIC_NEG) {
+        if (NUMERIC_NEG == sign) {
             unscaledBI = unscaledBI.negate();
         }
         return new BigDecimal(unscaledBI, scale);
     }
     
     private static void validator(final short sign, final short scale) {
-        if (!(sign == 0x0000 || NUMERIC_NEG == sign || NUMERIC_NAN == sign)) {
+        if (!(0x0000 == sign || NUMERIC_NEG == sign || NUMERIC_NAN == sign)) {
             throw new IllegalArgumentException("invalid sign in \"numeric\" value");
         }
         if ((scale & 0x00003FFF) != scale) {
@@ -387,10 +385,8 @@ public final class PostgreSQLByteConverter {
         private int index;
         
         public void push(final short value) {
-            if (value != 0 || index != 0) {
-                if (value < 0) {
-                    throw new IllegalArgumentException("only non-negative values accepted: " + value);
-                }
+            if (0 != value || 0 != index) {
+                Preconditions.checkArgument(value >= 0, "only non-negative values accepted: %s", value);
                 if (index == shorts.length) {
                     grow();
                 }
@@ -403,7 +399,7 @@ public final class PostgreSQLByteConverter {
         }
         
         public boolean isEmpty() {
-            return index == 0;
+            return 0 == index;
         }
         
         public short pop() {

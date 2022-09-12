@@ -94,7 +94,7 @@ public abstract class AbstractStreamingDataConsistencyCalculateAlgorithm impleme
             if (!nextResult.isPresent()) {
                 log.info("nextResult not present, calculation done. calculationCount={}", calculationCount);
             }
-            if (calculationCount.incrementAndGet() % 100_0000 == 0) {
+            if (0 == calculationCount.incrementAndGet() % 100_0000) {
                 log.warn("possible infinite loop, calculationCount={}", calculationCount);
             }
         }
