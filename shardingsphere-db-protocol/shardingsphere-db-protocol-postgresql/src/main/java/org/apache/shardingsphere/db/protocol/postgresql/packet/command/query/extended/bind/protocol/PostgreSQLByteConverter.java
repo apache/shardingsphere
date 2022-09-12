@@ -235,14 +235,14 @@ public final class PostgreSQLByteConverter {
             idx += 2;
             d = readShort2(bytes, idx);
             if (effectiveScale >= 4) {
-                if (unscaledBI == null) {
+                if (null == unscaledBI) {
                     unscaledInt *= 10000;
                 } else {
                     unscaledBI = unscaledBI.multiply(BI_TEN_THOUSAND);
                 }
                 effectiveScale -= 4;
             } else {
-                if (unscaledBI == null) {
+                if (null == unscaledBI) {
                     unscaledInt *= INT_TEN_POWERS[effectiveScale];
                 } else {
                     unscaledBI = unscaledBI.multiply(tenPower(effectiveScale));
@@ -250,7 +250,7 @@ public final class PostgreSQLByteConverter {
                 d = (short) (d / INT_TEN_POWERS[4 - effectiveScale]);
                 effectiveScale = 0;
             }
-            if (unscaledBI == null) {
+            if (null == unscaledBI) {
                 unscaledInt += d;
             } else {
                 if (d != 0) {
@@ -258,13 +258,13 @@ public final class PostgreSQLByteConverter {
                 }
             }
         }
-        if (unscaledBI == null) {
+        if (null == unscaledBI) {
             unscaledBI = BigInteger.valueOf(unscaledInt);
         }
         if (effectiveScale > 0) {
             unscaledBI = unscaledBI.multiply(tenPower(effectiveScale));
         }
-        if (sign == NUMERIC_NEG) {
+        if (NUMERIC_NEG == sign) {
             unscaledBI = unscaledBI.negate();
         }
         return new BigDecimal(unscaledBI, scale);
@@ -281,7 +281,7 @@ public final class PostgreSQLByteConverter {
             }
             idx += 2;
             d = readShort2(bytes, idx);
-            if (unscaledBI == null) {
+            if (null == unscaledBI) {
                 unscaledInt *= 10000;
                 unscaledInt += d;
             } else {
@@ -291,10 +291,10 @@ public final class PostgreSQLByteConverter {
                 }
             }
         }
-        if (unscaledBI == null) {
+        if (null == unscaledBI) {
             unscaledBI = BigInteger.valueOf(unscaledInt);
         }
-        if (sign == NUMERIC_NEG) {
+        if (NUMERIC_NEG == sign) {
             unscaledBI = unscaledBI.negate();
         }
         final int bigDecScale = (len - (weight + 1)) * 4;
@@ -316,20 +316,20 @@ public final class PostgreSQLByteConverter {
             d = readShort2(bytes, idx);
             if (effectiveWeight > 0) {
                 --effectiveWeight;
-                if (unscaledBI == null) {
+                if (null == unscaledBI) {
                     unscaledInt *= 10000;
                 } else {
                     unscaledBI = unscaledBI.multiply(BI_TEN_THOUSAND);
                 }
             } else if (effectiveScale >= 4) {
                 effectiveScale -= 4;
-                if (unscaledBI == null) {
+                if (null == unscaledBI) {
                     unscaledInt *= 10000;
                 } else {
                     unscaledBI = unscaledBI.multiply(BI_TEN_THOUSAND);
                 }
             } else {
-                if (unscaledBI == null) {
+                if (null == unscaledBI) {
                     unscaledInt *= INT_TEN_POWERS[effectiveScale];
                 } else {
                     unscaledBI = unscaledBI.multiply(tenPower(effectiveScale));
@@ -337,7 +337,7 @@ public final class PostgreSQLByteConverter {
                 d = (short) (d / INT_TEN_POWERS[4 - effectiveScale]);
                 effectiveScale = 0;
             }
-            if (unscaledBI == null) {
+            if (null == unscaledBI) {
                 unscaledInt += d;
             } else {
                 if (d != 0) {
@@ -345,7 +345,7 @@ public final class PostgreSQLByteConverter {
                 }
             }
         }
-        if (unscaledBI == null) {
+        if (null == unscaledBI) {
             unscaledBI = BigInteger.valueOf(unscaledInt);
         }
         if (effectiveWeight > 0) {
