@@ -208,7 +208,15 @@ auditDeclaration
     ;
 
 auditDefinition
-    : AUDIT_STRATEGY LP AUDITORS EQ columnName (COMMA dataNode)* COMMA algorithmDefinition RP
+    : AUDIT_STRATEGY LP LBT multiAuditDefinition RBT COMMA ALLOW_HINT_DISABLE EQ auditAllowHintDisable RP
+    ;
+
+multiAuditDefinition
+    : singleAuditDefinition (COMMA singleAuditDefinition)*
+    ;
+
+singleAuditDefinition
+    : LP NAME EQ auditorName COMMA algorithmDefinition RP
     ;
 
 auditStrategy
