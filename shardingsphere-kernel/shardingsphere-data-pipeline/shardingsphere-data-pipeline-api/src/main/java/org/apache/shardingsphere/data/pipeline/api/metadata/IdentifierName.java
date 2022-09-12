@@ -44,7 +44,7 @@ public class IdentifierName {
         if (this == o) {
             return true;
         }
-        if (null == o|| getClass() != o.getClass()) {
+        if (null == o || getClass() != o.getClass()) {
             return false;
         }
         final IdentifierName tableName = (IdentifierName) o;
