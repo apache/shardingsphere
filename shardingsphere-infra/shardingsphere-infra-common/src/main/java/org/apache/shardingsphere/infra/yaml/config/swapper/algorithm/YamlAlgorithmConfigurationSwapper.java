@@ -39,9 +39,6 @@ public final class YamlAlgorithmConfigurationSwapper implements YamlConfiguratio
     
     @Override
     public AlgorithmConfiguration swapToObject(final YamlAlgorithmConfiguration yamlConfig) {
-        if (null == yamlConfig) {
-            return null;
-        }
-        return new AlgorithmConfiguration(yamlConfig.getType(), yamlConfig.getProps());
+        return null == yamlConfig ? null : new AlgorithmConfiguration(yamlConfig.getType(), yamlConfig.getProps());
     }
 }

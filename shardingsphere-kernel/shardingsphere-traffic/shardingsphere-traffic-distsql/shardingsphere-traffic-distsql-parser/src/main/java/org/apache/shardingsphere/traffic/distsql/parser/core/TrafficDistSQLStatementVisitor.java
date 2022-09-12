@@ -70,18 +70,12 @@ public final class TrafficDistSQLStatementVisitor extends TrafficDistSQLStatemen
     }
     
     private Collection<String> buildLabels(final LabelDefinitionContext labelDefinition) {
-        if (null == labelDefinition) {
-            return Collections.emptyList();
-        }
-        return labelDefinition.label().stream().map(this::getIdentifierValue).collect(Collectors.toList());
+        return null == labelDefinition ? Collections.emptyList() : labelDefinition.label().stream().map(this::getIdentifierValue).collect(Collectors.toList());
     }
     
     @Override
     public ASTNode visitLoadBalancerDefinition(final LoadBalancerDefinitionContext ctx) {
-        if (null == ctx) {
-            return null;
-        }
-        return visit(ctx.algorithmDefinition());
+        return null == ctx ? null : visit(ctx.algorithmDefinition());
     }
     
     @Override

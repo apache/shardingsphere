@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.packet.command;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
@@ -273,9 +274,7 @@ public enum MySQLCommandPacketType implements CommandPacketType {
      */
     public static MySQLCommandPacketType valueOf(final int value) {
         MySQLCommandPacketType result = MYSQL_COMMAND_PACKET_TYPE_CACHE.get(value);
-        if (null == result) {
-            throw new IllegalArgumentException(String.format("Cannot find '%s' in command packet type", value));
-        }
+        Preconditions.checkNotNull(result, "Cannot find '%s' in command packet type", value);
         return result;
     }
 }

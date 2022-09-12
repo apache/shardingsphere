@@ -39,7 +39,7 @@ public final class JobItemIncrementalTasksProgress {
      * @return incremental position
      */
     public Optional<IngestPosition<?>> getIncrementalPosition() {
-        return null != incrementalTaskProgress ? Optional.of(incrementalTaskProgress.getPosition()) : Optional.empty();
+        return null == incrementalTaskProgress ? Optional.empty() : Optional.of(incrementalTaskProgress.getPosition());
     }
     
     /**
@@ -48,9 +48,6 @@ public final class JobItemIncrementalTasksProgress {
      * @return latest active time, <code>0</code> means there is no activity
      */
     public long getIncrementalLatestActiveTimeMillis() {
-        if (null == incrementalTaskProgress) {
-            return 0L;
-        }
-        return incrementalTaskProgress.getIncrementalTaskDelay().getLatestActiveTimeMillis();
+        return null == incrementalTaskProgress ? 0L : incrementalTaskProgress.getIncrementalTaskDelay().getLatestActiveTimeMillis();
     }
 }

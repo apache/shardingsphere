@@ -447,11 +447,10 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         StandardPipelineDataSourceConfiguration sourceDataSourceConfig = new StandardPipelineDataSourceConfiguration(sourceDataSourceProps);
         DatabaseType sourceDatabaseType = sourceDataSourceConfig.getDatabaseType();
         result.setSourceDatabaseType(sourceDatabaseType.getType());
-        if (null == parameter.getSourceSchemaName() && sourceDatabaseType.isSchemaAvailable()) {
-            result.setSourceSchemaName(PipelineSchemaTableUtil.getDefaultSchema(sourceDataSourceConfig));
-        } else {
-            result.setSourceSchemaName(parameter.getSourceSchemaName());
-        }
+        String sourceSchemaName = null == parameter.getSourceSchemaName() && sourceDatabaseType.isSchemaAvailable()
+                ? PipelineSchemaTableUtil.getDefaultSchema(sourceDataSourceConfig)
+                : parameter.getSourceSchemaName();
+        result.setSourceSchemaName(sourceSchemaName);
         result.setSourceTableName(parameter.getSourceTableName());
         Map<String, Map<String, Object>> targetDataSourceProperties = new HashMap<>();
         ShardingSphereDatabase targetDatabase = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabase(parameter.getTargetDatabaseName());

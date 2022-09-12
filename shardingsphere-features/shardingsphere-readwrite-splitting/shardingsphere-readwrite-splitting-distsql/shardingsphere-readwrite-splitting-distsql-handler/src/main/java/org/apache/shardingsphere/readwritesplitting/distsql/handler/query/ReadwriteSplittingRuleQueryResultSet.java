@@ -93,31 +93,21 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DatabaseDistS
     }
     
     private String getAutoAwareDataSourceName(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig) {
-        if (null == dataSourceRuleConfig.getDynamicStrategy()) {
-            return "";
-        }
-        return dataSourceRuleConfig.getDynamicStrategy().getAutoAwareDataSourceName();
+        return null == dataSourceRuleConfig.getDynamicStrategy() ? "" : dataSourceRuleConfig.getDynamicStrategy().getAutoAwareDataSourceName();
     }
     
     private String getWriteDataSourceQueryEnabled(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig) {
-        if (null == dataSourceRuleConfig.getDynamicStrategy()) {
-            return "";
-        }
-        return dataSourceRuleConfig.getDynamicStrategy().getWriteDataSourceQueryEnabled();
+        return null == dataSourceRuleConfig.getDynamicStrategy() ? "" : dataSourceRuleConfig.getDynamicStrategy().getWriteDataSourceQueryEnabled();
     }
     
     private String getWriteDataSourceName(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig, final Map<String, String> exportDataSources) {
-        if (null != exportDataSources) {
-            return exportDataSources.get(ExportableItemConstants.PRIMARY_DATA_SOURCE_NAME);
-        }
-        return dataSourceRuleConfig.getStaticStrategy().getWriteDataSourceName();
+        return null == exportDataSources ? dataSourceRuleConfig.getStaticStrategy().getWriteDataSourceName() : exportDataSources.get(ExportableItemConstants.PRIMARY_DATA_SOURCE_NAME);
     }
     
     private String getReadDataSourceNames(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig, final Map<String, String> exportDataSources) {
-        if (null != exportDataSources) {
-            return exportDataSources.get(ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES);
-        }
-        return Joiner.on(",").join(dataSourceRuleConfig.getStaticStrategy().getReadDataSourceNames());
+        return null == exportDataSources
+                ? Joiner.on(",").join(dataSourceRuleConfig.getStaticStrategy().getReadDataSourceNames())
+                : exportDataSources.get(ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES);
     }
     
     @Override

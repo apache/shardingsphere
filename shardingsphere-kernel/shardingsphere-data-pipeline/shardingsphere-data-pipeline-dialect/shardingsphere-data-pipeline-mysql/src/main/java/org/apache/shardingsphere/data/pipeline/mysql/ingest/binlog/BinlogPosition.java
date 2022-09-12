@@ -40,10 +40,7 @@ public final class BinlogPosition implements IngestPosition<BinlogPosition> {
     
     @Override
     public int compareTo(final BinlogPosition position) {
-        if (null == position) {
-            return 1;
-        }
-        return Long.compare(toLong(), position.toLong());
+        return null == position ? 1 : Long.compare(toLong(), position.toLong());
     }
     
     private long toLong() {

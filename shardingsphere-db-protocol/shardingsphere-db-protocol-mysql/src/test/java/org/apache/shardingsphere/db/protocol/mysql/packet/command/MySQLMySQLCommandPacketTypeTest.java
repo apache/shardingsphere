@@ -29,7 +29,7 @@ public final class MySQLMySQLCommandPacketTypeTest {
         assertThat(MySQLCommandPacketType.valueOf(MySQLCommandPacketType.COM_SLEEP.getValue()), is(MySQLCommandPacketType.COM_SLEEP));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void assertGetValueWithIllegalArgument() {
         MySQLCommandPacketType.valueOf(-1);
     }

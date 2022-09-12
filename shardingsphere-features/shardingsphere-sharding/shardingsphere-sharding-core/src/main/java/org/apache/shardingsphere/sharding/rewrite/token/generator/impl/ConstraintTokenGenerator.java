@@ -49,10 +49,9 @@ public final class ConstraintTokenGenerator implements CollectionSQLTokenGenerat
         if (sqlStatementContext instanceof ConstraintAvailable) {
             for (ConstraintSegment each : ((ConstraintAvailable) sqlStatementContext).getConstraints()) {
                 IdentifierValue constraintIdentifier = each.getIdentifier();
-                if (null == constraintIdentifier) {
-                    continue;
+                if (null != constraintIdentifier) {
+                    result.add(new ConstraintToken(each.getStartIndex(), each.getStopIndex(), constraintIdentifier, sqlStatementContext, shardingRule));
                 }
-                result.add(new ConstraintToken(each.getStartIndex(), each.getStopIndex(), constraintIdentifier, sqlStatementContext, shardingRule));
             }
         }
         return result;
