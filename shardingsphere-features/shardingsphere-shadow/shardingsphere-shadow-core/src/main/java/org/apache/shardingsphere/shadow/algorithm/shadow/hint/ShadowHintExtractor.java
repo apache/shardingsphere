@@ -105,7 +105,7 @@ public final class ShadowHintExtractor {
     
     private static boolean isBlank(final String noteValue) {
         final int strLen = null == noteValue ? 0 : noteValue.length();
-        if (0 ==strLen) {
+        if (0 == strLen) {
             return true;
         }
         for (int i = 0; i < strLen; i++) {
