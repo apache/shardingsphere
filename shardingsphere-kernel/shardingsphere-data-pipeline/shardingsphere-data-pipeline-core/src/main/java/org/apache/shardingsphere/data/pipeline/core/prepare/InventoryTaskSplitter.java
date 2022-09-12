@@ -218,7 +218,7 @@ public final class InventoryTaskSplitter {
                         break;
                     }
                     long endId = rs.getLong(1);
-                    if (endId == 0) {
+                    if (0 == endId) {
                         log.info("getPositionByPrimaryKeyRange, endId is 0, break, tableName={}, primaryKey={}, beginId={}", dumperConfig.getActualTableName(), dumperConfig.getUniqueKey(), beginId);
                         break;
                     }
@@ -227,7 +227,7 @@ public final class InventoryTaskSplitter {
                 }
             }
             // fix empty table missing inventory task
-            if (0 == result.size()) {
+            if (result.isEmpty()) {
                 result.add(new IntegerPrimaryKeyPosition(0, 0));
             }
         } catch (final SQLException ex) {
