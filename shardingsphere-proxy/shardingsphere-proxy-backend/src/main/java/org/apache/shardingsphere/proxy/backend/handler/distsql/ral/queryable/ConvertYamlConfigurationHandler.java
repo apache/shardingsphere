@@ -415,8 +415,8 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         }
         result.append(DistSQLScriptConstants.CREATE_DB_DISCOVERY);
         for (YamlRuleConfiguration ruleConfig : ruleConfigs) {
-            Iterator<Entry<String, YamlDatabaseDiscoveryDataSourceRuleConfiguration>> dataSourcesIterator
-                    = ((YamlDatabaseDiscoveryRuleConfiguration) ruleConfig).getDataSources().entrySet().iterator();
+            Iterator<Entry<String, YamlDatabaseDiscoveryDataSourceRuleConfiguration>> dataSourcesIterator =
+                    ((YamlDatabaseDiscoveryRuleConfiguration) ruleConfig).getDataSources().entrySet().iterator();
             while (dataSourcesIterator.hasNext()) {
                 Entry<String, YamlDatabaseDiscoveryDataSourceRuleConfiguration> entry = dataSourcesIterator.next();
                 String databaseDiscoveryName = entry.getKey();
