@@ -15,24 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.exception;
+package org.apache.shardingsphere.data.pipeline.core.exception.data;
 
 /**
- * Pipeline job execution exception.
+ * Pipeline data consistency check failed exception.
  */
-public final class PipelineJobExecutionException extends RuntimeException {
+public final class PipelineDataConsistencyCheckFailedException extends RuntimeException {
     
-    private static final long serialVersionUID = 1797495940081148743L;
+    private static final long serialVersionUID = -4100671584682823997L;
     
-    public PipelineJobExecutionException(final String message) {
+    public PipelineDataConsistencyCheckFailedException(final String message) {
         super(message);
     }
     
-    public PipelineJobExecutionException(final Throwable cause) {
-        super(cause);
-    }
-    
-    public PipelineJobExecutionException(final String message, final Throwable cause) {
+    public PipelineDataConsistencyCheckFailedException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }
