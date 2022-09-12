@@ -78,4 +78,15 @@ public final class ShardingSpherePreconditionsTest {
     public void assertCheckNotNullToNotThrowInternalException() throws ShardingSphereInternalException {
         ShardingSpherePreconditions.checkNotNull(new Object(), new ShardingSphereInternalExceptionFixture("message"));
     }
+    
+    @Test(expected = SQLException.class)
+    public void assertCheckNotNullToThrowsSQLException() throws SQLException {
+        ShardingSpherePreconditions.checkNotNull(null, new SQLException("message"));
+    }
+    
+    @SuppressWarnings("ObviousNullCheck")
+    @Test
+    public void assertCheckNotNullToNotThrowSQLException() throws SQLException {
+        ShardingSpherePreconditions.checkNotNull(new Object(), new SQLException("message"));
+    }
 }

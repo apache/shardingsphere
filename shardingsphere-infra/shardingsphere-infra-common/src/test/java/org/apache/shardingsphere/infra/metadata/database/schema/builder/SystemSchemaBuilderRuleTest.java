@@ -37,7 +37,7 @@ public final class SystemSchemaBuilderRuleTest {
         assertThat(actual.getTables(), is(new HashSet<>(Arrays.asList("columns", "engines", "parameters", "routines", "schemata", "tables", "views"))));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void assertValueOfSchemaPathFailure() {
         SystemSchemaBuilderRule.valueOf(new MySQLDatabaseType().getType(), "test");
     }

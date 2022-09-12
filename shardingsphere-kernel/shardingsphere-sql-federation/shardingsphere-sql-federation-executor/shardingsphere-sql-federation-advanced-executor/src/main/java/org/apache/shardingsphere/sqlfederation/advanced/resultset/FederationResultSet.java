@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtil;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -443,11 +444,9 @@ public final class FederationResultSet extends AbstractUnsupportedOperationResul
         return getString(columnLabel);
     }
     
-    private Integer getIndexFromColumnLabelAndIndexMap(final String columnLabel) throws SQLFeatureNotSupportedException {
+    private Integer getIndexFromColumnLabelAndIndexMap(final String columnLabel) throws SQLException {
         Integer result = columnLabelAndIndexMap.get(columnLabel.toLowerCase());
-        if (null == result) {
-            throw new SQLFeatureNotSupportedException(String.format("can't get index from columnLabel[%s].", columnLabel));
-        }
+        ShardingSpherePreconditions.checkNotNull(result, new SQLFeatureNotSupportedException(String.format("can't get index from columnLabel[%s].", columnLabel)));
         return result;
     }
     

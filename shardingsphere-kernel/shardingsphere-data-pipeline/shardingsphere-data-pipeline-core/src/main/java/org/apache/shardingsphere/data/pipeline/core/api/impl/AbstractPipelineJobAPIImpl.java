@@ -230,9 +230,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     
     protected final JobConfigurationPOJO getElasticJobConfigPOJO(final String jobId) {
         JobConfigurationPOJO result = PipelineAPIFactory.getJobConfigurationAPI().getJobConfiguration(jobId);
-        if (null == result) {
-            throw new PipelineJobNotFoundException(jobId);
-        }
+        Preconditions.checkNotNull(result, new PipelineJobNotFoundException(jobId));
         return result;
     }
     

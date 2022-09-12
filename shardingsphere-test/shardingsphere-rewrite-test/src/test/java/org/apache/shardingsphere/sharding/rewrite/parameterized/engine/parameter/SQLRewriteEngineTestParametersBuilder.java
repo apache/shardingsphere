@@ -117,7 +117,7 @@ public final class SQLRewriteEngineTestParametersBuilder {
         } else {
             return Splitter.on(",").trimResults().splitToList(inputParameters).stream().map(each -> {
                 Object result = Ints.tryParse(each);
-                return result == null ? each : result;
+                return null == result ? each : result;
             }).collect(Collectors.toList());
         }
     }

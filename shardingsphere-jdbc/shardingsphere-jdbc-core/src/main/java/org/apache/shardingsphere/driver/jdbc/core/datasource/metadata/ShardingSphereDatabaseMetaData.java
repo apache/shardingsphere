@@ -200,17 +200,13 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     }
     
     private String getActualTableNamePattern(final String tableNamePattern) {
-        if (null == tableNamePattern) {
-            return null;
-        }
-        return findDataNodeContainedRule().filter(optional -> optional.findFirstActualTable(tableNamePattern).isPresent()).map(optional -> "%" + tableNamePattern + "%").orElse(tableNamePattern);
+        return null == tableNamePattern
+                ? null
+                : findDataNodeContainedRule().filter(optional -> optional.findFirstActualTable(tableNamePattern).isPresent()).map(optional -> "%" + tableNamePattern + "%").orElse(tableNamePattern);
     }
     
     private String getActualTable(final String catalog, final String table) {
-        if (null == table) {
-            return null;
-        }
-        return findDataNodeContainedRule().map(each -> findActualTable(each, catalog, table).orElse(table)).orElse(table);
+        return null == table ? null : findDataNodeContainedRule().map(each -> findActualTable(each, catalog, table).orElse(table)).orElse(table);
     }
     
     private Optional<String> findActualTable(final DataNodeContainedRule dataNodeContainedRule, final String catalog, final String table) {

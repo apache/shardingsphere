@@ -20,6 +20,7 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource.swapper;
 import com.google.common.base.CaseFormat;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 import org.apache.shardingsphere.transaction.xa.jta.exception.XADataSourceInitializeException;
 
@@ -68,9 +69,7 @@ public final class DataSourceSwapper {
                 exceptions.add(ex);
             }
         }
-        if (null == result && !exceptions.isEmpty()) {
-            throw new XADataSourceInitializeException(xaDataSourceDefinition);
-        }
+        ShardingSpherePreconditions.checkState(null != result || exceptions.isEmpty(), new XADataSourceInitializeException(xaDataSourceDefinition));
         return result;
     }
     
