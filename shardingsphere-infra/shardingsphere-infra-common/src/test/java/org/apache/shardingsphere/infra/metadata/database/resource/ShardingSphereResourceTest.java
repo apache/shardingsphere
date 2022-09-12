@@ -20,8 +20,6 @@ package org.apache.shardingsphere.infra.metadata.database.resource;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.junit.Assert.assertTrue;
@@ -30,7 +28,7 @@ public final class ShardingSphereResourceTest {
     
     @SuppressWarnings("BusyWait")
     @Test
-    public void assertClose() throws SQLException, IOException, InterruptedException {
+    public void assertClose() throws InterruptedException {
         MockedDataSource dataSource = new MockedDataSource();
         new ShardingSphereResource(Collections.singletonMap("foo_ds", dataSource)).close(dataSource);
         while (!dataSource.isClosed()) {

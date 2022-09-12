@@ -21,7 +21,6 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPositio
 import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 
 /**
  * Default position initializer.
@@ -29,7 +28,7 @@ import java.sql.SQLException;
 public final class DefaultPositionInitializer implements PositionInitializer {
     
     @Override
-    public IngestPosition<?> init(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
+    public IngestPosition<?> init(final DataSource dataSource, final String slotNameSuffix) {
         return null;
     }
     

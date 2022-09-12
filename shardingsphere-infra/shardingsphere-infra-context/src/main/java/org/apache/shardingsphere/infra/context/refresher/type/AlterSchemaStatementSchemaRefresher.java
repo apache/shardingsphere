@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.AlterSchemaStatementHandler;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -39,7 +38,7 @@ public final class AlterSchemaStatementSchemaRefresher implements MetaDataRefres
     
     @Override
     public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
-                                                    final String schemaName, final AlterSchemaStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
+                                                    final String schemaName, final AlterSchemaStatement sqlStatement, final ConfigurationProperties props) {
         Optional<String> renameSchemaName = AlterSchemaStatementHandler.getRenameSchema(sqlStatement).map(optional -> optional.getValue().toLowerCase());
         if (!renameSchemaName.isPresent()) {
             return Optional.empty();
