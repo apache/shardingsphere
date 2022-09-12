@@ -87,10 +87,6 @@ convertYamlConfiguration
     : CONVERT YAML (CONFIGURATION | CONFIG) FILE EQ filePath
     ;
 
-showSQLTranslatorRule
-    : SHOW SQL_TRANSLATOR RULE
-    ;
-
 showMigrationProcessConfiguration
     : SHOW MIGRATION PROCESS CONFIGURATION
     ;

@@ -33,5 +33,6 @@
         <module>shardingsphere-sql-translator-core</module>
         <module>shardingsphere-sql-translator-provider</module>
         <module>shardingsphere-sql-translator-spring</module>
+        <module>shardingsphere-sql-translator-distsql</module>
     </modules>
 </project>

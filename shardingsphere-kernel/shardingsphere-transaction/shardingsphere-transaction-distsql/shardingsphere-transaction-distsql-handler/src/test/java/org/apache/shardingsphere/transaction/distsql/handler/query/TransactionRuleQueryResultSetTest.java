@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.transaction.distsql.handler.query;
 
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.distsql.parser.statement.queryable.ShowTransactionRuleStatement;
@@ -25,21 +24,22 @@ import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Test;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class TransactionRuleQueryResultSetTest {
     
     @Test
     public void assertExecuteWithXA() {
         TransactionRuleQueryResultSet resultSet = new TransactionRuleQueryResultSet();
-        ShardingSphereRuleMetaData ruleMetaData = createGlobalRuleMetaData("XA", "Atomikos", createProperties());
+        ShardingSphereRuleMetaData ruleMetaData = mockGlobalRuleMetaData("XA", "Atomikos", createProperties());
         resultSet.init(ruleMetaData, mock(ShowTransactionRuleStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         Iterator<Object> rowData = actual.iterator();
@@ -54,7 +54,7 @@ public final class TransactionRuleQueryResultSetTest {
     @Test
     public void assertExecuteWithLocal() {
         TransactionRuleQueryResultSet resultSet = new TransactionRuleQueryResultSet();
-        ShardingSphereRuleMetaData ruleMetaData = createGlobalRuleMetaData("LOCAL", null, null);
+        ShardingSphereRuleMetaData ruleMetaData = mockGlobalRuleMetaData("LOCAL", null, null);
         resultSet.init(ruleMetaData, mock(ShowTransactionRuleStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(3));
@@ -62,9 +62,16 @@ public final class TransactionRuleQueryResultSetTest {
         assertTrue(actual.contains(""));
     }
     
-    private ShardingSphereRuleMetaData createGlobalRuleMetaData(final String defaultType, final String providerType, final Properties props) {
-        TransactionRule rule = new TransactionRule(new TransactionRuleConfiguration(defaultType, providerType, props), Collections.emptyMap(), mock(InstanceContext.class));
-        return new ShardingSphereRuleMetaData(Collections.singleton(rule));
+    private ShardingSphereRuleMetaData mockGlobalRuleMetaData(final String defaultType, final String providerType, final Properties props) {
+        TransactionRule transactionRule = mock(TransactionRule.class);
+        when(transactionRule.getConfiguration()).thenReturn(createAuthorityRuleConfiguration(defaultType, providerType, props));
+        ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class);
+        when(result.findSingleRule(TransactionRule.class)).thenReturn(Optional.of(transactionRule));
+        return result;
+    }
+    
+    private TransactionRuleConfiguration createAuthorityRuleConfiguration(final String defaultType, final String providerType, final Properties props) {
+        return new TransactionRuleConfiguration(defaultType, providerType, props);
     }
     
     private Properties createProperties() {

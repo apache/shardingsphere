@@ -28,8 +28,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -47,15 +45,12 @@ public final class AuthorityRuleQueryResultSet implements GlobalRuleDistSQLResul
     
     @Override
     public void init(final ShardingSphereRuleMetaData ruleMetaData, final SQLStatement sqlStatement) {
-        Optional<AuthorityRule> rule = ruleMetaData.findSingleRule(AuthorityRule.class);
-        rule.ifPresent(optional -> data = buildData(optional.getConfiguration()).iterator());
+        ruleMetaData.findSingleRule(AuthorityRule.class).ifPresent(optional -> data = buildData(optional.getConfiguration()).iterator());
     }
     
     private Collection<Collection<Object>> buildData(final AuthorityRuleConfiguration ruleConfig) {
-        Collection<Collection<Object>> result = new LinkedList<>();
-        result.add(Arrays.asList(ruleConfig.getUsers().stream().map(each -> each.getGrantee().toString()).collect(Collectors.joining("; ")),
+        return Collections.singleton(Arrays.asList(ruleConfig.getUsers().stream().map(each -> each.getGrantee().toString()).collect(Collectors.joining("; ")),
                 ruleConfig.getProvider().getType(), ruleConfig.getProvider().getProps().size() == 0 ? "" : ruleConfig.getProvider().getProps()));
-        return result;
     }
     
     @Override
