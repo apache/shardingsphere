@@ -191,13 +191,13 @@ public final class ShardingTableRuleQueryResultSet implements DatabaseDistSQLRes
     }
     
     private String getAuditorNames(final ShardingAuditStrategyConfiguration shardingAuditStrategyConfig) {
-        return getShardingAuditStrategyConfiguration(shardingAuditStrategyConfig).isPresent() ?
-            String.join(",", getShardingAuditStrategyConfiguration(shardingAuditStrategyConfig).get().getAuditorNames()) : "";
+        return getShardingAuditStrategyConfiguration(shardingAuditStrategyConfig).isPresent()
+            ? String.join(",", getShardingAuditStrategyConfiguration(shardingAuditStrategyConfig).get().getAuditorNames()) : "";
     }
     
     private String getAllowHintDisable(final ShardingAuditStrategyConfiguration shardingAuditStrategyConfig) {
-        return getShardingAuditStrategyConfiguration(shardingAuditStrategyConfig).isPresent() ?
-            Boolean.valueOf(getShardingAuditStrategyConfiguration(shardingAuditStrategyConfig).get().isAllowHintDisable()).toString() : "";
+        return getShardingAuditStrategyConfiguration(shardingAuditStrategyConfig).isPresent()
+            ? Boolean.valueOf(getShardingAuditStrategyConfiguration(shardingAuditStrategyConfig).get().isAllowHintDisable()).toString() : "";
     }
     
     private Optional<ShardingAuditStrategyConfiguration> getShardingAuditStrategyConfiguration(final ShardingAuditStrategyConfiguration shardingAuditStrategyConfig) {
