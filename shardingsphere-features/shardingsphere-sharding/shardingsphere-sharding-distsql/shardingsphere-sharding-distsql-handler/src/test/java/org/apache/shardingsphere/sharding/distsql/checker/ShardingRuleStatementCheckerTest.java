@@ -96,9 +96,9 @@ public final class ShardingRuleStatementCheckerTest {
         shardingRuleConfig.getBindingTableGroups().add("t_order,t_order_item");
         Collection<AbstractTableRuleSegment> rules = new LinkedList<>();
         rules.add(new AutoTableRuleSegment("t_order", Arrays.asList("ds_0", "ds_1"), "order_id",
-                new AlgorithmSegment("MOD", newProperties("sharding-count", "2")), null));
+                new AlgorithmSegment("MOD", newProperties("sharding-count", "2")), null, null));
         rules.add(new AutoTableRuleSegment("t_order_item", Arrays.asList("ds_0", "ds_1"), "order_id",
-                new AlgorithmSegment("MOD", newProperties("sharding-count", "2")), null));
+                new AlgorithmSegment("MOD", newProperties("sharding-count", "2")), null, null));
         ShardingTableRuleStatementChecker.checkAlteration(database, rules, shardingRuleConfig);
     }
     
