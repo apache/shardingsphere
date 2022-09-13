@@ -35,7 +35,7 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WalEventCon
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WalPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.DecodingPlugin;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWalEvent;
-import org.apache.shardingsphere.infra.util.exception.external.sql.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.opengauss.jdbc.PgConnection;
 import org.opengauss.replication.PGReplicationStream;
 

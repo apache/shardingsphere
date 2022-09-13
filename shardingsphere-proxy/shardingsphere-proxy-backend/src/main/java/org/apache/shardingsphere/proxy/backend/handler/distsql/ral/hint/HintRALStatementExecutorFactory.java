@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.HintRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.hint.ClearHintStatement;
-import org.apache.shardingsphere.infra.util.exception.external.sql.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.executor.AddShardingHintDatabaseValueExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.executor.AddShardingHintTableValueExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.executor.ClearHintExecutor;
@@ -41,8 +41,6 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.ClearSha
 import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.SetShardingHintDatabaseValueStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.ShowShardingHintStatusStatement;
 
-import java.sql.SQLException;
-
 /**
  * Hint RAL statement executor factory.
  */
@@ -55,9 +53,8 @@ public final class HintRALStatementExecutorFactory {
      * @param sqlStatement hint RAL statement
      * @param connectionSession connection session
      * @return hint RAL statement executor
-     * @throws SQLException SQL exception
      */
-    public static HintRALStatementExecutor<? extends HintRALStatement> newInstance(final HintRALStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
+    public static HintRALStatementExecutor<? extends HintRALStatement> newInstance(final HintRALStatement sqlStatement, final ConnectionSession connectionSession) {
         if (sqlStatement instanceof SetReadwriteSplittingHintStatement) {
             return new SetReadwriteSplittingHintExecutor((SetReadwriteSplittingHintStatement) sqlStatement);
         }

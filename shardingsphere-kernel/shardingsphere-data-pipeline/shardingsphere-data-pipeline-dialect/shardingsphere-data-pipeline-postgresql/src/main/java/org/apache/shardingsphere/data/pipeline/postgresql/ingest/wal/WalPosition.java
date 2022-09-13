@@ -33,10 +33,7 @@ public final class WalPosition implements IngestPosition<WalPosition> {
     
     @Override
     public int compareTo(final WalPosition position) {
-        if (null == position) {
-            return 1;
-        }
-        return Long.compare(logSequenceNumber.asLong(), position.logSequenceNumber.asLong());
+        return null == position ? 1 : Long.compare(logSequenceNumber.asLong(), position.logSequenceNumber.asLong());
     }
     
     @Override

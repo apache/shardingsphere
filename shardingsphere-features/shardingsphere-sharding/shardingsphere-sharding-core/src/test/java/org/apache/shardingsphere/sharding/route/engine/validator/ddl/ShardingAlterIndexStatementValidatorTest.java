@@ -21,8 +21,8 @@ import org.apache.shardingsphere.infra.binder.statement.ddl.AlterIndexStatementC
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
-import org.apache.shardingsphere.sharding.exception.DuplicatedIndexException;
-import org.apache.shardingsphere.sharding.exception.IndexNotExistedException;
+import org.apache.shardingsphere.sharding.exception.metadata.DuplicatedIndexException;
+import org.apache.shardingsphere.sharding.exception.metadata.IndexNotExistedException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingAlterIndexStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;

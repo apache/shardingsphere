@@ -21,11 +21,11 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.util.exception.external.sql.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
-import org.apache.shardingsphere.sharding.exception.InvalidDatetimeFormatException;
+import org.apache.shardingsphere.sharding.exception.data.InvalidDatetimeFormatException;
 
 import java.time.Instant;
 import java.time.LocalDate;

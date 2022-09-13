@@ -21,8 +21,8 @@ import org.apache.shardingsphere.infra.binder.statement.ddl.CreateViewStatementC
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.sharding.exception.EngagedViewException;
-import org.apache.shardingsphere.sharding.exception.UnsupportedCreateViewException;
+import org.apache.shardingsphere.sharding.exception.metadata.EngagedViewException;
+import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedCreateViewException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingCreateViewStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;

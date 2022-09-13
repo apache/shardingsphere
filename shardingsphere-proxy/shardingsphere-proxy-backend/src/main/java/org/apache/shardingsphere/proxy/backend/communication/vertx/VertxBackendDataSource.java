@@ -32,7 +32,7 @@ import io.vertx.sqlclient.PoolOptions;
 import io.vertx.sqlclient.SqlConnection;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.util.exception.external.sql.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.proxy.backend.communication.BackendDataSource;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
@@ -136,7 +136,6 @@ public final class VertxBackendDataSource implements BackendDataSource {
             case "mysql":
                 return createMySQLPool(value, uri);
             case "postgresql":
-                throw new UnsupportedSQLOperationException("For now");
             case "opengauss":
                 throw new UnsupportedSQLOperationException("For now");
             default:

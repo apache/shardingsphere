@@ -39,8 +39,8 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineIndexM
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalProcessContext;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobCreationException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobPrepareFailedException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.DefaultPipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
@@ -218,7 +218,7 @@ public final class InventoryTaskSplitter {
                         break;
                     }
                     long endId = rs.getLong(1);
-                    if (endId == 0) {
+                    if (0 == endId) {
                         log.info("getPositionByPrimaryKeyRange, endId is 0, break, tableName={}, primaryKey={}, beginId={}", dumperConfig.getActualTableName(), dumperConfig.getUniqueKey(), beginId);
                         break;
                     }
@@ -227,7 +227,7 @@ public final class InventoryTaskSplitter {
                 }
             }
             // fix empty table missing inventory task
-            if (0 == result.size()) {
+            if (result.isEmpty()) {
                 result.add(new IntegerPrimaryKeyPosition(0, 0));
             }
         } catch (final SQLException ex) {

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.merge.result.impl.stream;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.io.InputStream;
 import java.sql.SQLException;
@@ -36,9 +37,7 @@ public abstract class StreamMergedResult implements MergedResult {
     private boolean wasNull;
     
     protected final QueryResult getCurrentQueryResult() throws SQLException {
-        if (null == currentQueryResult) {
-            throw new SQLException("Current ResultSet is null, ResultSet perhaps end of next.");
-        }
+        ShardingSpherePreconditions.checkNotNull(currentQueryResult, new SQLException("Current ResultSet is null, ResultSet perhaps end of next."));
         return currentQueryResult;
     }
     

@@ -20,17 +20,16 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.util.props.TypedPropertyValue;
 import org.apache.shardingsphere.infra.util.props.exception.TypedPropertyValueException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidValueException;
 import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableException;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
@@ -42,7 +41,7 @@ import java.util.Properties;
 public final class SetVariableHandler extends UpdatableRALBackendHandler<SetVariableStatement> {
     
     @Override
-    protected void update(final ContextManager contextManager) throws DistSQLException {
+    protected void update(final ContextManager contextManager) {
         Enum<?> enumType = getEnumType(getSqlStatement().getName());
         if (enumType instanceof ConfigurationPropertyKey) {
             handleConfigurationProperty((ConfigurationPropertyKey) enumType, getSqlStatement().getValue());

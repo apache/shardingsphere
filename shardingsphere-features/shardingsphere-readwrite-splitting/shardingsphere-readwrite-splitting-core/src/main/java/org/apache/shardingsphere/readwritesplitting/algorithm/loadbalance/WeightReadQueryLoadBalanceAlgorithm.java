@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
@@ -102,9 +103,7 @@ public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadB
     
     private double getWeightValue(final String readDataSourceName) {
         Object weightObject = props.get(readDataSourceName);
-        if (null == weightObject) {
-            throw new IllegalStateException("Read database access weight is not configured：" + readDataSourceName);
-        }
+        Preconditions.checkNotNull(weightObject, "Read database `%s` access weight is not configured", readDataSourceName);
         double result;
         try {
             result = Double.parseDouble(weightObject.toString());

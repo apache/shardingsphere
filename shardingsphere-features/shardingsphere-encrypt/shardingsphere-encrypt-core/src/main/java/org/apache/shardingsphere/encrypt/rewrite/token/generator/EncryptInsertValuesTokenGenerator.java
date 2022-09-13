@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
-import org.apache.shardingsphere.encrypt.exception.UnsupportedEncryptInsertValueException;
+import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptInsertValueException;
 import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseNameAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptInsertValuesToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;

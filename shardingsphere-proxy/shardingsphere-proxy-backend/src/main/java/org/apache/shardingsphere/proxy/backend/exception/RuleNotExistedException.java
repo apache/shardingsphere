@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.proxy.backend.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.exception.MetaDataSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Rule does not exist exception.
  */
-public final class RuleNotExistedException extends ShardingSphereSQLException {
+public final class RuleNotExistedException extends MetaDataSQLException {
     
     private static final long serialVersionUID = -4150905802300104824L;
     
     public RuleNotExistedException() {
-        super(XOpenSQLState.SYNTAX_ERROR, 11003, "Rule does not exist");
+        super(XOpenSQLState.SYNTAX_ERROR, 10, "Rule does not exist");
     }
 }

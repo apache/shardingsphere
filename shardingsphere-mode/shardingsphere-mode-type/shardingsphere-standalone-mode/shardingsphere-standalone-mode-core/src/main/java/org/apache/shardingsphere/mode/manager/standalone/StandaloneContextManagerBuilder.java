@@ -24,7 +24,6 @@ import org.apache.shardingsphere.mode.lock.ShardingSphereLockContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
-import org.apache.shardingsphere.mode.manager.standalone.lock.StandaloneLockPersistService;
 import org.apache.shardingsphere.mode.manager.standalone.subscriber.ProcessStandaloneSubscriber;
 import org.apache.shardingsphere.mode.manager.standalone.workerid.generator.StandaloneWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -60,7 +59,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     
     private InstanceContext buildInstanceContext(final ContextManagerBuilderParameter parameter) {
         return new InstanceContext(new ComputeNodeInstance(parameter.getInstanceMetaData()),
-                new StandaloneWorkerIdGenerator(), parameter.getModeConfiguration(), new ShardingSphereLockContext(new StandaloneLockPersistService()),
+                new StandaloneWorkerIdGenerator(), parameter.getModeConfiguration(), new ShardingSphereLockContext(null),
                 new EventBusContext(), ScheduleContextFactory.newInstance(parameter.getModeConfiguration()));
     }
     

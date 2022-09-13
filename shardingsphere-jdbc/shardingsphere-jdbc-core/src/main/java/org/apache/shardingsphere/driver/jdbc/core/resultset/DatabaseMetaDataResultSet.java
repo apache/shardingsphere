@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
 import lombok.EqualsAndHashCode;
-import org.apache.shardingsphere.driver.jdbc.exception.ColumnIndexOutOfRangeException;
-import org.apache.shardingsphere.driver.jdbc.exception.ColumnLabelNotFoundException;
-import org.apache.shardingsphere.driver.jdbc.exception.ResultSetClosedException;
+import org.apache.shardingsphere.driver.jdbc.exception.syntax.ColumnIndexOutOfRangeException;
+import org.apache.shardingsphere.driver.jdbc.exception.syntax.ColumnLabelNotFoundException;
+import org.apache.shardingsphere.driver.jdbc.exception.connection.ResultSetClosedException;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedDatabaseMetaDataResultSet;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtil;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;

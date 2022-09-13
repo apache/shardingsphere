@@ -23,7 +23,6 @@ import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -38,7 +37,7 @@ public final class MySQLComStmtSendLongDataExecutor implements CommandExecutor {
     private final ConnectionSession connectionSession;
     
     @Override
-    public Collection<DatabasePacket<?>> execute() throws SQLException {
+    public Collection<DatabasePacket<?>> execute() {
         MySQLPreparedStatement preparedStatement = connectionSession.getPreparedStatementRegistry().getPreparedStatement(packet.getStatementId());
         preparedStatement.getLongData().put(packet.getParamId(), packet.getData());
         return Collections.emptyList();

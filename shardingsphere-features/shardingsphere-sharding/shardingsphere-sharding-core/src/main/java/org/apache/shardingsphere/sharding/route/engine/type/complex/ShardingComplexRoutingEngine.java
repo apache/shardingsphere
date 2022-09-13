@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.type.complex;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.sharding.exception.ShardingRuleNotFoundException;
+import org.apache.shardingsphere.sharding.exception.metadata.ShardingRuleNotFoundException;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.standard.ShardingStandardRoutingEngine;

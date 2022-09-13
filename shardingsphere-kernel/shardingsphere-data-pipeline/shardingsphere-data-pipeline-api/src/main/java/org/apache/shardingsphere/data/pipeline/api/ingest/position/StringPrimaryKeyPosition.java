@@ -43,9 +43,6 @@ public final class StringPrimaryKeyPosition extends PrimaryKeyPosition<String> i
     
     @Override
     public int compareTo(final StringPrimaryKeyPosition position) {
-        if (null == position) {
-            return 1;
-        }
-        return beginValue.compareTo(position.getBeginValue());
+        return null == position ? 1 : beginValue.compareTo(position.getBeginValue());
     }
 }

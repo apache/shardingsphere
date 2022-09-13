@@ -19,14 +19,12 @@ package org.apache.shardingsphere.proxy.backend.handler.database;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.external.sql.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
-
-import java.sql.SQLException;
 
 /**
  * Database operate backend handler factory.
@@ -40,9 +38,8 @@ public final class DatabaseOperateBackendHandlerFactory {
      * @param sqlStatement SQL statement
      * @param connectionSession connection session
      * @return created instance
-     * @throws SQLException SQL exception
      */
-    public static ProxyBackendHandler newInstance(final SQLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
+    public static ProxyBackendHandler newInstance(final SQLStatement sqlStatement, final ConnectionSession connectionSession) {
         return createBackendHandler(sqlStatement, connectionSession);
     }
     

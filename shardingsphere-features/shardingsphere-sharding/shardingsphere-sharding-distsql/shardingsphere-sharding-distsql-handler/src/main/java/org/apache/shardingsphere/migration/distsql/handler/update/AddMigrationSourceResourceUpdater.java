@@ -19,7 +19,7 @@ package org.apache.shardingsphere.migration.distsql.handler.update;
 
 import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
-import org.apache.shardingsphere.data.pipeline.core.exception.AddMigrationSourceResourceException;
+import org.apache.shardingsphere.data.pipeline.core.exception.connection.AddMigrationSourceResourceException;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesVali
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.exception.external.sql.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.migration.distsql.statement.AddMigrationSourceResourceStatement;
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ResourceSegmentsConverter;
 

@@ -53,9 +53,6 @@ public final class IntegerPrimaryKeyPosition extends PrimaryKeyPosition<Long> im
     
     @Override
     public int compareTo(final IntegerPrimaryKeyPosition position) {
-        if (null == position) {
-            return 1;
-        }
-        return Long.compare(beginValue, position.beginValue);
+        return null == position ? 1 : Long.compare(beginValue, position.beginValue);
     }
 }

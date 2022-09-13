@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.exception.ActualDataNodesMissedWithShardingTableException;
+import org.apache.shardingsphere.sharding.exception.metadata.DataNodesMissedWithShardingTableException;
 import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import org.junit.Test;
 
@@ -148,7 +148,7 @@ public final class TableRuleTest {
         assertFalse(actual.isExisted("table_3"));
     }
     
-    @Test(expected = ActualDataNodesMissedWithShardingTableException.class)
+    @Test(expected = DataNodesMissedWithShardingTableException.class)
     public void assertActualDataNodesNotConfigured() {
         ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("LOGIC_TABLE", "");
         shardingTableRuleConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("shardingColumn", "INLINE"));

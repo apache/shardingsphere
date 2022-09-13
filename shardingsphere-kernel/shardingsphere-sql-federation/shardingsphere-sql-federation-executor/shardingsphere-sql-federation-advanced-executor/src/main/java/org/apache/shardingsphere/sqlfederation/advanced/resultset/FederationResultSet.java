@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtil;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -88,14 +89,14 @@ public final class FederationResultSet extends AbstractUnsupportedOperationResul
     }
     
     @Override
-    public boolean next() throws SQLException {
+    public boolean next() {
         boolean result = enumerator.moveNext();
         currentRows = result ? enumerator.current() : new Object[]{};
         return result;
     }
     
     @Override
-    public void close() throws SQLException {
+    public void close() {
         closed = true;
         enumerator.close();
         currentRows = null;
@@ -307,16 +308,16 @@ public final class FederationResultSet extends AbstractUnsupportedOperationResul
     }
     
     @Override
-    public SQLWarning getWarnings() throws SQLException {
+    public SQLWarning getWarnings() {
         return null;
     }
     
     @Override
-    public void clearWarnings() throws SQLException {
+    public void clearWarnings() {
     }
     
     @Override
-    public ResultSetMetaData getMetaData() throws SQLException {
+    public ResultSetMetaData getMetaData() {
         return resultSetMetaData;
     }
     
@@ -346,7 +347,7 @@ public final class FederationResultSet extends AbstractUnsupportedOperationResul
     }
     
     @Override
-    public void setFetchDirection(final int direction) throws SQLException {
+    public void setFetchDirection(final int direction) {
     }
     
     @Override
@@ -355,7 +356,7 @@ public final class FederationResultSet extends AbstractUnsupportedOperationResul
     }
     
     @Override
-    public void setFetchSize(final int rows) throws SQLException {
+    public void setFetchSize(final int rows) {
     }
     
     @Override
@@ -364,17 +365,17 @@ public final class FederationResultSet extends AbstractUnsupportedOperationResul
     }
     
     @Override
-    public int getType() throws SQLException {
+    public int getType() {
         return ResultSet.TYPE_FORWARD_ONLY;
     }
     
     @Override
-    public int getConcurrency() throws SQLException {
+    public int getConcurrency() {
         return ResultSet.CONCUR_READ_ONLY;
     }
     
     @Override
-    public Statement getStatement() throws SQLException {
+    public Statement getStatement() {
         return null;
     }
     
@@ -419,7 +420,7 @@ public final class FederationResultSet extends AbstractUnsupportedOperationResul
     }
     
     @Override
-    public boolean isClosed() throws SQLException {
+    public boolean isClosed() {
         return closed;
     }
     
@@ -443,11 +444,9 @@ public final class FederationResultSet extends AbstractUnsupportedOperationResul
         return getString(columnLabel);
     }
     
-    private Integer getIndexFromColumnLabelAndIndexMap(final String columnLabel) throws SQLFeatureNotSupportedException {
+    private Integer getIndexFromColumnLabelAndIndexMap(final String columnLabel) throws SQLException {
         Integer result = columnLabelAndIndexMap.get(columnLabel.toLowerCase());
-        if (null == result) {
-            throw new SQLFeatureNotSupportedException(String.format("can't get index from columnLabel[%s].", columnLabel));
-        }
+        ShardingSpherePreconditions.checkNotNull(result, new SQLFeatureNotSupportedException(String.format("can't get index from columnLabel[%s].", columnLabel)));
         return result;
     }
     

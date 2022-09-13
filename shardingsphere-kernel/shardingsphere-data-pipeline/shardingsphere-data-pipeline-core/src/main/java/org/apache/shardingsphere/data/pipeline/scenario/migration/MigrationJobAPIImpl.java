@@ -63,8 +63,8 @@ import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsis
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCalculateAlgorithmFactory;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
-import org.apache.shardingsphere.data.pipeline.core.exception.AddMigrationSourceResourceException;
-import org.apache.shardingsphere.data.pipeline.core.exception.DropMigrationSourceResourceException;
+import org.apache.shardingsphere.data.pipeline.core.exception.connection.AddMigrationSourceResourceException;
+import org.apache.shardingsphere.data.pipeline.core.exception.connection.DropMigrationSourceResourceException;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineSchemaTableUtil;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
@@ -447,11 +447,10 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         StandardPipelineDataSourceConfiguration sourceDataSourceConfig = new StandardPipelineDataSourceConfiguration(sourceDataSourceProps);
         DatabaseType sourceDatabaseType = sourceDataSourceConfig.getDatabaseType();
         result.setSourceDatabaseType(sourceDatabaseType.getType());
-        if (null == parameter.getSourceSchemaName() && sourceDatabaseType.isSchemaAvailable()) {
-            result.setSourceSchemaName(PipelineSchemaTableUtil.getDefaultSchema(sourceDataSourceConfig));
-        } else {
-            result.setSourceSchemaName(parameter.getSourceSchemaName());
-        }
+        String sourceSchemaName = null == parameter.getSourceSchemaName() && sourceDatabaseType.isSchemaAvailable()
+                ? PipelineSchemaTableUtil.getDefaultSchema(sourceDataSourceConfig)
+                : parameter.getSourceSchemaName();
+        result.setSourceSchemaName(sourceSchemaName);
         result.setSourceTableName(parameter.getSourceTableName());
         Map<String, Map<String, Object>> targetDataSourceProperties = new HashMap<>();
         ShardingSphereDatabase targetDatabase = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabase(parameter.getTargetDatabaseName());

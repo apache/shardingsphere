@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -39,5 +38,5 @@ public abstract class UpdatableRALBackendHandler<E extends RALStatement> extends
         return new UpdateResponseHeader(getSqlStatement());
     }
     
-    protected abstract void update(ContextManager contextManager) throws DistSQLException;
+    protected abstract void update(ContextManager contextManager) throws SQLException;
 }

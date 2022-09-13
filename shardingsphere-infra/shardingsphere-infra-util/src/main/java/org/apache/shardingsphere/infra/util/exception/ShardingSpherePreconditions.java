@@ -32,7 +32,7 @@ public final class ShardingSpherePreconditions {
     
     /**
      * Ensures the truth of an expression involving the state of the calling instance.
-     * 
+     *
      * @param expectedExpression expected expression
      * @param exceptionIfUnexpected exception thrown if expression is unexpected
      */
@@ -64,6 +64,44 @@ public final class ShardingSpherePreconditions {
      */
     public static void checkState(final boolean expectedExpression, final SQLException exceptionIfUnexpected) throws SQLException {
         if (!expectedExpression) {
+            throw exceptionIfUnexpected;
+        }
+    }
+    
+    /**
+     * Ensures that an object reference passed as a parameter to the calling method is not null.
+     *
+     * @param reference object reference to be checked
+     * @param exceptionIfUnexpected exception thrown if object is null
+     */
+    public static void checkNotNull(final Object reference, final ShardingSphereExternalException exceptionIfUnexpected) {
+        if (null == reference) {
+            throw exceptionIfUnexpected;
+        }
+    }
+    
+    /**
+     * Ensures that an object reference passed as a parameter to the calling method is not null.
+     *
+     * @param reference object reference to be checked
+     * @param exceptionIfUnexpected exception thrown if object is null
+     * @throws ShardingSphereInternalException ShardingSphere internal exception
+     */
+    public static void checkNotNull(final Object reference, final ShardingSphereInternalException exceptionIfUnexpected) throws ShardingSphereInternalException {
+        if (null == reference) {
+            throw exceptionIfUnexpected;
+        }
+    }
+    
+    /**
+     * Ensures that an object reference passed as a parameter to the calling method is not null.
+     *
+     * @param reference object reference to be checked
+     * @param exceptionIfUnexpected exception thrown if object is null
+     * @throws SQLException SQL exception
+     */
+    public static void checkNotNull(final Object reference, final SQLException exceptionIfUnexpected) throws SQLException {
+        if (null == reference) {
             throw exceptionIfUnexpected;
         }
     }

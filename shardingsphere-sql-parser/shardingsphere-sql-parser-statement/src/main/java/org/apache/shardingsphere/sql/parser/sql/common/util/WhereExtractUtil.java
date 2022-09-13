@@ -43,10 +43,7 @@ public final class WhereExtractUtil {
      * @return join where segment collection
      */
     public static Collection<WhereSegment> getJoinWhereSegments(final SelectStatement selectStatement) {
-        if (null == selectStatement.getFrom()) {
-            return Collections.emptyList();
-        }
-        return getJoinWhereSegments(selectStatement.getFrom());
+        return null == selectStatement.getFrom() ? Collections.emptyList() : getJoinWhereSegments(selectStatement.getFrom());
     }
     
     private static Collection<WhereSegment> getJoinWhereSegments(final TableSegment tableSegment) {

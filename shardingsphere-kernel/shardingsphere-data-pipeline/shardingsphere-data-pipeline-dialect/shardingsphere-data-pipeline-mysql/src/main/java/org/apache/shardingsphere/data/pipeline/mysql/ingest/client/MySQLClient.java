@@ -31,7 +31,7 @@ import io.netty.util.concurrent.DefaultPromise;
 import io.netty.util.concurrent.Promise;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecutionException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobExecutionException;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.GlobalTableMapEventMapping;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractBinlogEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.netty.MySQLBinlogEventPacketDecoder;
@@ -46,7 +46,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.que
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.netty.ChannelAttrInitializer;
-import org.apache.shardingsphere.infra.util.exception.external.sql.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 
 import java.net.InetSocketAddress;
 import java.util.Objects;

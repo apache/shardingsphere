@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.state.impl;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.junit.Test;
 
 public final class LockProxyStateTest {

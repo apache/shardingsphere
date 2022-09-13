@@ -152,10 +152,7 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     }
     
     private String getIdentifierValue(final ParserRuleContext ctx) {
-        if (null == ctx || ctx.isEmpty()) {
-            return null;
-        }
-        return new IdentifierValue(ctx.getText()).getValue();
+        return null == ctx || ctx.isEmpty() ? null : new IdentifierValue(ctx.getText()).getValue();
     }
     
     private Collection<ShadowAlgorithmSegment> visitShadowAlgorithms(final List<ShadowAlgorithmDefinitionContext> ctxs) {

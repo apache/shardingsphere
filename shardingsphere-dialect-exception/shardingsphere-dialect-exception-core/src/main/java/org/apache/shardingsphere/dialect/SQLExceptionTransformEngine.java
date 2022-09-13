@@ -23,7 +23,7 @@ import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 import org.apache.shardingsphere.dialect.mapper.SQLDialectExceptionMapper;
 import org.apache.shardingsphere.dialect.mapper.SQLDialectExceptionMapperFactory;
 import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.UnknownSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnknownSQLException;
 
 import java.sql.SQLException;
 import java.util.Optional;

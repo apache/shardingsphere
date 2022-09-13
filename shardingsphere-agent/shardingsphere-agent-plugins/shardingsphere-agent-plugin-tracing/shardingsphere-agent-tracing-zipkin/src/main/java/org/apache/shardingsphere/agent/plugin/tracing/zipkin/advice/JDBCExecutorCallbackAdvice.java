@@ -44,12 +44,7 @@ public final class JDBCExecutorCallbackAdvice implements InstanceMethodAroundAdv
     @SuppressWarnings("unchecked")
     public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         Span root = (Span) ((Map<String, Object>) args[2]).get(ZipkinConstants.ROOT_SPAN);
-        Span span;
-        if (null == root) {
-            span = Tracing.currentTracer().nextSpan().name(OPERATION_NAME);
-        } else {
-            span = Tracing.currentTracer().newChild(root.context()).name(OPERATION_NAME);
-        }
+        Span span = null == root ? Tracing.currentTracer().nextSpan().name(OPERATION_NAME) : Tracing.currentTracer().newChild(root.context()).name(OPERATION_NAME);
         span.tag(ZipkinConstants.Tags.COMPONENT, ZipkinConstants.COMPONENT_NAME);
         span.tag(ZipkinConstants.Tags.DB_TYPE, ZipkinConstants.DB_TYPE_VALUE);
         JDBCExecutionUnit executionUnit = (JDBCExecutionUnit) args[0];
