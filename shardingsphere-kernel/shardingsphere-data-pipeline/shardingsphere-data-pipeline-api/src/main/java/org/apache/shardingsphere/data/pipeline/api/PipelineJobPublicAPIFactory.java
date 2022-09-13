@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.api;
 
+import lombok.NonNull;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 /**
  * Pipeline job public API factory.
@@ -27,6 +29,16 @@ public final class PipelineJobPublicAPIFactory {
     
     static {
         ShardingSphereServiceLoader.register(MigrationJobPublicAPI.class);
+    }
+    
+    /**
+     * Get instance of pipeline job public API.
+     *
+     * @param jobTypeName job type name
+     * @return got instance
+     */
+    public static PipelineJobPublicAPI getPipelineJobPublicAPI(@NonNull final String jobTypeName) {
+        return TypedSPIRegistry.getRegisteredService(PipelineJobPublicAPI.class, jobTypeName);
     }
     
     /**

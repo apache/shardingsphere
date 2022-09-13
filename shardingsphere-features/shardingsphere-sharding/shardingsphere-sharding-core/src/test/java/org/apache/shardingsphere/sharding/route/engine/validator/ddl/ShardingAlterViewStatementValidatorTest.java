@@ -20,8 +20,8 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.sharding.exception.RenamedViewWithoutSameConfigException;
-import org.apache.shardingsphere.sharding.exception.UnsupportedShardingOperationException;
+import org.apache.shardingsphere.sharding.exception.syntax.RenamedViewWithoutSameConfigurationException;
+import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingAlterViewStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -83,7 +83,7 @@ public final class ShardingAlterViewStatementValidatorTest {
         new ShardingAlterViewStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database);
     }
     
-    @Test(expected = RenamedViewWithoutSameConfigException.class)
+    @Test(expected = RenamedViewWithoutSameConfigurationException.class)
     public void assertPreValidateAlterRenamedViewWithoutSameConfig() {
         OpenGaussAlterViewStatement selectStatement = new OpenGaussAlterViewStatement();
         selectStatement.setView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));

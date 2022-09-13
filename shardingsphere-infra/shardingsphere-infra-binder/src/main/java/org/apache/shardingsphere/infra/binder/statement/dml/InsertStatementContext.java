@@ -32,6 +32,7 @@ import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSel
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
@@ -98,13 +99,9 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     private ShardingSphereSchema getSchema(final Map<String, ShardingSphereDatabase> databases, final String defaultDatabaseName) {
         String databaseName = tablesContext.getDatabaseName().orElse(defaultDatabaseName);
-        if (null == databaseName) {
-            throw new NoDatabaseSelectedException();
-        }
+        ShardingSpherePreconditions.checkNotNull(databaseName, new NoDatabaseSelectedException());
         ShardingSphereDatabase database = databases.get(databaseName.toLowerCase());
-        if (null == database) {
-            throw new UnknownDatabaseException(databaseName);
-        }
+        ShardingSpherePreconditions.checkNotNull(database, new UnknownDatabaseException(databaseName));
         String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(getDatabaseType(), databaseName);
         return tablesContext.getSchemaName().map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchema));
     }

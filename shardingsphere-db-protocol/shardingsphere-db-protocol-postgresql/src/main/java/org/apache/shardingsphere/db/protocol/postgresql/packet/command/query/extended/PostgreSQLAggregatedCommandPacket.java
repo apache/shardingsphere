@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
@@ -56,7 +57,7 @@ public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPa
                 if (++parseTimes > 1) {
                     break;
                 }
-                if (firstStatement == null) {
+                if (null == firstStatement) {
                     firstStatement = ((PostgreSQLComParsePacket) each).getStatementId();
                 } else if (!firstStatement.equals(((PostgreSQLComParsePacket) each).getStatementId())) {
                     break;
@@ -99,9 +100,7 @@ public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPa
     }
     
     private void ensureRandomAccessible(final List<PostgreSQLCommandPacket> packets) {
-        if (!(packets instanceof RandomAccess)) {
-            throw new IllegalArgumentException("Packets must be RandomAccess.");
-        }
+        Preconditions.checkArgument(packets instanceof RandomAccess, "Packets must be RandomAccess.");
     }
     
     @Override

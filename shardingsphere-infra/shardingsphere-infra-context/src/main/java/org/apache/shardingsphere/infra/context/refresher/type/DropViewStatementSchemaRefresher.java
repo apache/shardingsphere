@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropViewStatement;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -38,7 +37,7 @@ public final class DropViewStatementSchemaRefresher implements MetaDataRefresher
     
     @Override
     public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
-                                                    final String schemaName, final DropViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
+                                                    final String schemaName, final DropViewStatement sqlStatement, final ConfigurationProperties props) {
         SchemaAlteredEvent event = new SchemaAlteredEvent(database.getName(), schemaName);
         sqlStatement.getViews().forEach(each -> {
             ShardingSphereSchema schema = database.getSchema(schemaName);

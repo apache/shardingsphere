@@ -260,7 +260,7 @@ The text of each license is the standard Apache 2.0 license.
     jackson-core 2.13.1: http://github.com/FasterXML/jackson, Apache 2.0
     jackson-databind 2.10.0: http://github.com/FasterXML/jackson, Apache 2.0
     jackson-dataformat-yaml 2.13.2: http://github.com/FasterXML/jackson, Apache 2.0
-    jcl-over-slf4j 1.7.7: https://github.com/qos-ch/slf4j, Apache 2.0
+    jcl-over-slf4j 1.7.36: https://github.com/qos-ch/slf4j, Apache 2.0
     jetcd-common 0.5.10: https://github.com/etcd-io/jetcd, Apache 2.0
     jetcd-core 0.5.10: https://github.com/etcd-io/jetcd, Apache 2.0
     json-path 2.7.0: https://github.com/jayway/JsonPath, Apache 2.0
@@ -268,31 +268,31 @@ The text of each license is the standard Apache 2.0 license.
     jsr305 3.0.2: http://findbugs.sourceforge.net/, Apache 2.0
     log4j 1.2.17: http://logging.apache.org/log4j/1.2/, Apache 2.0
     memory 0.9.0, Apache 2.0
-    netty-buffer 4.1.73.Final: https://github.com/netty, Apache 2.0
-    netty-codec 4.1.73.Final: https://github.com/netty, Apache 2.0
-    netty-codec-dns 4.1.73.Final: https://github.com/netty, Apache 2.0
-    netty-codec-http 4.1.73.Final: https://github.com/netty, Apache 2.0
-    netty-codec-http2 4.1.73.Final: https://github.com/netty, Apache 2.0
-    netty-codec-socks 4.1.73.Final: https://github.com/netty, Apache 2.0
-    netty-common 4.1.73.Final: https://github.com/netty, Apache 2.0
-    netty-handler 4.1.73.Final: https://github.com/netty, Apache 2.0
-    netty-handler-proxy 4.1.73.Final: https://github.com/netty, Apache 2.0
-    netty-resolver 4.1.73.Final: https://github.com/netty, Apache 2.0
-    netty-resolver-dns 4.1.73.Final: https://github.com/netty, Apache 2.0
-    netty-tcnative-classes 2.0.46.Final: https://github.com/netty/netty-tcnative, Apache 2.0
-    netty-transport 4.1.73.Final: https://github.com/netty, Apache 2.0
-    netty-transport-classes-epoll 4.1.73.Final: https://github.com/netty, Apache 2.0
-    netty-transport-native-epoll 4.1.73.Final-linux-aarch_64: https://github.com/netty, Apache 2.0
-    netty-transport-native-epoll 4.1.73.Final-linux-x86_64: https://github.com/netty, Apache 2.0
-    netty-transport-native-unix-common 4.1.73.Final: https://github.com/netty, Apache 2.0
+    netty-buffer 4.1.80.Final: https://github.com/netty, Apache 2.0
+    netty-codec 4.1.80.Final: https://github.com/netty, Apache 2.0
+    netty-codec-dns 4.1.80.Final: https://github.com/netty, Apache 2.0
+    netty-codec-http 4.1.80.Final: https://github.com/netty, Apache 2.0
+    netty-codec-http2 4.1.80.Final: https://github.com/netty, Apache 2.0
+    netty-codec-socks 4.1.80.Final: https://github.com/netty, Apache 2.0
+    netty-common 4.1.80.Final: https://github.com/netty, Apache 2.0
+    netty-handler 4.1.80.Final: https://github.com/netty, Apache 2.0
+    netty-handler-proxy 4.1.80.Final: https://github.com/netty, Apache 2.0
+    netty-resolver 4.1.80.Final: https://github.com/netty, Apache 2.0
+    netty-resolver-dns 4.1.80.Final: https://github.com/netty, Apache 2.0
+    netty-tcnative-classes 2.0.54.Final: https://github.com/netty/netty-tcnative, Apache 2.0
+    netty-transport 4.1.80.Final: https://github.com/netty, Apache 2.0
+    netty-transport-classes-epoll 4.1.80.Final: https://github.com/netty, Apache 2.0
+    netty-transport-native-epoll 4.1.80.Final-linux-aarch_64: https://github.com/netty, Apache 2.0
+    netty-transport-native-epoll 4.1.80.Final-linux-x86_64: https://github.com/netty, Apache 2.0
+    netty-transport-native-unix-common 4.1.80.Final: https://github.com/netty, Apache 2.0
     perfmark-api 0.23.0: https://github.com/perfmark/perfmark, Apache 2.0
     proto-google-common-protos 2.0.1: https://github.com/googleapis/common-protos-java, Apache 2.0
     quartz 2.3.2: https://github.com/quartz-scheduler/quartz, Apache 2.0
     sketches-core 0.9.0, Apache 2.0
     snakeyaml 1.30: https://bitbucket.org/snakeyaml/snakeyaml, Apache 2.0
     uzaygezen-core 0.2: https://code.google.com/p/uzaygezen, Apache 2.0
-    vertx-mysql-client 4.2.3: https://github.com/eclipse-vertx/vertx-sql-client, Apache 2.0
-    vertx-sql-client 4.2.3: https://github.com/eclipse-vertx/vertx-sql-client, Apache 2.0
+    vertx-mysql-client 4.3.3: https://github.com/eclipse-vertx/vertx-sql-client, Apache 2.0
+    vertx-sql-client 4.3.3: https://github.com/eclipse-vertx/vertx-sql-client, Apache 2.0
     zookeeper 3.6.0: https://github.com/apache/zookeeper, Apache 2.0
     zookeeper-jute 3.6.0: https://github.com/apache/zookeeper, Apache 2.0
 
@@ -308,7 +308,7 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
     transactions-api 5.0.8: https://www.atomikos.com, Apache 2.0
     transactions-jdbc 5.0.8: https://www.atomikos.com, Apache 2.0
     transactions-jta 5.0.8: https://www.atomikos.com, Apache 2.0
-    vertx-core 4.2.3: https://github.com/eclipse-vertx/vert.x, Apache 2.0
+    vertx-core 4.3.3: https://github.com/eclipse-vertx/vert.x, Apache 2.0
     
 ========================================================================
 BSD licenses
@@ -357,6 +357,6 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
     animal-sniffer-annotations 1.19: https://github.com/mojohaus/animal-sniffer, MIT
     bcprov-jdk15on 1.70: https://www.bouncycastle.org, MIT
     checker-qual 3.5.0: https://github.com/typetools/checker-framework/blob/master/checker-qual, MIT
-    jul-to-slf4j 1.7.7: https://www.slf4j.org, MIT
-    slf4j-api 1.7.7: https://www.slf4j.org, MIT
+    jul-to-slf4j 1.7.36: https://www.slf4j.org, MIT
+    slf4j-api 1.7.36: https://www.slf4j.org, MIT
     jnanoid 2.0.0: https://github.com/aventrix/jnanoid, MIT 

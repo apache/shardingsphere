@@ -77,7 +77,7 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     }
     
     @Override
-    public Connection getConnection() throws SQLException {
+    public Connection getConnection() {
         return DriverStateContext.getConnection(databaseName, contextManager, jdbcContext);
     }
     

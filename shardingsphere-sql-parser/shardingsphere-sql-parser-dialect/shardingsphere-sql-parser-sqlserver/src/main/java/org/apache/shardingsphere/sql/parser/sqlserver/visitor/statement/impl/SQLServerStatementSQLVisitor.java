@@ -1105,8 +1105,7 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         AliasSegment alias = null == ctx.alias() ? null : (AliasSegment) visit(ctx.alias());
         if (null != ctx.top()) {
             RowNumberValueSegment rowNumber = (RowNumberValueSegment) visit(ctx.top());
-            return new TopProjectionSegment(ctx.top().getStart().getStartIndex(), ctx.top().getStop().getStopIndex(), rowNumber,
-                    alias == null ? null : alias.getIdentifier().getValue());
+            return new TopProjectionSegment(ctx.top().getStart().getStartIndex(), ctx.top().getStop().getStopIndex(), rowNumber, null == alias ? null : alias.getIdentifier().getValue());
         }
         if (null != ctx.columnName()) {
             ColumnSegment column = (ColumnSegment) visit(ctx.columnName());

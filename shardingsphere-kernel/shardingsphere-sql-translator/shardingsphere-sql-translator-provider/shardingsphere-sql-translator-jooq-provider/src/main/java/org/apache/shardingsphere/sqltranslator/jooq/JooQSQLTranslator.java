@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sqltranslator.jooq;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqltranslator.exception.SQLTranslationException;
-import org.apache.shardingsphere.sqltranslator.exception.UnsupportedTranslatedSQLException;
+import org.apache.shardingsphere.sqltranslator.exception.syntax.UnsupportedTranslatedSQLException;
 import org.apache.shardingsphere.sqltranslator.spi.SQLTranslator;
 import org.jooq.Query;
 import org.jooq.impl.DSL;

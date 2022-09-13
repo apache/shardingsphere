@@ -50,7 +50,7 @@ public final class CoordinatorRegistryCenterInitializer {
         throw new IllegalArgumentException("Unsupported clusterType=" + clusterType);
     }
     
-    // TODO Merge registry center code in ejob and ShardingSphere mode; Use spi to load impl;
+    // TODO Merge registry center code in ElasticJob and ShardingSphere mode; Use spi to load impl;
     private ZookeeperConfiguration getZookeeperConfig(final ClusterPersistRepositoryConfiguration repositoryConfig, final String namespaceRelativePath) {
         Properties props = repositoryConfig.getProps();
         ZookeeperProperties zookeeperProps = new ZookeeperProperties(props);

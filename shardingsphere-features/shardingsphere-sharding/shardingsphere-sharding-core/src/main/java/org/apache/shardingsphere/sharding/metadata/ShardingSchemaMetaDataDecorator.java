@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.Ind
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
-import org.apache.shardingsphere.sharding.exception.InconsistentShardingTableMetaDataException;
+import org.apache.shardingsphere.sharding.exception.metadata.InconsistentShardingTableMetaDataException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 

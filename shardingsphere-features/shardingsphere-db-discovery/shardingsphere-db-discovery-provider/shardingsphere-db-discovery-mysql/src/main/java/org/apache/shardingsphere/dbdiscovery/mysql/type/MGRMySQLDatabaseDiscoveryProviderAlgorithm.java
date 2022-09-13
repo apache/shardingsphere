@@ -19,10 +19,10 @@ package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.dbdiscovery.mysql.exception.InvalidMGRGroupNameConfigurationException;
-import org.apache.shardingsphere.dbdiscovery.mysql.exception.InvalidMGRModeException;
-import org.apache.shardingsphere.dbdiscovery.mysql.exception.InvalidMGRPluginException;
-import org.apache.shardingsphere.dbdiscovery.mysql.exception.InvalidMGRReplicationGroupMemberException;
+import org.apache.shardingsphere.dbdiscovery.mysql.exception.mgr.InvalidMGRGroupNameConfigurationException;
+import org.apache.shardingsphere.dbdiscovery.mysql.exception.mgr.InvalidMGRModeException;
+import org.apache.shardingsphere.dbdiscovery.mysql.exception.mgr.InvalidMGRPluginException;
+import org.apache.shardingsphere.dbdiscovery.mysql.exception.mgr.InvalidMGRReplicationGroupMemberException;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
@@ -88,7 +88,7 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
         return CompletableFuture.runAsync(() -> {
             try {
                 checkSingleDataSourceEnvironment(databaseName, dataSource);
-            } catch (SQLException ex) {
+            } catch (final SQLException ex) {
                 throw new SQLWrapperException(ex);
             }
         }, executorService);

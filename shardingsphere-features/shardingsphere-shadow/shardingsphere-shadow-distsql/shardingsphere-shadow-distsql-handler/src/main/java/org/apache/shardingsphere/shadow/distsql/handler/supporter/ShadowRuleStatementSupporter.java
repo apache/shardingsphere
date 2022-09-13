@@ -42,10 +42,7 @@ public final class ShadowRuleStatementSupporter {
      * @return rule names
      */
     public static List<String> getRuleNames(final ShadowRuleConfiguration ruleConfig) {
-        if (null == ruleConfig) {
-            return Collections.emptyList();
-        }
-        return new ArrayList<>(ruleConfig.getDataSources().keySet());
+        return null == ruleConfig ? Collections.emptyList() : new ArrayList<>(ruleConfig.getDataSources().keySet());
     }
     
     /**
@@ -55,36 +52,7 @@ public final class ShadowRuleStatementSupporter {
      * @return rule names
      */
     public static List<String> getRuleNames(final Collection<ShadowRuleSegment> segments) {
-        if (segments.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return segments.stream().map(ShadowRuleSegment::getRuleName).collect(Collectors.toList());
-    }
-    
-    /**
-     * Get table names from the shadow rule configuration.
-     *
-     * @param ruleConfig shadow rule configuration
-     * @return table names
-     */
-    public static List<String> getTableNames(final ShadowRuleConfiguration ruleConfig) {
-        if (null == ruleConfig) {
-            return Collections.emptyList();
-        }
-        return new ArrayList<>(ruleConfig.getTables().keySet());
-    }
-    
-    /**
-     * Get the table names from the rules.
-     *
-     * @param segments shadow rule segments
-     * @return table names
-     */
-    public static List<String> getTableNames(final Collection<ShadowRuleSegment> segments) {
-        if (segments.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return segments.stream().flatMap(each -> each.getShadowTableRules().keySet().stream()).collect(Collectors.toList());
+        return segments.isEmpty() ? Collections.emptyList() : segments.stream().map(ShadowRuleSegment::getRuleName).collect(Collectors.toList());
     }
     
     /**
@@ -94,10 +62,9 @@ public final class ShadowRuleStatementSupporter {
      * @return resource names
      */
     public static List<String> getResourceNames(final Collection<ShadowRuleSegment> segments) {
-        if (segments.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return segments.stream().map(each -> Arrays.asList(each.getSource(), each.getShadow())).flatMap(Collection::stream).filter(Objects::nonNull).collect(Collectors.toList());
+        return segments.isEmpty()
+                ? Collections.emptyList()
+                : segments.stream().map(each -> Arrays.asList(each.getSource(), each.getShadow())).flatMap(Collection::stream).filter(Objects::nonNull).collect(Collectors.toList());
     }
     
     /**
@@ -107,10 +74,7 @@ public final class ShadowRuleStatementSupporter {
      * @return algorithm names
      */
     public static List<String> getAlgorithmNames(final ShadowRuleConfiguration ruleConfig) {
-        if (null == ruleConfig) {
-            return Collections.emptyList();
-        }
-        return new ArrayList<>(ruleConfig.getShadowAlgorithms().keySet());
+        return null == ruleConfig ? Collections.emptyList() : new ArrayList<>(ruleConfig.getShadowAlgorithms().keySet());
     }
     
     /**
@@ -120,10 +84,10 @@ public final class ShadowRuleStatementSupporter {
      * @return algorithm names
      */
     public static List<String> getAlgorithmNames(final Collection<ShadowRuleSegment> segments) {
-        if (segments.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return segments.stream().flatMap(each -> each.getShadowTableRules().values().stream()).flatMap(Collection::stream).map(ShadowAlgorithmSegment::getAlgorithmName).collect(Collectors.toList());
+        return segments.isEmpty()
+                ? Collections.emptyList()
+                : segments.stream().flatMap(each -> each.getShadowTableRules().values().stream()).flatMap(Collection::stream)
+                        .map(ShadowAlgorithmSegment::getAlgorithmName).collect(Collectors.toList());
     }
     
     /**

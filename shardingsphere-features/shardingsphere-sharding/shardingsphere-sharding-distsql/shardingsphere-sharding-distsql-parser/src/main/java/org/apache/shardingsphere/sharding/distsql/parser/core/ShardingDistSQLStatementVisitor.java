@@ -341,18 +341,12 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitKeyGenerateStrategy(final KeyGenerateStrategyContext ctx) {
-        if (null == ctx) {
-            return null;
-        }
-        return new KeyGenerateStrategySegment(getIdentifierValue(ctx.columnName()), getIdentifierValue(ctx.keyGenerator().shardingAlgorithmName()));
+        return null == ctx ? null : new KeyGenerateStrategySegment(getIdentifierValue(ctx.columnName()), getIdentifierValue(ctx.keyGenerator().shardingAlgorithmName()));
     }
     
     @Override
     public ASTNode visitKeyGenerateDefinition(final KeyGenerateDefinitionContext ctx) {
-        if (null == ctx) {
-            return null;
-        }
-        return new KeyGenerateStrategySegment(getIdentifierValue(ctx.columnName()), (AlgorithmSegment) visit(ctx.algorithmDefinition()));
+        return null == ctx ? null : new KeyGenerateStrategySegment(getIdentifierValue(ctx.columnName()), (AlgorithmSegment) visit(ctx.algorithmDefinition()));
     }
     
     @Override
@@ -385,10 +379,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     }
     
     private String getIdentifierValue(final ParseTree context) {
-        if (null == context) {
-            return null;
-        }
-        return new IdentifierValue(context.getText()).getValue();
+        return null == context ? null : new IdentifierValue(context.getText()).getValue();
     }
     
     private String getIdentifierValueForDataNodes(final ParseTree context) {

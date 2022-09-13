@@ -17,19 +17,19 @@
 
 package org.apache.shardingsphere.proxy.backend.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.exception.ClusterSQLException;
 
 import java.io.IOException;
 
 /**
  * File IO exception.
  */
-public final class FileIOException extends KernelSQLException {
+public final class FileIOException extends ClusterSQLException {
     
     private static final long serialVersionUID = 1104839422339487793L;
     
     public FileIOException(final IOException cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 11004, "File access failed, reason is: %s", cause.getMessage());
+        super(XOpenSQLState.GENERAL_ERROR, 2, "File access failed, reason is: %s", cause.getMessage());
     }
 }

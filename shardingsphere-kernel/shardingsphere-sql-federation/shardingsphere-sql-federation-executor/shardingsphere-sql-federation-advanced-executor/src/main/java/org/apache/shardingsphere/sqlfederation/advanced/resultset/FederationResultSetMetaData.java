@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 
 import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -49,12 +48,12 @@ public final class FederationResultSetMetaData extends WrapperAdapter implements
     private final SelectStatementContext selectStatementContext;
     
     @Override
-    public int getColumnCount() throws SQLException {
+    public int getColumnCount() {
         return selectStatementContext.getProjectionsContext().getExpandProjections().size();
     }
     
     @Override
-    public boolean isAutoIncrement(final int column) throws SQLException {
+    public boolean isAutoIncrement(final int column) {
         return false;
     }
     
@@ -80,7 +79,7 @@ public final class FederationResultSetMetaData extends WrapperAdapter implements
     }
     
     @Override
-    public boolean isSigned(final int column) throws SQLException {
+    public boolean isSigned(final int column) {
         return true;
     }
     
@@ -90,7 +89,7 @@ public final class FederationResultSetMetaData extends WrapperAdapter implements
     }
     
     @Override
-    public String getColumnLabel(final int column) throws SQLException {
+    public String getColumnLabel(final int column) {
         Projection projection = selectStatementContext.getProjectionsContext().getExpandProjections().get(column - 1);
         if (projection instanceof ColumnProjection) {
             return ((ColumnProjection) projection).getName();
@@ -99,7 +98,7 @@ public final class FederationResultSetMetaData extends WrapperAdapter implements
     }
     
     @Override
-    public String getColumnName(final int column) throws SQLException {
+    public String getColumnName(final int column) {
         Projection projection = selectStatementContext.getProjectionsContext().getExpandProjections().get(column - 1);
         if (projection instanceof ColumnProjection) {
             return ((ColumnProjection) projection).getName();
@@ -125,7 +124,7 @@ public final class FederationResultSetMetaData extends WrapperAdapter implements
     }
     
     @Override
-    public String getTableName(final int column) throws SQLException {
+    public String getTableName(final int column) {
         return findTableName(column).orElse("");
     }
     
@@ -135,17 +134,17 @@ public final class FederationResultSetMetaData extends WrapperAdapter implements
     }
     
     @Override
-    public int getColumnType(final int column) throws SQLException {
+    public int getColumnType(final int column) {
         return 0;
     }
     
     @Override
-    public String getColumnTypeName(final int column) throws SQLException {
+    public String getColumnTypeName(final int column) {
         return "";
     }
     
     @Override
-    public boolean isReadOnly(final int column) throws SQLException {
+    public boolean isReadOnly(final int column) {
         return false;
     }
     
