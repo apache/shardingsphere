@@ -117,7 +117,7 @@ public final class MetaDataContextsFactoryTest {
     
     private void mockGlobalRulesBuilder() {
         mockedGlobalRulesBuilder = mockStatic(GlobalRulesBuilder.class);
-        mockedGlobalRulesBuilder.when(() -> GlobalRulesBuilder.buildRules(anyCollection(), anyMap(), any(InstanceContext.class))).thenReturn(shardingSphereRules);
+        mockedGlobalRulesBuilder.when(() -> GlobalRulesBuilder.buildRules(anyCollection(), anyMap(), any(InstanceContext.class), any())).thenReturn(shardingSphereRules);
     }
     
     private DatabaseRulePersistService mockDatabaseRulePersistService() {
