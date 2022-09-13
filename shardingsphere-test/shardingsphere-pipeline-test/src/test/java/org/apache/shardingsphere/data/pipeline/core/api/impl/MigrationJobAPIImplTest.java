@@ -80,7 +80,6 @@ public final class MigrationJobAPIImplTest {
         PipelineContextUtil.mockModeConfigAndContextManager();
         jobAPI = MigrationJobAPIFactory.getInstance();
         Map<String, Object> props = new HashMap<>();
-        // TODO if resource availability is checked, then it should not work
         props.put("jdbcUrl", "jdbc:h2:mem:test_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         props.put("username", "root");
         props.put("password", "root");

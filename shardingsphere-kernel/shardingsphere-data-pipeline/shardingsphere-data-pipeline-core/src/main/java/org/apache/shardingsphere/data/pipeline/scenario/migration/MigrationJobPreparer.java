@@ -145,12 +145,12 @@ public final class MigrationJobPreparer {
     }
     
     private void initInventoryTasks(final MigrationJobItemContext jobItemContext) {
-        InventoryDumperConfiguration inventoryDumperConfiguration = new InventoryDumperConfiguration(jobItemContext.getTaskConfig().getDumperConfig());
+        InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(jobItemContext.getTaskConfig().getDumperConfig());
         PipelineColumnMetaData uniqueKeyColumn = jobItemContext.getJobConfig().getUniqueKeyColumn();
-        inventoryDumperConfiguration.setUniqueKey(uniqueKeyColumn.getName());
-        inventoryDumperConfiguration.setUniqueKeyDataType(uniqueKeyColumn.getDataType());
+        inventoryDumperConfig.setUniqueKey(uniqueKeyColumn.getName());
+        inventoryDumperConfig.setUniqueKeyDataType(uniqueKeyColumn.getDataType());
         InventoryTaskSplitter inventoryTaskSplitter = new InventoryTaskSplitter(
-                jobItemContext.getSourceDataSource(), inventoryDumperConfiguration, jobItemContext.getTaskConfig().getImporterConfig(), jobItemContext.getInitProgress(),
+                jobItemContext.getSourceDataSource(), inventoryDumperConfig, jobItemContext.getTaskConfig().getImporterConfig(), jobItemContext.getInitProgress(),
                 jobItemContext.getSourceMetaDataLoader(), jobItemContext.getDataSourceManager(), jobItemContext.getJobProcessContext().getImporterExecuteEngine());
         jobItemContext.getInventoryTasks().addAll(inventoryTaskSplitter.splitInventoryData(jobItemContext));
     }
