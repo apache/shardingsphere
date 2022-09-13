@@ -81,7 +81,7 @@ public final class ShardingRuleStatementConverterTest {
                 new AlgorithmSegment("MOD", newProperties("sharding_count", "2")),
                 new KeyGenerateStrategySegment("order_id", "snowflake_algorithm"),
                 new AuditStrategySegment(Arrays.asList("sharding_key_required_auditor"), Arrays.asList(new ShardingAuditorSegment("sharding_key_required_auditor",
-                        new AlgorithmSegment("DML_SHARDING_CONDITIONS", new Properties()))),true));
+                        new AlgorithmSegment("DML_SHARDING_CONDITIONS", new Properties()))), true));
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_order", Arrays.asList("ds0", "ds1"),
                 new ShardingStrategySegment("standard", "order_id", null, databaseAlgorithmSegment),
                 new ShardingStrategySegment("standard", "order_id", "order_id_algorithm", null),

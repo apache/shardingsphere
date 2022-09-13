@@ -152,7 +152,7 @@ public final class ShardingRuleStatementCheckerTest {
     public void assertCheckCreationWithInvalidAuditAlgorithm() throws DistSQLException {
         AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
         autoTableRuleSegment.setAuditStrategySegment(new AuditStrategySegment(Arrays.asList("sharding_key_required_auditor"),
-            Arrays.asList(new ShardingAuditorSegment("sharding_key_required_auditor", new AlgorithmSegment("invalid", new Properties()))), true));
+                Arrays.asList(new ShardingAuditorSegment("sharding_key_required_auditor", new AlgorithmSegment("invalid", new Properties()))), true));
         List<AbstractTableRuleSegment> rules = Collections.singletonList(autoTableRuleSegment);
         ShardingTableRuleStatementChecker.checkCreation(database, rules, shardingRuleConfig);
     }
