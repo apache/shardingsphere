@@ -24,20 +24,25 @@ import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyLevelType;
 import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyType;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.AbstractTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.AuditStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.KeyGenerateStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingAuditorSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Sharding table rule converter.
@@ -55,6 +60,7 @@ public final class ShardingTableRuleStatementConverter {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         rules.forEach(each -> {
             result.getKeyGenerators().putAll(createKeyGeneratorConfiguration(each));
+            result.getAuditors().putAll(createAuditorConfiguration(each));
             if (each instanceof AutoTableRuleSegment) {
                 result.getShardingAlgorithms().putAll(createAlgorithmConfiguration((AutoTableRuleSegment) each));
                 result.getAutoTables().add(createAutoTableRuleConfiguration((AutoTableRuleSegment) each));
@@ -72,6 +78,16 @@ public final class ShardingTableRuleStatementConverter {
         Optional.ofNullable(rule.getKeyGenerateStrategySegment()).ifPresent(optional -> {
             if (!optional.getKeyGenerateAlgorithmName().isPresent()) {
                 result.put(getKeyGeneratorName(rule.getLogicTable(), optional.getKeyGenerateAlgorithmSegment().getName()), createAlgorithmConfiguration(optional.getKeyGenerateAlgorithmSegment()));
+            }
+        });
+        return result;
+    }
+    
+    private static Map<String, AlgorithmConfiguration> createAuditorConfiguration(final AbstractTableRuleSegment rule) {
+        Map<String, AlgorithmConfiguration> result = new HashMap<>();
+        Optional.ofNullable(rule.getAuditStrategySegment()).ifPresent(optional -> {
+            for (ShardingAuditorSegment each : optional.getShardingAuditorSegments()) {
+                result.put(each.getAuditorName(), new AlgorithmConfiguration(each.getAlgorithmSegment().getName(), each.getAlgorithmSegment().getProps()));
             }
         });
         return result;
@@ -114,6 +130,8 @@ public final class ShardingTableRuleStatementConverter {
         result.setShardingStrategy(createAutoTableStrategyConfiguration(rule));
         Optional.ofNullable(rule.getKeyGenerateStrategySegment())
                 .ifPresent(optional -> result.setKeyGenerateStrategy(createKeyGenerateStrategyConfiguration(rule.getLogicTable(), rule.getKeyGenerateStrategySegment())));
+        Optional.ofNullable(rule.getAuditStrategySegment())
+                .ifPresent(optional -> result.setAuditStrategy(createShardingAuditStrategyConfiguration(rule.getAuditStrategySegment())));
         return result;
     }
     
@@ -133,6 +151,8 @@ public final class ShardingTableRuleStatementConverter {
                         ShardingStrategyLevelType.DATABASE, optional.getType(), optional)));
         Optional.ofNullable(tableRuleSegment.getKeyGenerateStrategySegment())
                 .ifPresent(optional -> result.setKeyGenerateStrategy(createKeyGenerateStrategyConfiguration(tableRuleSegment.getLogicTable(), optional)));
+        Optional.ofNullable(tableRuleSegment.getAuditStrategySegment())
+            .ifPresent(optional -> result.setAuditStrategy(createShardingAuditStrategyConfiguration(optional)));
         return result;
     }
     
@@ -148,6 +168,11 @@ public final class ShardingTableRuleStatementConverter {
             return new KeyGenerateStrategyConfiguration(segment.getKeyGenerateColumn(), segment.getKeyGenerateAlgorithmName().get());
         }
         return new KeyGenerateStrategyConfiguration(segment.getKeyGenerateColumn(), getKeyGeneratorName(logicTable, segment.getKeyGenerateAlgorithmSegment().getName()));
+    }
+    
+    private static ShardingAuditStrategyConfiguration createShardingAuditStrategyConfiguration(final AuditStrategySegment segment) {
+        List<String> auditorNames = segment.getShardingAuditorSegments().stream().map(ShardingAuditorSegment::getAuditorName).collect(Collectors.toList());
+        return new ShardingAuditStrategyConfiguration(auditorNames, segment.isAllowHintDisable());
     }
     
     /**
