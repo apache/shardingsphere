@@ -55,7 +55,7 @@ public final class ShardingSphereResultSetUtil {
         return result;
     }
     
-    private static Map<String, Integer> createColumnLabelAndIndexMapWithExpandProjections(final SelectStatementContext statementContext) throws SQLException {
+    private static Map<String, Integer> createColumnLabelAndIndexMapWithExpandProjections(final SelectStatementContext statementContext) {
         List<Projection> actualProjections = statementContext.getProjectionsContext().getExpandProjections();
         Map<String, Integer> result = new CaseInsensitiveMap<>(actualProjections.size(), 1);
         for (int columnIndex = actualProjections.size(); columnIndex > 0; columnIndex--) {

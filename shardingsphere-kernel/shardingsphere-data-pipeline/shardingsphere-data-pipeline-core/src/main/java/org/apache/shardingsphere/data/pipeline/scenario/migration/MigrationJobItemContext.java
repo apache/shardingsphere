@@ -23,7 +23,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
-import org.apache.shardingsphere.data.pipeline.api.config.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
@@ -50,13 +49,15 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
     
     private final int shardingItem;
     
+    private final String dataSourceName;
+    
     private volatile boolean stopping;
     
     private volatile JobStatus status = JobStatus.RUNNING;
     
     private final InventoryIncrementalJobItemProgress initProgress;
     
-    private final TaskConfiguration taskConfig;
+    private final MigrationTaskConfiguration taskConfig;
     
     private final Collection<InventoryTask> inventoryTasks = new LinkedList<>();
     
@@ -85,10 +86,11 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
     };
     
     public MigrationJobItemContext(final MigrationJobConfiguration jobConfig, final int shardingItem, final InventoryIncrementalJobItemProgress initProgress,
-                                   final MigrationProcessContext jobProcessContext, final TaskConfiguration taskConfig, final PipelineDataSourceManager dataSourceManager) {
+                                   final MigrationProcessContext jobProcessContext, final MigrationTaskConfiguration taskConfig, final PipelineDataSourceManager dataSourceManager) {
         this.jobConfig = jobConfig;
         jobId = jobConfig.getJobId();
         this.shardingItem = shardingItem;
+        this.dataSourceName = taskConfig.getDataSourceName();
         this.initProgress = initProgress;
         this.jobProcessContext = jobProcessContext;
         this.taskConfig = taskConfig;

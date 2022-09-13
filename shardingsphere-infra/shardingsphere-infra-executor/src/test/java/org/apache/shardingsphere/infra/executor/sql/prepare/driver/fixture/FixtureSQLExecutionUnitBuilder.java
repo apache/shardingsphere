@@ -21,13 +21,11 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.SQLExecutionUnitBuilder;
 
-import java.sql.SQLException;
-
 public final class FixtureSQLExecutionUnitBuilder implements SQLExecutionUnitBuilder<FixtureDriverExecutionUnit, FixtureExecutorStatementManager, Object, FixtureStorageResourceOption> {
     
     @Override
-    public FixtureDriverExecutionUnit build(final ExecutionUnit executionUnit, final FixtureExecutorStatementManager executorManager, final Object connection, final ConnectionMode connectionMode,
-                                            final FixtureStorageResourceOption option) throws SQLException {
+    public FixtureDriverExecutionUnit build(final ExecutionUnit executionUnit, final FixtureExecutorStatementManager executorManager,
+                                            final Object connection, final ConnectionMode connectionMode, final FixtureStorageResourceOption option) {
         return new FixtureDriverExecutionUnit();
     }
     

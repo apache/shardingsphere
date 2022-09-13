@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.util.exception;
 
 import org.apache.shardingsphere.infra.util.exception.external.ShardingSphereExternalException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.SQLWrapperException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.util.exception.internal.ShardingSphereInternalException;
 import org.apache.shardingsphere.infra.util.exception.internal.fixture.ShardingSphereInternalExceptionFixture;
 import org.junit.Test;
@@ -45,5 +45,48 @@ public final class ShardingSpherePreconditionsTest {
     @Test
     public void assertCheckStateToNotThrowInternalException() throws ShardingSphereInternalException {
         ShardingSpherePreconditions.checkState(true, new ShardingSphereInternalExceptionFixture("message"));
+    }
+    
+    @Test(expected = SQLException.class)
+    public void assertCheckStateToThrowsSQLException() throws SQLException {
+        ShardingSpherePreconditions.checkState(false, new SQLException("message"));
+    }
+    
+    @Test
+    public void assertCheckStateToNotThrowSQLException() throws SQLException {
+        ShardingSpherePreconditions.checkState(true, new SQLException("message"));
+    }
+    
+    @Test(expected = ShardingSphereExternalException.class)
+    public void assertCheckNotNullToThrowsExternalException() {
+        ShardingSpherePreconditions.checkNotNull(null, new SQLWrapperException(new SQLException()));
+    }
+    
+    @SuppressWarnings("ObviousNullCheck")
+    @Test
+    public void assertCheckNotNullToNotThrowExternalException() {
+        ShardingSpherePreconditions.checkNotNull(new Object(), new SQLWrapperException(new SQLException()));
+    }
+    
+    @Test(expected = ShardingSphereInternalException.class)
+    public void assertCheckNotNullToThrowsInternalException() throws ShardingSphereInternalException {
+        ShardingSpherePreconditions.checkNotNull(null, new ShardingSphereInternalExceptionFixture("message"));
+    }
+    
+    @SuppressWarnings("ObviousNullCheck")
+    @Test
+    public void assertCheckNotNullToNotThrowInternalException() throws ShardingSphereInternalException {
+        ShardingSpherePreconditions.checkNotNull(new Object(), new ShardingSphereInternalExceptionFixture("message"));
+    }
+    
+    @Test(expected = SQLException.class)
+    public void assertCheckNotNullToThrowsSQLException() throws SQLException {
+        ShardingSpherePreconditions.checkNotNull(null, new SQLException("message"));
+    }
+    
+    @SuppressWarnings("ObviousNullCheck")
+    @Test
+    public void assertCheckNotNullToNotThrowSQLException() throws SQLException {
+        ShardingSpherePreconditions.checkNotNull(new Object(), new SQLException("message"));
     }
 }

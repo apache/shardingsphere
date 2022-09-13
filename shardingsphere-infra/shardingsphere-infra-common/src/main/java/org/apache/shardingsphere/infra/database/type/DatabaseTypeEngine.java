@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.util.exception.external.sql.SQLWrapperException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
 
 import javax.sql.DataSource;
@@ -152,5 +152,15 @@ public final class DatabaseTypeEngine {
      */
     public static String getDefaultSchemaName(final DatabaseType databaseType, final String databaseName) {
         return databaseType instanceof SchemaSupportedDatabaseType ? ((SchemaSupportedDatabaseType) databaseType).getDefaultSchema() : databaseName.toLowerCase();
+    }
+    
+    /**
+     * Get default schema name.
+     *
+     * @param databaseType database type
+     * @return default schema name
+     */
+    public static Optional<String> getDefaultSchemaName(final DatabaseType databaseType) {
+        return databaseType instanceof SchemaSupportedDatabaseType ? Optional.of(((SchemaSupportedDatabaseType) databaseType).getDefaultSchema()) : Optional.empty();
     }
 }

@@ -35,6 +35,7 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WalEventCon
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WalPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.DecodingPlugin;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWalEvent;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.opengauss.jdbc.PgConnection;
 import org.opengauss.replication.PGReplicationStream;
 
@@ -62,7 +63,7 @@ public final class OpenGaussWalDumper extends AbstractIncrementalDumper<WalPosit
         super(dumperConfig, position, channel, metaDataLoader);
         walPosition = (WalPosition) position;
         if (!StandardPipelineDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass())) {
-            throw new UnsupportedOperationException("PostgreSQLWalDumper only support PipelineDataSourceConfiguration");
+            throw new UnsupportedSQLOperationException("PostgreSQLWalDumper only support PipelineDataSourceConfiguration");
         }
         this.dumperConfig = dumperConfig;
         this.channel = channel;

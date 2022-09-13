@@ -40,6 +40,13 @@ public interface PipelineJobItemContext {
     int getShardingItem();
     
     /**
+     * Get data source name.
+     *
+     * @return data source name
+     */
+    String getDataSourceName();
+    
+    /**
      * Get job status.
      *
      * @return job status

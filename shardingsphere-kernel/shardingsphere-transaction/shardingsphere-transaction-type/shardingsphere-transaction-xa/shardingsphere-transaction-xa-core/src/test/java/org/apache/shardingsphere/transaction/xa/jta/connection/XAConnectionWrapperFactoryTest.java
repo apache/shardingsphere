@@ -21,15 +21,13 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.transaction.xa.jta.connection.dialect.H2XAConnectionWrapper;
 import org.junit.Test;
 
-import java.sql.SQLException;
-
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
 public final class XAConnectionWrapperFactoryTest {
     
     @Test
-    public void assertGetInstance() throws SQLException {
+    public void assertGetInstance() {
         assertThat(XAConnectionWrapperFactory.getInstance(DatabaseTypeFactory.getInstance("H2")), instanceOf(H2XAConnectionWrapper.class));
     }
 }

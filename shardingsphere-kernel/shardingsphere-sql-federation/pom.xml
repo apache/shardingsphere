@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-kernel</artifactId>
-        <version>5.1.3-SNAPSHOT</version>
+        <version>5.2.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-sql-federation</artifactId>
     <packaging>pom</packaging>
@@ -31,6 +31,7 @@
     <modules>
         <module>shardingsphere-sql-federation-api</module>
         <module>shardingsphere-sql-federation-core</module>
-        <module>shardingsphere-sql-federation-provider</module>
+        <module>shardingsphere-sql-federation-executor</module>
+        <module>shardingsphere-sql-federation-optimizer</module>
     </modules>
 </project>

@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere</artifactId>
-        <version>5.1.3-SNAPSHOT</version>
+        <version>5.2.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-infra</artifactId>
     <packaging>pom</packaging>
@@ -39,6 +39,5 @@
         <module>shardingsphere-infra-merge</module>
         <module>shardingsphere-infra-context</module>
         <module>shardingsphere-infra-datetime</module>
-        <module>shardingsphere-infra-federation</module>
     </modules>
 </project>

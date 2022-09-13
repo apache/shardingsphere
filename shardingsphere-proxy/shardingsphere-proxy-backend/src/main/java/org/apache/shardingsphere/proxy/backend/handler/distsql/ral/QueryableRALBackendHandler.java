@@ -48,7 +48,7 @@ public abstract class QueryableRALBackendHandler<E extends RALStatement> extends
     private MergedResult mergedResult;
     
     @Override
-    public final ResponseHeader execute() throws SQLException {
+    public final ResponseHeader execute() {
         queryHeaders = createQueryHeader();
         mergedResult = createMergedResult();
         return new QueryResponseHeader(queryHeaders);
@@ -58,7 +58,7 @@ public abstract class QueryableRALBackendHandler<E extends RALStatement> extends
         return getColumnNames().stream().map(each -> new QueryHeader("", "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false)).collect(Collectors.toList());
     }
     
-    private MergedResult createMergedResult() throws SQLException {
+    private MergedResult createMergedResult() {
         return new LocalDataMergedResult(getRows(ProxyContext.getInstance().getContextManager()));
     }
     
@@ -78,5 +78,5 @@ public abstract class QueryableRALBackendHandler<E extends RALStatement> extends
     
     protected abstract Collection<String> getColumnNames();
     
-    protected abstract Collection<LocalDataQueryResultRow> getRows(ContextManager contextManager) throws SQLException;
+    protected abstract Collection<LocalDataQueryResultRow> getRows(ContextManager contextManager);
 }

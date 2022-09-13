@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sharding.rule;
 
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.exception.ActualTableNotFoundException;
-import org.apache.shardingsphere.sharding.exception.BindingTableNotFoundException;
+import org.apache.shardingsphere.sharding.exception.metadata.ActualTableNotFoundException;
+import org.apache.shardingsphere.sharding.exception.metadata.BindingTableNotFoundException;
 import org.junit.Test;
 
 import java.util.ArrayList;

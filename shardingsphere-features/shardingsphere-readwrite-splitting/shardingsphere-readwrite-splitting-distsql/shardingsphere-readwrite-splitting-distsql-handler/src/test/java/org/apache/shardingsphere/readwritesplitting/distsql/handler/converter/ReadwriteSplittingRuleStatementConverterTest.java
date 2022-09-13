@@ -33,7 +33,6 @@ import java.util.Properties;
 import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -93,9 +92,8 @@ public final class ReadwriteSplittingRuleStatementConverterTest {
                     String expectedLoadBalancerName = String.format("%s_%s", expectedReadwriteSplittingRuleSegment.getName(), expectedReadwriteSplittingRuleSegment.getLoadBalancer());
                     assertThat(actualRuleConfig.getLoadBalancerName(), is(expectedLoadBalancerName));
                     assertThat(getWriteDataSourceName(actualRuleConfig), is(expectedReadwriteSplittingRuleSegment.getWriteDataSource()));
-                    assertThat(getReadDataSourceNames(actualRuleConfig), equalTo(expectedReadwriteSplittingRuleSegment.getReadDataSources() == null
-                            ? Collections.emptyList()
-                            : expectedReadwriteSplittingRuleSegment.getReadDataSources()));
+                    assertThat(getReadDataSourceNames(actualRuleConfig), is(
+                            null == expectedReadwriteSplittingRuleSegment.getReadDataSources() ? Collections.emptyList() : expectedReadwriteSplittingRuleSegment.getReadDataSources()));
                     assertTrue(actualMultipleRuleSegmentConvertResultLoadBalancers.containsKey(expectedLoadBalancerName));
                     AlgorithmConfiguration actualSphereAlgorithmConfig = actualMultipleRuleSegmentConvertResultLoadBalancers.get(actualRuleConfig.getLoadBalancerName());
                     assertThat(actualSphereAlgorithmConfig.getType(), containsString(expectedReadwriteSplittingRuleSegment.getLoadBalancer()));

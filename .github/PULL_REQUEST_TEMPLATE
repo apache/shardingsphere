@@ -1,6 +1,16 @@
 Fixes #ISSUSE_ID.
 
 Changes proposed in this pull request:
--
--
--
+  -
+  -
+  -
+
+---
+
+Before committing this PR, I'm sure that I have checked the following options:
+- [x] My code follows the [code of conduct](https://shardingsphere.apache.org/community/en/involved/conduct/code/) of this project.
+- [x] I have self-reviewed the commit code.
+- [x] I have triggered maven check: `mvn clean install -B -T2C -DskipTests -Dmaven.javadoc.skip=true -e`.
+- [x] I have made corresponding changes to the documentation.
+- [x] I have added corresponding unit tests for my changes.
+

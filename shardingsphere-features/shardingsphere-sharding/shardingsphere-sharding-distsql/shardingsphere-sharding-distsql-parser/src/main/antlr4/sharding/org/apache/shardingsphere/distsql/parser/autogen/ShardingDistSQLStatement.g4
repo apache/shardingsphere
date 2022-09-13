@@ -52,11 +52,13 @@ execute
     | showShardingAuditors
     | createShardingAuditor
     | alterShardingAuditor
+    | dropShardingAuditor
     | showShardingDefaultShardingStrategy
     | alterDefaultShardingStrategy
     | dropDefaultShardingStrategy
     | showUnusedShardingAlgorithms
     | showUnusedShardingKeyGenerators
+    | showUnusedShardingAuditors
     | countShardingRule
     ) SEMI?
     ;

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSource
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobPrepareFailedException;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -72,7 +72,7 @@ public final class MySQLDataSourcePreparerTest {
     private PipelineDataSourceWrapper targetDataSourceWrapper;
     
     @Before
-    public void setUp() throws SQLException {
+    public void setUp() {
         PipelineDataSourceManager mockPipelineDataSourceManager = mock(PipelineDataSourceManager.class);
         when(mockPipelineDataSourceManager.getDataSource(same(sourceDataSourceConfig))).thenReturn(sourceDataSourceWrapper);
         when(mockPipelineDataSourceManager.getDataSource(same(targetDataSourceConfig))).thenReturn(targetDataSourceWrapper);
@@ -83,7 +83,6 @@ public final class MySQLDataSourcePreparerTest {
         when(jobConfig.getTarget()).thenReturn(targetPipelineDataSourceConfig);
         when(jobConfig.getTarget().getType()).thenReturn("ShardingSphereJDBC");
         when(jobConfig.getTarget().getParameter()).thenReturn("target");
-        when(prepareTargetTablesParameter.getDatabaseName()).thenReturn("test_db");
     }
     
     @Test

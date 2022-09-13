@@ -17,32 +17,49 @@
 
 package org.apache.shardingsphere.mode.metadata;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceGeneratedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.config.database.DatabaseRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.config.global.GlobalRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.config.global.PropertiesPersistService;
+import org.apache.shardingsphere.test.fixture.rule.MockedRule;
 import org.apache.shardingsphere.test.fixture.rule.MockedRuleConfiguration;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyCollection;
+import static org.mockito.Mockito.anyMap;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -54,17 +71,53 @@ public final class MetaDataContextsFactoryTest {
     @Mock
     private DatabaseMetaDataPersistService databaseMetaDataPersistService;
     
+    @Mock
+    private ShardingSphereDatabase database;
+    
+    @Mock
+    private JDBCInstanceMetaData jdbcInstanceMetaData;
+    
+    private final Properties properties = new Properties();
+    
+    private final Collection<ShardingSphereRule> shardingSphereRules = new LinkedList<>();
+    
+    private final Map<String, ShardingSphereDatabase> mockDatabases = new HashMap<>();
+    
+    private MockedStatic<ShardingSphereDatabasesFactory> mockedDbFactory;
+    
+    private MockedStatic<GlobalRulesBuilder> mockedGlobalRulesBuilder;
+    
     @Before
     public void setUp() {
+        shardingSphereRules.add(new MockedRule());
+        mockDatabases.put("foo_db", database);
         when(metaDataPersistService.getEffectiveDataSources(eq("foo_db"), Mockito.anyMap())).thenReturn(Collections.singletonMap("foo_ds", new MockedDataSource()));
         DatabaseRulePersistService databaseRulePersistService = mockDatabaseRulePersistService();
         when(metaDataPersistService.getDatabaseRulePersistService()).thenReturn(databaseRulePersistService);
         GlobalRulePersistService globalRulePersistService = mockGlobalRulePersistService();
         when(metaDataPersistService.getGlobalRuleService()).thenReturn(globalRulePersistService);
         PropertiesPersistService propertiesPersistService = mock(PropertiesPersistService.class);
-        when(propertiesPersistService.load()).thenReturn(new Properties());
+        when(propertiesPersistService.load()).thenReturn(properties);
         when(metaDataPersistService.getPropsService()).thenReturn(propertiesPersistService);
         when(metaDataPersistService.getDatabaseMetaDataService()).thenReturn(databaseMetaDataPersistService);
+        mockDatabasesFactory();
+        mockGlobalRulesBuilder();
+    }
+    
+    @After
+    public void tearDown() {
+        mockedDbFactory.close();
+        mockedGlobalRulesBuilder.close();
+    }
+    
+    private void mockDatabasesFactory() {
+        mockedDbFactory = mockStatic(ShardingSphereDatabasesFactory.class);
+        mockedDbFactory.when(() -> ShardingSphereDatabasesFactory.create(anyMap(), any(), any())).thenReturn(mockDatabases);
+    }
+    
+    private void mockGlobalRulesBuilder() {
+        mockedGlobalRulesBuilder = mockStatic(GlobalRulesBuilder.class);
+        mockedGlobalRulesBuilder.when(() -> GlobalRulesBuilder.buildRules(anyCollection(), anyMap(), any(InstanceContext.class))).thenReturn(shardingSphereRules);
     }
     
     private DatabaseRulePersistService mockDatabaseRulePersistService() {
@@ -81,9 +134,14 @@ public final class MetaDataContextsFactoryTest {
     
     @Test
     public void createFactoryWithJDBCInstanceMetadata() throws SQLException {
-        MetaDataContexts actual = MetaDataContextsFactory.create(metaDataPersistService, createContextManagerBuilderParameter(), mock(InstanceContext.class, RETURNS_DEEP_STUBS));
+        InstanceContext mockInstanceContext = mock(InstanceContext.class, RETURNS_DEEP_STUBS);
+        when(mockInstanceContext.getInstance().getMetaData()).thenReturn(jdbcInstanceMetaData);
+        MetaDataContexts actual = MetaDataContextsFactory.create(metaDataPersistService, createContextManagerBuilderParameter(), mockInstanceContext);
         assertThat(actual.getPersistService(), is(metaDataPersistService));
-        // TODO assert metaData
+        ShardingSphereMetaData actualMetaData = actual.getMetaData();
+        assertThat(actualMetaData.getGlobalRuleMetaData().getRules(), is(shardingSphereRules));
+        assertThat(actualMetaData.getDatabases(), is(mockDatabases));
+        assertThat(actualMetaData.getProps().getProps(), is(properties));
     }
     
     @Test
@@ -92,7 +150,10 @@ public final class MetaDataContextsFactoryTest {
         when(metaDataPersistService.getDatabaseMetaDataService()).thenReturn(databaseMetaDataPersistService);
         MetaDataContexts actual = MetaDataContextsFactory.create(metaDataPersistService, createContextManagerBuilderParameter(), mock(InstanceContext.class, RETURNS_DEEP_STUBS));
         assertThat(actual.getPersistService(), is(metaDataPersistService));
-        // TODO assert metaData
+        ShardingSphereMetaData actualMetaData = actual.getMetaData();
+        assertThat(actualMetaData.getGlobalRuleMetaData().getRules(), is(shardingSphereRules));
+        assertThat(actualMetaData.getDatabases(), is(mockDatabases));
+        assertThat(actualMetaData.getProps().getProps(), is(properties));
     }
     
     private ContextManagerBuilderParameter createContextManagerBuilderParameter() {

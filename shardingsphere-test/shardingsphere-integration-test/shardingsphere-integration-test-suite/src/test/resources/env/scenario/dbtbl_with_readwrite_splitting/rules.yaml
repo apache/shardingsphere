@@ -152,4 +152,4 @@ rules:
       type: ROUND_ROBIN
 
 props:
-  sql-federation-enabled: true
+  sql-federation-type: ORIGINAL

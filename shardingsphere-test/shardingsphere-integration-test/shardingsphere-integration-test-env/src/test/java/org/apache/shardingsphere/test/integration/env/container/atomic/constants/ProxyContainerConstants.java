@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
  * Proxy container constants.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ProxyContainerConstants {
+public final class ProxyContainerConstants {
     
     public static final String USERNAME = "proxy";
     

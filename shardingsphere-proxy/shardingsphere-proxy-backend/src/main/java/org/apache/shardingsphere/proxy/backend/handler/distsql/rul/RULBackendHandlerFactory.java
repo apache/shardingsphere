@@ -23,13 +23,14 @@ import org.apache.shardingsphere.distsql.parser.statement.rul.RULStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rul.sql.FormatStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rul.sql.ParseStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rul.sql.PreviewStatement;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.sql.FormatSQLHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.sql.ParseDistSQLHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.sql.PreviewHandler;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,9 +54,8 @@ public final class RULBackendHandlerFactory {
      * @param sqlStatement RUL statement
      * @param connectionSession connection session
      * @return created instance
-     * @throws SQLException SQL exception
      */
-    public static ProxyBackendHandler newInstance(final RULStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
+    public static ProxyBackendHandler newInstance(final RULStatement sqlStatement, final ConnectionSession connectionSession) {
         return createRULBackendHandler(sqlStatement, connectionSession);
     }
     
@@ -63,15 +63,13 @@ public final class RULBackendHandlerFactory {
         try {
             return clazz.getDeclaredConstructor().newInstance();
         } catch (final ReflectiveOperationException ex) {
-            throw new UnsupportedOperationException(String.format("Can not find public constructor for class `%s`", clazz.getName()));
+            throw new UnsupportedSQLOperationException(String.format("Can not find public constructor for class `%s`", clazz.getName()));
         }
     }
     
     private static RULBackendHandler<?> createRULBackendHandler(final RULStatement sqlStatement, final ConnectionSession connectionSession) {
         Class<? extends RULBackendHandler<?>> clazz = HANDLERS.get(sqlStatement.getClass());
-        if (null == clazz) {
-            throw new UnsupportedOperationException(String.format("Unsupported SQL statement : %s", sqlStatement.getClass().getCanonicalName()));
-        }
+        ShardingSpherePreconditions.checkState(null != clazz, new UnsupportedSQLOperationException(String.format("Unsupported SQL statement : %s", sqlStatement.getClass().getCanonicalName())));
         RULBackendHandler<?> result = newInstance(clazz);
         result.init(sqlStatement, connectionSession);
         return result;

@@ -41,13 +41,26 @@ public final class StorageContainerUtil {
      * @return data source
      */
     public static DataSource generateDataSource(final String jdbcUrl, final String username, final String password) {
+        return generateDataSource(jdbcUrl, username, password, 2);
+    }
+    
+    /**
+     * Generate datasource. 
+     *
+     * @param jdbcUrl JDBC URL for generating datasource
+     * @param username username
+     * @param password password
+     * @param maximumPoolSize maximum pool size
+     * @return data source
+     */
+    public static DataSource generateDataSource(final String jdbcUrl, final String username, final String password, final int maximumPoolSize) {
         DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(jdbcUrl);
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
         result.setJdbcUrl(jdbcUrl);
         result.setUsername(username);
         result.setPassword(password);
-        result.setMaximumPoolSize(2);
+        result.setMaximumPoolSize(maximumPoolSize);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return result;
     }

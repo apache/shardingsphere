@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
 import org.apache.shardingsphere.mode.lock.LockPersistService;
-import org.apache.shardingsphere.mode.lock.LockKeyUtil;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 /**
@@ -38,6 +37,6 @@ public final class ClusterLockPersistService implements LockPersistService {
     
     @Override
     public void unlock(final LockDefinition lockDefinition) {
-        repository.delete(LockKeyUtil.generateLockKeyLeases(lockDefinition.getLockKey()));
+        repository.deleteLock(lockDefinition.getLockKey());
     }
 }

@@ -121,7 +121,7 @@ public final class LocalTransactionManager implements TransactionManager<Void> {
             if (0 == count) {
                 ex = each;
             } else {
-                // TODO use recursion to setNextException with chain, not overlap 
+                // TODO use recursion to setNextException with chain, not overlap
                 ex.setNextException(each);
             }
             count++;

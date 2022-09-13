@@ -19,28 +19,27 @@ package org.apache.shardingsphere.infra.metadata.database.schema.loader.dialect;
 
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ViewMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DataTypeLoaderFactory;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoader;
-
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.sql.DataSource;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ConstraintMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ViewMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DataTypeLoaderFactory;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoader;
 
 /**
  * Schema meta data loader for PostgreSQL.
@@ -55,6 +54,11 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
     private static final String TABLE_META_DATA_SQL_WITH_TABLES = BASIC_TABLE_META_DATA_SQL + " AND table_name IN (%s) ORDER BY ordinal_position";
     
     private static final String VIEW_META_DATA_SQL = "SELECT table_name, view_definition FROM information_schema.views WHERE table_schema = ?";
+    
+    private static final String FOREIGN_KEY_META_DATA_SQL = "SELECT tc.table_schema,tc.table_name,tc.constraint_name,pgo.relname refer_table_name "
+            + "FROM information_schema.table_constraints tc "
+            + "JOIN pg_constraint pgc ON tc.constraint_name = pgc.conname AND contype='f' "
+            + "JOIN pg_class pgo ON pgc.confrelid = pgo.oid WHERE tc.constraint_type = 'FOREIGN KEY' AND tc.table_schema IN (%s)";
     
     private static final String PRIMARY_KEY_META_DATA_SQL = "SELECT tc.table_name, kc.column_name, kc.table_schema FROM information_schema.table_constraints tc"
             + " JOIN information_schema.key_column_usage kc ON kc.table_schema = tc.table_schema AND kc.table_name = tc.table_name AND kc.constraint_name = tc.constraint_name"
@@ -71,21 +75,26 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
         Collection<String> schemaNames = loadSchemaNames(dataSource, DatabaseTypeFactory.getInstance(getType()));
         Map<String, Multimap<String, IndexMetaData>> schemaIndexMetaDataMap = loadIndexMetaDataMap(dataSource, schemaNames);
         Map<String, Multimap<String, ColumnMetaData>> schemaColumnMetaDataMap = loadColumnMetaDataMap(dataSource, tables, schemaNames);
+        Map<String, Multimap<String, ConstraintMetaData>> schemaConstraintMetaDataMap = loadConstraintMetaDataMap(dataSource, schemaNames);
         Collection<SchemaMetaData> result = new LinkedList<>();
         for (String each : schemaNames) {
             Multimap<String, IndexMetaData> tableIndexMetaDataMap = schemaIndexMetaDataMap.getOrDefault(each, LinkedHashMultimap.create());
             Multimap<String, ColumnMetaData> tableColumnMetaDataMap = schemaColumnMetaDataMap.getOrDefault(each, LinkedHashMultimap.create());
-            result.add(new SchemaMetaData(each, createTableMetaDataList(tableIndexMetaDataMap, tableColumnMetaDataMap), loadViewMetaData(dataSource, each)));
+            Multimap<String, ConstraintMetaData> tableConstraintMetaDataMap = schemaConstraintMetaDataMap.getOrDefault(each, LinkedHashMultimap.create());
+            result.add(new SchemaMetaData(each, createTableMetaDataList(tableIndexMetaDataMap, tableColumnMetaDataMap, tableConstraintMetaDataMap), loadViewMetaData(dataSource, each)));
         }
         return result;
     }
     
-    private Collection<TableMetaData> createTableMetaDataList(final Multimap<String, IndexMetaData> tableIndexMetaDataMap, final Multimap<String, ColumnMetaData> tableColumnMetaDataMap) {
+    private Collection<TableMetaData> createTableMetaDataList(final Multimap<String, IndexMetaData> tableIndexMetaDataMap,
+                                                              final Multimap<String, ColumnMetaData> tableColumnMetaDataMap,
+                                                              final Multimap<String, ConstraintMetaData> tableConstraintMetaDataMap) {
         Collection<TableMetaData> result = new LinkedList<>();
         for (String each : tableColumnMetaDataMap.keySet()) {
             Collection<ColumnMetaData> columnMetaDataList = tableColumnMetaDataMap.get(each);
             Collection<IndexMetaData> indexMetaDataList = tableIndexMetaDataMap.get(each);
-            result.add(new TableMetaData(each, columnMetaDataList, indexMetaDataList, Collections.emptyList()));
+            Collection<ConstraintMetaData> constraintMetaDataList = tableConstraintMetaDataMap.get(each);
+            result.add(new TableMetaData(each, columnMetaDataList, indexMetaDataList, constraintMetaDataList));
         }
         return result;
     }
@@ -105,6 +114,28 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
             }
         }
         return result;
+    }
+    
+    private Map<String, Multimap<String, ConstraintMetaData>> loadConstraintMetaDataMap(final DataSource dataSource,
+                                                                                        final Collection<String> schemaNames) throws SQLException {
+        Map<String, Multimap<String, ConstraintMetaData>> result = new LinkedHashMap<>();
+        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(getConstraintKeyMetaDataSQL(schemaNames))) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    String schemaName = resultSet.getString("table_schema");
+                    Multimap<String, ConstraintMetaData> constraintMetaData = result.computeIfAbsent(schemaName, key -> LinkedHashMultimap.create());
+                    String tableName = resultSet.getString("table_name");
+                    String constraintName = resultSet.getString("constraint_name");
+                    String referencedTableName = resultSet.getString("refer_table_name");
+                    constraintMetaData.put(tableName, new ConstraintMetaData(constraintName, referencedTableName));
+                }
+            }
+        }
+        return result;
+    }
+    
+    private String getConstraintKeyMetaDataSQL(final Collection<String> schemaNames) {
+        return String.format(FOREIGN_KEY_META_DATA_SQL, schemaNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
     private Map<String, Multimap<String, ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> tables,

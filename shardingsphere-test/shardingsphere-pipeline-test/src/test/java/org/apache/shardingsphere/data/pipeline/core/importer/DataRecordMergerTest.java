@@ -21,8 +21,9 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPo
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.GroupedDataRecord;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineUnexpectedDataRecordOrderException;
+import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineUnexpectedDataRecordOrderException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -157,7 +158,7 @@ public final class DataRecordMergerTest {
         assertThat(dataRecord.getColumn(2).getValue(), is(2));
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = UnsupportedSQLOperationException.class)
     public void assertDeleteBeforeUpdate() {
         beforeDataRecord = mockDeleteDataRecord(1, 1, 1);
         afterDataRecord = mockUpdateDataRecord(1, 2, 2);

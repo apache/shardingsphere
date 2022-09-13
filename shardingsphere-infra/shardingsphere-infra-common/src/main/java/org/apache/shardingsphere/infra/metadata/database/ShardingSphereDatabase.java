@@ -97,9 +97,8 @@ public final class ShardingSphereDatabase {
      * @param name system database name
      * @param protocolType protocol database type
      * @return system database meta data
-     * @throws SQLException SQL exception
      */
-    public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType) throws SQLException {
+    public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType) {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(new LinkedHashMap<>(), new LinkedList<>());
         return create(name, protocolType, databaseConfig, new LinkedList<>(), SystemSchemaBuilder.build(name, protocolType));
     }

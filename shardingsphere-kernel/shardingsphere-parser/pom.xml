@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-kernel</artifactId>
-        <version>5.1.3-SNAPSHOT</version>
+        <version>5.2.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-parser</artifactId>
     <packaging>pom</packaging>
@@ -32,6 +32,6 @@
         <module>shardingsphere-parser-api</module>
         <module>shardingsphere-parser-core</module>
         <module>shardingsphere-parser-spring</module>
+        <module>shardingsphere-parser-distsql</module>
     </modules>
-    
 </project>

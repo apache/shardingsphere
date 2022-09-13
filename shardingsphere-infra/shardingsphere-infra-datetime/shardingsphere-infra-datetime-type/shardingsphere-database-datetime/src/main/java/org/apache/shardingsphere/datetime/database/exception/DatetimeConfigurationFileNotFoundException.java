@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.datetime.database.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.exception.ClusterSQLException;
 
 /**
  * Datetime configuration file not found exception.
  */
-public final class DatetimeConfigurationFileNotFoundException extends ShardingSphereSQLException {
+public final class DatetimeConfigurationFileNotFoundException extends ClusterSQLException {
     
     private static final long serialVersionUID = 4820838154441059833L;
     
     public DatetimeConfigurationFileNotFoundException(final String configurationFile) {
-        super(XOpenSQLState.GENERAL_ERROR, 14010, "Can not find `%s` file for datetime initialize", configurationFile);
+        super(XOpenSQLState.GENERAL_ERROR, 2, "Can not find `%s` file for datetime initialize", configurationFile);
     }
 }

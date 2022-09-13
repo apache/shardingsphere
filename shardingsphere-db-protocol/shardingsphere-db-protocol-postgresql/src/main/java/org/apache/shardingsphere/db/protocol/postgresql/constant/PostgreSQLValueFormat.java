@@ -19,6 +19,7 @@ package org.apache.shardingsphere.db.protocol.postgresql.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 
 /**
  * PostgreSQL value format.
@@ -46,7 +47,7 @@ public enum PostgreSQLValueFormat {
             case 1:
                 return BINARY;
             default:
-                throw new UnsupportedOperationException("Unsupported PostgreSQL format code " + code);
+                throw new UnsupportedSQLOperationException(String.format("Unsupported PostgreSQL format code `%s`", code));
         }
     }
 }

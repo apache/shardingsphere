@@ -71,10 +71,7 @@ public final class ShadowRuleBeanDefinitionParser extends AbstractBeanDefinition
     
     private String parseDefaultShadowAlgorithmName(final Element element) {
         Element defaultShadowAlgorithmElement = DomUtils.getChildElementByTagName(element, ShadowRuleBeanDefinitionTag.SHADOW_DEFAULT_SHADOW_ALGORITHM_NAME);
-        if (null == defaultShadowAlgorithmElement) {
-            return null;
-        }
-        return defaultShadowAlgorithmElement.getAttribute(ShadowRuleBeanDefinitionTag.SHADOW_NAME_ATTRIBUTE);
+        return null == defaultShadowAlgorithmElement ? null : defaultShadowAlgorithmElement.getAttribute(ShadowRuleBeanDefinitionTag.SHADOW_NAME_ATTRIBUTE);
     }
     
     private BeanDefinition parseShadowTableConfiguration(final Element element) {

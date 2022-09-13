@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.lock;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 
 /**
  * Lock context of ShardingSphere.
@@ -48,6 +49,6 @@ public final class ShardingSphereLockContext implements LockContext {
     
     @Override
     public boolean isLocked(final LockDefinition lockDefinition) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedSQLOperationException("isLocked");
     }
 }

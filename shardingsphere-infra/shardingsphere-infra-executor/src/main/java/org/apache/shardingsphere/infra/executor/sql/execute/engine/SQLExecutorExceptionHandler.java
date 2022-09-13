@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.execute.engine;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.util.exception.external.sql.UnknownSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnknownSQLException;
 
 import java.sql.SQLException;
 

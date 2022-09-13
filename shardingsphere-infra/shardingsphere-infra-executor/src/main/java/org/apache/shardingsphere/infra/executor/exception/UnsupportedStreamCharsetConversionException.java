@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.infra.executor.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.exception.DataSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Unsupported stream charset conversion exception.
  */
-public final class UnsupportedStreamCharsetConversionException extends ShardingSphereSQLException {
+public final class UnsupportedStreamCharsetConversionException extends DataSQLException {
     
     private static final long serialVersionUID = 4577091201937095156L;
     
     public UnsupportedStreamCharsetConversionException(final String charsetType) {
-        super(XOpenSQLState.INVALID_DATA_TYPE, 10005, "Unsupported conversion stream charset `%s`", charsetType);
+        super(XOpenSQLState.INVALID_DATA_TYPE, 10, "Unsupported conversion stream charset `%s`", charsetType);
     }
 }

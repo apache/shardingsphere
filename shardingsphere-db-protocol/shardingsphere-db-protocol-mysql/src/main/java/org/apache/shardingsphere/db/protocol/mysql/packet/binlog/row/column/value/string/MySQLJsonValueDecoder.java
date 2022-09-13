@@ -20,6 +20,7 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.val
 import io.netty.buffer.ByteBuf;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -89,7 +90,7 @@ public final class MySQLJsonValueDecoder {
                     outputString(decodeString(byteBuf.slice()), result);
                     break;
                 default:
-                    throw new UnsupportedOperationException(String.valueOf(type));
+                    throw new UnsupportedSQLOperationException(String.valueOf(type));
             }
         } finally {
             byteBuf.readerIndex(oldOffset);
@@ -180,7 +181,7 @@ public final class MySQLJsonValueDecoder {
                 outputLiteral(getIntBasedObjectSize(byteBuf, isSmall), stringBuilder);
                 break;
             default:
-                throw new UnsupportedOperationException(String.valueOf(type));
+                throw new UnsupportedSQLOperationException(String.valueOf(type));
         }
     }
     
@@ -200,7 +201,7 @@ public final class MySQLJsonValueDecoder {
                 out.append("false");
                 break;
             default:
-                throw new UnsupportedOperationException(String.valueOf(inlineValue));
+                throw new UnsupportedSQLOperationException(String.valueOf(inlineValue));
         }
     }
     

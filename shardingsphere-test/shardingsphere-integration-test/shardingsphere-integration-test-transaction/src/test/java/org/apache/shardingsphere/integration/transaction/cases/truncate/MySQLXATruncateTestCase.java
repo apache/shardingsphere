@@ -24,6 +24,7 @@ import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransac
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.dialect.exception.transaction.TableModifyInTransactionException;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.AdapterContainerConstants;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import javax.sql.DataSource;
@@ -36,7 +37,7 @@ import static org.junit.Assert.fail;
  * MySQL truncate XA transaction integration test.
  */
 @Slf4j
-@TransactionTestCase(dbTypes = {TransactionTestConstants.MYSQL}, adapters = {TransactionTestConstants.PROXY}, transactionTypes = {TransactionType.XA})
+@TransactionTestCase(dbTypes = {TransactionTestConstants.MYSQL}, adapters = {AdapterContainerConstants.PROXY}, transactionTypes = {TransactionType.XA})
 public final class MySQLXATruncateTestCase extends BaseTransactionTestCase {
     
     public MySQLXATruncateTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {

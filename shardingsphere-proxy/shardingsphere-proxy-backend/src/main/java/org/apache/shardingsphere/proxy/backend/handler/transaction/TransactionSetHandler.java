@@ -18,17 +18,18 @@
 package org.apache.shardingsphere.proxy.backend.handler.transaction;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.util.TransactionUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionAccessType;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.transaction.exception.SwitchTypeInTransactionException;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 
 /**
  * Set transaction handler.
@@ -41,10 +42,8 @@ public final class TransactionSetHandler implements ProxyBackendHandler {
     private final ConnectionSession connectionSession;
     
     @Override
-    public ResponseHeader execute() throws SQLException {
-        if (null == sqlStatement.getScope() && connectionSession.getTransactionStatus().isInTransaction()) {
-            throw new SQLException("when in transaction, not support set transaction");
-        }
+    public ResponseHeader execute() {
+        ShardingSpherePreconditions.checkState(null != sqlStatement.getScope() || !connectionSession.getTransactionStatus().isInTransaction(), new SwitchTypeInTransactionException());
         if (TransactionAccessType.READ_ONLY == sqlStatement.getAccessMode()) {
             connectionSession.setReadOnly(true);
         } else if (TransactionAccessType.READ_WRITE == sqlStatement.getAccessMode()) {

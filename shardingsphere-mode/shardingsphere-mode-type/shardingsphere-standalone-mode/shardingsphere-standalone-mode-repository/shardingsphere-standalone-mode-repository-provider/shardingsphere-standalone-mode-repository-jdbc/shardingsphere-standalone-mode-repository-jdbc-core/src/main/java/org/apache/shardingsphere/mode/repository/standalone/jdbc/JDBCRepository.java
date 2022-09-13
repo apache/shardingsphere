@@ -121,7 +121,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
                 String tempKey = tempPrefix + SEPARATOR + paths[i];
                 String tempKeyVal = get(tempKey);
                 if (Strings.isNullOrEmpty(tempKeyVal)) {
-                    if (i != 0) {
+                    if (0 != i) {
                         parent = tempPrefix;
                     }
                     insert(tempKey, "", parent);

@@ -5,7 +5,7 @@ weight = 3
 
 ## 背景信息
 
-使用 [Helm](https://helm.sh/) 在 Kubernetes 集群中引导 ShardingSphere-Proxy 实例进行安装。
+使用 [Helm](https://helm.sh/) 在 Kubernetes 集群中引导 ShardingSphere-Proxy 实例进行安装。关于 ShardingSphere Helm Charts 的更多内容可以参考：[ShardingSphere-on-Cloud 子项目](https://github.com/apache/shardingsphere-on-cloud)。
 
 ## 前提条件
 
@@ -24,7 +24,7 @@ weight = 3
 helm repo add shardingsphere https://shardingsphere.apache.org/charts
 ```
 
-1. 以 ShardingSphere-Proxy 命名安装 charts：
+2. 以 ShardingSphere-Proxy 命名安装 charts：
 
 ```shell
 helm install shardingsphere-proxy shardingsphere/shardingsphere-proxy
@@ -35,16 +35,18 @@ helm install shardingsphere-proxy shardingsphere/shardingsphere-proxy
 1. 执行下述命令以执行默认配置进行安装。
 
 ```shell
-cd shardingsphere-proxy/charts/governance
+ git clone https://github.com/apache/shardingsphere-on-cloud.git
+ cd charts/shardingsphere-proxy/charts/governance
  helm dependency build 
  cd ../..
  helm dependency build 
  cd ..
  helm install shardingsphere-proxy shardingsphere-proxy 
 ```
+说明：
 
 1. 其他的配置详见下方的配置列表。
-1. 执行 helm list 获取所有安装的 release。
+2. 执行 helm list 获取所有安装的 release。
 
 ### 卸载
 

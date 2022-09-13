@@ -28,6 +28,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthMor
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthSwitchRequestPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 
 import java.util.List;
 
@@ -36,7 +37,7 @@ import java.util.List;
  */
 public final class MySQLNegotiatePackageDecoder extends ByteToMessageDecoder {
     
-    private boolean handshakeReceived;
+    private volatile boolean handshakeReceived;
     
     @Override
     protected void decode(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out) {
@@ -54,8 +55,7 @@ public final class MySQLNegotiatePackageDecoder extends ByteToMessageDecoder {
     }
     
     private MySQLHandshakePacket decodeHandshakePacket(final MySQLPacketPayload payload) {
-        MySQLHandshakePacket result = new MySQLHandshakePacket(payload);
-        return result;
+        return new MySQLHandshakePacket(payload);
     }
     
     private MySQLPacket decodeResponsePacket(final MySQLPacketPayload payload, final List<Object> out) {
@@ -70,7 +70,7 @@ public final class MySQLNegotiatePackageDecoder extends ByteToMessageDecoder {
             case MySQLAuthMoreDataPacket.HEADER:
                 return new MySQLAuthMoreDataPacket(payload);
             default:
-                throw new UnsupportedOperationException(String.format("Unsupported negotiate response header: %X", header));
+                throw new UnsupportedSQLOperationException(String.format("Unsupported negotiate response header: %X", header));
         }
     }
 }

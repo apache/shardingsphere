@@ -24,8 +24,8 @@ import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.AuthorityRuleBuilder;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
-import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
+import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -153,7 +153,7 @@ public final class MySQLAuthenticationHandlerTest extends ProxyContextRestorer {
     
     private ShardingSphereRuleMetaData buildGlobalRuleMetaData(final ShardingSphereUser user, final boolean isNeedSuper) throws NoSuchFieldException, IllegalAccessException {
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.singletonList(user), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()));
-        AuthorityRule rule = new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap(), mock(InstanceContext.class));
+        AuthorityRule rule = new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap(), mock(InstanceContext.class), mock(ConfigurationProperties.class));
         if (!isNeedSuper) {
             Field authorityRegistryField = AuthorityRule.class.getDeclaredField("authorityRegistry");
             AuthorityRegistry authorityRegistry = mock(AuthorityRegistry.class);

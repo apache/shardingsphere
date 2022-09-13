@@ -29,13 +29,11 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowAllV
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceInfoStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceListStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowModeInfoStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowSQLParserRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowSQLTranslatorRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTableMetadataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterSQLParserRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ApplyDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.DiscardDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportDatabaseConfigurationStatement;
@@ -47,6 +45,8 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetVaria
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.UnlabelInstanceStatement;
 import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.HintRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.query.QueryableScalingRALBackendHandler;
@@ -59,11 +59,9 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.Sho
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowInstanceListHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowModeInfoHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowReadwriteSplittingReadResourcesHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowSQLParserRuleHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowSQLTranslatorRuleHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowTableMetadataHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowVariableHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.AlterSQLParserRuleHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.ApplyDistSQLHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.DiscardDistSQLHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.ImportDatabaseConfigurationHandler;
@@ -78,7 +76,6 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingReadResourcesStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.status.SetReadwriteSplittingStatusStatement;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -97,7 +94,6 @@ public final class RALBackendHandlerFactory {
         HANDLERS.put(SetVariableStatement.class, SetVariableHandler.class);
         HANDLERS.put(SetReadwriteSplittingStatusStatement.class, SetReadwriteSplittingStatusHandler.class);
         HANDLERS.put(RefreshTableMetadataStatement.class, RefreshTableMetadataHandler.class);
-        HANDLERS.put(AlterSQLParserRuleStatement.class, AlterSQLParserRuleHandler.class);
         HANDLERS.put(PrepareDistSQLStatement.class, PrepareDistSQLHandler.class);
         HANDLERS.put(ApplyDistSQLStatement.class, ApplyDistSQLHandler.class);
         HANDLERS.put(DiscardDistSQLStatement.class, DiscardDistSQLHandler.class);
@@ -106,7 +102,6 @@ public final class RALBackendHandlerFactory {
         HANDLERS.put(ShowVariableStatement.class, ShowVariableHandler.class);
         HANDLERS.put(ShowAllVariablesStatement.class, ShowAllVariablesHandler.class);
         HANDLERS.put(ShowReadwriteSplittingReadResourcesStatement.class, ShowReadwriteSplittingReadResourcesHandler.class);
-        HANDLERS.put(ShowSQLParserRuleStatement.class, ShowSQLParserRuleHandler.class);
         HANDLERS.put(ShowTableMetadataStatement.class, ShowTableMetadataHandler.class);
         HANDLERS.put(ExportDatabaseConfigurationStatement.class, ExportDatabaseConfigurationHandler.class);
         HANDLERS.put(ConvertYamlConfigurationStatement.class, ConvertYamlConfigurationHandler.class);
@@ -121,9 +116,8 @@ public final class RALBackendHandlerFactory {
      * @param sqlStatement RAL statement
      * @param connectionSession connection session
      * @return created instance
-     * @throws SQLException SQL exception
      */
-    public static ProxyBackendHandler newInstance(final RALStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
+    public static ProxyBackendHandler newInstance(final RALStatement sqlStatement, final ConnectionSession connectionSession) {
         if (sqlStatement instanceof HintRALStatement) {
             return new HintRALBackendHandler((HintRALStatement) sqlStatement, connectionSession);
         }
@@ -147,15 +141,13 @@ public final class RALBackendHandlerFactory {
         try {
             return clazz.getDeclaredConstructor().newInstance();
         } catch (final ReflectiveOperationException ex) {
-            throw new UnsupportedOperationException(String.format("Can not find public constructor for class `%s`", clazz.getName()));
+            throw new UnsupportedSQLOperationException(String.format("Can not find public constructor for class `%s`", clazz.getName()));
         }
     }
     
     private static RALBackendHandler<?> createRALBackendHandler(final RALStatement sqlStatement, final ConnectionSession connectionSession) {
         Class<? extends RALBackendHandler<?>> clazz = HANDLERS.get(sqlStatement.getClass());
-        if (null == clazz) {
-            throw new UnsupportedOperationException(String.format("Unsupported SQL statement : %s", sqlStatement.getClass().getCanonicalName()));
-        }
+        ShardingSpherePreconditions.checkState(null != clazz, new UnsupportedSQLOperationException(String.format("Unsupported SQL statement : %s", sqlStatement.getClass().getCanonicalName())));
         RALBackendHandler<?> result = newInstance(clazz);
         result.init(sqlStatement, connectionSession);
         return result;

@@ -21,18 +21,15 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
 
-import java.sql.SQLException;
-
 public final class FixtureExecutorStatementManager implements ExecutorStatementManager<Object, Object, FixtureStorageResourceOption> {
     
     @Override
-    public Object createStorageResource(final Object connection, final ConnectionMode connectionMode, final FixtureStorageResourceOption option) throws SQLException {
+    public Object createStorageResource(final Object connection, final ConnectionMode connectionMode, final FixtureStorageResourceOption option) {
         return null;
     }
     
     @Override
-    public Object createStorageResource(final ExecutionUnit executionUnit, final Object connection, final ConnectionMode connectionMode,
-                                        final FixtureStorageResourceOption option) throws SQLException {
+    public Object createStorageResource(final ExecutionUnit executionUnit, final Object connection, final ConnectionMode connectionMode, final FixtureStorageResourceOption option) {
         return null;
     }
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.classbased;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.sharding.exception.ShardingAlgorithmClassImplementationException;
+import org.apache.shardingsphere.sharding.exception.algorithm.ShardingAlgorithmClassImplementationException;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 
 import java.util.Properties;

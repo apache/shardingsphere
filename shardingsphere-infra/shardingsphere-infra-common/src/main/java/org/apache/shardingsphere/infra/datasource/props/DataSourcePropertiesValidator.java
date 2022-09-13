@@ -22,6 +22,9 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
+import org.apache.shardingsphere.infra.exception.MismatchedProtocolAndDataSourceException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.exception.internal.ShardingSphereInternalException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -63,6 +66,7 @@ public final class DataSourcePropertiesValidator {
             dataSource = DataSourcePoolCreator.create(dataSourceProps);
             checkFailFast(dataSource, databaseType);
             // CHECKSTYLE:OFF
+            // TODO check why catch exception here, can it simplify to catch SQLException and ShardingSphereInternalException?
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             throw new InvalidDataSourcePropertiesException(dataSourceName, ex.getMessage());
@@ -73,11 +77,10 @@ public final class DataSourcePropertiesValidator {
         }
     }
     
-    private void checkFailFast(final DataSource dataSource, final DatabaseType databaseType) throws SQLException {
+    private void checkFailFast(final DataSource dataSource, final DatabaseType databaseType) throws SQLException, ShardingSphereInternalException {
         try (Connection connection = dataSource.getConnection()) {
-            if (null != databaseType && !DatabaseTypeEngine.getDatabaseType(connection.getMetaData().getURL()).getType().equals(databaseType.getType())) {
-                throw new SQLException("Protocol mismatch for data source.");
-            }
+            ShardingSpherePreconditions.checkState(null == databaseType || DatabaseTypeEngine.getDatabaseType(connection.getMetaData().getURL()).getType().equals(databaseType.getType()),
+                    new MismatchedProtocolAndDataSourceException());
         }
     }
 }

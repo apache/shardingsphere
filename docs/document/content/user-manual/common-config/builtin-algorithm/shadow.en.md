@@ -54,7 +54,7 @@ public final class ShadowConfiguration {
         userIdInsertProps.setProperty("operation", "insert");
         userIdInsertProps.setProperty("column", "user_id");
         userIdInsertProps.setProperty("value", "1");
-        return new AlgorithmConfiguration("VALUE_MATCH", userIdInsertProps));
+        return new AlgorithmConfiguration("VALUE_MATCH", userIdInsertProps);
     }
     
     // ...

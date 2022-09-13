@@ -19,6 +19,10 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateProcedureStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateProcedureStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateProcedureStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateProcedureStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateProcedureStatement;
 import org.junit.Test;
 
 import java.util.Optional;
@@ -42,5 +46,13 @@ public final class CreateProcedureStatementHandlerTest {
         MySQLCreateProcedureStatement createProcedureStatement = new MySQLCreateProcedureStatement();
         Optional<RoutineBodySegment> routineBodySegment = CreateProcedureStatementHandler.getRoutineBodySegment(createProcedureStatement);
         assertFalse(routineBodySegment.isPresent());
+    }
+    
+    @Test
+    public void assertGetRoutineBodySegmentForOtherDatabases() {
+        assertFalse(CreateProcedureStatementHandler.getRoutineBodySegment(new OpenGaussCreateProcedureStatement()).isPresent());
+        assertFalse(CreateProcedureStatementHandler.getRoutineBodySegment(new OracleCreateProcedureStatement()).isPresent());
+        assertFalse(CreateProcedureStatementHandler.getRoutineBodySegment(new PostgreSQLCreateProcedureStatement()).isPresent());
+        assertFalse(CreateProcedureStatementHandler.getRoutineBodySegment(new SQLServerCreateProcedureStatement()).isPresent());
     }
 }

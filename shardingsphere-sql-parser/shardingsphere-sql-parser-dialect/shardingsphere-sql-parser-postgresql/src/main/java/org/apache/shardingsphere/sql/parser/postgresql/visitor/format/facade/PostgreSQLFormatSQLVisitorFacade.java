@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.sql.parser.postgresql.visitor.format.facade;
 
-import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DCLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.RLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
 
 /**
  * Format SQL Visitor facade for PostgreSQL.
@@ -32,32 +33,32 @@ public final class PostgreSQLFormatSQLVisitorFacade implements SQLVisitorFacade 
     
     @Override
     public Class<? extends DMLSQLVisitor> getDMLVisitorClass() {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedSQLOperationException("getDMLVisitorClass");
     }
     
     @Override
     public Class<? extends DDLSQLVisitor> getDDLVisitorClass() {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedSQLOperationException("getDDLVisitorClass");
     }
     
     @Override
     public Class<? extends TCLSQLVisitor> getTCLVisitorClass() {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedSQLOperationException("getTCLVisitorClass");
     }
     
     @Override
     public Class<? extends DCLSQLVisitor> getDCLVisitorClass() {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedSQLOperationException("getDCLVisitorClass");
     }
     
     @Override
     public Class<? extends DALSQLVisitor> getDALVisitorClass() {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedSQLOperationException("getDALVisitorClass");
     }
     
     @Override
     public Class<? extends RLSQLVisitor> getRLVisitorClass() {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedSQLOperationException("getRLVisitorClass");
     }
     
     @Override

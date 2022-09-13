@@ -277,6 +277,11 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     }
     
     @Override
+    public void deleteLock(final String lockKey) {
+        internalLockHolder.getInternalLock(lockKey).unlock();
+    }
+    
+    @Override
     public void close() {
         caches.values().forEach(CuratorCache::close);
         waitForCacheClose();

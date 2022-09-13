@@ -21,9 +21,9 @@ import io.vertx.sqlclient.Row;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 
 import java.io.InputStream;
-import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Iterator;
 
@@ -40,7 +40,7 @@ public final class VertxQueryResult implements QueryResult {
     private Row current;
     
     @Override
-    public boolean next() throws SQLException {
+    public boolean next() {
         boolean hasNext = rowIterator.hasNext();
         if (hasNext) {
             current = rowIterator.next();
@@ -49,18 +49,18 @@ public final class VertxQueryResult implements QueryResult {
     }
     
     @Override
-    public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
+    public Object getValue(final int columnIndex, final Class<?> type) {
         return Object.class == type ? current.getValue(columnIndex - 1) : current.get(type, columnIndex - 1);
     }
     
     @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedSQLOperationException("");
     }
     
     @Override
     public InputStream getInputStream(final int columnIndex, final String type) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedSQLOperationException("getInputStream");
     }
     
     @Override
@@ -74,6 +74,6 @@ public final class VertxQueryResult implements QueryResult {
     }
     
     @Override
-    public void close() throws SQLException {
+    public void close() {
     }
 }
