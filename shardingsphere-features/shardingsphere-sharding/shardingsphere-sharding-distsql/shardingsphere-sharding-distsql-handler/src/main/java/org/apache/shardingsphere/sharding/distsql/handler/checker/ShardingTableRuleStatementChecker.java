@@ -36,7 +36,6 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
@@ -267,7 +266,7 @@ public final class ShardingTableRuleStatementChecker {
         DistSQLException.predictionThrow(notExistAuditors.isEmpty(), () -> new RequiredAlgorithmMissedException("auditor", notExistAuditors));
         for (AuditStrategySegment each : auditStrategySegments) {
             requiredAuditors.addAll(each.getShardingAuditorSegments().stream().map(ShardingAuditorSegment::getAlgorithmSegment).collect(Collectors.toList())
-                .stream().map(AlgorithmSegment::getName).collect(Collectors.toList()));
+                    .stream().map(AlgorithmSegment::getName).collect(Collectors.toList()));
         }
         Collection<String> invalidAuditors = requiredAuditors.stream().distinct().filter(each -> !ShardingAuditAlgorithmFactory.contains(each)).collect(Collectors.toList());
         DistSQLException.predictionThrow(invalidAuditors.isEmpty(), () -> new InvalidAlgorithmConfigurationException("auditor", invalidAuditors));
