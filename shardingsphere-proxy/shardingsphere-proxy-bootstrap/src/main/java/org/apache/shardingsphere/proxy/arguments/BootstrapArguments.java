@@ -84,7 +84,7 @@ public final class BootstrapArguments {
     }
     
     private boolean parseForceParameter(final String forceParam) {
-        return forceParam.trim().equals("-f");
+        return Boolean.TRUE.toString().equalsIgnoreCase(forceParam.trim());
     }
     
     private String paddingWithSlash(final String pathArg) {
