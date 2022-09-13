@@ -17,14 +17,17 @@
 
 package org.apache.shardingsphere.data.pipeline.core.exception.job;
 
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+
 /**
- * Pipeline job creation exception.
+ * Zero sharding count exception.
  */
-public final class PipelineJobCreationException extends RuntimeException {
+public final class ZeroShardingCountException extends PipelineSQLException {
     
     private static final long serialVersionUID = 5829502315976905271L;
     
-    public PipelineJobCreationException(final String message) {
-        super(message);
+    public ZeroShardingCountException(final String jobId) {
+        super(XOpenSQLState.GENERAL_ERROR, 82, "Sharding count of job `%s` is 0", jobId);
     }
 }
