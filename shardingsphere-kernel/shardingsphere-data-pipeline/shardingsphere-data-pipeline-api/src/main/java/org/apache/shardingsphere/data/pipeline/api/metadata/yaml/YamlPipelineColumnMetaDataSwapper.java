@@ -24,6 +24,9 @@ public final class YamlPipelineColumnMetaDataSwapper implements YamlConfiguratio
     
     @Override
     public YamlPipelineColumnMetaData swapToYamlConfiguration(final PipelineColumnMetaData data) {
+        if (null == data) {
+            return null;
+        }
         YamlPipelineColumnMetaData result = new YamlPipelineColumnMetaData();
         result.setName(data.getName());
         result.setDataType(data.getDataType());
@@ -36,6 +39,9 @@ public final class YamlPipelineColumnMetaDataSwapper implements YamlConfiguratio
     
     @Override
     public PipelineColumnMetaData swapToObject(final YamlPipelineColumnMetaData yamlConfig) {
+        if (null == yamlConfig) {
+            return null;
+        }
         return new PipelineColumnMetaData(yamlConfig.getOrdinalPosition(), yamlConfig.getName(), yamlConfig.getDataType(), yamlConfig.getDataTypeName(), yamlConfig.isNullable(),
                 yamlConfig.isPrimaryKey());
     }

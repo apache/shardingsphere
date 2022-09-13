@@ -20,11 +20,15 @@ package org.apache.shardingsphere.data.pipeline.core.prepare;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IntegerPrimaryKeyPosition;
+import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineTableMetaDataUtil;
+import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobItemContext;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationTaskConfiguration;
 import org.junit.After;
@@ -57,15 +61,16 @@ public final class InventoryTaskSplitterTest {
     }
     
     @Before
-    public void setUp() {
+    public void setUp() throws NoSuchFieldException, IllegalAccessException {
         initJobItemContext();
         inventoryTaskSplitter = new InventoryTaskSplitter(
                 jobItemContext.getSourceDataSource(), jobItemContext.getTaskConfig().getDumperConfig(), jobItemContext.getTaskConfig().getImporterConfig(), jobItemContext.getInitProgress(),
                 jobItemContext.getSourceMetaDataLoader(), jobItemContext.getDataSourceManager(), jobItemContext.getJobProcessContext().getImporterExecuteEngine());
     }
     
-    private void initJobItemContext() {
+    private void initJobItemContext() throws NoSuchFieldException, IllegalAccessException {
         MigrationJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
+        ReflectionUtil.setFieldValue(jobConfig, "uniqueKeyColumn", new PipelineColumnMetaData(1, "order_id", 4, "", false, true));
         jobItemContext = PipelineContextUtil.mockMigrationJobItemContext(jobConfig);
         dataSourceManager = jobItemContext.getDataSourceManager();
         taskConfig = jobItemContext.getTaskConfig();
@@ -110,14 +115,22 @@ public final class InventoryTaskSplitterTest {
     }
     
     @Test(expected = PipelineJobCreationException.class)
-    public void assertSplitInventoryDataWithUnionPrimary() throws SQLException {
+    public void assertSplitInventoryDataWithUnionPrimary() throws SQLException, NoSuchFieldException, IllegalAccessException {
         initUnionPrimaryEnvironment(taskConfig.getDumperConfig());
+        try (PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig())) {
+            PipelineColumnMetaData uniqueKeyColumn = PipelineTableMetaDataUtil.getUniqueKeyColumn(null, "t_order", dataSource);
+            ReflectionUtil.setFieldValue(jobItemContext.getJobConfig(), "uniqueKeyColumn", uniqueKeyColumn);
+        }
         inventoryTaskSplitter.splitInventoryData(jobItemContext);
     }
     
     @Test(expected = PipelineJobCreationException.class)
-    public void assertSplitInventoryDataWithoutPrimaryAndUniqueIndex() throws SQLException {
+    public void assertSplitInventoryDataWithoutPrimaryAndUniqueIndex() throws SQLException, NoSuchFieldException, IllegalAccessException {
         initNoPrimaryEnvironment(taskConfig.getDumperConfig());
+        try (PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig())) {
+            PipelineColumnMetaData uniqueKeyColumn = PipelineTableMetaDataUtil.getUniqueKeyColumn(null, "t_order", dataSource);
+            ReflectionUtil.setFieldValue(jobItemContext.getJobConfig(), "uniqueKeyColumn", uniqueKeyColumn);
+        }
         inventoryTaskSplitter.splitInventoryData(jobItemContext);
     }
     

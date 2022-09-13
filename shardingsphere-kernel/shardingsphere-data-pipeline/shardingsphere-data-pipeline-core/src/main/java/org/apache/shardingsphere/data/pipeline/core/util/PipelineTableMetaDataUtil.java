@@ -47,7 +47,7 @@ public final class PipelineTableMetaDataUtil {
     @SneakyThrows(SQLException.class)
     public static PipelineTableMetaData getPipelineTableMetaData(final String schemaName, final String tableName, final StandardPipelineDataSourceConfiguration dataSourceConfiguration) {
         try (PipelineDataSourceWrapper dataSource = PipelineDataSourceFactory.newInstance(dataSourceConfiguration)) {
-            return new StandardPipelineTableMetaDataLoader(dataSource).getTableMetaData(schemaName, tableName);
+            return getPipelineTableMetaData(schemaName, tableName, dataSource);
         }
     }
     
@@ -73,6 +73,19 @@ public final class PipelineTableMetaDataUtil {
      */
     public static PipelineColumnMetaData getUniqueKeyColumn(final String schemaName, final String tableName, final StandardPipelineDataSourceConfiguration dataSourceConfiguration) {
         PipelineTableMetaData pipelineTableMetaData = getPipelineTableMetaData(schemaName, tableName, dataSourceConfiguration);
+        return mustGetAnAppropriateUniqueKeyColumn(pipelineTableMetaData, tableName);
+    }
+    
+    /**
+     * Get unique key column, if primary key exists, return primary key, otherwise return the first unique key.
+     *
+     * @param schemaName schema name
+     * @param tableName table name
+     * @param dataSource data source
+     * @return pipeline column meta data.
+     */
+    public static PipelineColumnMetaData getUniqueKeyColumn(final String schemaName, final String tableName, final PipelineDataSourceWrapper dataSource) {
+        PipelineTableMetaData pipelineTableMetaData = getPipelineTableMetaData(schemaName, tableName, dataSource);
         return mustGetAnAppropriateUniqueKeyColumn(pipelineTableMetaData, tableName);
     }
     
