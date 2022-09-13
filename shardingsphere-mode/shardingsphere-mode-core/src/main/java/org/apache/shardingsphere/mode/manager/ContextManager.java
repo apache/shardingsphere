@@ -284,7 +284,7 @@ public final class ContextManager implements AutoCloseable {
                 database.getResource().getDataSources().entrySet().stream().filter(entry -> !resource.getStaleDataSources().containsKey(entry.getKey()))
                         .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
         result.put(database.getName().toLowerCase(),
-                new ShardingSphereDatabase(database.getName(), database.getProtocolType(), new ShardingSphereResource(database.getName(), newDataSource), 
+                new ShardingSphereDatabase(database.getName(), database.getProtocolType(), new ShardingSphereResource(database.getName(), newDataSource),
                         database.getRuleMetaData(), database.getSchemas()));
         return result;
     }

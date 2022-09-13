@@ -17,13 +17,8 @@
 
 package org.apache.shardingsphere.mode.metadata;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceGeneratedDatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -50,16 +45,22 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyCollection;
 import static org.mockito.Mockito.anyMap;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -117,7 +118,7 @@ public final class MetaDataContextsFactoryTest {
     
     private void mockGlobalRulesBuilder() {
         mockedGlobalRulesBuilder = mockStatic(GlobalRulesBuilder.class);
-        mockedGlobalRulesBuilder.when(() -> GlobalRulesBuilder.buildRules(anyCollection(), anyMap(), any(InstanceContext.class))).thenReturn(shardingSphereRules);
+        mockedGlobalRulesBuilder.when(() -> GlobalRulesBuilder.buildRules(anyCollection(), anyMap(), any(InstanceContext.class), mock(ConfigurationProperties.class))).thenReturn(shardingSphereRules);
     }
     
     private DatabaseRulePersistService mockDatabaseRulePersistService() {
