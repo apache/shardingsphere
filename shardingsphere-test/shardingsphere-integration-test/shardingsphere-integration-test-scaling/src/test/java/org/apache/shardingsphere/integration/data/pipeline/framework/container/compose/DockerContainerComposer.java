@@ -54,7 +54,7 @@ public final class DockerContainerComposer extends BaseContainerComposer {
     @Getter
     private final GovernanceContainer governanceContainer;
     
-    public DockerContainerComposer(final DatabaseType databaseType, final String storageContainerImage) {
+    public DockerContainerComposer(final String proxyContainerImage, final DatabaseType databaseType, final String storageContainerImage) {
         this.databaseType = databaseType;
         governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
         StorageContainerConfiguration storageContainerConfig;
@@ -65,6 +65,8 @@ public final class DockerContainerComposer extends BaseContainerComposer {
             storageContainerConfig = StorageContainerConfigurationFactory.newInstance(databaseType);
         }
         storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, storageContainerImage,
+                "", StorageContainerConfigurationFactory.newInstance(databaseType)));
+        AdaptorContainerConfiguration containerConfig = ScalingProxyClusterContainerConfigurationFactory.newInstance(proxyContainerImage, databaseType, storageContainerImage);
                 "", storageContainerConfig));
         AdaptorContainerConfiguration containerConfig = ScalingProxyClusterContainerConfigurationFactory.newInstance(databaseType, storageContainerImage);
         ShardingSphereProxyClusterContainer proxyClusterContainer = (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance(EnvironmentConstants.CLUSTER_MODE,

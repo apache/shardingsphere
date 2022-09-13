@@ -37,8 +37,8 @@ public final class ProxyClusterContainerConfigurationFactory {
      * @param scenario scenario
      * @return created instance
      */
-    public static AdaptorContainerConfiguration newInstance(final String scenario) {
-        return new AdaptorContainerConfiguration("", getMountedResources(scenario));
+    public static AdaptorContainerConfiguration newInstance(final String scenario, final String proxyContainerImage) {
+        return new AdaptorContainerConfiguration("", getMountedResources(scenario), proxyContainerImage);
     }
     
     private static Map<String, String> getMountedResources(final String scenario) {

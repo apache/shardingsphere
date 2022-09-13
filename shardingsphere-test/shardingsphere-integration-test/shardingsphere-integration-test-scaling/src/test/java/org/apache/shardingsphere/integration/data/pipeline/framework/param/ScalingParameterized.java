@@ -27,6 +27,8 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 @ToString
 public final class ScalingParameterized {
     
+    private final String proxyContainerImage;
+    
     private final DatabaseType databaseType;
     
     private final String storageContainerImage;

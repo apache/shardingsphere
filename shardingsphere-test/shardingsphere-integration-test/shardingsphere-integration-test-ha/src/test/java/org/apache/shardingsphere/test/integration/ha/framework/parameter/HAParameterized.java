@@ -29,6 +29,8 @@ public final class HAParameterized {
     
     private final DatabaseType databaseType;
     
+    private final String proxyContainerImage;
+    
     private final String storageContainerImage;
     
     private final String scenario;

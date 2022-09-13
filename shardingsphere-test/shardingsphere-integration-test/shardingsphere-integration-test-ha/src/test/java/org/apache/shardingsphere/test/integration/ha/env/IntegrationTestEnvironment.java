@@ -22,6 +22,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.integration.ha.env.enums.ITEnvTypeEnum;
 
 import java.io.IOException;
@@ -41,6 +42,8 @@ public final class IntegrationTestEnvironment {
     
     private final ITEnvTypeEnum itEnvType;
     
+    private final String proxyContainerImage;
+    
     private final List<String> mysqlVersions;
     
     private final List<String> postgresVersions;
@@ -50,6 +53,7 @@ public final class IntegrationTestEnvironment {
     private IntegrationTestEnvironment() {
         props = loadProperties();
         itEnvType = ITEnvTypeEnum.valueOf(StringUtils.defaultIfBlank(props.getProperty("it.env.type").toUpperCase(), ITEnvTypeEnum.NONE.name()));
+        proxyContainerImage = props.getOrDefault("it.docker.proxy.image", ProxyContainerConstants.PROXY_CONTAINER_IMAGE).toString();
         mysqlVersions = Arrays.stream(props.getOrDefault("it.docker.mysql.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
         postgresVersions = Arrays.stream(props.getOrDefault("it.docker.postgresql.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
         openGaussVersions = Arrays.stream(props.getOrDefault("it.docker.opengauss.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());

@@ -34,5 +34,7 @@ public final class AdaptorContainerConfiguration {
     
     private final Map<String, String> mountedResources;
     
+    private final String proxyContainerImage;
+    
     private final int containerId = ContainerUtil.generateAdaptorContainerId();
 }

@@ -46,6 +46,8 @@ public final class IntegrationTestEnvironment {
     
     private final TransactionITEnvTypeEnum itEnvType;
     
+    private final String proxyContainerImage;
+    
     private final List<String> mysqlVersions;
     
     private final List<String> postgresVersions;
@@ -63,6 +65,7 @@ public final class IntegrationTestEnvironment {
     private IntegrationTestEnvironment() {
         props = loadProperties();
         itEnvType = TransactionITEnvTypeEnum.valueOf(StringUtils.defaultIfBlank(props.getProperty("transaction.it.env.type").toUpperCase(), TransactionITEnvTypeEnum.NONE.name()));
+        proxyContainerImage = props.getOrDefault("scaling.it.docker.proxy.image", ProxyContainerConstants.PROXY_CONTAINER_IMAGE).toString();
         mysqlVersions = splitProperty("transaction.it.docker.mysql.version");
         postgresVersions = splitProperty("transaction.it.docker.postgresql.version");
         openGaussVersions = splitProperty("transaction.it.docker.opengauss.version");
