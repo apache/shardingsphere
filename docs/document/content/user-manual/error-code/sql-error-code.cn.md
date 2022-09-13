@@ -95,6 +95,8 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | HY000     | 18080       | Can not find pipeline job \`%s\` |
 | HY000     | 18081       | Job has already started |
 | HY000     | 18090       | Importer job write data failed |
+| HY000     | 18091       | Can not poll event because of binlog sync channel already closed |
+| HY000     | 18092       | Task \`%s\` execute failed |
 
 ## 功能异常
 
