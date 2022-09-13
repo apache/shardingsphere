@@ -47,6 +47,7 @@ public final class CreateShardingTableRuleStatementUpdater implements RuleDefini
         currentRuleConfig.getAutoTables().addAll(toBeCreatedRuleConfig.getAutoTables());
         currentRuleConfig.getShardingAlgorithms().putAll(toBeCreatedRuleConfig.getShardingAlgorithms());
         currentRuleConfig.getKeyGenerators().putAll(toBeCreatedRuleConfig.getKeyGenerators());
+        currentRuleConfig.getAuditors().putAll(toBeCreatedRuleConfig.getAuditors());
     }
     
     @Override
