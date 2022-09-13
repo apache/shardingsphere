@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.core.prepare;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
@@ -28,13 +27,11 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSource
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IntegerPrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.StringPrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobCreationException;
@@ -66,7 +63,7 @@ public final class InventoryTaskSplitter {
     
     private final PipelineDataSourceWrapper sourceDataSource;
     
-    private final DumperConfiguration dumperConfig;
+    private final InventoryDumperConfiguration dumperConfig;
     
     private final ImporterConfiguration importerConfig;
     
@@ -95,7 +92,7 @@ public final class InventoryTaskSplitter {
         return result;
     }
     
-    private Collection<InventoryDumperConfiguration> splitDumperConfig(final InventoryIncrementalJobItemContext jobItemContext, final DumperConfiguration dumperConfig) {
+    private Collection<InventoryDumperConfiguration> splitDumperConfig(final InventoryIncrementalJobItemContext jobItemContext, final InventoryDumperConfiguration dumperConfig) {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
         for (InventoryDumperConfiguration each : splitByTable(dumperConfig)) {
             result.addAll(splitByPrimaryKey(each, jobItemContext, sourceDataSource));
@@ -103,7 +100,7 @@ public final class InventoryTaskSplitter {
         return result;
     }
     
-    private Collection<InventoryDumperConfiguration> splitByTable(final DumperConfiguration dumperConfig) {
+    private Collection<InventoryDumperConfiguration> splitByTable(final InventoryDumperConfiguration dumperConfig) {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
         dumperConfig.getTableNameMap().forEach((key, value) -> {
             InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(dumperConfig);
@@ -111,6 +108,8 @@ public final class InventoryTaskSplitter {
             inventoryDumperConfig.setActualTableName(key.getOriginal());
             inventoryDumperConfig.setLogicTableName(value.getOriginal());
             inventoryDumperConfig.setPosition(new PlaceholderPosition());
+            inventoryDumperConfig.setUniqueKey(dumperConfig.getUniqueKey());
+            inventoryDumperConfig.setUniqueKeyDataType(dumperConfig.getUniqueKeyDataType());
             result.add(inventoryDumperConfig);
         });
         return result;
@@ -142,29 +141,17 @@ public final class InventoryTaskSplitter {
     
     private Collection<IngestPosition<?>> getInventoryPositions(final InventoryIncrementalJobItemContext jobItemContext, final InventoryDumperConfiguration dumperConfig,
                                                                 final DataSource dataSource) {
-        String actualTableName = dumperConfig.getActualTableName();
-        PipelineColumnMetaData uniqueKeyColumn = jobItemContext.getJobConfig().getUniqueKeyColumn();
         if (null != initProgress && initProgress.getStatus() != JobStatus.PREPARING_FAILURE) {
-            Collection<IngestPosition<?>> result = initProgress.getInventory().getInventoryPosition(dumperConfig.getActualTableName()).values();
-            for (IngestPosition<?> each : result) {
-                if (each instanceof PrimaryKeyPosition) {
-                    dumperConfig.setUniqueKey(uniqueKeyColumn.getName());
-                    dumperConfig.setUniqueKeyDataType(uniqueKeyColumn.getDataType());
-                    break;
-                }
-            }
             // Do NOT filter FinishedPosition here, since whole inventory tasks are required in job progress when persisting to register center.
-            return result;
+            return initProgress.getInventory().getInventoryPosition(dumperConfig.getActualTableName()).values();
         }
-        dumperConfig.setUniqueKey(uniqueKeyColumn.getName());
-        int uniqueKeyDataType = uniqueKeyColumn.getDataType();
-        dumperConfig.setUniqueKeyDataType(uniqueKeyDataType);
+        int uniqueKeyDataType = dumperConfig.getUniqueKeyDataType();
         if (PipelineJdbcUtils.isIntegerColumn(uniqueKeyDataType)) {
             return getPositionByIntegerPrimaryKeyRange(jobItemContext, dataSource, dumperConfig);
         } else if (PipelineJdbcUtils.isStringColumn(uniqueKeyDataType)) {
             return getPositionByStringPrimaryKeyRange();
         } else {
-            throw new PipelineJobCreationException(String.format("Can not split range for table %s, reason: primary key is not integer or string type", actualTableName));
+            throw new PipelineJobCreationException(String.format("Can not split range for table %s, reason: primary key is not integer or string type", dumperConfig.getActualTableName()));
         }
     }
     

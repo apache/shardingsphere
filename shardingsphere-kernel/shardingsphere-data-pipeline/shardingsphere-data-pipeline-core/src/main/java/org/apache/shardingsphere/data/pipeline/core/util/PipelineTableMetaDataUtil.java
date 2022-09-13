@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.util;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineIndexMetaData;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
@@ -41,13 +42,15 @@ public final class PipelineTableMetaDataUtil {
      *
      * @param schemaName schema name
      * @param tableName table name
-     * @param dataSourceConfiguration source configuration
+     * @param dataSourceConfig source configuration
+     * @param loader pipeline table meta data loader* @return pipeline table meta data
      * @return pipeline table meta data
      */
     @SneakyThrows(SQLException.class)
-    public static PipelineTableMetaData getPipelineTableMetaData(final String schemaName, final String tableName, final StandardPipelineDataSourceConfiguration dataSourceConfiguration) {
-        try (PipelineDataSourceWrapper dataSource = PipelineDataSourceFactory.newInstance(dataSourceConfiguration)) {
-            return getPipelineTableMetaData(schemaName, tableName, dataSource);
+    public static PipelineTableMetaData getPipelineTableMetaData(final String schemaName, final String tableName, final StandardPipelineDataSourceConfiguration dataSourceConfig,
+                                                                 final PipelineTableMetaDataLoader loader) {
+        try (PipelineDataSourceWrapper dataSource = PipelineDataSourceFactory.newInstance(dataSourceConfig)) {
+            return getPipelineTableMetaData(schemaName, tableName, dataSource, loader);
         }
     }
     
@@ -57,10 +60,16 @@ public final class PipelineTableMetaDataUtil {
      * @param schemaName schema name
      * @param tableName table name
      * @param dataSource data source
+     * @param loader pipeline table meta data loader
      * @return pipeline table meta data.
      */
-    public static PipelineTableMetaData getPipelineTableMetaData(final String schemaName, final String tableName, final PipelineDataSourceWrapper dataSource) {
-        return new StandardPipelineTableMetaDataLoader(dataSource).getTableMetaData(schemaName, tableName);
+    public static PipelineTableMetaData getPipelineTableMetaData(final String schemaName, final String tableName, final PipelineDataSourceWrapper dataSource,
+                                                                 final PipelineTableMetaDataLoader loader) {
+        if (null == loader) {
+            return new StandardPipelineTableMetaDataLoader(dataSource).getTableMetaData(schemaName, tableName);
+        } else {
+            return loader.getTableMetaData(schemaName, tableName);
+        }
     }
     
     /**
@@ -68,11 +77,13 @@ public final class PipelineTableMetaDataUtil {
      *
      * @param schemaName schema name
      * @param tableName table name
-     * @param dataSourceConfiguration data source config
+     * @param dataSourceConfig data source config
+     * @param loader pipeline table meta data loader
      * @return pipeline column meta data.
      */
-    public static PipelineColumnMetaData getUniqueKeyColumn(final String schemaName, final String tableName, final StandardPipelineDataSourceConfiguration dataSourceConfiguration) {
-        PipelineTableMetaData pipelineTableMetaData = getPipelineTableMetaData(schemaName, tableName, dataSourceConfiguration);
+    public static PipelineColumnMetaData getUniqueKeyColumn(final String schemaName, final String tableName, final StandardPipelineDataSourceConfiguration dataSourceConfig,
+                                                            final StandardPipelineTableMetaDataLoader loader) {
+        PipelineTableMetaData pipelineTableMetaData = getPipelineTableMetaData(schemaName, tableName, dataSourceConfig, loader);
         return mustGetAnAppropriateUniqueKeyColumn(pipelineTableMetaData, tableName);
     }
     
@@ -82,10 +93,12 @@ public final class PipelineTableMetaDataUtil {
      * @param schemaName schema name
      * @param tableName table name
      * @param dataSource data source
+     * @param loader pipeline table meta data loader
      * @return pipeline column meta data.
      */
-    public static PipelineColumnMetaData getUniqueKeyColumn(final String schemaName, final String tableName, final PipelineDataSourceWrapper dataSource) {
-        PipelineTableMetaData pipelineTableMetaData = getPipelineTableMetaData(schemaName, tableName, dataSource);
+    public static PipelineColumnMetaData getUniqueKeyColumn(final String schemaName, final String tableName, final PipelineDataSourceWrapper dataSource,
+                                                            final StandardPipelineTableMetaDataLoader loader) {
+        PipelineTableMetaData pipelineTableMetaData = getPipelineTableMetaData(schemaName, tableName, dataSource, loader);
         return mustGetAnAppropriateUniqueKeyColumn(pipelineTableMetaData, tableName);
     }
     

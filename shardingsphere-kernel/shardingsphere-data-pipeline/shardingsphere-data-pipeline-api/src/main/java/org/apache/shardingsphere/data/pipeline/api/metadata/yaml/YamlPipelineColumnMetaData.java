@@ -20,6 +20,9 @@ package org.apache.shardingsphere.data.pipeline.api.metadata.yaml;
 import lombok.Data;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
+/**
+ * Yaml pipeline column meta data.
+ */
 @Data
 public final class YamlPipelineColumnMetaData implements YamlConfiguration {
     

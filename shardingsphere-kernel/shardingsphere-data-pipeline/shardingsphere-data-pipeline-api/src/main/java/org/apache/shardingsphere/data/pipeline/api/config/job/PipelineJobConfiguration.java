@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.api.config.job;
 
-import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
-
 /**
  * Pipeline job configuration.
  */
@@ -44,11 +42,4 @@ public interface PipelineJobConfiguration {
      * @return source database type
      */
     String getSourceDatabaseType();
-    
-    /**
-     * Get unique key column.
-     *
-     * @return unique key column
-     */
-    PipelineColumnMetaData getUniqueKeyColumn();
 }

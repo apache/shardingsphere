@@ -469,7 +469,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         result.setTargetDatabaseName(targetDatabaseName);
         result.setTargetTableName(parameter.getTargetTableName());
         YamlPipelineColumnMetaData uniqueKeyColumn = new YamlPipelineColumnMetaDataSwapper().swapToYamlConfiguration(PipelineTableMetaDataUtil.getUniqueKeyColumn(sourceSchemaName,
-                parameter.getSourceTableName(), sourceDataSourceConfig));
+                parameter.getSourceTableName(), sourceDataSourceConfig, null));
         result.setUniqueKeyColumn(uniqueKeyColumn);
         extendYamlJobConfiguration(result);
         MigrationJobConfiguration jobConfiguration = new YamlMigrationJobConfigurationSwapper().swapToObject(result);
