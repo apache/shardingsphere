@@ -207,8 +207,8 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         if (ruleConfigs.isEmpty()) {
             return;
         }
-        for (YamlRuleConfiguration ruleCofig : ruleConfigs) {
-            ShardingRuleConfiguration shardingRuleConfig = new YamlShardingRuleConfigurationSwapper().swapToObject((YamlShardingRuleConfiguration) ruleCofig);
+        for (YamlRuleConfiguration each : ruleConfigs) {
+            ShardingRuleConfiguration shardingRuleConfig = new YamlShardingRuleConfigurationSwapper().swapToObject((YamlShardingRuleConfiguration) each);
             appendShardingAlgorithms(shardingRuleConfig, result);
             appendKeyGenerators(shardingRuleConfig, result);
             appendShardingTableRules(shardingRuleConfig, result);
@@ -415,15 +415,16 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         }
         result.append(DistSQLScriptConstants.CREATE_DB_DISCOVERY);
         for (YamlRuleConfiguration ruleConfig : ruleConfigs) {
-            Iterator<Entry<String, YamlDatabaseDiscoveryDataSourceRuleConfiguration>> dataSourcesIter = ((YamlDatabaseDiscoveryRuleConfiguration) ruleConfig).getDataSources().entrySet().iterator();
-            while (dataSourcesIter.hasNext()) {
-                Entry<String, YamlDatabaseDiscoveryDataSourceRuleConfiguration> entry = dataSourcesIter.next();
+            Iterator<Entry<String, YamlDatabaseDiscoveryDataSourceRuleConfiguration>> dataSourcesIterator =
+                    ((YamlDatabaseDiscoveryRuleConfiguration) ruleConfig).getDataSources().entrySet().iterator();
+            while (dataSourcesIterator.hasNext()) {
+                Entry<String, YamlDatabaseDiscoveryDataSourceRuleConfiguration> entry = dataSourcesIterator.next();
                 String databaseDiscoveryName = entry.getKey();
                 String databaseSourceNames = getDatabaseDiscoveryResources(entry.getValue().getDataSourceNames());
                 String databaseType = getDatabaseDiscoveryType(entry.getValue().getDiscoveryTypeName(), ruleConfig);
                 String databaseHeartbeatProperty = getDatabaseDiscoveryHeartbeat(entry.getValue().getDiscoveryHeartbeatName(), ruleConfig);
                 result.append(String.format(DistSQLScriptConstants.DB_DISCOVERY, databaseDiscoveryName, databaseSourceNames, databaseType, databaseHeartbeatProperty));
-                if (dataSourcesIter.hasNext()) {
+                if (dataSourcesIterator.hasNext()) {
                     result.append(DistSQLScriptConstants.COMMA);
                 }
             }

@@ -54,7 +54,7 @@ public final class ShardingSphereConnectionTest {
     private ShardingSphereConnection connection;
     
     @Before
-    public void setUp() throws SQLException {
+    public void setUp() {
         TransactionTypeHolder.set(TransactionType.LOCAL);
         connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(), mock(JDBCContext.class));
     }

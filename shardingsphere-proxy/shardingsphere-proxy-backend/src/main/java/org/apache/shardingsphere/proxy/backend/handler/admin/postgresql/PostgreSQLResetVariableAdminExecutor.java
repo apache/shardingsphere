@@ -22,8 +22,6 @@ import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAd
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ResetParameterStatement;
 
-import java.sql.SQLException;
-
 /**
  * Reset variable admin executor for PostgreSQL.
  */
@@ -35,7 +33,7 @@ public final class PostgreSQLResetVariableAdminExecutor implements DatabaseAdmin
     private final ResetParameterStatement resetParameterStatement;
     
     @Override
-    public void execute(final ConnectionSession connectionSession) throws SQLException {
+    public void execute(final ConnectionSession connectionSession) {
         String variableName = resetParameterStatement.getConfigurationParameter();
         PostgreSQLSessionVariableHandlerFactory.getHandler(variableName).handle(connectionSession, variableName, DEFAULT);
     }

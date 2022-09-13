@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.exception;
+package org.apache.shardingsphere.data.pipeline.core.exception.job;
 
 /**
  * Pipeline job prepare failed exception.

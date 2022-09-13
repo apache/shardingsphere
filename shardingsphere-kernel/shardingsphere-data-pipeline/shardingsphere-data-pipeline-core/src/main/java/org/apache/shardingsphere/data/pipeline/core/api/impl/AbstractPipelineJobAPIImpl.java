@@ -28,10 +28,11 @@ import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobNotFoundException;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineMetaDataException;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineVerifyFailedException;
+import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineVerifyFailedException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobCreationException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
+import org.apache.shardingsphere.data.pipeline.core.exception.metadata.AlterNotExistProcessConfigurationException;
+import org.apache.shardingsphere.data.pipeline.core.exception.metadata.CreateExistsProcessConfigurationException;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
@@ -41,6 +42,7 @@ import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineProcessConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.data.pipeline.YamlPipelineProcessConfigurationSwapper;
@@ -74,7 +76,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     public void createProcessConfiguration(final PipelineProcessConfiguration processConfig) {
         PipelineProcessConfiguration existingProcessConfig = processConfigPersistService.load(getJobType());
         if (null != existingProcessConfig) {
-            throw new PipelineMetaDataException("Process configuration already exists");
+            throw new CreateExistsProcessConfigurationException();
         }
         processConfigPersistService.persist(getJobType(), processConfig);
     }
@@ -89,9 +91,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     
     private YamlPipelineProcessConfiguration getTargetYamlProcessConfiguration() {
         PipelineProcessConfiguration existingProcessConfig = processConfigPersistService.load(getJobType());
-        if (null == existingProcessConfig) {
-            throw new PipelineMetaDataException("Process configuration does not exist");
-        }
+        ShardingSpherePreconditions.checkNotNull(existingProcessConfig, new AlterNotExistProcessConfigurationException());
         return PROCESS_CONFIG_SWAPPER.swapToYamlConfiguration(existingProcessConfig);
     }
     

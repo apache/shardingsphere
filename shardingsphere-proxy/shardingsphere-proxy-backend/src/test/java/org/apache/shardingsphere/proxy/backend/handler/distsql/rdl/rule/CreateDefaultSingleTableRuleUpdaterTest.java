@@ -50,7 +50,7 @@ public final class CreateDefaultSingleTableRuleUpdaterTest {
     private SingleTableRuleConfiguration currentConfig;
     
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         when(database.getName()).thenReturn("sharding_db");
         when(database.getResource().getDataSources()).thenReturn(Collections.singletonMap("ds_0", new MockedDataSource()));
     }

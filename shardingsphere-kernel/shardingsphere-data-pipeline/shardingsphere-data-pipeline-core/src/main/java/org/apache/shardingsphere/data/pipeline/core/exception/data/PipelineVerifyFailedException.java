@@ -15,18 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.exception;
-
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+package org.apache.shardingsphere.data.pipeline.core.exception.data;
 
 /**
- * Pipeline job not found exception.
+ * Pipeline verify failed exception.
  */
-public final class PipelineJobNotFoundException extends PipelineSQLException {
+public final class PipelineVerifyFailedException extends RuntimeException {
     
-    private static final long serialVersionUID = -903289953649758722L;
+    private static final long serialVersionUID = 2854259384634892428L;
     
-    public PipelineJobNotFoundException(final String jobId) {
-        super(XOpenSQLState.GENERAL_ERROR, 0, "Can not find pipeline job `%s`", jobId);
+    public PipelineVerifyFailedException(final String message) {
+        super(message);
     }
 }

@@ -63,8 +63,8 @@ import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsis
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCalculateAlgorithmFactory;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
-import org.apache.shardingsphere.data.pipeline.core.exception.AddMigrationSourceResourceException;
-import org.apache.shardingsphere.data.pipeline.core.exception.DropMigrationSourceResourceException;
+import org.apache.shardingsphere.data.pipeline.core.exception.connection.AddMigrationSourceResourceException;
+import org.apache.shardingsphere.data.pipeline.core.exception.connection.DropMigrationSourceResourceException;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineSchemaTableUtil;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;

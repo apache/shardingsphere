@@ -58,7 +58,7 @@ public final class ParseDistSQLHandlerTest extends ProxyContextRestorer {
     private ConnectionSession connectionSession;
     
     @Before
-    public void setUp() throws SQLException {
+    public void setUp() {
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(globalRuleMetaData.getSingleRule(SQLParserRule.class)).thenReturn(sqlParserRule);

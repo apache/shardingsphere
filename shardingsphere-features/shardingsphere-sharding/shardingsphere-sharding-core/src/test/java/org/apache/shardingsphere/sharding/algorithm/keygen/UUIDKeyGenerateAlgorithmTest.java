@@ -28,6 +28,6 @@ public final class UUIDKeyGenerateAlgorithmTest {
     
     @Test
     public void assertGenerateKey() {
-        assertThat(((String) uuidKeyGenerateAlgorithm.generateKey()).length(), is(32));
+        assertThat(uuidKeyGenerateAlgorithm.generateKey().length(), is(32));
     }
 }

@@ -147,8 +147,8 @@ public final class PostgresConstraintsPropertiesAppender extends AbstractPostgre
         parameters.put("col_count", exclusionConstraintsProps.get("col_count"));
         Collection<Map<String, Object>> columns = new LinkedList<>();
         for (Map<String, Object> each : executeByTemplate(parameters, "component/exclusion_constraint/%s/get_constraint_cols.ftl")) {
-            boolean order = (((int) each.get("options")) & 1) == 0;
-            boolean nullsOrder = (((int) each.get("options")) & 2) != 0;
+            boolean order = 0 == (((int) each.get("options")) & 1);
+            boolean nullsOrder = 0 != (((int) each.get("options")) & 2);
             Map<String, Object> col = new HashMap<>();
             col.put("column", strip((String) each.get("coldef")));
             col.put("oper_class", each.get("opcname"));
@@ -247,9 +247,9 @@ public final class PostgresConstraintsPropertiesAppender extends AbstractPostgre
         Set<String> copyIndexCols = new HashSet<>(indexCols);
         Set<String> copyCols = new HashSet<>(cols);
         copyIndexCols.removeAll(copyCols);
-        if (0 == copyIndexCols.size()) {
+        if (copyIndexCols.isEmpty()) {
             cols.removeAll(indexCols);
-            return 0 == cols.size();
+            return cols.isEmpty();
         }
         return false;
     }

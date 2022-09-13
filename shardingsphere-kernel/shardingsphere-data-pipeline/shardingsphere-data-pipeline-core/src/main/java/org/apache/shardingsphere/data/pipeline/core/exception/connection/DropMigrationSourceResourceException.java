@@ -15,26 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.standalone.lock;
-
-import org.apache.shardingsphere.infra.lock.LockDefinition;
-import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.mode.lock.LockPersistService;
+package org.apache.shardingsphere.data.pipeline.core.exception.connection;
 
 /**
- * Standalone lock persist service.
+ * Drop migration source resource exception.
  */
-public final class StandaloneLockPersistService implements LockPersistService {
+public final class DropMigrationSourceResourceException extends RuntimeException {
     
-    private final ShardingSphereLock standaloneLock = new ShardingSphereStandaloneLock();
+    private static final long serialVersionUID = -7133815271017274299L;
     
-    @Override
-    public boolean tryLock(final LockDefinition lockDefinition, final long timeoutMillis) {
-        return standaloneLock.tryLock(lockDefinition.getLockKey(), timeoutMillis);
-    }
-    
-    @Override
-    public void unlock(final LockDefinition lockDefinition) {
-        standaloneLock.unlock(lockDefinition.getLockKey());
+    public DropMigrationSourceResourceException(final String message) {
+        super(message);
     }
 }

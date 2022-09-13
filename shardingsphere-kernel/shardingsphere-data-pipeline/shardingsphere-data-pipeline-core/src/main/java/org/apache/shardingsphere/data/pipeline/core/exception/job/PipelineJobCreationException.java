@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.exception;
+package org.apache.shardingsphere.data.pipeline.core.exception.job;
 
 /**
- * Pipeline meta data exception.
+ * Pipeline job creation exception.
  */
-public final class PipelineMetaDataException extends RuntimeException {
+public final class PipelineJobCreationException extends RuntimeException {
     
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 5829502315976905271L;
     
-    public PipelineMetaDataException(final String message) {
+    public PipelineJobCreationException(final String message) {
         super(message);
     }
 }

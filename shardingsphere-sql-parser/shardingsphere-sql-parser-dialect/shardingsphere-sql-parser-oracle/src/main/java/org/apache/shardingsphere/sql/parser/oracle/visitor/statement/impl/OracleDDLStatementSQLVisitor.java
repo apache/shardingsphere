@@ -985,8 +985,7 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     
     @Override
     public ASTNode visitCreateProcedure(final CreateProcedureContext ctx) {
-        OracleCreateProcedureStatement result = new OracleCreateProcedureStatement();
-        return result;
+        return new OracleCreateProcedureStatement();
     }
     
     @Override

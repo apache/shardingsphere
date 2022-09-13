@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.exception;
+package org.apache.shardingsphere.data.pipeline.core.exception.job;
 
 /**
  * Pipeline job ignored exception.
@@ -26,9 +26,5 @@ public final class PipelineIgnoredException extends RuntimeException {
     
     public PipelineIgnoredException(final String message) {
         super(message);
-    }
-    
-    public PipelineIgnoredException(final String message, final Throwable cause) {
-        super(message, cause);
     }
 }

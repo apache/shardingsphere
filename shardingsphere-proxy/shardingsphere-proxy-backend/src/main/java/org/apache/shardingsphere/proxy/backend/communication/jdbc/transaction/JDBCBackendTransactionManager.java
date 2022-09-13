@@ -54,7 +54,7 @@ public final class JDBCBackendTransactionManager implements TransactionManager<V
     }
     
     @Override
-    public Void begin() throws SQLException {
+    public Void begin() {
         if (!connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             connection.getConnectionSession().getTransactionStatus().setInTransaction(true);
             connection.getConnectionSession().getConnectionContext().getTransactionConnectionContext().setInTransaction(true);

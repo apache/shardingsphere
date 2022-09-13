@@ -15,34 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.exception;
-
-import lombok.Getter;
+package org.apache.shardingsphere.data.pipeline.core.exception.connection;
 
 /**
- * Pipeline job creation exception.
+ * Add migration source resource exception.
  */
-@Getter
-public final class PipelineJobCreationException extends RuntimeException {
+public final class AddMigrationSourceResourceException extends RuntimeException {
     
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -3952313247315105684L;
     
-    public PipelineJobCreationException() {
-    }
-    
-    public PipelineJobCreationException(final String message) {
+    public AddMigrationSourceResourceException(final String message) {
         super(message);
     }
     
-    public PipelineJobCreationException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
-    
-    public PipelineJobCreationException(final Throwable cause) {
+    public AddMigrationSourceResourceException(final Throwable cause) {
         super(cause);
-    }
-    
-    public PipelineJobCreationException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
     }
 }

@@ -45,7 +45,7 @@ public final class MySQLDecimalBinlogProtocolValue implements MySQLBinlogProtoco
     }
     
     private static BigDecimal toDecimal(final DecimalMetaData metaData, final byte[] value) {
-        boolean positive = (value[0] & 0x80) == 0x80;
+        boolean positive = 0x80 == (value[0] & 0x80);
         value[0] ^= 0x80;
         if (!positive) {
             for (int i = 0; i < value.length; i++) {

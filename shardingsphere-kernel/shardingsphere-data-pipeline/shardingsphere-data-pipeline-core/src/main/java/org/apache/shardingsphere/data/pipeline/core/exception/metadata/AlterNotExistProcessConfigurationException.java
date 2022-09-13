@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.exception;
+package org.apache.shardingsphere.data.pipeline.core.exception.metadata;
+
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Pipeline job execution exception.
+ * Alter not exist process configuration exception.
  */
-public final class PipelineJobExecutionException extends RuntimeException {
+public final class AlterNotExistProcessConfigurationException extends PipelineSQLException {
     
-    private static final long serialVersionUID = 1797495940081148743L;
+    private static final long serialVersionUID = 8799641580689564088L;
     
-    public PipelineJobExecutionException(final String message) {
-        super(message);
-    }
-    
-    public PipelineJobExecutionException(final Throwable cause) {
-        super(cause);
-    }
-    
-    public PipelineJobExecutionException(final String message, final Throwable cause) {
-        super(message, cause);
+    public AlterNotExistProcessConfigurationException() {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 2, "Altered process configuration does not exist");
     }
 }

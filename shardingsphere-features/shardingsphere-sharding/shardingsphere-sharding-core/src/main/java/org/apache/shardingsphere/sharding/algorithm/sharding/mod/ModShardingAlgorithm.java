@@ -85,7 +85,7 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     private int calculateMaxPaddingSize() {
         int result = 0;
         int calculatingShardingCount = shardingCount - 1;
-        while (calculatingShardingCount != 0) {
+        while (0 != calculatingShardingCount) {
             result++;
             calculatingShardingCount = calculatingShardingCount / 10;
         }

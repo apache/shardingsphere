@@ -81,7 +81,7 @@ public final class DropResourceBackendHandlerTest extends ProxyContextRestorer {
     private DropResourceBackendHandler dropResourceBackendHandler;
     
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         resource = mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS);
         when(resource.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);

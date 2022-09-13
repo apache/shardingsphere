@@ -23,8 +23,6 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 
-import java.sql.SQLException;
-
 /**
  * Set variable admin executor for PostgreSQL.
  */
@@ -34,7 +32,7 @@ public final class PostgreSQLSetVariableAdminExecutor implements DatabaseAdminEx
     private final SetStatement setStatement;
     
     @Override
-    public void execute(final ConnectionSession connectionSession) throws SQLException {
+    public void execute(final ConnectionSession connectionSession) {
         VariableAssignSegment variableAssignSegment = setStatement.getVariableAssigns().iterator().next();
         String variableName = variableAssignSegment.getVariable().getVariable().toLowerCase();
         String assignValue = variableAssignSegment.getAssignValue();

@@ -64,7 +64,7 @@ public final class FederationResultSetTest {
     private FederationResultSet federationResultSet;
     
     @Before
-    public void setUp() throws SQLException {
+    public void setUp() {
         enumerator = createEnumerator();
         federationResultSet = new FederationResultSet(enumerator, mock(ShardingSphereSchema.class), mock(FilterableSchema.class), createSelectStatementContext());
     }
@@ -81,7 +81,7 @@ public final class FederationResultSetTest {
     }
     
     @SuppressWarnings("unchecked")
-    private Enumerator<Object[]> createEnumerator() throws SQLException {
+    private Enumerator<Object[]> createEnumerator() {
         Enumerator<Object[]> result = mock(Enumerator.class);
         when(result.moveNext()).thenReturn(true, false);
         when(result.current()).thenReturn(new Object[]{1, 1, "OK", 1});
@@ -484,7 +484,7 @@ public final class FederationResultSetTest {
     }
     
     @After
-    public void clean() throws SQLException {
+    public void clean() {
         enumerator.close();
         federationResultSet.close();
     }

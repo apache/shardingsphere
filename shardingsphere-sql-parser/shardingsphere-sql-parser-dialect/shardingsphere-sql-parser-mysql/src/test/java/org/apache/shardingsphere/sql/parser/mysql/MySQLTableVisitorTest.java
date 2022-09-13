@@ -41,7 +41,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public final class MySQLTableVistorTest {
+public final class MySQLTableVisitorTest {
     
     private static Collection<Object[]> testUnits = new LinkedList<>();
     

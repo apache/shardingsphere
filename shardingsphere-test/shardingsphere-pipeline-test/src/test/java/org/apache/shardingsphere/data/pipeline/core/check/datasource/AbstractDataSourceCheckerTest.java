@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.check.datasource;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobPrepareFailedException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

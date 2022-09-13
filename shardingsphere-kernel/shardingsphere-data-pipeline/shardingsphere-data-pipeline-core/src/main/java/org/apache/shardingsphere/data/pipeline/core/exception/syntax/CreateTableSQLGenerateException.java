@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.exception;
+package org.apache.shardingsphere.data.pipeline.core.exception.syntax;
+
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Drop migration source resource exception.
+ * Create table SQL generate exception.
  */
-public final class DropMigrationSourceResourceException extends RuntimeException {
+public final class CreateTableSQLGenerateException extends PipelineSQLException {
     
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -219467568498936298L;
     
-    public DropMigrationSourceResourceException(final String message) {
-        super(message);
-    }
-    
-    public DropMigrationSourceResourceException(final Throwable cause) {
-        super(cause);
+    public CreateTableSQLGenerateException(final String tableName) {
+        super(XOpenSQLState.GENERAL_ERROR, 20, "Failed to get DDL for table `%s`", tableName);
     }
 }

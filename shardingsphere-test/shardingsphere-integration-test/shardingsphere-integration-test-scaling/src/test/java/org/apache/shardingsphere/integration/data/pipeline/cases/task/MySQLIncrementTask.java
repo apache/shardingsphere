@@ -28,8 +28,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import java.time.Instant;
 import java.util.concurrent.ThreadLocalRandom;
 
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public final class MySQLIncrementTask extends BaseIncrementTask {
     
     private final JdbcTemplate jdbcTemplate;
@@ -43,7 +43,7 @@ public final class MySQLIncrementTask extends BaseIncrementTask {
         int executeCount = 0;
         while (executeCount < executeCountLimit && !Thread.currentThread().isInterrupted()) {
             Object orderPrimaryKey = insertOrder();
-            if (executeCount % 2 == 0) {
+            if (0 == executeCount % 2) {
                 jdbcTemplate.update("DELETE FROM t_order_copy WHERE order_id = ?", orderPrimaryKey);
             } else {
                 setNullToOrderFields(orderPrimaryKey);
@@ -66,7 +66,7 @@ public final class MySQLIncrementTask extends BaseIncrementTask {
     
     private Object insertOrderItem() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        String status = random.nextInt() % 2 == 0 ? null : "NOT-NULL";
+        String status = 0 == random.nextInt() % 2 ? null : "NOT-NULL";
         Object[] orderInsertItemDate = new Object[]{primaryKeyGenerateAlgorithm.generateKey(), ScalingCaseHelper.generateSnowflakeKey(), random.nextInt(0, 6), status};
         jdbcTemplate.update("INSERT INTO t_order_item(item_id,order_id,user_id,status) VALUES(?, ?, ?, ?)", orderInsertItemDate);
         return orderInsertItemDate[0];
