@@ -28,7 +28,7 @@ import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
-import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineVerifyFailedException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.JobHasAlreadyStartedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
 import org.apache.shardingsphere.data.pipeline.core.exception.metadata.AlterNotExistProcessConfigurationException;
@@ -75,9 +75,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     @Override
     public void createProcessConfiguration(final PipelineProcessConfiguration processConfig) {
         PipelineProcessConfiguration existingProcessConfig = processConfigPersistService.load(getJobType());
-        if (null != existingProcessConfig) {
-            throw new CreateExistsProcessConfigurationException();
-        }
+        ShardingSpherePreconditions.checkState(null == existingProcessConfig, new CreateExistsProcessConfigurationException());
         processConfigPersistService.persist(getJobType(), processConfig);
     }
     
@@ -181,9 +179,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         log.info("Start disabled pipeline job {}", jobId);
         pipelineDistributedBarrier.removeParentNode(PipelineMetaDataNode.getJobBarrierDisablePath(jobId));
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
-        if (!jobConfigPOJO.isDisabled()) {
-            throw new PipelineVerifyFailedException("Job is already started.");
-        }
+        ShardingSpherePreconditions.checkState(jobConfigPOJO.isDisabled(), new JobHasAlreadyStartedException(jobId));
         jobConfigPOJO.setDisabled(false);
         jobConfigPOJO.getProps().remove("stop_time");
         PipelineAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);

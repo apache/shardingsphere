@@ -29,9 +29,9 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemIncrement
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
-import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineIgnoredException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobPrepareFailedException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.DefaultPipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.core.prepare.InventoryTaskSplitter;
 import org.apache.shardingsphere.data.pipeline.core.prepare.PipelineJobPreparerUtils;
@@ -65,18 +65,18 @@ public final class MigrationJobPreparer {
     public void prepare(final MigrationJobItemContext jobItemContext) throws SQLException {
         PipelineJobPreparerUtils.checkSourceDataSource(jobItemContext.getJobConfig().getSourceDatabaseType(), Collections.singleton(jobItemContext.getSourceDataSource()));
         if (jobItemContext.isStopping()) {
-            throw new PipelineIgnoredException("Job stopping, jobId=" + jobItemContext.getJobId());
+            PipelineJobCenter.stop(jobItemContext.getJobId());
         }
         prepareAndCheckTargetWithLock(jobItemContext);
         if (jobItemContext.isStopping()) {
-            throw new PipelineIgnoredException("Job stopping, jobId=" + jobItemContext.getJobId());
+            PipelineJobCenter.stop(jobItemContext.getJobId());
         }
         // TODO check metadata
         try {
             if (PipelineJobPreparerUtils.isIncrementalSupported(jobItemContext.getJobConfig().getSourceDatabaseType())) {
                 initIncrementalTasks(jobItemContext);
                 if (jobItemContext.isStopping()) {
-                    throw new PipelineIgnoredException("Job stopping, jobId=" + jobItemContext.getJobId());
+                    PipelineJobCenter.stop(jobItemContext.getJobId());
                 }
             }
             initInventoryTasks(jobItemContext);
