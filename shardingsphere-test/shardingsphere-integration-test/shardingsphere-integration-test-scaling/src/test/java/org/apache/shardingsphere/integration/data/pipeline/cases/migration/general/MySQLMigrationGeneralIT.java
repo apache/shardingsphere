@@ -42,7 +42,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * General scaling test case, includes multiple cases.
+ * General migration test case, includes multiple cases.
  */
 @Slf4j
 @RunWith(Parameterized.class)

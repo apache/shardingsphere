@@ -15,40 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config.job;
+package org.apache.shardingsphere.data.pipeline.api.metadata.yaml;
 
-import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
+import lombok.Data;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
-/**
- * Pipeline job configuration.
- */
-public interface PipelineJobConfiguration {
+@Data
+public final class YamlPipelineColumnMetaData implements YamlConfiguration {
     
-    /**
-     * Get job id.
-     *
-     * @return job id
-     */
-    String getJobId();
+    private int ordinalPosition;
     
-    /**
-     * Get job sharding count.
-     *
-     * @return job sharding count
-     */
-    int getJobShardingCount();
+    private String name;
     
-    /**
-     * Get source database type.
-     *
-     * @return source database type
-     */
-    String getSourceDatabaseType();
+    private int dataType;
     
-    /**
-     * Get unique key column.
-     *
-     * @return unique key column
-     */
-    PipelineColumnMetaData getUniqueKeyColumn();
+    private String dataTypeName;
+    
+    private boolean nullable;
+    
+    private boolean primaryKey;
 }

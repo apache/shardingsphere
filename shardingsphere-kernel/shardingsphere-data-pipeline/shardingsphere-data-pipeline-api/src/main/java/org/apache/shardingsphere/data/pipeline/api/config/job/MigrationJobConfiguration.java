@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 
 import java.util.List;
 
@@ -66,6 +67,8 @@ public final class MigrationJobConfiguration implements PipelineJobConfiguration
     private final String tablesFirstDataNodes;
     
     private final List<String> jobShardingDataNodes;
+    
+    private final PipelineColumnMetaData uniqueKeyColumn;
     
     private final int concurrency;
     
