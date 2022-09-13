@@ -22,7 +22,7 @@
         <column name="port" />
         <column name="status" />
         <column name="mode_type" assertion="false"/>
-        <column name="worker_id" />
+        <column name="worker_id" assertion="false"/>
         <column name="labels" />
     </metadata>
     <row values=" | | 3307 | OK | | 0 | " />
