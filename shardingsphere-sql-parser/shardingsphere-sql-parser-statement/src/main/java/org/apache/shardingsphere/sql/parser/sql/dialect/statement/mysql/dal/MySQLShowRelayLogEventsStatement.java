@@ -15,26 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.standalone.lock;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
-import org.apache.shardingsphere.infra.lock.LockDefinition;
-import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.mode.lock.LockPersistService;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Standalone lock persist service.
+ * MySQL show relay log events statement.
  */
-public final class StandaloneLockPersistService implements LockPersistService {
+@Getter
+@Setter
+@ToString(callSuper = true)
+public final class MySQLShowRelayLogEventsStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
-    private final ShardingSphereLock standaloneLock = new ShardingSphereStandaloneLock();
+    private String logName;
     
-    @Override
-    public boolean tryLock(final LockDefinition lockDefinition, final long timeoutMillis) {
-        return standaloneLock.tryLock(lockDefinition.getLockKey(), timeoutMillis);
-    }
+    private LimitSegment limit;
     
-    @Override
-    public void unlock(final LockDefinition lockDefinition) {
-        standaloneLock.unlock(lockDefinition.getLockKey());
-    }
+    private String channel;
 }
