@@ -21,13 +21,13 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLExcepti
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Job has already started exception.
+ * Pipeline job creation with invalid sharding count exception.
  */
-public final class JobHasAlreadyStartedException extends PipelineSQLException {
+public final class PipelineJobCreationWithInvalidShardingCountException extends PipelineSQLException {
     
-    private static final long serialVersionUID = 2854259384634892428L;
+    private static final long serialVersionUID = 5829502315976905271L;
     
-    public JobHasAlreadyStartedException(final String jobId) {
-        super(XOpenSQLState.GENERAL_ERROR, 81, "Job `%s` has already started", jobId);
+    public PipelineJobCreationWithInvalidShardingCountException(final String jobId) {
+        super(XOpenSQLState.GENERAL_ERROR, 82, "Sharding count of job `%s` is 0", jobId);
     }
 }
