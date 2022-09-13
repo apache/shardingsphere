@@ -447,10 +447,10 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
     
     private String getDatabaseDiscoveryHeartbeat(final String discoveryHeartbeatName, final YamlRuleConfiguration ruleConfig) {
         StringBuilder result = new StringBuilder();
-        Iterator<Entry<String, YamlDatabaseDiscoveryHeartBeatConfiguration>> discoveryHeartbeatsIter =
+        Iterator<Entry<String, YamlDatabaseDiscoveryHeartBeatConfiguration>> discoveryHeartbeatsConfigs =
                 ((YamlDatabaseDiscoveryRuleConfiguration) ruleConfig).getDiscoveryHeartbeats().entrySet().iterator();
-        while (discoveryHeartbeatsIter.hasNext()) {
-            Entry<String, YamlDatabaseDiscoveryHeartBeatConfiguration> entry = discoveryHeartbeatsIter.next();
+        while (discoveryHeartbeatsConfigs.hasNext()) {
+            Entry<String, YamlDatabaseDiscoveryHeartBeatConfiguration> entry = discoveryHeartbeatsConfigs.next();
             if (entry.getKey().equals(discoveryHeartbeatName)) {
                 getDatabaseDiscoveryProperties(entry.getValue().getProps(), result);
             }
@@ -461,9 +461,9 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
     private String getDatabaseDiscoveryType(final String discoveryTypeName, final YamlRuleConfiguration ruleConfig) {
         StringBuilder result = new StringBuilder();
         StringBuilder properties = new StringBuilder();
-        Iterator<Entry<String, YamlAlgorithmConfiguration>> discoveryTypesIter = ((YamlDatabaseDiscoveryRuleConfiguration) ruleConfig).getDiscoveryTypes().entrySet().iterator();
-        while (discoveryTypesIter.hasNext()) {
-            Entry<String, YamlAlgorithmConfiguration> entry = discoveryTypesIter.next();
+        Iterator<Entry<String, YamlAlgorithmConfiguration>> discoveryTypes = ((YamlDatabaseDiscoveryRuleConfiguration) ruleConfig).getDiscoveryTypes().entrySet().iterator();
+        while (discoveryTypes.hasNext()) {
+            Entry<String, YamlAlgorithmConfiguration> entry = discoveryTypes.next();
             if (entry.getKey().equals(discoveryTypeName)) {
                 getDatabaseDiscoveryProperties(entry.getValue().getProps(), properties);
                 String typeName = entry.getValue().getType();
@@ -475,9 +475,9 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
     }
     
     private void getDatabaseDiscoveryProperties(final Properties heartbeatProperties, final StringBuilder result) {
-        Iterator<Entry<Object, Object>> iterator = heartbeatProperties.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Entry<Object, Object> entry = iterator.next();
+        Iterator<Entry<Object, Object>> props = heartbeatProperties.entrySet().iterator();
+        while (props.hasNext()) {
+            Entry<Object, Object> entry = props.next();
             result.append(String.format(DistSQLScriptConstants.DB_DISCOVERY_PROPERTY, entry.getKey(), entry.getValue()));
         }
     }
@@ -488,14 +488,14 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         }
         result.append(DistSQLScriptConstants.CREATE_ENCRYPT);
         for (YamlRuleConfiguration ruleConfig : ruleConfigs) {
-            Iterator<Entry<String, YamlEncryptTableRuleConfiguration>> encryptTablesIter = ((YamlEncryptRuleConfiguration) ruleConfig).getTables().entrySet().iterator();
-            while (encryptTablesIter.hasNext()) {
-                Entry<String, YamlEncryptTableRuleConfiguration> entry = encryptTablesIter.next();
+            Iterator<Entry<String, YamlEncryptTableRuleConfiguration>> encryptTables = ((YamlEncryptRuleConfiguration) ruleConfig).getTables().entrySet().iterator();
+            while (encryptTables.hasNext()) {
+                Entry<String, YamlEncryptTableRuleConfiguration> entry = encryptTables.next();
                 String tableName = entry.getKey();
                 String columns = getEncryptColumns(entry.getValue().getColumns(), ruleConfig);
                 String queryWithCipher = getQueryWithCipher(entry.getValue().getQueryWithCipherColumn(), ruleConfig);
                 result.append(String.format(DistSQLScriptConstants.ENCRYPT, tableName, columns, queryWithCipher));
-                if (encryptTablesIter.hasNext()) {
+                if (encryptTables.hasNext()) {
                     result.append(DistSQLScriptConstants.COMMA).append(System.lineSeparator());
                 }
             }
@@ -537,9 +537,9 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
     
     private String getColumnType(final String encryptorName, final YamlRuleConfiguration ruleConfig) {
         StringBuilder result = new StringBuilder();
-        Iterator<Entry<String, YamlAlgorithmConfiguration>> encryptorIter = ((YamlEncryptRuleConfiguration) ruleConfig).getEncryptors().entrySet().iterator();
-        while (encryptorIter.hasNext()) {
-            Entry<String, YamlAlgorithmConfiguration> entry = encryptorIter.next();
+        Iterator<Entry<String, YamlAlgorithmConfiguration>> encryptorConfigs = ((YamlEncryptRuleConfiguration) ruleConfig).getEncryptors().entrySet().iterator();
+        while (encryptorConfigs.hasNext()) {
+            Entry<String, YamlAlgorithmConfiguration> entry = encryptorConfigs.next();
             if (entry.getKey().equals(encryptorName)) {
                 String typeName = entry.getValue().getType();
                 if (!entry.getValue().getProps().isEmpty()) {
@@ -555,11 +555,11 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
     
     private String getColumnTypeProperties(final Properties properties) {
         StringBuilder result = new StringBuilder();
-        Iterator<Entry<Object, Object>> propertiesIter = properties.entrySet().iterator();
-        while (propertiesIter.hasNext()) {
-            Entry<Object, Object> entry = propertiesIter.next();
+        Iterator<Entry<Object, Object>> props = properties.entrySet().iterator();
+        while (props.hasNext()) {
+            Entry<Object, Object> entry = props.next();
             result.append(String.format(DistSQLScriptConstants.ENCRYPT_TYPE_PROPERTIES, entry.getKey(), entry.getValue()));
-            if (propertiesIter.hasNext()) {
+            if (props.hasNext()) {
                 result.append(DistSQLScriptConstants.COMMA);
             }
         }
@@ -567,12 +567,6 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
     }
     
     private String getQueryWithCipher(final Boolean queryWithCipherColumn, final YamlRuleConfiguration ruleConfig) {
-        StringBuilder result = new StringBuilder();
-        if (null != queryWithCipherColumn) {
-            result.append(queryWithCipherColumn.toString().toLowerCase());
-        } else {
-            result.append(((YamlEncryptRuleConfiguration) ruleConfig).isQueryWithCipherColumn());
-        }
-        return result.toString();
+        return String.valueOf(null == queryWithCipherColumn ? ((YamlEncryptRuleConfiguration) ruleConfig).isQueryWithCipherColumn() : queryWithCipherColumn.toString().toLowerCase());
     }
 }

@@ -15,24 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlAttribute;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * MySQL show relay log events statement test case.
+ * MySQL show relay log events statement.
  */
 @Getter
 @Setter
-public final class ShowRelaylogEventsStatementTestCase extends SQLParserTestCase {
+@ToString(callSuper = true)
+public final class MySQLShowRelayLogEventsStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
-    @XmlAttribute(name = "log-name")
     private String logName;
     
-    @XmlAttribute(name = "channel")
+    private LimitSegment limit;
+    
     private String channel;
 }
