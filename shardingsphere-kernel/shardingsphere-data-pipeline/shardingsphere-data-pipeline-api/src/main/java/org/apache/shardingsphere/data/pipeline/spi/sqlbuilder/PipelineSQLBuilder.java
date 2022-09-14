@@ -98,13 +98,13 @@ public interface PipelineSQLBuilder extends TypedSPI, RequiredSPI {
     String buildDeleteSQL(String schemaName, DataRecord dataRecord, Collection<Column> conditionColumns);
     
     /**
-     * Build truncate SQL.
+     * Build drop SQL.
      *
      * @param schemaName schema name
      * @param tableName table name
-     * @return truncate SQL
+     * @return drop SQL
      */
-    String buildTruncateSQL(String schemaName, String tableName);
+    String buildDropSQL(String schemaName, String tableName);
     
     /**
      * Build count SQL.
