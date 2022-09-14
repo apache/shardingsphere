@@ -105,7 +105,7 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
             }
         }
         for (String each : tableNames) {
-            try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), schemaName, tableNamePattern, "%")) {
+            try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), schemaName, each, "%")) {
                 while (resultSet.next()) {
                     int ordinalPosition = resultSet.getInt("ORDINAL_POSITION");
                     String tableName = resultSet.getString("TABLE_NAME");
@@ -155,26 +155,6 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
             columnNames.addAll(each.getValue().values());
         }
         return result;
-    }
-    
-    private Collection<PipelineIndexMetaData> loadIndexesOfTable(final Connection connection, final String schemaName, final Map<String, PipelineColumnMetaData> columns,
-                                                                 final String tableName) throws SQLException {
-        Map<String, PipelineIndexMetaData> result = new LinkedHashMap<>();
-        Map<String, SortedMap<Short, String>> orderedColumnsOfIndexes = new LinkedHashMap<>();
-        try (ResultSet resultSet = connection.getMetaData().getIndexInfo(connection.getCatalog(), schemaName, tableName, true, false)) {
-            while (resultSet.next()) {
-                String indexName = resultSet.getString("INDEX_NAME");
-                if (null == indexName) {
-                    continue;
-                }
-                result.computeIfAbsent(indexName, unused -> new PipelineIndexMetaData(indexName, new LinkedList<>()));
-                orderedColumnsOfIndexes.computeIfAbsent(indexName, unused -> new TreeMap<>()).put(resultSet.getShort("ORDINAL_POSITION"), resultSet.getString("COLUMN_NAME"));
-            }
-        }
-        for (PipelineIndexMetaData each : result.values()) {
-            orderedColumnsOfIndexes.get(each.getName()).values().stream().map(columns::get).forEach(each.getColumns()::add);
-        }
-        return result.values();
     }
     
     private Set<String> loadPrimaryKeys(final Connection connection, final String schemaName, final String tableName) throws SQLException {
