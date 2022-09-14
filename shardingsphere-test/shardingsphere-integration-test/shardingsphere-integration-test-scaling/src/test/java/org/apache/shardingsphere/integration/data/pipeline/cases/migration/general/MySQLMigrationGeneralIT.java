@@ -64,8 +64,8 @@ public final class MySQLMigrationGeneralIT extends AbstractMigrationITCase {
             return result;
         }
         MySQLDatabaseType databaseType = new MySQLDatabaseType();
-        for (String version : ENV.listDatabaseDockerImageNames(databaseType)) {
-            result.add(new ScalingParameterized(databaseType, version, "env/scenario/general/mysql.xml"));
+        for (String each : ENV.listStorageContainerImages(databaseType)) {
+            result.add(new ScalingParameterized(databaseType, each, "env/scenario/general/mysql.xml"));
         }
         return result;
     }
