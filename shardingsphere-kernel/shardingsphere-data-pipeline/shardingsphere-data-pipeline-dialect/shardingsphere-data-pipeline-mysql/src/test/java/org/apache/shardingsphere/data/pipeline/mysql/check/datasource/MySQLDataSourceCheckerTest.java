@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.mysql.check.datasource;
 
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobPrepareFailedException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithoutEnoughPrivilegeException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -73,7 +74,7 @@ public final class MySQLDataSourceCheckerTest {
         verify(preparedStatement).executeQuery();
     }
     
-    @Test(expected = PipelineJobPrepareFailedException.class)
+    @Test(expected = PrepareJobWithoutEnoughPrivilegeException.class)
     public void assertCheckPrivilegeLackPrivileges() {
         new MySQLDataSourceChecker().checkPrivilege(dataSources);
     }
