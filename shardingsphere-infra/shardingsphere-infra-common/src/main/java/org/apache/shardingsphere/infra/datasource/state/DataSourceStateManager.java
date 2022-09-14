@@ -30,7 +30,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -84,26 +83,6 @@ public final class DataSourceStateManager {
             }
         });
         initialized = true;
-    }
-    
-    /**
-     * Get enabled data sources.
-     *
-     * @param databaseConfigs database config
-     * @return enabled data sources
-     */
-    public Collection<DataSource> getEnabledDataSources(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
-        String databaseName = "";
-        Map<String, DataSource> dataSources = Collections.emptyMap();
-        for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigs.entrySet()) {
-            DatabaseConfiguration value = entry.getValue();
-            if (!value.getDataSources().isEmpty()) {
-                databaseName = entry.getKey();
-                dataSources = value.getDataSources();
-                break;
-            }
-        }
-        return dataSources.isEmpty() ? dataSources.values() : getEnabledDataSourceMap(databaseName, dataSources).values();
     }
     
     /**

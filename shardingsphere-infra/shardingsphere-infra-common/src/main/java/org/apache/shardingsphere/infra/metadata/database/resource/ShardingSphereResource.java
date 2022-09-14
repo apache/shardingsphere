@@ -40,8 +40,6 @@ import java.util.stream.Collectors;
 @Getter
 public final class ShardingSphereResource {
     
-    private final String databaseName;
-    
     private final Map<String, DataSource> dataSources;
     
     private final DatabaseType databaseType;
@@ -50,7 +48,6 @@ public final class ShardingSphereResource {
     private final Map<String, DataSourceMetaData> dataSourceMetaDataMap;
     
     public ShardingSphereResource(final String databaseName, final Map<String, DataSource> dataSources) {
-        this.databaseName = databaseName;
         this.dataSources = dataSources;
         databaseType = getDatabaseType(DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, dataSources));
         dataSourceMetaDataMap = createDataSourceMetaDataMap(dataSources);

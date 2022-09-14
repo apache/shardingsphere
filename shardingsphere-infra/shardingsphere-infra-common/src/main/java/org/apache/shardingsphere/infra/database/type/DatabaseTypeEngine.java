@@ -23,14 +23,16 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -44,7 +46,6 @@ public final class DatabaseTypeEngine {
     /**
      * Get protocol type.
      * 
-     *
      * @param databaseName database name
      * @param databaseConfig database configuration
      * @param props props
@@ -63,10 +64,7 @@ public final class DatabaseTypeEngine {
      */
     public static DatabaseType getProtocolType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs, final ConfigurationProperties props) {
         Optional<DatabaseType> configuredDatabaseType = findConfiguredDatabaseType(props);
-        if (configuredDatabaseType.isPresent()) {
-            return configuredDatabaseType.get();
-        }
-        return getDatabaseType(DataSourceStateManager.getInstance().getEnabledDataSources(databaseConfigs));
+        return configuredDatabaseType.orElseGet(() -> getDatabaseType(databaseConfigs));
     }
     
     /**
@@ -76,7 +74,21 @@ public final class DatabaseTypeEngine {
      * @return storage type
      */
     public static DatabaseType getStorageType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
-        return getDatabaseType(DataSourceStateManager.getInstance().getEnabledDataSources(databaseConfigs));
+        return getDatabaseType(databaseConfigs);
+    }
+    
+    private static DatabaseType getDatabaseType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
+        String databaseName = "";
+        Map<String, DataSource> dataSources = Collections.emptyMap();
+        for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigs.entrySet()) {
+            DatabaseConfiguration value = entry.getValue();
+            if (!value.getDataSources().isEmpty()) {
+                databaseName = entry.getKey();
+                dataSources = value.getDataSources();
+                break;
+            }
+        }
+        return getDatabaseType(DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, dataSources).values());
     }
     
     /**

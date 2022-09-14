@@ -17,6 +17,11 @@
 
 package org.apache.shardingsphere.infra.datasource.state;
 
+import com.google.common.base.Strings;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Data source state.
  */
@@ -24,24 +29,31 @@ public enum DataSourceState {
     
     DISABLED, ENABLED;
     
-    /**
-     * Data source disable or enable.
-     *
-     * @param status data source state
-     * @return disable or enable
-     */
-    public static boolean isDisable(final String status) {
-        return DISABLED.name().toLowerCase().equals(status);
+    private static final Map<String, DataSourceState> DATA_SOURCE_STATES = new HashMap<>(2, 1);
+    
+    static {
+        DATA_SOURCE_STATES.put(DISABLED.name().toLowerCase(), DISABLED);
+        DATA_SOURCE_STATES.put(ENABLED.name().toLowerCase(), ENABLED);
     }
     
     /**
      * Data source disable or enable.
      *
-     * @param status storage node status
+     * @param state data source state
      * @return disable or enable
      */
-    public static boolean isEnable(final String status) {
-        return ENABLED.name().toLowerCase().equals(status);
+    public static boolean isDisable(final String state) {
+        return DISABLED.name().equalsIgnoreCase(state);
+    }
+    
+    /**
+     * Data source disable or enable.
+     *
+     * @param state data source state
+     * @return disable or enable
+     */
+    public static boolean isEnable(final String state) {
+        return ENABLED.name().equalsIgnoreCase(state);
     }
     
     /**
@@ -51,10 +63,8 @@ public enum DataSourceState {
      * @return data source state
      */
     public static DataSourceState getDataSourceState(final String state) {
-        for (DataSourceState each : values()) {
-            if (each.name().equalsIgnoreCase(state)) {
-                return each;
-            }
+        if (!Strings.isNullOrEmpty(state) && DATA_SOURCE_STATES.containsKey(state)) {
+            return DATA_SOURCE_STATES.get(state);
         }
         throw new IllegalArgumentException("Illegal data source state: " + state);
     }
