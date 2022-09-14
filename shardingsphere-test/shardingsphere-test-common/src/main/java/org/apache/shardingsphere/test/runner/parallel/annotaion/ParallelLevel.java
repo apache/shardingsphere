@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion;
+package org.apache.shardingsphere.test.runner.parallel.annotaion;
 
 /**
  * Parallel level.
  */
 public enum ParallelLevel {
     
-    CASE, SCENARIO
+    CASE, SCENARIO, DEFAULT
 }
