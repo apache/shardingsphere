@@ -45,13 +45,10 @@ public final class CheckMigrationQueryResultSet implements DatabaseDistSQLResult
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         CheckMigrationStatement checkMigrationStatement = (CheckMigrationStatement) sqlStatement;
-        Map<String, DataConsistencyCheckResult> checkResultMap;
         AlgorithmSegment typeStrategy = checkMigrationStatement.getTypeStrategy();
-        if (null == typeStrategy) {
-            checkResultMap = JOB_API.dataConsistencyCheck(checkMigrationStatement.getJobId());
-        } else {
-            checkResultMap = JOB_API.dataConsistencyCheck(checkMigrationStatement.getJobId(), typeStrategy.getName(), typeStrategy.getProps());
-        }
+        Map<String, DataConsistencyCheckResult> checkResultMap = null == typeStrategy
+                ? JOB_API.dataConsistencyCheck(checkMigrationStatement.getJobId())
+                : JOB_API.dataConsistencyCheck(checkMigrationStatement.getJobId(), typeStrategy.getName(), typeStrategy.getProps());
         data = checkResultMap.entrySet().stream()
                 .map(each -> {
                     Collection<Object> result = new LinkedList<>();

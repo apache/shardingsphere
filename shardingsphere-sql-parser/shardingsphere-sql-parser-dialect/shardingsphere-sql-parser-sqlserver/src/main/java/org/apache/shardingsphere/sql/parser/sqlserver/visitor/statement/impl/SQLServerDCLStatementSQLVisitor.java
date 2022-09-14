@@ -216,28 +216,23 @@ public final class SQLServerDCLStatementSQLVisitor extends SQLServerStatementSQL
     @Override
     public ASTNode visitIgnoredNameIdentifier(final IgnoredNameIdentifierContext ctx) {
         int identifierCount = ctx.identifier().size();
-        IdentifierValue result = 1 == identifierCount ? (IdentifierValue) visit(ctx.identifier(0)) : new IdentifierValue(ctx.getText());
-        return result;
+        return 1 == identifierCount ? (IdentifierValue) visit(ctx.identifier(0)) : new IdentifierValue(ctx.getText());
     }
     
     @Override
     public ASTNode visitCreateUserWindowsPrincipalClause(final CreateUserWindowsPrincipalClauseContext ctx) {
-        UserSegment result;
         if (null != ctx.windowsPrincipal()) {
-            result = (UserSegment) visit(ctx.windowsPrincipal().userName());
-        } else if (null != ctx.azureActiveDirectoryPrincipal()) {
-            result = (UserSegment) visit(ctx.azureActiveDirectoryPrincipal().userName());
-        } else {
-            result = (UserSegment) visit(ctx.userName());
+            return visit(ctx.windowsPrincipal().userName());
         }
-        return result;
+        if (null != ctx.azureActiveDirectoryPrincipal()) {
+            return visit(ctx.azureActiveDirectoryPrincipal().userName());
+        }
+        return visit(ctx.userName());
     }
     
     @Override
     public ASTNode visitCreateUserLoginWindowsPrincipalClause(final CreateUserLoginWindowsPrincipalClauseContext ctx) {
-        UserSegment result;
-        result = null != ctx.userName() ? (UserSegment) visit(ctx.userName()) : (UserSegment) visit(ctx.windowsPrincipal(0));
-        return result;
+        return null != ctx.userName() ? (UserSegment) visit(ctx.userName()) : (UserSegment) visit(ctx.windowsPrincipal(0));
     }
     
     @Override
@@ -316,8 +311,8 @@ public final class SQLServerDCLStatementSQLVisitor extends SQLServerStatementSQL
     public ASTNode visitCreateLogin(final CreateLoginContext ctx) {
         SQLServerCreateLoginStatement result = new SQLServerCreateLoginStatement();
         if (null != ctx.ignoredNameIdentifier()) {
-            LoginSegment loginSegment = new LoginSegment(ctx.ignoredNameIdentifier().getStart().getStartIndex(), ctx.ignoredNameIdentifier().getStop().getStopIndex(),
-                    (IdentifierValue) visit(ctx.ignoredNameIdentifier()));
+            LoginSegment loginSegment = new LoginSegment(
+                    ctx.ignoredNameIdentifier().getStart().getStartIndex(), ctx.ignoredNameIdentifier().getStop().getStopIndex(), (IdentifierValue) visit(ctx.ignoredNameIdentifier()));
             result.setLoginSegment(loginSegment);
         }
         return result;
@@ -327,8 +322,8 @@ public final class SQLServerDCLStatementSQLVisitor extends SQLServerStatementSQL
     public ASTNode visitAlterLogin(final AlterLoginContext ctx) {
         SQLServerAlterLoginStatement result = new SQLServerAlterLoginStatement();
         if (null != ctx.ignoredNameIdentifier()) {
-            LoginSegment loginSegment = new LoginSegment(ctx.ignoredNameIdentifier().getStart().getStartIndex(), ctx.ignoredNameIdentifier().getStop().getStopIndex(),
-                    (IdentifierValue) visit(ctx.ignoredNameIdentifier()));
+            LoginSegment loginSegment = new LoginSegment(
+                    ctx.ignoredNameIdentifier().getStart().getStartIndex(), ctx.ignoredNameIdentifier().getStop().getStopIndex(), (IdentifierValue) visit(ctx.ignoredNameIdentifier()));
             result.setLoginSegment(loginSegment);
         }
         return result;
@@ -337,8 +332,8 @@ public final class SQLServerDCLStatementSQLVisitor extends SQLServerStatementSQL
     @Override
     public ASTNode visitDropLogin(final DropLoginContext ctx) {
         SQLServerDropLoginStatement result = new SQLServerDropLoginStatement();
-        LoginSegment loginSegment = new LoginSegment(ctx.ignoredNameIdentifier().getStart().getStartIndex(), ctx.ignoredNameIdentifier().getStop().getStopIndex(),
-                (IdentifierValue) visit(ctx.ignoredNameIdentifier()));
+        LoginSegment loginSegment = new LoginSegment(
+                ctx.ignoredNameIdentifier().getStart().getStartIndex(), ctx.ignoredNameIdentifier().getStop().getStopIndex(), (IdentifierValue) visit(ctx.ignoredNameIdentifier()));
         result.setLoginSegment(loginSegment);
         return result;
     }

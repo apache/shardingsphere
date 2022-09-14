@@ -25,7 +25,6 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extende
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
 
-import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -40,12 +39,12 @@ public final class PostgreSQLComExecuteExecutor implements CommandExecutor {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public List execute() throws SQLException {
+    public List execute() {
         return connectionContext.getPortal(packet.getPortal()).execute(packet.getMaxRows());
     }
     
     @Override
-    public void close() throws SQLException {
+    public void close() {
         Portal<?> portal = connectionContext.getPortal(packet.getPortal());
         if (portal.getSqlStatement() instanceof CommitStatement || portal.getSqlStatement() instanceof RollbackStatement) {
             connectionContext.closeAllPortals();

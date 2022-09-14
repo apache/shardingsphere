@@ -47,23 +47,16 @@ public final class InventoryIncrementalProcessConfigurationSegmentConverter {
     }
     
     private static PipelineReadConfiguration convertToReadConfiguration(final ReadOrWriteSegment readSegment) {
-        if (null == readSegment) {
-            return null;
-        }
-        return new PipelineReadConfiguration(readSegment.getWorkerThread(), readSegment.getBatchSize(), readSegment.getShardingSize(), convertToAlgorithm(readSegment.getRateLimiter()));
+        return null == readSegment
+                ? null
+                : new PipelineReadConfiguration(readSegment.getWorkerThread(), readSegment.getBatchSize(), readSegment.getShardingSize(), convertToAlgorithm(readSegment.getRateLimiter()));
     }
     
     private static PipelineWriteConfiguration convertToWriteConfiguration(final ReadOrWriteSegment writeSegment) {
-        if (null == writeSegment) {
-            return null;
-        }
-        return new PipelineWriteConfiguration(writeSegment.getWorkerThread(), writeSegment.getBatchSize(), convertToAlgorithm(writeSegment.getRateLimiter()));
+        return null == writeSegment ? null : new PipelineWriteConfiguration(writeSegment.getWorkerThread(), writeSegment.getBatchSize(), convertToAlgorithm(writeSegment.getRateLimiter()));
     }
     
     private static AlgorithmConfiguration convertToAlgorithm(final AlgorithmSegment segment) {
-        if (null == segment) {
-            return null;
-        }
-        return new AlgorithmConfiguration(segment.getName(), segment.getProps());
+        return null == segment ? null : new AlgorithmConfiguration(segment.getName(), segment.getProps());
     }
 }

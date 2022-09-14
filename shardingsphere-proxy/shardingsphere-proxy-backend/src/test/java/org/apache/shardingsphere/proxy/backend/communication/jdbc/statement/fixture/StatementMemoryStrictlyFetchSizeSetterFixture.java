@@ -19,13 +19,12 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.fix
 
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter;
 
-import java.sql.SQLException;
 import java.sql.Statement;
 
 public final class StatementMemoryStrictlyFetchSizeSetterFixture implements StatementMemoryStrictlyFetchSizeSetter {
     
     @Override
-    public void setFetchSize(final Statement statement) throws SQLException {
+    public void setFetchSize(final Statement statement) {
     }
     
     @Override

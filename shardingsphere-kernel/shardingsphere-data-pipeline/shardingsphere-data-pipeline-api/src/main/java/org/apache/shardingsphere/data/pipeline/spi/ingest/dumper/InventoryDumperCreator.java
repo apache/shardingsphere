@@ -37,7 +37,7 @@ public interface InventoryDumperCreator extends TypedSPI, RequiredSPI {
      * Create inventory dumper.
      *
      * @param inventoryDumperConfig inventory dumper configuration
-     * @param channel chanel
+     * @param channel channel
      * @param sourceDataSource source data source
      * @param sourceMetaDataLoader source meta data loader
      * @return inventory dumper

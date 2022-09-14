@@ -70,7 +70,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
         StringBuilder mppData = new StringBuilder();
         mppData.append('{');
         int depth = 1;
-        while (depth != 0 && data.hasRemaining()) {
+        while (0 != depth && data.hasRemaining()) {
             char next = (char) data.get();
             mppData.append(next);
             int optDepth = '{' == next ? 1 : ('}' == next ? -1 : 0);

@@ -125,5 +125,6 @@ execute
     | createProcedure
     | dropProcedure
     | alterProcedure
+    | dropIndexType
     ) SEMI_?
     ;

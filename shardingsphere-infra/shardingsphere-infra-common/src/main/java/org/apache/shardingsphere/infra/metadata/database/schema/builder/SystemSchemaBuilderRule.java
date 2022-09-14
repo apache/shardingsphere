@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.builder;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -101,9 +102,7 @@ public enum SystemSchemaBuilderRule {
     public static SystemSchemaBuilderRule valueOf(final String databaseType, final String schema) {
         String schemaPath = databaseType + "." + schema;
         SystemSchemaBuilderRule result = SCHEMA_PATH_SYSTEM_SCHEMA_BUILDER_RULE_MAP.get(schemaPath);
-        if (null == result) {
-            throw new IllegalArgumentException(String.format("Can not find builder rule: `%s`", schemaPath));
-        }
+        Preconditions.checkNotNull(result, "Can not find builder rule: `%s`", schemaPath);
         return result;
     }
     

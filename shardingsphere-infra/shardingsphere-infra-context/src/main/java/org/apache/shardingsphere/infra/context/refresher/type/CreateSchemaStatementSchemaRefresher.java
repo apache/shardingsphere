@@ -27,7 +27,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateSchem
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateSchemaStatementHandler;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -38,7 +37,7 @@ public final class CreateSchemaStatementSchemaRefresher implements MetaDataRefre
     
     @Override
     public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
-                                                    final String schemaName, final CreateSchemaStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
+                                                    final String schemaName, final CreateSchemaStatement sqlStatement, final ConfigurationProperties props) {
         Optional<IdentifierValue> schema = sqlStatement.getSchemaName().isPresent() ? sqlStatement.getSchemaName() : CreateSchemaStatementHandler.getUsername(sqlStatement);
         if (!schema.isPresent()) {
             return Optional.empty();

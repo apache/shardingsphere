@@ -28,10 +28,11 @@ import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobNotFoundException;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineMetaDataException;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineVerifyFailedException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobHasAlreadyStartedException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobCreationWithInvalidShardingCountException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
+import org.apache.shardingsphere.data.pipeline.core.exception.metadata.AlterNotExistProcessConfigurationException;
+import org.apache.shardingsphere.data.pipeline.core.exception.metadata.CreateExistsProcessConfigurationException;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
@@ -41,6 +42,7 @@ import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineProcessConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.data.pipeline.YamlPipelineProcessConfigurationSwapper;
@@ -73,9 +75,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     @Override
     public void createProcessConfiguration(final PipelineProcessConfiguration processConfig) {
         PipelineProcessConfiguration existingProcessConfig = processConfigPersistService.load(getJobType());
-        if (null != existingProcessConfig) {
-            throw new PipelineMetaDataException("Process configuration already exists");
-        }
+        ShardingSpherePreconditions.checkState(null == existingProcessConfig, new CreateExistsProcessConfigurationException());
         processConfigPersistService.persist(getJobType(), processConfig);
     }
     
@@ -89,9 +89,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     
     private YamlPipelineProcessConfiguration getTargetYamlProcessConfiguration() {
         PipelineProcessConfiguration existingProcessConfig = processConfigPersistService.load(getJobType());
-        if (null == existingProcessConfig) {
-            throw new PipelineMetaDataException("Process configuration does not exist");
-        }
+        ShardingSpherePreconditions.checkNotNull(existingProcessConfig, new AlterNotExistProcessConfigurationException());
         return PROCESS_CONFIG_SWAPPER.swapToYamlConfiguration(existingProcessConfig);
     }
     
@@ -147,10 +145,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     @Override
     public Optional<String> start(final PipelineJobConfiguration jobConfig) {
         String jobId = jobConfig.getJobId();
-        if (0 == jobConfig.getJobShardingCount()) {
-            log.warn("Invalid job config since job sharding count is 0, jobId={}", jobId);
-            throw new PipelineJobCreationException("job sharding count is 0, jobId: " + jobId);
-        }
+        Preconditions.checkState(0 != jobConfig.getJobShardingCount(), new PipelineJobCreationWithInvalidShardingCountException(jobId));
         log.info("Start job by {}", jobConfig);
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
         String jobConfigKey = PipelineMetaDataNode.getJobConfigPath(jobId);
@@ -181,9 +176,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         log.info("Start disabled pipeline job {}", jobId);
         pipelineDistributedBarrier.removeParentNode(PipelineMetaDataNode.getJobBarrierDisablePath(jobId));
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
-        if (!jobConfigPOJO.isDisabled()) {
-            throw new PipelineVerifyFailedException("Job is already started.");
-        }
+        ShardingSpherePreconditions.checkState(jobConfigPOJO.isDisabled(), new PipelineJobHasAlreadyStartedException(jobId));
         jobConfigPOJO.setDisabled(false);
         jobConfigPOJO.getProps().remove("stop_time");
         PipelineAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);
@@ -230,9 +223,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     
     protected final JobConfigurationPOJO getElasticJobConfigPOJO(final String jobId) {
         JobConfigurationPOJO result = PipelineAPIFactory.getJobConfigurationAPI().getJobConfiguration(jobId);
-        if (null == result) {
-            throw new PipelineJobNotFoundException(jobId);
-        }
+        Preconditions.checkNotNull(result, new PipelineJobNotFoundException(jobId));
         return result;
     }
     

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
 
@@ -51,9 +52,7 @@ public final class PipelineJobIdUtils {
         }
         String typeCode = jobId.substring(1, 3);
         JobType result = JobType.valueOfByCode(typeCode);
-        if (null == result) {
-            throw new IllegalArgumentException("Could not get JobType by '" + typeCode + "', jobId: " + jobId);
-        }
+        Preconditions.checkNotNull(result, "Can not get job type by `%s`, job ID is `%s`", typeCode, jobId);
         return result;
     }
 }

@@ -166,8 +166,8 @@ public class TranslatableTableScan extends TableScan implements EnumerableRel {
             return implementor.result(physType, Blocks.toBlock(Expressions.call(table.getExpression(FederationTranslatableTable.class),
                     "projectAndFilter", implementor.getRootExpression(), Expressions.constant(filterValues), Expressions.constant(fields))));
         }
-        return implementor.result(physType, Blocks.toBlock(Expressions.call(table.getExpression(FederationTranslatableTable.class),
-                "project", implementor.getRootExpression(), Expressions.constant(fields))));
+        return implementor.result(physType, Blocks.toBlock(
+                Expressions.call(table.getExpression(FederationTranslatableTable.class), "project", implementor.getRootExpression(), Expressions.constant(fields))));
     }
     
     private boolean addFilter(final List<RexNode> filters, final String[] filterValues) {
@@ -185,7 +185,7 @@ public class TranslatableTableScan extends TableScan implements EnumerableRel {
                     continue;
                 }
                 int index = ((RexInputRef) left).getIndex();
-                if (filterValues[index] == null) {
+                if (null == filterValues[index]) {
                     filterValues[index] = ((RexLiteral) right).getValue2().toString();
                     return true;
                 }

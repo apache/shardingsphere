@@ -137,12 +137,17 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sql-federation-advanced-executor</artifactId>
+            <artifactId>shardingsphere-sql-federation-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sql-federation-original-executor</artifactId>
+            <artifactId>shardingsphere-sql-federation-executor-advanced</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sql-federation-executor-original</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

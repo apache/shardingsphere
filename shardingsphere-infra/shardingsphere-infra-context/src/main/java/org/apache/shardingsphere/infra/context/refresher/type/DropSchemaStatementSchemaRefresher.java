@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -40,7 +39,7 @@ public final class DropSchemaStatementSchemaRefresher implements MetaDataRefresh
     
     @Override
     public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
-                                                    final String schemaName, final DropSchemaStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
+                                                    final String schemaName, final DropSchemaStatement sqlStatement, final ConfigurationProperties props) {
         Collection<String> tobeRemovedTables = new LinkedHashSet<>();
         Collection<String> tobeRemovedSchemas = new LinkedHashSet<>();
         Collection<String> schemaNames = getSchemaNames(sqlStatement);

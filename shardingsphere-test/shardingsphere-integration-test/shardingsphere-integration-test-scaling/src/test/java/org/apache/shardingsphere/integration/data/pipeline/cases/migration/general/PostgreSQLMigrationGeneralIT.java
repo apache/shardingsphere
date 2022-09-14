@@ -111,7 +111,7 @@ public final class PostgreSQLMigrationGeneralIT extends AbstractMigrationITCase 
         sourceExecuteWithLog(String.format("INSERT INTO %s.t_order_copy (order_id,user_id,status) VALUES (%s, %s, '%s')", SCHEMA_NAME, KEY_GENERATE_ALGORITHM.generateKey(),
                 1, "afterStop"));
         startMigrationByJobId(jobId);
-        assertCheckMigrationSuccess(jobId);
+        assertCheckMigrationSuccess(jobId, "DATA_MATCH");
         stopMigrationByJobId(jobId);
     }
     
@@ -119,7 +119,7 @@ public final class PostgreSQLMigrationGeneralIT extends AbstractMigrationITCase 
         startMigrationOrderItem(true);
         String jobId = getJobIdByTableName("t_order_item");
         waitJobFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
-        assertCheckMigrationSuccess(jobId);
+        assertCheckMigrationSuccess(jobId, "DATA_MATCH");
         stopMigrationByJobId(jobId);
     }
 }

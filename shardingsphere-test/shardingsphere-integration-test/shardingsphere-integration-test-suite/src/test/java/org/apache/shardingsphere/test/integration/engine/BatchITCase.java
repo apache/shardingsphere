@@ -66,7 +66,7 @@ public abstract class BatchITCase extends BaseITCase {
     @Before
     public void init() throws Exception {
         for (IntegrationTestCaseAssertion each : getItCase().getAssertions()) {
-            dataSets.add(DataSetLoader.load(parentPath, getScenario(), getDatabaseType(), each.getExpectedDataFile()));
+            dataSets.add(DataSetLoader.load(parentPath, getScenario(), getDatabaseType(), getMode(), each.getExpectedDataFile()));
         }
         dataSetEnvironmentManager = new DataSetEnvironmentManager(new ScenarioDataPath(getScenario()).getDataSetFile(Type.ACTUAL), getActualDataSourceMap());
         dataSetEnvironmentManager.fillData();

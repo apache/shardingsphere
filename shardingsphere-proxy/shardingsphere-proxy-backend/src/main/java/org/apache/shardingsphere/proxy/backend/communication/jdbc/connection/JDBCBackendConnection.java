@@ -206,7 +206,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     }
     
     @Override
-    public Void handleAutoCommit() throws SQLException {
+    public Void handleAutoCommit() {
         if (!connectionSession.isAutoCommit() && !connectionSession.getTransactionStatus().isInTransaction()) {
             JDBCBackendTransactionManager transactionManager = new JDBCBackendTransactionManager(this);
             transactionManager.begin();
@@ -217,8 +217,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     @Override
     public Void closeExecutionResources() throws BackendConnectionException {
         synchronized (this) {
-            Collection<Exception> result = new LinkedList<>();
-            result.addAll(closeHandlers(false));
+            Collection<Exception> result = new LinkedList<>(closeHandlers(false));
             if (!connectionSession.getTransactionStatus().isInConnectionHeldTransaction()) {
                 result.addAll(closeHandlers(true));
                 result.addAll(closeConnections(false));

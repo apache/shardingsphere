@@ -29,7 +29,8 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>shardingsphere-sql-federation-advanced-executor</module>
-        <module>shardingsphere-sql-federation-original-executor</module>
+        <module>shardingsphere-sql-federation-executor-advanced</module>
+        <module>shardingsphere-sql-federation-executor-original</module>
+        <module>shardingsphere-sql-federation-executor-core</module>
     </modules>
 </project>

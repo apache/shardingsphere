@@ -22,7 +22,6 @@ import io.vertx.mysqlclient.impl.protocol.ColumnDefinition.ColumnDefinitionFlags
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 
-import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -34,12 +33,12 @@ public final class VertxMySQLQueryResultMetaData implements QueryResultMetaData 
     private final List<ColumnDefinition> columnDefinitions;
     
     @Override
-    public int getColumnCount() throws SQLException {
+    public int getColumnCount() {
         return columnDefinitions.size();
     }
     
     @Override
-    public String getTableName(final int columnIndex) throws SQLException {
+    public String getTableName(final int columnIndex) {
         return columnDefinitions.get(columnIndex - 1).table();
     }
     
@@ -49,12 +48,12 @@ public final class VertxMySQLQueryResultMetaData implements QueryResultMetaData 
     }
     
     @Override
-    public String getColumnLabel(final int columnIndex) throws SQLException {
+    public String getColumnLabel(final int columnIndex) {
         return columnDefinitions.get(columnIndex - 1).name();
     }
     
     @Override
-    public int getColumnType(final int columnIndex) throws SQLException {
+    public int getColumnType(final int columnIndex) {
         return columnDefinitions.get(columnIndex - 1).jdbcType().getVendorTypeNumber();
     }
     
