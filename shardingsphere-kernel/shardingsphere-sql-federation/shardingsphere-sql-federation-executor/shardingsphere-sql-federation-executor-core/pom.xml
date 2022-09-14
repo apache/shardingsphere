@@ -21,16 +21,27 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-sql-federation</artifactId>
+        <artifactId>shardingsphere-sql-federation-executor</artifactId>
         <version>5.2.1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-sql-federation-executor</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-sql-federation-executor-core</artifactId>
     <name>${project.artifactId}</name>
     
-    <modules>
-        <module>shardingsphere-sql-federation-executor-advanced</module>
-        <module>shardingsphere-sql-federation-executor-original</module>
-        <module>shardingsphere-sql-federation-executor-core</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sql-federation-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sql-federation-optimizer</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-merge</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
