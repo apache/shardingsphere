@@ -20,6 +20,7 @@ package org.apache.shardingsphere.singletable.route.validator.ddl;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.singletable.exception.DropNotEmptySchemaException;
 import org.apache.shardingsphere.singletable.exception.SchemaNotFoundException;
 import org.apache.shardingsphere.singletable.route.validator.SingleTableMetadataValidator;
@@ -39,12 +40,8 @@ public final class SingleTableDropSchemaMetadataValidator implements SingleTable
         for (IdentifierValue each : sqlStatementContext.getSqlStatement().getSchemaNames()) {
             String schemaName = each.getValue();
             ShardingSphereSchema schema = database.getSchema(schemaName);
-            if (null == schema) {
-                throw new SchemaNotFoundException(schemaName);
-            }
-            if (!containsCascade && !schema.getAllTableNames().isEmpty()) {
-                throw new DropNotEmptySchemaException(schemaName);
-            }
+            ShardingSpherePreconditions.checkNotNull(schema, new SchemaNotFoundException(schemaName));
+            ShardingSpherePreconditions.checkState(containsCascade || schema.getAllTableNames().isEmpty(), new DropNotEmptySchemaException(schemaName));
         }
     }
 }

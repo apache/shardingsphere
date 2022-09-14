@@ -35,7 +35,7 @@ public final class HintManagerHolder {
      * @return hint manager
      */
     public static HintManager get() {
-        if (HINT_MANAGER_HOLDER.get() == null) {
+        if (null == HINT_MANAGER_HOLDER.get()) {
             HINT_MANAGER_HOLDER.set(HintManager.getInstance());
         }
         return HINT_MANAGER_HOLDER.get();

@@ -296,8 +296,8 @@
             <owner name="TEST_USER" start-index="20" stop-index="28"/>
         </function>
     </show-procedure-code>
-    <show-relaylog-events sql-case-id="show_relaylog_events" channel="TEST_CHANNEL" />
-    <show-relaylog-events sql-case-id="show_relaylog_events_with_log" channel="TEST_CHANNEL" log-name="TEST_LOG" />
+    <show-relay-log-events sql-case-id="show_relay-log_events" channel="TEST_CHANNEL" />
+    <show-relay-log-events sql-case-id="show_relay-log_events_with_log" channel="TEST_CHANNEL" log-name="TEST_LOG" />
     <show-slave-hosts sql-case-id="show_slave_hosts" />
     <show-replica-status sql-case-id="show_replica_status" />
     <show-replica-status sql-case-id="show_replica_status_with_channel" channel="TEST_CHANNEL"/>

@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.proxy.backend.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
+import org.apache.shardingsphere.infra.exception.DataSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Invalid value exception.
  */
-public final class InvalidValueException extends KernelSQLException {
+public final class InvalidValueException extends DataSQLException {
     
     private static final long serialVersionUID = 1840341880422454371L;
     
     public InvalidValueException(final String value) {
-        super(XOpenSQLState.INVALID_DATA_TYPE, 10301, "Invalid value `%s`", value);
+        super(XOpenSQLState.INVALID_DATA_TYPE, 0, "Invalid value `%s`", value);
     }
 }

@@ -77,7 +77,7 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
         String modelMemFromMatcher = matcher.group("modelMem");
         String modelSslOrTcpFromMatcher = matcher.group("modelSslOrTcp");
         String modelFileFromMatcher = matcher.group("modelFile");
-        if (modelMemFromMatcher == null) {
+        if (null == modelMemFromMatcher) {
             model = null == modelSslOrTcpFromMatcher ? modelFileFromMatcher : modelSslOrTcpFromMatcher;
         } else {
             model = modelMemFromMatcher;

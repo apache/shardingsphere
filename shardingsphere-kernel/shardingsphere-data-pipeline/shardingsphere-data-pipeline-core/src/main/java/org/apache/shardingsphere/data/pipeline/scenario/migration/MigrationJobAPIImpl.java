@@ -51,6 +51,8 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.TableName;
+import org.apache.shardingsphere.data.pipeline.api.metadata.yaml.YamlPipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.api.metadata.yaml.YamlPipelineColumnMetaDataSwapper;
 import org.apache.shardingsphere.data.pipeline.api.pojo.CreateMigrationJobParameter;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.MigrationJobInfo;
@@ -63,10 +65,11 @@ import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsis
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCalculateAlgorithmFactory;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
-import org.apache.shardingsphere.data.pipeline.core.exception.AddMigrationSourceResourceException;
-import org.apache.shardingsphere.data.pipeline.core.exception.DropMigrationSourceResourceException;
+import org.apache.shardingsphere.data.pipeline.core.exception.connection.AddMigrationSourceResourceException;
+import org.apache.shardingsphere.data.pipeline.core.exception.connection.DropMigrationSourceResourceException;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineSchemaTableUtil;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineTableMetaDataUtil;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
@@ -447,11 +450,10 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         StandardPipelineDataSourceConfiguration sourceDataSourceConfig = new StandardPipelineDataSourceConfiguration(sourceDataSourceProps);
         DatabaseType sourceDatabaseType = sourceDataSourceConfig.getDatabaseType();
         result.setSourceDatabaseType(sourceDatabaseType.getType());
-        if (null == parameter.getSourceSchemaName() && sourceDatabaseType.isSchemaAvailable()) {
-            result.setSourceSchemaName(PipelineSchemaTableUtil.getDefaultSchema(sourceDataSourceConfig));
-        } else {
-            result.setSourceSchemaName(parameter.getSourceSchemaName());
-        }
+        String sourceSchemaName = null == parameter.getSourceSchemaName() && sourceDatabaseType.isSchemaAvailable()
+                ? PipelineSchemaTableUtil.getDefaultSchema(sourceDataSourceConfig)
+                : parameter.getSourceSchemaName();
+        result.setSourceSchemaName(sourceSchemaName);
         result.setSourceTableName(parameter.getSourceTableName());
         Map<String, Map<String, Object>> targetDataSourceProperties = new HashMap<>();
         ShardingSphereDatabase targetDatabase = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabase(parameter.getTargetDatabaseName());
@@ -466,6 +468,9 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         result.setTargetDatabaseType(targetPipelineDataSource.getDatabaseType().getType());
         result.setTargetDatabaseName(targetDatabaseName);
         result.setTargetTableName(parameter.getTargetTableName());
+        YamlPipelineColumnMetaData uniqueKeyColumn = new YamlPipelineColumnMetaDataSwapper().swapToYamlConfiguration(PipelineTableMetaDataUtil.getUniqueKeyColumn(sourceSchemaName,
+                parameter.getSourceTableName(), sourceDataSourceConfig, null));
+        result.setUniqueKeyColumn(uniqueKeyColumn);
         extendYamlJobConfiguration(result);
         MigrationJobConfiguration jobConfiguration = new YamlMigrationJobConfigurationSwapper().swapToObject(result);
         start(jobConfiguration);

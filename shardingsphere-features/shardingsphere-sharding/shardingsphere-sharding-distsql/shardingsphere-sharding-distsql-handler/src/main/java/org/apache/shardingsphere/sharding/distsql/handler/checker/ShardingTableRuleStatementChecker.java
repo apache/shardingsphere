@@ -48,7 +48,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.segment.AbstractTableRu
 import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
-import org.apache.shardingsphere.sharding.exception.ShardingRuleNotFoundException;
+import org.apache.shardingsphere.sharding.exception.metadata.ShardingRuleNotFoundException;
 import org.apache.shardingsphere.sharding.factory.KeyGenerateAlgorithmFactory;
 import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import org.apache.shardingsphere.sharding.rule.BindingTableCheckedConfiguration;

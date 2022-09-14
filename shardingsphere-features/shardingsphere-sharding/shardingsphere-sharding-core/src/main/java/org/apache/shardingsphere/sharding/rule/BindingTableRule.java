@@ -19,8 +19,8 @@ package org.apache.shardingsphere.sharding.rule;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sharding.exception.ActualTableNotFoundException;
-import org.apache.shardingsphere.sharding.exception.BindingTableNotFoundException;
+import org.apache.shardingsphere.sharding.exception.metadata.ActualTableNotFoundException;
+import org.apache.shardingsphere.sharding.exception.metadata.BindingTableNotFoundException;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;

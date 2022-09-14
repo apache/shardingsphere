@@ -55,8 +55,8 @@ public final class SM3EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     
     private byte[] createSm3Salt(final Properties props) {
         String salt = null == props.getProperty(SM3_SALT) ? "" : String.valueOf(props.getProperty(SM3_SALT));
-        Preconditions.checkState(0 == salt.length() || SALT_LENGTH == salt.length(), "Salt should be either blank or better " + SALT_LENGTH + " bytes long.");
-        return 0 == salt.length() ? new byte[0] : salt.getBytes(StandardCharsets.UTF_8);
+        Preconditions.checkState(salt.isEmpty() || SALT_LENGTH == salt.length(), "Salt should be either blank or better " + SALT_LENGTH + " bytes long.");
+        return salt.isEmpty() ? new byte[0] : salt.getBytes(StandardCharsets.UTF_8);
     }
     
     @Override

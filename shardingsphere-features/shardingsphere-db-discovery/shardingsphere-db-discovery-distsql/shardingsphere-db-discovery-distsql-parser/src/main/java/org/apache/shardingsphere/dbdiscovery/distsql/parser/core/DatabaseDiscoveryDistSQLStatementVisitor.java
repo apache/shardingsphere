@@ -164,10 +164,7 @@ public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDisc
     }
     
     private String getIdentifierValue(final ParseTree context) {
-        if (null == context) {
-            return null;
-        }
-        return new IdentifierValue(context.getText()).getValue();
+        return null == context ? null : new IdentifierValue(context.getText()).getValue();
     }
     
     @Override

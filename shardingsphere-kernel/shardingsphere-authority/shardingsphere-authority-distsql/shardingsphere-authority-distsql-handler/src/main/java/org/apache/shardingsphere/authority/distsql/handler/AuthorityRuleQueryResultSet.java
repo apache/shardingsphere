@@ -54,7 +54,7 @@ public final class AuthorityRuleQueryResultSet implements GlobalRuleDistSQLResul
     private Collection<Collection<Object>> buildData(final AuthorityRuleConfiguration ruleConfig) {
         Collection<Collection<Object>> result = new LinkedList<>();
         result.add(Arrays.asList(ruleConfig.getUsers().stream().map(each -> each.getGrantee().toString()).collect(Collectors.joining("; ")),
-                ruleConfig.getProvider().getType(), ruleConfig.getProvider().getProps().size() == 0 ? "" : ruleConfig.getProvider().getProps()));
+                ruleConfig.getProvider().getType(), ruleConfig.getProvider().getProps().isEmpty() ? "" : ruleConfig.getProvider().getProps()));
         return result;
     }
     

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
-import org.apache.shardingsphere.sharding.exception.InvalidDatetimeFormatException;
+import org.apache.shardingsphere.sharding.exception.data.InvalidDatetimeFormatException;
 
 import java.time.Instant;
 import java.time.LocalDate;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.encrypt.rewrite.condition;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.encrypt.exception.UnsupportedEncryptSQLException;
+import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptEqualCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInCondition;
 import org.apache.shardingsphere.encrypt.rule.EncryptColumn;

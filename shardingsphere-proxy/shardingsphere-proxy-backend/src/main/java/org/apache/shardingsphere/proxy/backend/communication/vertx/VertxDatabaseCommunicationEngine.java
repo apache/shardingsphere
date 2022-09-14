@@ -93,7 +93,7 @@ public final class VertxDatabaseCommunicationEngine extends DatabaseCommunicatio
     }
     
     @Override
-    public ResponseHeader execute() throws SQLException {
+    public ResponseHeader execute() {
         throw new UnsupportedSQLOperationException("VertxDatabaseCommunicationEngine.execute()");
     }
 }

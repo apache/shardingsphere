@@ -30,7 +30,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 import org.apache.shardingsphere.transaction.exception.SwitchTypeInTransactionException;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 
 /**
  * Set transaction handler.
@@ -43,7 +42,7 @@ public final class TransactionSetHandler implements ProxyBackendHandler {
     private final ConnectionSession connectionSession;
     
     @Override
-    public ResponseHeader execute() throws SQLException {
+    public ResponseHeader execute() {
         ShardingSpherePreconditions.checkState(null != sqlStatement.getScope() || !connectionSession.getTransactionStatus().isInTransaction(), new SwitchTypeInTransactionException());
         if (TransactionAccessType.READ_ONLY == sqlStatement.getAccessMode()) {
             connectionSession.setReadOnly(true);

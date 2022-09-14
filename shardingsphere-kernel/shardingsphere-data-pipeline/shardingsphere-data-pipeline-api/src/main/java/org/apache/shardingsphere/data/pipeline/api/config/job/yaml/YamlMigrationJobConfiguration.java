@@ -23,6 +23,7 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.metadata.yaml.YamlPipelineColumnMetaData;
 
 import java.util.List;
 
@@ -65,6 +66,8 @@ public final class YamlMigrationJobConfiguration implements YamlPipelineJobConfi
     private String tablesFirstDataNodes;
     
     private List<String> jobShardingDataNodes;
+    
+    private YamlPipelineColumnMetaData uniqueKeyColumn;
     
     private int concurrency = 3;
     

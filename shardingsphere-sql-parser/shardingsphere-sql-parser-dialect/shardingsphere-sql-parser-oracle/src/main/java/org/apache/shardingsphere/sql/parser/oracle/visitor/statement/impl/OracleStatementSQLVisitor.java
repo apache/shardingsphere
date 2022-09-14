@@ -515,10 +515,7 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
     }
     
     private Collection<ExpressionSegment> getExpressions(final AggregationFunctionContext ctx) {
-        if (null == ctx.expr()) {
-            return Collections.emptyList();
-        }
-        return Collections.singletonList((ExpressionSegment) visit(ctx.expr()));
+        return null == ctx.expr() ? Collections.emptyList() : Collections.singletonList((ExpressionSegment) visit(ctx.expr()));
     }
     
     private String getDistinctExpression(final AggregationFunctionContext ctx) {

@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.infra.fixture;
 
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 public final class FixtureRuleDefinitionUpdater implements RuleDefinitionUpdater<FixtureRuleStatement, FixtureRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final FixtureRuleStatement sqlStatement, final FixtureRuleConfiguration currentRuleConfig) throws DistSQLException {
+    public void checkSQLStatement(final ShardingSphereDatabase database, final FixtureRuleStatement sqlStatement, final FixtureRuleConfiguration currentRuleConfig) {
     }
     
     @Override

@@ -29,7 +29,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.XAStatement;
-import org.apache.shardingsphere.transaction.exception.StartNestedXATransactionException;
+import org.apache.shardingsphere.transaction.xa.jta.exception.XATransactionNestedBeginException;
 
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
@@ -74,7 +74,7 @@ public final class TransactionXAHandler implements ProxyBackendHandler {
                  * we have to let session occupy the thread when doing xa transaction. according to https://dev.mysql.com/doc/refman/5.7/en/xa-states.html XA and local transactions are mutually
                  * exclusive
                  */
-                ShardingSpherePreconditions.checkState(!connectionSession.getTransactionStatus().isInTransaction(), new StartNestedXATransactionException());
+                ShardingSpherePreconditions.checkState(!connectionSession.getTransactionStatus().isInTransaction(), new XATransactionNestedBeginException());
                 ResponseHeader header = backendHandler.execute();
                 connectionSession.getConnectionContext().getTransactionConnectionContext().setInTransaction(true);
                 return header;
