@@ -74,9 +74,9 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     private void checkDataSourceStates(final Map<String, DatabaseConfiguration> databaseConfigs, final RegistryCenter registryCenter, final boolean force) {
         Map<String, StorageNodeDataSource> storageNodes = registryCenter.getStorageNodeStatusService().loadStorageNodes();
         Map<String, DataSourceState> storageDataSourceStates = getStorageDataSourceStates(storageNodes);
-        databaseConfigs.forEach((key, databaseConfig) -> {
-            if (null != databaseConfig.getDataSources()) {
-                DataSourceStateManager.getInstance().initStates(key, databaseConfig.getDataSources(), storageDataSourceStates, force);
+        databaseConfigs.forEach((key, value) -> {
+            if (null != value.getDataSources()) {
+                DataSourceStateManager.getInstance().initStates(key, value.getDataSources(), storageDataSourceStates, force);
             }
         });
     }

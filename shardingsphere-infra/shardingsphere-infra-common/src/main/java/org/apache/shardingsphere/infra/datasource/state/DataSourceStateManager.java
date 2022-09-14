@@ -67,22 +67,30 @@ public final class DataSourceStateManager {
     public void initStates(final String databaseName, final Map<String, DataSource> dataSources, final Map<String, DataSourceState> storageDataSourceStates, final boolean force) {
         this.force = force;
         dataSources.forEach((key, value) -> {
-            DataSourceState storageState = storageDataSourceStates.get(getCacheKey(databaseName, key));
-            if (DataSourceState.DISABLED == storageState) {
-                dataSourceStates.put(getCacheKey(databaseName, key), storageState);
-            } else {
-                try (Connection ignored = value.getConnection()) {
-                    dataSourceStates.put(getCacheKey(databaseName, key), DataSourceState.ENABLED);
-                } catch (final SQLException ex) {
-                    if (this.force) {
-                        log.error("Data source status unavailable, ignored with the -f parameter.", ex);
-                    } else {
-                        throw new DataSourceStateException("DataSourceState", 1, "Data source status unavailable.", ex);
-                    }
-                }
-            }
+            initState(databaseName, storageDataSourceStates, key, value);
         });
         initialized = true;
+    }
+    
+    private void initState(final String databaseName, final Map<String, DataSourceState> storageDataSourceStates, final String actualDataSourceName, final DataSource dataSource) {
+        DataSourceState storageState = storageDataSourceStates.get(getCacheKey(databaseName, actualDataSourceName));
+        if (DataSourceState.DISABLED == storageState) {
+            dataSourceStates.put(getCacheKey(databaseName, actualDataSourceName), storageState);
+        } else {
+            checkState(databaseName, actualDataSourceName, dataSource);
+        }
+    }
+    
+    private void checkState(final String databaseName, final String actualDataSourceName, final DataSource dataSource) {
+        try (Connection ignored = dataSource.getConnection()) {
+            dataSourceStates.put(getCacheKey(databaseName, actualDataSourceName), DataSourceState.ENABLED);
+        } catch (final SQLException ex) {
+            if (this.force) {
+                log.error("Data source state unavailable, ignored with the -f parameter.", ex);
+            } else {
+                throw new DataSourceStateException("DataSourceState", 1, "Data source state unavailable.", ex);
+            }
+        }
     }
     
     /**
