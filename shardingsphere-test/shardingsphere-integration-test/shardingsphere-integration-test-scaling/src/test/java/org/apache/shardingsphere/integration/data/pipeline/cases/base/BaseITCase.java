@@ -159,7 +159,7 @@ public abstract class BaseITCase {
         } catch (final SQLException ex) {
             throw new IllegalStateException(ex);
         }
-        sourceDataSource = StorageContainerUtil.generateDataSource(getActualJdbcUrlTemplate(DS_0, false), username, password);
+        sourceDataSource = StorageContainerUtil.generateDataSource(appendBatchInsertParam(getActualJdbcUrlTemplate(DS_0, false)), username, password);
         proxyDataSource = StorageContainerUtil.generateDataSource(containerComposer.getProxyJdbcUrl(PROXY_DATABASE), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD);
     }
     
