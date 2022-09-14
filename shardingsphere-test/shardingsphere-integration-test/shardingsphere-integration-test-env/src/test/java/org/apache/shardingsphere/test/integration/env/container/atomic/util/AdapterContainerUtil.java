@@ -33,7 +33,6 @@ public class AdapterContainerUtil {
      * @return adapter container image
      */
     public static String getAdapterContainerImage() {
-        String result = System.getProperty("it.docker.proxy.image");
-        return result == null ? ProxyContainerConstants.PROXY_CONTAINER_IMAGE : result;
+        return System.getProperty("it.docker.proxy.image", ProxyContainerConstants.PROXY_CONTAINER_IMAGE);
     }
 }
