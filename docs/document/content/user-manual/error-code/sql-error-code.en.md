@@ -93,6 +93,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 44000     | 18002       | Altered process configuration does not exist |
 | HY000     | 18020       | Failed to get DDL for table \`%s\` |
 | HY000     | 18080       | Can not find pipeline job \`%s\` |
+| HY000     | 18081       | Job has already started |
 
 ## Feature Exception
 
