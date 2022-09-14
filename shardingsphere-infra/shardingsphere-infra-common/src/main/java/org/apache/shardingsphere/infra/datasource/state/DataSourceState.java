@@ -63,8 +63,8 @@ public enum DataSourceState {
      * @return data source state
      */
     public static DataSourceState getDataSourceState(final String state) {
-        if (!Strings.isNullOrEmpty(state) && DATA_SOURCE_STATES.containsKey(state)) {
-            return DATA_SOURCE_STATES.get(state);
+        if (!Strings.isNullOrEmpty(state) && DATA_SOURCE_STATES.containsKey(state.toLowerCase())) {
+            return DATA_SOURCE_STATES.get(state.toLowerCase());
         }
         throw new IllegalArgumentException("Illegal data source state: " + state);
     }

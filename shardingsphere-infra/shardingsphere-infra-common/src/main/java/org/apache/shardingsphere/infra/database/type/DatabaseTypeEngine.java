@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.database.type;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
@@ -34,6 +35,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Database type engine.
@@ -64,7 +66,7 @@ public final class DatabaseTypeEngine {
      */
     public static DatabaseType getProtocolType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs, final ConfigurationProperties props) {
         Optional<DatabaseType> configuredDatabaseType = findConfiguredDatabaseType(props);
-        return configuredDatabaseType.orElseGet(() -> getDatabaseType(databaseConfigs));
+        return configuredDatabaseType.orElseGet(() -> getDatabaseType(getEnabledDataSources(databaseConfigs)));
     }
     
     /**
@@ -74,21 +76,15 @@ public final class DatabaseTypeEngine {
      * @return storage type
      */
     public static DatabaseType getStorageType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
-        return getDatabaseType(databaseConfigs);
+        return getDatabaseType(getEnabledDataSources(databaseConfigs));
     }
     
-    private static DatabaseType getDatabaseType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
-        String databaseName = "";
-        Map<String, DataSource> dataSources = Collections.emptyMap();
-        for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigs.entrySet()) {
-            DatabaseConfiguration value = entry.getValue();
-            if (!value.getDataSources().isEmpty()) {
-                databaseName = entry.getKey();
-                dataSources = value.getDataSources();
-                break;
-            }
-        }
-        return getDatabaseType(DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, dataSources).values());
+    private static Collection<DataSource> getEnabledDataSources(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
+        Map<String, ? extends DatabaseConfiguration> databaseConfigMap = databaseConfigs.entrySet().stream()
+                .filter(each -> !each.getValue().getDataSources().isEmpty()).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+        String databaseName = databaseConfigMap.isEmpty() ? "" : databaseConfigMap.entrySet().iterator().next().getKey();
+        return Strings.isNullOrEmpty(databaseName) ? Collections.emptyList() 
+                : DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, databaseConfigMap.get(databaseName).getDataSources()).values();
     }
     
     /**

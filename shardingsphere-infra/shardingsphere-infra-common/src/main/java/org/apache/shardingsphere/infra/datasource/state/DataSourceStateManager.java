@@ -95,7 +95,7 @@ public final class DataSourceStateManager {
     
     /**
      * Get enabled data sources.
-     * 
+     *
      * @param databaseName database name
      * @param databaseConfig database config
      * @return enabled data sources
@@ -116,19 +116,12 @@ public final class DataSourceStateManager {
             return dataSources;
         }
         Map<String, DataSource> result = new LinkedHashMap<>(dataSources.size(), 1);
-        if (force) {
-            dataSources.forEach((key, value) -> {
-                if (DataSourceState.ENABLED == dataSourceStates.get(getCacheKey(databaseName, key))) {
-                    result.put(key, value);
-                }
-            });
-        } else {
-            dataSources.forEach((key, value) -> {
-                if (DataSourceState.DISABLED != dataSourceStates.get(getCacheKey(databaseName, key))) {
-                    result.put(key, value);
-                }
-            });
-        }
+        dataSources.forEach((key, value) -> {
+            DataSourceState dataSourceState = dataSourceStates.get(getCacheKey(databaseName, key));
+            if (force ? DataSourceState.ENABLED == dataSourceState : DataSourceState.DISABLED != dataSourceState) {
+                result.put(key, value);
+            }
+        });
         return result;
     }
     
