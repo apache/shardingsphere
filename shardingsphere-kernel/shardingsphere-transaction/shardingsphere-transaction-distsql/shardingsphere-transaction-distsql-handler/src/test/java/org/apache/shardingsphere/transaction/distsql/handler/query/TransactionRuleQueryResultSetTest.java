@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.transaction.distsql.handler.query;
 
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.distsql.parser.statement.queryable.ShowTransactionRuleStatement;
@@ -24,6 +25,7 @@ import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Test;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.Properties;
@@ -54,7 +56,7 @@ public final class TransactionRuleQueryResultSetTest {
     @Test
     public void assertExecuteWithLocal() {
         TransactionRuleQueryResultSet resultSet = new TransactionRuleQueryResultSet();
-        ShardingSphereRuleMetaData ruleMetaData = mockGlobalRuleMetaData("LOCAL", null, null);
+        ShardingSphereRuleMetaData ruleMetaData = mockGlobalRuleMetaData("LOCAL", null, new Properties());
         resultSet.init(ruleMetaData, mock(ShowTransactionRuleStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(3));
@@ -63,10 +65,9 @@ public final class TransactionRuleQueryResultSetTest {
     }
     
     private ShardingSphereRuleMetaData mockGlobalRuleMetaData(final String defaultType, final String providerType, final Properties props) {
-        TransactionRule transactionRule = mock(TransactionRule.class);
-        when(transactionRule.getConfiguration()).thenReturn(createAuthorityRuleConfiguration(defaultType, providerType, props));
+        TransactionRule rule = new TransactionRule(createAuthorityRuleConfiguration(defaultType, providerType, props), Collections.emptyMap(), mock(InstanceContext.class));
         ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class);
-        when(result.findSingleRule(TransactionRule.class)).thenReturn(Optional.of(transactionRule));
+        when(result.findSingleRule(TransactionRule.class)).thenReturn(Optional.of(rule));
         return result;
     }
     

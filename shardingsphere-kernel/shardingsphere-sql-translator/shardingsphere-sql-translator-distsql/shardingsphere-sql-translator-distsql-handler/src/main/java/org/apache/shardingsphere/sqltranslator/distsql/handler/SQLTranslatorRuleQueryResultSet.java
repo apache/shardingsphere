@@ -28,7 +28,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Optional;
 
 /**
  * Query result set for SQL translator rule.
@@ -43,8 +42,7 @@ public final class SQLTranslatorRuleQueryResultSet implements GlobalRuleDistSQLR
     
     @Override
     public void init(final ShardingSphereRuleMetaData ruleMetaData, final SQLStatement sqlStatement) {
-        Optional<SQLTranslatorRule> rule = ruleMetaData.findSingleRule(SQLTranslatorRule.class);
-        rule.ifPresent(optional -> data = buildData(optional.getConfiguration()).iterator());
+        ruleMetaData.findSingleRule(SQLTranslatorRule.class).ifPresent(optional -> data = buildData(optional.getConfiguration()).iterator());
     }
     
     private Collection<Collection<Object>> buildData(final SQLTranslatorRuleConfiguration ruleConfig) {

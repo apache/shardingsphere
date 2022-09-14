@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.distsql.query.GlobalRuleDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.util.props.PropertiesConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.distsql.parser.statement.queryable.ShowTransactionRuleStatement;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
@@ -45,11 +44,12 @@ public final class TransactionRuleQueryResultSet implements GlobalRuleDistSQLRes
     
     @Override
     public void init(final ShardingSphereRuleMetaData ruleMetaData, final SQLStatement sqlStatement) {
-        ruleMetaData.findSingleRule(TransactionRule.class).ifPresent(optional -> data = buildData(optional.getConfiguration()).iterator());
+        ruleMetaData.findSingleRule(TransactionRule.class).ifPresent(optional -> data = buildData(optional).iterator());
     }
     
-    private Collection<Collection<Object>> buildData(final TransactionRuleConfiguration ruleConfig) {
-        return Collections.singleton(Arrays.asList(ruleConfig.getDefaultType(), ruleConfig.getProviderType(), null != ruleConfig.getProps() ? PropertiesConverter.convert(ruleConfig.getProps()) : ""));
+    private Collection<Collection<Object>> buildData(final TransactionRule rule) {
+        return Collections.singleton(Arrays.asList(
+                rule.getDefaultType().name(), null != rule.getProviderType() ? rule.getProviderType() : "", !rule.getProps().isEmpty() ? PropertiesConverter.convert(rule.getProps()) : ""));
     }
     
     @Override
