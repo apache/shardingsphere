@@ -128,7 +128,7 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
     protected void addMigrationProcessConfig() throws SQLException {
         if (ENV.getItEnvType() == ITEnvTypeEnum.NATIVE) {
             try {
-                proxyExecuteWithLog("DROP MIGRATION PROCESS CONFIGURATION '/read'", 1);
+                proxyExecuteWithLog("DROP MIGRATION PROCESS CONFIGURATION '/'", 0);
             } catch (final SQLException ex) {
                 log.warn("Drop migration process configuration failed, maybe it's not exist. error msg={}", ex.getMessage());
             }
