@@ -152,7 +152,7 @@ public final class ShardingTableRuleStatementConverter {
         Optional.ofNullable(tableRuleSegment.getKeyGenerateStrategySegment())
                 .ifPresent(optional -> result.setKeyGenerateStrategy(createKeyGenerateStrategyConfiguration(tableRuleSegment.getLogicTable(), optional)));
         Optional.ofNullable(tableRuleSegment.getAuditStrategySegment())
-            .ifPresent(optional -> result.setAuditStrategy(createShardingAuditStrategyConfiguration(optional)));
+                .ifPresent(optional -> result.setAuditStrategy(createShardingAuditStrategyConfiguration(optional)));
         return result;
     }
     
