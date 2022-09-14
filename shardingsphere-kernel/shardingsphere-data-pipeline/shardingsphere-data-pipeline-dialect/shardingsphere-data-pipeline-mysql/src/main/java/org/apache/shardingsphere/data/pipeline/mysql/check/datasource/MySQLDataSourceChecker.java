@@ -19,7 +19,9 @@ package org.apache.shardingsphere.data.pipeline.mysql.check.datasource;
 
 import org.apache.shardingsphere.data.pipeline.core.check.datasource.AbstractDataSourceChecker;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobPrepareFailedException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithInvalidSourceDataSourceException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithoutEnoughPrivilegeException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -102,12 +104,9 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
         try (PreparedStatement preparedStatement = connection.prepareStatement(SHOW_VARIABLES_SQL)) {
             preparedStatement.setString(1, key);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (!resultSet.next() && BINLOG_ROW_IMAGE.equalsIgnoreCase(key)) {
-                    return;
-                }
-                String actualValue = resultSet.getString(2);
-                if (!toBeCheckedValue.equalsIgnoreCase(actualValue)) {
-                    throw new PipelineJobPrepareFailedException(String.format("Source data source required `%s = %s`, now is `%s`", key, toBeCheckedValue, actualValue));
+                if (resultSet.next() || !BINLOG_ROW_IMAGE.equalsIgnoreCase(key)) {
+                    String actualValue = resultSet.getString(2);
+                    ShardingSpherePreconditions.checkState(toBeCheckedValue.equalsIgnoreCase(actualValue), new PrepareJobWithInvalidSourceDataSourceException(key, toBeCheckedValue, actualValue));
                 }
             }
         }
