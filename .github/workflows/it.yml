@@ -141,7 +141,7 @@ jobs:
         adapter: [ proxy, jdbc ]
         mode: [ Standalone, Cluster ]
         database: [ MySQL, PostgreSQL ]
-        scenario: [ db, tbl, encrypt, readwrite_splitting, shadow ]
+        scenario: [ db, encrypt, readwrite_splitting, shadow ]
         exclude:
           - adapter: jdbc
             mode: Cluster
