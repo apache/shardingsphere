@@ -33,11 +33,6 @@ public final class JDBCInstanceMetaDataBuilder implements InstanceMetaDataBuilde
     }
     
     @Override
-    public InstanceMetaData build(final int port, final boolean force) {
-        return new JDBCInstanceMetaData(UUID.randomUUID().toString(), force);
-    }
-    
-    @Override
     public String getType() {
         return "JDBC";
     }

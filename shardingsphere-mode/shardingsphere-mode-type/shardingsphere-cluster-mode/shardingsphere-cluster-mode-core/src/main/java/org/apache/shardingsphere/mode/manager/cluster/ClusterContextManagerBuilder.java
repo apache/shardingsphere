@@ -63,7 +63,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         if (persistRepository instanceof InstanceContextAware) {
             ((InstanceContextAware) persistRepository).setInstanceContext(instanceContext);
         }
-        checkDataSourceStates(parameter.getDatabaseConfigs(), registryCenter, parameter.getInstanceMetaData().isForce());
+        checkDataSourceStates(parameter.getDatabaseConfigs(), registryCenter, parameter.isForce());
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, parameter, instanceContext);
         persistMetaData(metaDataContexts);
         ContextManager result = new ContextManager(metaDataContexts, instanceContext);

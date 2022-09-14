@@ -32,18 +32,9 @@ public final class JDBCInstanceMetaData implements InstanceMetaData {
     
     private final String ip;
     
-    private final boolean force;
-    
     public JDBCInstanceMetaData(final String id) {
         this.id = id;
         ip = IpUtils.getIp();
-        this.force = false;
-    }
-    
-    public JDBCInstanceMetaData(final String id, final boolean force) {
-        this.id = id;
-        ip = IpUtils.getIp();
-        this.force = force;
     }
     
     @Override

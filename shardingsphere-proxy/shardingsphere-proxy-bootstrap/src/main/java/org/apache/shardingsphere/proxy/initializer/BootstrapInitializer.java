@@ -64,14 +64,14 @@ public final class BootstrapInitializer {
     private ContextManager createContextManager(final ProxyConfiguration proxyConfig, final ModeConfiguration modeConfig, final int port, final boolean force) throws SQLException {
         ContextManagerBuilderParameter parameter = new ContextManagerBuilderParameter(modeConfig, proxyConfig.getDatabaseConfigurations(),
                 proxyConfig.getGlobalConfiguration().getRules(), proxyConfig.getGlobalConfiguration().getProperties(), proxyConfig.getGlobalConfiguration().getLabels(),
-                createInstanceMetaData(proxyConfig, port, force));
+                createInstanceMetaData(proxyConfig, port), force);
         return ContextManagerBuilderFactory.getInstance(modeConfig).build(parameter);
     }
     
-    private InstanceMetaData createInstanceMetaData(final ProxyConfiguration proxyConfig, final int port, final boolean force) {
+    private InstanceMetaData createInstanceMetaData(final ProxyConfiguration proxyConfig, final int port) {
         String instanceType = proxyConfig.getGlobalConfiguration().getProperties().getProperty(ConfigurationPropertyKey.PROXY_INSTANCE_TYPE.getKey(),
                 ConfigurationPropertyKey.PROXY_INSTANCE_TYPE.getDefaultValue());
-        return InstanceMetaDataBuilderFactory.create(instanceType, port, force);
+        return InstanceMetaDataBuilderFactory.create(instanceType, port);
     }
     
     private void contextManagerInitializedCallback(final ModeConfiguration modeConfig, final ContextManager contextManager) {

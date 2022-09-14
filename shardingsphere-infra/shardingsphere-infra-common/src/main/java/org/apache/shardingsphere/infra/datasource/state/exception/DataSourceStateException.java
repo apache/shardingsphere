@@ -26,10 +26,6 @@ public final class DataSourceStateException extends ShardingSphereServerExceptio
     
     private static final long serialVersionUID = -8058761885303180333L;
     
-    public DataSourceStateException(final String errorCategory, final int errorCode, final String message) {
-        super(errorCategory, errorCode, message);
-    }
-    
     public DataSourceStateException(final String errorCategory, final int errorCode, final String message, final Exception cause) {
         super(errorCategory, errorCode, message, cause);
     }

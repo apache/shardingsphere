@@ -83,7 +83,7 @@ public final class DatabaseTypeEngine {
         Map<String, ? extends DatabaseConfiguration> databaseConfigMap = databaseConfigs.entrySet().stream()
                 .filter(each -> !each.getValue().getDataSources().isEmpty()).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
         String databaseName = databaseConfigMap.isEmpty() ? "" : databaseConfigMap.entrySet().iterator().next().getKey();
-        return Strings.isNullOrEmpty(databaseName) ? Collections.emptyList() 
+        return Strings.isNullOrEmpty(databaseName) ? Collections.emptyList()
                 : DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, databaseConfigMap.get(databaseName).getDataSources()).values();
     }
     
