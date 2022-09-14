@@ -20,10 +20,11 @@ package org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable;
 import lombok.Getter;
 import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.impl.AbstractSchema;
-import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
-import org.apache.shardingsphere.sqlfederation.optimizer.metadata.statistic.FederationStatistic;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
+import org.apache.shardingsphere.sqlfederation.optimizer.metadata.filter.FilterableTable;
+import org.apache.shardingsphere.sqlfederation.optimizer.metadata.statistic.FederationStatistic;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -46,8 +47,9 @@ public final class TranslatableSchema extends AbstractSchema {
     private Map<String, Table> createTableMap(final ShardingSphereSchema schema, final TableScanExecutor executor) {
         Map<String, Table> result = new LinkedHashMap<>(schema.getTables().size(), 1);
         for (ShardingSphereTable each : schema.getTables().values()) {
+            // TODO replace FilterableTable with FederationTranslatableTable
             // TODO implement table statistic logic after using custom operators
-            result.put(each.getName(), new FederationTranslatableTable(each, executor, new FederationStatistic()));
+            result.put(each.getName(), new FilterableTable(each, executor, new FederationStatistic()));
         }
         return result;
     }
