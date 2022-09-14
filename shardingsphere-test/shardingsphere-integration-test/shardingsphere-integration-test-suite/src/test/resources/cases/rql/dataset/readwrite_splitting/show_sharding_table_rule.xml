@@ -31,6 +31,8 @@
         <column name="key_generate_column" />
         <column name="key_generator_type" />
         <column name="key_generator_props" />
+        <column name="auditor_names" />
+        <column name="allow_hint_disable" />
     </metadata>
-    <row values="t_order| write-read-ds.t_order| | | | | | | | | | | | " />
+    <row values="t_order| write-read-ds.t_order| | | | | | | | | | | | | | " />
 </dataset>
