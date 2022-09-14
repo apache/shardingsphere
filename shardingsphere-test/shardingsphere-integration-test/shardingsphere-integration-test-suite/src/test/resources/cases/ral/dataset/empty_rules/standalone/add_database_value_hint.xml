@@ -24,5 +24,5 @@
     </metadata>
     <row values="t_single_table| | | databases_tables" />
     <row values="t_user| | | databases_tables" />
-    <row values="t_user_item| 100| | databases_tables" />
+    <row values="t_user_item| 100 | | databases_tables" />
 </dataset>
