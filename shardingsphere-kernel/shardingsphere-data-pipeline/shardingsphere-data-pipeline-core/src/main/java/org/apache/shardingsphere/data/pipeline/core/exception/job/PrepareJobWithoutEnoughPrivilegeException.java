@@ -21,13 +21,13 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLExcepti
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Target table not empty when prepare migration exception.
+ * Prepare job without enough privilege exception.
  */
-public final class TargetTableNotEmptyWhenPrepareMigrationException extends PipelineSQLException {
+public final class PrepareJobWithoutEnoughPrivilegeException extends PipelineSQLException {
     
     private static final long serialVersionUID = -8462039913248251254L;
     
-    public TargetTableNotEmptyWhenPrepareMigrationException(final String tableName) {
-        super(XOpenSQLState.GENERAL_ERROR, 84, "Target table `%s` is not empty before migration", tableName);
+    public PrepareJobWithoutEnoughPrivilegeException() {
+        super(XOpenSQLState.GENERAL_ERROR, 85, "Source data source is lack of REPLICATION SLAVE, REPLICATION CLIENT ON *.* privileges");
     }
 }
