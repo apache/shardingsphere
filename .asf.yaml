@@ -39,6 +39,7 @@ github:
     - dba
     - oltp
     - bigdata
+    - hacktoberfest
   features:
     issues: true
     projects: true

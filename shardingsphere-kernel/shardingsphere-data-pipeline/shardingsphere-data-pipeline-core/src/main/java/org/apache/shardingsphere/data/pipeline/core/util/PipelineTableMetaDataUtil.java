@@ -27,8 +27,9 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumn
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineIndexMetaData;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
-import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobCreationException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.SplitPipelineJobException;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -106,27 +107,20 @@ public final class PipelineTableMetaDataUtil {
     }
     
     private static PipelineColumnMetaData mustGetAnAppropriateUniqueKeyColumn(final PipelineTableMetaData tableMetaData, final String tableName) {
-        if (null == tableMetaData) {
-            throw new PipelineJobCreationException(String.format("Can not split range for table %s, reason: can not get table metadata ", tableName));
-        }
+        ShardingSpherePreconditions.checkNotNull(tableMetaData, new SplitPipelineJobException(tableName, "can not get table metadata"));
         List<String> primaryKeys = tableMetaData.getPrimaryKeyColumns();
-        if (primaryKeys.size() > 1) {
-            throw new PipelineJobCreationException(String.format("Can not split range for table %s, reason: primary key is union primary", tableName));
-        }
         if (1 == primaryKeys.size()) {
             return tableMetaData.getColumnMetaData(tableMetaData.getPrimaryKeyColumns().get(0));
         }
+        ShardingSpherePreconditions.checkState(primaryKeys.isEmpty(), new SplitPipelineJobException(tableName, "primary key is union primary"));
         Collection<PipelineIndexMetaData> uniqueIndexes = tableMetaData.getUniqueIndexes();
-        if (uniqueIndexes.isEmpty()) {
-            throw new PipelineJobCreationException(String.format("Can not split range for table %s, reason: no primary key or unique index", tableName));
-        }
+        ShardingSpherePreconditions.checkState(!uniqueIndexes.isEmpty(), new SplitPipelineJobException(tableName, "no primary key or unique index"));
         if (1 == uniqueIndexes.size() && 1 == uniqueIndexes.iterator().next().getColumns().size()) {
             PipelineColumnMetaData column = uniqueIndexes.iterator().next().getColumns().get(0);
             if (!column.isNullable()) {
                 return column;
             }
         }
-        throw new PipelineJobCreationException(
-                String.format("Can not split range for table %s, reason: table contains multiple unique index or unique index contains nullable/multiple column(s)", tableName));
+        throw new SplitPipelineJobException(tableName, "table contains multiple unique index or unique index contains nullable/multiple column(s)");
     }
 }

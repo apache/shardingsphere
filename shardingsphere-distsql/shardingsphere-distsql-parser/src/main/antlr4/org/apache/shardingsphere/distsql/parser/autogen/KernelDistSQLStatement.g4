@@ -53,7 +53,6 @@ execute
     | showRulesUsedResource
     | importDatabaseConfiguration
     | convertYamlConfiguration
-    | showSQLTranslatorRule
     | showMigrationProcessConfiguration
     | createMigrationProcessConfiguration
     | alterMigrationProcessConfiguration

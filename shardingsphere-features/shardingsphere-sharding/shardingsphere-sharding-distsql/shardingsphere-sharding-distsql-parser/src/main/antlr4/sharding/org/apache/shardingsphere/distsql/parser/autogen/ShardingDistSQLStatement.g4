@@ -33,6 +33,7 @@ execute
     | dropShardingAlgorithm
     | showShardingTableRulesUsedAlgorithm
     | showShardingTableRulesUsedKeyGenerator
+    | showShardingTableRulesUsedAuditor
     | showShardingTableRules
     | showShardingBindingTableRules
     | showShardingBroadcastTableRules

@@ -17,18 +17,17 @@
 
 package org.apache.shardingsphere.data.pipeline.core.exception.job;
 
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+
 /**
  * Pipeline job execution exception.
  */
-public final class PipelineJobExecutionException extends RuntimeException {
+public final class PipelineJobExecutionException extends PipelineSQLException {
     
-    private static final long serialVersionUID = 1797495940081148743L;
+    private static final long serialVersionUID = -5530453461378051166L;
     
-    public PipelineJobExecutionException(final String message) {
-        super(message);
-    }
-    
-    public PipelineJobExecutionException(final String message, final Throwable cause) {
-        super(message, cause);
+    public PipelineJobExecutionException(final String taskId, final Throwable cause) {
+        super(XOpenSQLState.GENERAL_ERROR, 92, "Task `%s` execute failed", taskId, cause.getMessage());
     }
 }

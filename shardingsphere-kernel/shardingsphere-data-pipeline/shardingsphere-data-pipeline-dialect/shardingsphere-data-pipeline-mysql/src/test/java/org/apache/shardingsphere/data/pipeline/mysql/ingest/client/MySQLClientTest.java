@@ -22,7 +22,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.concurrent.Promise;
-import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobExecutionException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.BinlogSyncChannelAlreadyClosedException;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.binlog.MySQLComBinlogDumpCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.binlog.MySQLComRegisterSlaveCommandPacket;
@@ -150,7 +150,7 @@ public final class MySQLClientTest {
         assertFalse(channel.isOpen());
     }
     
-    @Test(expected = PipelineJobExecutionException.class)
+    @Test(expected = BinlogSyncChannelAlreadyClosedException.class)
     public void assertPollFailed() throws NoSuchFieldException, IllegalAccessException {
         ReflectionUtil.setFieldValue(mysqlClient, "channel", channel);
         ReflectionUtil.setFieldValue(mysqlClient, "running", false);
