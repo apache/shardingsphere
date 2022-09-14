@@ -20,15 +20,15 @@
         <column name="data_source_name" />
         <column name="actual_sql" />
     </metadata>
-    <row values="write_ds_0| SELECT * FROM `t_user_item_0` UNION ALL SELECT * FROM `t_user_item_10` UNION ALL SELECT * FROM `t_user_item_20` UNION ALL SELECT * FROM `t_user_item_30` WHERE CAST(`user_id` AS SIGNED) = 1" />
-    <row values="write_ds_1| SELECT * FROM `t_user_item_1` UNION ALL SELECT * FROM `t_user_item_11` UNION ALL SELECT * FROM `t_user_item_21` UNION ALL SELECT * FROM `t_user_item_31` WHERE CAST(`user_id` AS SIGNED) = 1" />
-    <row values="write_ds_2| SELECT * FROM `t_user_item_2` UNION ALL SELECT * FROM `t_user_item_12` UNION ALL SELECT * FROM `t_user_item_22` UNION ALL SELECT * FROM `t_user_item_32` WHERE CAST(`user_id` AS SIGNED) = 1" />
-    <row values="write_ds_3| SELECT * FROM `t_user_item_3` UNION ALL SELECT * FROM `t_user_item_13` UNION ALL SELECT * FROM `t_user_item_23` UNION ALL SELECT * FROM `t_user_item_33` WHERE CAST(`user_id` AS SIGNED) = 1" />
-    <row values="write_ds_4| SELECT * FROM `t_user_item_4` UNION ALL SELECT * FROM `t_user_item_14` UNION ALL SELECT * FROM `t_user_item_24` UNION ALL SELECT * FROM `t_user_item_34` WHERE CAST(`user_id` AS SIGNED) = 1" />
-    <row values="write_ds_5| SELECT * FROM `t_user_item_5` UNION ALL SELECT * FROM `t_user_item_15` UNION ALL SELECT * FROM `t_user_item_25` UNION ALL SELECT * FROM `t_user_item_35` WHERE CAST(`user_id` AS SIGNED) = 1" />
-    <row values="write_ds_6| SELECT * FROM `t_user_item_6` UNION ALL SELECT * FROM `t_user_item_16` UNION ALL SELECT * FROM `t_user_item_26` UNION ALL SELECT * FROM `t_user_item_36` WHERE CAST(`user_id` AS SIGNED) = 1" />
-    <row values="write_ds_7| SELECT * FROM `t_user_item_7` UNION ALL SELECT * FROM `t_user_item_17` UNION ALL SELECT * FROM `t_user_item_27` UNION ALL SELECT * FROM `t_user_item_37` WHERE CAST(`user_id` AS SIGNED) = 1" />
-    <row values="write_ds_8| SELECT * FROM `t_user_item_8` UNION ALL SELECT * FROM `t_user_item_18` UNION ALL SELECT * FROM `t_user_item_28` UNION ALL SELECT * FROM `t_user_item_38` WHERE CAST(`user_id` AS SIGNED) = 1" />
-    <row values="write_ds_9| SELECT * FROM `t_user_item_9` UNION ALL SELECT * FROM `t_user_item_19` UNION ALL SELECT * FROM `t_user_item_29` UNION ALL SELECT * FROM `t_user_item_39` WHERE CAST(`user_id` AS SIGNED) = 1" />
+    <row values="write_ds_0| SELECT * FROM `t_user_item_0` UNION ALL SELECT * FROM `t_user_item_10` UNION ALL SELECT * FROM `t_user_item_20` UNION ALL SELECT * FROM `t_user_item_30`" />
+    <row values="write_ds_1| SELECT * FROM `t_user_item_1` UNION ALL SELECT * FROM `t_user_item_11` UNION ALL SELECT * FROM `t_user_item_21` UNION ALL SELECT * FROM `t_user_item_31`" />
+    <row values="write_ds_2| SELECT * FROM `t_user_item_2` UNION ALL SELECT * FROM `t_user_item_12` UNION ALL SELECT * FROM `t_user_item_22` UNION ALL SELECT * FROM `t_user_item_32`" />
+    <row values="write_ds_3| SELECT * FROM `t_user_item_3` UNION ALL SELECT * FROM `t_user_item_13` UNION ALL SELECT * FROM `t_user_item_23` UNION ALL SELECT * FROM `t_user_item_33`" />
+    <row values="write_ds_4| SELECT * FROM `t_user_item_4` UNION ALL SELECT * FROM `t_user_item_14` UNION ALL SELECT * FROM `t_user_item_24` UNION ALL SELECT * FROM `t_user_item_34`" />
+    <row values="write_ds_5| SELECT * FROM `t_user_item_5` UNION ALL SELECT * FROM `t_user_item_15` UNION ALL SELECT * FROM `t_user_item_25` UNION ALL SELECT * FROM `t_user_item_35`" />
+    <row values="write_ds_6| SELECT * FROM `t_user_item_6` UNION ALL SELECT * FROM `t_user_item_16` UNION ALL SELECT * FROM `t_user_item_26` UNION ALL SELECT * FROM `t_user_item_36`" />
+    <row values="write_ds_7| SELECT * FROM `t_user_item_7` UNION ALL SELECT * FROM `t_user_item_17` UNION ALL SELECT * FROM `t_user_item_27` UNION ALL SELECT * FROM `t_user_item_37`" />
+    <row values="write_ds_8| SELECT * FROM `t_user_item_8` UNION ALL SELECT * FROM `t_user_item_18` UNION ALL SELECT * FROM `t_user_item_28` UNION ALL SELECT * FROM `t_user_item_38`" />
+    <row values="write_ds_9| SELECT * FROM `t_user_item_9` UNION ALL SELECT * FROM `t_user_item_19` UNION ALL SELECT * FROM `t_user_item_29` UNION ALL SELECT * FROM `t_user_item_39`" />
     <row values="read_ds_0| SELECT * FROM `t_single_table`" />
 </dataset>
