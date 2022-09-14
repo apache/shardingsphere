@@ -31,7 +31,6 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.sql.ParseDist
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.sql.PreviewHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,9 +54,8 @@ public final class RULBackendHandlerFactory {
      * @param sqlStatement RUL statement
      * @param connectionSession connection session
      * @return created instance
-     * @throws SQLException SQL exception
      */
-    public static ProxyBackendHandler newInstance(final RULStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
+    public static ProxyBackendHandler newInstance(final RULStatement sqlStatement, final ConnectionSession connectionSession) {
         return createRULBackendHandler(sqlStatement, connectionSession);
     }
     

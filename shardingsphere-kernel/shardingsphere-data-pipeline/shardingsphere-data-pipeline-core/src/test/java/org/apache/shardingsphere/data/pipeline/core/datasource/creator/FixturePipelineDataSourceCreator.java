@@ -18,12 +18,11 @@
 package org.apache.shardingsphere.data.pipeline.core.datasource.creator;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 
 public final class FixturePipelineDataSourceCreator implements PipelineDataSourceCreator {
     
     @Override
-    public DataSource createPipelineDataSource(final Object pipelineDataSourceConfig) throws SQLException {
+    public DataSource createPipelineDataSource(final Object pipelineDataSourceConfig) {
         return null;
     }
     

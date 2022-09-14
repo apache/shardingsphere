@@ -3478,3 +3478,7 @@ setMaxPdbSnapshotsClause
     : SET maxPdbSnapshots EQ_ maxNumberOfSnapshots
     ;
 
+dropIndexType
+    : DROP INDEXTYPE indexTypeName FORCE?
+    ;
+

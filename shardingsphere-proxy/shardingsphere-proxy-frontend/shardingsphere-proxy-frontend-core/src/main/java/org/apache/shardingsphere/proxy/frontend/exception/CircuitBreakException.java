@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.proxy.frontend.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
+import org.apache.shardingsphere.infra.exception.ConnectionSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Circuit break exception.
  */
-public final class CircuitBreakException extends KernelSQLException {
+public final class CircuitBreakException extends ConnectionSQLException {
     
     private static final long serialVersionUID = 6339672680026286798L;
     
     public CircuitBreakException() {
-        super(XOpenSQLState.GENERAL_WARNING, 0, "Circuit break open, the request has been ignored");
+        super(XOpenSQLState.GENERAL_WARNING, 10, "Circuit break open, the request has been ignored");
     }
 }

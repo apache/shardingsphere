@@ -55,7 +55,7 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
         int executeCount = 0;
         while (executeCount < executeCountLimit && !Thread.currentThread().isInterrupted()) {
             Object orderId = insertOrder();
-            if (executeCount % 2 == 0) {
+            if (0 == executeCount % 2) {
                 jdbcTemplate.update(prefixSchema("DELETE FROM ${schema}t_order_copy WHERE order_id = ?", schema), orderId);
             } else {
                 updateOrderByPrimaryKey(orderId);
@@ -72,7 +72,7 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
     
     private Object insertOrder() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        String status = random.nextInt() % 2 == 0 ? null : "NOT-NULL";
+        String status = 0 == random.nextInt() % 2 ? null : "NOT-NULL";
         Object[] orderInsertDate = new Object[]{KEY_GENERATE_ALGORITHM.generateKey(), random.nextInt(0, 6), status};
         jdbcTemplate.update(prefixSchema("INSERT INTO ${schema}t_order_copy (order_id,user_id,status) VALUES (?, ?, ?)", schema), orderInsertDate);
         return orderInsertDate[0];
@@ -80,7 +80,7 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
     
     private Object insertOrderItem() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        String status = random.nextInt() % 2 == 0 ? null : "NOT-NULL";
+        String status = 0 == random.nextInt() % 2 ? null : "NOT-NULL";
         Object[] orderInsertItemDate = new Object[]{KEY_GENERATE_ALGORITHM.generateKey(), ScalingCaseHelper.generateSnowflakeKey(), random.nextInt(0, 6), status};
         jdbcTemplate.update(prefixSchema("INSERT INTO ${schema}t_order_item(item_id,order_id,user_id,status) VALUES(?,?,?,?)", schema), orderInsertItemDate);
         return orderInsertItemDate[0];

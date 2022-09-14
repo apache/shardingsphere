@@ -18,13 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshTableMetadataStatement;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshTableMetadataStatement;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
 
 /**
@@ -33,7 +32,7 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALB
 public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandler<RefreshTableMetadataStatement> {
     
     @Override
-    protected void update(final ContextManager contextManager) throws DistSQLException {
+    protected void update(final ContextManager contextManager) {
         String databaseName = getDatabaseName();
         String schemaName = getSchemaName(databaseName);
         if (getSqlStatement().getResourceName().isPresent()) {

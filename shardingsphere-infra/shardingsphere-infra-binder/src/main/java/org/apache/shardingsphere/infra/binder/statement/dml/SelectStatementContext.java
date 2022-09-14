@@ -43,6 +43,7 @@ import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSel
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.SubqueryType;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
@@ -136,9 +137,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
             throw new NoDatabaseSelectedException();
         }
         ShardingSphereDatabase database = databases.get(databaseName.toLowerCase());
-        if (null == database) {
-            throw new UnknownDatabaseException(databaseName);
-        }
+        ShardingSpherePreconditions.checkNotNull(database, new UnknownDatabaseException(databaseName));
         return database.getSchemas();
     }
     
@@ -162,7 +161,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     /**
      * Judge whether contains having or not.
-     * 
+     *
      * @return whether contains having or not
      */
     public boolean isContainsHaving() {

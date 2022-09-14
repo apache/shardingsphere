@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.algorithm;
 
-import org.apache.shardingsphere.encrypt.exception.EncryptAlgorithmInitializationException;
+import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.factory.EncryptAlgorithmFactory;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;

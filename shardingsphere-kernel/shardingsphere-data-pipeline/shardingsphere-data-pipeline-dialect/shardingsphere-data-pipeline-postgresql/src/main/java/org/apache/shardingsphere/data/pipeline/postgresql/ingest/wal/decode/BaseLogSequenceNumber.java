@@ -25,7 +25,7 @@ public interface BaseLogSequenceNumber {
     /**
      * Convert log sequence number to long.
      *
-     * @return Long the squence number of long value
+     * @return Long the sequence number of long value
      */
     long asLong();
     

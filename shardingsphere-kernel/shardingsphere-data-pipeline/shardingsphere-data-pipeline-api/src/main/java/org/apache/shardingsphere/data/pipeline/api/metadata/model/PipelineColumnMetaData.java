@@ -50,7 +50,7 @@ public final class PipelineColumnMetaData implements Comparable<PipelineColumnMe
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (null == o || getClass() != o.getClass()) {
             return false;
         }
         final PipelineColumnMetaData that = (PipelineColumnMetaData) o;

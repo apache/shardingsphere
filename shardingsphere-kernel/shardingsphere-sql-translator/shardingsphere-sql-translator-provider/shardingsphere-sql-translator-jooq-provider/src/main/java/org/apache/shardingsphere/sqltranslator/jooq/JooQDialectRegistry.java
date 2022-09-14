@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sqltranslator.exception.SQLTranslationException;
-import org.apache.shardingsphere.sqltranslator.exception.UnsupportedTranslatedDatabaseException;
+import org.apache.shardingsphere.sqltranslator.exception.syntax.UnsupportedTranslatedDatabaseException;
 import org.jooq.SQLDialect;
 
 import java.util.HashMap;

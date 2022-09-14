@@ -105,11 +105,10 @@ public final class PipelineTableMetaData {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (null == o || getClass() != o.getClass()) {
             return false;
         }
-        final PipelineTableMetaData that = (PipelineTableMetaData) o;
-        return name.equals(that.name);
+        return name.equals(((PipelineTableMetaData) o).name);
     }
     
     @Override

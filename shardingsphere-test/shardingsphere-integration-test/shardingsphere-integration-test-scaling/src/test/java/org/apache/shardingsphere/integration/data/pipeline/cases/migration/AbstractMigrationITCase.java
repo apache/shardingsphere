@@ -126,15 +126,14 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
     }
     
     protected void addMigrationProcessConfig() throws SQLException {
-        try {
-            proxyExecuteWithLog(migrationDistSQLCommand.getAddMigrationProcessConfig(), 0);
-        } catch (final SQLException ex) {
-            if ("58000".equals(ex.getSQLState()) || "HY000".equals(ex.getSQLState())) {
-                log.warn(ex.getMessage());
-                return;
+        if (ENV.getItEnvType() == ITEnvTypeEnum.NATIVE) {
+            try {
+                proxyExecuteWithLog("DROP MIGRATION PROCESS CONFIGURATION '/'", 0);
+            } catch (final SQLException ex) {
+                log.warn("Drop migration process configuration failed, maybe it's not exist. error msg={}", ex.getMessage());
             }
-            throw ex;
         }
+        proxyExecuteWithLog(migrationDistSQLCommand.getAddMigrationProcessConfig(), 0);
     }
     
     protected void stopMigrationByJobId(final String jobId) throws SQLException {
@@ -159,7 +158,7 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
         return jobList.stream().filter(a -> a.get("tables").toString().equals(tableName)).findFirst().orElseThrow(() -> new RuntimeException("not find " + tableName + " table")).get("id").toString();
     }
     
-    protected void assertCheckMigrationSuccess(final String jobId) {
+    protected void assertCheckMigrationSuccess(final String jobId, final String algorithmType) {
         for (int i = 0; i < 5; i++) {
             if (checkJobIncrementTaskFinished(jobId)) {
                 break;
@@ -168,7 +167,7 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
         }
         boolean secondCheckJobResult = checkJobIncrementTaskFinished(jobId);
         log.info("second check job result: {}", secondCheckJobResult);
-        List<Map<String, Object>> checkJobResults = queryForListWithLog(String.format("CHECK MIGRATION '%s' BY TYPE (NAME='DATA_MATCH')", jobId));
+        List<Map<String, Object>> checkJobResults = queryForListWithLog(String.format("CHECK MIGRATION '%s' BY TYPE (NAME='%s')", jobId, algorithmType));
         log.info("check job results: {}", checkJobResults);
         for (Map<String, Object> entry : checkJobResults) {
             assertTrue(Boolean.parseBoolean(entry.get("records_content_matched").toString()));

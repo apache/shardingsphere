@@ -35,7 +35,7 @@ public final class MySQLCommandPacketTypeLoader {
      * @return command packet type for MySQL
      */
     public static MySQLCommandPacketType getCommandPacketType(final MySQLPacketPayload payload) {
-        Preconditions.checkArgument(0 == payload.readInt1(), "Sequence ID of MySQL command packet must be `0`.");
+        Preconditions.checkArgument(0 == payload.readInt1(), "Sequence ID of MySQL command packet must be `0`");
         return MySQLCommandPacketType.valueOf(payload.readInt1());
     }
 }

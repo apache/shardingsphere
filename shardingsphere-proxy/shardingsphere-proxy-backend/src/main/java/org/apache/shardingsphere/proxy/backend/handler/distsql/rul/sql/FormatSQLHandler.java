@@ -26,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
@@ -44,7 +43,7 @@ public final class FormatSQLHandler extends SQLRULBackendHandler<FormatStatement
     }
     
     @Override
-    protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) throws SQLException {
+    protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
         String sql = getSqlStatement().getSql();
         String databaseType = getConnectionSession().getDatabaseType().getType();
         return Collections.singleton(new LocalDataQueryResultRow(formatSQL(sql, databaseType)));

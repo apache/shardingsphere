@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorith
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
-import org.apache.shardingsphere.sharding.exception.InvalidDatetimeFormatException;
+import org.apache.shardingsphere.sharding.exception.data.InvalidDatetimeFormatException;
 
 import java.text.DecimalFormat;
 import java.text.ParsePosition;

@@ -37,9 +37,8 @@ public final class DriverDataSourceCache {
      * 
      * @param url URL
      * @return got data source
-     * @throws SQLException SQL exception
      */
-    public DataSource get(final String url) throws SQLException {
+    public DataSource get(final String url) {
         if (dataSourceMap.containsKey(url)) {
             return dataSourceMap.get(url);
         }

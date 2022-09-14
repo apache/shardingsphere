@@ -23,8 +23,6 @@ import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAd
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLKillStatement;
 
-import java.sql.SQLException;
-
 /**
  * Kill process executor.
  */
@@ -40,10 +38,9 @@ public final class KillProcessExecutor implements DatabaseAdminExecutor {
      * Execute.
      *
      * @param connectionSession connection session
-     * @throws SQLException SQLException
      */
     @Override
-    public void execute(final ConnectionSession connectionSession) throws SQLException {
+    public void execute(final ConnectionSession connectionSession) {
         String processlistId = killStatement.getProcesslistId();
         ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext().post(new KillProcessListIdRequestEvent(processlistId));
     }

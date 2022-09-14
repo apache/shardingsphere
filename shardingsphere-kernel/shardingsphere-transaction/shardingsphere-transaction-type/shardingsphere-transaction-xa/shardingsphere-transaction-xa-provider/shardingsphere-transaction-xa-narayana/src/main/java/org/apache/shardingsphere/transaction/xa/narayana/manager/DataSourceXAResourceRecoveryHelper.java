@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.transaction.xa.narayana.manager;
 
 import com.arjuna.ats.jta.recovery.XAResourceRecoveryHelper;
+import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.XAConnection;
@@ -94,10 +95,7 @@ public final class DataSourceXAResourceRecoveryHelper implements XAResourceRecov
     }
     
     private XAConnection getXaConnection() throws SQLException {
-        if (null == user && null == password) {
-            return xaDataSource.getXAConnection();
-        }
-        return xaDataSource.getXAConnection(user, password);
+        return null == user && null == password ? xaDataSource.getXAConnection() : xaDataSource.getXAConnection(user, password);
     }
     
     @Override
@@ -168,9 +166,7 @@ public final class DataSourceXAResourceRecoveryHelper implements XAResourceRecov
     }
     
     private XAResource getDelegate() {
-        if (null == delegate) {
-            throw new IllegalStateException("Connection has not been opened");
-        }
+        Preconditions.checkNotNull(delegate, "Connection has not been opened");
         return delegate;
     }
 }

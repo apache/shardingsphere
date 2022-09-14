@@ -62,7 +62,7 @@ public final class MySQLComStmtExecutePacket extends MySQLCommandPacket {
     @Getter
     private final List<MySQLPreparedStatementParameterType> newParameterTypes;
     
-    public MySQLComStmtExecutePacket(final MySQLPacketPayload payload, final int parameterCount) throws SQLException {
+    public MySQLComStmtExecutePacket(final MySQLPacketPayload payload, final int parameterCount) {
         super(MySQLCommandPacketType.COM_STMT_EXECUTE);
         this.payload = payload;
         statementId = payload.readInt4();

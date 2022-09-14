@@ -102,7 +102,7 @@ public final class PipelineDistributedBarrier {
     }
     
     /**
-     * Await unitl all children node is ready.
+     * Await until all children node is ready.
      *
      * @param parentPath parent path
      * @param timeout timeout
