@@ -20,9 +20,11 @@ package org.apache.shardingsphere.data.pipeline.core.check.datasource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobPrepareFailedException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.TargetTableNotEmptyWhenPrepareMigrationException;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -62,14 +64,12 @@ public abstract class AbstractDataSourceChecker implements DataSourceChecker {
     private void checkEmpty(final DataSource dataSource, final TableNameSchemaNameMapping tableNameSchemaNameMapping, final Collection<String> logicTableNames) throws SQLException {
         for (String each : logicTableNames) {
             String sql = getSQLBuilder().buildCheckEmptySQL(tableNameSchemaNameMapping.getSchemaName(each), each);
-            log.info("checkEmpty, sql={}", sql);
+            log.info("Check whether table is empty, SQL: {}", sql);
             try (
                     Connection connection = dataSource.getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(sql);
                     ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    throw new PipelineJobPrepareFailedException(String.format("Target table `%s` is not empty, sql: %s.", each, sql));
-                }
+                ShardingSpherePreconditions.checkState(!resultSet.next(), new TargetTableNotEmptyWhenPrepareMigrationException(each));
             }
         }
     }

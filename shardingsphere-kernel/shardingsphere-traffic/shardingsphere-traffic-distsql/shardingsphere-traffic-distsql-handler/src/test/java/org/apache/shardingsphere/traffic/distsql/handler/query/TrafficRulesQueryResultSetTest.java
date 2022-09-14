@@ -42,7 +42,7 @@ public final class TrafficRulesQueryResultSetTest {
     
     @Test
     public void assertExecute() {
-        ShardingSphereRuleMetaData ruleMetaData = mockRuleMetaData();
+        ShardingSphereRuleMetaData ruleMetaData = mockGlobalRuleMetaData();
         GlobalRuleDistSQLResultSet resultSet = new TrafficRulesQueryResultSet();
         resultSet.init(ruleMetaData, mock(ShowTrafficRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
@@ -55,7 +55,7 @@ public final class TrafficRulesQueryResultSetTest {
         assertTrue(actual.contains(""));
     }
     
-    private ShardingSphereRuleMetaData mockRuleMetaData() {
+    private ShardingSphereRuleMetaData mockGlobalRuleMetaData() {
         TrafficRule trafficRule = mock(TrafficRule.class);
         when(trafficRule.getConfiguration()).thenReturn(createTrafficRuleConfiguration());
         ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class);

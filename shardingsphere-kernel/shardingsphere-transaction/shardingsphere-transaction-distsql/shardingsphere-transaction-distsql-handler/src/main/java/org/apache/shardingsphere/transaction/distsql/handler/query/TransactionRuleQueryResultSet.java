@@ -49,7 +49,7 @@ public final class TransactionRuleQueryResultSet implements GlobalRuleDistSQLRes
     
     private Collection<Collection<Object>> buildData(final TransactionRule rule) {
         return Collections.singleton(Arrays.asList(
-                rule.getDefaultType().name(), null != rule.getProviderType() ? rule.getProviderType() : "", null != rule.getProps() ? PropertiesConverter.convert(rule.getProps()) : ""));
+                rule.getDefaultType().name(), null != rule.getProviderType() ? rule.getProviderType() : "", !rule.getProps().isEmpty() ? PropertiesConverter.convert(rule.getProps()) : ""));
     }
     
     @Override
