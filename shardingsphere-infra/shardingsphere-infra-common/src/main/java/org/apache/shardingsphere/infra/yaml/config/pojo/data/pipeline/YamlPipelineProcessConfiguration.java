@@ -91,4 +91,13 @@ public final class YamlPipelineProcessConfiguration implements YamlConfiguration
                 break;
         }
     }
+    
+    /**
+     * Check all fields is null.
+     *
+     * @return true if all fields is null, otherwise is false.
+     */
+    public boolean isAllFieldsNull() {
+        return null == read && null == write && null == streamChannel;
+    }
 }

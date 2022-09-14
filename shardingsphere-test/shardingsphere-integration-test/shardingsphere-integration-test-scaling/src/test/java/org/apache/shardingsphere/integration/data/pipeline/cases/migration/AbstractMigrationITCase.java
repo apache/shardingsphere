@@ -126,15 +126,14 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
     }
     
     protected void addMigrationProcessConfig() throws SQLException {
-        try {
-            proxyExecuteWithLog(migrationDistSQLCommand.getAddMigrationProcessConfig(), 0);
-        } catch (final SQLException ex) {
-            if ("58000".equals(ex.getSQLState()) || "HY000".equals(ex.getSQLState())) {
-                log.warn(ex.getMessage());
-                return;
+        if (ENV.getItEnvType() == ITEnvTypeEnum.NATIVE) {
+            try {
+                proxyExecuteWithLog("DROP MIGRATION PROCESS CONFIGURATION '/'", 0);
+            } catch (final SQLException ex) {
+                log.warn("Drop migration process configuration failed, maybe it's not exist. error msg={}", ex.getMessage());
             }
-            throw ex;
         }
+        proxyExecuteWithLog(migrationDistSQLCommand.getAddMigrationProcessConfig(), 0);
     }
     
     protected void stopMigrationByJobId(final String jobId) throws SQLException {

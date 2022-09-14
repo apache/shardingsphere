@@ -127,6 +127,10 @@
         <database name="sharding_db" start-index="60" stop-index="70"/>
     </show-sharding-table-rules-used-key-generator>
 
+    <show-sharding-table-rules-used-auditor sql-case-id="show-sharding-table-rules-used-auditor" auditor="shardingKeyAudit">
+        <database name="sharding_db" start-index="61" stop-index="71"/>
+    </show-sharding-table-rules-used-auditor>
+
     <show-sharding-table-rules-used-algorithm sql-case-id="show-sharding-table-rules-used-algorithm" algorithmName="t_order_inline">
         <database name="sharding_db" start-index="61" stop-index="71"/>
     </show-sharding-table-rules-used-algorithm>
