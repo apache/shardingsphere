@@ -37,12 +37,13 @@ public final class ScalingProxyClusterContainerConfigurationFactory {
     /**
      * Create instance of adaptor container configuration.
      * 
+     * @param adapterContainerImage adapter container image
      * @param databaseType database type
      * @param storageContainerImage storage container image
      * @return created instance
      */
-    public static AdaptorContainerConfiguration newInstance(final String proxyContainerImage, final DatabaseType databaseType, final String storageContainerImage) {
-        return new AdaptorContainerConfiguration(getProxyDatasourceName(databaseType), getMountedResource(databaseType, storageContainerImage), proxyContainerImage);
+    public static AdaptorContainerConfiguration newInstance(final String adapterContainerImage, final DatabaseType databaseType, final String storageContainerImage) {
+        return new AdaptorContainerConfiguration(getProxyDatasourceName(databaseType), getMountedResource(databaseType, storageContainerImage), adapterContainerImage);
     }
     
     private static String getProxyDatasourceName(final DatabaseType databaseType) {

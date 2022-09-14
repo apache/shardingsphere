@@ -44,7 +44,7 @@ public final class IntegrationTestEnvironment {
     
     private final ITEnvTypeEnum itEnvType;
     
-    private final String proxyContainerImage;
+    private final String adapterContainerImage;
     
     private final List<String> mysqlVersions;
     
@@ -55,7 +55,7 @@ public final class IntegrationTestEnvironment {
     private IntegrationTestEnvironment() {
         props = loadProperties();
         itEnvType = ITEnvTypeEnum.valueOf(StringUtils.defaultIfBlank(props.getProperty("scaling.it.env.type").toUpperCase(), ITEnvTypeEnum.NONE.name()));
-        proxyContainerImage = props.getOrDefault("scaling.it.docker.proxy.image", ProxyContainerConstants.PROXY_CONTAINER_IMAGE).toString();
+        adapterContainerImage = props.getOrDefault("scaling.it.docker.proxy.image", ProxyContainerConstants.PROXY_CONTAINER_IMAGE).toString();
         mysqlVersions = Arrays.stream(props.getOrDefault("scaling.it.docker.mysql.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
         postgresVersions = Arrays.stream(props.getOrDefault("scaling.it.docker.postgresql.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
         openGaussVersions = Arrays.stream(props.getOrDefault("scaling.it.docker.opengauss.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());

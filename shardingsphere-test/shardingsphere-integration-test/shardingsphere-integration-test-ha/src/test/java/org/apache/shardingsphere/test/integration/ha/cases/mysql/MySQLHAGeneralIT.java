@@ -50,7 +50,7 @@ public final class MySQLHAGeneralIT extends BaseITCase {
         Collection<HAParameterized> result = new LinkedList<>();
         MySQLDatabaseType databaseType = new MySQLDatabaseType();
         for (String each : ENV.listDatabaseDockerImageNames(databaseType)) {
-            result.add(new HAParameterized(databaseType, ENV.getProxyContainerImage(), each, "mysql_ha"));
+            result.add(new HAParameterized(databaseType, ENV.getAdapterContainerImage(), each, "mysql_ha"));
         return result;
     }
     

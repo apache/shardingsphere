@@ -44,15 +44,6 @@ public final class ContainerUtil {
     }
     
     /**
-     * Generate a unique adapter container id.
-     *
-     * @return unique adapter container id
-     */
-    public static int generateAdaptorContainerId() {
-        return ATOMIC_ADAPTOR_CONTAINER_ID.getAndIncrement();
-    }
-    
-    /**
      * Generate a unique storage container id.
      *
      * @return unique storage container id

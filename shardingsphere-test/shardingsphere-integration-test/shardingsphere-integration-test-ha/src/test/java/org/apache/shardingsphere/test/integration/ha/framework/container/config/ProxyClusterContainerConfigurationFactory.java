@@ -35,10 +35,11 @@ public final class ProxyClusterContainerConfigurationFactory {
      * Create new instance of adaptor container configuration.
      * 
      * @param scenario scenario
+     * @param adapterContainerImage adapter container image
      * @return created instance
      */
-    public static AdaptorContainerConfiguration newInstance(final String scenario, final String proxyContainerImage) {
-        return new AdaptorContainerConfiguration("", getMountedResources(scenario), proxyContainerImage);
+    public static AdaptorContainerConfiguration newInstance(final String scenario, final String adapterContainerImage) {
+        return new AdaptorContainerConfiguration("", getMountedResources(scenario), adapterContainerImage);
     }
     
     private static Map<String, String> getMountedResources(final String scenario) {

@@ -46,7 +46,7 @@ public final class ShardingSphereProxyClusterContainer extends DockerITContainer
     private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
     
     public ShardingSphereProxyClusterContainer(final DatabaseType databaseType, final AdaptorContainerConfiguration config) {
-        super(ProxyContainerConstants.PROXY_CONTAINER_NAME_PREFIX, config.getProxyContainerImage());
+        super(ProxyContainerConstants.PROXY_CONTAINER_NAME_PREFIX, config.getAdapterContainerImage());
         this.databaseType = databaseType;
         this.config = config;
     }

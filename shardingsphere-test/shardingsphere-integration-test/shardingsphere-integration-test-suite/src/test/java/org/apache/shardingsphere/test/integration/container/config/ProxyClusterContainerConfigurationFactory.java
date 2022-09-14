@@ -38,8 +38,8 @@ public final class ProxyClusterContainerConfigurationFactory {
      * @param databaseType database type
      * @return created instance
      */
-    public static AdaptorContainerConfiguration newInstance(final String scenario, final DatabaseType databaseType) {
-        return new AdaptorContainerConfiguration(scenario, getMountedResources(scenario, databaseType));
+    public static AdaptorContainerConfiguration newInstance(final String scenario, final DatabaseType databaseType, final String adapterContainer) {
+        return new AdaptorContainerConfiguration(scenario, getMountedResources(scenario, databaseType), adapterContainer);
     }
     
     private static Map<String, String> getMountedResources(final String scenario, final DatabaseType databaseType) {

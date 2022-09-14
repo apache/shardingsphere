@@ -60,7 +60,7 @@ public final class DockerContainerComposer extends BaseContainerComposer {
     @Getter
     private final GovernanceContainer governanceContainer;
     
-    public DockerContainerComposer(final String scenario, final String proxyContainerImage, final DatabaseType databaseType, final String storageContainerImage) {
+    public DockerContainerComposer(final String scenario, final String adapterContainerImage, final DatabaseType databaseType, final String storageContainerImage) {
         super("");
         this.databaseType = databaseType;
         this.storageContainers = new LinkedList<>();
@@ -72,7 +72,7 @@ public final class DockerContainerComposer extends BaseContainerComposer {
             storageContainers.add(storageContainer);
         });
         
-        AdaptorContainerConfiguration containerConfig = ProxyClusterContainerConfigurationFactory.newInstance(scenario, proxyContainerImage);
+        AdaptorContainerConfiguration containerConfig = ProxyClusterContainerConfigurationFactory.newInstance(scenario, adapterContainerImage);
         ShardingSphereProxyClusterContainer proxyClusterContainer = (ShardingSphereProxyClusterContainer) AdapterContainerFactory
                 .newInstance(EnvironmentConstants.CLUSTER_MODE, AdapterContainerConstants.PROXY, databaseType, null, "", containerConfig);
         storageContainers.forEach(each -> proxyClusterContainer.dependsOn(governanceContainer, each));
