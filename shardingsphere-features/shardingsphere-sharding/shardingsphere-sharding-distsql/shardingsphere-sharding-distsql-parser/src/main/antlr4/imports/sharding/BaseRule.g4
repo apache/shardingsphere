@@ -31,6 +31,10 @@ keyGeneratorName
     : IDENTIFIER
     ;
 
+auditorName
+    : IDENTIFIER
+    ;
+
 ifExists
     : IF EXISTS
     ;

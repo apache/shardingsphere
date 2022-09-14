@@ -26,12 +26,14 @@ import org.apache.shardingsphere.infra.lock.LockDefinition;
 @Getter
 public final class ExclusiveLockDefinition implements LockDefinition {
     
+    private static final String LOCK_KEY_PREFIX = "/lock/exclusive/locks/";
+    
     private final String lockKey;
     
     private final String lockName;
     
     public ExclusiveLockDefinition(final String lockName) {
         this.lockName = lockName;
-        lockKey = LockKeyUtil.generateExclusiveLockKey(lockName);
+        lockKey = LOCK_KEY_PREFIX + lockName;
     }
 }

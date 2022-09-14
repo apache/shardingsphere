@@ -25,6 +25,7 @@ import org.apache.shardingsphere.integration.data.pipeline.cases.migration.Abstr
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm;
+import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -38,8 +39,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
 @Slf4j
@@ -58,6 +59,7 @@ public class TextPrimaryKeyMigrationIT extends AbstractMigrationITCase {
         }
         for (String version : ENV.listDatabaseDockerImageNames(new MySQLDatabaseType())) {
             result.add(new ScalingParameterized(new MySQLDatabaseType(), version, "env/scenario/primary_key/text_primary_key/mysql.xml"));
+            result.add(new ScalingParameterized(new MySQLDatabaseType(), version, "env/scenario/primary_key/unique_key/mysql.xml"));
         }
         for (String version : ENV.listDatabaseDockerImageNames(new PostgreSQLDatabaseType())) {
             result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), version, "env/scenario/primary_key/text_primary_key/postgresql.xml"));
@@ -79,8 +81,14 @@ public class TextPrimaryKeyMigrationIT extends AbstractMigrationITCase {
         startMigrationOrder();
         String jobId = listJobId().get(0);
         waitJobFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+        sourceExecuteWithLog(String.format("INSERT INTO t_order (order_id,user_id,status) VALUES (%s, %s, '%s')", "1000000000", 1, "afterStop"));
+        // TODO The ordering of primary or unique keys for text types is different, may cause check failed, need fix
+        if (DatabaseTypeUtil.isMySQL(getDatabaseType())) {
+            assertCheckMigrationSuccess(jobId, "CRC32_MATCH");
+        } else {
+            assertCheckMigrationSuccess(jobId, "DATA_MATCH");
+        }
         stopMigrationByJobId(jobId);
-        assertCheckMigrationSuccess(jobId);
         if (ENV.getItEnvType() == ITEnvTypeEnum.DOCKER) {
             commitMigrationByJobId(jobId);
             List<String> lastJobIds = listJobId();
@@ -100,5 +108,6 @@ public class TextPrimaryKeyMigrationIT extends AbstractMigrationITCase {
             }
             preparedStatement.executeBatch();
         }
+        log.info("init data succeed");
     }
 }

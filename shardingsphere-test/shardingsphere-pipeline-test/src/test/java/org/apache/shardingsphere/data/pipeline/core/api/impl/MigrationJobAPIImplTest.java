@@ -28,6 +28,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDat
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.api.pojo.CreateMigrationJobParameter;
 import org.apache.shardingsphere.data.pipeline.api.pojo.MigrationJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
@@ -35,9 +36,11 @@ import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreatorFactory;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
+import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobItemContext;
+import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.junit.AfterClass;
@@ -77,8 +80,7 @@ public final class MigrationJobAPIImplTest {
         PipelineContextUtil.mockModeConfigAndContextManager();
         jobAPI = MigrationJobAPIFactory.getInstance();
         Map<String, Object> props = new HashMap<>();
-        // TODO if resource availability is checked, then it should not work
-        props.put("jdbcUrl", "jdbc:mysql://localhost:3306/test");
+        props.put("jdbcUrl", "jdbc:h2:mem:test_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         props.put("username", "root");
         props.put("password", "root");
         Map<String, DataSourceProperties> expect = new LinkedHashMap<>(1, 1);
@@ -151,8 +153,10 @@ public final class MigrationJobAPIImplTest {
     }
     
     @Test
-    public void assertDataConsistencyCheck() {
-        Optional<String> jobId = jobAPI.start(JobConfigurationBuilder.createJobConfiguration());
+    public void assertDataConsistencyCheck() throws NoSuchFieldException, IllegalAccessException {
+        MigrationJobConfiguration jobConfiguration = JobConfigurationBuilder.createJobConfiguration();
+        ReflectionUtil.setFieldValue(jobConfiguration, "uniqueKeyColumn", new PipelineColumnMetaData(1, "order_id", 4, "", false, true));
+        Optional<String> jobId = jobAPI.start(jobConfiguration);
         assertTrue(jobId.isPresent());
         MigrationJobConfiguration jobConfig = jobAPI.getJobConfiguration(jobId.get());
         if (null == jobConfig.getSource()) {
@@ -266,7 +270,8 @@ public final class MigrationJobAPIImplTest {
     }
     
     @Test
-    public void assertCreateJobConfig() {
+    public void assertCreateJobConfig() throws SQLException {
+        initIntPrimaryEnvironment();
         CreateMigrationJobParameter parameter = new CreateMigrationJobParameter("ds_0", null, "t_order", "logic_db", "t_order");
         String jobId = jobAPI.createJobAndStart(parameter);
         MigrationJobConfiguration jobConfig = jobAPI.getJobConfiguration(jobId);
@@ -274,6 +279,18 @@ public final class MigrationJobAPIImplTest {
         assertThat(jobConfig.getSourceTableName(), is("t_order"));
         assertThat(jobConfig.getTargetDatabaseName(), is("logic_db"));
         assertThat(jobConfig.getTargetTableName(), is("t_order"));
+    }
+    
+    private void initIntPrimaryEnvironment() throws SQLException {
+        Map<String, DataSourceProperties> metaDataDataSource = new PipelineDataSourcePersistService().load(JobType.MIGRATION);
+        DataSourceProperties dataSourceProperties = metaDataDataSource.get("ds_0");
+        DataSource dataSource = DataSourcePoolCreator.create(dataSourceProperties);
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            statement.execute("DROP TABLE IF EXISTS t_order");
+            statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id int(10))");
+        }
     }
     
     @Test

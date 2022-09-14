@@ -71,6 +71,10 @@ showShardingTableRulesUsedKeyGenerator
     : SHOW SHARDING TABLE RULES USED KEY GENERATOR keyGeneratorName (FROM databaseName)?
     ;
 
+showShardingTableRulesUsedAuditor
+    : SHOW SHARDING TABLE RULES USED AUDITOR auditorName (FROM databaseName)?
+    ;
+
 countShardingRule
     : COUNT SHARDING RULE (FROM databaseName)?
     ;

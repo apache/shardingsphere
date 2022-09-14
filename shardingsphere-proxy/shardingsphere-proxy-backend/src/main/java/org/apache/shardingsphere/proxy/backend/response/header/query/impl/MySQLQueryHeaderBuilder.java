@@ -74,7 +74,7 @@ public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
         return "MySQL";
     }
     
-    // TODO to be confirmed, QueryHeaderBuilder should not has default value, just throw unsupport exception if database type missing
+    // TODO to be confirmed, QueryHeaderBuilder should not has default value, just throw unsupported exception if database type missing
     @Override
     public boolean isDefault() {
         return true;

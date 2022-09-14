@@ -25,19 +25,20 @@ import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.junit.Test;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class SQLParserRuleQueryResultSetTest {
     
     @Test
     public void assertSQLParserRule() {
-        ShardingSphereRuleMetaData ruleMetaData = createGlobalRuleMetaData();
+        ShardingSphereRuleMetaData ruleMetaData = mockGlobalRuleMetaData();
         SQLParserRuleQueryResultSet resultSet = new SQLParserRuleQueryResultSet();
         resultSet.init(ruleMetaData, mock(ShowSQLParserRuleStatement.class));
         Collection<Object> actual = resultSet.getRowData();
@@ -52,10 +53,15 @@ public final class SQLParserRuleQueryResultSetTest {
         assertThat(sqlStatementCache, containsString("maximumSize: 65535"));
     }
     
-    private ShardingSphereRuleMetaData createGlobalRuleMetaData() {
-        CacheOption parseTreeCache = new CacheOption(128, 1024);
-        CacheOption sqlStatementCache = new CacheOption(2000, 65535);
-        SQLParserRuleConfiguration config = new SQLParserRuleConfiguration(true, parseTreeCache, sqlStatementCache);
-        return new ShardingSphereRuleMetaData(Collections.singleton(new SQLParserRule(config)));
+    private ShardingSphereRuleMetaData mockGlobalRuleMetaData() {
+        SQLParserRule sqlParserRule = mock(SQLParserRule.class);
+        when(sqlParserRule.getConfiguration()).thenReturn(createSQLParserRuleConfiguration());
+        ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class);
+        when(result.findSingleRule(SQLParserRule.class)).thenReturn(Optional.of(sqlParserRule));
+        return result;
+    }
+    
+    private SQLParserRuleConfiguration createSQLParserRuleConfiguration() {
+        return new SQLParserRuleConfiguration(true, new CacheOption(128, 1024), new CacheOption(2000, 65535));
     }
 }

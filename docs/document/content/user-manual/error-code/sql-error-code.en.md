@@ -93,6 +93,13 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 44000     | 18002       | Altered process configuration does not exist |
 | HY000     | 18020       | Failed to get DDL for table \`%s\` |
 | HY000     | 18080       | Can not find pipeline job \`%s\` |
+| HY000     | 18081       | Job has already started |
+| HY000     | 18082       | Sharding count of job \`%s\` is 0 |
+| HY000     | 18083       | Can not split range for table \`%s\`, reason: %s |
+| HY000     | 18084       | Target table \`%s\` is not empty |
+| HY000     | 18090       | Importer job write data failed |
+| HY000     | 18091       | Can not poll event because of binlog sync channel already closed |
+| HY000     | 18092       | Task \`%s\` execute failed |
 
 ## Feature Exception
 
