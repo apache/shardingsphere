@@ -43,7 +43,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * General scaling test case, includes multiple cases.
+ * General migration test case, includes multiple cases.
  */
 @Slf4j
 @RunWith(Parameterized.class)
@@ -106,7 +106,7 @@ public final class MySQLMigrationGeneralIT extends AbstractMigrationITCase {
     
     private void assertMigrationSuccessById(final String jobId) throws SQLException, InterruptedException {
         waitJobFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
-        assertCheckMigrationSuccess(jobId);
+        assertCheckMigrationSuccess(jobId, "DATA_MATCH");
         stopMigrationByJobId(jobId);
     }
 }
