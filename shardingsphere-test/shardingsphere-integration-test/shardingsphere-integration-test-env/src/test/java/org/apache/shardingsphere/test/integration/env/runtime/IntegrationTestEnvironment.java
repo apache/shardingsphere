@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.integration.env.runtime;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;
-import org.apache.shardingsphere.test.integration.env.container.atomic.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.integration.env.runtime.cluster.ClusterEnvironment;
 import org.apache.shardingsphere.test.integration.env.runtime.scenario.path.ScenarioCommonPath;
 
@@ -42,8 +41,6 @@ public final class IntegrationTestEnvironment {
     
     private final Collection<String> scenarios;
     
-    private final String adapterContainerImage;
-    
     private final ClusterEnvironment clusterEnvironment;
     
     private IntegrationTestEnvironment() {
@@ -51,7 +48,6 @@ public final class IntegrationTestEnvironment {
         runModes = Splitter.on(",").trimResults().splitToList(props.getProperty("it.run.modes"));
         runAdditionalTestCases = Boolean.parseBoolean(props.getProperty("it.run.additional.cases"));
         scenarios = getScenarios(props);
-        adapterContainerImage = props.getOrDefault("it.docker.proxy.image", ProxyContainerConstants.PROXY_CONTAINER_IMAGE).toString();
         clusterEnvironment = new ClusterEnvironment(props);
     }
     

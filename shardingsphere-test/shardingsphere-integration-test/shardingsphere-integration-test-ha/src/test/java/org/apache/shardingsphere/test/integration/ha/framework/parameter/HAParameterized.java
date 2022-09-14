@@ -29,8 +29,6 @@ public final class HAParameterized {
     
     private final DatabaseType databaseType;
     
-    private final String adapterContainerImage;
-    
     private final String storageContainerImage;
     
     private final String scenario;

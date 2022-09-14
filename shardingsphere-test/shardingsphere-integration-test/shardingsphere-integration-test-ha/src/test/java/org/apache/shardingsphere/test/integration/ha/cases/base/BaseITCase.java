@@ -56,7 +56,7 @@ public abstract class BaseITCase {
     
     public BaseITCase(final HAParameterized haParameterized) {
         databaseType = haParameterized.getDatabaseType();
-        containerComposer = new DockerContainerComposer(haParameterized.getScenario(), haParameterized.getAdapterContainerImage(), haParameterized.getDatabaseType(), haParameterized.getStorageContainerImage());
+        containerComposer = new DockerContainerComposer(haParameterized.getScenario(), haParameterized.getDatabaseType(), haParameterized.getStorageContainerImage());
         containerComposer.start();
         databaseName = (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) ? "postgres" : "";
         initStorageDataSources();

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.integration.env.container.atomic.adapter.
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.ProxyContainerConstants;
+import org.apache.shardingsphere.test.integration.env.container.atomic.util.AdapterContainerUtil;
 
 import java.util.Collections;
 import java.util.Map;
@@ -36,7 +37,7 @@ public final class ProxyClusterContainerConfigurationFactory {
      * @return created instance
      */
     public static AdaptorContainerConfiguration newInstance() {
-        return new AdaptorContainerConfiguration("", getMountedResources());
+        return new AdaptorContainerConfiguration("", getMountedResources(), AdapterContainerUtil.getAdapterContainerImage());
     }
     
     private static Map<String, String> getMountedResources() {

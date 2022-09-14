@@ -115,7 +115,7 @@ public abstract class BaseITCase {
     public BaseITCase(final ScalingParameterized parameterized) {
         databaseType = parameterized.getDatabaseType();
         if (ENV.getItEnvType() == ITEnvTypeEnum.DOCKER) {
-            containerComposer = new DockerContainerComposer(parameterized.getAdapterContainerImage(), parameterized.getDatabaseType(), parameterized.getStorageContainerImage());
+            containerComposer = new DockerContainerComposer(parameterized.getDatabaseType(), parameterized.getStorageContainerImage());
         } else {
             containerComposer = new NativeContainerComposer(parameterized.getDatabaseType());
         }
