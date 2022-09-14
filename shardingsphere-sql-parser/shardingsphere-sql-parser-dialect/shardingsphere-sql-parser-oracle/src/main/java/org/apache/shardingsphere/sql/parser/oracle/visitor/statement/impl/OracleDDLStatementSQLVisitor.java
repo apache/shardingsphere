@@ -999,7 +999,8 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     public ASTNode visitDropProcedure(final DropProcedureContext ctx) {
         return new OracleDropProcedureStatement();
     }
-    
+
+    @Override
     public ASTNode visitDropIndexType(final DropIndexTypeContext ctx) {
         return new OracleDropIndexTypeStatement();
     }
