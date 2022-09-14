@@ -33,4 +33,5 @@ org.apache.shardingsphere.sharding.distsql.handler.query.UnusedShardingKeyGenera
 org.apache.shardingsphere.sharding.distsql.handler.query.UnusedShardingAuditorsQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableRulesUsedAlgorithmQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableRulesUsedKeyGeneratorQueryResultSet
+org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableRulesUsedAuditorQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.CountShardingRuleQueryResultSet
