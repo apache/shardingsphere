@@ -5,17 +5,16 @@ weight = 1
 chapter = true
 +++
 
-本章介绍 Apache ShardingSphere的定义，设计哲学和部署形态。
-
-更多常见问题，请参考 [FAQ](https://github.com/apache/shardingsphere/wiki/FAQ)。
-
 ## 什么是 ShardingSphere
 
 ### 介绍
 
-Apache ShardingSphere 是一款开源的分布式数据库生态项目，由 JDBC 和 Proxy 两款产品组成。其核心采用微内核+可插拔架构，通过插件开放扩展功能。它提供多源异构数据库增强平台，进而围绕其上层构建生态。
+Apache ShardingSphere 是一款开源的分布式数据库生态项目，由 JDBC 和 Proxy 两款产品组成。
+其核心采用微内核+可插拔架构，通过插件开放扩展功能。它提供多源异构数据库增强平台，进而围绕其上层构建生态。
 
-Apache ShardingSphere 设计哲学为 Database Plus，旨在构建异构数据库上层的标准和生态。它关注如何充分合理地利用数据库的计算和存储能力，而并非实现一个全新的数据库。它站在数据库的上层视角，关注它们之间的协作多于数据库自身。
+Apache ShardingSphere 设计哲学为 Database Plus，旨在构建异构数据库上层的标准和生态。
+它关注如何充分合理地利用数据库的计算和存储能力，而并非实现一个全新的数据库。
+它站在数据库的上层视角，关注它们之间的协作多于数据库自身。
 
 #### ShardingSphere-JDBC
 
