@@ -41,7 +41,7 @@ public final class AuthorityRuleQueryResultSetTest {
     
     @Test
     public void assertExecute() {
-        ShardingSphereRuleMetaData ruleMetaData = mockRuleMetaData();
+        ShardingSphereRuleMetaData ruleMetaData = mockGlobalRuleMetaData();
         GlobalRuleDistSQLResultSet resultSet = new AuthorityRuleQueryResultSet();
         resultSet.init(ruleMetaData, mock(ShowAuthorityRuleStatement.class));
         Collection<Object> actual = resultSet.getRowData();
@@ -51,7 +51,7 @@ public final class AuthorityRuleQueryResultSetTest {
         assertTrue(actual.contains(""));
     }
     
-    private ShardingSphereRuleMetaData mockRuleMetaData() {
+    private ShardingSphereRuleMetaData mockGlobalRuleMetaData() {
         AuthorityRule authorityRule = mock(AuthorityRule.class);
         when(authorityRule.getConfiguration()).thenReturn(createAuthorityRuleConfiguration());
         ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class);

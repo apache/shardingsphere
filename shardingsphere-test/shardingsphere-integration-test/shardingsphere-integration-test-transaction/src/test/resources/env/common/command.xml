@@ -94,7 +94,7 @@
     </create-address-broadcast-table-rule>
     
     <alter-local-transaction-rule>
-        ALTER TRANSACTION RULE ( DEFAULT=LOCAL )
+        ALTER TRANSACTION RULE (DEFAULT='LOCAL')
     </alter-local-transaction-rule>
 
     <alter-xa-transaction-rule>

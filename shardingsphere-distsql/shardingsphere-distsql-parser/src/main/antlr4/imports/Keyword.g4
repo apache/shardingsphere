@@ -127,10 +127,6 @@ INSTANCE
     : I N S T A N C E
     ;
 
-IP
-    : I P
-    ;
-
 IGNORE
     : I G N O R E
     ;
@@ -159,10 +155,6 @@ TABLE
     : T A B L E
     ;
 
-TRANSACTION
-    : T R A N S A C T I O N
-    ;
-
 RULES
     : R U L E S
     ;
@@ -177,10 +169,6 @@ REFRESH
 
 METADATA
     : M E T A D A T A
-    ;
-
-AUTHORITY
-    : A U T H O R I T Y
     ;
 
 TRUE
@@ -221,10 +209,6 @@ RELABEL
 
 UNLABEL
     : U N L A B E L
-    ;
-
-LABELS
-    : L A B E L S
     ;
 
 EXPORT
@@ -285,10 +269,6 @@ DISCARD
 
 SINGLE_TABLE
     : S I N G L E UL_ T A B L E
-    ;
-
-SQL_TRANSLATOR
-    : S Q L UL_ T R A N S L A T O R
     ;
 
 INFO
