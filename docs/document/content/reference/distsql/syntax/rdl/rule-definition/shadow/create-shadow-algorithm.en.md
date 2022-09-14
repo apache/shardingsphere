@@ -11,7 +11,7 @@ The `CREATE SHADOW ALGORITHM` syntax is used to create a shadow algorithm.
 
 ```sql
 CreateShadowAlgorithm ::=
-  'CREATE' 'SHADOW' 'RULE' shadowAlgorithm ( ',' shadowAlgorithm )*
+  'CREATE' 'SHADOW' 'ALGORITHM' shadowAlgorithm ( ',' shadowAlgorithm )*
 
 shadowAlgorithm ::=
   '(' ( algorithmName ',' )? 'TYPE' '(' 'NAME' '=' shadowAlgorithmType ',' 'PROPERTIES' '(' ( 'key' '=' 'value' ( ',' 'key' '=' 'value' )* ) ')' ')'

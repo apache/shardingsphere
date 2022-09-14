@@ -11,7 +11,7 @@ weight = 3
 
 ```sql
 CreateShadowAlgorithm ::=
-  'CREATE' 'SHADOW' 'RULE' shadowAlgorithm ( ',' shadowAlgorithm )*
+  'CREATE' 'SHADOW' 'ALGORITHM' shadowAlgorithm ( ',' shadowAlgorithm )*
 
 shadowAlgorithm ::=
   '(' ( algorithmName ',' )? 'TYPE' '(' 'NAME' '=' shadowAlgorithmType ',' 'PROPERTIES' '(' ( 'key' '=' 'value' ( ',' 'key' '=' 'value' )* ) ')' ')'
