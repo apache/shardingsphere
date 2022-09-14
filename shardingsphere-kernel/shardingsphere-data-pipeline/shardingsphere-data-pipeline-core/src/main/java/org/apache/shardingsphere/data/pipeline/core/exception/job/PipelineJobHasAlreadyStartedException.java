@@ -17,14 +17,17 @@
 
 package org.apache.shardingsphere.data.pipeline.core.exception.job;
 
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+
 /**
- * Pipeline job creation exception.
+ * Pipeline job has already started exception.
  */
-public final class PipelineJobCreationException extends RuntimeException {
+public final class PipelineJobHasAlreadyStartedException extends PipelineSQLException {
     
-    private static final long serialVersionUID = 5829502315976905271L;
+    private static final long serialVersionUID = 2854259384634892428L;
     
-    public PipelineJobCreationException(final String message) {
-        super(message);
+    public PipelineJobHasAlreadyStartedException(final String jobId) {
+        super(XOpenSQLState.GENERAL_ERROR, 81, "Job `%s` has already started", jobId);
     }
 }

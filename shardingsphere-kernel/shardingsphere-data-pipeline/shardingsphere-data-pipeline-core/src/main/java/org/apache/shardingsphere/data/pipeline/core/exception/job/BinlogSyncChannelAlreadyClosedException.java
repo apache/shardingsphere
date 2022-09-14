@@ -21,13 +21,13 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLExcepti
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Pipeline job execution exception.
+ * Binlog sync channel already closed exception.
  */
-public final class PipelineJobExecutionException extends PipelineSQLException {
+public final class BinlogSyncChannelAlreadyClosedException extends PipelineSQLException {
     
-    private static final long serialVersionUID = -5530453461378051166L;
+    private static final long serialVersionUID = -8897293295641185703L;
     
-    public PipelineJobExecutionException(final String taskId, final Throwable cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 92, "Task `%s` execute failed", taskId, cause.getMessage());
+    public BinlogSyncChannelAlreadyClosedException() {
+        super(XOpenSQLState.GENERAL_ERROR, 91, "Can not poll event because of binlog sync channel already closed");
     }
 }

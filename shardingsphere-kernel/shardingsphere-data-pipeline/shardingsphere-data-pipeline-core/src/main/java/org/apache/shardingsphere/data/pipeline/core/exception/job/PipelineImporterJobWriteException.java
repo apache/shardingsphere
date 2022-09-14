@@ -21,13 +21,13 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLExcepti
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Job has already started exception.
+ * Pipeline importer job write exception.
  */
-public final class JobHasAlreadyStartedException extends PipelineSQLException {
+public final class PipelineImporterJobWriteException extends PipelineSQLException {
     
-    private static final long serialVersionUID = 2854259384634892428L;
+    private static final long serialVersionUID = -7924663094479253130L;
     
-    public JobHasAlreadyStartedException(final String jobId) {
-        super(XOpenSQLState.GENERAL_ERROR, 81, "Job `%s` has already started", jobId);
+    public PipelineImporterJobWriteException() {
+        super(XOpenSQLState.GENERAL_ERROR, 90, "Importer job write data failed");
     }
 }

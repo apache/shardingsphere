@@ -136,7 +136,7 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
             future.get();
         } catch (final InterruptedException ignored) {
         } catch (final ExecutionException ex) {
-            throw new PipelineJobExecutionException(String.format("Task %s execute failed ", taskId), ex.getCause());
+            throw new PipelineJobExecutionException(taskId, ex.getCause());
         }
     }
     

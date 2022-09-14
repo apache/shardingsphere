@@ -21,13 +21,13 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLExcepti
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Pipeline job execution exception.
+ * Split pipeline job exception.
  */
-public final class PipelineJobExecutionException extends PipelineSQLException {
+public final class SplitPipelineJobException extends PipelineSQLException {
     
-    private static final long serialVersionUID = -5530453461378051166L;
+    private static final long serialVersionUID = -8509592086832334026L;
     
-    public PipelineJobExecutionException(final String taskId, final Throwable cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 92, "Task `%s` execute failed", taskId, cause.getMessage());
+    public SplitPipelineJobException(final String tableName, final String reason) {
+        super(XOpenSQLState.GENERAL_ERROR, 83, "Can not split range for table `%s`, reason: %s", tableName, reason);
     }
 }
