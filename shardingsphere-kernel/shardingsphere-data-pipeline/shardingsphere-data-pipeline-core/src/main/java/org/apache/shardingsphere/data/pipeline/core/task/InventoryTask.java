@@ -128,7 +128,7 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
             future.get();
         } catch (final InterruptedException ignored) {
         } catch (final ExecutionException ex) {
-            throw new PipelineJobExecutionException(String.format("Task %s execute failed ", taskId), ex.getCause());
+            throw new PipelineJobExecutionException(taskId, ex.getCause());
         }
     }
     

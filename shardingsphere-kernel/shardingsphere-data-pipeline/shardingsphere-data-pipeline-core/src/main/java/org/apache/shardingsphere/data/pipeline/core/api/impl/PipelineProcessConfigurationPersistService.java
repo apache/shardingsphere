@@ -39,7 +39,11 @@ public final class PipelineProcessConfigurationPersistService implements Pipelin
         if (StringUtils.isBlank(yamlText)) {
             return null;
         }
-        return PROCESS_CONFIG_SWAPPER.swapToObject(YamlEngine.unmarshal(yamlText, YamlPipelineProcessConfiguration.class, true));
+        YamlPipelineProcessConfiguration yamlConfig = YamlEngine.unmarshal(yamlText, YamlPipelineProcessConfiguration.class, true);
+        if (null == yamlConfig || yamlConfig.isAllFieldsNull()) {
+            return null;
+        }
+        return PROCESS_CONFIG_SWAPPER.swapToObject(yamlConfig);
     }
     
     @Override
