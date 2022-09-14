@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.api.impl;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
@@ -40,15 +39,16 @@ public final class PipelineProcessConfigurationPersistService implements Pipelin
         if (StringUtils.isBlank(yamlText)) {
             return null;
         }
-        return PROCESS_CONFIG_SWAPPER.swapToObject(YamlEngine.unmarshal(yamlText, YamlPipelineProcessConfiguration.class, true));
+        YamlPipelineProcessConfiguration yamlConfig = YamlEngine.unmarshal(yamlText, YamlPipelineProcessConfiguration.class, true);
+        if (null == yamlConfig || yamlConfig.isAllFieldsNull()) {
+            return null;
+        }
+        return PROCESS_CONFIG_SWAPPER.swapToObject(yamlConfig);
     }
     
     @Override
     public void persist(final JobType jobType, final PipelineProcessConfiguration processConfig) {
-        String yamlText = "";
-        if (ObjectUtils.anyNotNull(processConfig.getRead(), processConfig.getWrite(), processConfig.getStreamChannel())) {
-            yamlText = YamlEngine.marshal(PROCESS_CONFIG_SWAPPER.swapToYamlConfiguration(processConfig));
-        }
+        String yamlText = YamlEngine.marshal(PROCESS_CONFIG_SWAPPER.swapToYamlConfiguration(processConfig));
         PipelineAPIFactory.getGovernanceRepositoryAPI().persistMetaDataProcessConfiguration(jobType, yamlText);
     }
 }
