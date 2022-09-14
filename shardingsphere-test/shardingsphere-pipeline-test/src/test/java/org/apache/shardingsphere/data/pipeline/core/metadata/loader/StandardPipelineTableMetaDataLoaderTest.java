@@ -130,9 +130,9 @@ public final class StandardPipelineTableMetaDataLoaderTest {
     
     private void assertColumnMetaData(final PipelineTableMetaData actual) {
         assertThat(actual.getColumnNames().size(), is(3));
-        assertColumnMetaData(actual.getColumnMetaData(0), "id", Types.BIGINT);
-        assertColumnMetaData(actual.getColumnMetaData(1), "name", Types.VARCHAR);
-        assertColumnMetaData(actual.getColumnMetaData(2), "age", Types.INTEGER);
+        assertColumnMetaData(actual.getColumnMetaData(1), "id", Types.BIGINT);
+        assertColumnMetaData(actual.getColumnMetaData(2), "name", Types.VARCHAR);
+        assertColumnMetaData(actual.getColumnMetaData(3), "age", Types.INTEGER);
     }
     
     private void assertColumnMetaData(final PipelineColumnMetaData actual, final String expectedName, final int expectedType) {

@@ -43,7 +43,7 @@ public final class PipelineTableMetaDataTest {
     
     @Test
     public void assertGetColumnMetaDataGivenColumnIndex() {
-        PipelineColumnMetaData actual = pipelineTableMetaData.getColumnMetaData(0);
+        PipelineColumnMetaData actual = pipelineTableMetaData.getColumnMetaData(1);
         assertThat(actual.getOrdinalPosition(), is(1));
         assertThat(actual.getName(), is("test"));
         assertThat(actual.getDataType(), is(Types.INTEGER));
@@ -62,7 +62,7 @@ public final class PipelineTableMetaDataTest {
     
     @Test
     public void assertIsPrimaryKey() {
-        assertTrue(pipelineTableMetaData.isUniqueKey(0));
-        assertFalse(pipelineTableMetaData.isUniqueKey(1));
+        assertTrue(pipelineTableMetaData.isUniqueKey(1));
+        assertFalse(pipelineTableMetaData.isUniqueKey(2));
     }
 }

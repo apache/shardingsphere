@@ -137,8 +137,8 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
             DataRecord record = createDataRecord(event, each.length);
             record.setType(IngestDataChangeType.INSERT);
             for (int i = 0; i < each.length; i++) {
-                PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(i);
-                record.addColumn(new Column(columnMetaData.getName(), handleValue(columnMetaData, each[i]), true, tableMetaData.isUniqueKey(i)));
+                PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(i + 1);
+                record.addColumn(new Column(columnMetaData.getName(), handleValue(columnMetaData, each[i]), true, tableMetaData.isUniqueKey(i + 1)));
             }
             pushRecord(record);
         }
@@ -158,7 +158,7 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
                 Serializable oldValue = beforeValues[j];
                 Serializable newValue = afterValues[j];
                 boolean updated = !Objects.equals(newValue, oldValue);
-                PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(j);
+                PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(j + 1);
                 record.addColumn(new Column(columnMetaData.getName(),
                         (columnMetaData.isPrimaryKey() && updated) ? handleValue(columnMetaData, oldValue) : null,
                         handleValue(columnMetaData, newValue), updated, columnMetaData.isPrimaryKey()));
@@ -172,8 +172,8 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
             DataRecord record = createDataRecord(event, each.length);
             record.setType(IngestDataChangeType.DELETE);
             for (int i = 0, length = each.length; i < length; i++) {
-                PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(i);
-                record.addColumn(new Column(columnMetaData.getName(), handleValue(columnMetaData, each[i]), true, tableMetaData.isUniqueKey(i)));
+                PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(i + 1);
+                record.addColumn(new Column(columnMetaData.getName(), handleValue(columnMetaData, each[i]), true, tableMetaData.isUniqueKey(i + 1)));
             }
             pushRecord(record);
         }
