@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.table;
+package org.apache.shardingsphere.sqlfederation.executor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
  */
 @RequiredArgsConstructor
 @Getter
-public final class CommonTableScanExecutorContext {
+public final class TableScanExecutorContext {
     
     private final String databaseName;
     

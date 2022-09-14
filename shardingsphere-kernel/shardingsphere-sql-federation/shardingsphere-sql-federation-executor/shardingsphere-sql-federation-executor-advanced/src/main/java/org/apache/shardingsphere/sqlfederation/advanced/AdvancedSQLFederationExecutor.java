@@ -44,18 +44,19 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sqlfederation.CommonExecuteDataContext;
-import org.apache.shardingsphere.sqlfederation.advanced.resultset.FederationResultSet;
-import org.apache.shardingsphere.sqlfederation.advanced.table.TranslatableTableScanExecutor;
+import org.apache.shardingsphere.sqlfederation.SQLFederationDataContext;
+import org.apache.shardingsphere.sqlfederation.advanced.resultset.SQLFederationResultSet;
+import org.apache.shardingsphere.sqlfederation.executor.FilterableTableScanExecutor;
+import org.apache.shardingsphere.sqlfederation.executor.TableScanExecutorContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.ShardingSphereOptimizer;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContextFactory;
+import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.TranslatableSchema;
 import org.apache.shardingsphere.sqlfederation.optimizer.planner.QueryOptimizePlannerFactory;
-import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
-import org.apache.shardingsphere.sqlfederation.table.CommonTableScanExecutorContext;
+import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -66,9 +67,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Advanced federation executor.
+ * Advanced sql federation executor.
  */
-public final class AdvancedFederationExecutor implements SQLFederationExecutor {
+public final class AdvancedSQLFederationExecutor implements SQLFederationExecutor {
     
     private String databaseName;
     
@@ -106,7 +107,7 @@ public final class AdvancedFederationExecutor implements SQLFederationExecutor {
         TranslatableSchema translatableSchema = createTranslatableSchema(prepareEngine, schema, callback, federationContext);
         Map<String, Object> parameters = createParameters(federationContext.getQueryContext().getParameters());
         Enumerator<Object[]> enumerator = execute(sqlStatementContext.getSqlStatement(), translatableSchema, parameters).enumerator();
-        resultSet = new FederationResultSet(enumerator, schema, translatableSchema, sqlStatementContext);
+        resultSet = new SQLFederationResultSet(enumerator, schema, translatableSchema, sqlStatementContext);
         return resultSet;
     }
     
@@ -121,8 +122,9 @@ public final class AdvancedFederationExecutor implements SQLFederationExecutor {
     
     private TranslatableSchema createTranslatableSchema(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final ShardingSphereSchema schema,
                                                         final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) {
-        CommonTableScanExecutorContext executorContext = new CommonTableScanExecutorContext(databaseName, schemaName, props, federationContext);
-        TranslatableTableScanExecutor executor = new TranslatableTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, globalRuleMetaData, executorContext, eventBusContext);
+        TableScanExecutorContext executorContext = new TableScanExecutorContext(databaseName, schemaName, props, federationContext);
+        // TODO replace FilterableTableScanExecutor with TranslatableTableScanExecutor
+        TableScanExecutor executor = new FilterableTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, globalRuleMetaData, executorContext, eventBusContext);
         return new TranslatableSchema(schemaName, schema, executor);
     }
     
@@ -136,7 +138,7 @@ public final class AdvancedFederationExecutor implements SQLFederationExecutor {
         RelNode bestPlan =
                 new ShardingSphereOptimizer(converter, QueryOptimizePlannerFactory.createHepPlanner()).optimize(sqlStatement);
         Bindable<Object[]> executablePlan = EnumerableInterpretable.toBindable(Collections.emptyMap(), null, (EnumerableRel) bestPlan, EnumerableRel.Prefer.ARRAY);
-        return executablePlan.bind(new CommonExecuteDataContext(validator, converter, parameters));
+        return executablePlan.bind(new SQLFederationDataContext(validator, converter, parameters));
     }
     
     @Override

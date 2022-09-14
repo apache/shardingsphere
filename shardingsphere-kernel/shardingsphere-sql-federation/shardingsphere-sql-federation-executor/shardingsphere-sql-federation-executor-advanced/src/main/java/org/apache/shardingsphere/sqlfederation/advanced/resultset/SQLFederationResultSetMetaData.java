@@ -34,10 +34,10 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Federation result set meta data.
+ * SQL federation result set meta data.
  */
 @RequiredArgsConstructor
-public final class FederationResultSetMetaData extends WrapperAdapter implements ResultSetMetaData {
+public final class SQLFederationResultSetMetaData extends WrapperAdapter implements ResultSetMetaData {
     
     private final ShardingSphereSchema schema;
     
