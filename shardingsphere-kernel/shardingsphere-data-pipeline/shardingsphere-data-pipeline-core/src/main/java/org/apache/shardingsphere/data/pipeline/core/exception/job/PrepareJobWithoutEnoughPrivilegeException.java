@@ -28,6 +28,6 @@ public final class PrepareJobWithoutEnoughPrivilegeException extends PipelineSQL
     private static final long serialVersionUID = -8462039913248251254L;
     
     public PrepareJobWithoutEnoughPrivilegeException() {
-        super(XOpenSQLState.GENERAL_ERROR, 85, "Source data source is lack of REPLICATION SLAVE, REPLICATION CLIENT ON *.* privileges");
+        super(XOpenSQLState.PRIVILEGE_NOT_GRANTED, 85, "Source data source is lack of REPLICATION SLAVE, REPLICATION CLIENT ON *.* privileges");
     }
 }
