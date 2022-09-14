@@ -89,8 +89,11 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
-| HY000     | 18000       | Can not find pipeline job \`%s\` |
-| HY000     | 18001       | Failed to get DDL for table \`%s\` |
+| 44000     | 18001       | Created process configuration already existed |
+| 44000     | 18002       | Altered process configuration does not exist |
+| HY000     | 18020       | Failed to get DDL for table \`%s\` |
+| HY000     | 18080       | Can not find pipeline job \`%s\` |
+| HY000     | 18081       | Job has already started |
 
 ## 功能异常
 

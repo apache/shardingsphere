@@ -100,7 +100,7 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
     private MockedStatic<ProxyBackendHandlerFactory> mockedStatic;
     
     @Before
-    public void setup() throws SQLException {
+    public void setup() {
         ProxyContext.init(mockContextManager);
         when(mockContextManager.getMetaDataContexts().getMetaData().containsDatabase("db")).thenReturn(true);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);

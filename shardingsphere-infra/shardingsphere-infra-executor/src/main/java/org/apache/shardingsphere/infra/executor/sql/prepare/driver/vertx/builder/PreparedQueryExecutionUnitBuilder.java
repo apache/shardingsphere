@@ -25,8 +25,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.vertx.
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.vertx.ExecutorVertxStatementManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.vertx.VertxExecutionContext;
 
-import java.sql.SQLException;
-
 /**
  * Execution unit builder using Vert.x prepared query.
  */
@@ -34,7 +32,7 @@ public final class PreparedQueryExecutionUnitBuilder implements VertxExecutionUn
     
     @Override
     public VertxExecutionUnit build(final ExecutionUnit executionUnit, final ExecutorVertxStatementManager statementManager,
-                                    final Future<? extends SqlClient> connection, final ConnectionMode connectionMode, final VertxExecutionContext option) throws SQLException {
+                                    final Future<? extends SqlClient> connection, final ConnectionMode connectionMode, final VertxExecutionContext option) {
         return new VertxExecutionUnit(executionUnit, connectionMode, connection.compose(sqlClient -> Future.succeededFuture(sqlClient.preparedQuery(executionUnit.getSqlUnit().getSql()))));
     }
     
