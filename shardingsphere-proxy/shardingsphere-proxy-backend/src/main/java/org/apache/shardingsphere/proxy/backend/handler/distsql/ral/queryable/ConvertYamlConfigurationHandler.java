@@ -66,9 +66,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.SortedMap;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Convert YAML configuration handler.
@@ -677,21 +677,18 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
     
     private String getTypeProperties(final Properties algorithmProperties) {
         StringBuilder result = new StringBuilder();
-        List reverseAlgorithmProperties = new ArrayList();
-        Iterator<Entry<Object, Object>> propsIter = algorithmProperties.entrySet().iterator();
-        while (propsIter.hasNext()) {
-            Entry<Object, Object> entry = propsIter.next();
-            reverseAlgorithmProperties.add(entry);
-        }
-        ListIterator<Entry<Object, Object>> reverseIter = reverseAlgorithmProperties.listIterator(reverseAlgorithmProperties.size());
-        while (reverseIter.hasPrevious()) {
-            Entry<Object, Object> entry = reverseIter.previous();
-            if (entry.getKey().equals(DistSQLScriptConstants.REGEX) || entry.getKey().equals(DistSQLScriptConstants.VALUE)) {
-                result.append(String.format(DistSQLScriptConstants.SHADOW_TABLE_TYPE_APOSTROPHE, entry.getKey(), entry.getValue()));
+        SortedMap<String, String> sortedMap = new TreeMap(algorithmProperties);
+        Set<String> set = sortedMap.keySet();
+        Iterator<String> prosIter = set.iterator();
+        while (prosIter.hasNext()) {
+            String prosKey = prosIter.next();
+            String prosValue = algorithmProperties.getProperty(prosKey);
+            if (prosKey.equals(DistSQLScriptConstants.REGEX) || prosKey.equals(DistSQLScriptConstants.VALUE)) {
+                result.append(String.format(DistSQLScriptConstants.SHADOW_TABLE_TYPE_APOSTROPHE, prosKey, prosValue));
             } else {
-                result.append(String.format(DistSQLScriptConstants.SHADOW_TABLE_TYPE_PROPERTIES, entry.getKey(), entry.getValue()));
+                result.append(String.format(DistSQLScriptConstants.SHADOW_TABLE_TYPE_PROPERTIES, prosKey, prosValue));
             }
-            if (reverseIter.hasPrevious()) {
+            if (prosIter.hasNext()) {
                 result.append(DistSQLScriptConstants.COMMA);
             }
         }
