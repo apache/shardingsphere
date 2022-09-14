@@ -41,16 +41,17 @@ public final class MigrationChangedJobConfigurationProcessor implements Pipeline
     public void process(final DataChangedEvent.Type eventType, final JobConfigurationPOJO jobConfigPOJO) {
         String jobId = jobConfigPOJO.getJobName();
         if (jobConfigPOJO.isDisabled()) {
+            log.info("{} is disabled", jobId);
             PipelineJobCenter.stop(jobId);
             return;
         }
         switch (eventType) {
             case ADDED:
             case UPDATED:
-                if (PipelineJobCenter.isJobExisting(jobConfigPOJO.getJobName())) {
-                    log.info("{} added to executing jobs failed since it already exists", jobConfigPOJO.getJobName());
+                if (PipelineJobCenter.isJobExisting(jobId)) {
+                    log.info("{} added to executing jobs failed since it already exists", jobId);
                 } else {
-                    log.info("{} executing jobs", jobConfigPOJO.getJobName());
+                    log.info("{} executing jobs", jobId);
                     CompletableFuture.runAsync(() -> execute(jobConfigPOJO), PipelineContext.getEventListenerExecutor());
                 }
                 break;
@@ -58,7 +59,7 @@ public final class MigrationChangedJobConfigurationProcessor implements Pipeline
                 log.info("deleted jobId={}", jobId);
                 MigrationJobConfiguration jobConfig = YamlMigrationJobConfigurationSwapper.swapToObject(jobConfigPOJO.getJobParameter());
                 new MigrationJobPreparer().cleanup(jobConfig);
-                PipelineJobCenter.stop(jobConfigPOJO.getJobName());
+                PipelineJobCenter.stop(jobId);
                 break;
             default:
                 break;

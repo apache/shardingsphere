@@ -42,7 +42,6 @@ public final class ChangedJobConfigurationDispatcher implements PipelineMetaData
     
     @Override
     public void handle(final DataChangedEvent event) {
-        log.info("{} job configuration: {}", event.getType(), event.getKey());
         JobConfigurationPOJO jobConfigPOJO;
         try {
             jobConfigPOJO = YamlEngine.unmarshal(event.getValue(), JobConfigurationPOJO.class, true);
@@ -52,6 +51,7 @@ public final class ChangedJobConfigurationDispatcher implements PipelineMetaData
             log.error("unmarshal job configuration pojo failed.", ex);
             return;
         }
+        log.info("{} job configuration: {}, disabled={}", event.getType(), event.getKey(), jobConfigPOJO.isDisabled());
         PipelineChangedJobConfigurationProcessor processor = PipelineChangedJobConfigurationProcessorFactory.getInstance(PipelineJobIdUtils.parseJobType(jobConfigPOJO.getJobName()));
         processor.process(event.getType(), jobConfigPOJO);
     }

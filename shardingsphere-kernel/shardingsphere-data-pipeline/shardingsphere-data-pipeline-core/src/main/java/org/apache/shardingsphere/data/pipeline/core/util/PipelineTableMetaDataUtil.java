@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
@@ -35,6 +37,7 @@ import java.util.List;
 /**
  * Pipeline table meta data util.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PipelineTableMetaDataUtil {
     
     /**
@@ -43,7 +46,7 @@ public final class PipelineTableMetaDataUtil {
      * @param schemaName schema name
      * @param tableName table name
      * @param dataSourceConfig source configuration
-     * @param loader pipeline table meta data loader* @return pipeline table meta data
+     * @param loader pipeline table meta data loader
      * @return pipeline table meta data
      */
     @SneakyThrows(SQLException.class)
@@ -73,7 +76,7 @@ public final class PipelineTableMetaDataUtil {
     }
     
     /**
-     * Get unique key column, if primary key exists, return primary key, otherwise return the first unique key.
+     * Get unique key column.
      *
      * @param schemaName schema name
      * @param tableName table name
@@ -88,7 +91,7 @@ public final class PipelineTableMetaDataUtil {
     }
     
     /**
-     * Get unique key column, if primary key exists, return primary key, otherwise return the first unique key.
+     * Get unique key column.
      *
      * @param schemaName schema name
      * @param tableName table name
