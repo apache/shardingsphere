@@ -125,7 +125,7 @@ public final class WalEventConverter {
     
     private void putColumnsIntoDataRecord(final DataRecord dataRecord, final PipelineTableMetaData tableMetaData, final List<Object> values) {
         for (int i = 0, count = values.size(); i < count; i++) {
-            boolean isUniqueKey = tableMetaData.isUniqueKey(i + 1);
+            boolean isUniqueKey = tableMetaData.getColumnMetaData(i + 1).isUniqueKey();
             Object uniqueKeyOldValue = isUniqueKey ? values.get(i) : null;
             Column column = new Column(tableMetaData.getColumnMetaData(i + 1).getName(), uniqueKeyOldValue, values.get(i), true, isUniqueKey);
             dataRecord.addColumn(column);

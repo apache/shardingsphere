@@ -26,7 +26,6 @@ import java.sql.Types;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -37,7 +36,7 @@ public final class PipelineTableMetaDataTest {
     
     @Before
     public void setUp() {
-        PipelineColumnMetaData column = new PipelineColumnMetaData(1, "test", Types.INTEGER, "INTEGER", true, true);
+        PipelineColumnMetaData column = new PipelineColumnMetaData(1, "test", Types.INTEGER, "INTEGER", true, true, true);
         pipelineTableMetaData = new PipelineTableMetaData("test_data", Collections.singletonMap("test", column), Collections.emptySet());
     }
     
@@ -62,7 +61,11 @@ public final class PipelineTableMetaDataTest {
     
     @Test
     public void assertIsPrimaryKey() {
-        assertTrue(pipelineTableMetaData.isUniqueKey(1));
-        assertFalse(pipelineTableMetaData.isUniqueKey(2));
+        assertTrue(pipelineTableMetaData.getColumnMetaData(1).isUniqueKey());
+    }
+    
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void assertIndexOutOfBoundsException() {
+        pipelineTableMetaData.getColumnMetaData(2);
     }
 }

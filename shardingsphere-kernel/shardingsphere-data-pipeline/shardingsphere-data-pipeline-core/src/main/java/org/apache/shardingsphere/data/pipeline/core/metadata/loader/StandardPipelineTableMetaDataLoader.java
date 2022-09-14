@@ -30,16 +30,21 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Standard pipeline table metadata loader.
@@ -88,34 +93,66 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
     
     private Map<TableName, PipelineTableMetaData> loadTableMetaData0(final Connection connection, final String schemaName, final String tableNamePattern) throws SQLException {
         Map<String, Map<String, PipelineColumnMetaData>> tablePipelineColumnMetaDataMap = new LinkedHashMap<>();
-        try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), schemaName, tableNamePattern, "%")) {
+        Map<String, Map<String, Collection<String>>> uniqueKeysMap = new HashMap<>();
+        Map<String, Set<String>> primaryKeysMap = new HashMap<>();
+        List<String> tableNames = new ArrayList<>();
+        try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), schemaName, tableNamePattern, null)) {
             while (resultSet.next()) {
-                int ordinalPosition = resultSet.getInt("ORDINAL_POSITION");
                 String tableName = resultSet.getString("TABLE_NAME");
-                Map<String, PipelineColumnMetaData> columnMetaDataMap = tablePipelineColumnMetaDataMap.computeIfAbsent(tableName, k -> new LinkedHashMap<>());
-                String columnName = resultSet.getString("COLUMN_NAME");
-                if (columnMetaDataMap.containsKey(columnName)) {
-                    continue;
+                tableNames.add(tableName);
+                primaryKeysMap.put(tableName, loadPrimaryKeys(connection, schemaName, tableName));
+                uniqueKeysMap.put(tableName, loadUniqueIndexesOfTable(connection, schemaName, tableName));
+            }
+        }
+        for (String each : tableNames) {
+            try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), schemaName, tableNamePattern, "%")) {
+                while (resultSet.next()) {
+                    int ordinalPosition = resultSet.getInt("ORDINAL_POSITION");
+                    String tableName = resultSet.getString("TABLE_NAME");
+                    Map<String, PipelineColumnMetaData> columnMetaDataMap = tablePipelineColumnMetaDataMap.computeIfAbsent(tableName, k -> new LinkedHashMap<>());
+                    String columnName = resultSet.getString("COLUMN_NAME");
+                    if (columnMetaDataMap.containsKey(columnName)) {
+                        continue;
+                    }
+                    int dataType = resultSet.getInt("DATA_TYPE");
+                    String dataTypeName = resultSet.getString("TYPE_NAME");
+                    Set<String> primaryKeys = primaryKeysMap.getOrDefault(each, Collections.emptySet());
+                    boolean primaryKey = primaryKeys.contains(columnName);
+                    boolean isNullable = "YES".equals(resultSet.getString("IS_NULLABLE"));
+                    Map<String, Collection<String>> uniqueKeys = uniqueKeysMap.getOrDefault(tableName, Collections.emptyMap());
+                    boolean isUniqueKey = primaryKey || uniqueKeys.values().stream().anyMatch(names -> names.contains(columnName));
+                    PipelineColumnMetaData columnMetaData = new PipelineColumnMetaData(ordinalPosition, columnName, dataType, dataTypeName, isNullable, primaryKey, isUniqueKey);
+                    columnMetaDataMap.put(columnName, columnMetaData);
                 }
-                int dataType = resultSet.getInt("DATA_TYPE");
-                String dataTypeName = resultSet.getString("TYPE_NAME");
-                Set<String> primaryKeys;
-                try {
-                    primaryKeys = loadPrimaryKeys(connection, schemaName, tableName);
-                } catch (final SQLException ex) {
-                    log.error("loadPrimaryKeys failed, tableName={}", tableName);
-                    throw ex;
-                }
-                boolean primaryKey = primaryKeys.contains(columnName);
-                boolean isNullable = "YES".equals(resultSet.getString("IS_NULLABLE"));
-                PipelineColumnMetaData columnMetaData = new PipelineColumnMetaData(ordinalPosition, columnName, dataType, dataTypeName, isNullable, primaryKey);
-                columnMetaDataMap.put(columnName, columnMetaData);
             }
         }
         Map<TableName, PipelineTableMetaData> result = new LinkedHashMap<>();
         for (Entry<String, Map<String, PipelineColumnMetaData>> entry : tablePipelineColumnMetaDataMap.entrySet()) {
             String tableName = entry.getKey();
-            result.put(new TableName(tableName), new PipelineTableMetaData(tableName, entry.getValue(), loadIndexesOfTable(connection, schemaName, entry.getValue(), tableName)));
+            Map<String, PipelineColumnMetaData> metaDataMap = tablePipelineColumnMetaDataMap.get(tableName);
+            Map<String, Collection<String>> uniqueKeys = uniqueKeysMap.getOrDefault(tableName, Collections.emptyMap());
+            Collection<PipelineIndexMetaData> uniqueIndexMetaData = uniqueKeys.entrySet().stream()
+                    .map(each -> new PipelineIndexMetaData(each.getKey(), each.getValue().stream().map(metaDataMap::get).collect(Collectors.toList()))).collect(Collectors.toList());
+            result.put(new TableName(tableName), new PipelineTableMetaData(tableName, entry.getValue(), uniqueIndexMetaData));
+        }
+        return result;
+    }
+    
+    private Map<String, Collection<String>> loadUniqueIndexesOfTable(final Connection connection, final String schemaName, final String tableName) throws SQLException {
+        Map<String, SortedMap<Short, String>> orderedColumnsOfIndexes = new LinkedHashMap<>();
+        try (ResultSet resultSet = connection.getMetaData().getIndexInfo(connection.getCatalog(), schemaName, tableName, true, false)) {
+            while (resultSet.next()) {
+                String indexName = resultSet.getString("INDEX_NAME");
+                if (null == indexName) {
+                    continue;
+                }
+                orderedColumnsOfIndexes.computeIfAbsent(indexName, unused -> new TreeMap<>()).put(resultSet.getShort("ORDINAL_POSITION"), resultSet.getString("COLUMN_NAME"));
+            }
+        }
+        Map<String, Collection<String>> result = new LinkedHashMap<>();
+        for (Entry<String, SortedMap<Short, String>> each : orderedColumnsOfIndexes.entrySet()) {
+            Collection<String> columnNames = result.computeIfAbsent(each.getKey(), unused -> new LinkedList<>());
+            columnNames.addAll(each.getValue().values());
         }
         return result;
     }

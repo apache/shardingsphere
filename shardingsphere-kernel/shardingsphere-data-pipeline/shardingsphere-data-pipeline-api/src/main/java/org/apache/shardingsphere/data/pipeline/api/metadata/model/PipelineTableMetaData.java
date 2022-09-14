@@ -86,20 +86,6 @@ public final class PipelineTableMetaData {
         return result;
     }
     
-    /**
-     * Judge whether column is unique key or not.
-     *
-     * @param columnIndex the first column is 1, the second is 2, ...
-     * @return true if the column is unique key, otherwise false
-     */
-    public boolean isUniqueKey(final int columnIndex) {
-        if (columnIndex > columnNames.size()) {
-            return false;
-        }
-        String columnName = columnNames.get(columnIndex - 1);
-        return columnMetaDataMap.get(columnName).isPrimaryKey() || (columnName.equals(uniqueIndexes.iterator().next().getColumns().get(0).getName()));
-    }
-    
     @Override
     public boolean equals(final Object o) {
         if (this == o) {

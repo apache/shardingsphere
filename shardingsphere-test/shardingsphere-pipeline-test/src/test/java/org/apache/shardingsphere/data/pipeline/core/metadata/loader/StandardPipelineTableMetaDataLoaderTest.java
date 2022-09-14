@@ -85,6 +85,8 @@ public final class StandardPipelineTableMetaDataLoaderTest {
         when(result.getPrimaryKeys(TEST_CATALOG, null, TEST_TABLE)).thenReturn(primaryKeyResultSet);
         ResultSet indexInfoResultSet = mockIndexInfoResultSet();
         when(result.getIndexInfo(TEST_CATALOG, null, TEST_TABLE, true, false)).thenReturn(indexInfoResultSet);
+        ResultSet mockTableResultSet = mockTableResultSet();
+        when(result.getTables(TEST_CATALOG, null, TEST_TABLE, null)).thenReturn(mockTableResultSet);
         return result;
     }
     
@@ -111,6 +113,13 @@ public final class StandardPipelineTableMetaDataLoaderTest {
         when(result.getString(INDEX_NAME)).thenReturn(TEST_INDEX);
         when(result.getString(COLUMN_NAME)).thenReturn("name", "id");
         when(result.getShort(ORDINAL_POSITION)).thenReturn((short) 2, (short) 1);
+        return result;
+    }
+    
+    private ResultSet mockTableResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, false);
+        when(result.getString(TABLE_NAME)).thenReturn(TEST_TABLE);
         return result;
     }
     
