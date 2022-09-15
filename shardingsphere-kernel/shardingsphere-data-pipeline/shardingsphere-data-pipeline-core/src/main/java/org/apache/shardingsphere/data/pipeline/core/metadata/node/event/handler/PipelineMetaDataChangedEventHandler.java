@@ -15,31 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.spi.handler;
+package org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
-import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 
 import java.util.regex.Pattern;
 
 /**
- * Barrier pipeline meta data handler, .
+ * Pipeline meta data changed event handler.
  */
-@Slf4j
-public final class BarrierMetaDataChangedHandler implements PipelineMetaDataChangedHandler {
+@SingletonSPI
+public interface PipelineMetaDataChangedEventHandler {
     
-    @Override
-    public Pattern getKeyPattern() {
-        return PipelineMetaDataNode.BARRIER_PATTERN;
-    }
+    /**
+     * Get key pattern.
+     *
+     * @return key pattern
+     */
+    Pattern getKeyPattern();
     
-    @Override
-    public void handle(final DataChangedEvent event) {
-        if (event.getType() == Type.ADDED) {
-            PipelineDistributedBarrier.getInstance().checkChildrenNodeCount(event);
-        }
-    }
+    /**
+     * Handle meta data changed event.
+     *
+     * @param event changed event
+     */
+    void handle(DataChangedEvent event);
 }

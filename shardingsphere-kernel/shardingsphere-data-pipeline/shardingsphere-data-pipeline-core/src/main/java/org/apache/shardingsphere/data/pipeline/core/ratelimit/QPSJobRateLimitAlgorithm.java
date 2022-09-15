@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.spi.ratelimit;
+package org.apache.shardingsphere.data.pipeline.core.ratelimit;
 
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.RateLimiter;
@@ -26,13 +26,13 @@ import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorit
 import java.util.Properties;
 
 /**
- * TPS job rate limit algorithm for SPI.
+ * QPS job rate limit algorithm for SPI.
  */
-public final class TPSJobRateLimitAlgorithm implements JobRateLimitAlgorithm {
+public final class QPSJobRateLimitAlgorithm implements JobRateLimitAlgorithm {
     
-    private static final String TPS_KEY = "tps";
+    private static final String QPS_KEY = "qps";
     
-    private int tps = 2000;
+    private int qps = 50;
     
     private RateLimiter rateLimiter;
     
@@ -42,32 +42,28 @@ public final class TPSJobRateLimitAlgorithm implements JobRateLimitAlgorithm {
     @Override
     public void init(final Properties props) {
         this.props = props;
-        String tpsValue = props.getProperty(TPS_KEY);
-        if (!Strings.isNullOrEmpty(tpsValue)) {
-            tps = Integer.parseInt(tpsValue);
+        String qpsValue = props.getProperty(QPS_KEY);
+        if (!Strings.isNullOrEmpty(qpsValue)) {
+            qps = Integer.parseInt(qpsValue);
         }
-        rateLimiter = RateLimiter.create(tps);
+        rateLimiter = RateLimiter.create(qps);
     }
     
     @Override
     public String getType() {
-        return "TPS";
+        return "QPS";
     }
     
     @Override
     public void intercept(final JobOperationType type, final Number data) {
-        switch (type) {
-            case INSERT:
-            case DELETE:
-            case UPDATE:
-                rateLimiter.acquire(null != data ? data.intValue() : 1);
-                break;
-            default:
+        if (type != JobOperationType.SELECT) {
+            return;
         }
+        rateLimiter.acquire(null != data ? data.intValue() : 1);
     }
     
     @Override
     public String toString() {
-        return "TPSJobRateLimitAlgorithm{" + "props=" + props + '}';
+        return "QPSJobRateLimitAlgorithm{" + "props=" + props + '}';
     }
 }

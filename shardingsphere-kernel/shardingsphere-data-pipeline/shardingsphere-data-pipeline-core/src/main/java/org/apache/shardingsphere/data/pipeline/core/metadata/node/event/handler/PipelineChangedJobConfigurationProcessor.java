@@ -15,19 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.exception.job;
+package org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler;
 
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 
 /**
- * Target table not empty when prepare migration exception.
+ * Pipeline changed job configuration processor.
  */
-public final class TargetTableNotEmptyWhenPrepareMigrationException extends PipelineSQLException {
+public interface PipelineChangedJobConfigurationProcessor extends TypedSPI {
     
-    private static final long serialVersionUID = -8462039913248251254L;
-    
-    public TargetTableNotEmptyWhenPrepareMigrationException(final String tableName) {
-        super(XOpenSQLState.GENERAL_ERROR, 84, "Target table `%s` is not empty before migration", tableName);
-    }
+    /**
+     * Process changed job configuration.
+     *
+     * @param eventType event type
+     * @param jobConfigPOJO job configuration pojo
+     */
+    void process(DataChangedEvent.Type eventType, JobConfigurationPOJO jobConfigPOJO);
 }

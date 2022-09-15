@@ -15,30 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.spi.handler;
+package org.apache.shardingsphere.data.pipeline.core.exception.job;
 
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
-
-import java.util.regex.Pattern;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Pipeline meta data changed handler.
+ * Prepare job without enough privilege exception.
  */
-@SingletonSPI
-public interface PipelineMetaDataChangedHandler {
+public final class PrepareJobWithoutEnoughPrivilegeException extends PipelineSQLException {
     
-    /**
-     * Get key pattern.
-     *
-     * @return key pattern
-     */
-    Pattern getKeyPattern();
+    private static final long serialVersionUID = -8462039913248251254L;
     
-    /**
-     * Event changed handler.
-     *
-     * @param event changed event
-     */
-    void handle(DataChangedEvent event);
+    public PrepareJobWithoutEnoughPrivilegeException() {
+        super(XOpenSQLState.PRIVILEGE_NOT_GRANTED, 85, "Source data source is lack of REPLICATION SLAVE, REPLICATION CLIENT ON *.* privileges");
+    }
 }

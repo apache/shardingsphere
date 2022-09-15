@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.spi.process;
+package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
@@ -24,8 +24,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJob;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobPreparer;
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler.PipelineChangedJobConfigurationProcessor;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
@@ -33,25 +32,26 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Migration job config event processor.
+ * Migration job configuration changed processor.
  */
 @Slf4j
-public final class MigrationJobConfigurationChangedEventProcessor implements PipelineJobConfigurationChangedEventProcessor {
+public final class MigrationChangedJobConfigurationProcessor implements PipelineChangedJobConfigurationProcessor {
     
     @Override
-    public void process(final DataChangedEvent event, final JobConfigurationPOJO jobConfigPOJO) {
+    public void process(final DataChangedEvent.Type eventType, final JobConfigurationPOJO jobConfigPOJO) {
         String jobId = jobConfigPOJO.getJobName();
         if (jobConfigPOJO.isDisabled()) {
+            log.info("{} is disabled", jobId);
             PipelineJobCenter.stop(jobId);
             return;
         }
-        switch (event.getType()) {
+        switch (eventType) {
             case ADDED:
             case UPDATED:
-                if (PipelineJobCenter.isJobExisting(jobConfigPOJO.getJobName())) {
-                    log.info("{} added to executing jobs failed since it already exists", jobConfigPOJO.getJobName());
+                if (PipelineJobCenter.isJobExisting(jobId)) {
+                    log.info("{} added to executing jobs failed since it already exists", jobId);
                 } else {
-                    log.info("{} executing jobs", jobConfigPOJO.getJobName());
+                    log.info("{} executing jobs", jobId);
                     CompletableFuture.runAsync(() -> execute(jobConfigPOJO), PipelineContext.getEventListenerExecutor());
                 }
                 break;
@@ -59,7 +59,7 @@ public final class MigrationJobConfigurationChangedEventProcessor implements Pip
                 log.info("deleted jobId={}", jobId);
                 MigrationJobConfiguration jobConfig = YamlMigrationJobConfigurationSwapper.swapToObject(jobConfigPOJO.getJobParameter());
                 new MigrationJobPreparer().cleanup(jobConfig);
-                PipelineJobCenter.stop(jobConfigPOJO.getJobName());
+                PipelineJobCenter.stop(jobId);
                 break;
             default:
                 break;

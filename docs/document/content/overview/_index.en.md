@@ -9,9 +9,8 @@ chapter = true
 
 ### Introduction
 
-Apache ShardingSphere is an open source ecosystem that allows you to transform any database into a distributed database system. 
-The project includes a JDBC and a Proxy, and its core adopts a micro-kernel and pluggable architecture.
-Thanks to its plugin-oriented architecture, features can be flexibly expanded at will.
+Apache ShardingSphere is an ecosystem to transform any database into a distributed database system,
+and enhance it with sharding, elastic scaling, encryption features & more.
 
 The project is committed to providing a multi-source heterogeneous, enhanced database platform and further building an ecosystem around the upper layer of the platform.
 Database Plus, the design philosophy of Apache ShardingSphere, aims at building the standard and ecosystem on the upper layer of the heterogeneous database.
@@ -36,14 +35,14 @@ ShardingSphere-Proxy is a transparent database proxy, providing a database serve
 
 | Feature                 | Definition |
 | ----------------------- | ---------- |
-| Data Sharding           | Data sharding is an effective way to deal with massive data storage and computing. ShardingSphere provides distributed database solutions that can scale out computing and storage levels on top of the underlying database. |
-| Distributed Transaction | Transactional capability is key to ensuring database integrity and security and is also one of the databases' core technologies. ShardingSphere provides distributed transaction capability on top of a single database, which can achieve data security across underlying data sources. |
-| Read/write Splitting    | Read/write splitting can be used to cope with business access with high stress. Based on its understanding of SQL semantics and the topological awareness of the underlying database, ShardingSphere provides flexible and secure read/write splitting capabilities and can achieve load balancing for read access. |
-| High Availability       | High availability is a basic requirement for a data storage and computing platform. ShardingSphere provides access to high-availability computing services based on stateless services. At the same time, it can sense and use the underlying database's HA solution to achieve its overall high availability. |
-| Data Migration          | Data migration is the key to connecting data ecosystems. ShardingSphere provides full-scenario data migration capability for users, which can cope with the surge of business data volume. |
-| Federated Query         | Federated queries are effective in utilizing data in a complex data environment. ShardingSphere is capable of querying and analyzing complex data across data sources, simplifying and improving the data usage experience. |
-| Data Encryption         | Data Encryption is a basic way to ensure data security. ShardingSphere provides a set of data encryption solutions that are complete, secure, transparent, and with low transformation costs. |
-| Shadow Database         | In the full-link stress testing scenario, ShardingSphere shadow DB is used for providing data isolation support for complex testing work. The obtained testing result can accurately reflect the system's true capacity and performance. |
+| Data Sharding           | Data sharding is an effective way to deal with massive data storage and computing. ShardingSphere provides a distributed database solution based on the underlying database, which can scale computing and storage horizontally. |
+| Distributed Transaction | Transactional capability is key to ensuring database integrity and security and is also one of the databases' core technologies. With a hybrid engine based on XA and BASE transactions, ShardingSphere provides distributed transaction capabilities on top of standalone databases, enabling data security across underlying data sources. |
+| Read/write Splitting    | Read/write splitting can be used to cope with business access with high stress. ShardingSphere provides flexible read/write splitting capabilities and can achieve read access load balancing based on the understanding of SQL semantics and the ability to perceive the underlying database topology. |
+| High Availability       | High availability is a basic requirement for a data storage and computing platform. Guarantee the HA of your distributed database cluster with ShardingSphere’s Operator on Kubernetes, and the native HA of your existing data sources. |
+| Data Migration          | Data migration is the key to connecting data ecosystems. SharingSphere provides migration capabilities to help users migrate the data from other data sources, while simultaneously performing data sharding. |
+| Query Federation        | Federated queries are effective in utilizing data in a complex data environment. ShardingSphere provides complex data query and analysis capabilities across data sources, simplifying the data aggregation from different data locations. |
+| Data Encryption         | Data Encryption is a basic way to ensure data security. ShardingSphere provides a complete, transparent, secure, and low-cost data encryption solution. |
+| Shadow Database         | In full-link online load testing scenarios, ShardingSphere supports data isolation in complex load testing scenarios through the shadow database function. Execute your load testing scenarios in a production environment without worrying about test data polluting your production data. |
 
 ### Advantages
 

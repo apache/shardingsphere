@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.spi.handler;
+package org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler;
 
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
 
 /**
- * Pipeline meta data listener factory.
+ * Pipeline meta data changed event handler factory.
  */
-public final class PipelineMetaDataChangedHandlerFactory {
+public final class PipelineMetaDataChangedEventHandlerFactory {
     
     static {
-        ShardingSphereServiceLoader.register(PipelineMetaDataChangedHandler.class);
+        ShardingSphereServiceLoader.register(PipelineMetaDataChangedEventHandler.class);
     }
     
     /**
-     * Get pipeline meta data listener instance.
+     * Get instances.
      *
-     * @return pipeline meta data listener
+     * @return instances
      */
-    public static Collection<PipelineMetaDataChangedHandler> findAllInstances() {
-        return ShardingSphereServiceLoader.getServiceInstances(PipelineMetaDataChangedHandler.class);
+    public static Collection<PipelineMetaDataChangedEventHandler> findAllInstances() {
+        return ShardingSphereServiceLoader.getServiceInstances(PipelineMetaDataChangedEventHandler.class);
     }
 }

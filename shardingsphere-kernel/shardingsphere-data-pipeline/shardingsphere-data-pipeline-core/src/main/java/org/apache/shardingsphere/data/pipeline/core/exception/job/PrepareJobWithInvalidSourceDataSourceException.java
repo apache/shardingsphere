@@ -15,22 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.spi.process;
+package org.apache.shardingsphere.data.pipeline.core.exception.job;
 
-import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Pipeline job config changed event processor.
+ * Prepare job with invalid source data source exception.
  */
-public interface PipelineJobConfigurationChangedEventProcessor extends TypedSPI {
+public final class PrepareJobWithInvalidSourceDataSourceException extends PipelineSQLException {
     
-    /**
-     * Process data changed event.
-     *
-     * @param jobConfigPOJO job config
-     * @param event event
-     */
-    void process(DataChangedEvent event, JobConfigurationPOJO jobConfigPOJO);
+    private static final long serialVersionUID = -7710035889344958565L;
+    
+    public PrepareJobWithInvalidSourceDataSourceException(final String dataSourceKey, final String toBeCheckedValue, final String actualValue) {
+        super(XOpenSQLState.GENERAL_ERROR, 86, "Source data source required `%s = %s`, now is `%s`", dataSourceKey, toBeCheckedValue, actualValue);
+    }
 }
