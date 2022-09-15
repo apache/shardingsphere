@@ -26,6 +26,7 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.PasswordEncry
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.ServerInfo;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.ServerVersion;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationPlugin;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCapabilityFlag;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
@@ -80,8 +81,18 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
         }
         if (msg instanceof MySQLAuthSwitchRequestPacket) {
             MySQLAuthSwitchRequestPacket authSwitchRequest = (MySQLAuthSwitchRequestPacket) msg;
-            ctx.channel().writeAndFlush(new MySQLAuthSwitchResponsePacket(authSwitchRequest.getSequenceId() + 1,
-                    PasswordEncryption.encryptWithSha2(password.getBytes(), authSwitchRequest.getAuthPluginData().getAuthenticationPluginData())));
+            byte[] authPluginResponse;
+            switch (MySQLAuthenticationPlugin.getPluginByName(authSwitchRequest.getAuthPluginName())) {
+                case NATIVE_PASSWORD_AUTHENTICATION:
+                    authPluginResponse = PasswordEncryption.encryptWithMySQL41(password.getBytes(), authSwitchRequest.getAuthPluginData().getAuthenticationPluginData());
+                    break;
+                case SHA2_AUTHENTICATION:
+                    authPluginResponse = PasswordEncryption.encryptWithSha2(password.getBytes(), authSwitchRequest.getAuthPluginData().getAuthenticationPluginData());
+                    break;
+                default:
+                    authPluginResponse = password.getBytes();
+            }
+            ctx.channel().writeAndFlush(new MySQLAuthSwitchResponsePacket(authSwitchRequest.getSequenceId() + 1, authPluginResponse));
             seed = authSwitchRequest.getAuthPluginData().getAuthenticationPluginData();
             return;
         }
