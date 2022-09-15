@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.integration.env.container.atomic.storage.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.ContainerUtil;
@@ -35,25 +36,53 @@ public final class MySQLContainerConfigurationFactory {
     
     /**
      * Create new instance of MySQL container configuration.
-     * 
+     *
      * @return created instance
      */
     public static StorageContainerConfiguration newInstance() {
-        return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources());
+        return new StorageContainerConfiguration(getDefaultCommand(), getDefaultContainerEnvironments(), getDefaultMountedResources());
     }
     
-    private static String getCommand() {
+    /**
+     * Create new instance of MySQL container configuration with parameter.
+     *
+     * @param command command
+     * @param containerEnvironments container environments
+     * @param mountedResources mounted resources
+     * @return created instance
+     */
+    public static StorageContainerConfiguration newInstance(final String command, final Map<String, String> containerEnvironments, final Map<String, String> mountedResources) {
+        return new StorageContainerConfiguration(ObjectUtils.defaultIfNull(command, getDefaultCommand()), ObjectUtils.defaultIfNull(containerEnvironments, getDefaultContainerEnvironments()),
+                ObjectUtils.defaultIfNull(mountedResources, getDefaultMountedResources()));
+    }
+    
+    /**
+     * Get default command.
+     *
+     * @return command
+     */
+    public static String getDefaultCommand() {
         return "--server-id=" + ContainerUtil.generateMySQLServerId();
     }
     
-    private static Map<String, String> getContainerEnvironments() {
+    /**
+     * Get default container environments.
+     *
+     * @return container environments
+     */
+    public static Map<String, String> getDefaultContainerEnvironments() {
         Map<String, String> result = new HashMap<>(2, 1);
         result.put("LANG", "C.UTF-8");
         result.put("MYSQL_RANDOM_ROOT_PASSWORD", "yes");
         return result;
     }
     
-    private static Map<String, String> getMountedResources() {
+    /**
+     * Get default mounted resources.
+     *
+     * @return container environments
+     */
+    public static Map<String, String> getDefaultMountedResources() {
         return Collections.singletonMap("/env/mysql/my.cnf", StorageContainerConstants.MYSQL_CONF_IN_CONTAINER);
     }
 }
