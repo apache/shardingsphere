@@ -155,7 +155,7 @@ public final class MigrationJobAPIImplTest {
     @Test
     public void assertDataConsistencyCheck() throws NoSuchFieldException, IllegalAccessException {
         MigrationJobConfiguration jobConfiguration = JobConfigurationBuilder.createJobConfiguration();
-        ReflectionUtil.setFieldValue(jobConfiguration, "uniqueKeyColumn", new PipelineColumnMetaData(1, "order_id", 4, "", false, true));
+        ReflectionUtil.setFieldValue(jobConfiguration, "uniqueKeyColumn", new PipelineColumnMetaData(1, "order_id", 4, "", false, true, true));
         Optional<String> jobId = jobAPI.start(jobConfiguration);
         assertTrue(jobId.isPresent());
         MigrationJobConfiguration jobConfig = jobAPI.getJobConfiguration(jobId.get());
