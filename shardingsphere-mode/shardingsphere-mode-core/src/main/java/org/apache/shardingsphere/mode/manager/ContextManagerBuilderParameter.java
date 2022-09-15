@@ -49,6 +49,8 @@ public final class ContextManagerBuilderParameter {
     
     private final InstanceMetaData instanceMetaData;
     
+    private final boolean force;
+    
     /**
      * Whether parameter is empty.
      * 

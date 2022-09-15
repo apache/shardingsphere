@@ -15,25 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.resource;
+package org.apache.shardingsphere.infra.datasource.state.exception;
 
-import org.apache.shardingsphere.test.mock.MockedDataSource;
-import org.junit.Test;
+import org.apache.shardingsphere.infra.util.exception.external.server.ShardingSphereServerException;
 
-import java.util.Collections;
-
-import static org.junit.Assert.assertTrue;
-
-public final class ShardingSphereResourceTest {
+/**
+ * Data source state exception.
+ */
+public final class DataSourceStateException extends ShardingSphereServerException {
     
-    @SuppressWarnings("BusyWait")
-    @Test
-    public void assertClose() throws InterruptedException {
-        MockedDataSource dataSource = new MockedDataSource();
-        new ShardingSphereResource("sharding_db", Collections.singletonMap("foo_ds", dataSource)).close(dataSource);
-        while (!dataSource.isClosed()) {
-            Thread.sleep(10L);
-        }
-        assertTrue(dataSource.isClosed());
+    private static final long serialVersionUID = -8058761885303180333L;
+    
+    public DataSourceStateException(final String errorCategory, final int errorCode, final String message, final Exception cause) {
+        super(errorCategory, errorCode, message, cause);
     }
 }
