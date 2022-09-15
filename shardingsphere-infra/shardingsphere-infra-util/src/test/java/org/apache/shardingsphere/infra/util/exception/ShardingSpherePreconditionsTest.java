@@ -17,53 +17,29 @@
 
 package org.apache.shardingsphere.infra.util.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.ShardingSphereExternalException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
-import org.apache.shardingsphere.infra.util.exception.internal.ShardingSphereInternalException;
-import org.apache.shardingsphere.infra.util.exception.internal.fixture.ShardingSphereInternalExceptionFixture;
 import org.junit.Test;
 
 import java.sql.SQLException;
 
 public final class ShardingSpherePreconditionsTest {
     
-    @Test(expected = ShardingSphereExternalException.class)
-    public void assertCheckStateToThrowsException() {
-        ShardingSpherePreconditions.checkState(false, () -> new SQLWrapperException(new SQLException()));
+    @Test(expected = SQLException.class)
+    public void assertCheckStateToThrowsException() throws SQLException {
+        ShardingSpherePreconditions.checkState(false, SQLException::new);
     }
     
     @Test
-    public void assertCheckStateToNotThrowException() {
-        ShardingSpherePreconditions.checkState(true, () -> new SQLWrapperException(new SQLException()));
-    }
-    
-    @Test(expected = ShardingSphereExternalException.class)
-    public void assertCheckNotNullToThrowsExternalException() {
-        ShardingSpherePreconditions.checkNotNull(null, () -> new SQLWrapperException(new SQLException()));
-    }
-    
-    @Test
-    public void assertCheckNotNullToNotThrowExternalException() {
-        ShardingSpherePreconditions.checkNotNull(new Object(), () -> new SQLWrapperException(new SQLException()));
-    }
-    
-    @Test(expected = ShardingSphereInternalException.class)
-    public void assertCheckNotNullToThrowsInternalException() throws ShardingSphereInternalException {
-        ShardingSpherePreconditions.checkNotNull(null, () -> new ShardingSphereInternalExceptionFixture("message"));
-    }
-    
-    @Test
-    public void assertCheckNotNullToNotThrowInternalException() throws ShardingSphereInternalException {
-        ShardingSpherePreconditions.checkNotNull(new Object(), () -> new ShardingSphereInternalExceptionFixture("message"));
+    public void assertCheckStateToNotThrowException() throws SQLException {
+        ShardingSpherePreconditions.checkState(true, SQLException::new);
     }
     
     @Test(expected = SQLException.class)
-    public void assertCheckNotNullToThrowsSQLException() throws SQLException {
-        ShardingSpherePreconditions.checkNotNull(null, () -> new SQLException("message"));
+    public void assertCheckNotNullToThrowsException() throws SQLException {
+        ShardingSpherePreconditions.checkNotNull(null, SQLException::new);
     }
     
     @Test
-    public void assertCheckNotNullToNotThrowSQLException() throws SQLException {
-        ShardingSpherePreconditions.checkNotNull(new Object(), () -> new SQLException("message"));
+    public void assertCheckNotNullToNotThrowException() throws SQLException {
+        ShardingSpherePreconditions.checkNotNull(new Object(), SQLException::new);
     }
 }
