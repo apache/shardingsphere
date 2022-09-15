@@ -56,6 +56,13 @@ For full documentation & more details, visit: [Docs](https://shardingsphere.apac
 
 For guides on how to get started and setup your environment, contributor & committer guides, visit: [Contribution Guidelines](https://shardingsphere.apache.org/community/en/involved/)
 
+Good news! We'll be taking part in [Hacktoberfest 2022](https://hacktoberfest.com) 🍻🎉 Hacktoberfest is for everyone. 
+
+Whether it's your first time, you're a seasoned PRO - it's almost time to get hacking, chase those pull/merge requests and complete your mission in supporting open source.
+
+You can find the issues we've prepared for this year's Hacktoberfest [here](https://github.com/apache/shardingsphere/labels/project%3A%20hacktoberfest).
+
+
 ### Team
 
 <hr>

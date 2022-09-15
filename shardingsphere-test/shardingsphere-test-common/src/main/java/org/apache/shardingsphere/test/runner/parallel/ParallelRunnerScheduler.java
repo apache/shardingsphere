@@ -15,32 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.framework.runner.parallel;
+package org.apache.shardingsphere.test.runner.parallel;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelLevel;
-import org.apache.shardingsphere.test.integration.framework.param.RunnerParameters;
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
+import org.apache.shardingsphere.test.runner.parallel.annotaion.ParallelLevel;
 import org.junit.runners.model.RunnerScheduler;
 
 /**
  * Parallel runner scheduler.
  */
 @RequiredArgsConstructor
-public final class ParallelRunnerScheduler implements RunnerScheduler {
+public class ParallelRunnerScheduler implements RunnerScheduler {
     
+    @Getter
     private final ParallelLevel parallelLevel;
     
-    private final ParallelRunnerExecutorFactory executorFactory = new ParallelRunnerExecutorFactory();
+    @Getter
+    private final ParallelRunnerExecutorFactory executorFactory;
     
     @Override
     public void schedule(final Runnable childStatement) {
-        ParameterizedArray parameterizedArray = new RunnerParameters(childStatement).getParameterizedArray();
-        executorFactory.getExecutor(parameterizedArray.getDatabaseType(), parallelLevel).execute(parameterizedArray, childStatement);
+        executorFactory.getExecutor(parallelLevel).execute(childStatement);
     }
     
     @Override
     public void finished() {
-        executorFactory.getAllExecutors().forEach(ParallelRunnerExecutor::finished);
+        executorFactory.getAllExecutors().forEach(each -> ((ParallelRunnerExecutor) each).finished());
     }
 }

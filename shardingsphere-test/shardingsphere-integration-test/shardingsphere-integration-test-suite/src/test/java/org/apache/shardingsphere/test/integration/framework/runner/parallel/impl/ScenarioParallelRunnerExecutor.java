@@ -17,53 +17,32 @@
 
 package org.apache.shardingsphere.test.integration.framework.runner.parallel.impl;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.EqualsAndHashCode;
-import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
-import org.apache.shardingsphere.test.integration.framework.runner.parallel.ParallelRunnerExecutor;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
-
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import org.apache.shardingsphere.test.runner.parallel.impl.DefaultParallelRunnerExecutor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Parallel runner executor with scenario.
  */
-public final class ScenarioParallelRunnerExecutor implements ParallelRunnerExecutor {
-    
-    private final Map<ScenarioKey, ExecutorServiceManager> executorServiceManagers = new ConcurrentHashMap<>();
-    
-    private final Collection<Future<?>> taskFeatures = new LinkedList<>();
+public final class ScenarioParallelRunnerExecutor extends DefaultParallelRunnerExecutor<ParameterizedArray> {
     
     @Override
-    public void execute(final ParameterizedArray parameterizedArray, final Runnable childStatement) {
-        taskFeatures.add(getExecutorService(new ScenarioKey(parameterizedArray)).getExecutorService().submit(childStatement));
-    }
-    
-    private ExecutorServiceManager getExecutorService(final ScenarioKey scenarioKey) {
-        if (executorServiceManagers.containsKey(scenarioKey)) {
-            return executorServiceManagers.get(scenarioKey);
+    public ExecutorService getExecutorService(final ParameterizedArray key) {
+        ScenarioKey scenarioKey = new ScenarioKey(key);
+        if (getExecutorServiceMap().containsKey(scenarioKey)) {
+            return getExecutorServiceMap().get(scenarioKey);
         }
         String threadPoolNameFormat = String.join("-", "ScenarioExecutorPool", scenarioKey.toString(), "%d");
-        ExecutorServiceManager newExecutorServiceManager = new ExecutorServiceManager(1, threadPoolNameFormat);
-        if (null != executorServiceManagers.putIfAbsent(scenarioKey, newExecutorServiceManager)) {
-            newExecutorServiceManager.close();
+        ExecutorService executorService = Executors.newFixedThreadPool(
+                Runtime.getRuntime().availableProcessors(),
+                new ThreadFactoryBuilder().setDaemon(true).setNameFormat(threadPoolNameFormat).build());
+        if (null != getExecutorServiceMap().putIfAbsent(scenarioKey, executorService)) {
+            executorService.shutdownNow();
         }
-        return executorServiceManagers.get(scenarioKey);
-    }
-    
-    @Override
-    public void finished() {
-        taskFeatures.forEach(each -> {
-            try {
-                each.get();
-            } catch (final InterruptedException | ExecutionException ignored) {
-            }
-        });
-        executorServiceManagers.values().forEach(each -> each.getExecutorService().shutdownNow());
+        return getExecutorServiceMap().get(scenarioKey);
     }
     
     /**

@@ -15,19 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.framework.runner.parallel.impl;
-
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
-
-import org.apache.shardingsphere.test.runner.parallel.impl.DefaultParallelRunnerExecutor;
+package org.apache.shardingsphere.test.runner.parallel;
 
 /**
- * Parallel runner executor with case.
+ * Parallel runner executor.
  */
-public final class CaseParallelRunnerExecutor extends DefaultParallelRunnerExecutor<ParameterizedArray> {
+public interface ParallelRunnerExecutor<T> {
     
-    @Override
-    public void execute(final ParameterizedArray parameterizedArray, final Runnable childStatement) {
-        execute(childStatement);
-    }
+    /**
+     * Execute child statement.
+     *
+     * @param key executor key
+     * @param childStatement child statement
+     */
+    void execute(T key, Runnable childStatement);
+    
+    /**
+     * Execute child statement.
+     *
+     * @param childStatement child statement
+     */
+    void execute(Runnable childStatement);
+    
+    /**
+     * Override to implement any behavior that must occur after all children have been scheduled (for example, waiting for them all to finish).
+     */
+    void finished();
 }

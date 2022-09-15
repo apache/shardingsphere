@@ -15,28 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion;
+package org.apache.shardingsphere.test.runner.parallel;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.apache.shardingsphere.test.runner.parallel.annotaion.ParallelLevel;
+import org.junit.runners.BlockJUnit4ClassRunner;
+import org.junit.runners.model.InitializationError;
 
 /**
- * Parallel runtime strategy.
+ * Parallel runner for junit.
  */
-@Documented
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Inherited
-public @interface ParallelRuntimeStrategy {
+public class ParallelRunner extends BlockJUnit4ClassRunner {
     
     /**
-     * Get parallel level.
-     * 
-     * @return value parallel level
+     * Creates a ParallelRunner to run {@code klass}.
+     * If you now annotate a test-class with @RunWith(ParallelRunner.class) each method will run within its own thread.
+     *
+     * @param klass test class
+     * @throws InitializationError if the test class is malformed.
      */
-    ParallelLevel value();
+    public ParallelRunner(final Class<?> klass) throws InitializationError {
+        super(klass);
+        setScheduler(new ParallelRunnerScheduler(ParallelLevel.DEFAULT, new DefaultParallelRunnerExecutorFactory()));
+    }
 }
