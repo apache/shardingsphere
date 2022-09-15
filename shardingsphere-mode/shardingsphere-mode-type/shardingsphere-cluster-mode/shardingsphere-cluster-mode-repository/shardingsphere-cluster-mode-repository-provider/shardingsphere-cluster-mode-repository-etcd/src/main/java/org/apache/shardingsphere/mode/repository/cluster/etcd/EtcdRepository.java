@@ -92,14 +92,12 @@ public final class EtcdRepository implements ClusterPersistRepository {
     @SneakyThrows({InterruptedException.class, ExecutionException.class})
     @Override
     public void persist(final String key, final String value) {
-        buildParentPath(key);
         client.getKVClient().put(ByteSequence.from(key, StandardCharsets.UTF_8), ByteSequence.from(value, StandardCharsets.UTF_8)).get();
     }
     
     @SneakyThrows({InterruptedException.class, ExecutionException.class})
     @Override
     public void persistEphemeral(final String key, final String value) {
-        buildParentPath(key);
         long leaseId = client.getLeaseClient().grant(etcdProps.getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS)).get().getID();
         client.getLeaseClient().keepAlive(leaseId, Observers.observer(response -> {
         }));
@@ -109,20 +107,6 @@ public final class EtcdRepository implements ClusterPersistRepository {
     @Override
     public void persistExclusiveEphemeral(final String key, final String value) {
         persistEphemeral(key, value);
-    }
-    
-    private void buildParentPath(final String key) throws ExecutionException, InterruptedException {
-        StringBuilder parentPath = new StringBuilder();
-        String[] partPath = key.split(PATH_SEPARATOR);
-        for (int index = 1; index < partPath.length - 1; index++) {
-            parentPath.append(PATH_SEPARATOR);
-            parentPath.append(partPath[index]);
-            String path = parentPath.toString();
-            List<KeyValue> keyValues = client.getKVClient().get(ByteSequence.from(path, StandardCharsets.UTF_8)).get().getKvs();
-            if (keyValues.isEmpty()) {
-                client.getKVClient().put(ByteSequence.from(path, StandardCharsets.UTF_8), ByteSequence.from("", StandardCharsets.UTF_8)).get();
-            }
-        }
     }
     
     @Override
