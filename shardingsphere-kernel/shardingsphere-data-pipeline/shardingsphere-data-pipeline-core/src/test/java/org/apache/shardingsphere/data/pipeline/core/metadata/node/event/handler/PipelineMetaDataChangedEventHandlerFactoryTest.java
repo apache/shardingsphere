@@ -15,27 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.spi.handler;
+package org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler;
 
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler.impl.BarrierMetaDataChangedEventHandler;
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler.impl.ChangedJobConfigurationDispatcher;
 import org.junit.Test;
 
 import java.util.Collection;
 
 import static org.junit.Assert.assertTrue;
 
-public final class PipelineMetaDataChangedHandlerFactoryTest {
+public final class PipelineMetaDataChangedEventHandlerFactoryTest {
     
     @Test
     public void assertFindInstance() {
-        Collection<PipelineMetaDataChangedHandler> actual = PipelineMetaDataChangedHandlerFactory.findAllInstances();
+        Collection<PipelineMetaDataChangedEventHandler> actual = PipelineMetaDataChangedEventHandlerFactory.findAllInstances();
         boolean isContainMigration = false;
         boolean isContainBarrier = false;
-        for (PipelineMetaDataChangedHandler each : actual) {
-            if (each instanceof JobConfigurationChangedHandler) {
+        for (PipelineMetaDataChangedEventHandler each : actual) {
+            if (each instanceof ChangedJobConfigurationDispatcher) {
                 isContainMigration = true;
                 continue;
             }
-            if (each instanceof BarrierMetaDataChangedHandler) {
+            if (each instanceof BarrierMetaDataChangedEventHandler) {
                 isContainBarrier = true;
             }
         }

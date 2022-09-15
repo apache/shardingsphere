@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.spi.handler;
+package org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler.PipelineMetaDataChangedEventHandler;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
@@ -26,10 +27,10 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 import java.util.regex.Pattern;
 
 /**
- * Barrier pipeline meta data handler, .
+ * Barrier meta data changed event handler.
  */
 @Slf4j
-public final class BarrierMetaDataChangedHandler implements PipelineMetaDataChangedHandler {
+public final class BarrierMetaDataChangedEventHandler implements PipelineMetaDataChangedEventHandler {
     
     @Override
     public Pattern getKeyPattern() {

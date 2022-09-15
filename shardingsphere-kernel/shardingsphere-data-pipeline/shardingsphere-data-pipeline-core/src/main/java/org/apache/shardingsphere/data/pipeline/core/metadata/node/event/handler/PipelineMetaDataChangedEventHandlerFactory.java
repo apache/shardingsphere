@@ -15,22 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.spi.process;
+package org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler;
 
-import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+
+import java.util.Collection;
 
 /**
- * Pipeline job config changed event processor.
+ * Pipeline meta data changed event handler factory.
  */
-public interface PipelineJobConfigurationChangedEventProcessor extends TypedSPI {
+public final class PipelineMetaDataChangedEventHandlerFactory {
+    
+    static {
+        ShardingSphereServiceLoader.register(PipelineMetaDataChangedEventHandler.class);
+    }
     
     /**
-     * Process data changed event.
+     * Get instances.
      *
-     * @param jobConfigPOJO job config
-     * @param event event
+     * @return instances
      */
-    void process(DataChangedEvent event, JobConfigurationPOJO jobConfigPOJO);
+    public static Collection<PipelineMetaDataChangedEventHandler> findAllInstances() {
+        return ShardingSphereServiceLoader.getServiceInstances(PipelineMetaDataChangedEventHandler.class);
+    }
 }

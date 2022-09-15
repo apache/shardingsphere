@@ -15,30 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.spi.handler;
+package org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler;
 
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 
-import java.util.regex.Pattern;
-
 /**
- * Pipeline meta data changed handler.
+ * Pipeline changed job configuration processor.
  */
-@SingletonSPI
-public interface PipelineMetaDataChangedHandler {
+public interface PipelineChangedJobConfigurationProcessor extends TypedSPI {
     
     /**
-     * Get key pattern.
+     * Process changed job configuration.
      *
-     * @return key pattern
+     * @param eventType event type
+     * @param jobConfigPOJO job configuration pojo
      */
-    Pattern getKeyPattern();
-    
-    /**
-     * Event changed handler.
-     *
-     * @param event changed event
-     */
-    void handle(DataChangedEvent event);
+    void process(DataChangedEvent.Type eventType, JobConfigurationPOJO jobConfigPOJO);
 }
