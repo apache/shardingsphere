@@ -139,11 +139,11 @@ public final class SelectInformationSchemataExecutorTest extends ProxyContextRes
     }
     
     private ShardingSphereDatabase createDatabase(final String databaseName) {
-        return createDatabase(databaseName, new ShardingSphereResource(Collections.emptyMap()));
+        return createDatabase(databaseName, new ShardingSphereResource("sharding_db", Collections.emptyMap()));
     }
     
     private ShardingSphereDatabase createDatabase(final Map<String, String> expectedResultSetMap) throws SQLException {
-        return createDatabase("auth_db", new ShardingSphereResource(Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection(expectedResultSetMap)))));
+        return createDatabase("auth_db", new ShardingSphereResource("sharding_db", Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection(expectedResultSetMap)))));
     }
     
     private Connection mockConnection(final Map<String, String> expectedResultSetMap) throws SQLException {

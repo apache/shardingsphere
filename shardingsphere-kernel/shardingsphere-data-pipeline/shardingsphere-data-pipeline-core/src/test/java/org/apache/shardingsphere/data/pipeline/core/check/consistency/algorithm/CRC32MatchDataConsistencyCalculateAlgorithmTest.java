@@ -59,7 +59,7 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithmTest {
     
     @Before
     public void setUp() throws SQLException {
-        PipelineColumnMetaData uniqueKey = new PipelineColumnMetaData(1, "id", Types.INTEGER, "integer", false, true);
+        PipelineColumnMetaData uniqueKey = new PipelineColumnMetaData(1, "id", Types.INTEGER, "integer", false, true, true);
         parameter = new DataConsistencyCalculateParameter(pipelineDataSource, new TableNameSchemaNameMapping(Collections.emptyMap()),
                 "foo_tbl", Arrays.asList("foo_col", "bar_col"), "FIXTURE", "FIXTURE", uniqueKey);
         when(pipelineDataSource.getConnection()).thenReturn(connection);

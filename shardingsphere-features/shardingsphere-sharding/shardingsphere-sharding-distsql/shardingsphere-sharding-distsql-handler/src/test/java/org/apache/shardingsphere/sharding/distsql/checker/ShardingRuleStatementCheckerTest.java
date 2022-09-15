@@ -72,7 +72,7 @@ public final class ShardingRuleStatementCheckerTest {
     
     private final ShardingRuleConfiguration shardingRuleConfig = createShardingRuleConfiguration();
     
-    private final ShardingSphereResource shardingSphereResource = new ShardingSphereResource(createDataSource());
+    private final ShardingSphereResource shardingSphereResource = new ShardingSphereResource("sharding_db", createDataSource());
     
     @Before
     public void before() {

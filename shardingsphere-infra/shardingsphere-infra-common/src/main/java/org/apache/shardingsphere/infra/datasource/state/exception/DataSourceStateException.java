@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.container.atomic.constants;
+package org.apache.shardingsphere.infra.datasource.state.exception;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.util.exception.external.server.ShardingSphereServerException;
 
 /**
- * Environment constant.
+ * Data source state exception.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class EnvironmentConstants {
+public final class DataSourceStateException extends ShardingSphereServerException {
     
-    public static final String CLUSTER_MODE = "Cluster";
+    private static final long serialVersionUID = -8058761885303180333L;
     
-    public static final String STANDALONE_MODE = "Standalone";
-    
-    public static final int MAX_CONTAINER_QUANTITY = 7;
+    public DataSourceStateException(final String errorCategory, final int errorCode, final String message, final Exception cause) {
+        super(errorCategory, errorCode, message, cause);
+    }
 }
