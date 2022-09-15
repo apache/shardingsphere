@@ -61,7 +61,7 @@ public final class DataSourceStateManager {
      *
      * @param databaseName database name
      * @param dataSources data sources
-     * @param storageDataSourceStates storage node data source status
+     * @param storageDataSourceStates storage node data source state
      * @param force whether to force start
      */
     public void initStates(final String databaseName, final Map<String, DataSource> dataSources, final Map<String, DataSourceState> storageDataSourceStates, final boolean force) {
@@ -118,7 +118,8 @@ public final class DataSourceStateManager {
         Map<String, DataSource> result = new LinkedHashMap<>(dataSources.size(), 1);
         dataSources.forEach((key, value) -> {
             DataSourceState dataSourceState = dataSourceStates.get(getCacheKey(databaseName, key));
-            if (force ? DataSourceState.ENABLED == dataSourceState : DataSourceState.DISABLED != dataSourceState) {
+            boolean isValidDataSource = force ? DataSourceState.ENABLED == dataSourceState : DataSourceState.DISABLED != dataSourceState;
+            if (isValidDataSource) {
                 result.put(key, value);
             }
         });
