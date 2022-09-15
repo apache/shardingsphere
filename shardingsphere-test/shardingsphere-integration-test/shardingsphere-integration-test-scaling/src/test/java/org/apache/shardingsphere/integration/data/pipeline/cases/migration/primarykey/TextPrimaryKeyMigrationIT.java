@@ -57,14 +57,14 @@ public class TextPrimaryKeyMigrationIT extends AbstractMigrationITCase {
         if (ENV.getItEnvType() == ITEnvTypeEnum.NONE) {
             return result;
         }
-        for (String version : ENV.listDatabaseDockerImageNames(new MySQLDatabaseType())) {
+        for (String version : ENV.listStorageContainerImages(new MySQLDatabaseType())) {
             result.add(new ScalingParameterized(new MySQLDatabaseType(), version, "env/scenario/primary_key/text_primary_key/mysql.xml"));
             result.add(new ScalingParameterized(new MySQLDatabaseType(), version, "env/scenario/primary_key/unique_key/mysql.xml"));
         }
-        for (String version : ENV.listDatabaseDockerImageNames(new PostgreSQLDatabaseType())) {
+        for (String version : ENV.listStorageContainerImages(new PostgreSQLDatabaseType())) {
             result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), version, "env/scenario/primary_key/text_primary_key/postgresql.xml"));
         }
-        for (String version : ENV.listDatabaseDockerImageNames(new OpenGaussDatabaseType())) {
+        for (String version : ENV.listStorageContainerImages(new OpenGaussDatabaseType())) {
             result.add(new ScalingParameterized(new OpenGaussDatabaseType(), version, "env/scenario/primary_key/text_primary_key/postgresql.xml"));
         }
         return result;

@@ -36,8 +36,8 @@ public final class OpenGaussContainer extends DockerStorageContainer {
     
     private final StorageContainerConfiguration storageContainerConfiguration;
     
-    public OpenGaussContainer(final String dockerImageName, final String scenario, final StorageContainerConfiguration storageContainerConfiguration) {
-        super(DatabaseTypeFactory.getInstance("openGauss"), Strings.isNullOrEmpty(dockerImageName) ? "enmotech/opengauss:3.0.0" : dockerImageName, scenario);
+    public OpenGaussContainer(final String containerImage, final String scenario, final StorageContainerConfiguration storageContainerConfiguration) {
+        super(DatabaseTypeFactory.getInstance("openGauss"), Strings.isNullOrEmpty(containerImage) ? "enmotech/opengauss:3.0.0" : containerImage, scenario);
         this.storageContainerConfiguration = storageContainerConfiguration;
     }
     
