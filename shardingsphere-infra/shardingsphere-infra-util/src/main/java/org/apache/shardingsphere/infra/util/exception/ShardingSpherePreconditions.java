@@ -19,10 +19,7 @@ package org.apache.shardingsphere.infra.util.exception;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.external.ShardingSphereExternalException;
-import org.apache.shardingsphere.infra.util.exception.internal.ShardingSphereInternalException;
 
-import java.sql.SQLException;
 import java.util.function.Supplier;
 
 /**
@@ -48,38 +45,14 @@ public final class ShardingSpherePreconditions {
     /**
      * Ensures that an object reference passed as a parameter to the calling method is not null.
      *
+     * @param <T> type of exception
      * @param reference object reference to be checked
-     * @param exceptionIfUnexpected exception thrown if object is null
+     * @param exceptionSupplierIfUnexpected exception from this supplier will be thrown if expression is unexpected
+     * @throws T exception to be thrown
      */
-    public static void checkNotNull(final Object reference, final ShardingSphereExternalException exceptionIfUnexpected) {
+    public static <T extends Throwable> void checkNotNull(final Object reference, final Supplier<T> exceptionSupplierIfUnexpected) throws T {
         if (null == reference) {
-            throw exceptionIfUnexpected;
-        }
-    }
-    
-    /**
-     * Ensures that an object reference passed as a parameter to the calling method is not null.
-     *
-     * @param reference object reference to be checked
-     * @param exceptionIfUnexpected exception thrown if object is null
-     * @throws ShardingSphereInternalException ShardingSphere internal exception
-     */
-    public static void checkNotNull(final Object reference, final ShardingSphereInternalException exceptionIfUnexpected) throws ShardingSphereInternalException {
-        if (null == reference) {
-            throw exceptionIfUnexpected;
-        }
-    }
-    
-    /**
-     * Ensures that an object reference passed as a parameter to the calling method is not null.
-     *
-     * @param reference object reference to be checked
-     * @param exceptionIfUnexpected exception thrown if object is null
-     * @throws SQLException SQL exception
-     */
-    public static void checkNotNull(final Object reference, final SQLException exceptionIfUnexpected) throws SQLException {
-        if (null == reference) {
-            throw exceptionIfUnexpected;
+            throw exceptionSupplierIfUnexpected.get();
         }
     }
 }

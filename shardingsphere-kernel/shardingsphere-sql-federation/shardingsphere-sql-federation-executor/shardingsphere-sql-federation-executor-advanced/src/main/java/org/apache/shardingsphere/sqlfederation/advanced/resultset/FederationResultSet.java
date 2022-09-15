@@ -446,7 +446,7 @@ public final class FederationResultSet extends AbstractUnsupportedOperationResul
     
     private Integer getIndexFromColumnLabelAndIndexMap(final String columnLabel) throws SQLException {
         Integer result = columnLabelAndIndexMap.get(columnLabel.toLowerCase());
-        ShardingSpherePreconditions.checkNotNull(result, new SQLFeatureNotSupportedException(String.format("can't get index from columnLabel[%s].", columnLabel)));
+        ShardingSpherePreconditions.checkNotNull(result, () -> new SQLFeatureNotSupportedException(String.format("can not get index from column label `%s`", columnLabel)));
         return result;
     }
     

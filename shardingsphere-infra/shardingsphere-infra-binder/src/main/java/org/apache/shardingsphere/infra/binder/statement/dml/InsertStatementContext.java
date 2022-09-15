@@ -99,9 +99,9 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     private ShardingSphereSchema getSchema(final Map<String, ShardingSphereDatabase> databases, final String defaultDatabaseName) {
         String databaseName = tablesContext.getDatabaseName().orElse(defaultDatabaseName);
-        ShardingSpherePreconditions.checkNotNull(databaseName, new NoDatabaseSelectedException());
+        ShardingSpherePreconditions.checkNotNull(databaseName, NoDatabaseSelectedException::new);
         ShardingSphereDatabase database = databases.get(databaseName.toLowerCase());
-        ShardingSpherePreconditions.checkNotNull(database, new UnknownDatabaseException(databaseName));
+        ShardingSpherePreconditions.checkNotNull(database, () -> new UnknownDatabaseException(databaseName));
         String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(getDatabaseType(), databaseName);
         return tablesContext.getSchemaName().map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchema));
     }

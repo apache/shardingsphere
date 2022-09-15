@@ -39,34 +39,31 @@ public final class ShardingSpherePreconditionsTest {
     
     @Test(expected = ShardingSphereExternalException.class)
     public void assertCheckNotNullToThrowsExternalException() {
-        ShardingSpherePreconditions.checkNotNull(null, new SQLWrapperException(new SQLException()));
+        ShardingSpherePreconditions.checkNotNull(null, () -> new SQLWrapperException(new SQLException()));
     }
     
-    @SuppressWarnings("ObviousNullCheck")
     @Test
     public void assertCheckNotNullToNotThrowExternalException() {
-        ShardingSpherePreconditions.checkNotNull(new Object(), new SQLWrapperException(new SQLException()));
+        ShardingSpherePreconditions.checkNotNull(new Object(), () -> new SQLWrapperException(new SQLException()));
     }
     
     @Test(expected = ShardingSphereInternalException.class)
     public void assertCheckNotNullToThrowsInternalException() throws ShardingSphereInternalException {
-        ShardingSpherePreconditions.checkNotNull(null, new ShardingSphereInternalExceptionFixture("message"));
+        ShardingSpherePreconditions.checkNotNull(null, () -> new ShardingSphereInternalExceptionFixture("message"));
     }
     
-    @SuppressWarnings("ObviousNullCheck")
     @Test
     public void assertCheckNotNullToNotThrowInternalException() throws ShardingSphereInternalException {
-        ShardingSpherePreconditions.checkNotNull(new Object(), new ShardingSphereInternalExceptionFixture("message"));
+        ShardingSpherePreconditions.checkNotNull(new Object(), () -> new ShardingSphereInternalExceptionFixture("message"));
     }
     
     @Test(expected = SQLException.class)
     public void assertCheckNotNullToThrowsSQLException() throws SQLException {
-        ShardingSpherePreconditions.checkNotNull(null, new SQLException("message"));
+        ShardingSpherePreconditions.checkNotNull(null, () -> new SQLException("message"));
     }
     
-    @SuppressWarnings("ObviousNullCheck")
     @Test
     public void assertCheckNotNullToNotThrowSQLException() throws SQLException {
-        ShardingSpherePreconditions.checkNotNull(new Object(), new SQLException("message"));
+        ShardingSpherePreconditions.checkNotNull(new Object(), () -> new SQLException("message"));
     }
 }
