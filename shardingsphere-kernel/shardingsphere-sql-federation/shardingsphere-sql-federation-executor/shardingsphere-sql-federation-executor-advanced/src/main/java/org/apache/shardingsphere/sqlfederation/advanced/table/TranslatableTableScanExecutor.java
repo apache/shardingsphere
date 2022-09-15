@@ -222,13 +222,13 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
             if (Strings.isNullOrEmpty(each)) {
                 continue;
             }
-            RexNode temp = null;
+            RexNode filterCondition = null;
             try {
-                temp = StringToRexNodeUtil.buildRexNode(each, rexBuilder);
+                filterCondition = StringToRexNodeUtil.buildRexNode(each, rexBuilder);
             } catch (IOException ignored) {
                 continue;
             }
-            result.add(temp);
+            result.add(filterCondition);
         }
         return result;
     }
