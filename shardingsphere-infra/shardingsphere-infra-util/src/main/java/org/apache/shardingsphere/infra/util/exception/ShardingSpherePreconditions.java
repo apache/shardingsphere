@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.util.exception.external.ShardingSphereExt
 import org.apache.shardingsphere.infra.util.exception.internal.ShardingSphereInternalException;
 
 import java.sql.SQLException;
+import java.util.function.Supplier;
 
 /**
  * ShardingSphere preconditions.
@@ -33,38 +34,14 @@ public final class ShardingSpherePreconditions {
     /**
      * Ensures the truth of an expression involving the state of the calling instance.
      *
+     * @param <T> type of exception
      * @param expectedExpression expected expression
-     * @param exceptionIfUnexpected exception thrown if expression is unexpected
+     * @param exceptionSupplierIfUnexpected exception from this supplier will be thrown if expression is unexpected
+     * @throws T exception to be thrown
      */
-    public static void checkState(final boolean expectedExpression, final ShardingSphereExternalException exceptionIfUnexpected) {
+    public static <T extends Throwable> void checkState(final boolean expectedExpression, final Supplier<T> exceptionSupplierIfUnexpected) throws T {
         if (!expectedExpression) {
-            throw exceptionIfUnexpected;
-        }
-    }
-    
-    /**
-     * Ensures the truth of an expression involving the state of the calling instance.
-     *
-     * @param expectedExpression expected expression
-     * @param exceptionIfUnexpected exception thrown if expression is unexpected
-     * @throws ShardingSphereInternalException ShardingSphere internal exception
-     */
-    public static void checkState(final boolean expectedExpression, final ShardingSphereInternalException exceptionIfUnexpected) throws ShardingSphereInternalException {
-        if (!expectedExpression) {
-            throw exceptionIfUnexpected;
-        }
-    }
-    
-    /**
-     * Ensures the truth of an expression involving the state of the calling instance.
-     *
-     * @param expectedExpression expected expression
-     * @param exceptionIfUnexpected exception thrown if expression is unexpected
-     * @throws SQLException SQL exception
-     */
-    public static void checkState(final boolean expectedExpression, final SQLException exceptionIfUnexpected) throws SQLException {
-        if (!expectedExpression) {
-            throw exceptionIfUnexpected;
+            throw exceptionSupplierIfUnexpected.get();
         }
     }
     

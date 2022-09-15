@@ -100,7 +100,7 @@ public final class DataRecordMerger {
             dataRecords.put(dataRecord.getKey(), dataRecord);
             return;
         }
-        ShardingSpherePreconditions.checkState(!IngestDataChangeType.DELETE.equals(beforeDataRecord.getType()), new UnsupportedSQLOperationException("Not Delete"));
+        ShardingSpherePreconditions.checkState(!IngestDataChangeType.DELETE.equals(beforeDataRecord.getType()), () -> new UnsupportedSQLOperationException("Not Delete"));
         if (checkUpdatedPrimaryKey(dataRecord)) {
             dataRecords.remove(dataRecord.getOldKey());
         }

@@ -107,20 +107,20 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
     
     private void checkPluginActive(final String databaseName, final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(QUERY_PLUGIN_STATUS)) {
-            ShardingSpherePreconditions.checkState(resultSet.next() && "ACTIVE".equals(resultSet.getString("PLUGIN_STATUS")), new InvalidMGRPluginException(databaseName));
+            ShardingSpherePreconditions.checkState(resultSet.next() && "ACTIVE".equals(resultSet.getString("PLUGIN_STATUS")), () -> new InvalidMGRPluginException(databaseName));
         }
     }
     
     private void checkSinglePrimaryMode(final String databaseName, final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(QUERY_SINGLE_PRIMARY_MODE)) {
-            ShardingSpherePreconditions.checkState(resultSet.next() && "ON".equals(resultSet.getString("VARIABLE_VALUE")), new InvalidMGRModeException(databaseName));
+            ShardingSpherePreconditions.checkState(resultSet.next() && "ON".equals(resultSet.getString("VARIABLE_VALUE")), () -> new InvalidMGRModeException(databaseName));
         }
     }
     
     private void checkGroupName(final String databaseName, final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(QUERY_GROUP_NAME)) {
             ShardingSpherePreconditions.checkState(resultSet.next() && props.getProperty("group-name", "").equals(resultSet.getString("VARIABLE_VALUE")),
-                    new InvalidMGRGroupNameConfigurationException(props.getProperty("group-name"), databaseName));
+                    () -> new InvalidMGRGroupNameConfigurationException(props.getProperty("group-name"), databaseName));
         }
     }
     

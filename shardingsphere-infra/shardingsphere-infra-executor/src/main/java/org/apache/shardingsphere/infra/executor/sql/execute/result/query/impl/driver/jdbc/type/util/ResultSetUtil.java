@@ -55,7 +55,7 @@ public final class ResultSetUtil {
      * @throws SQLException SQL exception
      */
     public static Object convertValue(final Object value, final Class<?> convertType) throws SQLException {
-        ShardingSpherePreconditions.checkState(null != convertType, new SQLFeatureNotSupportedException("Type can not be null"));
+        ShardingSpherePreconditions.checkState(null != convertType, () -> new SQLFeatureNotSupportedException("Type can not be null"));
         if (null == value) {
             return convertNullValue(convertType);
         }

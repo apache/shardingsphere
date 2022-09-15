@@ -69,7 +69,7 @@ public abstract class AbstractDataSourceChecker implements DataSourceChecker {
                     Connection connection = dataSource.getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(sql);
                     ResultSet resultSet = preparedStatement.executeQuery()) {
-                ShardingSpherePreconditions.checkState(!resultSet.next(), new PrepareJobWithTargetTableNotEmptyException(each));
+                ShardingSpherePreconditions.checkState(!resultSet.next(), () -> new PrepareJobWithTargetTableNotEmptyException(each));
             }
         }
     }
