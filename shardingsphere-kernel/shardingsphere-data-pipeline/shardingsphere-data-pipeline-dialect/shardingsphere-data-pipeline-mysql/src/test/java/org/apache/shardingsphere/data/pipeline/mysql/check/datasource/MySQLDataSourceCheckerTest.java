@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.mysql.check.datasource;
 
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobPrepareFailedException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithInvalidSourceDataSourceException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithoutEnoughPrivilegeException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -73,7 +75,7 @@ public final class MySQLDataSourceCheckerTest {
         verify(preparedStatement).executeQuery();
     }
     
-    @Test(expected = PipelineJobPrepareFailedException.class)
+    @Test(expected = PrepareJobWithoutEnoughPrivilegeException.class)
     public void assertCheckPrivilegeLackPrivileges() {
         new MySQLDataSourceChecker().checkPrivilege(dataSources);
     }
@@ -92,7 +94,7 @@ public final class MySQLDataSourceCheckerTest {
         verify(preparedStatement, times(3)).executeQuery();
     }
     
-    @Test(expected = PipelineJobPrepareFailedException.class)
+    @Test(expected = PrepareJobWithInvalidSourceDataSourceException.class)
     public void assertCheckVariableWithWrongVariable() throws SQLException {
         when(resultSet.next()).thenReturn(true, true);
         when(resultSet.getString(2)).thenReturn("OFF", "ROW");

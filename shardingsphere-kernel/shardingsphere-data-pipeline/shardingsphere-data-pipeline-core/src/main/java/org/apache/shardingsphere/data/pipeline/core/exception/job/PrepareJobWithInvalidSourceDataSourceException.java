@@ -21,13 +21,13 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLExcepti
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Target table not empty when prepare migration exception.
+ * Prepare job with invalid source data source exception.
  */
-public final class TargetTableNotEmptyWhenPrepareMigrationException extends PipelineSQLException {
+public final class PrepareJobWithInvalidSourceDataSourceException extends PipelineSQLException {
     
-    private static final long serialVersionUID = -8462039913248251254L;
+    private static final long serialVersionUID = -7710035889344958565L;
     
-    public TargetTableNotEmptyWhenPrepareMigrationException(final String tableName) {
-        super(XOpenSQLState.GENERAL_ERROR, 84, "Target table `%s` is not empty before migration", tableName);
+    public PrepareJobWithInvalidSourceDataSourceException(final String dataSourceKey, final String toBeCheckedValue, final String actualValue) {
+        super(XOpenSQLState.GENERAL_ERROR, 86, "Source data source required `%s = %s`, now is `%s`", dataSourceKey, toBeCheckedValue, actualValue);
     }
 }
