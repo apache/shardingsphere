@@ -115,15 +115,33 @@ public final class DataSourceStateManager {
         if (dataSources.isEmpty() || !initialized) {
             return dataSources;
         }
+        Map<String, DataSource> result = filterDisabledDataSources(databaseName, dataSources);
+        checkForceConnection(result);
+        return result;
+    }
+    
+    private Map<String, DataSource> filterDisabledDataSources(final String databaseName, final Map<String, DataSource> dataSources) {
         Map<String, DataSource> result = new LinkedHashMap<>(dataSources.size(), 1);
         dataSources.forEach((key, value) -> {
             DataSourceState dataSourceState = dataSourceStates.get(getCacheKey(databaseName, key));
-            boolean isValidDataSource = force ? DataSourceState.ENABLED == dataSourceState : DataSourceState.DISABLED != dataSourceState;
-            if (isValidDataSource) {
+            if (DataSourceState.DISABLED != dataSourceState) {
                 result.put(key, value);
             }
         });
         return result;
+    }
+    
+    private void checkForceConnection(final Map<String, DataSource> dataSources) {
+        if (force) {
+            dataSources.entrySet().removeIf(entry -> {
+                try (Connection ignored = entry.getValue().getConnection()) {
+                    return false;
+                } catch (final SQLException ex) {
+                    log.error("Data source state unavailable, ignored with the -f parameter.", ex);
+                    return true;
+                }
+            });
+        }
     }
     
     private String getCacheKey(final String databaseName, final String dataSourceName) {
