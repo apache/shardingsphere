@@ -109,7 +109,7 @@ public final class DefaultDatabaseMetadataExecutorTest extends ProxyContextResto
     
     private ShardingSphereDatabase createDatabase(final Map<String, String> expectedResultSetMap) throws SQLException {
         return new ShardingSphereDatabase("auth_db", new MySQLDatabaseType(),
-                new ShardingSphereResource(Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection(expectedResultSetMap)))),
+                new ShardingSphereResource("sharding_db", Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection(expectedResultSetMap)))),
                 mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
     }
     

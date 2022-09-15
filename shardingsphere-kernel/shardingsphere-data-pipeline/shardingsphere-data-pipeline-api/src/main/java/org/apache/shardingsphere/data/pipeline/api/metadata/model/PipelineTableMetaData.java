@@ -65,11 +65,11 @@ public final class PipelineTableMetaData {
     /**
      * Get column metadata.
      *
-     * @param columnIndex column index
+     * @param columnIndex the first column is 1, the second is 2, ...
      * @return column metadata
      */
     public PipelineColumnMetaData getColumnMetaData(final int columnIndex) {
-        return getColumnMetaData(columnNames.get(columnIndex));
+        return getColumnMetaData(columnNames.get(columnIndex - 1));
     }
     
     /**
@@ -84,20 +84,6 @@ public final class PipelineTableMetaData {
             log.warn("getColumnMetaData, can not get column metadata for column name '{}', columnNames={}", columnName, columnNames);
         }
         return result;
-    }
-    
-    /**
-     * Judge whether column is unique key or not.
-     *
-     * @param columnIndex column index
-     * @return true if the column is unique key, otherwise false
-     */
-    public boolean isUniqueKey(final int columnIndex) {
-        if (columnIndex >= columnNames.size()) {
-            return false;
-        }
-        String columnName = columnNames.get(columnIndex);
-        return columnMetaDataMap.get(columnName).isPrimaryKey() || (columnName.equals(uniqueIndexes.iterator().next().getColumns().get(0).getName()));
     }
     
     @Override

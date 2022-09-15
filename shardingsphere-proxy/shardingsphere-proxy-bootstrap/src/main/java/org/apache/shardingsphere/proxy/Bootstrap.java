@@ -49,7 +49,7 @@ public final class Bootstrap {
         YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(bootstrapArgs.getConfigurationPath());
         int port = bootstrapArgs.getPort().orElseGet(() -> new ConfigurationProperties(yamlConfig.getServerConfiguration().getProps()).getValue(ConfigurationPropertyKey.PROXY_DEFAULT_PORT));
         List<String> addresses = bootstrapArgs.getAddresses();
-        new BootstrapInitializer().init(yamlConfig, port);
+        new BootstrapInitializer().init(yamlConfig, port, bootstrapArgs.getForce());
         new ShardingSphereProxy().start(port, addresses);
     }
 }

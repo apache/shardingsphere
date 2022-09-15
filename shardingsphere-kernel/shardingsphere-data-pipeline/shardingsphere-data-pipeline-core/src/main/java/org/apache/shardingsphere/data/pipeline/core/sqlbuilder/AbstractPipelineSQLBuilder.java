@@ -162,8 +162,8 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildTruncateSQL(final String schemaName, final String tableName) {
-        return String.format("TRUNCATE TABLE %s", decorate(schemaName, tableName));
+    public String buildDropSQL(final String schemaName, final String tableName) {
+        return String.format("DROP TABLE IF EXISTS %s", decorate(schemaName, tableName));
     }
     
     private String buildDeleteSQLInternal(final String schemaName, final String tableName, final Collection<Column> conditionColumns) {

@@ -87,7 +87,7 @@ public final class SelectTableExecutorTest extends ProxyContextRestorer {
     }
     
     private ShardingSphereDatabase createDatabase() throws SQLException {
-        return new ShardingSphereDatabase("public", new PostgreSQLDatabaseType(), new ShardingSphereResource(Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection()))),
+        return new ShardingSphereDatabase("public", new PostgreSQLDatabaseType(), new ShardingSphereResource("sharding_db", Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection()))),
                 new ShardingSphereRuleMetaData(Collections.emptyList()), Collections.singletonMap("public",
                         new ShardingSphereSchema(Collections.singletonMap("t_order", mock(ShardingSphereTable.class)), Collections.emptyMap())));
     }

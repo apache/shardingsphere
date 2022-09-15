@@ -37,4 +37,6 @@ public final class YamlPipelineColumnMetaData implements YamlConfiguration {
     private boolean nullable;
     
     private boolean primaryKey;
+    
+    private boolean uniqueKey;
 }

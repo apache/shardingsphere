@@ -87,6 +87,7 @@ public final class PostgreSQLWalDumperTest {
         dumperConfig = mockDumperConfiguration();
         PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig()));
         walDumper = new PostgreSQLWalDumper(dumperConfig, position, channel, metaDataLoader);
+        
     }
     
     @After

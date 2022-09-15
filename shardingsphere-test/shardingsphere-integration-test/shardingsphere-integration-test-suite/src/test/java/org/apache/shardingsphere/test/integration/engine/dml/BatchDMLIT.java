@@ -24,8 +24,8 @@ import org.apache.shardingsphere.test.integration.engine.BatchITCase;
 import org.apache.shardingsphere.test.integration.framework.param.array.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.CaseParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
-import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelLevel;
-import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelRuntimeStrategy;
+import org.apache.shardingsphere.test.runner.parallel.annotaion.ParallelLevel;
+import org.apache.shardingsphere.test.runner.parallel.annotaion.ParallelRuntimeStrategy;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 

@@ -149,19 +149,19 @@ public final class TransactionBackendHandler implements ProxyBackendHandler {
     
     private void handleSavepoint() throws SQLException {
         ShardingSpherePreconditions.checkState(connectionSession.getTransactionStatus().isInTransaction() || !isPostgreSQLOrOpenGauss(),
-                new SQLFeatureNotSupportedException("SAVEPOINT can only be used in transaction blocks"));
+                () -> new SQLFeatureNotSupportedException("SAVEPOINT can only be used in transaction blocks"));
         backendTransactionManager.setSavepoint(((SavepointStatement) tclStatement).getSavepointName());
     }
     
     private void handleRollbackToSavepoint() throws SQLException {
         ShardingSpherePreconditions.checkState(connectionSession.getTransactionStatus().isInTransaction() || !isPostgreSQLOrOpenGauss(),
-                new SQLFeatureNotSupportedException("ROLLBACK TO SAVEPOINT can only be used in transaction blocks"));
+                () -> new SQLFeatureNotSupportedException("ROLLBACK TO SAVEPOINT can only be used in transaction blocks"));
         backendTransactionManager.rollbackTo(((RollbackStatement) tclStatement).getSavepointName().get());
     }
     
     private void handleReleaseSavepoint() throws SQLException {
         ShardingSpherePreconditions.checkState(connectionSession.getTransactionStatus().isInTransaction() || !isPostgreSQLOrOpenGauss(),
-                new SQLFeatureNotSupportedException("RELEASE SAVEPOINT can only be used in transaction blocks"));
+                () -> new SQLFeatureNotSupportedException("RELEASE SAVEPOINT can only be used in transaction blocks"));
         backendTransactionManager.releaseSavepoint(((ReleaseSavepointStatement) tclStatement).getSavepointName());
     }
     

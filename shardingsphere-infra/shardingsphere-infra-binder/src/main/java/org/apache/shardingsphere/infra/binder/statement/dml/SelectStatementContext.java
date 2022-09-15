@@ -137,7 +137,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
             throw new NoDatabaseSelectedException();
         }
         ShardingSphereDatabase database = databases.get(databaseName.toLowerCase());
-        ShardingSpherePreconditions.checkNotNull(database, new UnknownDatabaseException(databaseName));
+        ShardingSpherePreconditions.checkNotNull(database, () -> new UnknownDatabaseException(databaseName));
         return database.getSchemas();
     }
     

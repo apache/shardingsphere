@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
@@ -36,6 +38,7 @@ import java.util.List;
 /**
  * Pipeline table meta data util.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PipelineTableMetaDataUtil {
     
     /**
@@ -44,7 +47,7 @@ public final class PipelineTableMetaDataUtil {
      * @param schemaName schema name
      * @param tableName table name
      * @param dataSourceConfig source configuration
-     * @param loader pipeline table meta data loader* @return pipeline table meta data
+     * @param loader pipeline table meta data loader
      * @return pipeline table meta data
      */
     @SneakyThrows(SQLException.class)
@@ -74,7 +77,7 @@ public final class PipelineTableMetaDataUtil {
     }
     
     /**
-     * Get unique key column, if primary key exists, return primary key, otherwise return the first unique key.
+     * Get unique key column.
      *
      * @param schemaName schema name
      * @param tableName table name
@@ -89,7 +92,7 @@ public final class PipelineTableMetaDataUtil {
     }
     
     /**
-     * Get unique key column, if primary key exists, return primary key, otherwise return the first unique key.
+     * Get unique key column.
      *
      * @param schemaName schema name
      * @param tableName table name
@@ -104,14 +107,14 @@ public final class PipelineTableMetaDataUtil {
     }
     
     private static PipelineColumnMetaData mustGetAnAppropriateUniqueKeyColumn(final PipelineTableMetaData tableMetaData, final String tableName) {
-        ShardingSpherePreconditions.checkNotNull(tableMetaData, new SplitPipelineJobException(tableName, "can not get table metadata"));
+        ShardingSpherePreconditions.checkNotNull(tableMetaData, () -> new SplitPipelineJobException(tableName, "can not get table metadata"));
         List<String> primaryKeys = tableMetaData.getPrimaryKeyColumns();
         if (1 == primaryKeys.size()) {
             return tableMetaData.getColumnMetaData(tableMetaData.getPrimaryKeyColumns().get(0));
         }
-        ShardingSpherePreconditions.checkState(primaryKeys.isEmpty(), new SplitPipelineJobException(tableName, "primary key is union primary"));
+        ShardingSpherePreconditions.checkState(primaryKeys.isEmpty(), () -> new SplitPipelineJobException(tableName, "primary key is union primary"));
         Collection<PipelineIndexMetaData> uniqueIndexes = tableMetaData.getUniqueIndexes();
-        ShardingSpherePreconditions.checkState(!uniqueIndexes.isEmpty(), new SplitPipelineJobException(tableName, "no primary key or unique index"));
+        ShardingSpherePreconditions.checkState(!uniqueIndexes.isEmpty(), () -> new SplitPipelineJobException(tableName, "no primary key or unique index"));
         if (1 == uniqueIndexes.size() && 1 == uniqueIndexes.iterator().next().getColumns().size()) {
             PipelineColumnMetaData column = uniqueIndexes.iterator().next().getColumns().get(0);
             if (!column.isNullable()) {

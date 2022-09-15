@@ -28,8 +28,8 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 public final class PipelineJobPublicAPIFactory {
     
     static {
-        ShardingSphereServiceLoader.register(MigrationJobPublicAPI.class);
         ShardingSphereServiceLoader.register(PipelineJobPublicAPI.class);
+        ShardingSphereServiceLoader.register(MigrationJobPublicAPI.class);
     }
     
     /**

@@ -64,8 +64,8 @@ public final class MySQLMigrationGeneralIT extends AbstractMigrationITCase {
             return result;
         }
         MySQLDatabaseType databaseType = new MySQLDatabaseType();
-        for (String version : ENV.listDatabaseDockerImageNames(databaseType)) {
-            result.add(new ScalingParameterized(databaseType, version, "env/scenario/general/mysql.xml"));
+        for (String each : ENV.listStorageContainerImages(databaseType)) {
+            result.add(new ScalingParameterized(databaseType, each, "env/scenario/general/mysql.xml"));
         }
         return result;
     }
@@ -89,7 +89,7 @@ public final class MySQLMigrationGeneralIT extends AbstractMigrationITCase {
         log.info("init data end: {}", LocalDateTime.now());
         startMigrationOrderCopy(false);
         startMigrationOrderItem(false);
-        startIncrementTask(new MySQLIncrementTask(jdbcTemplate, keyGenerateAlgorithm, 20));
+        startIncrementTask(new MySQLIncrementTask(jdbcTemplate, keyGenerateAlgorithm, 30));
         String orderJobId = getJobIdByTableName("t_order_copy");
         String orderItemJobId = getJobIdByTableName("t_order_item");
         assertMigrationSuccessById(orderJobId);

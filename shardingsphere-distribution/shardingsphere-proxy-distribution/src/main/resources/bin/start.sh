@@ -102,6 +102,7 @@ MAIN_CLASS=org.apache.shardingsphere.proxy.Bootstrap
 unset -v PORT
 unset -v ADDRESSES
 unset -v CONF_PATH
+unset -v FORCE
 
 print_usage() {
     echo "usage:"
@@ -116,6 +117,7 @@ print_usage() {
     echo "    comma-separated list. The default value is '0.0.0.0'."
     echo "-p  Bind port, default is '3307', which could be changed in server.yaml"
     echo "-c  Path to config directory of ShardingSphere-Proxy, default is 'conf'"
+    echo "-f  Force start ShardingSphere-Proxy"
     exit 0
 }
 
@@ -136,8 +138,8 @@ if [ $# == 0 ]; then
     CLASS_PATH=${DEPLOY_DIR}/conf:${CLASS_PATH}
 fi
 
-if [[ $1 == -a ]] || [[ $1 == -p ]] || [[ $1 == -c ]] ; then
-    while getopts ":a:p:c:" opt
+if [[ $1 == -a ]] || [[ $1 == -p ]] || [[ $1 == -c ]] || [[ $1 == -f ]] ; then
+    while getopts ":a:p:c:f" opt
     do
         case $opt in
         a)
@@ -149,6 +151,9 @@ if [[ $1 == -a ]] || [[ $1 == -p ]] || [[ $1 == -c ]] ; then
         c)
           echo "The configuration path is $OPTARG"
           CONF_PATH=$OPTARG;;
+        f)
+          echo "The force param is true"
+          FORCE=true;;
         ?)
           print_usage;;
         esac
@@ -173,8 +178,16 @@ if [ -z "$PORT" ]; then
     PORT=-1
 fi
 
+if [ -z "$ADDRESSES" ]; then
+    ADDRESSES="0.0.0.0"
+fi
+
+if [ -z "$FORCE" ]; then
+    FORCE=false
+fi
+
 CLASS_PATH=${CONF_PATH}:${CLASS_PATH}
-MAIN_CLASS="${MAIN_CLASS} ${PORT} ${CONF_PATH} ${ADDRESSES}"
+MAIN_CLASS="${MAIN_CLASS} ${PORT} ${CONF_PATH} ${ADDRESSES} ${FORCE}"
 
 echo "The classpath is ${CLASS_PATH}"
 echo "main class ${MAIN_CLASS}"

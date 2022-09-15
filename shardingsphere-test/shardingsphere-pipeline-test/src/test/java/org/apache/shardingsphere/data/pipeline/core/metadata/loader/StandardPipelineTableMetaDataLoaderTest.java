@@ -85,13 +85,14 @@ public final class StandardPipelineTableMetaDataLoaderTest {
         when(result.getPrimaryKeys(TEST_CATALOG, null, TEST_TABLE)).thenReturn(primaryKeyResultSet);
         ResultSet indexInfoResultSet = mockIndexInfoResultSet();
         when(result.getIndexInfo(TEST_CATALOG, null, TEST_TABLE, true, false)).thenReturn(indexInfoResultSet);
+        ResultSet mockTableResultSet = mockTableResultSet();
+        when(result.getTables(TEST_CATALOG, null, TEST_TABLE, null)).thenReturn(mockTableResultSet);
         return result;
     }
     
     private ResultSet mockColumnMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, true, false);
-        when(result.getString(TABLE_NAME)).thenReturn(TEST_TABLE);
         when(result.getInt(ORDINAL_POSITION)).thenReturn(1, 2, 3);
         when(result.getString(COLUMN_NAME)).thenReturn("id", "name", "age");
         when(result.getInt(DATA_TYPE)).thenReturn(Types.BIGINT, Types.VARCHAR, Types.INTEGER);
@@ -114,6 +115,13 @@ public final class StandardPipelineTableMetaDataLoaderTest {
         return result;
     }
     
+    private ResultSet mockTableResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, false);
+        when(result.getString(TABLE_NAME)).thenReturn(TEST_TABLE);
+        return result;
+    }
+    
     @Test
     public void assertGetTableMetaData() {
         PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(dataSource);
@@ -130,9 +138,9 @@ public final class StandardPipelineTableMetaDataLoaderTest {
     
     private void assertColumnMetaData(final PipelineTableMetaData actual) {
         assertThat(actual.getColumnNames().size(), is(3));
-        assertColumnMetaData(actual.getColumnMetaData(0), "id", Types.BIGINT);
-        assertColumnMetaData(actual.getColumnMetaData(1), "name", Types.VARCHAR);
-        assertColumnMetaData(actual.getColumnMetaData(2), "age", Types.INTEGER);
+        assertColumnMetaData(actual.getColumnMetaData(1), "id", Types.BIGINT);
+        assertColumnMetaData(actual.getColumnMetaData(2), "name", Types.VARCHAR);
+        assertColumnMetaData(actual.getColumnMetaData(3), "age", Types.INTEGER);
     }
     
     private void assertColumnMetaData(final PipelineColumnMetaData actual, final String expectedName, final int expectedType) {

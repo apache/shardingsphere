@@ -46,7 +46,7 @@ public final class DataSourceQueryResultSetTest {
     
     @Before
     public void before() {
-        ShardingSphereResource resource = new ShardingSphereResource(Collections.singletonMap("foo_ds", createDataSource()));
+        ShardingSphereResource resource = new ShardingSphereResource("sharding_db", Collections.singletonMap("foo_ds", createDataSource()));
         when(database.getResource()).thenReturn(resource);
     }
     

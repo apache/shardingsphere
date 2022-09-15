@@ -78,7 +78,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     
     private final ShardingRuleConfiguration currentRuleConfig = createCurrentShardingRuleConfiguration();
     
-    private final ShardingSphereResource shardingSphereResource = new ShardingSphereResource(createDataSource());
+    private final ShardingSphereResource shardingSphereResource = new ShardingSphereResource("sharding_db", createDataSource());
     
     private final CreateShardingTableRuleStatementUpdater updater = new CreateShardingTableRuleStatementUpdater();
     
