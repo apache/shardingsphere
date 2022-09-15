@@ -76,7 +76,7 @@ import java.util.TreeMap;
 public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<ConvertYamlConfigurationStatement> {
     
     private final YamlProxyDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlProxyDataSourceConfigurationSwapper();
-
+    
     @Override
     protected Collection<String> getColumnNames() {
         return Collections.singleton("distsql");
@@ -342,7 +342,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         StringBuilder result = new StringBuilder();
         while (iterator.hasNext()) {
             String binding = iterator.next();
-            result.append(String.format(DistSQLScriptConstants.BINDING, binding));
+            result.append(String.format(DistSQLScriptConstants.BRACKET, binding));
             if (iterator.hasNext()) {
                 result.append(DistSQLScriptConstants.COMMA);
             }
@@ -360,7 +360,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         StringBuilder result = new StringBuilder();
         while (iterator.hasNext()) {
             String broadcast = iterator.next();
-            result.append(String.format(DistSQLScriptConstants.BROADCAST, broadcast));
+            result.append(String.format(DistSQLScriptConstants.BRACKET, broadcast));
             if (iterator.hasNext()) {
                 result.append(DistSQLScriptConstants.COMMA);
             }
@@ -502,7 +502,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
                 getDatabaseDiscoveryProperties(entry.getValue().getProps(), properties);
                 String typeName = entry.getValue().getType();
                 String typePros = properties.toString();
-                result.append(String.format(DistSQLScriptConstants.DB_DISCOVERY_TYPE, typeName, typePros));
+                result.append(String.format(DistSQLScriptConstants.TYPE, typeName, typePros));
             }
         }
         return result.toString();
@@ -512,7 +512,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         Iterator<Entry<Object, Object>> props = heartbeatProperties.entrySet().iterator();
         while (props.hasNext()) {
             Entry<Object, Object> entry = props.next();
-            result.append(String.format(DistSQLScriptConstants.DB_DISCOVERY_PROPERTY, entry.getKey(), entry.getValue()));
+            result.append(String.format(DistSQLScriptConstants.PROPERTY_APOSTROPHE, entry.getKey(), entry.getValue()));
         }
     }
     
@@ -578,7 +578,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
                 String typeName = entry.getValue().getType();
                 if (!entry.getValue().getProps().isEmpty()) {
                     String properties = getColumnTypeProperties(entry.getValue().getProps());
-                    result.append(String.format(DistSQLScriptConstants.ENCRYPT_TYPE, typeName, properties));
+                    result.append(String.format(DistSQLScriptConstants.TYPE, typeName, properties));
                 } else {
                     result.append(String.format(DistSQLScriptConstants.ENCRYPT_TYPE_WITHOUT_PROPERTIES, typeName));
                 }
@@ -592,7 +592,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         Iterator<Entry<Object, Object>> props = properties.entrySet().iterator();
         while (props.hasNext()) {
             Entry<Object, Object> entry = props.next();
-            result.append(String.format(DistSQLScriptConstants.ENCRYPT_TYPE_PROPERTIES, entry.getKey(), entry.getValue()));
+            result.append(String.format(DistSQLScriptConstants.PROPERTY_APOSTROPHE, entry.getKey(), entry.getValue()));
             if (props.hasNext()) {
                 result.append(DistSQLScriptConstants.COMMA);
             }
@@ -664,7 +664,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
                 Entry<String, YamlAlgorithmConfiguration> entry = shadowAlgorithmsIter.next();
                 if (entry.getKey().equals(shadowAlgorithmName)) {
                     String typeName = entry.getValue().getType();
-                    String typeProperties = getTypeProperties(entry.getValue().getProps());
+                    String typeProperties = getAlgorithmProperties(entry.getValue().getProps());
                     result.append(String.format(DistSQLScriptConstants.SHADOW_TABLE_TYPE, typeName, typeProperties));
                 }
             }
@@ -675,7 +675,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         return result.toString();
     }
     
-    private String getTypeProperties(final Properties algorithmProperties) {
+    private String getAlgorithmProperties(final Properties algorithmProperties) {
         StringBuilder result = new StringBuilder();
         SortedMap<String, String> sortedMap = new TreeMap(algorithmProperties);
         Set<String> set = sortedMap.keySet();
@@ -684,9 +684,9 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
             String prosKey = prosIter.next();
             String prosValue = algorithmProperties.getProperty(prosKey);
             if (prosKey.equals(DistSQLScriptConstants.REGEX) || prosKey.equals(DistSQLScriptConstants.VALUE)) {
-                result.append(String.format(DistSQLScriptConstants.SHADOW_TABLE_TYPE_APOSTROPHE, prosKey, prosValue));
+                result.append(String.format(DistSQLScriptConstants.PROPERTY_HYBRID, prosKey, prosValue));
             } else {
-                result.append(String.format(DistSQLScriptConstants.SHADOW_TABLE_TYPE_PROPERTIES, prosKey, prosValue));
+                result.append(String.format(DistSQLScriptConstants.PROPERTY, prosKey, prosValue));
             }
             if (prosIter.hasNext()) {
                 result.append(DistSQLScriptConstants.COMMA);
