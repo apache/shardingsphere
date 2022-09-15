@@ -89,7 +89,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     
     private YamlPipelineProcessConfiguration getTargetYamlProcessConfiguration() {
         PipelineProcessConfiguration existingProcessConfig = processConfigPersistService.load(getJobType());
-        ShardingSpherePreconditions.checkNotNull(existingProcessConfig, new AlterNotExistProcessConfigurationException());
+        ShardingSpherePreconditions.checkNotNull(existingProcessConfig, AlterNotExistProcessConfigurationException::new);
         return PROCESS_CONFIG_SWAPPER.swapToYamlConfiguration(existingProcessConfig);
     }
     

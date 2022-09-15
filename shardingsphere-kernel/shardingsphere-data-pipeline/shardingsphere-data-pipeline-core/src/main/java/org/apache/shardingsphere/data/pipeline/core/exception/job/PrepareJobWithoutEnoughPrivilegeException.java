@@ -20,6 +20,8 @@ package org.apache.shardingsphere.data.pipeline.core.exception.job;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
+import java.util.Collection;
+
 /**
  * Prepare job without enough privilege exception.
  */
@@ -27,7 +29,7 @@ public final class PrepareJobWithoutEnoughPrivilegeException extends PipelineSQL
     
     private static final long serialVersionUID = -8462039913248251254L;
     
-    public PrepareJobWithoutEnoughPrivilegeException() {
-        super(XOpenSQLState.PRIVILEGE_NOT_GRANTED, 85, "Source data source is lack of REPLICATION SLAVE, REPLICATION CLIENT ON *.* privileges");
+    public PrepareJobWithoutEnoughPrivilegeException(final Collection<String> privileges) {
+        super(XOpenSQLState.PRIVILEGE_NOT_GRANTED, 85, "Source data source lacks %s privilege(s)", privileges);
     }
 }
