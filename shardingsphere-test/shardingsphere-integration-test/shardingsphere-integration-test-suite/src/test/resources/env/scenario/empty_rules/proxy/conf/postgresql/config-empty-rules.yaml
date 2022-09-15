@@ -220,6 +220,10 @@ rules:
       keyGenerateStrategy:
         column: user_id
         keyGeneratorName: constant
+      auditStrategy:
+        auditorNames:
+          - auditor_constant
+        allowHintDisable: true
     t_user_item:
       actualDataSources: write_ds_${0..9}
       shardingStrategy:
@@ -239,6 +243,10 @@ rules:
   keyGenerators:
     constant:
       type: IT.FIXTURE
+
+  auditors:
+    auditor_constant:
+      type: IT.AUDITOR.FIXTURE
 
 - !READWRITE_SPLITTING
   dataSources:
