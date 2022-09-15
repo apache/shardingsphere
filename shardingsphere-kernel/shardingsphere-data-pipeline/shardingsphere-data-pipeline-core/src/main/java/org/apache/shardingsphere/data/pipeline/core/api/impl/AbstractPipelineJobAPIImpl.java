@@ -75,7 +75,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     @Override
     public void createProcessConfiguration(final PipelineProcessConfiguration processConfig) {
         PipelineProcessConfiguration existingProcessConfig = processConfigPersistService.load(getJobType());
-        ShardingSpherePreconditions.checkState(null == existingProcessConfig, new CreateExistsProcessConfigurationException());
+        ShardingSpherePreconditions.checkState(null == existingProcessConfig, CreateExistsProcessConfigurationException::new);
         processConfigPersistService.persist(getJobType(), processConfig);
     }
     
@@ -176,7 +176,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         log.info("Start disabled pipeline job {}", jobId);
         pipelineDistributedBarrier.removeParentNode(PipelineMetaDataNode.getJobBarrierDisablePath(jobId));
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
-        ShardingSpherePreconditions.checkState(jobConfigPOJO.isDisabled(), new PipelineJobHasAlreadyStartedException(jobId));
+        ShardingSpherePreconditions.checkState(jobConfigPOJO.isDisabled(), () -> new PipelineJobHasAlreadyStartedException(jobId));
         jobConfigPOJO.setDisabled(false);
         jobConfigPOJO.getProps().remove("stop_time");
         PipelineAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);

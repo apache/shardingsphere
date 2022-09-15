@@ -61,6 +61,6 @@ public abstract class DatabaseRequiredBackendHandler<T extends SQLStatement> imp
     
     private void checkDatabaseName(final String databaseName) {
         ShardingSpherePreconditions.checkNotNull(databaseName, new NoDatabaseSelectedException());
-        ShardingSpherePreconditions.checkState(ProxyContext.getInstance().databaseExists(databaseName), new UnknownDatabaseException(databaseName));
+        ShardingSpherePreconditions.checkState(ProxyContext.getInstance().databaseExists(databaseName), () -> new UnknownDatabaseException(databaseName));
     }
 }

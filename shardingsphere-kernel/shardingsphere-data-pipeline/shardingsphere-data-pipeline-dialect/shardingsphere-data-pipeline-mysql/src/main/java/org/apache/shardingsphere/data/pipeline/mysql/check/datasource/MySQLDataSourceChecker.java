@@ -106,7 +106,8 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next() || !BINLOG_ROW_IMAGE.equalsIgnoreCase(key)) {
                     String actualValue = resultSet.getString(2);
-                    ShardingSpherePreconditions.checkState(toBeCheckedValue.equalsIgnoreCase(actualValue), new PrepareJobWithInvalidSourceDataSourceException(key, toBeCheckedValue, actualValue));
+                    ShardingSpherePreconditions.checkState(toBeCheckedValue.equalsIgnoreCase(actualValue),
+                            () -> new PrepareJobWithInvalidSourceDataSourceException(key, toBeCheckedValue, actualValue));
                 }
             }
         }

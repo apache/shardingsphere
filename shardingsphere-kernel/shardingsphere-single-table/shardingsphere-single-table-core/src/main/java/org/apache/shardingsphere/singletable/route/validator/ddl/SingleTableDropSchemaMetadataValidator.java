@@ -41,7 +41,7 @@ public final class SingleTableDropSchemaMetadataValidator implements SingleTable
             String schemaName = each.getValue();
             ShardingSphereSchema schema = database.getSchema(schemaName);
             ShardingSpherePreconditions.checkNotNull(schema, new SchemaNotFoundException(schemaName));
-            ShardingSpherePreconditions.checkState(containsCascade || schema.getAllTableNames().isEmpty(), new DropNotEmptySchemaException(schemaName));
+            ShardingSpherePreconditions.checkState(containsCascade || schema.getAllTableNames().isEmpty(), () -> new DropNotEmptySchemaException(schemaName));
         }
     }
 }

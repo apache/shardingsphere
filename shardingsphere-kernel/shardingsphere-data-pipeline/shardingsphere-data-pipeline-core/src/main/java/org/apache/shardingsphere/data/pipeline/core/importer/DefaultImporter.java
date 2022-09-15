@@ -127,7 +127,7 @@ public final class DefaultImporter extends AbstractLifecycleExecutor implements 
             return;
         }
         boolean success = tryFlush(dataSource, buffer);
-        ShardingSpherePreconditions.checkState(!isRunning() || success, new PipelineImporterJobWriteException());
+        ShardingSpherePreconditions.checkState(!isRunning() || success, PipelineImporterJobWriteException::new);
     }
     
     private boolean tryFlush(final DataSource dataSource, final List<DataRecord> buffer) {
