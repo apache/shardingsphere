@@ -93,7 +93,6 @@ public final class StandardPipelineTableMetaDataLoaderTest {
     private ResultSet mockColumnMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, true, false);
-        when(result.getString(TABLE_NAME)).thenReturn(TEST_TABLE);
         when(result.getInt(ORDINAL_POSITION)).thenReturn(1, 2, 3);
         when(result.getString(COLUMN_NAME)).thenReturn("id", "name", "age");
         when(result.getInt(DATA_TYPE)).thenReturn(Types.BIGINT, Types.VARCHAR, Types.INTEGER);

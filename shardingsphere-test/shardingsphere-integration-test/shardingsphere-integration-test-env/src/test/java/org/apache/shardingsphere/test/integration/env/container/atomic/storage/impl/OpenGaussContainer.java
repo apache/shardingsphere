@@ -25,6 +25,8 @@ import org.apache.shardingsphere.test.integration.env.container.atomic.storage.D
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 /**
@@ -45,6 +47,7 @@ public final class OpenGaussContainer extends DockerStorageContainer {
         addEnvs(storageContainerConfiguration.getContainerEnvironments());
         mapResources(storageContainerConfiguration.getMountedResources());
         withPrivilegedMode(true);
+        withStartupTimeout(Duration.of(120, ChronoUnit.SECONDS));
         super.configure();
     }
     

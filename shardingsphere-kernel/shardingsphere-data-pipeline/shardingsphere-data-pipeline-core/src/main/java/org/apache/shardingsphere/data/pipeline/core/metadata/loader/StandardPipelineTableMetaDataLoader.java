@@ -32,8 +32,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -92,48 +90,37 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
     }
     
     private Map<TableName, PipelineTableMetaData> loadTableMetaData0(final Connection connection, final String schemaName, final String tableNamePattern) throws SQLException {
-        Map<String, Map<String, PipelineColumnMetaData>> tablePipelineColumnMetaDataMap = new LinkedHashMap<>();
-        Map<String, Map<String, Collection<String>>> uniqueKeysMap = new HashMap<>();
-        Map<String, Set<String>> primaryKeysMap = new HashMap<>();
         List<String> tableNames = new ArrayList<>();
         try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), schemaName, tableNamePattern, null)) {
             while (resultSet.next()) {
                 String tableName = resultSet.getString("TABLE_NAME");
                 tableNames.add(tableName);
-                primaryKeysMap.put(tableName, loadPrimaryKeys(connection, schemaName, tableName));
-                uniqueKeysMap.put(tableName, loadUniqueIndexesOfTable(connection, schemaName, tableName));
             }
         }
+        Map<TableName, PipelineTableMetaData> result = new LinkedHashMap<>();
         for (String each : tableNames) {
+            Set<String> primaryKeys = loadPrimaryKeys(connection, schemaName, each);
+            Map<String, Collection<String>> uniqueKeys = loadUniqueIndexesOfTable(connection, schemaName, each);
+            Map<String, PipelineColumnMetaData> columnMetaDataMap = new LinkedHashMap<>();
             try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), schemaName, each, "%")) {
                 while (resultSet.next()) {
                     int ordinalPosition = resultSet.getInt("ORDINAL_POSITION");
-                    String tableName = resultSet.getString("TABLE_NAME");
-                    Map<String, PipelineColumnMetaData> columnMetaDataMap = tablePipelineColumnMetaDataMap.computeIfAbsent(tableName, k -> new LinkedHashMap<>());
                     String columnName = resultSet.getString("COLUMN_NAME");
                     if (columnMetaDataMap.containsKey(columnName)) {
                         continue;
                     }
                     int dataType = resultSet.getInt("DATA_TYPE");
                     String dataTypeName = resultSet.getString("TYPE_NAME");
-                    Set<String> primaryKeys = primaryKeysMap.getOrDefault(each, Collections.emptySet());
                     boolean primaryKey = primaryKeys.contains(columnName);
                     boolean isNullable = "YES".equals(resultSet.getString("IS_NULLABLE"));
-                    Map<String, Collection<String>> uniqueKeys = uniqueKeysMap.getOrDefault(tableName, Collections.emptyMap());
                     boolean isUniqueKey = primaryKey || uniqueKeys.values().stream().anyMatch(names -> names.contains(columnName));
                     PipelineColumnMetaData columnMetaData = new PipelineColumnMetaData(ordinalPosition, columnName, dataType, dataTypeName, isNullable, primaryKey, isUniqueKey);
                     columnMetaDataMap.put(columnName, columnMetaData);
                 }
             }
-        }
-        Map<TableName, PipelineTableMetaData> result = new LinkedHashMap<>();
-        for (Entry<String, Map<String, PipelineColumnMetaData>> entry : tablePipelineColumnMetaDataMap.entrySet()) {
-            String tableName = entry.getKey();
-            Map<String, PipelineColumnMetaData> metaDataMap = tablePipelineColumnMetaDataMap.get(tableName);
-            Map<String, Collection<String>> uniqueKeys = uniqueKeysMap.getOrDefault(tableName, Collections.emptyMap());
             Collection<PipelineIndexMetaData> uniqueIndexMetaData = uniqueKeys.entrySet().stream()
-                    .map(each -> new PipelineIndexMetaData(each.getKey(), each.getValue().stream().map(metaDataMap::get).collect(Collectors.toList()))).collect(Collectors.toList());
-            result.put(new TableName(tableName), new PipelineTableMetaData(tableName, entry.getValue(), uniqueIndexMetaData));
+                    .map(e -> new PipelineIndexMetaData(e.getKey(), e.getValue().stream().map(columnMetaDataMap::get).collect(Collectors.toList()))).collect(Collectors.toList());
+            result.put(new TableName(each), new PipelineTableMetaData(each, columnMetaDataMap, uniqueIndexMetaData));
         }
         return result;
     }
