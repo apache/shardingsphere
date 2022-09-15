@@ -76,7 +76,7 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
         } catch (final SQLException ex) {
             throw new PipelineJobPrepareFailedException("Source data source check privileges failed.", ex);
         }
-        throw new PrepareJobWithoutEnoughPrivilegeException();
+        throw new PrepareJobWithoutEnoughPrivilegeException(Arrays.asList("REPLICATION SLAVE", "REPLICATION CLIENT"));
     }
     
     private boolean matchPrivileges(final String privilege) {
