@@ -418,18 +418,23 @@ chapter = true
             </a>
         </td>
         <td>
-            <a href="https://github.com/Swastyy" target="_blank">
+           <a href="https://github.com/Swastyy" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/64654203?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+     <td>
+    </a href="https://github.com/yy2so" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/86716581?v=4" style="border-radius:50%; overflow:hidden">
     </tr>
     <tr align="center">
         <td>
             <b>张俊杰</b>        
         </td>
         <td>
-            <b>Swastika Gupta</b>        
-        </td>
+            <b>Swastika Gupta</b>
+              <td>
+            <b>Yacine Si Tayeb</b>
+        </tr>
     </tr>
 </table>
 
