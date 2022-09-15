@@ -44,13 +44,15 @@ public final class ExecuteProcessContext {
     
     private final String hostname;
     
-    private final String sql;
+    private String sql;
     
     private final Map<String, ExecuteProcessUnit> processUnits = new HashMap<>();
     
     private final Collection<Statement> processStatements = new LinkedList<>();
     
-    private final long startTimeMillis = System.currentTimeMillis();
+    private long startTimeMillis = System.currentTimeMillis();
+    
+    private ExecuteProcessConstants executeProcessConstants;
     
     public ExecuteProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessConstants constants) {
         this.executionID = executionGroupContext.getExecutionID();
@@ -59,6 +61,7 @@ public final class ExecuteProcessContext {
         Grantee grantee = executionGroupContext.getGrantee();
         this.username = null != grantee ? grantee.getUsername() : null;
         this.hostname = null != grantee ? grantee.getHostname() : null;
+        executeProcessConstants = constants;
         addProcessUnitsAndStatements(executionGroupContext, constants);
     }
     
@@ -73,4 +76,14 @@ public final class ExecuteProcessContext {
             }
         }
     }
+    
+    /**
+     * Reset execute process context to sleep.
+     */
+    public void resetExecuteProcessContextToSleep() {
+        this.sql = "";
+        this.startTimeMillis = System.currentTimeMillis();
+        this.executeProcessConstants = ExecuteProcessConstants.EXECUTE_STATUS_SLEEP;
+    }
+    
 }

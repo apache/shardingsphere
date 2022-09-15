@@ -54,7 +54,13 @@ public final class GovernanceExecuteProcessReporter implements ExecuteProcessRep
     
     @Override
     public void reportClean(final String executionID) {
-        ShowProcessListManager.getInstance().removeProcessContext(executionID);
         ShowProcessListManager.getInstance().removeProcessStatement(executionID);
+        Optional.ofNullable(ShowProcessListManager.getInstance().getProcessContext(executionID)).ifPresent(ExecuteProcessContext::resetExecuteProcessContextToSleep);
+    }
+    
+    @Override
+    public void reportRemove(final String executionID) {
+        ShowProcessListManager.getInstance().removeProcessStatement(executionID);
+        ShowProcessListManager.getInstance().removeProcessContext(executionID);
     }
 }

@@ -49,4 +49,8 @@ public final class ExecuteProcessReporterFixture implements ExecuteProcessReport
     @Override
     public void reportClean(final String executionID) {
     }
+    
+    @Override
+    public void reportRemove(final String executionID) {
+    }
 }

@@ -63,4 +63,11 @@ public interface ExecuteProcessReporter extends OptionalSPI {
      * @param executionID execution ID
      */
     void reportClean(String executionID);
+    
+    /**
+     * Report remove process context.
+     *
+     * @param executionID execution ID
+     */
+    void reportRemove(String executionID);
 }

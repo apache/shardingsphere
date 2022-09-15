@@ -138,9 +138,9 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
         try {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits());
             setParameters(executionGroupContext.getInputGroups());
-            ExecuteProcessEngine.initialize(context.getQueryContext(), executionGroupContext, eventBusContext);
+            ExecuteProcessEngine.initializeExecution(context.getQueryContext(), executionGroupContext, eventBusContext);
             List<QueryResult> queryResults = execute(executionGroupContext, databaseType);
-            ExecuteProcessEngine.finish(executionGroupContext.getExecutionID(), eventBusContext);
+            ExecuteProcessEngine.finishExecution(executionGroupContext.getExecutionID(), eventBusContext);
             MergeEngine mergeEngine = new MergeEngine(database, executorContext.getProps(), new ConnectionContext());
             MergedResult mergedResult = mergeEngine.merge(queryResults, queryContext.getSqlStatementContext());
             Collection<Statement> statements = getStatements(executionGroupContext.getInputGroups());
@@ -148,7 +148,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
         } finally {
-            ExecuteProcessEngine.clean();
+            ExecuteProcessEngine.cleanExecution();
         }
     }
     

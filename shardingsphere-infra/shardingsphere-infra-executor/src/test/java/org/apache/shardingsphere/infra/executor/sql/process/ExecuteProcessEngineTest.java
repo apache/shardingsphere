@@ -46,22 +46,22 @@ public final class ExecuteProcessEngineTest {
     @Before
     public void setUp() {
         executionGroupContext = createMockedExecutionGroups();
-        ExecuteProcessEngine.initialize(createQueryContext(), executionGroupContext, eventBusContext);
+        ExecuteProcessEngine.initializeExecution(createQueryContext(), executionGroupContext, eventBusContext);
         assertThat(ExecutorDataMap.getValue().get("EXECUTE_ID"), is(executionGroupContext.getExecutionID()));
         assertThat(ExecuteProcessReporterFixture.ACTIONS.get(0), is("Report the summary of this task."));
     }
     
     @Test
     public void assertFinish() {
-        ExecuteProcessEngine.finish(executionGroupContext.getExecutionID(), mock(RawSQLExecutionUnit.class), eventBusContext);
+        ExecuteProcessEngine.finishExecution(executionGroupContext.getExecutionID(), mock(RawSQLExecutionUnit.class), eventBusContext);
         assertThat(ExecuteProcessReporterFixture.ACTIONS.get(1), is("Report a unit of this task."));
-        ExecuteProcessEngine.finish(executionGroupContext.getExecutionID(), eventBusContext);
+        ExecuteProcessEngine.finishExecution(executionGroupContext.getExecutionID(), eventBusContext);
         assertThat(ExecuteProcessReporterFixture.ACTIONS.get(2), is("Report this task on completion."));
     }
     
     @Test
     public void assertClean() {
-        ExecuteProcessEngine.clean();
+        ExecuteProcessEngine.cleanExecution();
         assertTrue(ExecutorDataMap.getValue().isEmpty());
     }
     

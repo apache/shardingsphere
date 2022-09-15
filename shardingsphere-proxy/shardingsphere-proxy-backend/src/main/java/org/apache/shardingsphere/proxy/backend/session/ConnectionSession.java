@@ -75,6 +75,8 @@ public final class ConnectionSession {
     
     private final RequiredSessionVariableRecorder requiredSessionVariableRecorder = new RequiredSessionVariableRecorder();
     
+    private volatile String executionId;
+    
     private QueryContext queryContext;
     
     public ConnectionSession(final DatabaseType databaseType, final TransactionType initialTransactionType, final AttributeMap attributeMap) {
