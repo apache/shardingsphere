@@ -82,6 +82,7 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
         if (msg instanceof MySQLAuthSwitchRequestPacket) {
             MySQLAuthSwitchRequestPacket authSwitchRequest = (MySQLAuthSwitchRequestPacket) msg;
             byte[] authPluginResponse;
+            // TODO not support sha256_password now
             switch (MySQLAuthenticationPlugin.getPluginByName(authSwitchRequest.getAuthPluginName())) {
                 case NATIVE_PASSWORD_AUTHENTICATION:
                     authPluginResponse = PasswordEncryption.encryptWithMySQL41(password.getBytes(), authSwitchRequest.getAuthPluginData().getAuthenticationPluginData());
