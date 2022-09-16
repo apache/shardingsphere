@@ -66,7 +66,7 @@ public final class ShardingTableRuleQueryResultSetTest {
         assertThat(actual.get(11), is("order_id"));
         assertThat(actual.get(12), is("SNOWFLAKE"));
         assertThat(actual.get(13), is(""));
-        assertThat(actual.get(14), is("sharding_key_required_auditor"));
+        assertThat(actual.get(14), is("DML_SHARDING_CONDITIONS"));
         assertThat(actual.get(15), is("true"));
     }
     

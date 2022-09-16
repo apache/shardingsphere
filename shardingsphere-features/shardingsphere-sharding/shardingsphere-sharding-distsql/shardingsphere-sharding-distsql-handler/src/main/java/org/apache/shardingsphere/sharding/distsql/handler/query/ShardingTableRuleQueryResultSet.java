@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingT
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -76,7 +77,7 @@ public final class ShardingTableRuleQueryResultSet implements DatabaseDistSQLRes
     public Collection<String> getColumnNames() {
         return Arrays.asList("table", "actual_data_nodes", "actual_data_sources", "database_strategy_type", "database_sharding_column", "database_sharding_algorithm_type",
                 "database_sharding_algorithm_props", "table_strategy_type", "table_sharding_column", "table_sharding_algorithm_type", "table_sharding_algorithm_props",
-                "key_generate_column", "key_generator_type", "key_generator_props", "auditor_names", "allow_hint_disable");
+                "key_generate_column", "key_generator_type", "key_generator_props", "auditor_types", "allow_hint_disable");
     }
     
     @Override
@@ -107,7 +108,7 @@ public final class ShardingTableRuleQueryResultSet implements DatabaseDistSQLRes
         result.add(getKeyGenerateColumn(shardingTableRuleConfig.getKeyGenerateStrategy()));
         result.add(getKeyGeneratorType(shardingTableRuleConfig.getKeyGenerateStrategy()));
         result.add(getKeyGeneratorProps(shardingTableRuleConfig.getKeyGenerateStrategy()));
-        result.add(getAuditorNames(shardingTableRuleConfig.getAuditStrategy()));
+        result.add(getAuditorTypes(shardingTableRuleConfig.getAuditStrategy()));
         result.add(getAllowHintDisable(shardingTableRuleConfig.getAuditStrategy()));
         return result;
     }
@@ -129,7 +130,7 @@ public final class ShardingTableRuleQueryResultSet implements DatabaseDistSQLRes
         result.add(getKeyGenerateColumn(shardingAutoTableRuleConfig.getKeyGenerateStrategy()));
         result.add(getKeyGeneratorType(shardingAutoTableRuleConfig.getKeyGenerateStrategy()));
         result.add(getKeyGeneratorProps(shardingAutoTableRuleConfig.getKeyGenerateStrategy()));
-        result.add(getAuditorNames(shardingAutoTableRuleConfig.getAuditStrategy()));
+        result.add(getAuditorTypes(shardingAutoTableRuleConfig.getAuditStrategy()));
         result.add(getAllowHintDisable(shardingAutoTableRuleConfig.getAuditStrategy()));
         return result;
     }
@@ -190,10 +191,15 @@ public final class ShardingTableRuleQueryResultSet implements DatabaseDistSQLRes
         return null == keyGenerateStrategyConfig ? Optional.ofNullable(shardingRuleConfig.getDefaultKeyGenerateStrategy()) : Optional.of(keyGenerateStrategyConfig);
     }
     
-    private String getAuditorNames(final ShardingAuditStrategyConfiguration shardingAuditStrategyConfig) {
-        return getShardingAuditStrategyConfiguration(shardingAuditStrategyConfig).isPresent()
-                ? String.join(",", getShardingAuditStrategyConfiguration(shardingAuditStrategyConfig).get().getAuditorNames())
-                : "";
+    private String getAuditorTypes(final ShardingAuditStrategyConfiguration shardingAuditStrategyConfig) {
+        Optional<ShardingAuditStrategyConfiguration> auditStrategyConfig = getShardingAuditStrategyConfiguration(shardingAuditStrategyConfig);
+        Collection<String> auditorTypes = new ArrayList<>();
+        if (auditStrategyConfig.isPresent()) {
+            for (String each : auditStrategyConfig.get().getAuditorNames()) {
+                auditorTypes.add(shardingRuleConfig.getAuditors().get(each).getType());
+            }
+        }
+        return !auditorTypes.isEmpty() ? String.join(",", auditorTypes) : "";
     }
     
     private String getAllowHintDisable(final ShardingAuditStrategyConfiguration shardingAuditStrategyConfig) {
