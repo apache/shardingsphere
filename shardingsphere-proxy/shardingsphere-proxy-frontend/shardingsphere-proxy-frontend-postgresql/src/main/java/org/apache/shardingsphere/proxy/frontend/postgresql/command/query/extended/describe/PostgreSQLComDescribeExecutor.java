@@ -164,7 +164,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
                     }
                     column = caseInsensitiveColumns.get(columnName);
                 }
-                ShardingSpherePreconditions.checkState(null != column, new ColumnNotFoundException(logicTableName, columnName));
+                ShardingSpherePreconditions.checkState(null != column, () -> new ColumnNotFoundException(logicTableName, columnName));
                 preparedStatement.getParameterTypes().set(parameterMarkerIndex++, PostgreSQLColumnType.valueOfJDBCType(column.getDataType()));
             }
         }

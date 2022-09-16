@@ -15,21 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.exception.job;
-
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
-
-import java.util.Collection;
+package org.apache.shardingsphere.integration.data.pipeline.util;
 
 /**
- * Prepare job without enough privilege exception.
+ * Docker image version util.
  */
-public final class PrepareJobWithoutEnoughPrivilegeException extends PipelineSQLException {
+public final class DockerImageVersion {
     
-    private static final long serialVersionUID = -8462039913248251254L;
+    private static final String SEPARATOR = ":";
     
-    public PrepareJobWithoutEnoughPrivilegeException(final Collection<String> privileges) {
-        super(XOpenSQLState.PRIVILEGE_NOT_GRANTED, 85, "Source data source lacks %s privilege(s)", privileges);
+    private final String version;
+    
+    public DockerImageVersion(final String dockerImageName) {
+        if (!dockerImageName.contains(SEPARATOR)) {
+            version = dockerImageName;
+        } else {
+            String[] split = dockerImageName.split(SEPARATOR);
+            version = split[1];
+        }
+    }
+    
+    /**
+     * Get major version.
+     *
+     * @return major version
+     */
+    public int getMajorVersion() {
+        String[] split = version.split("\\.");
+        return Integer.parseInt(split[0]);
     }
 }

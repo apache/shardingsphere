@@ -80,11 +80,11 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     
     private void checkReadwriteSplittingRule(final ContextManager contextManager, final String databaseName) {
         Optional<ReadwriteSplittingRule> rule = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class);
-        ShardingSpherePreconditions.checkState(rule.isPresent(), new UnsupportedSQLOperationException("The current schema has no read_write splitting rules"));
+        ShardingSpherePreconditions.checkState(rule.isPresent(), () -> new UnsupportedSQLOperationException("The current schema has no read_write splitting rules"));
     }
     
     private void checkModeAndPersistRepository(final ContextManager contextManager) {
-        ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().isCluster(), new UnsupportedSQLOperationException("Mode must be `Cluster`"));
+        ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().isCluster(), () -> new UnsupportedSQLOperationException("Mode must be `Cluster`"));
     }
     
     private void checkDatabaseName(final String databaseName) {
@@ -129,7 +129,7 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     }
     
     private void checkIsNotDisabled(final Collection<String> disabledResources, final String toBeEnabledResource) {
-        ShardingSpherePreconditions.checkState(disabledResources.contains(toBeEnabledResource), new UnsupportedSQLOperationException(String.format("`%s` is not disabled", toBeEnabledResource)));
+        ShardingSpherePreconditions.checkState(disabledResources.contains(toBeEnabledResource), () -> new UnsupportedSQLOperationException(String.format("`%s` is not disabled", toBeEnabledResource)));
     }
     
     private void checkDisable(final ContextManager contextManager, final String databaseName, final Collection<String> disabledResources, final String toBeDisabledResource,
@@ -143,20 +143,21 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     private void checkIsDisabled(final Map<String, String> replicaResources, final Collection<String> disabledResources, final String toBeDisabledResource) {
         String toBeDisableResourceRuleNames = replicaResources.get(toBeDisabledResource);
         ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(toBeDisableResourceRuleNames) || !disabledResources.contains(toBeDisabledResource),
-                new UnsupportedSQLOperationException(String.format("`%s` has been disabled", toBeDisabledResource)));
+                () -> new UnsupportedSQLOperationException(String.format("`%s` has been disabled", toBeDisabledResource)));
     }
     
     private void checkIsReplicaResource(final Map<String, String> replicaResources, final String toBeDisabledResource) {
         ShardingSpherePreconditions.checkState(replicaResources.containsKey(toBeDisabledResource),
-                new UnsupportedSQLOperationException(String.format("`%s` is not used as a read resource by any read-write separation rules,cannot be disabled", toBeDisabledResource)));
+                () -> new UnsupportedSQLOperationException(String.format("`%s` is not used as a read resource by any read-write separation rules,cannot be disabled", toBeDisabledResource)));
     }
     
     private void checkIsLastResource(final Map<String, String> replicaResources, final String toBeDisabledResource) {
         Collection<String> onlyOneResourceRules = getOnlyOneResourceRules(replicaResources);
         Collection<String> toBeDisabledResourceRuleNames = Splitter.on(",").trimResults().splitToList(replicaResources.get(toBeDisabledResource));
         onlyOneResourceRules = onlyOneResourceRules.stream().filter(toBeDisabledResourceRuleNames::contains).collect(Collectors.toSet());
+        Collection<String> finalOnlyOneResourceRules = onlyOneResourceRules;
         ShardingSpherePreconditions.checkState(onlyOneResourceRules.isEmpty(),
-                new UnsupportedSQLOperationException(String.format("`%s` is the last read resource in `%s`, cannot be disabled", toBeDisabledResource, onlyOneResourceRules)));
+                () -> new UnsupportedSQLOperationException(String.format("`%s` is the last read resource in `%s`, cannot be disabled", toBeDisabledResource, finalOnlyOneResourceRules)));
     }
     
     private Collection<String> getGroupNames(final String toBeDisableResource, final Map<String, String> replicaResources,

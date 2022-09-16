@@ -37,7 +37,7 @@ public abstract class StreamMergedResult implements MergedResult {
     private boolean wasNull;
     
     protected final QueryResult getCurrentQueryResult() throws SQLException {
-        ShardingSpherePreconditions.checkNotNull(currentQueryResult, new SQLException("Current ResultSet is null, ResultSet perhaps end of next."));
+        ShardingSpherePreconditions.checkNotNull(currentQueryResult, () -> new SQLException("Current ResultSet is null, ResultSet perhaps end of next"));
         return currentQueryResult;
     }
     

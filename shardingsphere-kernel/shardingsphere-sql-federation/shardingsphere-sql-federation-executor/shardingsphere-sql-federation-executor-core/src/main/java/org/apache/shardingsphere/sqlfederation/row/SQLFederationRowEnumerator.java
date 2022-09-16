@@ -28,10 +28,10 @@ import java.sql.Statement;
 import java.util.Collection;
 
 /**
- * Common row enumerator.
+ * SQL federation row enumerator.
  */
 @RequiredArgsConstructor
-public final class CommonRowEnumerator implements Enumerator<Object[]> {
+public final class SQLFederationRowEnumerator implements Enumerator<Object[]> {
     
     private final MergedResult queryResult;
     

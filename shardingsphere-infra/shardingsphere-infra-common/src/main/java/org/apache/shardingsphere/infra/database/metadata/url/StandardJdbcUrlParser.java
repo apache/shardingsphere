@@ -57,7 +57,7 @@ public final class StandardJdbcUrlParser {
         Matcher matcher = CONNECTION_URL_PATTERN.matcher(jdbcUrl);
         if (matcher.matches()) {
             String authority = matcher.group(AUTHORITY_GROUP_KEY);
-            ShardingSpherePreconditions.checkNotNull(authority, new UnrecognizedDatabaseURLException(jdbcUrl, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%")));
+            ShardingSpherePreconditions.checkNotNull(authority, () -> new UnrecognizedDatabaseURLException(jdbcUrl, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%")));
             return new JdbcUrl(parseHostname(authority), parsePort(authority), matcher.group(PATH_GROUP_KEY), parseQueryProperties(matcher.group(QUERY_GROUP_KEY)));
         }
         throw new UnrecognizedDatabaseURLException(jdbcUrl, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%"));

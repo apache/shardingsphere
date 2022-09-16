@@ -41,6 +41,7 @@ public final class MySQLAuthSwitchRequestPacket implements MySQLPacket {
     @Getter
     private final int sequenceId;
     
+    @Getter
     private final String authPluginName;
     
     @Getter

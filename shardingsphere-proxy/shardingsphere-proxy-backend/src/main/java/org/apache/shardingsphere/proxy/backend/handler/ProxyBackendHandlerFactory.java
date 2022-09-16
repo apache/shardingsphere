@@ -160,7 +160,7 @@ public final class ProxyBackendHandlerFactory {
     
     private static void checkUnsupportedDistSQLStatementInTransaction(final SQLStatement sqlStatement, final ConnectionSession connectionSession) {
         ShardingSpherePreconditions.checkState(!connectionSession.getTransactionStatus().isInTransaction() || isSupportedDistSQLStatementInTransaction(sqlStatement),
-                new UnsupportedSQLOperationException("Non-query dist sql is not supported within a transaction"));
+                () -> new UnsupportedSQLOperationException("Non-query dist sql is not supported within a transaction"));
     }
     
     private static boolean isSupportedDistSQLStatementInTransaction(final SQLStatement sqlStatement) {
