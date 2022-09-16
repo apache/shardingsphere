@@ -50,9 +50,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Federation result set.
+ * SQL federation result set.
  */
-public final class FederationResultSet extends AbstractUnsupportedOperationResultSet {
+public final class SQLFederationResultSet extends AbstractUnsupportedOperationResultSet {
     
     private static final String ASCII = "Ascii";
     
@@ -64,7 +64,7 @@ public final class FederationResultSet extends AbstractUnsupportedOperationResul
     
     private final Map<String, Integer> columnLabelAndIndexMap;
     
-    private final FederationResultSetMetaData resultSetMetaData;
+    private final SQLFederationResultSetMetaData resultSetMetaData;
     
     private Object[] currentRows;
     
@@ -72,10 +72,10 @@ public final class FederationResultSet extends AbstractUnsupportedOperationResul
     
     private boolean closed;
     
-    public FederationResultSet(final Enumerator<Object[]> enumerator, final ShardingSphereSchema schema, final AbstractSchema filterableSchema, final SQLStatementContext<?> sqlStatementContext) {
+    public SQLFederationResultSet(final Enumerator<Object[]> enumerator, final ShardingSphereSchema schema, final AbstractSchema filterableSchema, final SQLStatementContext<?> sqlStatementContext) {
         this.enumerator = enumerator;
         columnLabelAndIndexMap = createColumnLabelAndIndexMap(sqlStatementContext);
-        resultSetMetaData = new FederationResultSetMetaData(schema, filterableSchema, new JavaTypeFactoryImpl(), (SelectStatementContext) sqlStatementContext);
+        resultSetMetaData = new SQLFederationResultSetMetaData(schema, filterableSchema, new JavaTypeFactoryImpl(), (SelectStatementContext) sqlStatementContext);
     }
     
     private Map<String, Integer> createColumnLabelAndIndexMap(final SQLStatementContext<?> sqlStatementContext) {

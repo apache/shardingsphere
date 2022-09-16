@@ -37,10 +37,10 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Federation result set meta data.
+ * SQL federation result set meta data.
  */
 @RequiredArgsConstructor
-public final class FederationResultSetMetaData extends WrapperAdapter implements ResultSetMetaData {
+public final class SQLFederationResultSetMetaData extends WrapperAdapter implements ResultSetMetaData {
     
     private final ShardingSphereSchema schema;
     
@@ -94,9 +94,6 @@ public final class FederationResultSetMetaData extends WrapperAdapter implements
     @Override
     public String getColumnLabel(final int column) {
         Projection projection = selectStatementContext.getProjectionsContext().getExpandProjections().get(column - 1);
-        if (projection instanceof ColumnProjection) {
-            return ((ColumnProjection) projection).getName();
-        }
         return projection.getColumnLabel();
     }
     

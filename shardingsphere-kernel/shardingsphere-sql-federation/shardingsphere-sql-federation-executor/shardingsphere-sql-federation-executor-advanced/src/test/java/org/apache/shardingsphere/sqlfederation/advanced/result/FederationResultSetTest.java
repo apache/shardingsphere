@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.Projecti
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.sqlfederation.advanced.resultset.FederationResultSet;
+import org.apache.shardingsphere.sqlfederation.advanced.resultset.SQLFederationResultSet;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.filter.FilterableSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.junit.After;
@@ -61,12 +61,12 @@ public final class FederationResultSetTest {
     
     private Enumerator<Object[]> enumerator;
     
-    private FederationResultSet federationResultSet;
+    private SQLFederationResultSet federationResultSet;
     
     @Before
     public void setUp() {
         enumerator = createEnumerator();
-        federationResultSet = new FederationResultSet(enumerator, mock(ShardingSphereSchema.class), mock(FilterableSchema.class), createSelectStatementContext());
+        federationResultSet = new SQLFederationResultSet(enumerator, mock(ShardingSphereSchema.class), mock(FilterableSchema.class), createSelectStatementContext());
     }
     
     private static SelectStatementContext createSelectStatementContext() {

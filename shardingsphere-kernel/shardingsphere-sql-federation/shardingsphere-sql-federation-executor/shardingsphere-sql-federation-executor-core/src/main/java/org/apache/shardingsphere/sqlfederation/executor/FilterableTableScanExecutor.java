@@ -15,12 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.advanced.table;
+package org.apache.shardingsphere.sqlfederation.executor;
 
-import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.calcite.adapter.java.JavaTypeFactory;
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
@@ -32,13 +30,9 @@ import org.apache.calcite.prepare.CalciteCatalogReader;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.rel2sql.RelToSqlConverter;
-import org.apache.calcite.rel.type.RelDataType;
-import org.apache.calcite.rel.type.RelDataTypeSystem;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.sql.SqlDialect;
-import org.apache.calcite.sql.fun.SqlStdOperatorTable;
-import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.util.SqlString;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.shardingsphere.infra.binder.QueryContext;
@@ -74,15 +68,14 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.SQLDialectFactory;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContextFactory;
+import org.apache.shardingsphere.sqlfederation.optimizer.executor.FilterableScanNodeExecutorContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.ScanNodeExecutorContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
-import org.apache.shardingsphere.sqlfederation.optimizer.executor.TranslatableScanNodeExecutorContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.filter.FilterableSchema;
 import org.apache.shardingsphere.sqlfederation.optimizer.planner.QueryOptimizePlannerFactory;
-import org.apache.shardingsphere.sqlfederation.row.CommonRowEnumerator;
+import org.apache.shardingsphere.sqlfederation.row.SQLFederationRowEnumerator;
 import org.apache.shardingsphere.sqlfederation.row.EmptyRowEnumerator;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
-import org.apache.shardingsphere.sqlfederation.table.CommonTableScanExecutorContext;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -97,10 +90,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Translatable table scan executor.
+ * Filterable table scan executor.
  */
 @RequiredArgsConstructor
-public final class TranslatableTableScanExecutor implements TableScanExecutor {
+public final class FilterableTableScanExecutor implements TableScanExecutor {
     
     private final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine;
     
@@ -112,7 +105,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
     
     private final ShardingSphereRuleMetaData globalRuleMetaData;
     
-    private final CommonTableScanExecutorContext executorContext;
+    private final TableScanExecutorContext executorContext;
     
     private final EventBusContext eventBusContext;
     
@@ -121,11 +114,11 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
         String databaseName = executorContext.getDatabaseName();
         String schemaName = executorContext.getSchemaName();
         DatabaseType databaseType = DatabaseTypeEngine.getTrunkDatabaseType(optimizerContext.getParserContexts().get(databaseName).getDatabaseType().getType());
-        SqlString sqlString = createSQLString(table, (TranslatableScanNodeExecutorContext) scanContext, SQLDialectFactory.getSQLDialect(databaseType));
-        // TODO replace sql parse with sql convert
+        SqlString sqlString = createSQLString(table, (FilterableScanNodeExecutorContext) scanContext, SQLDialectFactory.getSQLDialect(databaseType));
         SQLFederationExecutorContext federationContext = executorContext.getFederationContext();
         QueryContext queryContext = createQueryContext(federationContext.getDatabases(), sqlString, databaseType);
         ShardingSphereDatabase database = federationContext.getDatabases().get(databaseName.toLowerCase());
+        // TODO need to get session context
         ExecutionContext context = new KernelProcessor().generateExecutionContext(queryContext, database, globalRuleMetaData, executorContext.getProps(), new ConnectionContext());
         if (federationContext.isPreview() || databaseType.getSystemSchemas().contains(schemaName)) {
             federationContext.getExecutionUnits().addAll(context.getExecutionUnits());
@@ -141,6 +134,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
             ExecuteProcessEngine.initialize(context.getQueryContext(), executionGroupContext, eventBusContext);
             List<QueryResult> queryResults = execute(executionGroupContext, databaseType);
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID(), eventBusContext);
+            // TODO need to get session context
             MergeEngine mergeEngine = new MergeEngine(database, executorContext.getProps(), new ConnectionContext());
             MergedResult mergedResult = mergeEngine.merge(queryResults, queryContext.getSqlStatementContext());
             Collection<Statement> statements = getStatements(executionGroupContext.getInputGroups());
@@ -174,7 +168,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
         return result;
     }
     
-    private SqlString createSQLString(final ShardingSphereTable table, final TranslatableScanNodeExecutorContext scanContext, final SqlDialect sqlDialect) {
+    private SqlString createSQLString(final ShardingSphereTable table, final FilterableScanNodeExecutorContext scanContext, final SqlDialect sqlDialect) {
         return new RelToSqlConverter(sqlDialect).visitRoot(createRelNode(table, scanContext)).asStatement().toSqlString(sqlDialect);
     }
     
@@ -197,7 +191,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
         }
     }
     
-    private RelNode createRelNode(final ShardingSphereTable table, final TranslatableScanNodeExecutorContext scanContext) {
+    private RelNode createRelNode(final ShardingSphereTable table, final FilterableScanNodeExecutorContext scanContext) {
         String databaseName = executorContext.getDatabaseName();
         String schemaName = executorContext.getSchemaName();
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(OptimizerPlannerContextFactory.createConnectionProperties());
@@ -205,30 +199,11 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
         CalciteCatalogReader catalogReader = OptimizerPlannerContextFactory.createCatalogReader(schemaName,
                 new FilterableSchema(schemaName, schema, null), new JavaTypeFactoryImpl(), connectionConfig);
         RelOptCluster relOptCluster = RelOptCluster.create(QueryOptimizePlannerFactory.createVolcanoPlanner(), new RexBuilder(new JavaTypeFactoryImpl()));
-        RelBuilder builder = RelFactories.LOGICAL_BUILDER.create(relOptCluster, catalogReader).scan(table.getName());
-        if (null != scanContext.getFilterValues()) {
-            builder.filter(createFilters(scanContext.getFilterValues(), builder, table.getColumnNames()));
-        }
+        RelBuilder builder = RelFactories.LOGICAL_BUILDER.create(relOptCluster, catalogReader).scan(table.getName()).filter(scanContext.getFilterValues());
         if (null != scanContext.getProjects()) {
             builder.project(createProjections(scanContext.getProjects(), builder, table.getColumnNames()));
         }
         return builder.build();
-    }
-    
-    private Collection<RexNode> createFilters(final String[] filterValues, final RelBuilder builder, final List<String> columnNames) {
-        Collection<RexNode> result = new LinkedList<>();
-        JavaTypeFactory typeFactory = new JavaTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
-        RexBuilder rexBuilder = new RexBuilder(typeFactory);
-        for (int i = 0; i < filterValues.length; i++) {
-            if (!Strings.isNullOrEmpty(filterValues[i])) {
-                RelDataType nonNullableInt = typeFactory.createSqlType(SqlTypeName.INTEGER);
-                RexNode n2 = rexBuilder.makeLiteral(Integer.valueOf(filterValues[i]), nonNullableInt, false);
-                RexNode n1 = rexBuilder.makeInputRef(nonNullableInt, i);
-                RexNode tmp = rexBuilder.makeCall(SqlStdOperatorTable.EQUALS, n1, n2);
-                result.add(tmp);
-            }
-        }
-        return result;
     }
     
     private Collection<RexNode> createProjections(final int[] projects, final RelBuilder relBuilder, final List<String> columnNames) {
@@ -244,7 +219,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
             
             @Override
             public Enumerator<Object[]> enumerator() {
-                return new CommonRowEnumerator(mergedResult, metaData, statements);
+                return new SQLFederationRowEnumerator(mergedResult, metaData, statements);
             }
         };
     }
