@@ -13,29 +13,31 @@ weight = 1
 
 \<sharding:rule />
 
-| *名称*                                | *类型* | *说明*             |
-| ------------------------------------- | ------ | ----------------- |
-| id                                    | 属性   | Spring Bean Id    |
-| table-rules (?)                       | 标签   | 分片表规则配置      |
-| auto-table-rules (?)                  | 标签   | 自动分片表规则配置  |
-| binding-table-rules (?)               | 标签   | 绑定表规则配置       |
-| broadcast-table-rules (?)             | 标签   | 广播表规则配置       |
-| default-database-strategy-ref (?)     | 属性   | 默认分库策略名称     |
-| default-table-strategy-ref (?)        | 属性   | 默认分表策略名称     |
-| default-key-generate-strategy-ref (?) | 属性   | 默认分布式序列策略名称 |
-| default-sharding-column (?)           | 属性   | 默认分片列名称      |
+| *名称*                                  | *类型* | *说明*           |
+|---------------------------------------| ------ |----------------|
+| id                                    | 属性   | Spring Bean Id |
+| table-rules (?)                       | 标签   | 分片表规则配置        |
+| auto-table-rules (?)                  | 标签   | 自动分片表规则配置      |
+| binding-table-rules (?)               | 标签   | 绑定表规则配置        |
+| broadcast-table-rules (?)             | 标签   | 广播表规则配置        |
+| default-database-strategy-ref (?)     | 属性   | 默认分库策略名称       |
+| default-table-strategy-ref (?)        | 属性   | 默认分表策略名称       |
+| default-key-generate-strategy-ref (?) | 属性   | 默认分布式序列策略名称    |
+| default-audit-strategy-ref (?)        | 属性   | 默认分片审计策略名称     |
+| default-sharding-column (?)           | 属性   | 默认分片列名称        |
 
 \<sharding:table-rule />
 
-| *名称*                     | *类型* | *说明*          |
-| ------------------------- | ----- | --------------- |
-| logic-table               | 属性  | 逻辑表名称        |
+| *名称*                      | *类型* | *说明*                                                                                                                       |
+|---------------------------| ----- |----------------------------------------------------------------------------------------------------------------------------|
+| logic-table               | 属性  | 逻辑表名称                                                                                                                      |
 | actual-data-nodes         | 属性  | 由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持 inline 表达式。缺省表示使用已知数据源与逻辑表名称生成数据节点，用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况 |
-| actual-data-sources       | 属性  | 自动分片表数据源名 |
-| database-strategy-ref     | 属性  | 标准分片表分库策略名称      |
-| table-strategy-ref        | 属性  | 标准分片表分表策略名称      |
-| sharding-strategy-ref     | 属性  | 自动分片表策略名称      |
-| key-generate-strategy-ref | 属性  | 分布式序列策略名称 |
+| actual-data-sources       | 属性  | 自动分片表数据源名                                                                                                                  |
+| database-strategy-ref     | 属性  | 标准分片表分库策略名称                                                                                                                |
+| table-strategy-ref        | 属性  | 标准分片表分表策略名称                                                                                                                |
+| sharding-strategy-ref     | 属性  | 自动分片表策略名称                                                                                                                  |
+| key-generate-strategy-ref | 属性  | 分布式序列策略名称                                                                                                                  |
+| audit-strategy-ref        | 属性  | 分片审计策略名称                                                                                                                   |
 
 \<sharding:binding-table-rules />
 
@@ -98,6 +100,26 @@ weight = 1
 | column        | 属性   | 分布式序列列名称   |
 | algorithm-ref | 属性   | 分布式序列算法名称 |
 
+\<sharding:audit-strategy />
+
+| *名称*              | *类型*   | *说明*         |
+| -------------------|--------|--------------|
+| id                 | 属性     | 分片审计策略名称     |
+| allow-hint-disable | 属性     | 是否禁用分片审计hint |
+| auditors           | 标签     | 分片审计算法名称     |
+
+\<sharding:auditors />
+
+| *名称*             | *类型*   | *说明*     |
+| -----------------|--------|----------|
+| auditor          | 标签     | 分片审计算法名称 |
+
+\<sharding:auditor />
+
+| *名称*             | *类型* | *说明*     |
+| -----------------|------|----------|
+| algorithm-ref    | 属性   | 分片审计算法名称 |
+
 \<sharding:sharding-algorithm />
 
 | *名称*    | *类型* | *说明*        |
@@ -113,6 +135,14 @@ weight = 1
 | id        | 属性  | 分布式序列算法名称    |
 | type      | 属性  | 分布式序列算法类型    |
 | props (?) | 标签  | 分布式序列算法属性配置 |
+
+\<sharding:audit-algorithm />
+
+| *名称*    | *类型* | *说明*       |
+| --------- | ----- |------------|
+| id        | 属性  | 分片审计算法名称   |
+| type      | 属性  | 分片审计算法类型   |
+| props (?) | 标签  | 分片审计算法属性配置 |
 
 算法类型的详情，请参见[内置分片算法列表](/cn/user-manual/common-config/builtin-algorithm/sharding)和[内置分布式序列算法列表](/cn/user-manual/common-config/builtin-algorithm/keygen)。
 
@@ -169,13 +199,26 @@ weight = 1
     
     <sharding:key-generate-algorithm id="snowflakeAlgorithm" type="SNOWFLAKE">
     </sharding:key-generate-algorithm>
+
+    <sharding:audit-algorithm id="auditAlgorithm" type="DML_SHARDING_CONDITIONS" />
     
     <sharding:key-generate-strategy id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
     <sharding:key-generate-strategy id="itemKeyGenerator" column="order_item_id" algorithm-ref="snowflakeAlgorithm" />
+
+    <sharding:audit-strategy id="defaultAudit" allow-hint-disable="true">
+        <sharding:auditors>
+            <sharding:auditor algorithm-ref="auditAlgorithm" />
+        </sharding:auditors>
+    </sharding:audit-strategy>
+    <sharding:audit-strategy id="shardingKeyAudit" allow-hint-disable="true">
+        <sharding:auditors>
+            <sharding:auditor algorithm-ref="auditAlgorithm" />
+        </sharding:auditors>
+    </sharding:audit-strategy>
     
     <sharding:rule id="shardingRule">
         <sharding:table-rules>
-            <sharding:table-rule logic-table="t_order" database-strategy-ref="databaseStrategy" key-generate-strategy-ref="orderKeyGenerator" />
+            <sharding:table-rule logic-table="t_order" database-strategy-ref="databaseStrategy" key-generate-strategy-ref="orderKeyGenerator" audit-strategy-ref="shardingKeyAudit" />
             <sharding:table-rule logic-table="t_order_item" database-strategy-ref="databaseStrategy" key-generate-strategy-ref="itemKeyGenerator" />
         </sharding:table-rules>
         <sharding:binding-table-rules>

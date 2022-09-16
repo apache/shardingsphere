@@ -15,18 +15,20 @@ Class name: org.apache.shardingsphere.sharding.api.config.ShardingRuleConfigurat
 
 Attributes:
 
-| *Name*                              | *DataType*                                       | *Description*                             | *Default Value* |
-| ----------------------------------- | ------------------------------------------------ | ----------------------------------------- | --------------- |
-| tables (+)                          | Collection\<ShardingTableRuleConfiguration\>     | Sharding table rules                      | -               |
-| autoTables (+)                      | Collection\<ShardingAutoTableRuleConfiguration\> | Sharding auto table rules                 | -               |
-| bindingTableGroups (*)              | Collection\<String\>                             | Binding table rules                       | Empty           |
-| broadcastTables (*)                 | Collection\<String\>                             | Broadcast table rules                     | Empty           |
-| defaultDatabaseShardingStrategy (?) | ShardingStrategyConfiguration                    | Default database sharding strategy        | Not sharding    |
-| defaultTableShardingStrategy (?)    | ShardingStrategyConfiguration                    | Default table sharding strategy           | Not sharding    |
-| defaultKeyGenerateStrategy (?)      | KeyGeneratorConfiguration                        | Default key generator                     | Snowflake       |
-| defaultShardingColumn (?)           | String                                           | Default sharding column name              | None            |
-| shardingAlgorithms (+)              | Map\<String, AlgorithmConfiguration\>            | Sharding algorithm name and configurations | None            |
-| keyGenerators (?)                   | Map\<String, AlgorithmConfiguration\>            | Key generate algorithm name and configurations | None            |
+| *Name*                              | *DataType*                                       | *Description*                                    | *Default Value*         |
+| ----------------------------------- | ------------------------------------------------ |--------------------------------------------------|-------------------------|
+| tables (+)                          | Collection\<ShardingTableRuleConfiguration\>     | Sharding table rules                             | -                       |
+| autoTables (+)                      | Collection\<ShardingAutoTableRuleConfiguration\> | Sharding auto table rules                        | -                       |
+| bindingTableGroups (*)              | Collection\<String\>                             | Binding table rules                              | Empty                   |
+| broadcastTables (*)                 | Collection\<String\>                             | Broadcast table rules                            | Empty                   |
+| defaultDatabaseShardingStrategy (?) | ShardingStrategyConfiguration                    | Default database sharding strategy               | Not sharding            |
+| defaultTableShardingStrategy (?)    | ShardingStrategyConfiguration                    | Default table sharding strategy                  | Not sharding            |
+| defaultKeyGenerateStrategy (?)      | KeyGeneratorConfiguration                        | Default key generator                            | Snowflake               |
+| defaultAuditStrategy (?)            | ShardingAuditStrategyConfiguration               | Default key auditor                              | DML_SHARDING_CONDITIONS |
+| defaultShardingColumn (?)           | String                                           | Default sharding column name                     | None                    |
+| shardingAlgorithms (+)              | Map\<String, AlgorithmConfiguration\>            | Sharding algorithm name and configurations       | None                    |
+| keyGenerators (?)                   | Map\<String, AlgorithmConfiguration\>            | Key generate algorithm name and configurations   | None                    |
+| auditors (?)                        | Map\<String, AlgorithmConfiguration\>            | Sharding audit algorithm name and configurations | None                    |
 
 ### Sharding Table Configuration
 
@@ -34,13 +36,14 @@ Class name: org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfi
 
 Attributes:
 
-| *Name*                       | *DataType*                    | *Description*                                                                                                                         | *Default Value*                            |
-| ---------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
-| logicTable                   | String                        | Name of sharding logic table                                                                                                          | -                                          |
-| actualDataNodes (?)          | String                        | Describe data source names and actual tables, delimiter as point.<br /> Multiple data nodes split by comma, support inline expression | Broadcast table or databases sharding only |
-| databaseShardingStrategy (?) | ShardingStrategyConfiguration | Databases sharding strategy                                                                                                           | Use default databases sharding strategy    |
-| tableShardingStrategy (?)    | ShardingStrategyConfiguration | Tables sharding strategy                                                                                                              | Use default tables sharding strategy       |
-| keyGenerateStrategy (?)      | KeyGeneratorConfiguration     | Key generator configuration                                                                                                           | Use default key generator                  |
+| *Name*                       | *DataType*                         | *Description*                                                                                                                         | *Default Value*                            |
+| ---------------------------- |------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------|
+| logicTable                   | String                             | Name of sharding logic table                                                                                                          | -                                          |
+| actualDataNodes (?)          | String                             | Describe data source names and actual tables, delimiter as point.<br /> Multiple data nodes split by comma, support inline expression | Broadcast table or databases sharding only |
+| databaseShardingStrategy (?) | ShardingStrategyConfiguration      | Databases sharding strategy                                                                                                           | Use default databases sharding strategy    |
+| tableShardingStrategy (?)    | ShardingStrategyConfiguration      | Tables sharding strategy                                                                                                              | Use default tables sharding strategy       |
+| keyGenerateStrategy (?)      | KeyGeneratorConfiguration          | Key generator configuration                                                                                                           | Use default key generator                  |
+| auditStrategy (?)            | ShardingAuditStrategyConfiguration | Sharding audit strategy configuration                                                                                                 | Use default auditor                        |
 
 ### Sharding Auto Table Configuration
 
@@ -110,6 +113,19 @@ Attributes:
 
 Please refer to [Built-in Key Generate Algorithm List](/en/user-manual/common-config/builtin-algorithm/keygen) for more details about type of algorithm.
 
+### Sharding audit Strategy Configuration
+
+Class name：org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration
+
+Attributes：
+
+| *Name*           | *DataType*            | *Description*                          |
+|------------------|-----------------------|----------------------------------------|
+| auditorNames     | Collection\<String\>  | Sharding audit algorithm name          |
+| allowHintDisable | Boolean               | Enable or disable sharding audit hint  |
+
+Please refer to [Built-in Key Generate Algorithm List](/en/user-manual/common-config/builtin-algorithm/keygen) for more details about type of algorithm.
+
 ## Procedure
 
 1. Create an authentic data source mapping relationship, with key as the logical name of the data source and value as the DataSource object.
@@ -139,12 +155,14 @@ public final class ShardingDatabasesAndTablesConfigurationPrecise implements Exa
         result.getShardingAlgorithms().put("inline", new AlgorithmConfiguration("INLINE", props));
         result.getShardingAlgorithms().put("standard_test_tbl", new AlgorithmConfiguration("STANDARD_TEST_TBL", new Properties()));
         result.getKeyGenerators().put("snowflake", new AlgorithmConfiguration("SNOWFLAKE", new Properties()));
+        result.getAuditors().put("sharding_key_required_auditor", new AlgorithmConfiguration("DML_SHARDING_CONDITIONS", new Properties()));
         return result;
     }
     
     private ShardingTableRuleConfiguration getOrderTableRuleConfiguration() {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order", "demo_ds_${0..1}.t_order_${[0, 1]}");
         result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake"));
+        result.setAuditStrategy(new ShardingAuditStrategyConfiguration(Collections.singleton("sharding_key_required_auditor"), true));
         return result;
     }
     

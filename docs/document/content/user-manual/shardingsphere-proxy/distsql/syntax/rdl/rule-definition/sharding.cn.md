@@ -30,16 +30,22 @@ CREATE SHARDING KEY GENERATOR keyGeneratorDefinition [, keyGeneratorDefinition] 
 
 ALTER SHARDING KEY GENERATOR keyGeneratorDefinition [, keyGeneratorDefinition] ...
 
-DROP SHARDING KEY GENERATOR keyGeneratorName [, keyGeneratorName] ...
+DROP SHARDING KEY GENERATOR [IF EXISTS] keyGeneratorName [, keyGeneratorName] ...
+    
+CREATE SHARDING AUDITOR auditorDefinition [, auditorDefinition] ...
+    
+ALTER SHARDING AUDITOR auditorDefinition [, auditorDefinition] ...
+    
+DROP SHARDING AUDITOR [IF EXISTS] auditorName [, auditorName] ...
 
 shardingTableRuleDefinition:
     shardingAutoTableRule | shardingTableRule
 
 shardingAutoTableRule:
-    tableName(resources, shardingColumn, algorithmDefinition [, keyGenerateDeclaration])
+    tableName(resources, shardingColumn, algorithmDefinition [, keyGenerateDeclaration] [, auditDeclaration])
 
 shardingTableRule:
-    tableName(dataNodes [, databaseStrategy] [, tableStrategy] [, keyGenerateDeclaration])
+    tableName(dataNodes [, databaseStrategy] [, tableStrategy] [, keyGenerateDeclaration] [, auditDeclaration])
 
 resources:
     RESOURCES(resource [, resource] ...)
@@ -64,6 +70,18 @@ keyGenerateDeclaration:
 
 keyGenerateDefinition:
     KEY_GENERATE_STRATEGY(COLUMN=columnName, strategyDefinition)
+    
+auditDeclaration:
+    auditDefinition | auditStrategy
+
+auditDefinition:
+    AUDIT_STRATEGY([(singleAuditDefinition),(singleAuditDefinition)], ALLOW_HINT_DISABLE=true)
+    
+singleAuditDefinition:
+    NAME=auditor1, algorithmDefinition
+    
+auditStrategy:
+    AUDIT_STRATEGY(AUDITORS=[auditor1,auditor2], ALLOW_HINT_DISABLE=true)
 
 shardingScope:
     DATABASE | TABLE
@@ -103,10 +121,17 @@ algorithmProperty:
 
 keyGeneratorDefinition: 
     keyGeneratorName (algorithmDefinition)
+
+auditorDefinition:
+    auditorName (auditorAlgorithmDefinition)
+    
+auditorAlgorithmDefinition:
+    TYPE(NAME=auditorAlgorithmType [, PROPERTIES([algorithmProperties])])
 ```
 - `RESOURCES` 需使用 RDL 管理的数据源资源；
 - `shardingAlgorithmType` 指定自动分片算法类型，请参考  [自动分片算法](/cn/user-manual/common-config/builtin-algorithm/sharding/)；
 - `keyGenerateStrategyType` 指定分布式主键生成策略，请参考 [分布式主键](/cn/user-manual/common-config/builtin-algorithm/keygen/)；
+- `auditorAlgorithmType` 指定分片审计策略，请参考 [分片审计](/cn/user-manual/common-config/builtin-algorithm/keygen/)；
 - 重复的 `tableName` 将无法被创建；
 - `shardingAlgorithm` 能够被不同的 `Sharding Table Rule` 复用，因此在执行 `DROP SHARDING TABLE RULE` 时，对应的 `shardingAlgorithm` 不会被移除；
 - 如需移除 `shardingAlgorithm`，请执行 `DROP SHARDING ALGORITHM`；
@@ -157,18 +182,34 @@ TYPE(NAME="SNOWFLAKE")
 DROP SHARDING KEY GENERATOR snowflake_key_generator;
 ```
 
+*Auditor*
+
+```sql
+CREATE SHARDING AUDITOR sharding_key_required_auditor (
+TYPE(NAME="DML_SHARDING_CONDITIONS")
+);
+
+ALTER SHARDING AUDITOR sharding_key_required_auditor (
+TYPE(NAME="DML_SHARDING_CONDITIONS")
+);
+
+DROP SHARDING AUDITOR IF EXISTS sharding_key_required_auditor;
+```
+
 *Auto Table*
 ```sql
 CREATE SHARDING TABLE RULE t_order (
 RESOURCES(resource_0,resource_1),
 SHARDING_COLUMN=order_id,TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="4")),
-KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake"))
+KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake")),
+AUDIT_STRATEGY(AUDITORS=[auditor1,auditor2],ALLOW_HINT_DISABLE=true)
 );
 
 ALTER SHARDING TABLE RULE t_order (
 RESOURCES(resource_0,resource_1,resource_2,resource_3),
 SHARDING_COLUMN=order_id,TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="16")),
-KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake"))
+KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake")),
+AUDIT_STRATEGY(AUDITORS=[auditor1,auditor2],ALLOW_HINT_DISABLE=true)
 );
 
 DROP SHARDING TABLE RULE t_order;
@@ -187,7 +228,8 @@ CREATE SHARDING TABLE RULE t_order_item (
 DATANODES("resource_${0..1}.t_order_item_${0..1}"),
 DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME="inline",PROPERTIES("algorithm-expression"="resource_${user_id % 2}")))),
 TABLE_STRATEGY(TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=table_inline),
-KEY_GENERATE_STRATEGY(COLUMN=another_id,KEY_GENERATOR=snowflake_key_generator)
+KEY_GENERATE_STRATEGY(COLUMN=another_id,KEY_GENERATOR=snowflake_key_generator),
+AUDIT_STRATEGY(AUDITORS=[auditor1,auditor2],ALLOW_HINT_DISABLE=true)
 );
 
 ALTER SHARDING ALGORITHM database_inline (
@@ -200,7 +242,8 @@ ALTER SHARDING TABLE RULE t_order_item (
 DATANODES("resource_${0..3}.t_order_item${0..3}"),
 DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
 TABLE_STRATEGY(TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=table_inline),
-KEY_GENERATE_STRATEGY(COLUMN=another_id,KEY_GENERATOR=snowflake_key_generator)
+KEY_GENERATE_STRATEGY(COLUMN=another_id,KEY_GENERATOR=snowflake_key_generator),
+AUDIT_STRATEGY(AUDITORS=[auditor1,auditor2],ALLOW_HINT_DISABLE=true)
 );
 
 DROP SHARDING TABLE RULE t_order_item;
