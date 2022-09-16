@@ -512,7 +512,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         Iterator<Entry<Object, Object>> props = heartbeatProperties.entrySet().iterator();
         while (props.hasNext()) {
             Entry<Object, Object> entry = props.next();
-            result.append(String.format(DistSQLScriptConstants.PROPERTY_APOSTROPHE, entry.getKey(), entry.getValue()));
+            result.append(String.format(DistSQLScriptConstants.PROPERTY, entry.getKey(), entry.getValue()));
         }
     }
     
@@ -592,7 +592,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         Iterator<Entry<Object, Object>> props = properties.entrySet().iterator();
         while (props.hasNext()) {
             Entry<Object, Object> entry = props.next();
-            result.append(String.format(DistSQLScriptConstants.PROPERTY_APOSTROPHE, entry.getKey(), entry.getValue()));
+            result.append(String.format(DistSQLScriptConstants.PROPERTY, entry.getKey(), entry.getValue()));
             if (props.hasNext()) {
                 result.append(DistSQLScriptConstants.COMMA);
             }
@@ -683,11 +683,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         while (prosIter.hasNext()) {
             String prosKey = prosIter.next();
             String prosValue = algorithmProperties.getProperty(prosKey);
-            if (prosKey.equals(DistSQLScriptConstants.REGEX) || prosKey.equals(DistSQLScriptConstants.VALUE)) {
-                result.append(String.format(DistSQLScriptConstants.PROPERTY_HYBRID, prosKey, prosValue));
-            } else {
-                result.append(String.format(DistSQLScriptConstants.PROPERTY, prosKey, prosValue));
-            }
+            result.append(String.format(DistSQLScriptConstants.PROPERTY, prosKey, prosValue));
             if (prosIter.hasNext()) {
                 result.append(DistSQLScriptConstants.COMMA);
             }

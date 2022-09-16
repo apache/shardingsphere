@@ -83,10 +83,6 @@ public final class DistSQLScriptConstants {
     
     public static final String PROPERTY = "\"%s\"=\"%s\"";
     
-    public static final String PROPERTY_HYBRID = "\"%s\"=\'%s\'";
-    
-    public static final String PROPERTY_APOSTROPHE = "\'%s\'=\'%s\'";
-    
     public static final String CREATE_SHARDING_ALGORITHM = "CREATE SHARDING ALGORITHM";
     
     public static final String SHARDING_ALGORITHM = " %s ("
@@ -201,8 +197,4 @@ public final class DistSQLScriptConstants {
     public static final String SHADOW_TABLE = "%s(%s)";
     
     public static final String SHADOW_TABLE_TYPE = "(TYPE(NAME=\"%s\", PROPERTIES(%s)))";
-    
-    public static final String REGEX = "regex";
-    
-    public static final String VALUE = "value";
 }
