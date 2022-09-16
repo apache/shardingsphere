@@ -51,10 +51,12 @@ public final class ShowMigrationJobStatusQueryResultSet implements DatabaseDistS
                         result.add(entry.getValue().getDataSourceName());
                         result.add(entry.getValue().getStatus());
                         result.add(entry.getValue().isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
+                        result.add(entry.getValue().getProcessedRecordCount());
                         result.add(entry.getValue().getInventory().getInventoryFinishedPercentage());
                         long latestActiveTimeMillis = entry.getValue().getIncremental().getIncrementalLatestActiveTimeMillis();
                         result.add(latestActiveTimeMillis > 0 ? TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis) : 0);
                     } else {
+                        result.add("");
                         result.add("");
                         result.add("");
                         result.add("");
@@ -67,7 +69,7 @@ public final class ShowMigrationJobStatusQueryResultSet implements DatabaseDistS
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("item", "data_source", "status", "active", "inventory_finished_percentage", "incremental_idle_seconds");
+        return Arrays.asList("item", "data_source", "status", "active", "processed_records", "inventory_finished_percentage", "incremental_idle_seconds");
     }
     
     @Override

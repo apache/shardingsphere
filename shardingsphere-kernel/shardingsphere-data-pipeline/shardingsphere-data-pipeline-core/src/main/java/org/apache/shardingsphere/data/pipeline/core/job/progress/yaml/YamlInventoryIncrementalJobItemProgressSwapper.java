@@ -38,6 +38,7 @@ public final class YamlInventoryIncrementalJobItemProgressSwapper implements Yam
         result.setDataSourceName(progress.getDataSourceName());
         result.setInventory(INVENTORY_PROGRESS_SWAPPER.swapToYaml(progress.getInventory()));
         result.setIncremental(INCREMENTAL_PROGRESS_SWAPPER.swapToYaml(progress.getIncremental()));
+        result.setProcessedRecordCount(progress.getProcessedRecordCount());
         return result;
     }
     
@@ -49,6 +50,7 @@ public final class YamlInventoryIncrementalJobItemProgressSwapper implements Yam
         result.setDataSourceName(yamlProgress.getDataSourceName());
         result.setInventory(INVENTORY_PROGRESS_SWAPPER.swapToObject(yamlProgress.getInventory()));
         result.setIncremental(INCREMENTAL_PROGRESS_SWAPPER.swapToObject(yamlProgress.getSourceDatabaseType(), yamlProgress.getIncremental()));
+        result.setProcessedRecordCount(yamlProgress.getProcessedRecordCount());
         return result;
     }
 }

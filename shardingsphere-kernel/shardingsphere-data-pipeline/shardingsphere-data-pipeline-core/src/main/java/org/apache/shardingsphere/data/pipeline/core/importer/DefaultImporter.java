@@ -31,6 +31,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.GroupedDataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProcessUpdateParameter;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineImporterJobWriteException;
@@ -97,9 +98,9 @@ public final class DefaultImporter extends AbstractLifecycleExecutor implements 
             if (null != records && !records.isEmpty()) {
                 round++;
                 rowCount += records.size();
-                flush(dataSourceManager.getDataSource(importerConfig.getDataSourceConfig()), records);
+                PipelineJobProcessUpdateParameter updatedParameter = flush(dataSourceManager.getDataSource(importerConfig.getDataSourceConfig()), records);
                 channel.ack(records);
-                jobProgressListener.onProgressUpdated();
+                jobProgressListener.onProgressUpdated(updatedParameter);
                 if (0 == round % 50) {
                     log.info("importer write, round={}, rowCount={}", round, rowCount);
                 }
@@ -113,13 +114,18 @@ public final class DefaultImporter extends AbstractLifecycleExecutor implements 
         log.info("importer write done, rowCount={}, finishedByBreak={}", rowCount, finishedByBreak);
     }
     
-    private void flush(final DataSource dataSource, final List<Record> buffer) {
-        List<GroupedDataRecord> groupedDataRecords = MERGER.group(buffer.stream().filter(each -> each instanceof DataRecord).map(each -> (DataRecord) each).collect(Collectors.toList()));
-        groupedDataRecords.forEach(each -> {
+    private PipelineJobProcessUpdateParameter flush(final DataSource dataSource, final List<Record> buffer) {
+        List<GroupedDataRecord> result = MERGER.group(buffer.stream().filter(each -> each instanceof DataRecord).map(each -> (DataRecord) each).collect(Collectors.toList()));
+        int insertRecordNumber = 0;
+        int deleteRecordNumber = 0;
+        for (GroupedDataRecord each : result) {
+            deleteRecordNumber += null != each.getDeleteDataRecords() ? each.getDeleteDataRecords().size() : 0;
             flushInternal(dataSource, each.getDeleteDataRecords());
+            insertRecordNumber += null != each.getInsertDataRecords() ? each.getInsertDataRecords().size() : 0;
             flushInternal(dataSource, each.getInsertDataRecords());
             flushInternal(dataSource, each.getUpdateDataRecords());
-        });
+        }
+        return new PipelineJobProcessUpdateParameter(insertRecordNumber, deleteRecordNumber);
     }
     
     private void flushInternal(final DataSource dataSource, final List<DataRecord> buffer) {

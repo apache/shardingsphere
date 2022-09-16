@@ -15,28 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
+package org.apache.shardingsphere.data.pipeline.api.job.progress.listener;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+import lombok.RequiredArgsConstructor;
 
 /**
- * YAML inventory incremental job item progress.
+ * Pipeline job process update parameter.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class YamlInventoryIncrementalJobItemProgress implements YamlConfiguration {
+public final class PipelineJobProcessUpdateParameter {
     
-    private String status;
+    private final int insertRecordNumber;
     
-    private String sourceDatabaseType;
-    
-    private String dataSourceName;
-    
-    private YamlJobItemInventoryTasksProgress inventory;
-    
-    private YamlJobItemIncrementalTasksProgress incremental;
-    
-    private long processedRecordCount;
+    private final int deleteRecordNumber;
 }

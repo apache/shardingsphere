@@ -38,9 +38,11 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * General migration test case, includes multiple cases.
@@ -105,7 +107,10 @@ public final class MySQLMigrationGeneralIT extends AbstractMigrationITCase {
     }
     
     private void assertMigrationSuccessById(final String jobId) throws SQLException, InterruptedException {
-        waitJobFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+        List<Map<String, Object>> jobStatus = waitJobFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+        for (Map<String, Object> each : jobStatus) {
+            assertTrue(Integer.parseInt(each.get("processed_records").toString()) > 0);
+        }
         assertCheckMigrationSuccess(jobId, "DATA_MATCH");
         stopMigrationByJobId(jobId);
     }
