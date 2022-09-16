@@ -22,11 +22,14 @@ import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.impl.AbstractSchema;
+import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 
 import java.sql.ResultSetMetaData;
 import java.util.Collections;
@@ -135,12 +138,18 @@ public final class FederationResultSetMetaData extends WrapperAdapter implements
     
     @Override
     public int getColumnType(final int column) {
+        Projection projection = selectStatementContext.getProjectionsContext().getExpandProjections().get(column - 1);
+        if (projection instanceof ColumnProjection) {
+            Optional<ShardingSphereTable> table = findTableName(column).flatMap(optional -> Optional.ofNullable(schema.getTable(optional)));
+            return table.flatMap(optional -> Optional.ofNullable(optional.getColumns().get(((ColumnProjection) projection).getName()))).map(ShardingSphereColumn::getDataType).orElse(0);
+        }
         return 0;
     }
     
     @Override
     public String getColumnTypeName(final int column) {
-        return "";
+        int columnType = getColumnType(column);
+        return Optional.ofNullable(SqlTypeName.getNameForJdbcType(columnType)).map(SqlTypeName::getName).orElse("");
     }
     
     @Override
