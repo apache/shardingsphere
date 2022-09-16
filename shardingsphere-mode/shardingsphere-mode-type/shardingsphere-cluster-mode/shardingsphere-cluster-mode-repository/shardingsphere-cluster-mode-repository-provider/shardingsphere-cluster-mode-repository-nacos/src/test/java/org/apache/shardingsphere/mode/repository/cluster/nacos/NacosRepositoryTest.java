@@ -27,12 +27,10 @@ import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.alibaba.nacos.common.utils.StringUtils;
 import com.google.common.util.concurrent.SettableFuture;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.instance.utils.IpUtils;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryException;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.entity.RegisterMetadata;
-import org.apache.shardingsphere.mode.repository.cluster.nacos.lock.NacosInternalLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.props.NacosProperties;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.props.NacosPropertyKey;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.utils.MetadataUtil;
@@ -47,9 +45,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.plugins.MemberAccessor;
 import org.mockito.stubbing.VoidAnswer2;
 
-import javax.sql.DataSource;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -58,6 +53,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -83,8 +79,10 @@ public class NacosRepositoryTest {
         MemberAccessor accessor = Plugins.getMemberAccessor();
         accessor.set(REPOSITORY.getClass().getDeclaredField("nacosProps"), REPOSITORY, new NacosProperties(new Properties()));
         accessor.set(REPOSITORY.getClass().getDeclaredField("client"), REPOSITORY, client);
+        accessor.set(REPOSITORY.getClass().getDeclaredField("isDuplicated"), REPOSITORY, new AtomicBoolean(false));
         RegisterMetadata.PERSISTENT.setPort(new AtomicInteger(Integer.MIN_VALUE));
         RegisterMetadata.EPHEMERAL.setPort(new AtomicInteger(Integer.MIN_VALUE));
+
     }
     
     @Test
@@ -92,14 +90,12 @@ public class NacosRepositoryTest {
     public void assertGetLatestKey() {
         int total = 2;
         String key = "/test/children/keys/persistent/1";
-        ZoneOffset zoneOffset = ZoneOffset.of("+8");
-        long epochMilliseconds = LocalDateTime.now().toInstant(zoneOffset).toEpochMilli();
         List<Instance> instances = new LinkedList<>();
         for (int count = 1; count <= total; count++) {
             Instance instance = new Instance();
             final Map<String, String> metadataMap = new HashMap<>(2, 1);
             metadataMap.put(key, "value" + count);
-            metadataMap.put(zoneOffset.toString(), String.valueOf(epochMilliseconds + count));
+            metadataMap.put(MetadataUtil.UTC_ZONE_OFFSET.toString(), String.valueOf(count));
             instance.setMetadata(metadataMap);
             instances.add(instance);
         }
@@ -138,7 +134,6 @@ public class NacosRepositoryTest {
         Instance registerInstance = instanceArgumentCaptor.getValue();
         String registerType = stringArgumentCaptor.getValue();
         assertThat(registerType, is(RegisterMetadata.PERSISTENT.name()));
-        assertThat(registerInstance.getIp(), is(IpUtils.getIp()));
         assertThat(registerInstance.isEphemeral(), is(false));
         assertThat(MetadataUtil.getValue(registerInstance), is("value4"));
     }
@@ -147,10 +142,8 @@ public class NacosRepositoryTest {
     @SneakyThrows
     public void assertPersistExistKey() {
         String ip = "127.0.0.1";
-        int port = 0;
         Instance instance = new Instance();
         instance.setIp(ip);
-        instance.setPort(port);
         instance.setEphemeral(false);
         String key = "/test/children/keys/persistent/0";
         Map<String, String> metadataMap = new HashMap<>(1, 1);
@@ -169,7 +162,6 @@ public class NacosRepositoryTest {
         String registerType = stringArgumentCaptor.getValue();
         assertThat(registerType, is(RegisterMetadata.PERSISTENT.name()));
         assertThat(registerInstance.getIp(), is(ip));
-        assertThat(registerInstance.getPort(), is(port));
         assertThat(registerInstance.isEphemeral(), is(false));
         assertThat(MetadataUtil.getValue(registerInstance), is("value4"));
     }
@@ -180,8 +172,6 @@ public class NacosRepositoryTest {
         final String key = "/test/children/keys/ephemeral/1";
         final Instance instance = new Instance();
         instance.setEphemeral(true);
-        instance.setIp("127.0.0.1");
-        instance.setPort(0);
         Map<String, String> metadataMap = new HashMap<>(4, 1);
         metadataMap.put(PreservedMetadataKeys.HEART_BEAT_INTERVAL, String.valueOf(2000));
         metadataMap.put(PreservedMetadataKeys.HEART_BEAT_TIMEOUT, String.valueOf(4000));
@@ -204,7 +194,6 @@ public class NacosRepositoryTest {
         Instance registerInstance = instanceArgumentCaptor.getValue();
         String registerType = stringArgumentCaptor.getValue();
         assertThat(registerType, is(RegisterMetadata.EPHEMERAL.name()));
-        assertThat(registerInstance.getIp(), is(IpUtils.getIp()));
         assertThat(registerInstance.isEphemeral(), is(true));
         assertThat(MetadataUtil.getValue(registerInstance), is("value4"));
         Map<String, String> metadata = registerInstance.getMetadata();
@@ -240,7 +229,6 @@ public class NacosRepositoryTest {
         Instance registerInstance = instanceArgumentCaptor.getValue();
         String registerType = stringArgumentCaptor.getValue();
         assertThat(registerType, is(RegisterMetadata.EPHEMERAL.name()));
-        assertThat(registerInstance.getIp(), is(IpUtils.getIp()));
         assertThat(registerInstance.isEphemeral(), is(true));
         assertThat(MetadataUtil.getValue(registerInstance), is("value0"));
         Map<String, String> metadata = registerInstance.getMetadata();
@@ -305,17 +293,16 @@ public class NacosRepositoryTest {
     public void assertWatchUpdate() {
         RegisterMetadata.PERSISTENT.setListener(null);
         String key = "key/key";
-        ZoneOffset zoneOffset = ZoneOffset.of("+8");
-        long epochMilliseconds = LocalDateTime.now().toInstant(zoneOffset).toEpochMilli();
+        long epochMilliseconds = MetadataUtil.getTimestamp();
         Instance preInstance = new Instance();
         Map<String, String> metadataMap = new HashMap<>();
         metadataMap.put(key, "value1");
-        metadataMap.put(zoneOffset.toString(), String.valueOf(epochMilliseconds));
+        metadataMap.put(MetadataUtil.UTC_ZONE_OFFSET.toString(), String.valueOf(epochMilliseconds));
         preInstance.setMetadata(metadataMap);
         final Instance instance = new Instance();
         metadataMap = new HashMap<>();
         metadataMap.put(key, "value2");
-        metadataMap.put(zoneOffset.toString(), String.valueOf(epochMilliseconds + 1));
+        metadataMap.put(MetadataUtil.UTC_ZONE_OFFSET.toString(), String.valueOf(epochMilliseconds + 1));
         instance.setMetadata(metadataMap);
         Event event = new NamingEvent(RegisterMetadata.EPHEMERAL.name(), Collections.singletonList(instance));
         doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(preInstance, event))).when(client).subscribe(anyString(), any(EventListener.class));
@@ -364,16 +351,26 @@ public class NacosRepositoryTest {
     @Test(expected = IllegalStateException.class)
     @SneakyThrows
     public void assertDuplicateClusterIp() {
-        MemberAccessor accessor = Plugins.getMemberAccessor();
-        accessor.invoke(REPOSITORY.getClass().getDeclaredMethod("initRegisterMetadata"), REPOSITORY);
         Instance instance = new Instance();
-        instance.setIp(IpUtils.getIp());
+        instance.setIp(NacosPropertyKey.CLUSTER_IP.getDefaultValue());
         Map<String, String> metadataMap = new HashMap<>();
-        metadataMap.put(UUID.class.getSimpleName(), UUID.randomUUID().toString());
+        metadataMap.put(MetadataUtil.UUID_NAME, UUID.randomUUID().toString());
         instance.setMetadata(metadataMap);
         List<Instance> instances = new LinkedList<>();
         instances.add(instance);
-        when(client.getAllInstances(NacosPropertyKey.CLUSTER_IP.name(), false)).thenReturn(instances);
+        NamingEvent event = new NamingEvent(NacosPropertyKey.CLUSTER_IP.name(), instances);
+        doAnswer(AdditionalAnswers.answerVoid((VoidAnswer2<String, EventListener>) (serviceName, listener) -> listener.onEvent(event)))
+                .when(client).subscribe(anyString(), any(EventListener.class));
+        MemberAccessor accessor = Plugins.getMemberAccessor();
+        accessor.set(REPOSITORY.getClass().getDeclaredField("isDuplicated"), REPOSITORY, null);
+        accessor.invoke(REPOSITORY.getClass().getDeclaredMethod("initRegisterMetadata"), REPOSITORY);
+        instance = new Instance();
+        instance.setIp(NacosPropertyKey.CLUSTER_IP.getDefaultValue());
+        metadataMap = new HashMap<>();
+        metadataMap.put(MetadataUtil.UUID_NAME, UUID.randomUUID().toString());
+        instance.setMetadata(metadataMap);
+        instances = new LinkedList<>();
+        instances.add(instance);
         try {
             REPOSITORY.persist("/key", "value");
         } catch (ClusterPersistRepositoryException cause) {
@@ -384,13 +381,7 @@ public class NacosRepositoryTest {
     @Test(expected = IllegalStateException.class)
     @SneakyThrows
     public void assertExceededMaximum() {
-        Instance instance = new Instance();
-        instance.setIp(IpUtils.getIp());
-        instance.setPort(Integer.MAX_VALUE);
-        instance.setMetadata(Collections.singletonMap("/key1", "value"));
-        when(client.getAllInstances(RegisterMetadata.EPHEMERAL.name(), false)).thenReturn(Collections.singletonList(instance));
-        MemberAccessor accessor = Plugins.getMemberAccessor();
-        accessor.invoke(REPOSITORY.getClass().getDeclaredMethod("initRegisterMetadata"), REPOSITORY);
+        RegisterMetadata.EPHEMERAL.setPort(new AtomicInteger(Integer.MAX_VALUE));
         try {
             REPOSITORY.persistEphemeral("/key2", "value");
         } catch (ClusterPersistRepositoryException cause) {
@@ -427,22 +418,4 @@ public class NacosRepositoryTest {
         };
     }
     
-    @Test
-    @SneakyThrows
-    public void assertMutexLock() {
-        Properties props = new Properties();
-        props.setProperty(NacosPropertyKey.URL.getKey(), "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        props.setProperty(NacosPropertyKey.USERNAME.getKey(), "sa");
-        props.setProperty(NacosPropertyKey.PASSWORD.getKey(), "");
-        props.setProperty(NacosPropertyKey.INIT_SCHEMA.getKey(), "true");
-        MemberAccessor accessor = Plugins.getMemberAccessor();
-        accessor.set(REPOSITORY.getClass().getDeclaredField("nacosProps"), REPOSITORY, new NacosProperties(props));
-        accessor.invoke(REPOSITORY.getClass().getDeclaredMethod("initDataSource"), REPOSITORY);
-        DataSource dataSource = (DataSource) accessor.get(REPOSITORY.getClass().getDeclaredField("dataSource"), REPOSITORY);
-        NacosInternalLockHolder lockHolder = new NacosInternalLockHolder(dataSource);
-        accessor.set(REPOSITORY.getClass().getDeclaredField("nacosInternalLockHolder"), REPOSITORY, lockHolder);
-        String lockKey = "/LOCK";
-        int timeoutMillis = 1000;
-        assertThat(REPOSITORY.persistLock(lockKey, timeoutMillis), is(true));
-    }
 }
