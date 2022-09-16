@@ -32,8 +32,6 @@
     
     <logger name="io.netty" level="error" />
     
-    <logger name="org.apache.shardingsphere.elasticjob" level="debug" />
-    
     <root>
         <level value="info" />
         <appender-ref ref="console" />
