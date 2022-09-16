@@ -99,6 +99,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | HY000     | 18084       | Target table \`%s\` is not empty |
 | 01007     | 18085       | Source data source lacks %s privilege(s) |
 | HY000     | 18086       | Source data source required \`%s = %s\`, now is \`%s\` |
+| HY000     | 18087       | User \`%s\` does exist |
 | HY000     | 18090       | Importer job write data failed |
 | HY000     | 18091       | Can not poll event because of binlog sync channel already closed |
 | HY000     | 18092       | Task \`%s\` execute failed |
