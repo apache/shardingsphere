@@ -22,12 +22,22 @@ import com.alibaba.nacos.api.naming.PreservedMetadataKeys;
 import com.alibaba.nacos.api.naming.pojo.Instance;
 import lombok.SneakyThrows;
 
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.UUID;
 
 /**
  * Metadata util.
  */
 public class MetadataUtil {
+    
+    public static final String EMPTY = "";
+    
+    public static final String UUID_NAME = UUID.class.getSimpleName();
+    
+    public static final String UNIQUE_ID = UUID.randomUUID().toString();
+    
+    public static final ZoneOffset UTC_ZONE_OFFSET = ZoneOffset.of("+8");
     
     /**
      * Get timestamp.
@@ -36,7 +46,15 @@ public class MetadataUtil {
      */
     @SneakyThrows
     public static long getTimestamp(final Instance instance) {
-        return Long.parseLong(instance.getMetadata().get(ZoneOffset.of("+8").toString()));
+        return Long.parseLong(instance.getMetadata().get(UTC_ZONE_OFFSET.toString()));
+    }
+    
+    /**
+     * Get timeStamp.
+     * @return timeStamp
+     */
+    public static long getTimestamp() {
+        return LocalDateTime.now().toInstant(UTC_ZONE_OFFSET).toEpochMilli();
     }
     
     /**
@@ -61,5 +79,14 @@ public class MetadataUtil {
                         && !entryKey.equals(PreservedMetadataKeys.IP_DELETE_TIMEOUT)
                         && !entryKey.equals(ZoneOffset.of("+8").toString()))
                 .findFirst().orElseThrow(() -> new NacosException(NacosException.RESOURCE_NOT_FOUND, "Failed to find key "));
+    }
+    
+    /**
+     * Get UUID.
+     * @param instance instance
+     * @return UUID
+     */
+    public static String getUUID(final Instance instance) {
+        return instance.getMetadata().get(UUID_NAME);
     }
 }

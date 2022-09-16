@@ -35,56 +35,6 @@ public enum NacosPropertyKey implements TypedPropertyKey {
     CLUSTER_IP("clusterIp", IpUtils.getIp(), String.class),
     
     /**
-     * Url of dataSource.
-     */
-    DATA_SOURCE_POOL_CLASS_NAME("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource", String.class),
-    
-    /**
-     * Url of dataSource.
-     */
-    URL("url", "", String.class),
-    
-    /**
-     * Username of dataSource.
-     */
-    USERNAME("username", "root", String.class),
-    
-    /**
-     * Password of dataSource.
-     */
-    PASSWORD("password", "", String.class),
-    
-    /**
-     * ConnectionTimeoutMilliseconds of pool.
-     */
-    CONNECTION_TIMEOUT_MILLISECONDS("connectionTimeoutMilliseconds", String.valueOf(30000), long.class),
-    
-    /**
-     * IdleTimeoutMilliseconds of pool.
-     */
-    IDLE_TIMEOUT_MILLISECONDS("idleTimeoutMilliseconds", String.valueOf(60000), long.class),
-    
-    /**
-     * MaxLifetimeMilliseconds of pool.
-     */
-    MAX_LIFETIME_MILLISECONDS("maxLifetimeMilliseconds", String.valueOf(1800000), long.class),
-    
-    /**
-     * MaxPoolSize of pool.
-     */
-    MAX_POOL_SIZE("maxPoolSize", String.valueOf(50), int.class),
-    
-    /**
-     * MinPoolSize of pool.
-     */
-    MIN_POOL_SIZE("minPoolSize", String.valueOf(1), int.class),
-    
-    /**
-     * Init distributed lock schema.
-     */
-    INIT_SCHEMA("initSchema", String.valueOf(false), boolean.class),
-    
-    /**
      * Retry interval milliseconds when checking whether value is available.
      */
     RETRY_INTERVAL_MILLISECONDS("retryIntervalMilliseconds", String.valueOf(500), long.class),
@@ -93,6 +43,11 @@ public enum NacosPropertyKey implements TypedPropertyKey {
      * Max Retry times when checking whether value is available.
      */
     MAX_RETRIES("maxRetries", String.valueOf(3), int.class),
+    
+    /**
+     * Client init timeout value.
+     */
+    INIT_TIMEOUT_MILLISECONDS("initTimeoutMilliseconds", String.valueOf(3000), long.class),
     
     /**
      * Time to live seconds.

@@ -21,32 +21,23 @@ import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingFactory;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.PreservedMetadataKeys;
+import com.alibaba.nacos.api.naming.listener.NamingEvent;
 import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.alibaba.nacos.common.utils.CollectionUtils;
 import com.alibaba.nacos.common.utils.StringUtils;
+import com.google.common.util.concurrent.SettableFuture;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryException;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
-import org.apache.shardingsphere.mode.repository.cluster.nacos.constant.JdbcConstants;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.entity.KeyValue;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.entity.RegisterMetadata;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.listener.NamingEventListener;
-import org.apache.shardingsphere.mode.repository.cluster.nacos.lock.NacosInternalLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.props.NacosProperties;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.props.NacosPropertyKey;
-import org.apache.shardingsphere.mode.repository.cluster.nacos.props.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.mode.repository.cluster.nacos.props.metadata.DataSourceMetaDataFactory;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.utils.MetadataUtil;
-import org.apache.shardingsphere.mode.repository.cluster.nacos.utils.ReflectionUtil;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.Statement;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -56,7 +47,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Random;
-import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -67,28 +59,16 @@ import java.util.stream.Stream;
 @Slf4j
 public final class NacosRepository implements ClusterPersistRepository {
     
-    private static final String EMPTY = "";
-    
-    private final Random random = new Random();
-    
-    private final String uuid = UUID.randomUUID().toString();
-    
-    private final ZoneOffset zoneOffset = ZoneOffset.of("+8");
-    
     private NamingService client;
     
-    private NacosInternalLockHolder nacosInternalLockHolder;
-    
-    private DataSource dataSource;
-    
     private NacosProperties nacosProps;
+    
+    private AtomicBoolean isDuplicated;
     
     @Override
     public void init(final ClusterPersistRepositoryConfiguration config) {
         nacosProps = new NacosProperties(config.getProps());
         initClient(config);
-        initDataSource();
-        nacosInternalLockHolder = new NacosInternalLockHolder(dataSource);
         initRegisterMetadata();
     }
     
@@ -105,60 +85,32 @@ public final class NacosRepository implements ClusterPersistRepository {
         }
     }
     
-    private void initDataSource() {
-        Optional<DataSourceMetaData> metaData = DataSourceMetaDataFactory.findInstance(nacosProps.getValue(NacosPropertyKey.DATA_SOURCE_POOL_CLASS_NAME));
-        metaData.ifPresent(dataSourceMetaData -> {
-            try {
-                dataSource = (DataSource) Class.forName(dataSourceMetaData.getType()).getConstructor().newInstance();
-                Map<String, Object> fieldAndValueMap = new HashMap<>(8, 1);
-                Arrays.stream(NacosPropertyKey.values())
-                        .filter(propertyKey -> propertyKey.equals(NacosPropertyKey.URL)
-                                || propertyKey.equals(NacosPropertyKey.USERNAME)
-                                || propertyKey.equals(NacosPropertyKey.PASSWORD)
-                                || propertyKey.equals(NacosPropertyKey.CONNECTION_TIMEOUT_MILLISECONDS)
-                                || propertyKey.equals(NacosPropertyKey.IDLE_TIMEOUT_MILLISECONDS)
-                                || propertyKey.equals(NacosPropertyKey.MAX_LIFETIME_MILLISECONDS)
-                                || propertyKey.equals(NacosPropertyKey.MAX_POOL_SIZE)
-                                || propertyKey.equals(NacosPropertyKey.MIN_POOL_SIZE))
-                        .forEach(propertyKey -> {
-                            String fieldName = dataSourceMetaData.getPropertySynonyms().getOrDefault(propertyKey.getKey(), propertyKey.getKey());
-                            fieldAndValueMap.put(fieldName, nacosProps.getValue(propertyKey));
-                        });
-                ReflectionUtil.setFields(dataSource, fieldAndValueMap);
-                initSchema();
-                // CHECKSTYLE:OFF
-            } catch (Exception cause) {
-                // CHECKSTYLE:ON
-                throw new ClusterPersistRepositoryException(cause);
-            }
-        });
-    }
-    
-    private void initSchema() {
-        boolean initSchema = nacosProps.getValue(NacosPropertyKey.INIT_SCHEMA);
-        if (initSchema) {
-            try (Connection connection = dataSource.getConnection()) {
-                Statement statement = connection.createStatement();
-                statement.execute(JdbcConstants.CREATE_TABLE);
-                // CHECKSTYLE:OFF
-            } catch (Exception cause) {
-                // CHECKSTYLE:ON
-                throw new ClusterPersistRepositoryException(cause);
-            }
-        }
-    }
-    
     private void initRegisterMetadata() {
         try {
             String ip = nacosProps.getValue(NacosPropertyKey.CLUSTER_IP);
             Instance instance = new Instance();
             Map<String, String> metadataMap = new HashMap<>(4, 1);
             instance.setIp(ip);
-            fillMetadata(metadataMap);
+            fillEphemeralMetadata(metadataMap);
             instance.setMetadata(metadataMap);
-            String uuidName = UUID.class.getSimpleName();
-            metadataMap.put(uuidName, uuid);
-            client.registerInstance(NacosPropertyKey.CLUSTER_IP.name(), instance);
+            metadataMap.put(MetadataUtil.UUID_NAME, MetadataUtil.UNIQUE_ID);
+            String clusterIp = NacosPropertyKey.CLUSTER_IP.name();
+            client.registerInstance(clusterIp, instance);
+            SettableFuture<AtomicBoolean> settableFuture = SettableFuture.create();
+            client.subscribe(clusterIp, event -> {
+                NamingEvent namingEvent = (NamingEvent) event;
+                namingEvent.getInstances().stream().filter(filterInstance -> StringUtils.equals(filterInstance.getIp(), ip)).findFirst()
+                        .ifPresent(presentInstance -> {
+                            boolean duplicated = !StringUtils.equals(MetadataUtil.getUUID(presentInstance), MetadataUtil.UNIQUE_ID);
+                            if (Objects.isNull(isDuplicated)) {
+                                settableFuture.set(new AtomicBoolean(duplicated));
+                            } else {
+                                isDuplicated.set(duplicated);
+                            }
+                        });
+            });
+            long initTimeoutMilliseconds = nacosProps.getValue(NacosPropertyKey.INIT_TIMEOUT_MILLISECONDS);
+            isDuplicated = settableFuture.get(initTimeoutMilliseconds, TimeUnit.MILLISECONDS);
             for (RegisterMetadata registerMetadata : RegisterMetadata.values()) {
                 AtomicInteger port = client.getAllInstances(registerMetadata.name(), false).stream()
                         .filter(filterInstance -> StringUtils.equals(filterInstance.getIp(), ip)).max(Comparator.comparing(Instance::getPort))
@@ -205,19 +157,13 @@ public final class NacosRepository implements ClusterPersistRepository {
     
     @Override
     public boolean persistLock(final String lockKey, final long timeoutMillis) {
-        try {
-            // TODO because Nacos does not support distributed locks, it adopts database-based distributed locks
-            return nacosInternalLockHolder.getInternalLock(lockKey).tryLock(timeoutMillis);
-            // CHECKSTYLE:OFF
-        } catch (Exception cause) {
-            // CHECKSTYLE:ON
-            throw new ClusterPersistRepositoryException(cause);
-        }
+        // TODO
+        return false;
     }
     
     @Override
     public void deleteLock(final String lockKey) {
-        nacosInternalLockHolder.getInternalLock(lockKey).unlock();
+        // TODO
     }
     
     @Override
@@ -303,7 +249,7 @@ public final class NacosRepository implements ClusterPersistRepository {
     }
     
     private void put(final String key, final String value, final boolean ephemeral) throws NacosException, InterruptedException {
-        if (isDuplicated()) {
+        if (isDuplicated.get()) {
             throw new IllegalStateException("Ip specified is duplicated in cluster");
         }
         final List<KeyValue> keyValues = buildParentPath(key);
@@ -314,21 +260,14 @@ public final class NacosRepository implements ClusterPersistRepository {
         instance.setEphemeral(ephemeral);
         Map<String, String> metadataMap = new HashMap<>(5, 1);
         if (ephemeral) {
-            fillMetadata(metadataMap);
+            fillEphemeralMetadata(metadataMap);
         }
         metadataMap.put(key, value);
-        long epochMilliseconds = LocalDateTime.now().toInstant(zoneOffset).toEpochMilli();
-        metadataMap.put(zoneOffset.toString(), String.valueOf(epochMilliseconds));
+        metadataMap.put(MetadataUtil.UTC_ZONE_OFFSET.toString(), String.valueOf(MetadataUtil.getTimestamp()));
         instance.setMetadata(metadataMap);
         client.registerInstance(registerMetadata.name(), instance);
         keyValues.add(new KeyValue(key, value, ephemeral));
         waitValue(keyValues);
-    }
-    
-    private boolean isDuplicated() throws NacosException {
-        String ip = nacosProps.getValue(NacosPropertyKey.CLUSTER_IP);
-        return client.getAllInstances(NacosPropertyKey.CLUSTER_IP.name(), false).stream()
-                .anyMatch(instance -> StringUtils.equals(instance.getIp(), ip) && !StringUtils.equals(instance.getMetadata().get(UUID.class.getSimpleName()), uuid));
     }
     
     private List<KeyValue> buildParentPath(final String key) throws NacosException {
@@ -352,17 +291,16 @@ public final class NacosRepository implements ClusterPersistRepository {
             instance.setPort(RegisterMetadata.PERSISTENT.getPort());
             instance.setEphemeral(false);
             Map<String, String> metadataMap = new HashMap<>(2, 1);
-            metadataMap.put(key, EMPTY);
-            long epochMilliseconds = LocalDateTime.now().toInstant(zoneOffset).toEpochMilli();
-            metadataMap.put(zoneOffset.toString(), String.valueOf(epochMilliseconds));
+            metadataMap.put(key, MetadataUtil.EMPTY);
+            metadataMap.put(MetadataUtil.UTC_ZONE_OFFSET.toString(), String.valueOf(MetadataUtil.getTimestamp()));
             instance.setMetadata(metadataMap);
             client.registerInstance(RegisterMetadata.PERSISTENT.name(), instance);
-            keyValues.add(new KeyValue(key, EMPTY, false));
+            keyValues.add(new KeyValue(key, MetadataUtil.EMPTY, false));
         }
         return keyValues;
     }
     
-    private void fillMetadata(final Map<String, String> metadataMap) {
+    private void fillEphemeralMetadata(final Map<String, String> metadataMap) {
         int timeToLiveSeconds = nacosProps.getValue(NacosPropertyKey.TIME_TO_LIVE_SECONDS);
         metadataMap.put(PreservedMetadataKeys.HEART_BEAT_INTERVAL, String.valueOf(timeToLiveSeconds * 1000 / 3));
         metadataMap.put(PreservedMetadataKeys.HEART_BEAT_TIMEOUT, String.valueOf(timeToLiveSeconds * 1000 * 2 / 3));
@@ -373,8 +311,7 @@ public final class NacosRepository implements ClusterPersistRepository {
         Map<String, String> metadataMap = instance.getMetadata();
         String key = MetadataUtil.getKey(instance);
         metadataMap.put(key, value);
-        long epochMilliseconds = LocalDateTime.now().toInstant(zoneOffset).toEpochMilli();
-        metadataMap.put(zoneOffset.toString(), String.valueOf(epochMilliseconds));
+        metadataMap.put(MetadataUtil.UTC_ZONE_OFFSET.toString(), String.valueOf(MetadataUtil.getTimestamp()));
         instance.setMetadata(metadataMap);
         client.registerInstance(RegisterMetadata.PERSISTENT.name(), instance);
         LinkedList<KeyValue> keyValues = new LinkedList<>();
@@ -445,7 +382,7 @@ public final class NacosRepository implements ClusterPersistRepository {
     
     private long getSleepTimeMs(final int retryCount, final long baseSleepTimeMs) {
         // copied from Hadoop's RetryPolicies.java
-        return baseSleepTimeMs * Math.max(1, random.nextInt(1 << (retryCount + 1)));
+        return baseSleepTimeMs * Math.max(1, new Random().nextInt(1 << (retryCount + 1)));
     }
     
     @Override
