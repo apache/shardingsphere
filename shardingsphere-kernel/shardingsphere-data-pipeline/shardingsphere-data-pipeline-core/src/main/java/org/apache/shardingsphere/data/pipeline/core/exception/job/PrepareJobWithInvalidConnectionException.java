@@ -17,14 +17,19 @@
 
 package org.apache.shardingsphere.data.pipeline.core.exception.job;
 
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+
+import java.sql.SQLException;
+
 /**
- * Pipeline job prepare failed exception.
+ * Prepare job with invalid connection exception.
  */
-public final class PipelineJobPrepareFailedException extends RuntimeException {
+public final class PrepareJobWithInvalidConnectionException extends PipelineSQLException {
     
-    private static final long serialVersionUID = 1409505606319197767L;
+    private static final long serialVersionUID = 208040912786493973L;
     
-    public PipelineJobPrepareFailedException(final String message, final Throwable cause) {
-        super(message, cause);
+    public PrepareJobWithInvalidConnectionException(final SQLException cause) {
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 89, "Data sources can not connect, reason is: %s", cause.getMessage());
     }
 }
