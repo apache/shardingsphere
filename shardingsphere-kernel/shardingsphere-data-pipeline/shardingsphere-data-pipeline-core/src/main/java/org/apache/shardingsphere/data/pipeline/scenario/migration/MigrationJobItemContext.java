@@ -28,7 +28,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSource
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProcessUpdateParameter;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressUpdatedParameter;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
@@ -66,7 +66,7 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
     
     private final Collection<IncrementalTask> incrementalTasks = new LinkedList<>();
     
-    private final AtomicLong processedRecordCount = new AtomicLong(0);
+    private final AtomicLong processedRecordsCount = new AtomicLong(0);
     
     private final MigrationJobConfiguration jobConfig;
     
@@ -98,7 +98,7 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
         this.dataSourceName = taskConfig.getDataSourceName();
         this.initProgress = initProgress;
         if (null != initProgress) {
-            processedRecordCount.addAndGet(initProgress.getProcessedRecordCount());
+            processedRecordsCount.set(initProgress.getProcessedRecordsCount());
         }
         this.jobProcessContext = jobProcessContext;
         this.taskConfig = taskConfig;
@@ -135,14 +135,14 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
     }
     
     @Override
-    public void onProgressUpdated(final PipelineJobProcessUpdateParameter parameter) {
-        int needAddNumber = parameter.getInsertRecordNumber() - parameter.getDeleteRecordNumber();
-        processedRecordCount.addAndGet(needAddNumber);
+    public void onProgressUpdated(final PipelineJobProgressUpdatedParameter parameter) {
+        int needAddNumber = parameter.getInsertedRecordsCount() - parameter.getDeletedRecordsCount();
+        processedRecordsCount.addAndGet(needAddNumber);
         PipelineJobProgressPersistService.notifyPersist(jobId, shardingItem);
     }
     
     @Override
-    public long getProcessedRecordCount() {
-        return processedRecordCount.get();
+    public long getProcessedRecordsCount() {
+        return processedRecordsCount.get();
     }
 }

@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.data.pipeline.core.fixture;
 
-import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProcessUpdateParameter;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressUpdatedParameter;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 
 public final class FixturePipelineJobProgressListener implements PipelineJobProgressListener {
     
     @Override
-    public void onProgressUpdated(final PipelineJobProcessUpdateParameter parameter) {
+    public void onProgressUpdated(final PipelineJobProgressUpdatedParameter parameter) {
     }
 }

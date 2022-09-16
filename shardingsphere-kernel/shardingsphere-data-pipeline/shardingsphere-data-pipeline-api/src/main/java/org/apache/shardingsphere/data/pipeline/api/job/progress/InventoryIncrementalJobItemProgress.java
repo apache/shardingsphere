@@ -40,5 +40,5 @@ public final class InventoryIncrementalJobItemProgress implements PipelineJobIte
     
     private JobItemIncrementalTasksProgress incremental;
     
-    private long processedRecordCount;
+    private long processedRecordsCount;
 }
