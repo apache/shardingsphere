@@ -26,8 +26,6 @@ import org.apache.shardingsphere.test.integration.env.container.atomic.storage.c
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.opengauss.OpenGaussContainerConfigurationFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.postgresql.PostgreSQLContainerConfigurationFactory;
 
-import java.util.Map;
-
 /**
  * Storage container configuration factory.
  */
@@ -44,31 +42,6 @@ public final class StorageContainerConfigurationFactory {
         switch (databaseType.getType()) {
             case "MySQL":
                 return MySQLContainerConfigurationFactory.newInstance();
-            case "PostgreSQL":
-                return PostgreSQLContainerConfigurationFactory.newInstance();
-            case "openGauss":
-                return OpenGaussContainerConfigurationFactory.newInstance();
-            case "H2":
-                return H2ContainerConfigurationFactory.newInstance();
-            default:
-                throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
-        }
-    }
-    
-    /**
-     * Create new instance of storage container configuration.
-     *
-     * @param databaseType database type
-     * @param command command
-     * @param containerEnvironments container environments
-     * @param mountedResources mounted resources
-     * @return created instance
-     */
-    public static StorageContainerConfiguration newInstance(final DatabaseType databaseType, final String command, final Map<String, String> containerEnvironments,
-                                                            final Map<String, String> mountedResources) {
-        switch (databaseType.getType()) {
-            case "MySQL":
-                return MySQLContainerConfigurationFactory.newInstance(command, containerEnvironments, mountedResources);
             case "PostgreSQL":
                 return PostgreSQLContainerConfigurationFactory.newInstance();
             case "openGauss":

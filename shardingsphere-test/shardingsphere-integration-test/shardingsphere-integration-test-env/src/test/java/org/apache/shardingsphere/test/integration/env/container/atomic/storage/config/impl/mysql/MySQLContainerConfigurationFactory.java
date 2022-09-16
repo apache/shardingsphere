@@ -36,11 +36,11 @@ public final class MySQLContainerConfigurationFactory {
     
     /**
      * Create new instance of MySQL container configuration.
-     *
+     * 
      * @return created instance
      */
     public static StorageContainerConfiguration newInstance() {
-        return new StorageContainerConfiguration(getDefaultCommand(), getDefaultContainerEnvironments(), getDefaultMountedResources());
+        return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources());
     }
     
     /**
@@ -52,37 +52,22 @@ public final class MySQLContainerConfigurationFactory {
      * @return created instance
      */
     public static StorageContainerConfiguration newInstance(final String command, final Map<String, String> containerEnvironments, final Map<String, String> mountedResources) {
-        return new StorageContainerConfiguration(ObjectUtils.defaultIfNull(command, getDefaultCommand()), ObjectUtils.defaultIfNull(containerEnvironments, getDefaultContainerEnvironments()),
-                ObjectUtils.defaultIfNull(mountedResources, getDefaultMountedResources()));
+        return new StorageContainerConfiguration(ObjectUtils.defaultIfNull(command, getCommand()), ObjectUtils.defaultIfNull(containerEnvironments, getContainerEnvironments()),
+                ObjectUtils.defaultIfNull(mountedResources, getMountedResources()));
     }
     
-    /**
-     * Get default command.
-     *
-     * @return command
-     */
-    public static String getDefaultCommand() {
+    private static String getCommand() {
         return "--server-id=" + ContainerUtil.generateMySQLServerId();
     }
     
-    /**
-     * Get default container environments.
-     *
-     * @return container environments
-     */
-    public static Map<String, String> getDefaultContainerEnvironments() {
+    private static Map<String, String> getContainerEnvironments() {
         Map<String, String> result = new HashMap<>(2, 1);
         result.put("LANG", "C.UTF-8");
         result.put("MYSQL_RANDOM_ROOT_PASSWORD", "yes");
         return result;
     }
     
-    /**
-     * Get default mounted resources.
-     *
-     * @return container environments
-     */
-    public static Map<String, String> getDefaultMountedResources() {
+    private static Map<String, String> getMountedResources() {
         return Collections.singletonMap("/env/mysql/my.cnf", StorageContainerConstants.MYSQL_CONF_IN_CONTAINER);
     }
 }

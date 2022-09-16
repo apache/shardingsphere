@@ -33,11 +33,11 @@ import org.apache.shardingsphere.test.integration.env.container.atomic.storage.D
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.StorageContainerConfigurationFactory;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.mysql.MySQLContainerConfigurationFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 
 import java.util.Collections;
-import java.util.Map;
 
 /**
  * Composed container, include governance container and database container.
@@ -57,11 +57,13 @@ public final class DockerContainerComposer extends BaseContainerComposer {
     public DockerContainerComposer(final DatabaseType databaseType, final String storageContainerImage) {
         this.databaseType = databaseType;
         governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
-        Map<String, String> mountedResources = null;
+        StorageContainerConfiguration storageContainerConfig;
         if (DatabaseTypeUtil.isMySQL(databaseType) && new DockerImageVersion(storageContainerImage).getMajorVersion() > 5) {
-            mountedResources = Collections.singletonMap("/env/mysql/mysql8/my.cnf", StorageContainerConstants.MYSQL_CONF_IN_CONTAINER);
+            storageContainerConfig = MySQLContainerConfigurationFactory.newInstance(null, null,
+                    Collections.singletonMap("/env/mysql/mysql8/my.cnf", StorageContainerConstants.MYSQL_CONF_IN_CONTAINER));
+        } else {
+            storageContainerConfig = StorageContainerConfigurationFactory.newInstance(databaseType);
         }
-        StorageContainerConfiguration storageContainerConfig = StorageContainerConfigurationFactory.newInstance(databaseType, null, null, mountedResources);
         storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, storageContainerImage,
                 "", storageContainerConfig));
         AdaptorContainerConfiguration containerConfig = ScalingProxyClusterContainerConfigurationFactory.newInstance(databaseType, storageContainerImage);
