@@ -362,7 +362,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         try (
                 PipelineDataSourceWrapper dataSource = PipelineDataSourceFactory.newInstance(jobConfig.getTarget());
                 Connection connection = dataSource.getConnection()) {
-            String sql = pipelineSQLBuilder.buildTruncateSQL(targetSchemaName, targetTableName);
+            String sql = pipelineSQLBuilder.buildDropSQL(targetSchemaName, targetTableName);
             log.info("cleanTempTableOnRollback, targetSchemaName={}, targetTableName={}, sql={}", targetSchemaName, targetTableName, sql);
             try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 preparedStatement.execute();

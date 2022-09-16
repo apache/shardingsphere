@@ -80,7 +80,7 @@ public final class DataSourcePropertiesValidator {
     private void checkFailFast(final DataSource dataSource, final DatabaseType databaseType) throws SQLException, ShardingSphereInternalException {
         try (Connection connection = dataSource.getConnection()) {
             ShardingSpherePreconditions.checkState(null == databaseType || DatabaseTypeEngine.getDatabaseType(connection.getMetaData().getURL()).getType().equals(databaseType.getType()),
-                    new MismatchedProtocolAndDataSourceException());
+                    MismatchedProtocolAndDataSourceException::new);
         }
     }
 }

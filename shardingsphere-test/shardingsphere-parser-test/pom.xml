@@ -102,11 +102,15 @@
             <artifactId>shardingsphere-shadow-distsql-parser</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-test-common</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

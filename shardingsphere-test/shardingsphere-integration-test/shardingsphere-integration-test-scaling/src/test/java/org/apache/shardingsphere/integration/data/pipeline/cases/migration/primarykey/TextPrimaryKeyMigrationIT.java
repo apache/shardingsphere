@@ -57,14 +57,14 @@ public class TextPrimaryKeyMigrationIT extends AbstractMigrationITCase {
         if (ENV.getItEnvType() == ITEnvTypeEnum.NONE) {
             return result;
         }
-        for (String version : ENV.listDatabaseDockerImageNames(new MySQLDatabaseType())) {
+        for (String version : ENV.listStorageContainerImages(new MySQLDatabaseType())) {
             result.add(new ScalingParameterized(new MySQLDatabaseType(), version, "env/scenario/primary_key/text_primary_key/mysql.xml"));
             result.add(new ScalingParameterized(new MySQLDatabaseType(), version, "env/scenario/primary_key/unique_key/mysql.xml"));
         }
-        for (String version : ENV.listDatabaseDockerImageNames(new PostgreSQLDatabaseType())) {
+        for (String version : ENV.listStorageContainerImages(new PostgreSQLDatabaseType())) {
             result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), version, "env/scenario/primary_key/text_primary_key/postgresql.xml"));
         }
-        for (String version : ENV.listDatabaseDockerImageNames(new OpenGaussDatabaseType())) {
+        for (String version : ENV.listStorageContainerImages(new OpenGaussDatabaseType())) {
             result.add(new ScalingParameterized(new OpenGaussDatabaseType(), version, "env/scenario/primary_key/text_primary_key/postgresql.xml"));
         }
         return result;
@@ -82,9 +82,9 @@ public class TextPrimaryKeyMigrationIT extends AbstractMigrationITCase {
         String jobId = listJobId().get(0);
         waitJobFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         sourceExecuteWithLog(String.format("INSERT INTO t_order (order_id,user_id,status) VALUES (%s, %s, '%s')", "1000000000", 1, "afterStop"));
-        // TODO The ordering of primary or unique keys for text types is different, may cause check failed, need fix
+        // TODO The ordering of primary or unique keys for text types is different, but can't reproduce now
         if (DatabaseTypeUtil.isMySQL(getDatabaseType())) {
-            assertCheckMigrationSuccess(jobId, "CRC32_MATCH");
+            assertCheckMigrationSuccess(jobId, "DATA_MATCH");
         } else {
             assertCheckMigrationSuccess(jobId, "DATA_MATCH");
         }
@@ -100,7 +100,7 @@ public class TextPrimaryKeyMigrationIT extends AbstractMigrationITCase {
         UUIDKeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
         try (Connection connection = getSourceDataSource().getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO t_order (order_id,user_id,status) VALUES (?,?,?)");
-            for (int i = 0; i < TABLE_INIT_ROW_COUNT; i++) {
+            for (int i = 0; i < TABLE_INIT_ROW_COUNT * 2; i++) {
                 preparedStatement.setObject(1, keyGenerateAlgorithm.generateKey());
                 preparedStatement.setObject(2, ThreadLocalRandom.current().nextInt(0, 6));
                 preparedStatement.setObject(3, "OK");

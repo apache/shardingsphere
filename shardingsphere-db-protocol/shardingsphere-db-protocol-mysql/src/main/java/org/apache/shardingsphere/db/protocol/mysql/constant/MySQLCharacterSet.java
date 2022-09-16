@@ -335,8 +335,8 @@ public enum MySQLCharacterSet {
      */
     public static MySQLCharacterSet findById(final int id) {
         MySQLCharacterSet result = CHARACTER_SET_MAP.get(id);
-        ShardingSpherePreconditions.checkNotNull(result, new UnknownCollationException(id));
-        ShardingSpherePreconditions.checkNotNull(result.getCharset(), new UnknownCollationException(id));
+        ShardingSpherePreconditions.checkNotNull(result, () -> new UnknownCollationException(id));
+        ShardingSpherePreconditions.checkNotNull(result.getCharset(), () -> new UnknownCollationException(id));
         return result;
     }
 }

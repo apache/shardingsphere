@@ -258,7 +258,7 @@ public abstract class BaseITCase {
                                           final Map<String, TransactionParameterized> parameterizedMap, final String group) {
         String uniqueKey = getUniqueKey(currentTestCaseInfo.getDbType(), currentTestCaseInfo.getRunningAdaptor(), transactionTypes, providers, group);
         parameterizedMap.putIfAbsent(uniqueKey, new TransactionParameterized(getSqlDatabaseType(currentTestCaseInfo.getDbType()), currentTestCaseInfo.getRunningAdaptor(), transactionTypes, providers,
-                getDockerImageName(currentTestCaseInfo.getDbType(), version), group, new LinkedList<>()));
+                getStorageContainerImage(currentTestCaseInfo.getDbType(), version), group, new LinkedList<>()));
         parameterizedMap.get(uniqueKey).getTransactionTestCaseClasses().add(caseClass);
     }
     
@@ -279,7 +279,7 @@ public abstract class BaseITCase {
         }
     }
     
-    private static String getDockerImageName(final String databaseType, final String version) {
+    private static String getStorageContainerImage(final String databaseType, final String version) {
         switch (databaseType) {
             case TransactionTestConstants.MYSQL:
                 return "mysql/mysql-server:" + version;

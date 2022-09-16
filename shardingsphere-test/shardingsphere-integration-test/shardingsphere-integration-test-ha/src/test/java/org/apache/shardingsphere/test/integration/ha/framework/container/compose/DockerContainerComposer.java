@@ -60,14 +60,14 @@ public final class DockerContainerComposer extends BaseContainerComposer {
     @Getter
     private final GovernanceContainer governanceContainer;
     
-    public DockerContainerComposer(final String scenario, final DatabaseType databaseType, final String dockerImageName) {
+    public DockerContainerComposer(final String scenario, final DatabaseType databaseType, final String storageContainerImage) {
         super("");
         this.databaseType = databaseType;
         this.storageContainers = new LinkedList<>();
         governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
         List<StorageContainerConfiguration> containerConfigs = StorageContainerConfigurationFactory.newInstance(scenario, databaseType);
         containerConfigs.forEach(each -> {
-            DockerStorageContainer storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, dockerImageName, null, each));
+            DockerStorageContainer storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, storageContainerImage, null, each));
             storageContainer.setNetworkAliases(Collections.singletonList(databaseType.getType().toLowerCase() + "_" + ContainerUtil.generateStorageContainerId()));
             storageContainers.add(storageContainer);
         });
