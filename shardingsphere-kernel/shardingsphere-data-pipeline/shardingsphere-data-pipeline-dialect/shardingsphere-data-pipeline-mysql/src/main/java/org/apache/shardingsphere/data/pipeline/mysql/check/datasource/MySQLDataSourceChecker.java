@@ -76,7 +76,7 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
         } catch (final SQLException ex) {
             throw new PipelineJobPrepareFailedException("Source data source check privileges failed.", ex);
         }
-        throw new PrepareJobWithoutEnoughPrivilegeException();
+        throw new PrepareJobWithoutEnoughPrivilegeException(Arrays.asList("REPLICATION SLAVE", "REPLICATION CLIENT"));
     }
     
     private boolean matchPrivileges(final String privilege) {
@@ -106,7 +106,8 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next() || !BINLOG_ROW_IMAGE.equalsIgnoreCase(key)) {
                     String actualValue = resultSet.getString(2);
-                    ShardingSpherePreconditions.checkState(toBeCheckedValue.equalsIgnoreCase(actualValue), new PrepareJobWithInvalidSourceDataSourceException(key, toBeCheckedValue, actualValue));
+                    ShardingSpherePreconditions.checkState(toBeCheckedValue.equalsIgnoreCase(actualValue),
+                            () -> new PrepareJobWithInvalidSourceDataSourceException(key, toBeCheckedValue, actualValue));
                 }
             }
         }

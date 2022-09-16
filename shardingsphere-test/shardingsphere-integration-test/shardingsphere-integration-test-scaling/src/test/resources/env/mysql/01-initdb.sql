@@ -23,3 +23,4 @@ CREATE DATABASE scaling_it_4;
 
 GRANT REPLICATION CLIENT, REPLICATION SLAVE, SELECT, INSERT, UPDATE, DELETE, INDEX ON *.* TO `test_user`@`%`;
 GRANT CREATE, DROP ON TABLE *.* TO test_user;
+ALTER USER `test_user`@`%` IDENTIFIED WITH mysql_native_password by 'Test@123';

@@ -48,7 +48,7 @@ public final class HintRALBackendHandler extends RALBackendHandler {
     public ResponseHeader execute() throws SQLException {
         ShardingSpherePreconditions.checkState(
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED),
-                new UnsupportedSQLOperationException(String.format("%s should be true, please check your config", ConfigurationPropertyKey.PROXY_HINT_ENABLED.getKey())));
+                () -> new UnsupportedSQLOperationException(String.format("%s should be true, please check your config", ConfigurationPropertyKey.PROXY_HINT_ENABLED.getKey())));
         hintRALStatementExecutor = HintRALStatementExecutorFactory.newInstance(sqlStatement, connectionSession);
         return hintRALStatementExecutor.execute();
     }

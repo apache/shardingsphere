@@ -29,6 +29,7 @@ import org.apache.calcite.prepare.CalciteCatalogReader;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.runtime.Bindable;
+import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -44,18 +45,19 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sqlfederation.CommonExecuteDataContext;
-import org.apache.shardingsphere.sqlfederation.advanced.resultset.FederationResultSet;
-import org.apache.shardingsphere.sqlfederation.advanced.table.TranslatableTableScanExecutor;
+import org.apache.shardingsphere.sqlfederation.SQLFederationDataContext;
+import org.apache.shardingsphere.sqlfederation.advanced.resultset.SQLFederationResultSet;
+import org.apache.shardingsphere.sqlfederation.executor.FilterableTableScanExecutor;
+import org.apache.shardingsphere.sqlfederation.executor.TableScanExecutorContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.ShardingSphereOptimizer;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContextFactory;
-import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.TranslatableSchema;
+import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
+import org.apache.shardingsphere.sqlfederation.optimizer.metadata.filter.FilterableSchema;
 import org.apache.shardingsphere.sqlfederation.optimizer.planner.QueryOptimizePlannerFactory;
-import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
-import org.apache.shardingsphere.sqlfederation.table.CommonTableScanExecutorContext;
+import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -66,9 +68,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Advanced federation executor.
+ * Advanced sql federation executor.
  */
-public final class AdvancedFederationExecutor implements SQLFederationExecutor {
+public final class AdvancedSQLFederationExecutor implements SQLFederationExecutor {
     
     private String databaseName;
     
@@ -103,10 +105,10 @@ public final class AdvancedFederationExecutor implements SQLFederationExecutor {
         SQLStatementContext<?> sqlStatementContext = federationContext.getQueryContext().getSqlStatementContext();
         Preconditions.checkArgument(sqlStatementContext instanceof SelectStatementContext, "SQL statement context must be select statement context.");
         ShardingSphereSchema schema = federationContext.getDatabases().get(databaseName.toLowerCase()).getSchema(schemaName);
-        TranslatableSchema translatableSchema = createTranslatableSchema(prepareEngine, schema, callback, federationContext);
+        AbstractSchema sqlFederationSchema = createSQLFederationSchema(prepareEngine, schema, callback, federationContext);
         Map<String, Object> parameters = createParameters(federationContext.getQueryContext().getParameters());
-        Enumerator<Object[]> enumerator = execute(sqlStatementContext.getSqlStatement(), translatableSchema, parameters).enumerator();
-        resultSet = new FederationResultSet(enumerator, schema, translatableSchema, sqlStatementContext);
+        Enumerator<Object[]> enumerator = execute(sqlStatementContext.getSqlStatement(), sqlFederationSchema, parameters).enumerator();
+        resultSet = new SQLFederationResultSet(enumerator, schema, sqlFederationSchema, sqlStatementContext);
         return resultSet;
     }
     
@@ -119,24 +121,26 @@ public final class AdvancedFederationExecutor implements SQLFederationExecutor {
         return result;
     }
     
-    private TranslatableSchema createTranslatableSchema(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final ShardingSphereSchema schema,
-                                                        final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) {
-        CommonTableScanExecutorContext executorContext = new CommonTableScanExecutorContext(databaseName, schemaName, props, federationContext);
-        TranslatableTableScanExecutor executor = new TranslatableTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, globalRuleMetaData, executorContext, eventBusContext);
-        return new TranslatableSchema(schemaName, schema, executor);
+    private AbstractSchema createSQLFederationSchema(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final ShardingSphereSchema schema,
+                                                     final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) {
+        TableScanExecutorContext executorContext = new TableScanExecutorContext(databaseName, schemaName, props, federationContext);
+        // TODO replace FilterableTableScanExecutor with TranslatableTableScanExecutor
+        TableScanExecutor executor = new FilterableTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, globalRuleMetaData, executorContext, eventBusContext);
+        // TODO replace FilterableSchema with TranslatableSchema
+        return new FilterableSchema(schemaName, schema, executor);
     }
     
     @SuppressWarnings("unchecked")
-    private Enumerable<Object[]> execute(final SQLStatement sqlStatement, final TranslatableSchema translatableSchema, final Map<String, Object> parameters) {
+    private Enumerable<Object[]> execute(final SQLStatement sqlStatement, final AbstractSchema sqlFederationSchema, final Map<String, Object> parameters) {
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(OptimizerPlannerContextFactory.createConnectionProperties());
         RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
-        CalciteCatalogReader catalogReader = OptimizerPlannerContextFactory.createCatalogReader(schemaName, translatableSchema, relDataTypeFactory, connectionConfig);
+        CalciteCatalogReader catalogReader = OptimizerPlannerContextFactory.createCatalogReader(schemaName, sqlFederationSchema, relDataTypeFactory, connectionConfig);
         SqlValidator validator = OptimizerPlannerContextFactory.createValidator(catalogReader, relDataTypeFactory, connectionConfig);
         SqlToRelConverter converter = OptimizerPlannerContextFactory.createConverter(catalogReader, validator, relDataTypeFactory);
         RelNode bestPlan =
                 new ShardingSphereOptimizer(converter, QueryOptimizePlannerFactory.createHepPlanner()).optimize(sqlStatement);
         Bindable<Object[]> executablePlan = EnumerableInterpretable.toBindable(Collections.emptyMap(), null, (EnumerableRel) bestPlan, EnumerableRel.Prefer.ARRAY);
-        return executablePlan.bind(new CommonExecuteDataContext(validator, converter, parameters));
+        return executablePlan.bind(new SQLFederationDataContext(validator, converter, parameters));
     }
     
     @Override

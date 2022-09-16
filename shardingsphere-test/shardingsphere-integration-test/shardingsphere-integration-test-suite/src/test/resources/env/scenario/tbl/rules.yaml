@@ -83,4 +83,4 @@ rules:
       type: IT.AUDITOR.FIXTURE
 
 props:
-  sql-federation-type: ORIGINAL
+  sql-federation-type: ADVANCED

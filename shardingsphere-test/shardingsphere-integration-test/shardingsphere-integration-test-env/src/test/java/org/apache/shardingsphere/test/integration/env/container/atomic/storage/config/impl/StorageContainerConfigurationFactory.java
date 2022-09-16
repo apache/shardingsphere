@@ -34,7 +34,7 @@ public final class StorageContainerConfigurationFactory {
     
     /**
      * Create new instance of storage container configuration.
-     * 
+     *
      * @param databaseType database type
      * @return created instance
      */

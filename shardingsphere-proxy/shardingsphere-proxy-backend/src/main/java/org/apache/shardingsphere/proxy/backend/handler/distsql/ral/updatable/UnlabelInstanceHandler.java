@@ -43,7 +43,7 @@ public final class UnlabelInstanceHandler extends UpdatableRALBackendHandler<Unl
     protected void update(final ContextManager contextManager) {
         MetaDataPersistService persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService();
         ShardingSpherePreconditions.checkState(null != persistService.getRepository() && !(persistService.getRepository() instanceof StandalonePersistRepository),
-                new UnsupportedSQLOperationException("Labels can only be removed in cluster mode"));
+                () -> new UnsupportedSQLOperationException("Labels can only be removed in cluster mode"));
         String instanceId = getSqlStatement().getInstanceId();
         Optional<ComputeNodeInstance> computeNodeInstance = contextManager.getInstanceContext().getComputeNodeInstanceById(instanceId);
         if (computeNodeInstance.isPresent()) {

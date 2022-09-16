@@ -207,4 +207,4 @@ rules:
           encryptorName: aes_encryptor
 
 props:
-  sql-federation-type: ORIGINAL
+  sql-federation-type: ADVANCED

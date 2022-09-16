@@ -28,10 +28,10 @@ import org.apache.calcite.sql2rel.SqlToRelConverter;
 import java.util.Map;
 
 /**
- * Advanced execute data context.
+ * SQL federation data context.
  */
 @RequiredArgsConstructor
-public final class CommonExecuteDataContext implements DataContext {
+public final class SQLFederationDataContext implements DataContext {
     
     private final SqlValidator validator;
     

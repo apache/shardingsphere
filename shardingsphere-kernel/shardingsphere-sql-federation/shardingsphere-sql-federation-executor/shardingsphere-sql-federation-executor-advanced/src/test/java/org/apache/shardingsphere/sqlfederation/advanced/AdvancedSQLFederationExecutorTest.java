@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -43,9 +44,9 @@ import java.util.Map;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class AdvancedFederationExecutorTest {
+public class AdvancedSQLFederationExecutorTest {
     
-    private AdvancedFederationExecutor executor;
+    private SQLFederationExecutor sqlFederationExecutor;
     
     @Before
     public void init() {
@@ -60,8 +61,8 @@ public class AdvancedFederationExecutorTest {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(metaData.getDatabase(databaseName)).thenReturn(database);
         when(metaData.getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
-        executor = new AdvancedFederationExecutor();
-        executor.init(databaseName, schemaName, metaData, mock(JDBCExecutor.class), mock(EventBusContext.class));
+        sqlFederationExecutor = new AdvancedSQLFederationExecutor();
+        sqlFederationExecutor.init(databaseName, schemaName, metaData, mock(JDBCExecutor.class), mock(EventBusContext.class));
     }
     
     private ShardingSphereRuleMetaData createGlobalRuleMetaData() {

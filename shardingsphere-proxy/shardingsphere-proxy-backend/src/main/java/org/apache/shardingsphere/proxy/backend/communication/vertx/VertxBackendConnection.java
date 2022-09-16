@@ -59,7 +59,7 @@ public final class VertxBackendConnection implements BackendConnection<Future<Vo
     
     public VertxBackendConnection(final ConnectionSession connectionSession) {
         ShardingSpherePreconditions.checkState(TransactionType.LOCAL == connectionSession.getTransactionStatus().getTransactionType(),
-                new UnsupportedSQLOperationException("Vert.x backend supports LOCAL transaction only for now"));
+                () -> new UnsupportedSQLOperationException("Vert.x backend supports LOCAL transaction only for now"));
         closed = new AtomicBoolean(false);
         this.connectionSession = connectionSession;
     }
