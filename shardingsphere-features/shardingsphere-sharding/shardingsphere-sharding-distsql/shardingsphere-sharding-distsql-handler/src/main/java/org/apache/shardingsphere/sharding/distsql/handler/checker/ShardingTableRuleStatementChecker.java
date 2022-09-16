@@ -257,8 +257,8 @@ public final class ShardingTableRuleStatementChecker {
     private static void checkAuditors(final Collection<AbstractTableRuleSegment> rules, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         Set<String> notExistAuditors = new LinkedHashSet<>();
         Set<String> requiredAuditors = new LinkedHashSet<>();
-        List<AuditStrategySegment> auditStrategySegments = rules.stream().map(AbstractTableRuleSegment::getAuditStrategySegment).filter(Objects::nonNull).collect(Collectors.toList());
-        List<String> auditorNames = new ArrayList<>();
+        Collection<AuditStrategySegment> auditStrategySegments = rules.stream().map(AbstractTableRuleSegment::getAuditStrategySegment).filter(Objects::nonNull).collect(Collectors.toList());
+        Collection<String> auditorNames = new LinkedList<>();
         for (AuditStrategySegment each : auditStrategySegments) {
             auditorNames.addAll(each.getAuditorNames());
         }

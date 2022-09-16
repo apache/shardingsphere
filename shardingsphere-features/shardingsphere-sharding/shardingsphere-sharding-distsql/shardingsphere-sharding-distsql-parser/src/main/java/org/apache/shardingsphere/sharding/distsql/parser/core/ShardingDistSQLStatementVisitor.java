@@ -363,7 +363,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
         if (null == ctx) {
             return null;
         }
-        List<String> auditorNames = new ArrayList<>();
+        Collection<String> auditorNames = new LinkedList<>();
         for (AuditorNameContext each : ctx.auditorNames().auditorName()) {
             auditorNames.add(getIdentifierValue(each));
         }
