@@ -103,8 +103,9 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 08000     | 18088       | Check privileges failed on source data source, reason is: %s |
 | 08000     | 18089       | Data sources can not connect, reason is: %s |
 | HY000     | 18090       | Importer job write data failed |
-| HY000     | 18091       | Can not poll event because of binlog sync channel already closed |
-| HY000     | 18092       | Task \`%s\` execute failed |
+| 08000     | 18091       | Get binlog position failed by job \`%s\`, reason is: %s |
+| HY000     | 18093       | Can not poll event because of binlog sync channel already closed |
+| HY000     | 18094       | Task \`%s\` execute failed |
 
 ## Feature Exception
 

@@ -20,14 +20,16 @@ package org.apache.shardingsphere.data.pipeline.core.exception.job;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
+import java.sql.SQLException;
+
 /**
- * Binlog sync channel already closed exception.
+ * Prepare job with get binlog position.
  */
-public final class BinlogSyncChannelAlreadyClosedException extends PipelineSQLException {
+public final class PrepareJobWithGetBinlogPositionException extends PipelineSQLException {
     
-    private static final long serialVersionUID = -8897293295641185703L;
+    private static final long serialVersionUID = -3701189611685636704L;
     
-    public BinlogSyncChannelAlreadyClosedException() {
-        super(XOpenSQLState.GENERAL_ERROR, 93, "Can not poll event because of binlog sync channel already closed");
+    public PrepareJobWithGetBinlogPositionException(final String jobId, final SQLException cause) {
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 90, "Get binlog position failed by job `%s`, reason is: %s", jobId, cause.getMessage());
     }
 }
