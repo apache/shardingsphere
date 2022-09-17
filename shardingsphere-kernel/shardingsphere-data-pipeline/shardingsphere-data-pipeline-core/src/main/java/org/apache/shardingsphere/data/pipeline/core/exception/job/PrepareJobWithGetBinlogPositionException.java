@@ -30,6 +30,6 @@ public final class PrepareJobWithGetBinlogPositionException extends PipelineSQLE
     private static final long serialVersionUID = -3701189611685636704L;
     
     public PrepareJobWithGetBinlogPositionException(final String jobId, final SQLException cause) {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 90, "Get binlog position failed by job `%s`, reason is: %s", jobId, cause.getMessage());
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 92, "Get binlog position failed by job `%s`, reason is: %s", jobId, cause.getMessage());
     }
 }
