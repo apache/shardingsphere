@@ -22,9 +22,9 @@ import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.select.SelectStatementConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,10 +34,10 @@ import java.util.Optional;
 /**
  * Subquery table converter.
  */
-public final class SubqueryTableConverter implements SQLSegmentConverter<SubqueryTableSegment, SqlBasicCall> {
+public final class SubqueryTableConverter implements SQLSegmentConverter<SubqueryTableSegment, SqlNode> {
     
     @Override
-    public Optional<SqlBasicCall> convert(final SubqueryTableSegment segment) {
+    public Optional<SqlNode> convert(final SubqueryTableSegment segment) {
         if (null == segment) {
             return Optional.empty();
         }
