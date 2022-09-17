@@ -26,9 +26,6 @@ import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContextFactory;
-import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.TranslatableSchema;
-import org.apache.shardingsphere.sqlfederation.optimizer.planner.QueryOptimizePlannerFactory;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
@@ -36,6 +33,11 @@ import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.OptimizerParserContext;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.OptimizerParserContextFactory;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContextFactory;
+import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.TranslatableSchema;
+import org.apache.shardingsphere.sqlfederation.optimizer.planner.QueryOptimizePlannerFactory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -93,6 +95,8 @@ public final class ShardingSphereOptimizerTest {
     
     private ShardingSphereOptimizer optimizer;
     
+    private OptimizerParserContext parserContext;
+    
     @Before
     public void init() {
         Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1);
@@ -101,6 +105,7 @@ public final class ShardingSphereOptimizerTest {
         ShardingSphereSchema schema = new ShardingSphereSchema(tables, Collections.emptyMap());
         SqlToRelConverter converter = createSqlToRelConverter(schema);
         optimizer = new ShardingSphereOptimizer(converter, QueryOptimizePlannerFactory.createHepPlanner());
+        parserContext = OptimizerParserContextFactory.create(new H2DatabaseType());
     }
     
     private ShardingSphereTable createOrderTableMetaData() {
@@ -116,8 +121,8 @@ public final class ShardingSphereOptimizerTest {
         return new ShardingSphereTable("t_user_info", Arrays.asList(userIdColumn, informationColumn), Collections.emptyList(), Collections.emptyList());
     }
     
-    private static SqlToRelConverter createSqlToRelConverter(final ShardingSphereSchema schema) {
-        CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(OptimizerPlannerContextFactory.createConnectionProperties());
+    private SqlToRelConverter createSqlToRelConverter(final ShardingSphereSchema schema) {
+        CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(parserContext.getDialectProps());
         RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
         TranslatableSchema federationSchema = new TranslatableSchema(SCHEMA_NAME, schema, null);
         CalciteCatalogReader catalogReader = OptimizerPlannerContextFactory.createCatalogReader(SCHEMA_NAME, federationSchema, relDataTypeFactory, connectionConfig);

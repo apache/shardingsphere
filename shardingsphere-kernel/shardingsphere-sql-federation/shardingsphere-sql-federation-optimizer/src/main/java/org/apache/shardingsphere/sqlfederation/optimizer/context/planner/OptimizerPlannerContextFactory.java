@@ -17,30 +17,35 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.context.planner;
 
+import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.config.CalciteConnectionConfig;
-import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptTable.ViewExpander;
 import org.apache.calcite.prepare.CalciteCatalogReader;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rex.RexBuilder;
+import org.apache.calcite.runtime.ConsList;
 import org.apache.calcite.schema.Schema;
-import org.apache.calcite.sql.fun.SqlStdOperatorTable;
+import org.apache.calcite.sql.SqlOperatorTable;
+import org.apache.calcite.sql.fun.SqlLibrary;
+import org.apache.calcite.sql.fun.SqlLibraryOperatorTableFactory;
+import org.apache.calcite.sql.util.SqlOperatorTables;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql.validate.SqlValidatorUtil;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.sql2rel.SqlToRelConverter.Config;
 import org.apache.calcite.sql2rel.StandardConvertletTable;
-import org.apache.shardingsphere.sqlfederation.optimizer.planner.QueryOptimizePlannerFactory;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.sqlfederation.optimizer.planner.QueryOptimizePlannerFactory;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -60,17 +65,6 @@ public final class OptimizerPlannerContextFactory {
         for (Entry<String, ShardingSphereDatabase> entry : databases.entrySet()) {
             result.put(entry.getKey(), new OptimizerPlannerContext(QueryOptimizePlannerFactory.createHepPlanner()));
         }
-        return result;
-    }
-    
-    /**
-     * Create connection properties.
-     * 
-     * @return properties
-     */
-    public static Properties createConnectionProperties() {
-        Properties result = new Properties();
-        result.setProperty(CalciteConnectionProperty.TIME_ZONE.camelName(), "UTC");
         return result;
     }
     
@@ -103,7 +97,14 @@ public final class OptimizerPlannerContextFactory {
                 .withConformance(connectionConfig.conformance())
                 .withDefaultNullCollation(connectionConfig.defaultNullCollation())
                 .withIdentifierExpansion(true);
-        return SqlValidatorUtil.newValidator(SqlStdOperatorTable.instance(), catalogReader, relDataTypeFactory, validatorConfig);
+        SqlOperatorTable operatorTable =
+                SqlLibraryOperatorTableFactory.INSTANCE.getOperatorTable(
+                        ConsList.of(SqlLibrary.STANDARD, Lists.newArrayList(SqlLibrary.STANDARD, SqlLibrary.MYSQL)));
+        final List<SqlOperatorTable> list = new ArrayList<>();
+        list.add(operatorTable);
+        list.add(catalogReader);
+        final SqlOperatorTable opTab = SqlOperatorTables.chain(list);
+        return SqlValidatorUtil.newValidator(opTab, catalogReader, relDataTypeFactory, validatorConfig);
     }
     
     /**
