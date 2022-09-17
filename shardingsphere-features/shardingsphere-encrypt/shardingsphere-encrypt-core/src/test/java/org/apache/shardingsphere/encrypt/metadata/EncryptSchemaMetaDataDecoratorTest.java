@@ -50,7 +50,7 @@ public final class EncryptSchemaMetaDataDecoratorTest {
         Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
         tableMetaDataList.add(createTableMetaData());
         TableMetaData actual = loader.decorate(Collections.singletonMap("logic_db",
-                new SchemaMetaData("logic_db", tableMetaDataList, Collections.emptyList())), rule, mock(GenericSchemaBuilderMaterials.class)).get("logic_db").getTables().iterator().next();
+                new SchemaMetaData("logic_db", tableMetaDataList)), rule, mock(GenericSchemaBuilderMaterials.class)).get("logic_db").getTables().iterator().next();
         assertThat(actual.getColumns().size(), is(2));
         Iterator<ColumnMetaData> columnsIterator = actual.getColumns().iterator();
         assertThat(columnsIterator.next().getName(), is("id"));

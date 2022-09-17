@@ -56,7 +56,7 @@ public final class SchemaMetaDataRegistrySubscriber {
         String databaseName = event.getDatabaseName();
         String schemaName = event.getSchemaName();
         Map<String, ShardingSphereTable> tables = event.getAlteredTables().stream().collect(Collectors.toMap(ShardingSphereTable::getName, table -> table));
-        Map<String, ShardingSphereView> views = event.getAlteredViews().stream().collect(Collectors.toMap(ShardingSphereView::getName, table -> table));
+        Map<String, ShardingSphereView> views = event.getAlteredViews().stream().collect(Collectors.toMap(ShardingSphereView::getName, view -> view));
         persistService.persist(databaseName, schemaName, new ShardingSphereSchema(tables, views));
         event.getDroppedTables().forEach(each -> persistService.getTableMetaDataPersistService().delete(databaseName, schemaName, each));
         event.getDroppedViews().forEach(each -> persistService.getViewMetaDataPersistService().delete(databaseName, schemaName, each));

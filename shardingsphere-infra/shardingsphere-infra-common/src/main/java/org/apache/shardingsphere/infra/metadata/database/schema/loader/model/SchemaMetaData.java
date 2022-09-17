@@ -36,6 +36,4 @@ public final class SchemaMetaData {
     private final String name;
     
     private final Collection<TableMetaData> tables;
-    
-    private final Collection<ViewMetaData> views;
 }
