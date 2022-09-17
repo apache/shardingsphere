@@ -36,6 +36,7 @@ public final class SQLServerOptimizerBuilder implements OptimizerSQLDialectBuild
         result.setProperty(CalciteConnectionProperty.LEX.camelName(), Lex.SQL_SERVER.name());
         result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), SqlConformanceEnum.SQL_SERVER_2008.name());
         result.setProperty(CalciteConnectionProperty.FUN.camelName(), SqlLibrary.STANDARD.fun);
+        result.setProperty(CalciteConnectionProperty.CASE_SENSITIVE.camelName(),  String.valueOf(Lex.SQL_SERVER.caseSensitive));
         return result;
     }
     

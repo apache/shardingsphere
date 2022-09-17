@@ -36,6 +36,7 @@ public final class MariaDBOptimizerBuilder implements OptimizerSQLDialectBuilder
         result.setProperty(CalciteConnectionProperty.LEX.camelName(), Lex.MYSQL.name());
         result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), SqlConformanceEnum.MYSQL_5.name());
         result.setProperty(CalciteConnectionProperty.FUN.camelName(), SqlLibrary.MYSQL.fun);
+        result.setProperty(CalciteConnectionProperty.CASE_SENSITIVE.camelName(),  String.valueOf(Lex.MYSQL.caseSensitive));
         return result;
     }
     

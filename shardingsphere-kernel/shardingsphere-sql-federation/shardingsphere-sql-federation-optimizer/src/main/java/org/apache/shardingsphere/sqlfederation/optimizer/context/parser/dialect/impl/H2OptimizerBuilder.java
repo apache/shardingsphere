@@ -37,6 +37,7 @@ public final class H2OptimizerBuilder implements OptimizerSQLDialectBuilder {
         result.setProperty(CalciteConnectionProperty.LEX.camelName(), Lex.MYSQL.name());
         result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), SqlConformanceEnum.LENIENT.name());
         result.setProperty(CalciteConnectionProperty.FUN.camelName(), SqlLibrary.STANDARD.fun);
+        result.setProperty(CalciteConnectionProperty.CASE_SENSITIVE.camelName(),  String.valueOf(Lex.MYSQL.caseSensitive));
         return result;
     }
     
