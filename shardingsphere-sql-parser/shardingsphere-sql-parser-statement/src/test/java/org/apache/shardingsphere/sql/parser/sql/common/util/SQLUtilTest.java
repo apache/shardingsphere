@@ -149,7 +149,7 @@ public final class SQLUtilTest {
         assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE 'sharding_\\%db'"), is("SHOW DATABASES LIKE 'sharding.%db'"));
         assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE 'sharding\\_%db'"), is("SHOW DATABASES LIKE 'sharding_.*db'"));
     }
-
+    
     @Test
     public void assertIsReadOnly() {
         assertFalse(SQLUtil.isReadOnly(new SQLServerRevertStatement()));
@@ -160,13 +160,13 @@ public final class SQLUtilTest {
         assertTrue(SQLUtil.isReadOnly(new MySQLSelectStatement()));
         assertTrue(SQLUtil.isReadOnly(new MySQLShowMasterStatusStatement()));
     }
-
+    
     @Test
     public void assertTrimSemiColon() {
         assertThat(SQLUtil.trimSemicolon("SHOW DATABASES;"), is("SHOW DATABASES"));
         assertThat(SQLUtil.trimSemicolon("SHOW DATABASES"), is("SHOW DATABASES"));
     }
-
+    
     @Test
     public void assertTrimComment() {
         assertThat(SQLUtil.trimComment("/* This is a comment */ SHOW DATABASES"), is("SHOW DATABASES"));
