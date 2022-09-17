@@ -30,6 +30,6 @@ public final class PrepareJobWithInvalidConnectionException extends PipelineSQLE
     private static final long serialVersionUID = 208040912786493973L;
     
     public PrepareJobWithInvalidConnectionException(final SQLException cause) {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 89, "Data sources can not connect, reason is: %s", cause.getMessage());
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 90, "Data sources can not connect, reason is: %s", cause.getMessage());
     }
 }
