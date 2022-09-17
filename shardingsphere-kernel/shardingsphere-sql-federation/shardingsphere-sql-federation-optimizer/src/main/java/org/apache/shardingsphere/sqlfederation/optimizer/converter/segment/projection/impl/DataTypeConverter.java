@@ -15,25 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.groupby;
+package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.projection.impl;
 
-import org.apache.calcite.sql.SqlNodeList;
+import org.apache.calcite.sql.SqlDataTypeSpec;
+import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.SqlUserDefinedTypeNameSpec;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.orderby.item.OrderByItemConverterUtil;
 
 import java.util.Optional;
 
 /**
- * Group by converter.
+ * Data type converter. 
  */
-public final class GroupByConverter implements SQLSegmentConverter<GroupBySegment, SqlNodeList> {
+public final class DataTypeConverter implements SQLSegmentConverter<DataTypeSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNodeList> convert(final GroupBySegment segment) {
-        return null == segment || segment.getGroupByItems().isEmpty()
-                ? Optional.empty()
-                : Optional.of(new SqlNodeList(OrderByItemConverterUtil.convert(segment.getGroupByItems()), SqlParserPos.ZERO));
+    public Optional<SqlNode> convert(final DataTypeSegment segment) {
+        if (null == segment) {
+            return Optional.empty();
+        }
+        return Optional.of(new SqlDataTypeSpec(new SqlUserDefinedTypeNameSpec(segment.getDataTypeName(), SqlParserPos.ZERO), SqlParserPos.ZERO));
     }
 }
