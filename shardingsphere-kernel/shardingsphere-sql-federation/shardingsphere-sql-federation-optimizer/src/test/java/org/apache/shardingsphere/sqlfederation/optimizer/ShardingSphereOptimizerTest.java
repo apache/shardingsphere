@@ -33,8 +33,6 @@ import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.OptimizerParserContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.OptimizerParserContextFactory;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContextFactory;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.TranslatableSchema;
 import org.apache.shardingsphere.sqlfederation.optimizer.planner.QueryOptimizePlannerFactory;
@@ -46,6 +44,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -95,8 +94,6 @@ public final class ShardingSphereOptimizerTest {
     
     private ShardingSphereOptimizer optimizer;
     
-    private OptimizerParserContext parserContext;
-    
     @Before
     public void init() {
         Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1);
@@ -105,7 +102,6 @@ public final class ShardingSphereOptimizerTest {
         ShardingSphereSchema schema = new ShardingSphereSchema(tables, Collections.emptyMap());
         SqlToRelConverter converter = createSqlToRelConverter(schema);
         optimizer = new ShardingSphereOptimizer(converter, QueryOptimizePlannerFactory.createHepPlanner());
-        parserContext = OptimizerParserContextFactory.create(new H2DatabaseType());
     }
     
     private ShardingSphereTable createOrderTableMetaData() {
@@ -122,11 +118,11 @@ public final class ShardingSphereOptimizerTest {
     }
     
     private SqlToRelConverter createSqlToRelConverter(final ShardingSphereSchema schema) {
-        CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(parserContext.getDialectProps());
+        CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(new Properties());
         RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
         TranslatableSchema federationSchema = new TranslatableSchema(SCHEMA_NAME, schema, null);
         CalciteCatalogReader catalogReader = OptimizerPlannerContextFactory.createCatalogReader(SCHEMA_NAME, federationSchema, relDataTypeFactory, connectionConfig);
-        SqlValidator validator = OptimizerPlannerContextFactory.createValidator(catalogReader, relDataTypeFactory, parserContext.getDatabaseType(), connectionConfig);
+        SqlValidator validator = OptimizerPlannerContextFactory.createValidator(catalogReader, relDataTypeFactory, new H2DatabaseType(), connectionConfig);
         return OptimizerPlannerContextFactory.createConverter(catalogReader, validator, relDataTypeFactory);
     }
     
