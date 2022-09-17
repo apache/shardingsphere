@@ -36,6 +36,8 @@ public final class DistSQLScriptConstants {
     
     public static final String ENCRYPT_DB = "encrypt_db";
     
+    public static final String SHADOW_DB = "shadow_db";
+    
     public static final String STANDARD = "standard";
     
     public static final String COMPLEX = "complex";
@@ -125,7 +127,9 @@ public final class DistSQLScriptConstants {
     
     public static final String SHARDING_BINDING_TABLE_RULES = "CREATE SHARDING BINDING TABLE RULES %s";
     
-    public static final String BINDING = "(%s)";
+    public static final String BRACKET = "(%s)";
+    
+    public static final String SHARDING_BROADCAST_TABLE_RULES = "CREATE SHARDING BROADCAST TABLE RULES %s";
     
     public static final String CREATE_READWRITE_SPLITTING_RULE = "CREATE READWRITE_SPLITTING RULE";
     
@@ -157,10 +161,6 @@ public final class DistSQLScriptConstants {
             + System.lineSeparator()
             + ")";
     
-    public static final String DB_DISCOVERY_TYPE = "TYPE(NAME=\'%s\', PROPERTIES(%s))";
-    
-    public static final String DB_DISCOVERY_PROPERTY = "\'%s\'=\'%s\'";
-    
     public static final String CREATE_ENCRYPT = "CREATE ENCRYPT RULE";
     
     public static final String ENCRYPT = " %s ("
@@ -178,9 +178,23 @@ public final class DistSQLScriptConstants {
     
     public static final String CIPHER = "CIPHER=%s";
     
-    public static final String ENCRYPT_TYPE = "TYPE(NAME=\'%s\',PROPERTIES(%s))";
+    public static final String TYPE = "TYPE(NAME=\'%s\', PROPERTIES(%s))";
     
     public static final String ENCRYPT_TYPE_WITHOUT_PROPERTIES = "TYPE(NAME=\'%s\')";
     
-    public static final String ENCRYPT_TYPE_PROPERTIES = "\'%s\'=\'%s\'";
+    public static final String CREATE_SHADOW = "CREATE SHADOW RULE";
+    
+    public static final String SHADOW = " %s("
+            + System.lineSeparator()
+            + "SOURCE=%s,"
+            + System.lineSeparator()
+            + "SHADOW=%s,"
+            + System.lineSeparator()
+            + "%s"
+            + System.lineSeparator()
+            + ")";
+    
+    public static final String SHADOW_TABLE = "%s(%s)";
+    
+    public static final String SHADOW_TABLE_TYPE = "(TYPE(NAME=\"%s\", PROPERTIES(%s)))";
 }

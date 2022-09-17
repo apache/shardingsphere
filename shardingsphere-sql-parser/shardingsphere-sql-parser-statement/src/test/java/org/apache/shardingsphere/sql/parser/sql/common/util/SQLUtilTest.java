@@ -17,6 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.util;
 
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowMasterStatusStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropDimensionStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerRevertStatement;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -25,6 +32,8 @@ import java.math.BigInteger;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 public final class SQLUtilTest {
     
@@ -139,5 +148,29 @@ public final class SQLUtilTest {
         assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE 'sharding%\\%db'"), is("SHOW DATABASES LIKE 'sharding.*%db'"));
         assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE 'sharding_\\%db'"), is("SHOW DATABASES LIKE 'sharding.%db'"));
         assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE 'sharding\\_%db'"), is("SHOW DATABASES LIKE 'sharding_.*db'"));
+    }
+    
+    @Test
+    public void assertIsReadOnly() {
+        assertFalse(SQLUtil.isReadOnly(new SQLServerRevertStatement()));
+        assertFalse(SQLUtil.isReadOnly(new OracleDropDimensionStatement()));
+        assertFalse(SQLUtil.isReadOnly(new MySQLUpdateStatement()));
+        assertFalse(SQLUtil.isReadOnly(new MySQLDeleteStatement()));
+        assertFalse(SQLUtil.isReadOnly(new MySQLInsertStatement()));
+        assertTrue(SQLUtil.isReadOnly(new MySQLSelectStatement()));
+        assertTrue(SQLUtil.isReadOnly(new MySQLShowMasterStatusStatement()));
+    }
+    
+    @Test
+    public void assertTrimSemiColon() {
+        assertThat(SQLUtil.trimSemicolon("SHOW DATABASES;"), is("SHOW DATABASES"));
+        assertThat(SQLUtil.trimSemicolon("SHOW DATABASES"), is("SHOW DATABASES"));
+    }
+    
+    @Test
+    public void assertTrimComment() {
+        assertThat(SQLUtil.trimComment("/* This is a comment */ SHOW DATABASES"), is("SHOW DATABASES"));
+        assertThat(SQLUtil.trimComment("/* This is a query with a semicolon */ SHOW DATABASES;"), is("SHOW DATABASES"));
+        assertThat(SQLUtil.trimComment("/* This is a query with spaces */    SHOW DATABASES   "), is("SHOW DATABASES"));
     }
 }

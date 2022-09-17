@@ -15,25 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.loader.model;
+package org.apache.shardingsphere.data.pipeline.core.exception.job;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
-import java.util.Collection;
+import java.sql.SQLException;
 
 /**
-* Schema meta data.
-*/
-@RequiredArgsConstructor
-@Getter
-@EqualsAndHashCode
-@ToString
-public final class SchemaMetaData {
+ * Prepare job with invalid connection exception.
+ */
+public final class PrepareJobWithInvalidConnectionException extends PipelineSQLException {
     
-    private final String name;
+    private static final long serialVersionUID = 208040912786493973L;
     
-    private final Collection<TableMetaData> tables;
+    public PrepareJobWithInvalidConnectionException(final SQLException cause) {
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 89, "Data sources can not connect, reason is: %s", cause.getMessage());
+    }
 }
