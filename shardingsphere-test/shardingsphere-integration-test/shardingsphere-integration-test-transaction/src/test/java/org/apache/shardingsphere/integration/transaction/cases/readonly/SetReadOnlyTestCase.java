@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.integration.transaction.cases.readonly;
 
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 
@@ -35,15 +33,13 @@ import static org.junit.Assert.fail;
 /**
  * Set read only transaction integration test.
  */
-@Slf4j
 public abstract class SetReadOnlyTestCase extends BaseTransactionTestCase {
     
     public SetReadOnlyTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
         super(baseTransactionITCase, dataSource);
     }
     
-    @SneakyThrows
-    protected void assertNotSetReadOnly() {
+    protected void assertNotSetReadOnly() throws SQLException {
         Connection conn = getDataSource().getConnection();
         assertQueryBalance(conn);
         Statement queryStatement = conn.createStatement();

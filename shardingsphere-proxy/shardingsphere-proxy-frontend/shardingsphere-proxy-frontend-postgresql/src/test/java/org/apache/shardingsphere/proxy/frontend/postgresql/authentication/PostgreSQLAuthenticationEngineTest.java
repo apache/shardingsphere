@@ -117,7 +117,7 @@ public final class PostgreSQLAuthenticationEngineTest extends ProxyContextRestor
         authenticationEngine.authenticate(channelHandlerContext, payload);
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setAlreadyReceivedStartupMessage(final PostgreSQLAuthenticationEngine target) {
         Field field = PostgreSQLAuthenticationEngine.class.getDeclaredField("startupMessageReceived");
         field.setAccessible(true);
@@ -136,8 +136,7 @@ public final class PostgreSQLAuthenticationEngineTest extends ProxyContextRestor
     }
     
     @Test
-    @SneakyThrows(ReflectiveOperationException.class)
-    public void assertGetIdentifierPacket() {
+    public void assertGetIdentifierPacket() throws ReflectiveOperationException {
         Method method = PostgreSQLAuthenticationEngine.class.getDeclaredMethod("getIdentifierPacket", String.class);
         method.setAccessible(true);
         PostgreSQLIdentifierPacket packet = (PostgreSQLIdentifierPacket) method.invoke(new PostgreSQLAuthenticationEngine(), username);

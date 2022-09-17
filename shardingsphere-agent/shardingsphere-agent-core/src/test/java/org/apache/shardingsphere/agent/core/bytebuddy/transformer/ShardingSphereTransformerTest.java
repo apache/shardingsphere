@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.core.bytebuddy.transformer;
 
-import lombok.SneakyThrows;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import net.bytebuddy.agent.builder.AgentBuilder;
@@ -59,9 +58,8 @@ public final class ShardingSphereTransformerTest {
     private final List<String> queue = new LinkedList<>();
     
     @BeforeClass
-    @SneakyThrows
     @SuppressWarnings("unchecked")
-    public static void setup() {
+    public static void setup() throws ReflectiveOperationException {
         ByteBuddyAgent.install();
         FieldReader objectPoolReader = new FieldReader(LOADER, LOADER.getClass().getDeclaredField("objectPool"));
         Map<String, Object> objectPool = (Map<String, Object>) objectPoolReader.read();

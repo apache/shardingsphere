@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.check.datasource;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithInvalidConnectionException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithTargetTableNotEmptyException;
@@ -79,9 +78,8 @@ public final class AbstractDataSourceCheckerTest {
         dataSources.add(dataSource);
     }
     
-    @SneakyThrows
     @Test
-    public void assertCheckConnection() {
+    public void assertCheckConnection() throws SQLException {
         when(dataSource.getConnection()).thenReturn(connection);
         dataSourceChecker.checkConnection(dataSources);
         verify(dataSource).getConnection();

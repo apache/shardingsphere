@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -51,7 +52,7 @@ public final class PipelineDistributedBarrier {
     
     private final Map<String, InnerCountDownLatchHolder> countDownLatchMap = new ConcurrentHashMap<>();
     
-    @SneakyThrows
+    @SneakyThrows(ConcurrentException.class)
     private static ClusterPersistRepository getRepository() {
         return REPOSITORY_LAZY_INITIALIZER.get();
     }

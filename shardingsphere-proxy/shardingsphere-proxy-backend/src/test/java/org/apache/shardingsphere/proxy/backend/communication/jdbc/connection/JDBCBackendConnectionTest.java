@@ -401,7 +401,7 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private Collection<ProxyBackendHandler> getDatabaseCommunicationEngines() {
         Field field = JDBCBackendConnection.class.getDeclaredField("backendHandlers");
         field.setAccessible(true);
@@ -409,7 +409,7 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private Collection<ProxyBackendHandler> getInUseDatabaseCommunicationEngines() {
         Field field = JDBCBackendConnection.class.getDeclaredField("inUseBackendHandlers");
         field.setAccessible(true);

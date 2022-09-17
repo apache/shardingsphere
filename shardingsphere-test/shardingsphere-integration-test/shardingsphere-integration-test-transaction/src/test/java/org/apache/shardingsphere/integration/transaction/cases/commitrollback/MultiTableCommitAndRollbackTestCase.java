@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.integration.transaction.cases.commitrollback;
 
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
@@ -30,7 +28,6 @@ import java.sql.SQLException;
 /**
  * Multi-table transaction commit and rollback integration test.
  */
-@Slf4j
 @TransactionTestCase
 public final class MultiTableCommitAndRollbackTestCase extends BaseTransactionTestCase {
     
@@ -43,8 +40,7 @@ public final class MultiTableCommitAndRollbackTestCase extends BaseTransactionTe
     }
     
     @Override
-    @SneakyThrows
-    public void executeTest() {
+    public void executeTest() throws SQLException {
         assertRollback();
         assertCommit();
     }
@@ -82,5 +78,4 @@ public final class MultiTableCommitAndRollbackTestCase extends BaseTransactionTe
         assertTableRowCount(conn, T_ORDER, 2);
         assertTableRowCount(conn, T_ORDER_ITEM, 2);
     }
-    
 }

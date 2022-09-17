@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.database;
 
-import lombok.SneakyThrows;
+import org.apache.shardingsphere.dialect.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.dialect.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
@@ -32,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -58,24 +58,21 @@ public final class CreateDatabaseBackendHandlerTest extends ProxyContextRestorer
         when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test_db", mock(ShardingSphereDatabase.class)));
     }
     
-    @SneakyThrows
     @Test
-    public void assertExecuteCreateNewDatabase() {
+    public void assertExecuteCreateNewDatabase() throws SQLException {
         when(statement.getDatabaseName()).thenReturn("other_db");
         assertThat(handler.execute(), instanceOf(UpdateResponseHeader.class));
     }
     
-    @SneakyThrows
     @Test(expected = DatabaseCreateExistsException.class)
-    public void assertExecuteCreateExistDatabase() {
+    public void assertExecuteCreateExistDatabase() throws SQLException {
         when(ProxyContext.getInstance().databaseExists("test_db")).thenReturn(true);
         when(statement.getDatabaseName()).thenReturn("test_db");
         assertThat(handler.execute(), instanceOf(UpdateResponseHeader.class));
     }
     
-    @SneakyThrows
     @Test
-    public void assertExecuteCreateExistDatabaseWithIfNotExists() {
+    public void assertExecuteCreateExistDatabaseWithIfNotExists() throws SQLException {
         when(statement.getDatabaseName()).thenReturn("test_db");
         when(statement.isIfNotExists()).thenReturn(true);
         assertThat(handler.execute(), instanceOf(UpdateResponseHeader.class));

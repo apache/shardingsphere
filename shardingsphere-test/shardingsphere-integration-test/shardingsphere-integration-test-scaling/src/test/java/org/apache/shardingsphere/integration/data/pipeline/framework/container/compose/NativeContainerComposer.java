@@ -51,7 +51,7 @@ public final class NativeContainerComposer extends BaseContainerComposer {
         // do nothing
     }
     
-    @SneakyThrows
+    @SneakyThrows(SQLException.class)
     @Override
     public void cleanUpDatabase(final String databaseName) {
         int actualDatabasePort = ENV.getActualDatabasePort(databaseType);

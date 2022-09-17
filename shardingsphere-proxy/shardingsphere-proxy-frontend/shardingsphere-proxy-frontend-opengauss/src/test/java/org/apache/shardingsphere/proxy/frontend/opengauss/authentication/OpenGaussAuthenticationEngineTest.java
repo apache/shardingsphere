@@ -114,7 +114,7 @@ public final class OpenGaussAuthenticationEngineTest extends ProxyContextRestore
         authenticationEngine.authenticate(channelHandlerContext, payload);
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setAlreadyReceivedStartupMessage(final OpenGaussAuthenticationEngine target) {
         Field field = OpenGaussAuthenticationEngine.class.getDeclaredField("startupMessageReceived");
         field.setAccessible(true);

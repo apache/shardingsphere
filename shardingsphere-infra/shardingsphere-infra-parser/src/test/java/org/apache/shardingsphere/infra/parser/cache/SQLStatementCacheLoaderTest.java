@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.parser.cache;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserExecutor;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -34,9 +33,8 @@ public final class SQLStatementCacheLoaderTest {
     
     private static final String SQL = "select * from user where id=1";
     
-    @SneakyThrows
     @Test
-    public void assertSQLStatementCacheLoad() {
+    public void assertSQLStatementCacheLoad() throws ReflectiveOperationException {
         SQLStatementCacheLoader sqlStatementCacheLoader = new SQLStatementCacheLoader("MySQL", new CacheOption(128, 1024L), false);
         Field sqlStatementParserExecutorField = sqlStatementCacheLoader.getClass().getDeclaredField("sqlStatementParserExecutor");
         SQLStatementParserExecutor executor = mock(SQLStatementParserExecutor.class, RETURNS_DEEP_STUBS);
