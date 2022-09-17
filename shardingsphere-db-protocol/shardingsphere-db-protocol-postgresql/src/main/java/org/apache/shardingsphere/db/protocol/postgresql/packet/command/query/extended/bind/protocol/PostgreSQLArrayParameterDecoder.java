@@ -41,7 +41,7 @@ public final class PostgreSQLArrayParameterDecoder {
      * @return int array
      */
     public short[] decodeInt2Array(final byte[] parameterBytes, final boolean isBinary) {
-        ShardingSpherePreconditions.checkState(!isBinary, new UnsupportedSQLOperationException("binary mode"));
+        ShardingSpherePreconditions.checkState(!isBinary, () -> new UnsupportedSQLOperationException("binary mode"));
         String parameterValue = new String(parameterBytes, StandardCharsets.UTF_8);
         Collection<String> parameterElements = decodeText(parameterValue);
         short[] result = new short[parameterElements.size()];
@@ -60,7 +60,7 @@ public final class PostgreSQLArrayParameterDecoder {
      * @return int array
      */
     public int[] decodeInt4Array(final byte[] parameterBytes, final boolean isBinary) {
-        ShardingSpherePreconditions.checkState(!isBinary, new UnsupportedSQLOperationException("binary mode"));
+        ShardingSpherePreconditions.checkState(!isBinary, () -> new UnsupportedSQLOperationException("binary mode"));
         String parameterValue = new String(parameterBytes, StandardCharsets.UTF_8);
         Collection<String> parameterElements = decodeText(parameterValue);
         int[] result = new int[parameterElements.size()];
@@ -79,7 +79,7 @@ public final class PostgreSQLArrayParameterDecoder {
      * @return int array
      */
     public long[] decodeInt8Array(final byte[] parameterBytes, final boolean isBinary) {
-        ShardingSpherePreconditions.checkState(!isBinary, new UnsupportedSQLOperationException("binary mode"));
+        ShardingSpherePreconditions.checkState(!isBinary, () -> new UnsupportedSQLOperationException("binary mode"));
         String parameterValue = new String(parameterBytes, StandardCharsets.UTF_8);
         Collection<String> parameterElements = decodeText(parameterValue);
         long[] result = new long[parameterElements.size()];
@@ -98,7 +98,7 @@ public final class PostgreSQLArrayParameterDecoder {
      * @return int array
      */
     public float[] decodeFloat4Array(final byte[] parameterBytes, final boolean isBinary) {
-        ShardingSpherePreconditions.checkState(!isBinary, new UnsupportedSQLOperationException("binary mode"));
+        ShardingSpherePreconditions.checkState(!isBinary, () -> new UnsupportedSQLOperationException("binary mode"));
         String parameterValue = new String(parameterBytes, StandardCharsets.UTF_8);
         Collection<String> parameterElements = decodeText(parameterValue);
         float[] result = new float[parameterElements.size()];
@@ -117,7 +117,7 @@ public final class PostgreSQLArrayParameterDecoder {
      * @return int array
      */
     public double[] decodeFloat8Array(final byte[] parameterBytes, final boolean isBinary) {
-        ShardingSpherePreconditions.checkState(!isBinary, new UnsupportedSQLOperationException("binary mode"));
+        ShardingSpherePreconditions.checkState(!isBinary, () -> new UnsupportedSQLOperationException("binary mode"));
         String parameterValue = new String(parameterBytes, StandardCharsets.UTF_8);
         Collection<String> parameterElements = decodeText(parameterValue);
         double[] result = new double[parameterElements.size()];
@@ -136,7 +136,7 @@ public final class PostgreSQLArrayParameterDecoder {
      * @return int array
      */
     public boolean[] decodeBoolArray(final byte[] parameterBytes, final boolean isBinary) {
-        ShardingSpherePreconditions.checkState(!isBinary, new UnsupportedSQLOperationException("binary mode"));
+        ShardingSpherePreconditions.checkState(!isBinary, () -> new UnsupportedSQLOperationException("binary mode"));
         String parameterValue = new String(parameterBytes, StandardCharsets.UTF_8);
         Collection<String> parameterElements = decodeText(parameterValue);
         boolean[] result = new boolean[parameterElements.size()];
@@ -155,7 +155,7 @@ public final class PostgreSQLArrayParameterDecoder {
      * @return int array
      */
     public String[] decodeStringArray(final byte[] parameterBytes, final boolean isBinary) {
-        ShardingSpherePreconditions.checkState(!isBinary, new UnsupportedSQLOperationException("binary mode"));
+        ShardingSpherePreconditions.checkState(!isBinary, () -> new UnsupportedSQLOperationException("binary mode"));
         String parameterValue = new String(parameterBytes, StandardCharsets.UTF_8);
         Collection<String> parameterElements = decodeText(parameterValue);
         return parameterElements.toArray(EMPTY_STRING_ARRAY);

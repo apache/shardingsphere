@@ -69,7 +69,7 @@ public final class DataSourceSwapper {
                 exceptions.add(ex);
             }
         }
-        ShardingSpherePreconditions.checkState(null != result || exceptions.isEmpty(), new XADataSourceInitializeException(xaDataSourceDefinition));
+        ShardingSpherePreconditions.checkState(null != result || exceptions.isEmpty(), () -> new XADataSourceInitializeException(xaDataSourceDefinition));
         return result;
     }
     

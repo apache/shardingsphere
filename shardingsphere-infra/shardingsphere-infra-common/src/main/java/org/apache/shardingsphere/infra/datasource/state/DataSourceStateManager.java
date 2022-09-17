@@ -144,6 +144,17 @@ public final class DataSourceStateManager {
         }
     }
     
+    /**
+     * Update data source state.
+     * 
+     * @param databaseName database name
+     * @param actualDataSourceName actual data source name
+     * @param dataSourceState data source state
+     */
+    public void updateState(final String databaseName, final String actualDataSourceName, final DataSourceState dataSourceState) {
+        dataSourceStates.put(getCacheKey(databaseName, actualDataSourceName), dataSourceState);
+    }
+    
     private String getCacheKey(final String databaseName, final String dataSourceName) {
         return databaseName + "." + dataSourceName;
     }

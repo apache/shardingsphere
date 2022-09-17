@@ -115,11 +115,11 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
     }
     
     private void addDatabase(final String databaseName) throws SQLException {
-        ProxyContext.getInstance().getContextManager().addDatabase(databaseName);
+        ProxyContext.getInstance().getContextManager().addDatabaseAndPersist(databaseName);
     }
     
     private void dropDatabase(final String databaseName) {
-        ProxyContext.getInstance().getContextManager().dropDatabase(databaseName);
+        ProxyContext.getInstance().getContextManager().dropDatabaseAndPersist(databaseName);
     }
     
     private void addResources(final String databaseName, final Map<String, YamlProxyDataSourceConfiguration> yamlDataSourceMap) throws DistSQLException {

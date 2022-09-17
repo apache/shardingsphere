@@ -47,7 +47,7 @@ public final class SingleTableSchemaMetaDataDecorator implements RuleBasedSchema
             for (TableMetaData each : entry.getValue().getTables()) {
                 tables.add(decorate(each.getName(), each));
             }
-            result.put(entry.getKey(), new SchemaMetaData(entry.getKey(), tables, entry.getValue().getViews()));
+            result.put(entry.getKey(), new SchemaMetaData(entry.getKey(), tables));
         }
         return result;
     }

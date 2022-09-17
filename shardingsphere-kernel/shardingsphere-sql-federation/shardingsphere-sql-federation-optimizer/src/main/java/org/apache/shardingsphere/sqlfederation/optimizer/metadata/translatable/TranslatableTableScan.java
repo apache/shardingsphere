@@ -39,12 +39,7 @@ import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeField;
-import org.apache.calcite.rex.RexCall;
-import org.apache.calcite.rex.RexInputRef;
-import org.apache.calcite.rex.RexLiteral;
 import org.apache.calcite.rex.RexNode;
-import org.apache.calcite.sql.SqlKind;
-import org.codehaus.groovy.runtime.InvokerHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -166,32 +161,15 @@ public class TranslatableTableScan extends TableScan implements EnumerableRel {
             return implementor.result(physType, Blocks.toBlock(Expressions.call(table.getExpression(FederationTranslatableTable.class),
                     "projectAndFilter", implementor.getRootExpression(), Expressions.constant(filterValues), Expressions.constant(fields))));
         }
-        return implementor.result(physType, Blocks.toBlock(
-                Expressions.call(table.getExpression(FederationTranslatableTable.class), "project", implementor.getRootExpression(), Expressions.constant(fields))));
+        return implementor.result(physType, Blocks.toBlock(Expressions.call(table.getExpression(FederationTranslatableTable.class),
+                "project", implementor.getRootExpression(), Expressions.constant(fields))));
     }
     
-    private boolean addFilter(final List<RexNode> filters, final String[] filterValues) {
+    private void addFilter(final List<RexNode> filters, final String[] filterValues) {
+        int index = 0;
         for (RexNode filter : filters) {
-            if (filter.isA(SqlKind.AND)) {
-                ((RexCall) filter).getOperands().forEach(subFilter -> addFilter(InvokerHelper.asList(subFilter), filterValues));
-            } else if (filter.isA(SqlKind.EQUALS)) {
-                RexCall call = (RexCall) filter;
-                RexNode left = call.getOperands().get(0);
-                if (left.isA(SqlKind.CAST)) {
-                    left = ((RexCall) left).operands.get(0);
-                }
-                RexNode right = call.getOperands().get(1);
-                if (!(left instanceof RexInputRef && right instanceof RexLiteral)) {
-                    continue;
-                }
-                int index = ((RexInputRef) left).getIndex();
-                if (null == filterValues[index]) {
-                    filterValues[index] = ((RexLiteral) right).getValue2().toString();
-                    return true;
-                }
-            }
+            filterValues[index] = filter.toString();
+            index++;
         }
-        return false;
     }
-    
 }

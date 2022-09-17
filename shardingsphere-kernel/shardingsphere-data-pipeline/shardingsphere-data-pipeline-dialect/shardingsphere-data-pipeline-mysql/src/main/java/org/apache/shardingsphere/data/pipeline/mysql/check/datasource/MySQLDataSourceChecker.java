@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.mysql.check.datasource;
 
 import org.apache.shardingsphere.data.pipeline.core.check.datasource.AbstractDataSourceChecker;
-import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobPrepareFailedException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithCheckPrivilegeFailedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithInvalidSourceDataSourceException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithoutEnoughPrivilegeException;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -74,9 +74,9 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
                 }
             }
         } catch (final SQLException ex) {
-            throw new PipelineJobPrepareFailedException("Source data source check privileges failed.", ex);
+            throw new PrepareJobWithCheckPrivilegeFailedException(ex);
         }
-        throw new PrepareJobWithoutEnoughPrivilegeException();
+        throw new PrepareJobWithoutEnoughPrivilegeException(Arrays.asList("REPLICATION SLAVE", "REPLICATION CLIENT"));
     }
     
     private boolean matchPrivileges(final String privilege) {
@@ -96,7 +96,7 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
                 checkVariable(connection, entry.getKey(), entry.getValue());
             }
         } catch (final SQLException ex) {
-            throw new PipelineJobPrepareFailedException("Source data source check variables failed.", ex);
+            throw new PrepareJobWithCheckPrivilegeFailedException(ex);
         }
     }
     
@@ -106,7 +106,8 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next() || !BINLOG_ROW_IMAGE.equalsIgnoreCase(key)) {
                     String actualValue = resultSet.getString(2);
-                    ShardingSpherePreconditions.checkState(toBeCheckedValue.equalsIgnoreCase(actualValue), new PrepareJobWithInvalidSourceDataSourceException(key, toBeCheckedValue, actualValue));
+                    ShardingSpherePreconditions.checkState(toBeCheckedValue.equalsIgnoreCase(actualValue),
+                            () -> new PrepareJobWithInvalidSourceDataSourceException(key, toBeCheckedValue, actualValue));
                 }
             }
         }

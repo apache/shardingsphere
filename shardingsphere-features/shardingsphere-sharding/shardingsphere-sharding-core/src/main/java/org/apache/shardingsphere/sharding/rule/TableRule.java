@@ -243,7 +243,7 @@ public final class TableRule {
     
     private void checkRule(final List<String> dataNodes) {
         ShardingSpherePreconditions.checkState(!isEmptyDataNodes(dataNodes) || null == tableShardingStrategyConfig || tableShardingStrategyConfig instanceof NoneShardingStrategyConfiguration,
-                new DataNodesMissedWithShardingTableException(logicTable));
+                () -> new DataNodesMissedWithShardingTableException(logicTable));
     }
     
     /**

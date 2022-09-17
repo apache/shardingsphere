@@ -46,6 +46,9 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.consta
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.strategy.YamlStaticReadwriteSplittingStrategyConfiguration;
+import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration;
+import org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -63,6 +66,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.SortedMap;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Convert YAML configuration handler.
@@ -109,6 +115,9 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
             case DistSQLScriptConstants.ENCRYPT_DB:
                 addEncryptDistSQL(yamlConfig, result);
                 break;
+            case DistSQLScriptConstants.SHADOW_DB:
+                addShadowDistSQL(yamlConfig, result);
+                break;
             default:
                 break;
         }
@@ -142,6 +151,12 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         appendDatabase(yamlConfig.getDatabaseName(), result);
         appendResources(yamlConfig.getDataSources(), result);
         appendEncryptRules(yamlConfig.getRules(), result);
+    }
+    
+    private void addShadowDistSQL(final YamlProxyDatabaseConfiguration yamlConfig, final StringBuilder result) {
+        appendDatabase(yamlConfig.getDatabaseName(), result);
+        appendResources(yamlConfig.getDataSources(), result);
+        appendShadowRules(yamlConfig.getRules(), result);
     }
     
     private void appendDatabase(final String databaseName, final StringBuilder result) {
@@ -207,13 +222,14 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         if (ruleConfigs.isEmpty()) {
             return;
         }
-        for (YamlRuleConfiguration each : ruleConfigs) {
-            ShardingRuleConfiguration shardingRuleConfig = new YamlShardingRuleConfigurationSwapper().swapToObject((YamlShardingRuleConfiguration) each);
+        for (YamlRuleConfiguration ruleConfig : ruleConfigs) {
+            ShardingRuleConfiguration shardingRuleConfig = new YamlShardingRuleConfigurationSwapper().swapToObject((YamlShardingRuleConfiguration) ruleConfig);
             appendShardingAlgorithms(shardingRuleConfig, result);
             appendKeyGenerators(shardingRuleConfig, result);
             appendShardingTableRules(shardingRuleConfig, result);
             // TODO append autoTables
             appendShardingBindingTableRules(shardingRuleConfig, result);
+            appendShardingBroadcastTableRules(shardingRuleConfig, result);
         }
     }
     
@@ -326,7 +342,25 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         StringBuilder result = new StringBuilder();
         while (iterator.hasNext()) {
             String binding = iterator.next();
-            result.append(String.format(DistSQLScriptConstants.BINDING, binding));
+            result.append(String.format(DistSQLScriptConstants.BRACKET, binding));
+            if (iterator.hasNext()) {
+                result.append(DistSQLScriptConstants.COMMA);
+            }
+        }
+        result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator());
+        return result.toString();
+    }
+    
+    private void appendShardingBroadcastTableRules(final ShardingRuleConfiguration shardingRuleConfig, final StringBuilder result) {
+        String broadcast = getBroadcast(shardingRuleConfig.getBroadcastTables().iterator());
+        result.append(String.format(DistSQLScriptConstants.SHARDING_BROADCAST_TABLE_RULES, broadcast));
+    }
+    
+    private String getBroadcast(final Iterator<String> iterator) {
+        StringBuilder result = new StringBuilder();
+        while (iterator.hasNext()) {
+            String broadcast = iterator.next();
+            result.append(String.format(DistSQLScriptConstants.BRACKET, broadcast));
             if (iterator.hasNext()) {
                 result.append(DistSQLScriptConstants.COMMA);
             }
@@ -468,7 +502,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
                 getDatabaseDiscoveryProperties(entry.getValue().getProps(), properties);
                 String typeName = entry.getValue().getType();
                 String typePros = properties.toString();
-                result.append(String.format(DistSQLScriptConstants.DB_DISCOVERY_TYPE, typeName, typePros));
+                result.append(String.format(DistSQLScriptConstants.TYPE, typeName, typePros));
             }
         }
         return result.toString();
@@ -478,7 +512,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         Iterator<Entry<Object, Object>> props = heartbeatProperties.entrySet().iterator();
         while (props.hasNext()) {
             Entry<Object, Object> entry = props.next();
-            result.append(String.format(DistSQLScriptConstants.DB_DISCOVERY_PROPERTY, entry.getKey(), entry.getValue()));
+            result.append(String.format(DistSQLScriptConstants.PROPERTY, entry.getKey(), entry.getValue()));
         }
     }
     
@@ -544,7 +578,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
                 String typeName = entry.getValue().getType();
                 if (!entry.getValue().getProps().isEmpty()) {
                     String properties = getColumnTypeProperties(entry.getValue().getProps());
-                    result.append(String.format(DistSQLScriptConstants.ENCRYPT_TYPE, typeName, properties));
+                    result.append(String.format(DistSQLScriptConstants.TYPE, typeName, properties));
                 } else {
                     result.append(String.format(DistSQLScriptConstants.ENCRYPT_TYPE_WITHOUT_PROPERTIES, typeName));
                 }
@@ -558,7 +592,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         Iterator<Entry<Object, Object>> props = properties.entrySet().iterator();
         while (props.hasNext()) {
             Entry<Object, Object> entry = props.next();
-            result.append(String.format(DistSQLScriptConstants.ENCRYPT_TYPE_PROPERTIES, entry.getKey(), entry.getValue()));
+            result.append(String.format(DistSQLScriptConstants.PROPERTY, entry.getKey(), entry.getValue()));
             if (props.hasNext()) {
                 result.append(DistSQLScriptConstants.COMMA);
             }
@@ -568,5 +602,92 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
     
     private String getQueryWithCipher(final Boolean queryWithCipherColumn, final YamlRuleConfiguration ruleConfig) {
         return String.valueOf(null == queryWithCipherColumn ? ((YamlEncryptRuleConfiguration) ruleConfig).isQueryWithCipherColumn() : queryWithCipherColumn.toString().toLowerCase());
+    }
+    
+    private void appendShadowRules(final Collection<YamlRuleConfiguration> ruleConfigs, final StringBuilder result) {
+        if (ruleConfigs.isEmpty()) {
+            return;
+        }
+        result.append(DistSQLScriptConstants.CREATE_SHADOW);
+        for (YamlRuleConfiguration ruleConfig : ruleConfigs) {
+            Iterator<Entry<String, YamlShadowDataSourceConfiguration>> shadowDataSourcesIter = ((YamlShadowRuleConfiguration) ruleConfig).getDataSources().entrySet().iterator();
+            while (shadowDataSourcesIter.hasNext()) {
+                Entry<String, YamlShadowDataSourceConfiguration> entry = shadowDataSourcesIter.next();
+                String shadowRuleName = entry.getKey();
+                String source = entry.getValue().getProductionDataSourceName();
+                String shadow = entry.getValue().getShadowDataSourceName();
+                String shadowTables = getShadowTables(entry.getKey(), ruleConfig);
+                result.append(String.format(DistSQLScriptConstants.SHADOW, shadowRuleName, source, shadow, shadowTables));
+                if (shadowDataSourcesIter.hasNext()) {
+                    result.append(DistSQLScriptConstants.COMMA);
+                }
+            }
+            result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator());
+        }
+    }
+    
+    private String getShadowTables(final String shadowName, final YamlRuleConfiguration ruleConfig) {
+        StringBuilder result = new StringBuilder();
+        Iterator<Entry<String, YamlShadowTableConfiguration>> shadowTablesIter = ((YamlShadowRuleConfiguration) ruleConfig).getTables().entrySet().iterator();
+        while (shadowTablesIter.hasNext()) {
+            Entry<String, YamlShadowTableConfiguration> entry = shadowTablesIter.next();
+            if (isBelongToShadowRule(shadowName, entry.getValue().getDataSourceNames())) {
+                String tableName = entry.getKey();
+                String tableTypes = getShadowTableTypes(entry.getValue().getShadowAlgorithmNames(), ruleConfig);
+                result.append(String.format(DistSQLScriptConstants.SHADOW_TABLE, tableName, tableTypes));
+            }
+            if (shadowTablesIter.hasNext()) {
+                result.append(DistSQLScriptConstants.COMMA).append(System.lineSeparator());
+            }
+        }
+        return result.toString();
+    }
+    
+    private Boolean isBelongToShadowRule(final String shadowName, final Collection<String> dataSourceNames) {
+        Iterator<String> dataSourceNamesIter = dataSourceNames.iterator();
+        while (dataSourceNamesIter.hasNext()) {
+            String dataSourceName = dataSourceNamesIter.next();
+            if (dataSourceName.equals(shadowName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private String getShadowTableTypes(final Collection<String> shadowAlgorithmNames, final YamlRuleConfiguration ruleConfig) {
+        StringBuilder result = new StringBuilder();
+        Iterator<String> shadowAlgorithmNamesIter = shadowAlgorithmNames.iterator();
+        while (shadowAlgorithmNamesIter.hasNext()) {
+            String shadowAlgorithmName = shadowAlgorithmNamesIter.next();
+            Iterator<Entry<String, YamlAlgorithmConfiguration>> shadowAlgorithmsIter = ((YamlShadowRuleConfiguration) ruleConfig).getShadowAlgorithms().entrySet().iterator();
+            while (shadowAlgorithmsIter.hasNext()) {
+                Entry<String, YamlAlgorithmConfiguration> entry = shadowAlgorithmsIter.next();
+                if (entry.getKey().equals(shadowAlgorithmName)) {
+                    String typeName = entry.getValue().getType();
+                    String typeProperties = getAlgorithmProperties(entry.getValue().getProps());
+                    result.append(String.format(DistSQLScriptConstants.SHADOW_TABLE_TYPE, typeName, typeProperties));
+                }
+            }
+            if (shadowAlgorithmNamesIter.hasNext()) {
+                result.append(DistSQLScriptConstants.COMMA);
+            }
+        }
+        return result.toString();
+    }
+    
+    private String getAlgorithmProperties(final Properties algorithmProperties) {
+        StringBuilder result = new StringBuilder();
+        SortedMap<String, String> sortedMap = new TreeMap(algorithmProperties);
+        Set<String> set = sortedMap.keySet();
+        Iterator<String> prosIter = set.iterator();
+        while (prosIter.hasNext()) {
+            String prosKey = prosIter.next();
+            String prosValue = algorithmProperties.getProperty(prosKey);
+            result.append(String.format(DistSQLScriptConstants.PROPERTY, prosKey, prosValue));
+            if (prosIter.hasNext()) {
+                result.append(DistSQLScriptConstants.COMMA);
+            }
+        }
+        return result.toString();
     }
 }

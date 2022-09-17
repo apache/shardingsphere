@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.original.table;
+package org.apache.shardingsphere.sqlfederation.executor;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -73,10 +73,9 @@ import org.apache.shardingsphere.sqlfederation.optimizer.executor.ScanNodeExecut
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.filter.FilterableSchema;
 import org.apache.shardingsphere.sqlfederation.optimizer.planner.QueryOptimizePlannerFactory;
-import org.apache.shardingsphere.sqlfederation.row.CommonRowEnumerator;
+import org.apache.shardingsphere.sqlfederation.row.SQLFederationRowEnumerator;
 import org.apache.shardingsphere.sqlfederation.row.EmptyRowEnumerator;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
-import org.apache.shardingsphere.sqlfederation.table.CommonTableScanExecutorContext;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -106,7 +105,7 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
     
     private final ShardingSphereRuleMetaData globalRuleMetaData;
     
-    private final CommonTableScanExecutorContext executorContext;
+    private final TableScanExecutorContext executorContext;
     
     private final EventBusContext eventBusContext;
     
@@ -220,7 +219,7 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
             
             @Override
             public Enumerator<Object[]> enumerator() {
-                return new CommonRowEnumerator(mergedResult, metaData, statements);
+                return new SQLFederationRowEnumerator(mergedResult, metaData, statements);
             }
         };
     }

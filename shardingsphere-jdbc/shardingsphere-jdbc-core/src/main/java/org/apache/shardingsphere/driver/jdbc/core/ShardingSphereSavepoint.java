@@ -36,7 +36,7 @@ public final class ShardingSphereSavepoint implements Savepoint {
     }
     
     public ShardingSphereSavepoint(final String name) throws SQLException {
-        ShardingSpherePreconditions.checkState(null != name && 0 != name.length(), new SQLFeatureNotSupportedException("Savepoint name can not be NULL or empty"));
+        ShardingSpherePreconditions.checkState(null != name && 0 != name.length(), () -> new SQLFeatureNotSupportedException("Savepoint name can not be NULL or empty"));
         savepointName = name;
     }
     

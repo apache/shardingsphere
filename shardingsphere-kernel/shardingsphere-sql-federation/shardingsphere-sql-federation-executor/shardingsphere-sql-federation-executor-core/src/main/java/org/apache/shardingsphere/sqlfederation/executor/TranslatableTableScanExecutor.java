@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.advanced.table;
+package org.apache.shardingsphere.sqlfederation.executor;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
@@ -32,13 +32,10 @@ import org.apache.calcite.prepare.CalciteCatalogReader;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.rel2sql.RelToSqlConverter;
-import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeSystem;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.sql.SqlDialect;
-import org.apache.calcite.sql.fun.SqlStdOperatorTable;
-import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.util.SqlString;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.shardingsphere.infra.binder.QueryContext;
@@ -78,12 +75,13 @@ import org.apache.shardingsphere.sqlfederation.optimizer.executor.ScanNodeExecut
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TranslatableScanNodeExecutorContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.filter.FilterableSchema;
+import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.StringToRexNodeUtil;
 import org.apache.shardingsphere.sqlfederation.optimizer.planner.QueryOptimizePlannerFactory;
-import org.apache.shardingsphere.sqlfederation.row.CommonRowEnumerator;
+import org.apache.shardingsphere.sqlfederation.row.SQLFederationRowEnumerator;
 import org.apache.shardingsphere.sqlfederation.row.EmptyRowEnumerator;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
-import org.apache.shardingsphere.sqlfederation.table.CommonTableScanExecutorContext;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -112,7 +110,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
     
     private final ShardingSphereRuleMetaData globalRuleMetaData;
     
-    private final CommonTableScanExecutorContext executorContext;
+    private final TableScanExecutorContext executorContext;
     
     private final EventBusContext eventBusContext;
     
@@ -207,7 +205,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
         RelOptCluster relOptCluster = RelOptCluster.create(QueryOptimizePlannerFactory.createVolcanoPlanner(), new RexBuilder(new JavaTypeFactoryImpl()));
         RelBuilder builder = RelFactories.LOGICAL_BUILDER.create(relOptCluster, catalogReader).scan(table.getName());
         if (null != scanContext.getFilterValues()) {
-            builder.filter(createFilters(scanContext.getFilterValues(), builder, table.getColumnNames()));
+            builder.filter(createFilters(scanContext.getFilterValues()));
         }
         if (null != scanContext.getProjects()) {
             builder.project(createProjections(scanContext.getProjects(), builder, table.getColumnNames()));
@@ -215,18 +213,21 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
         return builder.build();
     }
     
-    private Collection<RexNode> createFilters(final String[] filterValues, final RelBuilder builder, final List<String> columnNames) {
+    private Collection<RexNode> createFilters(final String[] filterValues) {
         Collection<RexNode> result = new LinkedList<>();
         JavaTypeFactory typeFactory = new JavaTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
         RexBuilder rexBuilder = new RexBuilder(typeFactory);
-        for (int i = 0; i < filterValues.length; i++) {
-            if (!Strings.isNullOrEmpty(filterValues[i])) {
-                RelDataType nonNullableInt = typeFactory.createSqlType(SqlTypeName.INTEGER);
-                RexNode n2 = rexBuilder.makeLiteral(Integer.valueOf(filterValues[i]), nonNullableInt, false);
-                RexNode n1 = rexBuilder.makeInputRef(nonNullableInt, i);
-                RexNode tmp = rexBuilder.makeCall(SqlStdOperatorTable.EQUALS, n1, n2);
-                result.add(tmp);
+        for (String each : filterValues) {
+            if (Strings.isNullOrEmpty(each)) {
+                continue;
             }
+            RexNode filterCondition = null;
+            try {
+                filterCondition = StringToRexNodeUtil.buildRexNode(each, rexBuilder);
+            } catch (IOException ignored) {
+                continue;
+            }
+            result.add(filterCondition);
         }
         return result;
     }
@@ -244,7 +245,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
             
             @Override
             public Enumerator<Object[]> enumerator() {
-                return new CommonRowEnumerator(mergedResult, metaData, statements);
+                return new SQLFederationRowEnumerator(mergedResult, metaData, statements);
             }
         };
     }
