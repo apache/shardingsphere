@@ -52,6 +52,7 @@ import org.apache.shardingsphere.sqlfederation.executor.TableScanExecutorContext
 import org.apache.shardingsphere.sqlfederation.optimizer.ShardingSphereOptimizer;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContextFactory;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.OptimizerParserContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContextFactory;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.filter.FilterableSchema;
@@ -132,10 +133,11 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
     
     @SuppressWarnings("unchecked")
     private Enumerable<Object> execute(final SQLStatement sqlStatement, final AbstractSchema sqlFederationSchema, final Map<String, Object> parameters) {
-        CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(optimizerContext.getParserContexts().get(databaseName).getDialectProps());
+        OptimizerParserContext parserContext = optimizerContext.getParserContexts().get(databaseName);
+        CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(parserContext.getDialectProps());
         RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
         CalciteCatalogReader catalogReader = OptimizerPlannerContextFactory.createCatalogReader(schemaName, sqlFederationSchema, relDataTypeFactory, connectionConfig);
-        SqlValidator validator = OptimizerPlannerContextFactory.createValidator(catalogReader, relDataTypeFactory, connectionConfig);
+        SqlValidator validator = OptimizerPlannerContextFactory.createValidator(catalogReader, relDataTypeFactory, parserContext.getDatabaseType(), connectionConfig);
         SqlToRelConverter converter = OptimizerPlannerContextFactory.createConverter(catalogReader, validator, relDataTypeFactory);
         RelNode bestPlan =
                 new ShardingSphereOptimizer(converter, QueryOptimizePlannerFactory.createHepPlanner()).optimize(sqlStatement);

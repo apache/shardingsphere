@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.context.planner;
 
-import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.config.CalciteConnectionConfig;
@@ -27,7 +26,6 @@ import org.apache.calcite.plan.RelOptTable.ViewExpander;
 import org.apache.calcite.prepare.CalciteCatalogReader;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rex.RexBuilder;
-import org.apache.calcite.runtime.ConsList;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.sql.SqlOperatorTable;
 import org.apache.calcite.sql.fun.SqlLibrary;
@@ -38,12 +36,13 @@ import org.apache.calcite.sql.validate.SqlValidatorUtil;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.sql2rel.SqlToRelConverter.Config;
 import org.apache.calcite.sql2rel.StandardConvertletTable;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sqlfederation.optimizer.planner.QueryOptimizePlannerFactory;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -53,6 +52,15 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OptimizerPlannerContextFactory {
+    
+    private static final Map<String, SqlLibrary> DATABASE_TYPE_SQL_LIBRARIES = new HashMap<>();
+    
+    static {
+        DATABASE_TYPE_SQL_LIBRARIES.put(SqlLibrary.MYSQL.name().toLowerCase(), SqlLibrary.MYSQL);
+        DATABASE_TYPE_SQL_LIBRARIES.put(SqlLibrary.POSTGRESQL.name().toLowerCase(), SqlLibrary.POSTGRESQL);
+        DATABASE_TYPE_SQL_LIBRARIES.put(SqlLibrary.ORACLE.name(), SqlLibrary.ORACLE);
+        DATABASE_TYPE_SQL_LIBRARIES.put("openGauss", SqlLibrary.POSTGRESQL);
+    }
     
     /**
      * Create optimizer planner context map.
@@ -85,26 +93,27 @@ public final class OptimizerPlannerContextFactory {
     
     /**
      * Create validator.
-     * 
+     *
      * @param catalogReader catalog reader
      * @param relDataTypeFactory rel data type factory
+     * @param databaseType database type
      * @param connectionConfig connection config
      * @return sql validator
      */
-    public static SqlValidator createValidator(final CalciteCatalogReader catalogReader, final RelDataTypeFactory relDataTypeFactory, final CalciteConnectionConfig connectionConfig) {
+    public static SqlValidator createValidator(final CalciteCatalogReader catalogReader, final RelDataTypeFactory relDataTypeFactory, 
+                                               final DatabaseType databaseType, final CalciteConnectionConfig connectionConfig) {
         SqlValidator.Config validatorConfig = SqlValidator.Config.DEFAULT
                 .withLenientOperatorLookup(connectionConfig.lenientOperatorLookup())
                 .withConformance(connectionConfig.conformance())
                 .withDefaultNullCollation(connectionConfig.defaultNullCollation())
                 .withIdentifierExpansion(true);
-        SqlOperatorTable operatorTable =
-                SqlLibraryOperatorTableFactory.INSTANCE.getOperatorTable(
-                        ConsList.of(SqlLibrary.STANDARD, Lists.newArrayList(SqlLibrary.STANDARD, SqlLibrary.MYSQL)));
-        final List<SqlOperatorTable> list = new ArrayList<>();
-        list.add(operatorTable);
-        list.add(catalogReader);
-        final SqlOperatorTable opTab = SqlOperatorTables.chain(list);
-        return SqlValidatorUtil.newValidator(opTab, catalogReader, relDataTypeFactory, validatorConfig);
+        SqlOperatorTable sqlOperatorTable = getSQLOperatorTable(catalogReader, databaseType);
+        return SqlValidatorUtil.newValidator(sqlOperatorTable, catalogReader, relDataTypeFactory, validatorConfig);
+    }
+    
+    private static SqlOperatorTable getSQLOperatorTable(final CalciteCatalogReader catalogReader, final DatabaseType databaseType) {
+        return SqlOperatorTables.chain(Arrays.asList(SqlLibraryOperatorTableFactory.INSTANCE.getOperatorTable(
+                Arrays.asList(SqlLibrary.STANDARD, DATABASE_TYPE_SQL_LIBRARIES.getOrDefault(databaseType.getType(), SqlLibrary.MYSQL))), catalogReader));
     }
     
     /**

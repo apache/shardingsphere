@@ -36,7 +36,7 @@ public final class OpenGaussOptimizerBuilder implements OptimizerSQLDialectBuild
         result.setProperty(CalciteConnectionProperty.LEX.camelName(), Lex.JAVA.name());
         result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), SqlConformanceEnum.BABEL.name());
         result.setProperty(CalciteConnectionProperty.FUN.camelName(), SqlLibrary.POSTGRESQL.fun);
-        result.setProperty(CalciteConnectionProperty.CASE_SENSITIVE.camelName(),  String.valueOf(Lex.JAVA.caseSensitive));
+        result.setProperty(CalciteConnectionProperty.CASE_SENSITIVE.camelName(), String.valueOf(Lex.JAVA.caseSensitive));
         return result;
     }
     
