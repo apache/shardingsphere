@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
@@ -47,28 +48,34 @@ public final class AlterViewStatementSchemaRefresher implements MetaDataRefreshe
     public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                                                     final String schemaName, final AlterViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String viewName = sqlStatement.getView().getTableName().getIdentifier().getValue();
+        String viewDefinition = sqlStatement.getViewSQL().substring(sqlStatement.getViewSQL().substring(0, sqlStatement.getViewSQL().indexOf(" as ")).length() + 4).trim();
         SchemaAlteredEvent event = new SchemaAlteredEvent(database.getName(), schemaName);
         Optional<SimpleTableSegment> renameView = AlterViewStatementHandler.getRenameView(sqlStatement);
         if (renameView.isPresent()) {
             String renameViewName = renameView.get().getTableName().getIdentifier().getValue();
-            putTableMetaData(database, logicDataSourceNames, schemaName, renameViewName, props);
+            String originalView = database.getSchema(schemaName).getView(viewName).getViewDefinition();
+            putTableMetaData(database, logicDataSourceNames, schemaName, renameViewName, originalView, props);
             removeTableMetaData(database, schemaName, viewName);
             event.getAlteredTables().add(database.getSchema(schemaName).getTable(renameViewName));
+            event.getAlteredViews().add(database.getSchema(schemaName).getView(renameViewName));
             event.getDroppedTables().add(viewName);
+            event.getDroppedViews().add(viewName);
         } else {
-            putTableMetaData(database, logicDataSourceNames, schemaName, viewName, props);
+            putTableMetaData(database, logicDataSourceNames, schemaName, viewName, viewDefinition, props);
             event.getAlteredTables().add(database.getSchema(schemaName).getTable(viewName));
+            event.getAlteredViews().add(database.getSchema(schemaName).getView(viewName));
         }
         return Optional.of(event);
     }
     
     private void removeTableMetaData(final ShardingSphereDatabase database, final String schemaName, final String viewName) {
         database.getSchema(schemaName).removeTable(viewName);
+        database.getSchema(schemaName).removeView(viewName);
         database.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.remove(schemaName, viewName));
     }
     
     private void putTableMetaData(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
-                                  final String schemaName, final String viewName, final ConfigurationProperties props) throws SQLException {
+                                  final String schemaName, final String viewName, final String viewDefinition, final ConfigurationProperties props) throws SQLException {
         if (!containsInImmutableDataNodeContainedRule(viewName, database)) {
             database.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, viewName));
         }
@@ -77,6 +84,7 @@ public final class AlterViewStatementSchemaRefresher implements MetaDataRefreshe
         Map<String, ShardingSphereSchema> schemaMap = GenericSchemaBuilder.build(Collections.singletonList(viewName), materials);
         Optional<ShardingSphereTable> actualViewMetaData = Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.getTable(viewName));
         actualViewMetaData.ifPresent(optional -> database.getSchema(schemaName).putTable(viewName, optional));
+        database.getSchema(schemaName).putView(viewName, new ShardingSphereView(viewName, viewDefinition));
     }
     
     private boolean containsInImmutableDataNodeContainedRule(final String viewName, final ShardingSphereDatabase database) {
