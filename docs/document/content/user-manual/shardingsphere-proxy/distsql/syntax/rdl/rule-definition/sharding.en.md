@@ -131,7 +131,7 @@ auditorAlgorithmDefinition:
 - `RESOURCES` needs to use data source resources managed by RDL
 - `shardingAlgorithmType` specifies the type of automatic sharding algorithm, please refer to [Auto Sharding Algorithm](/en/user-manual/common-config/builtin-algorithm/sharding/)
 - `keyGenerateStrategyType` specifies the distributed primary key generation strategy, please refer to [Key Generate Algorithm](/en/user-manual/common-config/builtin-algorithm/keygen/)
-- `auditorAlgorithmType` specifies the sharding audit strategy, please refer to [Sharding Audit Algorithm](/cn/user-manual/common-config/builtin-algorithm/keygen/)；
+- `auditorAlgorithmType` specifies the sharding audit strategy, please refer to [Sharding Audit Algorithm](/cn/user-manual/common-config/builtin-algorithm/audit/)；
 - Duplicate `tableName` will not be created
 - `shardingAlgorithm` can be reused by different `Sharding Table Rule`, so when executing `DROP SHARDING TABLE RULE`, the corresponding `shardingAlgorithm` will not be removed
 - To remove `shardingAlgorithm`, please execute `DROP SHARDING ALGORITHM`

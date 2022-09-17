@@ -124,7 +124,7 @@ Attributes：
 | auditorNames     | Collection\<String\>  | Sharding audit algorithm name          |
 | allowHintDisable | Boolean               | Enable or disable sharding audit hint  |
 
-Please refer to [Built-in Key Generate Algorithm List](/en/user-manual/common-config/builtin-algorithm/keygen) for more details about type of algorithm.
+Please refer to [Built-in Sharding Audit Algorithm List](/en/user-manual/common-config/builtin-algorithm/audit) for more details about type of algorithm.
 
 ## Procedure
 

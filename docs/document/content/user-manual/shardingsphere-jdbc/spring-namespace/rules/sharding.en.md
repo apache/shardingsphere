@@ -144,7 +144,7 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/sharding/shar
 | type      | Attribute | Sharding audit algorithm type       |
 | props (?) | Tag       | Sharding audit algorithm properties |
 
-Please refer to [Built-in Sharding Algorithm List](/en/user-manual/common-config/builtin-algorithm/sharding) and [Built-in Key Generate Algorithm List](/en/user-manual/common-config/builtin-algorithm/keygen) for more details about type of algorithm.
+Please refer to [Built-in Sharding Audit Algorithm List](/en/user-manual/common-config/builtin-algorithm/sharding), [Built-in Key Generate Algorithm List](/en/user-manual/common-config/builtin-algorithm/keygen) and [Built-in Sharding Audit Algorithm List](/en/user-manual/common-config/builtin-algorithm/audit) for more details about type of algorithm.
 
 > Attention: Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is conflict with spring placeholder of properties, so use `$->{...}` on spring environment is better.
 

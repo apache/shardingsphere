@@ -125,7 +125,7 @@ weight = 1
 | auditorNames      | Collection\<String\> | 分片审计算法名称  |
 | allowHintDisable  | Boolean              | 是否禁用分片审计hint |
 
-算法类型的详情，请参见[内置分布式序列算法列表](/cn/user-manual/common-config/builtin-algorithm/keygen)。
+算法类型的详情，请参见[内置分片审计列算法列表](/cn/user-manual/common-config/builtin-algorithm/audit)。
 
 ## 操作步骤
 
