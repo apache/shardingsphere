@@ -100,7 +100,7 @@ public final class OptimizerPlannerContextFactory {
      * @param connectionConfig connection config
      * @return sql validator
      */
-    public static SqlValidator createValidator(final CalciteCatalogReader catalogReader, final RelDataTypeFactory relDataTypeFactory, 
+    public static SqlValidator createValidator(final CalciteCatalogReader catalogReader, final RelDataTypeFactory relDataTypeFactory,
                                                final DatabaseType databaseType, final CalciteConnectionConfig connectionConfig) {
         SqlValidator.Config validatorConfig = SqlValidator.Config.DEFAULT
                 .withLenientOperatorLookup(connectionConfig.lenientOperatorLookup())
