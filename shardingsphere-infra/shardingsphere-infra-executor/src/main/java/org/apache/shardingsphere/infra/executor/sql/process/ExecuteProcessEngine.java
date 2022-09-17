@@ -58,8 +58,7 @@ public final class ExecuteProcessEngine {
         executionGroupContext.setGrantee(grantee);
         executionGroupContext.setDatabaseName(databaseName);
         Optional<ExecuteProcessReporter> reporter = ExecuteProcessReporterFactory.getInstance();
-        reporter.ifPresent(executeProcessReporter -> executeProcessReporter.report(new QueryContext(null, null, null),
-                executionGroupContext, ExecuteProcessConstants.EXECUTE_STATUS_SLEEP, eventBusContext));
+        reporter.ifPresent(executeProcessReporter -> executeProcessReporter.report(executionGroupContext));
         return executionGroupContext.getExecutionID();
     }
     

@@ -34,9 +34,17 @@ import java.util.Optional;
 public final class GovernanceExecuteProcessReporter implements ExecuteProcessReporter {
     
     @Override
+    public void report(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
+        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext("", executionGroupContext, ExecuteProcessConstants.EXECUTE_STATUS_SLEEP, true);
+        ShowProcessListManager.getInstance().putProcessContext(executeProcessContext.getExecutionID(), executeProcessContext);
+    }
+    
+    @Override
     public void report(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext,
                        final ExecuteProcessConstants constants, final EventBusContext eventBusContext) {
-        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(queryContext.getSql(), executionGroupContext, constants);
+        ExecuteProcessContext originExecuteProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionGroupContext.getExecutionID());
+        boolean isProxyContext = null != originExecuteProcessContext && originExecuteProcessContext.isProxyContext();
+        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(queryContext.getSql(), executionGroupContext, constants, isProxyContext);
         ShowProcessListManager.getInstance().putProcessContext(executeProcessContext.getExecutionID(), executeProcessContext);
         ShowProcessListManager.getInstance().putProcessStatement(executeProcessContext.getExecutionID(), executeProcessContext.getProcessStatements());
     }
@@ -55,7 +63,14 @@ public final class GovernanceExecuteProcessReporter implements ExecuteProcessRep
     @Override
     public void reportClean(final String executionID) {
         ShowProcessListManager.getInstance().removeProcessStatement(executionID);
-        Optional.ofNullable(ShowProcessListManager.getInstance().getProcessContext(executionID)).ifPresent(ExecuteProcessContext::resetExecuteProcessContextToSleep);
+        Optional.ofNullable(ShowProcessListManager.getInstance().getProcessContext(executionID)).ifPresent(
+                executeProcessContext -> {
+                    if (executeProcessContext.isProxyContext()) {
+                        executeProcessContext.resetExecuteProcessContextToSleep();
+                    } else {
+                        ShowProcessListManager.getInstance().removeProcessContext(executionID);
+                    }
+                });
     }
     
     @Override

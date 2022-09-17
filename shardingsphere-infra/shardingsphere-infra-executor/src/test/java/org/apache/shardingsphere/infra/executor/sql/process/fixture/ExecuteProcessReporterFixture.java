@@ -31,6 +31,10 @@ public final class ExecuteProcessReporterFixture implements ExecuteProcessReport
     public static final LinkedList<String> ACTIONS = new LinkedList<>();
     
     @Override
+    public void report(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
+    }
+    
+    @Override
     public void report(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessConstants constants,
                        final EventBusContext eventBusContext) {
         ACTIONS.add("Report the summary of this task.");

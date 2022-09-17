@@ -54,7 +54,10 @@ public final class ExecuteProcessContext {
     
     private ExecuteProcessConstants executeProcessConstants;
     
-    public ExecuteProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessConstants constants) {
+    private final boolean proxyContext;
+    
+    public ExecuteProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessConstants constants,
+                                 final boolean isProxyContext) {
         this.executionID = executionGroupContext.getExecutionID();
         this.sql = sql;
         this.databaseName = executionGroupContext.getDatabaseName();
@@ -63,6 +66,7 @@ public final class ExecuteProcessContext {
         this.hostname = null != grantee ? grantee.getHostname() : null;
         executeProcessConstants = constants;
         addProcessUnitsAndStatements(executionGroupContext, constants);
+        proxyContext = isProxyContext;
     }
     
     private void addProcessUnitsAndStatements(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessConstants constants) {

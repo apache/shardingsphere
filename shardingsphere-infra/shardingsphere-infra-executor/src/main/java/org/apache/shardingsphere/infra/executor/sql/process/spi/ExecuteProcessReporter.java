@@ -32,6 +32,12 @@ import org.apache.shardingsphere.infra.util.spi.type.optional.OptionalSPI;
 public interface ExecuteProcessReporter extends OptionalSPI {
     
     /**
+     * Report this connection for proxy.
+     * @param executionGroupContext execution group context
+     */
+    void report(ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext);
+    
+    /**
      * Report the summary of this task.
      * @param queryContext query context
      * @param executionGroupContext execution group context
