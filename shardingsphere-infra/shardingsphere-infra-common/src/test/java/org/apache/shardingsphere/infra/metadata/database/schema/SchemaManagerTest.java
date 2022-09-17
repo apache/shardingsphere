@@ -38,7 +38,6 @@ public final class SchemaManagerTest {
                 new ShardingSphereSchema(Collections.singletonMap("foo_table", new ShardingSphereTable()), Collections.singletonMap("foo_view", new ShardingSphereView("", "")));
         ShardingSphereSchema actual = SchemaManager.getToBeDeletedSchemaMetaData(loadedSchemas, currentSchemas);
         assertThat(actual.getTables().size(), is(1));
-        assertThat(actual.getViews().size(), is(1));
     }
     
     @Test
@@ -53,19 +52,5 @@ public final class SchemaManagerTest {
         Map<String, ShardingSphereTable> actual = SchemaManager.getToBeDeletedTables(Collections.emptyMap(), Collections.singletonMap("foo_table", new ShardingSphereTable()));
         assertThat(actual.size(), is(1));
         assertTrue(actual.containsKey("foo_table"));
-    }
-    
-    @Test
-    public void assertGetToBeAddedViews() {
-        Map<String, ShardingSphereView> actual = SchemaManager.getToBeAddedViews(Collections.singletonMap("foo_view", new ShardingSphereView("", "")), Collections.emptyMap());
-        assertThat(actual.size(), is(1));
-        assertTrue(actual.containsKey("foo_view"));
-    }
-    
-    @Test
-    public void assertGetToBeDeletedViews() {
-        Map<String, ShardingSphereView> actual = SchemaManager.getToBeDeletedViews(Collections.emptyMap(), Collections.singletonMap("foo_view", new ShardingSphereView("", "")));
-        assertThat(actual.size(), is(1));
-        assertTrue(actual.containsKey("foo_view"));
     }
 }

@@ -46,15 +46,6 @@ public final class ViewMetaDataPersistServiceTest {
     private PersistRepository repository;
     
     @Test
-    public void assertCompareAndPersist() {
-        ViewMetaDataPersistService viewMetaDataPersistService = new ViewMetaDataPersistService(repository);
-        when(repository.getChildrenKeys("/metadata/foo_db/schemas/foo_schema/views")).thenReturn(Collections.singletonList("foo_view"));
-        when(repository.get("/metadata/foo_db/schemas/foo_schema/views/foo_view")).thenReturn(readYAML());
-        viewMetaDataPersistService.compareAndPersist("foo_db", "foo_schema", Collections.emptyMap());
-        verify(repository).delete("/metadata/foo_db/schemas/foo_schema/views/foo_view");
-    }
-    
-    @Test
     public void assertPersist() {
         ShardingSphereView view = new ShardingSphereView("foo_view", "select `db`.`db`.`id` AS `id`,`db`.`db`.`order_id` AS `order_id` from `db`.`db`");
         new ViewMetaDataPersistService(repository).persist("foo_db", "foo_schema", Collections.singletonMap("foo_view", view));
