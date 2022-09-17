@@ -46,15 +46,14 @@ public final class ClassicTransferTestCase extends BaseTransactionTestCase {
     }
     
     @Override
-    @SneakyThrows
-    public void executeTest() {
+    public void executeTest() throws SQLException {
         Connection connection = getDataSource().getConnection();
         executeUpdateWithLog(connection, "insert into account(transaction_id, balance) values (1,0), (2,100);");
         innerRun();
     }
     
-    @SneakyThrows
-    private void innerRun() {
+    @SneakyThrows(InterruptedException.class)
+    private void innerRun() throws SQLException {
         List<Thread> tasks = new LinkedList<>();
         for (int i = 0; i < 20; i++) {
             Thread updateThread = new UpdateTread(getDataSource());
@@ -71,7 +70,7 @@ public final class ClassicTransferTestCase extends BaseTransactionTestCase {
         }
     }
     
-    private int getBalanceSum() throws Exception {
+    private int getBalanceSum() throws SQLException {
         int result = 0;
         try (Connection connection = getDataSource().getConnection(); Statement statement = connection.createStatement()) {
             connection.setAutoCommit(false);

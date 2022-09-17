@@ -23,6 +23,7 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
 import javax.crypto.Cipher;
+import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -85,20 +86,19 @@ public final class PasswordEncryption {
      * @param publicKey public key
      * @return encrypted password
      */
+    @SneakyThrows(GeneralSecurityException.class)
     public static byte[] encryptWithRSAPublicKey(final String password, final byte[] seed, final String transformation, final String publicKey) {
         byte[] formattedPassword = password != null ? Bytes.concat(password.getBytes(), new byte[]{0}) : new byte[]{0};
         return encryptWithRSAPublicKey(xor(formattedPassword, seed, formattedPassword.length), parseRSAPublicKey(publicKey), transformation);
     }
     
-    @SneakyThrows
-    private static byte[] encryptWithRSAPublicKey(final byte[] source, final RSAPublicKey key, final String transformation) {
+    private static byte[] encryptWithRSAPublicKey(final byte[] source, final RSAPublicKey key, final String transformation) throws GeneralSecurityException {
         Cipher cipher = Cipher.getInstance(transformation);
         cipher.init(Cipher.ENCRYPT_MODE, key);
         return cipher.doFinal(source);
     }
     
-    @SneakyThrows
-    private static RSAPublicKey parseRSAPublicKey(final String key) {
+    private static RSAPublicKey parseRSAPublicKey(final String key) throws GeneralSecurityException {
         byte[] certificateData = Base64.getDecoder().decode(formatKey(key));
         X509EncodedKeySpec spec = new X509EncodedKeySpec(certificateData);
         KeyFactory kf = KeyFactory.getInstance("RSA");

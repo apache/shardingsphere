@@ -116,7 +116,7 @@ public final class ExecuteEngineTest {
         verify(callback).onFailure(expectedException);
     }
     
-    @SneakyThrows
+    @SneakyThrows({ReflectiveOperationException.class, InterruptedException.class})
     private void shutdownAndAwaitTerminal(final ExecuteEngine executeEngine) {
         Field field = ExecuteEngine.class.getDeclaredField("executorService");
         field.setAccessible(true);

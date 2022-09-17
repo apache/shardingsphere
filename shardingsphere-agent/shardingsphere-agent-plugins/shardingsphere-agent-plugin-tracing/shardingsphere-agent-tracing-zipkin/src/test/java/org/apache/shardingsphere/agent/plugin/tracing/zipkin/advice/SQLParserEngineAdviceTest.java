@@ -19,7 +19,6 @@ package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 
 import brave.Span;
 import brave.Tracing;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractSQLParserEngineAdviceTest;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.collector.ZipkinCollector;
@@ -48,7 +47,6 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
     private Span parentSpan;
     
     @Before
-    @SneakyThrows
     public void setup() {
         parentSpan = Tracing.currentTracer().newTrace().name("parent").start();
         ExecutorDataMap.getValue().put(ZipkinConstants.ROOT_SPAN, parentSpan);

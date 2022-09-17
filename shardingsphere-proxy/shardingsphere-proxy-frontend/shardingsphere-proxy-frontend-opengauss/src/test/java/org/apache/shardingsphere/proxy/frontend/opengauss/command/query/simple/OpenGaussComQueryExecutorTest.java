@@ -73,7 +73,7 @@ public final class OpenGaussComQueryExecutorTest {
         setMockFieldIntoExecutor(queryExecutor);
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setMockFieldIntoExecutor(final OpenGaussComQueryExecutor executor) {
         Field field = OpenGaussComQueryExecutor.class.getDeclaredField("proxyBackendHandler");
         field.setAccessible(true);

@@ -64,7 +64,7 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
     
     private volatile boolean publicKeyRequested;
     
-    @SneakyThrows
+    @SneakyThrows(NoSuchAlgorithmException.class)
     @Override
     public void channelRead(final ChannelHandlerContext ctx, final Object msg) {
         if (msg instanceof MySQLHandshakePacket) {

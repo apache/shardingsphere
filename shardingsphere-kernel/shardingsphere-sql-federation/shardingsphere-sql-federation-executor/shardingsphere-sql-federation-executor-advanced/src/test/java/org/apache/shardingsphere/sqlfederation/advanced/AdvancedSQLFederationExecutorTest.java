@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sqlfederation.advanced;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -90,7 +89,6 @@ public class AdvancedSQLFederationExecutorTest {
     }
     
     @Test
-    @SneakyThrows
     public void assertSelectWhereSingleField() {
         // TODO add executor.executeQuery()
     }

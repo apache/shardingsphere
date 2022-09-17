@@ -19,7 +19,6 @@ package org.apache.shardingsphere.agent.plugin.tracing.jaeger.service;
 
 import io.opentracing.noop.NoopTracerFactory;
 import io.opentracing.util.GlobalTracer;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
 import org.junit.After;
 import org.junit.Test;
@@ -48,9 +47,8 @@ public final class JaegerTracingPluginBootServiceTest {
         return result;
     }
     
-    @SneakyThrows
     @After
-    public void close() {
+    public void close() throws ReflectiveOperationException {
         jaegerTracingPluginBootService.close();
         Field field = GlobalTracer.class.getDeclaredField("tracer");
         field.setAccessible(true);

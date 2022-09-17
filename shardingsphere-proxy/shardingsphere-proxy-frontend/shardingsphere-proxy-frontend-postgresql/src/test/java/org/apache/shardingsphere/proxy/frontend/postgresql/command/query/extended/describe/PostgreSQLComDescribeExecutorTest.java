@@ -290,7 +290,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private List<PostgreSQLColumnDescription> getColumnDescriptions(final PostgreSQLRowDescriptionPacket packet) {
         Field columnDescriptionsField = PostgreSQLRowDescriptionPacket.class.getDeclaredField("columnDescriptions");
         columnDescriptionsField.setAccessible(true);

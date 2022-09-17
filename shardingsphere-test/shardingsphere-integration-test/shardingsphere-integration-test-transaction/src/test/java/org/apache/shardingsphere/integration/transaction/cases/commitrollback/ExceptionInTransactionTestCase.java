@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.integration.transaction.cases.commitrollback;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
@@ -34,8 +33,8 @@ import static org.junit.Assert.fail;
 /**
  * An exception occurred within the transaction integration test.
  */
-@Slf4j
 @TransactionTestCase
+@Slf4j
 public final class ExceptionInTransactionTestCase extends BaseTransactionTestCase {
     
     public ExceptionInTransactionTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
@@ -43,8 +42,7 @@ public final class ExceptionInTransactionTestCase extends BaseTransactionTestCas
     }
     
     @Override
-    @SneakyThrows(SQLException.class)
-    protected void executeTest() {
+    protected void executeTest() throws SQLException {
         Connection conn = null;
         try {
             conn = getDataSource().getConnection();

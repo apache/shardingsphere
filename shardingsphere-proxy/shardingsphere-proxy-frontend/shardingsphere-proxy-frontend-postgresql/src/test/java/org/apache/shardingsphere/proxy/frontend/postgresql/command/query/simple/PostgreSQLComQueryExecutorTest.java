@@ -73,7 +73,7 @@ public final class PostgreSQLComQueryExecutorTest {
         setMockFieldIntoExecutor(queryExecutor);
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setMockFieldIntoExecutor(final PostgreSQLComQueryExecutor executor) {
         Field field = PostgreSQLComQueryExecutor.class.getDeclaredField("proxyBackendHandler");
         field.setAccessible(true);

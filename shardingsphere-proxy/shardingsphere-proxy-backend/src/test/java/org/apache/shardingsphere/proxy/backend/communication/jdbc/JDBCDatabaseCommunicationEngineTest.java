@@ -296,7 +296,7 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private <T> T getField(final JDBCDatabaseCommunicationEngine target, final String fieldName) {
         Field field = JDBCDatabaseCommunicationEngine.class.getDeclaredField(fieldName);
         field.setAccessible(true);

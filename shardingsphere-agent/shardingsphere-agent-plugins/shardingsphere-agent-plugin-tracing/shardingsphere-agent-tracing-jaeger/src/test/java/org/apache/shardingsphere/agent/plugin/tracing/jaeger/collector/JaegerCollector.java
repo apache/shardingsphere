@@ -32,7 +32,7 @@ public class JaegerCollector extends ExternalResource implements CollectorRule {
     private MockTracer tracer;
     
     @Override
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     protected void before() {
         if (!GlobalTracer.isRegistered()) {
             GlobalTracer.register(new MockTracer());

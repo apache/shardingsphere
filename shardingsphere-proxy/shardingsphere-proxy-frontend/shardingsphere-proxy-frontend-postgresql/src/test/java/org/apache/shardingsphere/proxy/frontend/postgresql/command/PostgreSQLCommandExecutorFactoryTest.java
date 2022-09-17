@@ -152,7 +152,7 @@ public final class PostgreSQLCommandExecutorFactoryTest {
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private static List<CommandExecutor> getExecutorsFromAggregatedCommandExecutor(final PostgreSQLAggregatedCommandExecutor executor) {
         Field field = PostgreSQLAggregatedCommandExecutor.class.getDeclaredField("executors");
         field.setAccessible(true);
