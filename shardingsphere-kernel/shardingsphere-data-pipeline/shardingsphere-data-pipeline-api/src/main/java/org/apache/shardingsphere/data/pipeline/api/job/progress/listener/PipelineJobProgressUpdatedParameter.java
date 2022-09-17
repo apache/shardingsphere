@@ -15,17 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.converter.context;
+package org.apache.shardingsphere.data.pipeline.api.job.progress.listener;
 
 import lombok.Getter;
-
-import java.util.concurrent.atomic.AtomicInteger;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Converter context.
+ * Pipeline job process update parameter.
  */
+@RequiredArgsConstructor
 @Getter
-public final class ConverterContext {
+public final class PipelineJobProgressUpdatedParameter {
     
-    private final AtomicInteger parameterCount = new AtomicInteger();
+    private final int insertedRecordsCount;
+    
+    private final int deletedRecordsCount;
 }

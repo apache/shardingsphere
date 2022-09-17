@@ -99,6 +99,9 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | HY000     | 18084       | Target table \`%s\` is not empty |
 | 01007     | 18085       | Source data source lacks %s privilege(s) |
 | HY000     | 18086       | Source data source required \`%s = %s\`, now is \`%s\` |
+| HY000     | 18087       | User \`%s\` does exist |
+| 08000     | 18088       | Check privileges failed on source data source, reason is: %s |
+| 08000     | 18089       | Data sources can not connect, reason is: %s |
 | HY000     | 18090       | Importer job write data failed |
 | HY000     | 18091       | Can not poll event because of binlog sync channel already closed |
 | HY000     | 18092       | Task \`%s\` execute failed |

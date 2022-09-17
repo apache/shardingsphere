@@ -24,9 +24,9 @@ import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -38,7 +38,7 @@ import java.util.TreeMap;
 /**
  * Binary operation expression converter.
  */
-public final class BinaryOperationExpressionConverter implements SQLSegmentConverter<BinaryOperationExpression, SqlBasicCall> {
+public final class BinaryOperationExpressionConverter implements SQLSegmentConverter<BinaryOperationExpression, SqlNode> {
     
     private static final Map<String, SqlOperator> REGISTRY = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     
@@ -72,7 +72,7 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
     }
     
     @Override
-    public Optional<SqlBasicCall> convert(final BinaryOperationExpression segment) {
+    public Optional<SqlNode> convert(final BinaryOperationExpression segment) {
         SqlOperator operator = convertOperator(segment.getOperator());
         List<SqlNode> sqlNodes = convertSqlNodes(segment);
         return Optional.of(new SqlBasicCall(operator, sqlNodes, SqlParserPos.ZERO));

@@ -105,6 +105,7 @@ public final class SQLNodeConvertEngineParameterizedTest {
         SUPPORTED_SQL_CASE_IDS.add("select_database");
         SUPPORTED_SQL_CASE_IDS.add("select_distinct_with_count_calculation");
         SUPPORTED_SQL_CASE_IDS.add("select_count_like_escape");
+        SUPPORTED_SQL_CASE_IDS.add("select_with_projection_subquery_and_multiple_parameters");
     }
     
     private final String sqlCaseId;

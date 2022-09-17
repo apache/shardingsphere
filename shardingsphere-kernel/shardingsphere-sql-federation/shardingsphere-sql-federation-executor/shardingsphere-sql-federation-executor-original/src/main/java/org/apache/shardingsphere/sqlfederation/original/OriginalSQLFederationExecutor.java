@@ -29,13 +29,13 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
+import org.apache.shardingsphere.sqlfederation.executor.FilterableTableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.filter.FilterableDatabase;
-import org.apache.shardingsphere.sqlfederation.original.table.FilterableTableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
-import org.apache.shardingsphere.sqlfederation.table.CommonTableScanExecutorContext;
+import org.apache.shardingsphere.sqlfederation.executor.TableScanExecutorContext;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -46,10 +46,10 @@ import java.sql.Statement;
 import java.util.List;
 
 /**
- * Original federation executor.
+ * Original sql federation executor.
  */
 @RequiredArgsConstructor
-public final class OriginalFederationExecutor implements SQLFederationExecutor {
+public final class OriginalSQLFederationExecutor implements SQLFederationExecutor {
     
     public static final String CONNECTION_URL = "jdbc:calcite:";
     
@@ -111,7 +111,7 @@ public final class OriginalFederationExecutor implements SQLFederationExecutor {
     
     private void addSchema(final CalciteConnection connection, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                            final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) throws SQLException {
-        CommonTableScanExecutorContext executorContext = new CommonTableScanExecutorContext(databaseName, schemaName, props, federationContext);
+        TableScanExecutorContext executorContext = new TableScanExecutorContext(databaseName, schemaName, props, federationContext);
         FilterableTableScanExecutor executor = new FilterableTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, globalRuleMetaData, executorContext, eventBusContext);
         FilterableDatabase database = new FilterableDatabase(federationContext.getDatabases().get(databaseName.toLowerCase()), executor);
         // TODO support database.schema.table query when switch to AdvancedFederationExecutor, calcite jdbc just support schema.table query now

@@ -19,9 +19,10 @@ package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.proj
 
 import com.google.common.collect.ImmutableList;
 import org.apache.calcite.sql.SqlIdentifier;
+import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -29,14 +30,16 @@ import java.util.Optional;
 /**
  * Shorthand projection converter. 
  */
-public final class ShorthandProjectionConverter implements SQLSegmentConverter<ShorthandProjectionSegment, SqlIdentifier> {
+public final class ShorthandProjectionConverter implements SQLSegmentConverter<ShorthandProjectionSegment, SqlNode> {
     
     @Override
-    public Optional<SqlIdentifier> convert(final ShorthandProjectionSegment segment) {
+    public Optional<SqlNode> convert(final ShorthandProjectionSegment segment) {
         if (null == segment) {
             return Optional.empty();
         }
-        return segment.getOwner().map(optional -> Optional.of(SqlIdentifier.star(Arrays.asList(optional.getIdentifier().getValue(), ""),
-                SqlParserPos.ZERO, ImmutableList.of(SqlParserPos.ZERO)))).orElseGet(() -> Optional.of(SqlIdentifier.star(SqlParserPos.ZERO)));
+        if (!segment.getOwner().isPresent()) {
+            return Optional.of(SqlIdentifier.star(SqlParserPos.ZERO));
+        }
+        return Optional.of(SqlIdentifier.star(Arrays.asList(segment.getOwner().get().getIdentifier().getValue(), ""), SqlParserPos.ZERO, ImmutableList.of(SqlParserPos.ZERO)));
     }
 }

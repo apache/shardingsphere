@@ -24,10 +24,6 @@ public final class PipelineJobPrepareFailedException extends RuntimeException {
     
     private static final long serialVersionUID = 1409505606319197767L;
     
-    public PipelineJobPrepareFailedException(final String message) {
-        super(message);
-    }
-    
     public PipelineJobPrepareFailedException(final String message, final Throwable cause) {
         super(message, cause);
     }

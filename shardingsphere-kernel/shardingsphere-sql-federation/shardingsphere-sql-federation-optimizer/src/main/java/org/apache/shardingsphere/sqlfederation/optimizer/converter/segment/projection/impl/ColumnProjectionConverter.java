@@ -22,9 +22,9 @@ import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.ColumnConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -37,10 +37,10 @@ public final class ColumnProjectionConverter implements SQLSegmentConverter<Colu
     @Override
     public Optional<SqlNode> convert(final ColumnProjectionSegment segment) {
         if (segment.getAlias().isPresent()) {
-            Optional<SqlIdentifier> columnSqlIdentifier = new ColumnConverter().convert(segment.getColumn());
-            SqlIdentifier aliasSqlIdentifier = new SqlIdentifier(segment.getAlias().get(), SqlParserPos.ZERO);
-            return Optional.of(new SqlBasicCall(new SqlAsOperator(), Arrays.asList(columnSqlIdentifier.get(), aliasSqlIdentifier), SqlParserPos.ZERO));
+            Optional<SqlNode> column = new ColumnConverter().convert(segment.getColumn());
+            SqlIdentifier alias = new SqlIdentifier(segment.getAlias().get(), SqlParserPos.ZERO);
+            return column.map(optional -> new SqlBasicCall(new SqlAsOperator(), Arrays.asList(optional, alias), SqlParserPos.ZERO));
         }
-        return new ColumnConverter().convert(segment.getColumn()).map(optional -> optional);
+        return new ColumnConverter().convert(segment.getColumn());
     }
 }

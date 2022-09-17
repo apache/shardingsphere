@@ -15,25 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.table;
+package org.apache.shardingsphere.data.pipeline.core.exception.job;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+
+import java.sql.SQLException;
 
 /**
- * Translatable table scan executor context.
+ * Prepare job with check privilege failed exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class CommonTableScanExecutorContext {
+public final class PrepareJobWithCheckPrivilegeFailedException extends PipelineSQLException {
     
-    private final String databaseName;
+    private static final long serialVersionUID = -8462039913248251254L;
     
-    private final String schemaName;
-    
-    private final ConfigurationProperties props;
-    
-    private final SQLFederationExecutorContext federationContext;
+    public PrepareJobWithCheckPrivilegeFailedException(final SQLException cause) {
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 88, "Check privileges failed on source data source, reason is: %s", cause.getMessage());
+    }
 }

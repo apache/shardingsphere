@@ -15,24 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job.progress.listener;
+package org.apache.shardingsphere.sqlfederation.executor;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
 
 /**
- * Default pipeline job progress listener implementation.
+ * Translatable table scan executor context.
  */
 @RequiredArgsConstructor
-public final class DefaultPipelineJobProgressListener implements PipelineJobProgressListener {
+@Getter
+public final class TableScanExecutorContext {
     
-    private final String jobId;
+    private final String databaseName;
     
-    private final int shardingItem;
+    private final String schemaName;
     
-    @Override
-    public void onProgressUpdated() {
-        PipelineJobProgressPersistService.notifyPersist(jobId, shardingItem);
-    }
+    private final ConfigurationProperties props;
+    
+    private final SQLFederationExecutorContext federationContext;
 }

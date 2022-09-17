@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.calcite.sql.SqlBasicCall;
+import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.select.SelectStatementConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -31,17 +31,10 @@ import java.util.Optional;
 /**
  * Exists subquery expression converter.
  */
-@RequiredArgsConstructor
-public final class ExistsSubqueryExpressionConverter implements SQLSegmentConverter<ExistsSubqueryExpression, SqlBasicCall> {
-    
-    private final boolean not;
-    
-    public ExistsSubqueryExpressionConverter() {
-        not = false;
-    }
+public final class ExistsSubqueryExpressionConverter implements SQLSegmentConverter<ExistsSubqueryExpression, SqlNode> {
     
     @Override
-    public Optional<SqlBasicCall> convert(final ExistsSubqueryExpression expression) {
+    public Optional<SqlNode> convert(final ExistsSubqueryExpression expression) {
         if (null == expression) {
             return Optional.empty();
         }

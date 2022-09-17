@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.L
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.BetweenExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.BinaryOperationExpressionConverter;
@@ -44,6 +45,7 @@ import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expre
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.ParameterMarkerExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.SubqueryExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.projection.impl.AggregationProjectionConverter;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.projection.impl.DataTypeConverter;
 
 import java.util.Optional;
 
@@ -65,23 +67,25 @@ public final class ExpressionConverter implements SQLSegmentConverter<Expression
         } else if (segment instanceof ListExpression) {
             return new ListExpressionConverter().convert((ListExpression) segment);
         } else if (segment instanceof BinaryOperationExpression) {
-            return new BinaryOperationExpressionConverter().convert((BinaryOperationExpression) segment).map(optional -> optional);
+            return new BinaryOperationExpressionConverter().convert((BinaryOperationExpression) segment);
         } else if (segment instanceof ColumnSegment) {
-            return new ColumnConverter().convert((ColumnSegment) segment).map(optional -> optional);
+            return new ColumnConverter().convert((ColumnSegment) segment);
         } else if (segment instanceof ExistsSubqueryExpression) {
-            return new ExistsSubqueryExpressionConverter().convert((ExistsSubqueryExpression) segment).map(optional -> optional);
+            return new ExistsSubqueryExpressionConverter().convert((ExistsSubqueryExpression) segment);
         } else if (segment instanceof SubqueryExpressionSegment) {
             return new SubqueryExpressionConverter().convert((SubqueryExpressionSegment) segment);
         } else if (segment instanceof InExpression) {
-            return new InExpressionConverter().convert((InExpression) segment).map(optional -> optional);
+            return new InExpressionConverter().convert((InExpression) segment);
         } else if (segment instanceof BetweenExpression) {
-            return new BetweenExpressionConverter().convert((BetweenExpression) segment).map(optional -> optional);
+            return new BetweenExpressionConverter().convert((BetweenExpression) segment);
         } else if (segment instanceof ParameterMarkerExpressionSegment) {
             return new ParameterMarkerExpressionConverter().convert((ParameterMarkerExpressionSegment) segment);
         } else if (segment instanceof FunctionSegment) {
             return new FunctionConverter().convert((FunctionSegment) segment);
         } else if (segment instanceof AggregationProjectionSegment) {
-            return new AggregationProjectionConverter().convert((AggregationProjectionSegment) segment).map(optional -> optional);
+            return new AggregationProjectionConverter().convert((AggregationProjectionSegment) segment);
+        } else if (segment instanceof DataTypeSegment) {
+            return new DataTypeConverter().convert((DataTypeSegment) segment);
         }
         throw new UnsupportedSQLOperationException("unsupported TableSegment type: " + segment.getClass());
     }
