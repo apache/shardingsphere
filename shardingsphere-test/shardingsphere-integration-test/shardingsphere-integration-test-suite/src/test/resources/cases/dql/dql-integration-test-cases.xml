@@ -541,10 +541,9 @@
         <assertion parameters="10000:int" expected-data-source-name="read_dataset" />
     </test-case>-->
     
-    <!-- FIXME No match found for function signature CONCAT(<CHARACTER>, <CHARACTER>) -->
-    <!--<test-case sql="select t_order_federate.*, t_order_item_federate_sharding.* from t_order_federate,t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id" scenario-types="dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <test-case sql="select t_order_federate.*, t_order_item_federate_sharding.* from t_order_federate,t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id" scenario-types="dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
-    </test-case>-->
+    </test-case>
     
     <test-case sql="select t_order_federate.*, t_order_item_federate_sharding.* from t_order_federate, t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id AND t_order_item_federate_sharding.order_id = ?" scenario-types="dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion parameters="10001:int" expected-data-source-name="read_dataset" />
