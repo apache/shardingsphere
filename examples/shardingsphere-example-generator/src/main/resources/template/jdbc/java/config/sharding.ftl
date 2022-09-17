@@ -25,7 +25,7 @@
         props.setProperty("algorithm-expression", "${r"ds_${user_id % 2}"}");
         result.getShardingAlgorithms() .put("inline", new AlgorithmConfiguration("INLINE", props));
         result.getKeyGenerators().put("snowflake", new AlgorithmConfiguration("SNOWFLAKE", new Properties()));
-        result.getKeyGenerators().put("sharding_key_required_auditor", new AlgorithmConfiguration("DML_SHARDING_CONDITIONS", new Properties()));
+        result.getAuditors().put("sharding_key_required_auditor", new AlgorithmConfiguration("DML_SHARDING_CONDITIONS", new Properties()));
         return result;
     }
     

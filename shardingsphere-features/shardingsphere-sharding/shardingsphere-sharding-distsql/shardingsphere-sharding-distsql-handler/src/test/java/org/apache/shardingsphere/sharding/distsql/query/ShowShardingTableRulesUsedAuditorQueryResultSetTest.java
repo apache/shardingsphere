@@ -75,7 +75,7 @@ public final class ShowShardingTableRulesUsedAuditorQueryResultSetTest {
         result.getShardingAlgorithms().put("database_inline", createShardingInlineAlgorithmConfiguration("ds_${user_id % 2}"));
         result.getShardingAlgorithms().put("t_order_inline", createShardingInlineAlgorithmConfiguration("t_order_${order_id % 2}"));
         result.getShardingAlgorithms().put("auto_mod", createShardingAutoModAlgorithmConfiguration());
-        result.getAuditors().put("shardingKeyAudit", createAuditorConfiguration());
+        result.getAuditors().put("sharding_key_required_auditor", createAuditorConfiguration());
         return result;
     }
     
