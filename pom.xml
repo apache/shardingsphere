@@ -73,7 +73,7 @@
         <annotation-api.version>1.3.2</annotation-api.version>
         <activation-api.version>1.2.0</activation-api.version>
         
-        <calcite.version>1.31.0</calcite.version>
+        <calcite.version>1.32.0</calcite.version>
         <vertx.version>4.3.3</vertx.version>
         <netty.version>4.1.80.Final</netty.version>
         
