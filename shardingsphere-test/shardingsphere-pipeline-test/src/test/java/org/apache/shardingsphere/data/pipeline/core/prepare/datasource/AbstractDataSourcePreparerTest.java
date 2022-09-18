@@ -17,8 +17,13 @@
 
 package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
 
+import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.junit.Test;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.regex.Pattern;
@@ -26,6 +31,9 @@ import java.util.regex.Pattern;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public final class AbstractDataSourcePreparerTest {
     
@@ -37,6 +45,24 @@ public final class AbstractDataSourcePreparerTest {
         public void prepareTargetTables(final PrepareTargetTablesParameter parameter) {
         }
     };
+    
+    @Test
+    public void assertGetCachedDataSource() {
+        PipelineDataSourceConfiguration dataSourceConfig = mock(PipelineDataSourceConfiguration.class);
+        PipelineDataSourceManager dataSourceManager = mock(PipelineDataSourceManager.class);
+        preparer.getCachedDataSource(dataSourceConfig, dataSourceManager);
+        verify(dataSourceManager).getDataSource(dataSourceConfig);
+    }
+    
+    @Test
+    public void assertExecuteTargetTableSQL() throws SQLException {
+        Statement statement = mock(Statement.class);
+        Connection targetConnection = mock(Connection.class);
+        when(targetConnection.createStatement()).thenReturn(statement);
+        String sql = "CREATE TABLE t (id int)";
+        preparer.executeTargetTableSQL(targetConnection, sql);
+        verify(statement).execute(sql);
+    }
     
     @Test
     public void assertAddIfNotExistsForCreateTableSQL() {
