@@ -28,14 +28,17 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSource
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressUpdatedParameter;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalJobItemContext;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Migration job item context.
@@ -62,6 +65,8 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
     private final Collection<InventoryTask> inventoryTasks = new LinkedList<>();
     
     private final Collection<IncrementalTask> incrementalTasks = new LinkedList<>();
+    
+    private final AtomicLong processedRecordsCount = new AtomicLong(0);
     
     private final MigrationJobConfiguration jobConfig;
     
@@ -92,6 +97,9 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
         this.shardingItem = shardingItem;
         this.dataSourceName = taskConfig.getDataSourceName();
         this.initProgress = initProgress;
+        if (null != initProgress) {
+            processedRecordsCount.set(initProgress.getProcessedRecordsCount());
+        }
         this.jobProcessContext = jobProcessContext;
         this.taskConfig = taskConfig;
         this.dataSourceManager = dataSourceManager;
@@ -124,5 +132,17 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
      */
     public boolean isSourceTargetDatabaseTheSame() {
         return jobConfig.getSourceDatabaseType().equalsIgnoreCase(jobConfig.getTargetDatabaseType());
+    }
+    
+    @Override
+    public void onProgressUpdated(final PipelineJobProgressUpdatedParameter parameter) {
+        int needAddNumber = parameter.getInsertedRecordsCount() - parameter.getDeletedRecordsCount();
+        processedRecordsCount.addAndGet(needAddNumber);
+        PipelineJobProgressPersistService.notifyPersist(jobId, shardingItem);
+    }
+    
+    @Override
+    public long getProcessedRecordsCount() {
+        return processedRecordsCount.get();
     }
 }

@@ -24,6 +24,8 @@ public interface PipelineJobProgressListener {
     
     /**
      * Emit on progress updated.
+     *
+     * @param parameter process update parameter
      */
-    void onProgressUpdated();
+    void onProgressUpdated(PipelineJobProgressUpdatedParameter parameter);
 }

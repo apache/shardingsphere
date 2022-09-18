@@ -20,14 +20,16 @@ package org.apache.shardingsphere.data.pipeline.core.exception.job;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
+import java.sql.SQLException;
+
 /**
- * Split pipeline job exception.
+ * Prepare job with invalid connection exception.
  */
-public final class SplitPipelineJobException extends PipelineSQLException {
+public final class PrepareJobWithInvalidConnectionException extends PipelineSQLException {
     
-    private static final long serialVersionUID = -8509592086832334026L;
+    private static final long serialVersionUID = 208040912786493973L;
     
-    public SplitPipelineJobException(final String tableName, final String reason) {
-        super(XOpenSQLState.GENERAL_ERROR, 83, "Can not split range for table `%s`, reason: %s", tableName, reason);
+    public PrepareJobWithInvalidConnectionException(final SQLException cause) {
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 90, "Data sources can not connect, reason is: %s", cause.getMessage());
     }
 }

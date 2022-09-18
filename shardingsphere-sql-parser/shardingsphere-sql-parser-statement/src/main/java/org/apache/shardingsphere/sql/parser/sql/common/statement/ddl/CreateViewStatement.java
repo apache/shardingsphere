@@ -36,6 +36,8 @@ public abstract class CreateViewStatement extends AbstractSQLStatement implement
     
     private SimpleTableSegment view;
     
+    private String viewSQL;
+    
     private SelectStatement select;
     
     /**

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.check.datasource;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
-import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobPrepareFailedException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithInvalidConnectionException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithTargetTableNotEmptyException;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
@@ -46,7 +46,7 @@ public abstract class AbstractDataSourceChecker implements DataSourceChecker {
                 each.getConnection().close();
             }
         } catch (final SQLException ex) {
-            throw new PipelineJobPrepareFailedException("Data sources can not connect.", ex);
+            throw new PrepareJobWithInvalidConnectionException(ex);
         }
     }
     
@@ -57,7 +57,7 @@ public abstract class AbstractDataSourceChecker implements DataSourceChecker {
                 checkEmpty(each, tableNameSchemaNameMapping, logicTableNames);
             }
         } catch (final SQLException ex) {
-            throw new PipelineJobPrepareFailedException("Check target table failed.", ex);
+            throw new PrepareJobWithInvalidConnectionException(ex);
         }
     }
     

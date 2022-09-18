@@ -36,6 +36,7 @@ public final class OracleOptimizerBuilder implements OptimizerSQLDialectBuilder 
         result.setProperty(CalciteConnectionProperty.LEX.camelName(), Lex.ORACLE.name());
         result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), SqlConformanceEnum.ORACLE_12.name());
         result.setProperty(CalciteConnectionProperty.FUN.camelName(), SqlLibrary.ORACLE.fun);
+        result.setProperty(CalciteConnectionProperty.CASE_SENSITIVE.camelName(), String.valueOf(Lex.ORACLE.caseSensitive));
         return result;
     }
     

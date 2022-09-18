@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.integration.transaction.cases.readonly;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
@@ -41,8 +40,7 @@ public final class PostgreSQLSetReadOnlyTestCase extends SetReadOnlyTestCase {
     }
     
     @Override
-    @SneakyThrows
-    public void executeTest() {
+    public void executeTest() throws SQLException {
         assertSetReadOnly();
         assertNotSetReadOnly();
     }

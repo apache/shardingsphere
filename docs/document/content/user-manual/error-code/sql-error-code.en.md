@@ -96,13 +96,17 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | HY000     | 18081       | Job has already started |
 | HY000     | 18082       | Sharding count of job \`%s\` is 0 |
 | HY000     | 18083       | Can not split range for table \`%s\`, reason: %s |
-| HY000     | 18084       | Target table \`%s\` is not empty |
-| 01007     | 18085       | Source data source lacks %s privilege(s) |
-| HY000     | 18086       | Source data source required \`%s = %s\`, now is \`%s\` |
-| HY000     | 18087       | User \`%s\` does exist |
-| HY000     | 18090       | Importer job write data failed |
-| HY000     | 18091       | Can not poll event because of binlog sync channel already closed |
-| HY000     | 18092       | Task \`%s\` execute failed |
+| HY000     | 18084       | Can not split by unique key \`%s\` for table \`%s\`, reason is: %s |
+| HY000     | 18085       | Target table \`%s\` is not empty |
+| 01007     | 18086       | Source data source lacks %s privilege(s) |
+| HY000     | 18087       | Source data source required \`%s = %s\`, now is \`%s\` |
+| HY000     | 18088       | User \`%s\` does exist |
+| 08000     | 18089       | Check privileges failed on source data source, reason is: %s |
+| 08000     | 18090       | Data sources can not connect, reason is: %s |
+| HY000     | 18091       | Importer job write data failed |
+| 08000     | 18092       | Get binlog position failed by job \`%s\`, reason is: %s |
+| HY000     | 18093       | Can not poll event because of binlog sync channel already closed |
+| HY000     | 18094       | Task \`%s\` execute failed |
 
 ## Feature Exception
 

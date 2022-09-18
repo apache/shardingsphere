@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.CombineType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class CombineOperatorConverterTest {
     

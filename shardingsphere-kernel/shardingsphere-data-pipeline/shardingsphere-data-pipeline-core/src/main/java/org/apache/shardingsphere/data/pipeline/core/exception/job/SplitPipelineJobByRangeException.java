@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job.progress.listener;
+package org.apache.shardingsphere.data.pipeline.core.exception.job;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Default pipeline job progress listener implementation.
+ * Split pipeline job by range exception.
  */
-@RequiredArgsConstructor
-public final class DefaultPipelineJobProgressListener implements PipelineJobProgressListener {
+public final class SplitPipelineJobByRangeException extends PipelineSQLException {
     
-    private final String jobId;
+    private static final long serialVersionUID = -8509592086832334026L;
     
-    private final int shardingItem;
-    
-    @Override
-    public void onProgressUpdated() {
-        PipelineJobProgressPersistService.notifyPersist(jobId, shardingItem);
+    public SplitPipelineJobByRangeException(final String tableName, final String reason) {
+        super(XOpenSQLState.GENERAL_ERROR, 83, "Can not split by range for table `%s`, reason is: %s", tableName, reason);
     }
 }

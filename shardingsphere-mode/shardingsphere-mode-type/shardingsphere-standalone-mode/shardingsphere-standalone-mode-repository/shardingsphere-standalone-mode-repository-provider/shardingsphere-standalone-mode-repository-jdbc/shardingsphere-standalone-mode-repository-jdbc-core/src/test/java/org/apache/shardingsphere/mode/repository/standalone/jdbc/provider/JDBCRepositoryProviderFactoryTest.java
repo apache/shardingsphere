@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.repository.standalone.jdbc.provider;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.apache.shardingsphere.mode.repository.standalone.jdbc.fixture.JDBCRepositoryProviderFixture;
 import org.junit.Test;

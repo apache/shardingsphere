@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.groupby;
 
 import org.apache.calcite.sql.SqlNode;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.HavingSegment;
 
 import java.util.Optional;
 
@@ -28,8 +28,6 @@ import java.util.Optional;
  * Having converter.
  */
 public final class HavingConverter implements SQLSegmentConverter<HavingSegment, SqlNode> {
-    
-    private static final int HAVING_SEGMENT_LENGTH = 7;
     
     @Override
     public Optional<SqlNode> convert(final HavingSegment segment) {

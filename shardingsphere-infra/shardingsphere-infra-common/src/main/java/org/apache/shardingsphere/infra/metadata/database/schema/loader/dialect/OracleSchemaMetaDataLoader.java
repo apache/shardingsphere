@@ -85,7 +85,7 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
             tableMetaDataList.add(new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList()), Collections.emptyList()));
         }
         // TODO Load views from Oracle database.
-        return Collections.singletonList(new SchemaMetaData(defaultSchemaName, tableMetaDataList, Collections.emptyList()));
+        return Collections.singletonList(new SchemaMetaData(defaultSchemaName, tableMetaDataList));
     }
     
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final Connection connection, final Collection<String> tables) throws SQLException {

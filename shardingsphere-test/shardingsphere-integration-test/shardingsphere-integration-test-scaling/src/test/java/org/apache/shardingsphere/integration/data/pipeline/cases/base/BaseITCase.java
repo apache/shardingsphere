@@ -51,6 +51,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -264,7 +265,7 @@ public abstract class BaseITCase {
         getIncreaseTaskThread().start();
     }
     
-    protected void waitJobFinished(final String distSQL) throws InterruptedException {
+    protected List<Map<String, Object>> waitJobFinished(final String distSQL) throws InterruptedException {
         if (null != getIncreaseTaskThread()) {
             TimeUnit.SECONDS.timedJoin(getIncreaseTaskThread(), 60);
         }
@@ -276,12 +277,13 @@ public abstract class BaseITCase {
             assertFalse(CollectionUtils.containsAny(actualStatus, Arrays.asList(JobStatus.PREPARING_FAILURE.name(), JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name(),
                     JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name())));
             if (actualStatus.size() == 1 && actualStatus.contains(JobStatus.EXECUTE_INCREMENTAL_TASK.name())) {
-                break;
+                return listJobStatus;
             } else if (actualStatus.size() >= 1 && actualStatus.containsAll(new HashSet<>(Arrays.asList("", JobStatus.EXECUTE_INCREMENTAL_TASK.name())))) {
                 log.warn("one of the shardingItem was not started correctly");
             }
             ThreadUtil.sleep(3, TimeUnit.SECONDS);
         }
+        return Collections.emptyList();
     }
     
     protected void assertGreaterThanOrderTableInitRows(final int tableInitRows, final String schema) throws SQLException {

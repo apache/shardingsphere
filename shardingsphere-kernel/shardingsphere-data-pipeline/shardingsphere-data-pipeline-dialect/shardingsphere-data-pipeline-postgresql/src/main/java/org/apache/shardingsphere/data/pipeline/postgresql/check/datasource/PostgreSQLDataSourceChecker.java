@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.postgresql.check.datasource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.core.check.datasource.AbstractDataSourceChecker;
-import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobPrepareFailedException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithCheckPrivilegeFailedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithoutEnoughPrivilegeException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithoutUserException;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -63,7 +63,7 @@ public class PostgreSQLDataSourceChecker extends AbstractDataSourceChecker {
                         () -> new PrepareJobWithoutEnoughPrivilegeException(Collections.singleton("REPLICATION")));
             }
         } catch (final SQLException ex) {
-            throw new PipelineJobPrepareFailedException("Source data source check privileges failed.", ex);
+            throw new PrepareJobWithCheckPrivilegeFailedException(ex);
         }
     }
     

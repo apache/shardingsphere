@@ -19,7 +19,7 @@ package org.apache.shardingsphere.integration.transaction.cases.base;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.SneakyThrows;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
@@ -31,40 +31,34 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Base transaction test case.
  */
-@Slf4j
+@RequiredArgsConstructor
 @Getter(AccessLevel.PROTECTED)
+@Slf4j
 public abstract class BaseTransactionTestCase {
     
     private final BaseTransactionITCase baseTransactionITCase;
     
     private final DataSource dataSource;
     
-    public BaseTransactionTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
-        this.baseTransactionITCase = baseTransactionITCase;
-        this.dataSource = dataSource;
-    }
-    
     /**
      * Execute test cases.
+     * 
+     * @throws SQLException SQL exception
      */
-    public void execute() {
+    public void execute() throws SQLException {
         beforeTest();
         executeTest();
         afterTest();
     }
     
-    /**
-     * Integration testing method with assertions.
-     */
-    protected abstract void executeTest();
+    protected abstract void executeTest() throws SQLException;
     
-    @SneakyThrows(SQLException.class)
-    protected void beforeTest() {
+    protected void beforeTest() throws SQLException {
         Connection conn = getDataSource().getConnection();
         executeWithLog(conn, "delete from account;");
         executeWithLog(conn, "delete from t_order;");
@@ -72,48 +66,43 @@ public abstract class BaseTransactionTestCase {
         conn.close();
     }
     
-    protected void afterTest() {
+    protected void afterTest() throws SQLException {
     }
     
-    @SneakyThrows(SQLException.class)
-    protected static void executeWithLog(final Connection connection, final String sql) {
+    protected static void executeWithLog(final Connection connection, final String sql) throws SQLException {
         log.info("Connection execute: {}.", sql);
         connection.createStatement().execute(sql);
     }
     
-    @SneakyThrows(SQLException.class)
-    protected static void executeUpdateWithLog(final Connection connection, final String sql) {
+    protected static void executeUpdateWithLog(final Connection connection, final String sql) throws SQLException {
         log.info("Connection execute update: {}.", sql);
         connection.createStatement().executeUpdate(sql);
     }
     
-    @SneakyThrows(SQLException.class)
-    protected static ResultSet executeQueryWithLog(final Connection connection, final String sql) {
+    protected static ResultSet executeQueryWithLog(final Connection connection, final String sql) throws SQLException {
         log.info("Connection execute query: {}.", sql);
         return connection.createStatement().executeQuery(sql);
     }
     
-    protected static void assertAccountRowCount(final Connection conn, final int rowNum) {
+    protected static void assertAccountRowCount(final Connection conn, final int rowNum) throws SQLException {
         assertTableRowCount(conn, TransactionTestConstants.ACCOUNT, rowNum);
     }
     
-    @SneakyThrows(SQLException.class)
-    protected static void assertTableRowCount(final Connection conn, final String tableName, final int rowNum) {
+    protected static void assertTableRowCount(final Connection conn, final String tableName, final int rowNum) throws SQLException {
         Statement statement = conn.createStatement();
-        ResultSet rs = statement.executeQuery("select * from " + tableName);
+        ResultSet resultSet = statement.executeQuery("select * from " + tableName);
         int resultSetCount = 0;
-        while (rs.next()) {
+        while (resultSet.next()) {
             resultSetCount++;
         }
         statement.close();
         assertThat(String.format("Recode num assert error, expect: %s, actual: %s.", rowNum, resultSetCount), resultSetCount, is(rowNum));
     }
     
-    @SneakyThrows(SQLException.class)
-    protected void executeSqlListWithLog(final Connection conn, final String... sqlList) {
-        for (String sql : sqlList) {
-            log.info("Connection execute: {}.", sql);
-            conn.createStatement().execute(sql);
+    protected void executeSqlListWithLog(final Connection conn, final String... sqlList) throws SQLException {
+        for (String each : sqlList) {
+            log.info("Connection execute: {}.", each);
+            conn.createStatement().execute(each);
         }
     }
 }
