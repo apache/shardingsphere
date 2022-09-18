@@ -52,9 +52,9 @@ public final class ClusterModeRawJavaConfigurationExample {
     private static boolean loadConfigFromRegCenter = false;
 //    private static boolean loadConfigFromRegCenter = true;
     
-    private static String repositoryType = RepositoryType.NACOS;
-//    private static String repositoryType = RepositoryType.ZOOKEEPER;
+    private static String repositoryType = RepositoryType.ZOOKEEPER;
 //    private static String repositoryType = RepositoryType.ETCD;
+//    private static String repositoryType = RepositoryType.NACOS;
     
     public static void main(final String[] args) throws Exception {
         DataSource dataSource = getDataSource(shardingType, loadConfigFromRegCenter, repositoryType);

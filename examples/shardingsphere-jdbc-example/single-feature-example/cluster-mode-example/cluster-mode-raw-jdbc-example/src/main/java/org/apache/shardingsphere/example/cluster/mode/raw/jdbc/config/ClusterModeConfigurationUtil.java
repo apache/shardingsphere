@@ -38,10 +38,6 @@ public final class ClusterModeConfigurationUtil {
         String repositoryConnection;
         switch (repositoryType) {
             case RepositoryType.NACOS:
-                props.setProperty(NacosPropertyKey.URL.getKey(), "jdbc:mysql://localhost:3306/nacos?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8");
-                props.setProperty(NacosPropertyKey.USERNAME.getKey(), "root");
-                props.setProperty(NacosPropertyKey.PASSWORD.getKey(), "");
-                props.setProperty(NacosPropertyKey.INIT_SCHEMA.getKey(), "true");
                 repositoryConnection = NACOS_CONNECTION_STRING;
                 break;
             case RepositoryType.ZOOKEEPER:
