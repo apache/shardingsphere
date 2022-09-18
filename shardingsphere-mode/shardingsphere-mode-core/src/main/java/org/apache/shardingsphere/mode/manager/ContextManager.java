@@ -110,6 +110,20 @@ public final class ContextManager implements AutoCloseable {
         }
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), metaDataContexts.getMetaData().getProps());
         metaDataContexts.getMetaData().addDatabase(databaseName, protocolType);
+    }
+    
+    /**
+     * Add database and persist.
+     *
+     * @param databaseName database name
+     * @throws SQLException SQL exception
+     */
+    public synchronized void addDatabaseAndPersist(final String databaseName) throws SQLException {
+        if (metaDataContexts.getMetaData().containsDatabase(databaseName)) {
+            return;
+        }
+        DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), metaDataContexts.getMetaData().getProps());
+        metaDataContexts.getMetaData().addDatabase(databaseName, protocolType);
         metaDataContexts.getPersistService().getDatabaseMetaDataService().addDatabase(databaseName);
     }
     
@@ -119,6 +133,19 @@ public final class ContextManager implements AutoCloseable {
      * @param databaseName database name
      */
     public synchronized void dropDatabase(final String databaseName) {
+        if (!metaDataContexts.getMetaData().containsDatabase(databaseName)) {
+            return;
+        }
+        String actualDatabaseName = metaDataContexts.getMetaData().getActualDatabaseName(databaseName);
+        metaDataContexts.getMetaData().dropDatabase(actualDatabaseName);
+    }
+    
+    /**
+     * Drop database and persist.
+     *
+     * @param databaseName database name
+     */
+    public synchronized void dropDatabaseAndPersist(final String databaseName) {
         if (!metaDataContexts.getMetaData().containsDatabase(databaseName)) {
             return;
         }
@@ -284,7 +311,8 @@ public final class ContextManager implements AutoCloseable {
                 database.getResource().getDataSources().entrySet().stream().filter(entry -> !resource.getStaleDataSources().containsKey(entry.getKey()))
                         .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
         result.put(database.getName().toLowerCase(),
-                new ShardingSphereDatabase(database.getName(), database.getProtocolType(), new ShardingSphereResource(newDataSource), database.getRuleMetaData(), database.getSchemas()));
+                new ShardingSphereDatabase(database.getName(), database.getProtocolType(), new ShardingSphereResource(database.getName(), newDataSource),
+                        database.getRuleMetaData(), database.getSchemas()));
         return result;
     }
     

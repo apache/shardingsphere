@@ -13,4 +13,3 @@ Before committing this PR, I'm sure that I have checked the following options:
 - [x] I have triggered maven check: `mvn clean install -B -T2C -DskipTests -Dmaven.javadoc.skip=true -e`.
 - [x] I have made corresponding changes to the documentation.
 - [x] I have added corresponding unit tests for my changes.
-

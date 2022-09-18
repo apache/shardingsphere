@@ -58,7 +58,7 @@ public final class MySQLProxyTransactionIT extends BaseTransactionITCase {
     }
     
     @Test
-    public void assertTransaction() {
+    public void assertTransaction() throws SQLException {
         callTestCases(parameterized);
     }
 }

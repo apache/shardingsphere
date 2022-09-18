@@ -38,9 +38,11 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * General migration test case, includes multiple cases.
@@ -64,8 +66,8 @@ public final class MySQLMigrationGeneralIT extends AbstractMigrationITCase {
             return result;
         }
         MySQLDatabaseType databaseType = new MySQLDatabaseType();
-        for (String version : ENV.listDatabaseDockerImageNames(databaseType)) {
-            result.add(new ScalingParameterized(databaseType, version, "env/scenario/general/mysql.xml"));
+        for (String each : ENV.listStorageContainerImages(databaseType)) {
+            result.add(new ScalingParameterized(databaseType, each, "env/scenario/general/mysql.xml"));
         }
         return result;
     }
@@ -89,7 +91,7 @@ public final class MySQLMigrationGeneralIT extends AbstractMigrationITCase {
         log.info("init data end: {}", LocalDateTime.now());
         startMigrationOrderCopy(false);
         startMigrationOrderItem(false);
-        startIncrementTask(new MySQLIncrementTask(jdbcTemplate, keyGenerateAlgorithm, 20));
+        startIncrementTask(new MySQLIncrementTask(jdbcTemplate, keyGenerateAlgorithm, 30));
         String orderJobId = getJobIdByTableName("t_order_copy");
         String orderItemJobId = getJobIdByTableName("t_order_item");
         assertMigrationSuccessById(orderJobId);
@@ -105,7 +107,10 @@ public final class MySQLMigrationGeneralIT extends AbstractMigrationITCase {
     }
     
     private void assertMigrationSuccessById(final String jobId) throws SQLException, InterruptedException {
-        waitJobFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+        List<Map<String, Object>> jobStatus = waitJobFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+        for (Map<String, Object> each : jobStatus) {
+            assertTrue(Integer.parseInt(each.get("processed_records_count").toString()) > 0);
+        }
         assertCheckMigrationSuccess(jobId, "DATA_MATCH");
         stopMigrationByJobId(jobId);
     }

@@ -20,6 +20,8 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
+import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.BatchYamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
@@ -197,6 +199,8 @@ public final class ClusterContextManagerCoordinator {
                 .getRules().stream().filter(each -> each instanceof StaticDataSourceContainedRule).findFirst();
         staticDataSourceRule.ifPresent(shardingSphereRule -> ((StaticDataSourceContainedRule) shardingSphereRule)
                 .updateStatus(new StorageNodeDataSourceChangedEvent(qualifiedDatabase, event.getDataSource())));
+        DataSourceStateManager.getInstance().updateState(qualifiedDatabase.getDatabaseName(), qualifiedDatabase.getDataSourceName(),
+                DataSourceState.getDataSourceState(event.getDataSource().getStatus()));
     }
     
     /**

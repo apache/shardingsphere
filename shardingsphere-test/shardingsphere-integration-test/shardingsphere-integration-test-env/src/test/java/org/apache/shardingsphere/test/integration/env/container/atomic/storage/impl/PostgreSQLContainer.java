@@ -32,8 +32,8 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
     
     private final StorageContainerConfiguration storageContainerConfiguration;
     
-    public PostgreSQLContainer(final String dockerImageName, final String scenario, final StorageContainerConfiguration storageContainerConfiguration) {
-        super(DatabaseTypeFactory.getInstance("PostgreSQL"), Strings.isNullOrEmpty(dockerImageName) ? "postgres:12-alpine" : dockerImageName, scenario);
+    public PostgreSQLContainer(final String containerImage, final String scenario, final StorageContainerConfiguration storageContainerConfiguration) {
+        super(DatabaseTypeFactory.getInstance("PostgreSQL"), Strings.isNullOrEmpty(containerImage) ? "postgres:12-alpine" : containerImage, scenario);
         this.storageContainerConfiguration = storageContainerConfiguration;
     }
     

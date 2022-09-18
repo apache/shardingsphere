@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineReadConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
@@ -34,16 +35,14 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalProcessContext;
-import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobCreationException;
-import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobPrepareFailedException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.SplitPipelineJobByUniqueKeyException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.SplitPipelineJobByRangeException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.DefaultPipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
-import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineReadConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -84,10 +83,9 @@ public final class InventoryTaskSplitter {
     public List<InventoryTask> splitInventoryData(final InventoryIncrementalJobItemContext jobItemContext) {
         List<InventoryTask> result = new LinkedList<>();
         PipelineChannelCreator pipelineChannelCreator = jobItemContext.getJobProcessContext().getPipelineChannelCreator();
-        DefaultPipelineJobProgressListener jobProgressListener = new DefaultPipelineJobProgressListener(jobItemContext.getJobId(), jobItemContext.getShardingItem());
         for (InventoryDumperConfiguration each : splitDumperConfig(jobItemContext, dumperConfig)) {
             result.add(new InventoryTask(each, importerConfig, pipelineChannelCreator, dataSourceManager, sourceDataSource, metaDataLoader, importerExecuteEngine,
-                    jobProgressListener));
+                    jobItemContext));
         }
         return result;
     }
@@ -148,11 +146,11 @@ public final class InventoryTaskSplitter {
         int uniqueKeyDataType = dumperConfig.getUniqueKeyDataType();
         if (PipelineJdbcUtils.isIntegerColumn(uniqueKeyDataType)) {
             return getPositionByIntegerPrimaryKeyRange(jobItemContext, dataSource, dumperConfig);
-        } else if (PipelineJdbcUtils.isStringColumn(uniqueKeyDataType)) {
-            return getPositionByStringPrimaryKeyRange();
-        } else {
-            throw new PipelineJobCreationException(String.format("Can not split range for table %s, reason: primary key is not integer or string type", dumperConfig.getActualTableName()));
         }
+        if (PipelineJdbcUtils.isStringColumn(uniqueKeyDataType)) {
+            return getPositionByStringPrimaryKeyRange();
+        }
+        throw new SplitPipelineJobByRangeException(dumperConfig.getActualTableName(), "primary key is not integer or string type");
     }
     
     private Collection<IngestPosition<?>> getPositionByIntegerPrimaryKeyRange(final InventoryIncrementalJobItemContext jobItemContext, final DataSource dataSource,
@@ -189,7 +187,7 @@ public final class InventoryTaskSplitter {
                 result.add(new IntegerPrimaryKeyPosition(0, 0));
             }
         } catch (final SQLException ex) {
-            throw new PipelineJobPrepareFailedException(String.format("Split task for table %s by primary key %s error", dumperConfig.getActualTableName(), dumperConfig.getUniqueKey()), ex);
+            throw new SplitPipelineJobByUniqueKeyException(dumperConfig.getActualTableName(), dumperConfig.getUniqueKey(), ex);
         }
         return result;
     }

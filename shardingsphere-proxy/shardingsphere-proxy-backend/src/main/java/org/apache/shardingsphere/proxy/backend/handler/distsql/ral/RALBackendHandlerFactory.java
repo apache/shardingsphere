@@ -29,7 +29,6 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowAllV
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceInfoStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceListStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowModeInfoStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowSQLTranslatorRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTableMetadataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
@@ -59,7 +58,6 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.Sho
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowInstanceListHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowModeInfoHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowReadwriteSplittingReadResourcesHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowSQLTranslatorRuleHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowTableMetadataHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowVariableHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.ApplyDistSQLHandler;
@@ -105,7 +103,6 @@ public final class RALBackendHandlerFactory {
         HANDLERS.put(ShowTableMetadataStatement.class, ShowTableMetadataHandler.class);
         HANDLERS.put(ExportDatabaseConfigurationStatement.class, ExportDatabaseConfigurationHandler.class);
         HANDLERS.put(ConvertYamlConfigurationStatement.class, ConvertYamlConfigurationHandler.class);
-        HANDLERS.put(ShowSQLTranslatorRuleStatement.class, ShowSQLTranslatorRuleHandler.class);
         HANDLERS.put(ShowInstanceInfoStatement.class, ShowInstanceInfoHandler.class);
         HANDLERS.put(ShowModeInfoStatement.class, ShowModeInfoHandler.class);
     }
@@ -147,7 +144,7 @@ public final class RALBackendHandlerFactory {
     
     private static RALBackendHandler<?> createRALBackendHandler(final RALStatement sqlStatement, final ConnectionSession connectionSession) {
         Class<? extends RALBackendHandler<?>> clazz = HANDLERS.get(sqlStatement.getClass());
-        ShardingSpherePreconditions.checkState(null != clazz, new UnsupportedSQLOperationException(String.format("Unsupported SQL statement : %s", sqlStatement.getClass().getCanonicalName())));
+        ShardingSpherePreconditions.checkState(null != clazz, () -> new UnsupportedSQLOperationException(String.format("Unsupported SQL statement : %s", sqlStatement.getClass().getCanonicalName())));
         RALBackendHandler<?> result = newInstance(clazz);
         result.init(sqlStatement, connectionSession);
         return result;

@@ -27,7 +27,7 @@ import javax.annotation.Resource;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @ContextConfiguration(locations = "classpath:META-INF/spring/application-context.xml")
 public final class ShardingSphereAlgorithmSpringNamespaceTest extends AbstractJUnit4SpringContextTests {

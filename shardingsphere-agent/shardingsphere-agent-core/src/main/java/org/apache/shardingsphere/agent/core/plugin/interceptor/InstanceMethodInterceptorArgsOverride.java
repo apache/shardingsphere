@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.agent.core.plugin.interceptor;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.Morph;
@@ -52,7 +51,6 @@ public class InstanceMethodInterceptorArgsOverride {
      * @return the return value of target invocation
      */
     @RuntimeType
-    @SneakyThrows
     public Object intercept(@This final Object target, @Origin final Method method, @AllArguments final Object[] args, @Morph final OverrideArgsInvoker callable) {
         AdviceTargetObject instance = (AdviceTargetObject) target;
         MethodInvocationResult methodResult = new MethodInvocationResult();

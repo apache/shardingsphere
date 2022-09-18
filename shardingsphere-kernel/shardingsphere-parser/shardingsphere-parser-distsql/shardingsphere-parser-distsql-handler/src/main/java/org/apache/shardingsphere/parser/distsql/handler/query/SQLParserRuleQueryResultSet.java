@@ -19,6 +19,7 @@ package org.apache.shardingsphere.parser.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.distsql.query.GlobalRuleDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.distsql.parser.statement.queryable.ShowSQLParserRuleStatement;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -43,12 +44,12 @@ public final class SQLParserRuleQueryResultSet implements GlobalRuleDistSQLResul
     
     @Override
     public void init(final ShardingSphereRuleMetaData ruleMetaData, final SQLStatement sqlStatement) {
-        ruleMetaData.findSingleRule(SQLParserRule.class).ifPresent(optional -> data = buildData(optional).iterator());
+        ruleMetaData.findSingleRule(SQLParserRule.class).ifPresent(optional -> data = buildData(optional.getConfiguration()).iterator());
     }
     
-    private Collection<Collection<Object>> buildData(final SQLParserRule rule) {
-        return Collections.singleton(Arrays.asList(String.valueOf(rule.isSqlCommentParseEnabled()),
-                null != rule.getParseTreeCache() ? rule.getParseTreeCache().toString() : "", null != rule.getSqlStatementCache() ? rule.getSqlStatementCache().toString() : ""));
+    private Collection<Collection<Object>> buildData(final SQLParserRuleConfiguration ruleConfig) {
+        return Collections.singleton(Arrays.asList(String.valueOf(ruleConfig.isSqlCommentParseEnabled()), null != ruleConfig.getParseTreeCache() ? ruleConfig.getParseTreeCache().toString() : "",
+                null != ruleConfig.getSqlStatementCache() ? ruleConfig.getSqlStatementCache().toString() : ""));
     }
     
     @Override

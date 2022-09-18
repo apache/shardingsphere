@@ -52,7 +52,7 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -78,7 +78,7 @@ public final class RulesUsedResourceQueryResultSetTest {
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(
                 Arrays.asList(mockShardingRule(), mockReadwriteSplittingRule(), mockDatabaseDiscoveryRule(), mockEncryptRule(), mockShadowRule()));
         when(result.getRuleMetaData()).thenReturn(ruleMetaData);
-        ShardingSphereResource resource = new ShardingSphereResource(Collections.singletonMap("foo_ds", new MockedDataSource()));
+        ShardingSphereResource resource = new ShardingSphereResource("sharding_db", Collections.singletonMap("foo_ds", new MockedDataSource()));
         when(result.getResource()).thenReturn(resource);
         return result;
     }
@@ -181,7 +181,7 @@ public final class RulesUsedResourceQueryResultSetTest {
     private ShardingSphereDatabase mockEmptyDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
         when(result.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
-        ShardingSphereResource resource = new ShardingSphereResource(Collections.singletonMap("empty_ds", new MockedDataSource()));
+        ShardingSphereResource resource = new ShardingSphereResource("sharding_db", Collections.singletonMap("empty_ds", new MockedDataSource()));
         when(result.getResource()).thenReturn(resource);
         return result;
     }

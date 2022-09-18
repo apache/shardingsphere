@@ -20,8 +20,8 @@ package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.proj
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlSelectKeyword;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 
 import java.util.Collections;
 import java.util.Optional;

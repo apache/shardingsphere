@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -70,9 +71,10 @@ public final class SingleTableRule implements DatabaseRule, DataNodeContainedRul
     public SingleTableRule(final SingleTableRuleConfiguration ruleConfig, final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
         configuration = ruleConfig;
         defaultDataSource = ruleConfig.getDefaultDataSource().orElse(null);
-        Map<String, DataSource> aggregateDataSourceMap = getAggregateDataSourceMap(dataSourceMap, builtRules);
+        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, dataSourceMap);
+        Map<String, DataSource> aggregateDataSourceMap = getAggregateDataSourceMap(enabledDataSources, builtRules);
         dataSourceNames = aggregateDataSourceMap.keySet();
-        singleTableDataNodes = SingleTableDataNodeLoader.load(databaseName, DatabaseTypeEngine.getDatabaseType(dataSourceMap.values()), aggregateDataSourceMap, getLoadedTables(builtRules));
+        singleTableDataNodes = SingleTableDataNodeLoader.load(databaseName, DatabaseTypeEngine.getDatabaseType(enabledDataSources.values()), aggregateDataSourceMap, getLoadedTables(builtRules));
         tableNames = singleTableDataNodes.entrySet().stream().collect(Collectors.toConcurrentMap(Entry::getKey, entry -> entry.getValue().iterator().next().getTableName()));
     }
     

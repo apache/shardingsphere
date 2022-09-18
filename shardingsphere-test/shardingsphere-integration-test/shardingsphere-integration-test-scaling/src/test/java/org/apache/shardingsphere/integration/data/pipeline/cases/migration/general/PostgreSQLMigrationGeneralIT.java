@@ -40,7 +40,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * PostgreSQL general scaling test case. include openGauss type, same process.
@@ -65,11 +65,11 @@ public final class PostgreSQLMigrationGeneralIT extends AbstractMigrationITCase 
         if (ENV.getItEnvType() == ITEnvTypeEnum.NONE) {
             return result;
         }
-        for (String dockerImageName : ENV.listDatabaseDockerImageNames(new PostgreSQLDatabaseType())) {
-            result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), dockerImageName, "env/scenario/general/postgresql.xml"));
+        for (String each : ENV.listStorageContainerImages(new PostgreSQLDatabaseType())) {
+            result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), each, "env/scenario/general/postgresql.xml"));
         }
-        for (String dockerImageName : ENV.listDatabaseDockerImageNames(new OpenGaussDatabaseType())) {
-            result.add(new ScalingParameterized(new OpenGaussDatabaseType(), dockerImageName, "env/scenario/general/postgresql.xml"));
+        for (String each : ENV.listStorageContainerImages(new OpenGaussDatabaseType())) {
+            result.add(new ScalingParameterized(new OpenGaussDatabaseType(), each, "env/scenario/general/postgresql.xml"));
         }
         return result;
     }

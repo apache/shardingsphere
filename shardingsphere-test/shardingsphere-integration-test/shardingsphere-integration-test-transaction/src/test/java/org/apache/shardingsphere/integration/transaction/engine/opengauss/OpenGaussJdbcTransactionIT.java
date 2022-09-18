@@ -58,7 +58,7 @@ public final class OpenGaussJdbcTransactionIT extends BaseTransactionITCase {
     }
     
     @Test
-    public void assertTransaction() {
+    public void assertTransaction() throws SQLException {
         callTestCases(parameterized);
     }
 }

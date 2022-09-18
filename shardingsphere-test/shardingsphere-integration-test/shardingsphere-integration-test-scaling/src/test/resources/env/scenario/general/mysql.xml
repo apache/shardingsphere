@@ -47,7 +47,8 @@
         `t_set` set ('1', '2', '3') NULL,
         `t_json` json NULL COMMENT 'json test',
         PRIMARY KEY ( `order_id` ),
-        KEY `idx_user_id` (`user_id`)
+        KEY `idx_user_id` (`user_id`),
+        KEY `idx_mulit` (`t_mediumint`,`t_unsigned_mediumint`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     </create-table-order>
     

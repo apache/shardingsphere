@@ -40,7 +40,7 @@ import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.mock;
@@ -59,7 +59,7 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithmTest {
     
     @Before
     public void setUp() throws SQLException {
-        PipelineColumnMetaData uniqueKey = new PipelineColumnMetaData(1, "id", Types.INTEGER, "integer", false, true);
+        PipelineColumnMetaData uniqueKey = new PipelineColumnMetaData(1, "id", Types.INTEGER, "integer", false, true, true);
         parameter = new DataConsistencyCalculateParameter(pipelineDataSource, new TableNameSchemaNameMapping(Collections.emptyMap()),
                 "foo_tbl", Arrays.asList("foo_col", "bar_col"), "FIXTURE", "FIXTURE", uniqueKey);
         when(pipelineDataSource.getConnection()).thenReturn(connection);

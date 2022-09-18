@@ -77,7 +77,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -258,7 +258,7 @@ public final class MySQLAdminExecutorCreatorTest extends ProxyContextRestorer {
     @Test
     public void assertCreateWithOtherSelectStatementForDatabaseName() {
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
-        ShardingSphereResource resource = new ShardingSphereResource(Collections.singletonMap("ds", new MockedDataSource()));
+        ShardingSphereResource resource = new ShardingSphereResource("sharding_db", Collections.singletonMap("ds", new MockedDataSource()));
         ShardingSphereDatabase database = new ShardingSphereDatabase("db_0", mock(DatabaseType.class), resource, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
         result.put("db_0", database);
         initProxyContext(result);
@@ -275,7 +275,7 @@ public final class MySQLAdminExecutorCreatorTest extends ProxyContextRestorer {
     @Test
     public void assertCreateWithOtherSelectStatementForNullDatabaseName() {
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
-        ShardingSphereResource resource = new ShardingSphereResource(Collections.singletonMap("ds_0", new MockedDataSource()));
+        ShardingSphereResource resource = new ShardingSphereResource("sharding_db", Collections.singletonMap("ds_0", new MockedDataSource()));
         ShardingSphereDatabase database = new ShardingSphereDatabase("db_0", mock(DatabaseType.class), resource, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
         result.put("db_0", database);
         initProxyContext(result);

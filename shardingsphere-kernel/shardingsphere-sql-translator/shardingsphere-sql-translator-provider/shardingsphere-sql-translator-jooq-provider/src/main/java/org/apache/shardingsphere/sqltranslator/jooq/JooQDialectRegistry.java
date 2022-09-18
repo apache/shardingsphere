@@ -55,7 +55,7 @@ public final class JooQDialectRegistry {
      */
     public static SQLDialect getSQLDialect(final DatabaseType databaseType) throws SQLTranslationException {
         SQLDialect result = DATABASE_DIALECT_MAP.get(databaseType);
-        ShardingSpherePreconditions.checkState(null != result, new UnsupportedTranslatedDatabaseException(databaseType));
+        ShardingSpherePreconditions.checkState(null != result, () -> new UnsupportedTranslatedDatabaseException(databaseType));
         return result;
     }
 }

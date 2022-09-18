@@ -41,5 +41,5 @@ props:
   proxy-frontend-flush-threshold: 128  # The default value is 128.
   proxy-hint-enabled: true
   sql-show: true
-  sql-federation-type: ORIGINAL
+  sql-federation-type: ADVANCED
   proxy-mysql-default-version: 5.7.22 

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.agent.core.plugin.interceptor;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import net.bytebuddy.agent.builder.AgentBuilder;
@@ -46,7 +45,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
@@ -92,8 +91,7 @@ public final class InstanceMethodAroundInterceptorTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertInterceptedMethod() {
+    public void assertInterceptedMethod() throws ReflectiveOperationException {
         InstanceMaterial material = new ByteBuddy()
                 .subclass(InstanceMaterial.class)
                 .method(ElementMatchers.named(methodName))

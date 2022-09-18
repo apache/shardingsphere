@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.integration.transaction.cases.commitrollback;
 
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
@@ -30,7 +29,6 @@ import java.sql.SQLException;
 /**
  * Broadcast table transaction integration test.
  */
-@Slf4j
 @TransactionTestCase
 public final class BroadcastTableTransactionTestCase extends BaseTransactionTestCase {
     
@@ -41,15 +39,13 @@ public final class BroadcastTableTransactionTestCase extends BaseTransactionTest
     }
     
     @Override
-    @SneakyThrows(SQLException.class)
-    protected void beforeTest() {
+    protected void beforeTest() throws SQLException {
         super.beforeTest();
         init();
     }
     
     @Override
-    @SneakyThrows(SQLException.class)
-    protected void afterTest() {
+    protected void afterTest() throws SQLException {
         super.afterTest();
         init();
     }

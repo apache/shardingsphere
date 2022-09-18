@@ -53,7 +53,7 @@ public final class TestCaseClassScanner {
      *
      * @return transaction test case classes
      */
-    @SneakyThrows
+    @SneakyThrows({IOException.class, ClassNotFoundException.class})
     public static List<Class<? extends BaseTransactionTestCase>> scan() {
         final Enumeration<URL> urls = Thread.currentThread().getContextClassLoader().getResources(TEST_CASE_PACKAGE_NAME.replace(".", File.separator));
         return scanURL(urls);

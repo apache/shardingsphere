@@ -69,7 +69,7 @@ public final class RULBackendHandlerFactory {
     
     private static RULBackendHandler<?> createRULBackendHandler(final RULStatement sqlStatement, final ConnectionSession connectionSession) {
         Class<? extends RULBackendHandler<?>> clazz = HANDLERS.get(sqlStatement.getClass());
-        ShardingSpherePreconditions.checkState(null != clazz, new UnsupportedSQLOperationException(String.format("Unsupported SQL statement : %s", sqlStatement.getClass().getCanonicalName())));
+        ShardingSpherePreconditions.checkState(null != clazz, () -> new UnsupportedSQLOperationException(String.format("Unsupported SQL statement : %s", sqlStatement.getClass().getCanonicalName())));
         RULBackendHandler<?> result = newInstance(clazz);
         result.init(sqlStatement, connectionSession);
         return result;

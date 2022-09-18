@@ -611,7 +611,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
      */
     public Comparable<?> generateKey(final String logicTableName) {
         Optional<TableRule> tableRule = findTableRule(logicTableName);
-        ShardingSpherePreconditions.checkState(tableRule.isPresent(), new GenerateKeyStrategyNotFoundException(logicTableName));
+        ShardingSpherePreconditions.checkState(tableRule.isPresent(), () -> new GenerateKeyStrategyNotFoundException(logicTableName));
         KeyGenerateAlgorithm keyGenerator = null != tableRule.get().getKeyGeneratorName() ? keyGenerators.get(tableRule.get().getKeyGeneratorName()) : defaultKeyGenerateAlgorithm;
         return keyGenerator.generateKey();
     }

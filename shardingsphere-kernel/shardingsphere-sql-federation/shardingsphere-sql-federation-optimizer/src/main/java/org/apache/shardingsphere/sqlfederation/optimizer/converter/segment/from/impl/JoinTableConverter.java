@@ -24,12 +24,12 @@ import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.ColumnConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.from.TableConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -38,10 +38,10 @@ import java.util.Optional;
 /**
  * Join converter.
  */
-public final class JoinTableConverter implements SQLSegmentConverter<JoinTableSegment, SqlJoin> {
+public final class JoinTableConverter implements SQLSegmentConverter<JoinTableSegment, SqlNode> {
     
     @Override
-    public Optional<SqlJoin> convert(final JoinTableSegment segment) {
+    public Optional<SqlNode> convert(final JoinTableSegment segment) {
         SqlNode left = new TableConverter().convert(segment.getLeft()).orElseThrow(IllegalStateException::new);
         SqlNode right = new TableConverter().convert(segment.getRight()).orElseThrow(IllegalStateException::new);
         Optional<SqlNode> condition = convertJoinCondition(segment);

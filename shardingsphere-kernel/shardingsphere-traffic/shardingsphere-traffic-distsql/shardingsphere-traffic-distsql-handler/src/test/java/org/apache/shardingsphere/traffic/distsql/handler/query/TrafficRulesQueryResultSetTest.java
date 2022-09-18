@@ -33,7 +33,7 @@ import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -42,7 +42,7 @@ public final class TrafficRulesQueryResultSetTest {
     
     @Test
     public void assertExecute() {
-        ShardingSphereRuleMetaData ruleMetaData = mockRuleMetaData();
+        ShardingSphereRuleMetaData ruleMetaData = mockGlobalRuleMetaData();
         GlobalRuleDistSQLResultSet resultSet = new TrafficRulesQueryResultSet();
         resultSet.init(ruleMetaData, mock(ShowTrafficRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
@@ -55,7 +55,7 @@ public final class TrafficRulesQueryResultSetTest {
         assertTrue(actual.contains(""));
     }
     
-    private ShardingSphereRuleMetaData mockRuleMetaData() {
+    private ShardingSphereRuleMetaData mockGlobalRuleMetaData() {
         TrafficRule trafficRule = mock(TrafficRule.class);
         when(trafficRule.getConfiguration()).thenReturn(createTrafficRuleConfiguration());
         ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class);

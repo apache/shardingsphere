@@ -26,9 +26,6 @@ import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContextFactory;
-import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.TranslatableSchema;
-import org.apache.shardingsphere.sqlfederation.optimizer.planner.QueryOptimizePlannerFactory;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
@@ -36,6 +33,9 @@ import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContextFactory;
+import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.TranslatableSchema;
+import org.apache.shardingsphere.sqlfederation.optimizer.planner.QueryOptimizePlannerFactory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,9 +44,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class ShardingSphereOptimizerTest {
     
@@ -116,12 +117,12 @@ public final class ShardingSphereOptimizerTest {
         return new ShardingSphereTable("t_user_info", Arrays.asList(userIdColumn, informationColumn), Collections.emptyList(), Collections.emptyList());
     }
     
-    private static SqlToRelConverter createSqlToRelConverter(final ShardingSphereSchema schema) {
-        CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(OptimizerPlannerContextFactory.createConnectionProperties());
+    private SqlToRelConverter createSqlToRelConverter(final ShardingSphereSchema schema) {
+        CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(new Properties());
         RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
         TranslatableSchema federationSchema = new TranslatableSchema(SCHEMA_NAME, schema, null);
         CalciteCatalogReader catalogReader = OptimizerPlannerContextFactory.createCatalogReader(SCHEMA_NAME, federationSchema, relDataTypeFactory, connectionConfig);
-        SqlValidator validator = OptimizerPlannerContextFactory.createValidator(catalogReader, relDataTypeFactory, connectionConfig);
+        SqlValidator validator = OptimizerPlannerContextFactory.createValidator(catalogReader, relDataTypeFactory, new H2DatabaseType(), connectionConfig);
         return OptimizerPlannerContextFactory.createConverter(catalogReader, validator, relDataTypeFactory);
     }
     
@@ -135,7 +136,7 @@ public final class ShardingSphereOptimizerTest {
                 + "    EnumerableCalc(expr#0..1=[{inputs}], expr#2=[CAST($t1):VARCHAR], proj#0..2=[{exprs}])" + LINE_SEPARATOR
                 + "      TranslatableTableScan(table=[[federate_jdbc, t_order_federate]], fields=[[0, 1]])" + LINE_SEPARATOR
                 + "    EnumerableCalc(expr#0=[{inputs}], expr#1=[CAST($t0):VARCHAR], proj#0..1=[{exprs}])" + LINE_SEPARATOR
-                + "      TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0]], filters=[[13, null]])" + LINE_SEPARATOR;
+                + "      TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0]], filters=[[=(CAST($0):INTEGER, 13), null]])" + LINE_SEPARATOR;
         assertThat(actual, is(expected));
     }
     
@@ -144,7 +145,7 @@ public final class ShardingSphereOptimizerTest {
         ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_WHERE_ALL_FIELDS, false);
         String actual = optimizer.optimize(sqlStatement).explain();
-        String expected = "TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0, 1]], filters=[[12, null]])" + LINE_SEPARATOR;
+        String expected = "TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0, 1]], filters=[[=(CAST($0):INTEGER, 12), null]])" + LINE_SEPARATOR;
         assertThat(actual, is(expected));
     }
     
@@ -153,7 +154,7 @@ public final class ShardingSphereOptimizerTest {
         ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_WHERE_SINGLE_FIELD, false);
         String actual = optimizer.optimize(sqlStatement).explain();
-        String expected = "TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0]], filters=[[12]])" + LINE_SEPARATOR;
+        String expected = "TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0]], filters=[[=(CAST($0):INTEGER, 12)]])" + LINE_SEPARATOR;
         assertThat(actual, is(expected));
     }
     
@@ -195,7 +196,7 @@ public final class ShardingSphereOptimizerTest {
                 + "    EnumerableCalc(expr#0..1=[{inputs}], expr#2=[CAST($t1):VARCHAR], proj#0..2=[{exprs}])" + LINE_SEPARATOR
                 + "      TranslatableTableScan(table=[[federate_jdbc, t_order_federate]], fields=[[0, 1]])" + LINE_SEPARATOR
                 + "    EnumerableCalc(expr#0=[{inputs}], expr#1=[CAST($t0):VARCHAR], proj#0..1=[{exprs}])" + LINE_SEPARATOR
-                + "      TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0]], filters=[[13, null]])" + LINE_SEPARATOR;
+                + "      TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0]], filters=[[=(CAST($0):INTEGER, 13), null]])" + LINE_SEPARATOR;
         assertThat(actual, is(expected));
     }
     
@@ -204,7 +205,7 @@ public final class ShardingSphereOptimizerTest {
         ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_SUBQUERY_FROM, false);
         String actual = optimizer.optimize(sqlStatement).explain();
-        String expected = "TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0, 1]], filters=[[null, null]])" + LINE_SEPARATOR;
+        String expected = "TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0, 1]], filters=[[>(CAST($0):INTEGER, 1), null]])" + LINE_SEPARATOR;
         assertThat(actual, is(expected));
     }
     
@@ -218,7 +219,7 @@ public final class ShardingSphereOptimizerTest {
                 + "    TranslatableTableScan(table=[[federate_jdbc, t_order_federate]], fields=[[0, 1, 2]])" + LINE_SEPARATOR
                 + "    EnumerableAggregate(group=[{}], agg#0=[MIN($0)])" + LINE_SEPARATOR
                 + "      EnumerableCalc(expr#0..1=[{inputs}], expr#2=[true], $f0=[$t2])" + LINE_SEPARATOR
-                + "        TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0, 1]], filters=[[null, null]])" + LINE_SEPARATOR;
+                + "        TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0, 1]], filters=[[=(CAST($cor0.user_id):VARCHAR, CAST($0):VARCHAR), null]])" + LINE_SEPARATOR;
         assertThat(actual, is(expected));
     }
     
@@ -246,9 +247,9 @@ public final class ShardingSphereOptimizerTest {
                 + "      EnumerableNestedLoopJoin(condition=[>=($1, $2)], joinType=[inner])" + LINE_SEPARATOR
                 + "        TranslatableTableScan(table=[[federate_jdbc, t_order_federate]], fields=[[0, 1]])" + LINE_SEPARATOR
                 + "        EnumerableAggregate(group=[{}], agg#0=[SINGLE_VALUE($0)])" + LINE_SEPARATOR
-                + "          TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0]], filters=[[1]])" + LINE_SEPARATOR
+                + "          TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0]], filters=[[=(CAST($0):INTEGER, 1)]])" + LINE_SEPARATOR
                 + "    EnumerableAggregate(group=[{}], agg#0=[SINGLE_VALUE($0)])" + LINE_SEPARATOR
-                + "      TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0]], filters=[[3]])" + LINE_SEPARATOR;
+                + "      TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0]], filters=[[=(CAST($0):INTEGER, 3)]])" + LINE_SEPARATOR;
         assertThat(actual, is(expected));
     }
     
@@ -260,7 +261,7 @@ public final class ShardingSphereOptimizerTest {
         String expected = "EnumerableUnion(all=[false])" + LINE_SEPARATOR
                 + "  TranslatableTableScan(table=[[federate_jdbc, t_order_federate]], fields=[[0, 1]])" + LINE_SEPARATOR
                 + "  EnumerableCalc(expr#0=[{inputs}], expr#1=['1':VARCHAR], EXPR$0=[$t1], user_id=[$t0])" + LINE_SEPARATOR
-                + "    TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0]], filters=[[null, before]])" + LINE_SEPARATOR;
+                + "    TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0]], filters=[[=(CAST($1):VARCHAR, 'before'), null]])" + LINE_SEPARATOR;
         assertThat(actual, is(expected));
     }
 }

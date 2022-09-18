@@ -66,7 +66,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @Slf4j
@@ -155,7 +155,7 @@ public final class MigrationJobAPIImplTest {
     @Test
     public void assertDataConsistencyCheck() throws NoSuchFieldException, IllegalAccessException {
         MigrationJobConfiguration jobConfiguration = JobConfigurationBuilder.createJobConfiguration();
-        ReflectionUtil.setFieldValue(jobConfiguration, "uniqueKeyColumn", new PipelineColumnMetaData(1, "order_id", 4, "", false, true));
+        ReflectionUtil.setFieldValue(jobConfiguration, "uniqueKeyColumn", new PipelineColumnMetaData(1, "order_id", 4, "", false, true, true));
         Optional<String> jobId = jobAPI.start(jobConfiguration);
         assertTrue(jobId.isPresent());
         MigrationJobConfiguration jobConfig = jobAPI.getJobConfiguration(jobId.get());

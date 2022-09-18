@@ -54,7 +54,7 @@ public final class PostgresColumnPropertiesAppender extends AbstractPostgresDDLA
      * 
      * @param context create table sql context
      */
-    @SneakyThrows
+    @SneakyThrows(SQLException.class)
     public void append(final Map<String, Object> context) {
         Collection<Map<String, Object>> typeAndInheritedColumns = getTypeAndInheritedColumns(context);
         Collection<Map<String, Object>> allColumns = executeByTemplate(context, "component/columns/%s/properties.ftl");
@@ -74,7 +74,7 @@ public final class PostgresColumnPropertiesAppender extends AbstractPostgresDDLA
         context.put("columns", allColumns);
     }
     
-    private Collection<Map<String, Object>> getTypeAndInheritedColumns(final Map<String, Object> context) {
+    private Collection<Map<String, Object>> getTypeAndInheritedColumns(final Map<String, Object> context) throws SQLException {
         if (null != context.get("typoid")) {
             return getColumnFromType(context);
         }
@@ -117,8 +117,7 @@ public final class PostgresColumnPropertiesAppender extends AbstractPostgresDDLA
         return result;
     }
     
-    @SneakyThrows
-    private Collection<String> convertPgArrayToList(final Object array) {
+    private Collection<String> convertPgArrayToList(final Object array) throws SQLException {
         return Arrays.stream((String[]) ((Array) array).getArray()).collect(Collectors.toList());
     }
     

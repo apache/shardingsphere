@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,17 +34,10 @@ import java.util.Optional;
 /**
  * Between expression converter.
  */
-@RequiredArgsConstructor
-public final class BetweenExpressionConverter implements SQLSegmentConverter<BetweenExpression, SqlBasicCall> {
-    
-    private final boolean not;
-    
-    public BetweenExpressionConverter() {
-        not = false;
-    }
+public final class BetweenExpressionConverter implements SQLSegmentConverter<BetweenExpression, SqlNode> {
     
     @Override
-    public Optional<SqlBasicCall> convert(final BetweenExpression expression) {
+    public Optional<SqlNode> convert(final BetweenExpression expression) {
         if (null == expression) {
             return Optional.empty();
         }
