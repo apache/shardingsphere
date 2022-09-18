@@ -65,7 +65,7 @@
         <commons-codec.version>1.15</commons-codec.version>
         
         <antlr4.version>4.9.2</antlr4.version>
-        <snakeyaml.version>1.30</snakeyaml.version>
+        <snakeyaml.version>1.32</snakeyaml.version>
         <gson.version>2.9.1</gson.version>
         <groovy.version>4.0.3</groovy.version>
         
