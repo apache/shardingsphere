@@ -121,8 +121,4 @@
     <test-case sql="SHOW DB_DISCOVERY HEARTBEATS" scenario-types="sharding_governance">
         <assertion expected-data-file="show_discovery_heartbeats.xml" />
     </test-case>
-    
-    <test-case sql="COUNT DATABASE RULES" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
-        <assertion expected-data-file="count_database_rules.xml" />
-    </test-case>
 </integration-test-cases>
