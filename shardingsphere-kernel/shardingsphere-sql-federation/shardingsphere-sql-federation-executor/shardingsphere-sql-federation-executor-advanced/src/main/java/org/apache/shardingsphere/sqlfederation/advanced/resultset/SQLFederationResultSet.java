@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sqlfederation.advanced.resultset;
 
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.linq4j.Enumerator;
+import org.apache.calcite.rel.type.RelDataTypeField;
 import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -72,10 +73,11 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     
     private boolean closed;
     
-    public SQLFederationResultSet(final Enumerator<Object> enumerator, final ShardingSphereSchema schema, final AbstractSchema filterableSchema, final SQLStatementContext<?> sqlStatementContext) {
+    public SQLFederationResultSet(final Enumerator<Object> enumerator, final ShardingSphereSchema schema, final AbstractSchema filterableSchema,
+                                  final SQLStatementContext<?> sqlStatementContext, final List<RelDataTypeField> fields) {
         this.enumerator = enumerator;
         columnLabelAndIndexMap = createColumnLabelAndIndexMap(sqlStatementContext);
-        resultSetMetaData = new SQLFederationResultSetMetaData(schema, filterableSchema, new JavaTypeFactoryImpl(), (SelectStatementContext) sqlStatementContext);
+        resultSetMetaData = new SQLFederationResultSetMetaData(schema, filterableSchema, new JavaTypeFactoryImpl(), (SelectStatementContext) sqlStatementContext, fields);
     }
     
     private Map<String, Integer> createColumnLabelAndIndexMap(final SQLStatementContext<?> sqlStatementContext) {
@@ -229,7 +231,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     
     @Override
     public Date getDate(final int columnIndex, final Calendar cal) throws SQLException {
-        return (Date) ResultSetUtil.convertValue(getCalendarValue(columnIndex, Date.class, cal), Date.class);
+        return (Date) ResultSetUtil.convertValue(getCalendarValue(columnIndex), Date.class);
     }
     
     @Override
@@ -249,7 +251,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     
     @Override
     public Time getTime(final int columnIndex, final Calendar cal) throws SQLException {
-        return (Time) ResultSetUtil.convertValue(getCalendarValue(columnIndex, Time.class, cal), Time.class);
+        return (Time) ResultSetUtil.convertValue(getCalendarValue(columnIndex), Time.class);
     }
     
     @Override
@@ -269,7 +271,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     
     @Override
     public Timestamp getTimestamp(final int columnIndex, final Calendar cal) throws SQLException {
-        return (Timestamp) ResultSetUtil.convertValue(getCalendarValue(columnIndex, Timestamp.class, cal), Timestamp.class);
+        return (Timestamp) ResultSetUtil.convertValue(getCalendarValue(columnIndex), Timestamp.class);
     }
     
     @Override
@@ -459,7 +461,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
         return result;
     }
     
-    private Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
+    private Object getCalendarValue(final int columnIndex) {
         // TODO implement with calendar
         Object result = currentRows[columnIndex - 1];
         wasNull = null == result;

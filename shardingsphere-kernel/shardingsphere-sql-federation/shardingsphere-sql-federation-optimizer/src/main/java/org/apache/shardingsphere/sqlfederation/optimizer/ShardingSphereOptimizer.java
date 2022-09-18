@@ -21,10 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
 import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.rel.RelNode;
-import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.SQLNodeConverterEngine;
 
 /**
  * ShardingSphere optimizer.
@@ -39,12 +36,10 @@ public final class ShardingSphereOptimizer {
     /**
      * Optimize query execution plan.
      * 
-     * @param sqlStatement SQL statement
+     * @param logicPlan logic plan
      * @return optimized relational node
      */
-    public RelNode optimize(final SQLStatement sqlStatement) {
-        SqlNode sqlNode = SQLNodeConverterEngine.convert(sqlStatement);
-        RelNode logicPlan = converter.convertQuery(sqlNode, true, true).rel;
+    public RelNode optimize(final RelNode logicPlan) {
         RelNode ruleBasedPlan = optimizeWithRBO(logicPlan, hepPlanner);
         return optimizeWithCBO(ruleBasedPlan, converter);
     }

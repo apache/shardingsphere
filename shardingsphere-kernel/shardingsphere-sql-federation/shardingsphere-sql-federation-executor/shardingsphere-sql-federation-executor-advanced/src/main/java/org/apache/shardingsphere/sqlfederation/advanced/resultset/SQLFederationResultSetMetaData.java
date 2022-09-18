@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sqlfederation.advanced.resultset;
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
+import org.apache.calcite.rel.type.RelDataTypeField;
 import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.calcite.sql.type.SqlTypeName;
@@ -27,12 +28,11 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.Projecti
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 
 import java.sql.ResultSetMetaData;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -49,6 +49,8 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     private final RelDataTypeFactory relDataTypeFactory;
     
     private final SelectStatementContext selectStatementContext;
+    
+    private final List<RelDataTypeField> fields;
     
     @Override
     public int getColumnCount() {
@@ -135,12 +137,7 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     @Override
     public int getColumnType(final int column) {
-        Projection projection = selectStatementContext.getProjectionsContext().getExpandProjections().get(column - 1);
-        if (projection instanceof ColumnProjection) {
-            Optional<ShardingSphereTable> table = findTableName(column).flatMap(optional -> Optional.ofNullable(schema.getTable(optional)));
-            return table.flatMap(optional -> Optional.ofNullable(optional.getColumns().get(((ColumnProjection) projection).getName()))).map(ShardingSphereColumn::getDataType).orElse(0);
-        }
-        return 0;
+        return fields.get(column - 1).getType().getSqlTypeName().getJdbcOrdinal();
     }
     
     @Override

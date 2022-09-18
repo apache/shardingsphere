@@ -27,9 +27,12 @@ import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.prepare.CalciteCatalogReader;
 import org.apache.calcite.rel.RelNode;
+import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
+import org.apache.calcite.rel.type.RelDataTypeField;
 import org.apache.calcite.runtime.Bindable;
 import org.apache.calcite.schema.impl.AbstractSchema;
+import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -54,6 +57,7 @@ import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContex
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.OptimizerParserContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContextFactory;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.SQLNodeConverterEngine;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.filter.FilterableSchema;
 import org.apache.shardingsphere.sqlfederation.optimizer.planner.QueryOptimizePlannerFactory;
@@ -89,6 +93,8 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
     
     private ResultSet resultSet;
     
+    private List<RelDataTypeField> fields;
+    
     @Override
     public void init(final String databaseName, final String schemaName, final ShardingSphereMetaData metaData, final JDBCExecutor jdbcExecutor, final EventBusContext eventBusContext) {
         this.databaseName = databaseName;
@@ -109,7 +115,7 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
         AbstractSchema sqlFederationSchema = createSQLFederationSchema(prepareEngine, schema, callback, federationContext);
         Map<String, Object> parameters = createParameters(federationContext.getQueryContext().getParameters());
         Enumerator<Object> enumerator = execute(sqlStatementContext.getSqlStatement(), sqlFederationSchema, parameters).enumerator();
-        resultSet = new SQLFederationResultSet(enumerator, schema, sqlFederationSchema, sqlStatementContext);
+        resultSet = new SQLFederationResultSet(enumerator, schema, sqlFederationSchema, sqlStatementContext, fields);
         return resultSet;
     }
     
@@ -139,8 +145,13 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
         CalciteCatalogReader catalogReader = OptimizerPlannerContextFactory.createCatalogReader(schemaName, sqlFederationSchema, relDataTypeFactory, connectionConfig);
         SqlValidator validator = OptimizerPlannerContextFactory.createValidator(catalogReader, relDataTypeFactory, parserContext.getDatabaseType(), connectionConfig);
         SqlToRelConverter converter = OptimizerPlannerContextFactory.createConverter(catalogReader, validator, relDataTypeFactory);
+        SqlNode sqlNode = SQLNodeConverterEngine.convert(sqlStatement);
+        RelNode logicPlan = converter.convertQuery(sqlNode, true, true).rel;
+        RelDataType validatedNodeType = validator.getValidatedNodeType(sqlNode);
+        fields = validatedNodeType.getFieldList();
+        // TODO get dataType and dataType name from —— validatedNodeType.getFieldList().get(0).getType().getSqlTypeName().getJdbcOrdinal()
         RelNode bestPlan =
-                new ShardingSphereOptimizer(converter, QueryOptimizePlannerFactory.createHepPlanner()).optimize(sqlStatement);
+                new ShardingSphereOptimizer(converter, QueryOptimizePlannerFactory.createHepPlanner()).optimize(logicPlan);
         Bindable<Object> executablePlan = EnumerableInterpretable.toBindable(Collections.emptyMap(), null, (EnumerableRel) bestPlan, EnumerableRel.Prefer.ARRAY);
         return executablePlan.bind(new SQLFederationDataContext(validator, converter, parameters));
     }
