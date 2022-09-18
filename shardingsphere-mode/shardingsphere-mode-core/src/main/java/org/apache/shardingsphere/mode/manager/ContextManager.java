@@ -540,9 +540,9 @@ public final class ContextManager implements AutoCloseable {
         GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(database.getProtocolType(), database.getResource().getDatabaseType(),
                 Collections.singletonMap(dataSourceName, database.getResource().getDataSources().get(dataSourceName)),
                 database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps(), schemaName);
-        ShardingSphereSchema schema = GenericSchemaBuilder.build(materials).get(schemaName);
-        schema.getViews().putAll(metaDataContexts.getPersistService().getDatabaseMetaDataService().getViewMetaDataPersistService().load(database.getName(), schemaName));
-        return schema;
+        ShardingSphereSchema result = GenericSchemaBuilder.build(materials).get(schemaName);
+        result.getViews().putAll(metaDataContexts.getPersistService().getDatabaseMetaDataService().getViewMetaDataPersistService().load(database.getName(), schemaName));
+        return result;
     }
     
     /**
