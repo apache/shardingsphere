@@ -5,6 +5,12 @@ weight = 8
 
 ## Background
 
+## Parameters
+
+### DML_SHARDING_CONDITIONS algorithm
+
+Type: DML_SHARDING_CONDITIONS
+
 ## Procedure
 
 1. when configuring data sharding rules, create sharding audit configurations.
