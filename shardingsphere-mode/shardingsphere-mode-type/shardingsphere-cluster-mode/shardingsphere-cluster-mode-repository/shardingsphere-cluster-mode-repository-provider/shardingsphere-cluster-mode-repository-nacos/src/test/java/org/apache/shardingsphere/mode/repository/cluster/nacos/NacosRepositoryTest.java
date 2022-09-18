@@ -52,8 +52,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -79,10 +77,7 @@ public class NacosRepositoryTest {
         MemberAccessor accessor = Plugins.getMemberAccessor();
         accessor.set(REPOSITORY.getClass().getDeclaredField("nacosProps"), REPOSITORY, new NacosProperties(new Properties()));
         accessor.set(REPOSITORY.getClass().getDeclaredField("client"), REPOSITORY, client);
-        accessor.set(REPOSITORY.getClass().getDeclaredField("isDuplicated"), REPOSITORY, new AtomicBoolean(false));
-        RegisterMetadata.PERSISTENT.setPort(new AtomicInteger(Integer.MIN_VALUE));
-        RegisterMetadata.EPHEMERAL.setPort(new AtomicInteger(Integer.MIN_VALUE));
-
+        accessor.invoke(REPOSITORY.getClass().getDeclaredMethod("initRegisterMetadata"), REPOSITORY);
     }
     
     @Test
@@ -101,7 +96,6 @@ public class NacosRepositoryTest {
         }
         when(client.getAllInstances(RegisterMetadata.PERSISTENT.name(), false)).thenReturn(instances);
         String value = REPOSITORY.get(key);
-        verify(client).getAllInstances(RegisterMetadata.PERSISTENT.name(), false);
         assertThat(value, is("value2"));
     }
     
@@ -343,36 +337,6 @@ public class NacosRepositoryTest {
     public void assertPersistNotAvailable() {
         try {
             REPOSITORY.persist("/test/children/keys/persistent/1", "value4");
-        } catch (ClusterPersistRepositoryException cause) {
-            throw cause.getCause();
-        }
-    }
-    
-    @Test(expected = IllegalStateException.class)
-    @SneakyThrows
-    public void assertDuplicateClusterIp() {
-        Instance instance = new Instance();
-        instance.setIp(NacosPropertyKey.CLUSTER_IP.getDefaultValue());
-        Map<String, String> metadataMap = new HashMap<>();
-        metadataMap.put(MetadataUtil.UUID_NAME, UUID.randomUUID().toString());
-        instance.setMetadata(metadataMap);
-        List<Instance> instances = new LinkedList<>();
-        instances.add(instance);
-        NamingEvent event = new NamingEvent(NacosPropertyKey.CLUSTER_IP.name(), instances);
-        doAnswer(AdditionalAnswers.answerVoid((VoidAnswer2<String, EventListener>) (serviceName, listener) -> listener.onEvent(event)))
-                .when(client).subscribe(anyString(), any(EventListener.class));
-        MemberAccessor accessor = Plugins.getMemberAccessor();
-        accessor.set(REPOSITORY.getClass().getDeclaredField("isDuplicated"), REPOSITORY, null);
-        accessor.invoke(REPOSITORY.getClass().getDeclaredMethod("initRegisterMetadata"), REPOSITORY);
-        instance = new Instance();
-        instance.setIp(NacosPropertyKey.CLUSTER_IP.getDefaultValue());
-        metadataMap = new HashMap<>();
-        metadataMap.put(MetadataUtil.UUID_NAME, UUID.randomUUID().toString());
-        instance.setMetadata(metadataMap);
-        instances = new LinkedList<>();
-        instances.add(instance);
-        try {
-            REPOSITORY.persist("/key", "value");
         } catch (ClusterPersistRepositoryException cause) {
             throw cause.getCause();
         }

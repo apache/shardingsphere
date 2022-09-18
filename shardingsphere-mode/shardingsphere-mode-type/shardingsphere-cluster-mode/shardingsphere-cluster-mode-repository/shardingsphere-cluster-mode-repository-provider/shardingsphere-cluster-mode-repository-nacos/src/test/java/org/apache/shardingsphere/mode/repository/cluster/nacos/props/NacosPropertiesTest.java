@@ -33,7 +33,6 @@ public class NacosPropertiesTest {
         assertThat(actual.getValue(NacosPropertyKey.CLUSTER_IP), is("127.0.0.1"));
         assertThat(actual.getValue(NacosPropertyKey.RETRY_INTERVAL_MILLISECONDS), is(1000L));
         assertThat(actual.getValue(NacosPropertyKey.MAX_RETRIES), is(5));
-        assertThat(actual.getValue(NacosPropertyKey.INIT_TIMEOUT_MILLISECONDS), is(5000L));
         assertThat(actual.getValue(NacosPropertyKey.TIME_TO_LIVE_SECONDS), is(60));
     }
     
@@ -42,7 +41,6 @@ public class NacosPropertiesTest {
         result.setProperty(NacosPropertyKey.CLUSTER_IP.getKey(), "127.0.0.1");
         result.setProperty(NacosPropertyKey.RETRY_INTERVAL_MILLISECONDS.getKey(), "1000");
         result.setProperty(NacosPropertyKey.MAX_RETRIES.getKey(), "5");
-        result.setProperty(NacosPropertyKey.INIT_TIMEOUT_MILLISECONDS.getKey(), "5000");
         result.setProperty(NacosPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "60");
         return result;
     }
@@ -53,7 +51,6 @@ public class NacosPropertiesTest {
         assertThat(actual.getValue(NacosPropertyKey.CLUSTER_IP), is(IpUtils.getIp()));
         assertThat(actual.getValue(NacosPropertyKey.RETRY_INTERVAL_MILLISECONDS), is(500L));
         assertThat(actual.getValue(NacosPropertyKey.MAX_RETRIES), is(3));
-        assertThat(actual.getValue(NacosPropertyKey.INIT_TIMEOUT_MILLISECONDS), is(3000L));
         assertThat(actual.getValue(NacosPropertyKey.TIME_TO_LIVE_SECONDS), is(30));
     }
 }
