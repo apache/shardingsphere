@@ -72,7 +72,7 @@ public class MetadataUtil {
                 .filter(entryKey -> !entryKey.equals(PreservedMetadataKeys.HEART_BEAT_INTERVAL)
                         && !entryKey.equals(PreservedMetadataKeys.HEART_BEAT_TIMEOUT)
                         && !entryKey.equals(PreservedMetadataKeys.IP_DELETE_TIMEOUT)
-                        && !entryKey.equals(ZoneOffset.of("+8").toString()))
+                        && !entryKey.equals(UTC_ZONE_OFFSET.toString()))
                 .findFirst().orElseThrow(() -> new NacosException(NacosException.RESOURCE_NOT_FOUND, "Failed to find key "));
     }
 }
