@@ -1416,9 +1416,6 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-unused-sharding-algorithms")
     private final List<ShowUnusedShardingAlgorithmsStatementTestCase> showUnusedShardingAlgorithmsTestCases = new LinkedList<>();
     
-    @XmlElement(name = "count-database-rules")
-    private final List<CountDatabaseRulesStatementTestCase> countDatabaseRulesTestCases = new LinkedList<>();
-    
     @XmlElement(name = "show-unused-sharding-key-generators")
     private final List<ShowUnusedShardingKeyGeneratorsStatementTestCase> showUnusedShardingKeyGeneratorsTestCases = new LinkedList<>();
     
