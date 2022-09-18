@@ -21,11 +21,9 @@ import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingFactory;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.PreservedMetadataKeys;
-import com.alibaba.nacos.api.naming.listener.NamingEvent;
 import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.alibaba.nacos.common.utils.CollectionUtils;
 import com.alibaba.nacos.common.utils.StringUtils;
-import com.google.common.util.concurrent.SettableFuture;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
@@ -47,8 +45,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -62,8 +58,6 @@ public final class NacosRepository implements ClusterPersistRepository {
     private NamingService client;
     
     private NacosProperties nacosProps;
-    
-    private AtomicBoolean isDuplicated;
     
     @Override
     public void init(final ClusterPersistRepositoryConfiguration config) {
@@ -88,29 +82,6 @@ public final class NacosRepository implements ClusterPersistRepository {
     private void initRegisterMetadata() {
         try {
             String ip = nacosProps.getValue(NacosPropertyKey.CLUSTER_IP);
-            Instance instance = new Instance();
-            Map<String, String> metadataMap = new HashMap<>(4, 1);
-            instance.setIp(ip);
-            fillEphemeralMetadata(metadataMap);
-            instance.setMetadata(metadataMap);
-            metadataMap.put(MetadataUtil.UUID_NAME, MetadataUtil.UNIQUE_ID);
-            String clusterIp = NacosPropertyKey.CLUSTER_IP.name();
-            client.registerInstance(clusterIp, instance);
-            SettableFuture<AtomicBoolean> settableFuture = SettableFuture.create();
-            client.subscribe(clusterIp, event -> {
-                NamingEvent namingEvent = (NamingEvent) event;
-                namingEvent.getInstances().stream().filter(filterInstance -> StringUtils.equals(filterInstance.getIp(), ip)).findFirst()
-                        .ifPresent(presentInstance -> {
-                            boolean duplicated = !StringUtils.equals(MetadataUtil.getUUID(presentInstance), MetadataUtil.UNIQUE_ID);
-                            if (Objects.isNull(isDuplicated)) {
-                                settableFuture.set(new AtomicBoolean(duplicated));
-                            } else {
-                                isDuplicated.set(duplicated);
-                            }
-                        });
-            });
-            long initTimeoutMilliseconds = nacosProps.getValue(NacosPropertyKey.INIT_TIMEOUT_MILLISECONDS);
-            isDuplicated = settableFuture.get(initTimeoutMilliseconds, TimeUnit.MILLISECONDS);
             for (RegisterMetadata registerMetadata : RegisterMetadata.values()) {
                 AtomicInteger port = client.getAllInstances(registerMetadata.name(), false).stream()
                         .filter(filterInstance -> StringUtils.equals(filterInstance.getIp(), ip)).max(Comparator.comparing(Instance::getPort))
@@ -249,9 +220,6 @@ public final class NacosRepository implements ClusterPersistRepository {
     }
     
     private void put(final String key, final String value, final boolean ephemeral) throws NacosException, InterruptedException {
-        if (isDuplicated.get()) {
-            throw new IllegalStateException("Ip specified is duplicated in cluster");
-        }
         final List<KeyValue> keyValues = buildParentPath(key);
         RegisterMetadata registerMetadata = RegisterMetadata.of(ephemeral);
         Instance instance = new Instance();

@@ -45,11 +45,6 @@ public enum NacosPropertyKey implements TypedPropertyKey {
     MAX_RETRIES("maxRetries", String.valueOf(3), int.class),
     
     /**
-     * Client init timeout value.
-     */
-    INIT_TIMEOUT_MILLISECONDS("initTimeoutMilliseconds", String.valueOf(3000), long.class),
-    
-    /**
      * Time to live seconds.
      */
     TIME_TO_LIVE_SECONDS("timeToLiveSeconds", String.valueOf(30), int.class);
