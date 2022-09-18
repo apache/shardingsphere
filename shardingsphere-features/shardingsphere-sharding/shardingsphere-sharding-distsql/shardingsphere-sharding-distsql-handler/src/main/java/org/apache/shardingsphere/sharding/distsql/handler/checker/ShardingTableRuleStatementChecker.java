@@ -273,39 +273,48 @@ public final class ShardingTableRuleStatementChecker {
         Optional<ShardingStrategySegment> anyTableRule = tableRules.stream().map(each -> Arrays.asList(each.getDatabaseStrategySegment(), each.getTableStrategySegment()))
                 .flatMap(Collection::stream).filter(Objects::nonNull).findAny();
         if (anyTableRule.isPresent()) {
-            checkStrategy(databaseName, currentRuleConfig, tableRules);
+            checkStrategy(databaseName, tableRules);
+            checkAlgorithm(databaseName, currentRuleConfig, tableRules);
         }
     }
     
-    private static void checkStrategy(final String databaseName, final ShardingRuleConfiguration currentRuleConfig, final Collection<TableRuleSegment> rules) throws DistSQLException {
-        Map<String, AlgorithmConfiguration> currentAlgorithms = Optional.ofNullable(currentRuleConfig).map(ShardingRuleConfiguration::getShardingAlgorithms).orElse(Collections.emptyMap());
+    private static void checkStrategy(final String databaseName, final Collection<TableRuleSegment> rules) throws DistSQLException {
         Collection<String> invalidAlgorithms = rules.stream().map(each -> Arrays.asList(each.getDatabaseStrategySegment(), each.getTableStrategySegment()))
-                .flatMap(Collection::stream).filter(Objects::nonNull).filter(each -> isInvalidStrategy(currentAlgorithms, each))
-                .map(each -> Optional.ofNullable(each.getShardingAlgorithmName()).orElse(Optional.ofNullable(each.getAlgorithmSegment()).map(AlgorithmSegment::getName).orElse("unknown")))
-                .collect(Collectors.toList());
+                .flatMap(Collection::stream).filter(Objects::nonNull).filter(ShardingTableRuleStatementChecker::isInvalidStrategy)
+                .map(ShardingStrategySegment::getShardingAlgorithmName).collect(Collectors.toList());
         DistSQLException.predictionThrow(invalidAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException(databaseName, invalidAlgorithms));
     }
     
-    private static boolean isInvalidStrategy(final Map<String, AlgorithmConfiguration> currentAlgorithms, final ShardingStrategySegment shardingStrategySegment) {
+    private static boolean isInvalidStrategy(final ShardingStrategySegment shardingStrategySegment) {
         return !ShardingStrategyType.contain(shardingStrategySegment.getType())
-                || !ShardingStrategyType.getValueOf(shardingStrategySegment.getType()).isValid(shardingStrategySegment.getShardingColumn())
-                || !isAlgorithmExists(currentAlgorithms, shardingStrategySegment);
+                || !ShardingStrategyType.getValueOf(shardingStrategySegment.getType()).isValid(shardingStrategySegment.getShardingColumn());
     }
     
-    private static boolean isAlgorithmExists(final Map<String, AlgorithmConfiguration> currentAlgorithms, final ShardingStrategySegment shardingStrategySegment) {
+    private static void checkAlgorithm(final String databaseName, final ShardingRuleConfiguration currentRuleConfig, final Collection<TableRuleSegment> rules) throws DistSQLException {
+        Map<String, AlgorithmConfiguration> currentAlgorithms = Optional.ofNullable(currentRuleConfig).map(ShardingRuleConfiguration::getShardingAlgorithms).orElse(Collections.emptyMap());
+        Collection<String> invalidAlgorithms = rules.stream().map(each -> Arrays.asList(each.getDatabaseStrategySegment(), each.getTableStrategySegment())).flatMap(Collection::stream)
+                .filter(Objects::nonNull).map(each -> isInvalidAlgorithm(currentAlgorithms, each)).filter(Objects::nonNull).collect(Collectors.toList());
+        DistSQLException.predictionThrow(invalidAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException(databaseName, invalidAlgorithms));
+    }
+    
+    private static String isInvalidAlgorithm(final Map<String, AlgorithmConfiguration> currentAlgorithms, final ShardingStrategySegment shardingStrategySegment) {
         ShardingAlgorithm shardingAlgorithm;
+        String shardingAlgorithmName;
         if (null == shardingStrategySegment.getShardingAlgorithmName() && null != shardingStrategySegment.getAlgorithmSegment()) {
-            shardingAlgorithm = ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration(
-                    shardingStrategySegment.getAlgorithmSegment().getName(),
-                    shardingStrategySegment.getAlgorithmSegment().getProps()));
+            shardingAlgorithmName = shardingStrategySegment.getAlgorithmSegment().getName();
+            shardingAlgorithm = ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration(shardingAlgorithmName, shardingStrategySegment.getAlgorithmSegment().getProps()));
         } else {
-            AlgorithmConfiguration algorithmConfiguration = currentAlgorithms.get(shardingStrategySegment.getShardingAlgorithmName());
+            shardingAlgorithmName = shardingStrategySegment.getShardingAlgorithmName();
+            AlgorithmConfiguration algorithmConfiguration = currentAlgorithms.get(shardingAlgorithmName);
             if (null == algorithmConfiguration) {
-                return false;
+                return shardingAlgorithmName;
             }
             shardingAlgorithm = ShardingAlgorithmFactory.newInstance(algorithmConfiguration);
         }
-        return !(shardingAlgorithm instanceof ShardingAutoTableAlgorithm);
+        if (shardingAlgorithm instanceof ShardingAutoTableAlgorithm) {
+            return shardingAlgorithmName;
+        }
+        return null;
     }
     
     private static Map<String, List<AbstractTableRuleSegment>> groupingByClassType(final Collection<AbstractTableRuleSegment> rules) {
