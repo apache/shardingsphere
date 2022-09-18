@@ -41,7 +41,6 @@ public final class ViewMetaDataPersistService implements SchemaMetaDataPersistSe
     
     @Override
     public void compareAndPersist(final String databaseName, final String schemaName, final Map<String, ShardingSphereView> loadedViews) {
-        
     }
     
     @Override
