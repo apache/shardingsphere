@@ -20,7 +20,6 @@ package org.apache.shardingsphere.integration.agent.test.common.env;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
@@ -42,7 +41,6 @@ public final class IntegrationTestEnvironment {
     
     private DataSource dataSource;
     
-    @SneakyThrows
     private IntegrationTestEnvironment() {
         props = EnvironmentProperties.loadProperties("env/engine-env.properties");
         isEnvironmentPrepared = props.getProperty("it.env.value").equals(props.getProperty("it.env.type"));

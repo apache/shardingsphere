@@ -117,7 +117,7 @@ public final class JDBCOKProxyStateTest extends ProxyContextRestorer {
     }
     
     @SuppressWarnings({"unchecked", "SameParameterValue"})
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private ExecutorService registerMockExecutorService(final int connectionId) {
         Field executorServicesField = ConnectionThreadExecutorGroup.class.getDeclaredField("executorServices");
         executorServicesField.setAccessible(true);

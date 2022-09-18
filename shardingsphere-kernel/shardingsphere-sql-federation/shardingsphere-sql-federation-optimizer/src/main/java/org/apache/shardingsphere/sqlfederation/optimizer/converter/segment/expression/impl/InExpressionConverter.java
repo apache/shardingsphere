@@ -22,9 +22,9 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,10 +35,10 @@ import java.util.Optional;
 /**
  * In expression converter.
  */
-public final class InExpressionConverter implements SQLSegmentConverter<InExpression, SqlBasicCall> {
+public final class InExpressionConverter implements SQLSegmentConverter<InExpression, SqlNode> {
     
     @Override
-    public Optional<SqlBasicCall> convert(final InExpression expression) {
+    public Optional<SqlNode> convert(final InExpression expression) {
         if (null == expression) {
             return Optional.empty();
         }

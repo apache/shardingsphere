@@ -15,24 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.rule.data.pipeline;
+package org.apache.shardingsphere.data.pipeline.core.exception.job;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+
+import java.sql.SQLException;
 
 /**
- * Pipeline write configuration.
+ * Split pipeline job by unique key exception.
  */
-@RequiredArgsConstructor
-@Getter
-@ToString
-public final class PipelineWriteConfiguration {
+public final class SplitPipelineJobByUniqueKeyException extends PipelineSQLException {
     
-    private final Integer workerThread;
+    private static final long serialVersionUID = -7804078676439253443L;
     
-    private final Integer batchSize;
-    
-    private final AlgorithmConfiguration rateLimiter;
+    public SplitPipelineJobByUniqueKeyException(final String tableName, final String uniqueKey, final SQLException cause) {
+        super(XOpenSQLState.GENERAL_ERROR, 84, "Can not split by unique key `%s` for table `%s`, reason is: %s", uniqueKey, tableName, cause.getMessage());
+    }
 }

@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.integration.transaction.cases.truncate;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.dialect.exception.transaction.TableModifyInTransactionException;
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
-import org.apache.shardingsphere.dialect.exception.transaction.TableModifyInTransactionException;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.AdapterContainerConstants;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
@@ -36,8 +35,8 @@ import static org.junit.Assert.fail;
 /**
  * MySQL truncate XA transaction integration test.
  */
-@Slf4j
 @TransactionTestCase(dbTypes = {TransactionTestConstants.MYSQL}, adapters = {AdapterContainerConstants.PROXY}, transactionTypes = {TransactionType.XA})
+@Slf4j
 public final class MySQLXATruncateTestCase extends BaseTransactionTestCase {
     
     public MySQLXATruncateTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
@@ -45,8 +44,7 @@ public final class MySQLXATruncateTestCase extends BaseTransactionTestCase {
     }
     
     @Override
-    @SneakyThrows(SQLException.class)
-    public void executeTest() {
+    public void executeTest() throws SQLException {
         assertTruncateInMySQLXATransaction();
     }
     

@@ -60,7 +60,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     
     private static final String BINARY = "Binary";
     
-    private final Enumerator<Object[]> enumerator;
+    private final Enumerator<Object> enumerator;
     
     private final Map<String, Integer> columnLabelAndIndexMap;
     
@@ -72,7 +72,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     
     private boolean closed;
     
-    public SQLFederationResultSet(final Enumerator<Object[]> enumerator, final ShardingSphereSchema schema, final AbstractSchema filterableSchema, final SQLStatementContext<?> sqlStatementContext) {
+    public SQLFederationResultSet(final Enumerator<Object> enumerator, final ShardingSphereSchema schema, final AbstractSchema filterableSchema, final SQLStatementContext<?> sqlStatementContext) {
         this.enumerator = enumerator;
         columnLabelAndIndexMap = createColumnLabelAndIndexMap(sqlStatementContext);
         resultSetMetaData = new SQLFederationResultSetMetaData(schema, filterableSchema, new JavaTypeFactoryImpl(), (SelectStatementContext) sqlStatementContext);
@@ -91,7 +91,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     @Override
     public boolean next() {
         boolean result = enumerator.moveNext();
-        currentRows = result ? enumerator.current() : new Object[]{};
+        currentRows = result ? (enumerator.current().getClass().isArray() ? (Object[]) enumerator.current() : new Object[]{enumerator.current()}) : new Object[]{};
         return result;
     }
     

@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.integration.transaction.cases.savepoint;
 
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 
@@ -30,15 +28,13 @@ import java.sql.Savepoint;
 /**
  * Base savepoint transaction integration test.
  */
-@Slf4j
 public abstract class BaseSavePointTestCase extends BaseTransactionTestCase {
     
     public BaseSavePointTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
         super(baseTransactionITCase, dataSource);
     }
     
-    @SneakyThrows(SQLException.class)
-    protected void assertRollback2Savepoint() {
+    protected void assertRollback2Savepoint() throws SQLException {
         Connection connection = getDataSource().getConnection();
         connection.setAutoCommit(false);
         assertAccountRowCount(connection, 0);
@@ -53,8 +49,7 @@ public abstract class BaseSavePointTestCase extends BaseTransactionTestCase {
         assertAccountRowCount(connection, 1);
     }
     
-    @SneakyThrows(SQLException.class)
-    protected void assertReleaseSavepoint() {
+    protected void assertReleaseSavepoint() throws SQLException {
         Connection connection = getDataSource().getConnection();
         connection.setAutoCommit(false);
         assertAccountRowCount(connection, 1);

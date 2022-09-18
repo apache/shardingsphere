@@ -32,6 +32,7 @@ import org.mockito.internal.util.reflection.FieldReader;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
 import java.util.HashMap;
@@ -55,7 +56,7 @@ public abstract class AbstractJDBCExecutorCallbackAdviceTest implements AdviceTe
     private Map<String, Object> extraMap;
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    @SneakyThrows
+    @SneakyThrows({ReflectiveOperationException.class, SQLException.class})
     @Override
     public void prepare() {
         extraMap = new HashMap<>();

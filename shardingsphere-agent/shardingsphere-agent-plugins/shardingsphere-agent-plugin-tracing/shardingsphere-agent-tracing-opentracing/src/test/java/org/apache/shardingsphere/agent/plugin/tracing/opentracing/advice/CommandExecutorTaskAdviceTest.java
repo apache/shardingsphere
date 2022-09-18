@@ -22,7 +22,6 @@ import io.opentracing.mock.MockSpan;
 import io.opentracing.mock.MockSpan.LogEntry;
 import io.opentracing.mock.MockTracer;
 import io.opentracing.util.GlobalTracer;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
@@ -38,7 +37,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class CommandExecutorTaskAdviceTest {
@@ -50,8 +49,7 @@ public final class CommandExecutorTaskAdviceTest {
     private static Method executeCommandMethod;
     
     @BeforeClass
-    @SneakyThrows
-    public static void setup() {
+    public static void setup() throws ReflectiveOperationException {
         if (!GlobalTracer.isRegistered()) {
             GlobalTracer.register(new MockTracer());
         }

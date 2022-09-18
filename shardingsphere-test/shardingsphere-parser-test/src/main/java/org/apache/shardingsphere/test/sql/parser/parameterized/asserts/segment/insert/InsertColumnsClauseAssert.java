@@ -27,7 +27,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.c
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.insert.ExpectedInsertColumnsClause;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Insert column clause assert.

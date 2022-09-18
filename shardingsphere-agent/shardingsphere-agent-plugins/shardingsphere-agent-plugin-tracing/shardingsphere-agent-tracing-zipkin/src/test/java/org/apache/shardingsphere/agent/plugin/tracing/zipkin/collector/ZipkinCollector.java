@@ -19,7 +19,6 @@ package org.apache.shardingsphere.agent.plugin.tracing.zipkin.collector;
 
 import brave.Tracing;
 import brave.propagation.StrictCurrentTraceContext;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.plugin.tracing.rule.CollectorRule;
 import org.junit.rules.ExternalResource;
 import zipkin2.Span;
@@ -31,13 +30,11 @@ public class ZipkinCollector extends ExternalResource implements CollectorRule {
     private static final ConcurrentLinkedDeque<Span> SPANS = new ConcurrentLinkedDeque<>();
     
     @Override
-    @SneakyThrows
     protected void before() {
         Tracing.newBuilder().currentTraceContext(StrictCurrentTraceContext.create()).spanReporter(SPANS::add).build();
     }
     
     @Override
-    @SneakyThrows
     protected void after() {
         Tracing.current().close();
     }

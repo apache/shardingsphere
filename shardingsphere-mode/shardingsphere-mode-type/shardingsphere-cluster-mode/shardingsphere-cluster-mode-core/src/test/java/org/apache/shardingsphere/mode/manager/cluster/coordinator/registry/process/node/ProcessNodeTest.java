@@ -21,7 +21,7 @@ import org.apache.shardingsphere.mode.process.node.ProcessNode;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class ProcessNodeTest {
     
