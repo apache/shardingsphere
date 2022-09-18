@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.rule.data.pipeline;
+package org.apache.shardingsphere.data.pipeline.api.config.process;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,18 +23,16 @@ import lombok.ToString;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 
 /**
- * Pipeline read configuration.
+ * Pipeline process configuration.
  */
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class PipelineReadConfiguration {
+public final class PipelineProcessConfiguration {
     
-    private final Integer workerThread;
+    private final PipelineReadConfiguration read;
     
-    private final Integer batchSize;
+    private final PipelineWriteConfiguration write;
     
-    private final Integer shardingSize;
-    
-    private final AlgorithmConfiguration rateLimiter;
+    private final AlgorithmConfiguration streamChannel;
 }
