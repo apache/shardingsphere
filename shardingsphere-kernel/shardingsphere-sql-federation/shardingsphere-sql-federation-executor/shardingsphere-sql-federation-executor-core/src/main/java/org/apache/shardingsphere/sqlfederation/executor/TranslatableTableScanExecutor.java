@@ -70,13 +70,12 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.SQLDialectFactory;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContextFactory;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.ScanNodeExecutorContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TranslatableScanNodeExecutorContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.filter.FilterableSchema;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.StringToRexNodeUtil;
-import org.apache.shardingsphere.sqlfederation.optimizer.planner.QueryOptimizePlannerFactory;
+import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationPlannerUtil;
 import org.apache.shardingsphere.sqlfederation.row.EmptyRowEnumerator;
 import org.apache.shardingsphere.sqlfederation.row.SQLFederationRowEnumerator;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
@@ -200,9 +199,9 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
         String schemaName = executorContext.getSchemaName();
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(optimizerContext.getParserContexts().get(databaseName).getDialectProps());
         ShardingSphereSchema schema = executorContext.getFederationContext().getDatabases().get(databaseName).getSchema(schemaName);
-        CalciteCatalogReader catalogReader = OptimizerPlannerContextFactory.createCatalogReader(schemaName,
+        CalciteCatalogReader catalogReader = SQLFederationPlannerUtil.createCatalogReader(schemaName,
                 new FilterableSchema(schemaName, schema, null), new JavaTypeFactoryImpl(), connectionConfig);
-        RelOptCluster relOptCluster = RelOptCluster.create(QueryOptimizePlannerFactory.createVolcanoPlanner(), new RexBuilder(new JavaTypeFactoryImpl()));
+        RelOptCluster relOptCluster = RelOptCluster.create(SQLFederationPlannerUtil.createVolcanoPlanner(), new RexBuilder(new JavaTypeFactoryImpl()));
         RelBuilder builder = RelFactories.LOGICAL_BUILDER.create(relOptCluster, catalogReader).scan(table.getName());
         if (null != scanContext.getFilterValues()) {
             builder.filter(createFilters(scanContext.getFilterValues()));
@@ -221,7 +220,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
             if (Strings.isNullOrEmpty(each)) {
                 continue;
             }
-            RexNode filterCondition = null;
+            RexNode filterCondition;
             try {
                 filterCondition = StringToRexNodeUtil.buildRexNode(each, rexBuilder);
             } catch (IOException ignored) {

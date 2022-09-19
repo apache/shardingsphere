@@ -33,9 +33,8 @@ import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContextFactory;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.TranslatableSchema;
-import org.apache.shardingsphere.sqlfederation.optimizer.planner.QueryOptimizePlannerFactory;
+import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationPlannerUtil;
 import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
@@ -101,7 +100,7 @@ public final class SQLOptimizeEngineTest {
         tables.put("t_user_info", createUserInfoTableMetaData());
         ShardingSphereSchema schema = new ShardingSphereSchema(tables, Collections.emptyMap());
         SqlToRelConverter converter = createSqlToRelConverter(schema);
-        optimizeEngine = new SQLOptimizeEngine(converter, QueryOptimizePlannerFactory.createHepPlanner());
+        optimizeEngine = new SQLOptimizeEngine(converter, SQLFederationPlannerUtil.createHepPlanner());
     }
     
     private ShardingSphereTable createOrderTableMetaData() {
@@ -121,9 +120,9 @@ public final class SQLOptimizeEngineTest {
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(new Properties());
         RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
         TranslatableSchema federationSchema = new TranslatableSchema(SCHEMA_NAME, schema, null);
-        CalciteCatalogReader catalogReader = OptimizerPlannerContextFactory.createCatalogReader(SCHEMA_NAME, federationSchema, relDataTypeFactory, connectionConfig);
-        SqlValidator validator = OptimizerPlannerContextFactory.createValidator(catalogReader, relDataTypeFactory, new H2DatabaseType(), connectionConfig);
-        return OptimizerPlannerContextFactory.createConverter(catalogReader, validator, relDataTypeFactory);
+        CalciteCatalogReader catalogReader = SQLFederationPlannerUtil.createCatalogReader(SCHEMA_NAME, federationSchema, relDataTypeFactory, connectionConfig);
+        SqlValidator validator = SQLFederationPlannerUtil.createSqlValidator(catalogReader, relDataTypeFactory, new H2DatabaseType(), connectionConfig);
+        return SQLFederationPlannerUtil.createSqlToRelConverter(catalogReader, validator, relDataTypeFactory);
     }
     
     @Test

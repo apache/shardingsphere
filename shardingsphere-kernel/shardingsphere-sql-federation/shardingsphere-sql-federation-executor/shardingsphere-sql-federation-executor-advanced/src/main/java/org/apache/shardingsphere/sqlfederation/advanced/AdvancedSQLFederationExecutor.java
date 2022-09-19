@@ -51,10 +51,9 @@ import org.apache.shardingsphere.sqlfederation.optimizer.SQLOptimizeEngine;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.OptimizerParserContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContextFactory;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.filter.FilterableSchema;
-import org.apache.shardingsphere.sqlfederation.optimizer.planner.QueryOptimizePlannerFactory;
+import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationPlannerUtil;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
 
@@ -133,11 +132,11 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
         OptimizerParserContext parserContext = optimizerContext.getParserContexts().get(databaseName);
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(parserContext.getDialectProps());
         RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
-        CalciteCatalogReader catalogReader = OptimizerPlannerContextFactory.createCatalogReader(schemaName, sqlFederationSchema, relDataTypeFactory, connectionConfig);
-        SqlValidator validator = OptimizerPlannerContextFactory.createValidator(catalogReader, relDataTypeFactory, parserContext.getDatabaseType(), connectionConfig);
-        SqlToRelConverter converter = OptimizerPlannerContextFactory.createConverter(catalogReader, validator, relDataTypeFactory);
+        CalciteCatalogReader catalogReader = SQLFederationPlannerUtil.createCatalogReader(schemaName, sqlFederationSchema, relDataTypeFactory, connectionConfig);
+        SqlValidator validator = SQLFederationPlannerUtil.createSqlValidator(catalogReader, relDataTypeFactory, parserContext.getDatabaseType(), connectionConfig);
+        SqlToRelConverter converter = SQLFederationPlannerUtil.createSqlToRelConverter(catalogReader, validator, relDataTypeFactory);
         SQLOptimizeContext optimizeContext =
-                new SQLOptimizeEngine(converter, QueryOptimizePlannerFactory.createHepPlanner()).optimize(selectStatementContext.getSqlStatement());
+                new SQLOptimizeEngine(converter, SQLFederationPlannerUtil.createHepPlanner()).optimize(selectStatementContext.getSqlStatement());
         Bindable<Object> executablePlan = EnumerableInterpretable.toBindable(Collections.emptyMap(), null, (EnumerableRel) optimizeContext.getBestPlan(), EnumerableRel.Prefer.ARRAY);
         Enumerator<Object> enumerator = executablePlan.bind(new SQLFederationDataContext(validator, converter, parameters)).enumerator();
         return new SQLFederationResultSet(enumerator, schema, sqlFederationSchema, selectStatementContext, optimizeContext.getValidatedNodeType());
