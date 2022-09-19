@@ -33,6 +33,10 @@ rules:
       keyGenerateStrategy:
         column: item_id
         keyGeneratorName: constant
+      auditStrategy:
+        auditorNames:
+          - auditor_constant
+        allowHintDisable: true
     t_order_details:
       actualDataNodes: db_${0..9}.t_order_details
       databaseStrategy:
@@ -73,6 +77,10 @@ rules:
   keyGenerators:
     constant:
       type: IT.FIXTURE
+
+  auditors:
+    auditor_constant:
+      type: IT.AUDITOR.FIXTURE
 
 props:
   sql-federation-type: ADVANCED

@@ -125,6 +125,10 @@ rules:
       keyGenerateStrategy:
         column: item_id
         keyGeneratorName: constant
+      auditStrategy:
+        auditorNames:
+          - auditor_constant
+        allowHintDisable: true
     t_user:
       actualDataNodes: encrypt_ds_${0..9}.t_user_${0..9}
       databaseStrategy:
@@ -138,6 +142,10 @@ rules:
       keyGenerateStrategy:
         column: user_id
         keyGeneratorName: constant
+      auditStrategy:
+        auditorNames:
+          - auditor_constant
+        allowHintDisable: true
     t_user_details:
       actualDataNodes: encrypt_ds_${0..9}.t_user_details_${0..9}
       databaseStrategy:
@@ -189,6 +197,10 @@ rules:
   keyGenerators:
     constant:
       type: IT.FIXTURE
+
+  auditors:
+    auditor_constant:
+      type: IT.AUDITOR.FIXTURE
 
 - !ENCRYPT
   encryptors:

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.util.props.PropertiesConverter;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingT
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -75,7 +77,7 @@ public final class ShardingTableRuleQueryResultSet implements DatabaseDistSQLRes
     public Collection<String> getColumnNames() {
         return Arrays.asList("table", "actual_data_nodes", "actual_data_sources", "database_strategy_type", "database_sharding_column", "database_sharding_algorithm_type",
                 "database_sharding_algorithm_props", "table_strategy_type", "table_sharding_column", "table_sharding_algorithm_type", "table_sharding_algorithm_props",
-                "key_generate_column", "key_generator_type", "key_generator_props");
+                "key_generate_column", "key_generator_type", "key_generator_props", "auditor_types", "allow_hint_disable");
     }
     
     @Override
@@ -106,6 +108,8 @@ public final class ShardingTableRuleQueryResultSet implements DatabaseDistSQLRes
         result.add(getKeyGenerateColumn(shardingTableRuleConfig.getKeyGenerateStrategy()));
         result.add(getKeyGeneratorType(shardingTableRuleConfig.getKeyGenerateStrategy()));
         result.add(getKeyGeneratorProps(shardingTableRuleConfig.getKeyGenerateStrategy()));
+        result.add(getAuditorTypes(shardingTableRuleConfig.getAuditStrategy()));
+        result.add(getAllowHintDisable(shardingTableRuleConfig.getAuditStrategy()));
         return result;
     }
     
@@ -126,6 +130,8 @@ public final class ShardingTableRuleQueryResultSet implements DatabaseDistSQLRes
         result.add(getKeyGenerateColumn(shardingAutoTableRuleConfig.getKeyGenerateStrategy()));
         result.add(getKeyGeneratorType(shardingAutoTableRuleConfig.getKeyGenerateStrategy()));
         result.add(getKeyGeneratorProps(shardingAutoTableRuleConfig.getKeyGenerateStrategy()));
+        result.add(getAuditorTypes(shardingAutoTableRuleConfig.getAuditStrategy()));
+        result.add(getAllowHintDisable(shardingAutoTableRuleConfig.getAuditStrategy()));
         return result;
     }
     
@@ -183,6 +189,27 @@ public final class ShardingTableRuleQueryResultSet implements DatabaseDistSQLRes
     
     private Optional<KeyGenerateStrategyConfiguration> getKeyGenerateStrategyConfiguration(final KeyGenerateStrategyConfiguration keyGenerateStrategyConfig) {
         return null == keyGenerateStrategyConfig ? Optional.ofNullable(shardingRuleConfig.getDefaultKeyGenerateStrategy()) : Optional.of(keyGenerateStrategyConfig);
+    }
+    
+    private String getAuditorTypes(final ShardingAuditStrategyConfiguration shardingAuditStrategyConfig) {
+        Optional<ShardingAuditStrategyConfiguration> auditStrategyConfig = getShardingAuditStrategyConfiguration(shardingAuditStrategyConfig);
+        Collection<String> auditorTypes = new ArrayList<>();
+        if (auditStrategyConfig.isPresent()) {
+            for (String each : auditStrategyConfig.get().getAuditorNames()) {
+                auditorTypes.add(shardingRuleConfig.getAuditors().get(each).getType());
+            }
+        }
+        return !auditorTypes.isEmpty() ? String.join(",", auditorTypes) : "";
+    }
+    
+    private String getAllowHintDisable(final ShardingAuditStrategyConfiguration shardingAuditStrategyConfig) {
+        return getShardingAuditStrategyConfiguration(shardingAuditStrategyConfig).isPresent()
+                ? Boolean.valueOf(getShardingAuditStrategyConfiguration(shardingAuditStrategyConfig).get().isAllowHintDisable()).toString()
+                : "";
+    }
+    
+    private Optional<ShardingAuditStrategyConfiguration> getShardingAuditStrategyConfiguration(final ShardingAuditStrategyConfiguration shardingAuditStrategyConfig) {
+        return null == shardingAuditStrategyConfig ? Optional.ofNullable(shardingRuleConfig.getDefaultAuditStrategy()) : Optional.of(shardingAuditStrategyConfig);
     }
     
     @Override
