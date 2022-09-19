@@ -17,9 +17,8 @@
 
 <dataset>
     <metadata>
-        <column name="name" />
         <column name="type" />
-        <column name="props" />
+        <column name="name" />
     </metadata>
-    <row values="auditor_constant| IT.AUDITOR.FIXTURE| {}" />
+    <row values="table| t_order_item" />
 </dataset>
