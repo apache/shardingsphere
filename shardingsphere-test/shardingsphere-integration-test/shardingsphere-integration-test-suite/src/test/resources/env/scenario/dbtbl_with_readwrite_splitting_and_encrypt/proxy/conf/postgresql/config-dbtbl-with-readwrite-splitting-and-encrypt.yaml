@@ -215,6 +215,10 @@ rules:
       keyGenerateStrategy:
         column: item_id
         keyGeneratorName: constant
+      auditStrategy:
+        auditorNames:
+          - auditor_constant
+        allowHintDisable: true
     t_user:
       actualDataNodes: readwrite_ds_${0..9}.t_user_${0..9}
       databaseStrategy:
