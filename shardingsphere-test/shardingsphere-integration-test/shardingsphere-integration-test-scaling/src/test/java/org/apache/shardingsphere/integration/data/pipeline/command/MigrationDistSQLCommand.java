@@ -47,18 +47,9 @@ public final class MigrationDistSQLCommand {
     @XmlElement(name = "add-migration-target-resource-template")
     private String addMigrationTargetResourceTemplate;
     
-    @XmlElement(name = "migration-order-single-table")
-    private String migrationOrderSingleTable;
+    @XmlElement(name = "migration-single-table")
+    private String migrationSingleTable;
     
-    @XmlElement(name = "migration-order-copy-single-table")
-    private String migrationOrderCopySingleTable;
-    
-    @XmlElement(name = "migration-order-copy-single-table-with-schema")
-    private String migrationOrderCopySingleTableWithSchema;
-    
-    @XmlElement(name = "migration-order-item-single-table")
-    private String migrationOrderItemSingleTable;
-    
-    @XmlElement(name = "migration-order-item-single-table-with-schema")
-    private String migrationOrderItemSingleTableWithSchema;
+    @XmlElement(name = "migration-single-table-with-schema")
+    private String migrationSingleTableWithSchema;
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.cases.migration;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
@@ -42,6 +43,11 @@ import static org.junit.Assert.assertTrue;
 @Slf4j
 public abstract class AbstractMigrationITCase extends BaseITCase {
     
+    protected static final String SOURCE_TABLE_ORDER = "t_order_copy";
+    
+    protected static final String SOURCE_TABLE_ORDER_ITEM = "t_order_item";
+    
+    @Getter
     private final MigrationDistSQLCommand migrationDistSQLCommand;
     
     public AbstractMigrationITCase(final ScalingParameterized parameterized) {
@@ -105,24 +111,33 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
         proxyExecuteWithLog(migrationDistSQLCommand.getCreateTargetOrderItemTableRule(), 2);
     }
     
-    protected void startMigrationOrderCopy(final boolean withSchema) throws SQLException {
-        if (withSchema) {
-            proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderCopySingleTableWithSchema(), 4);
+    protected void createSourceOrderTable() throws SQLException {
+        String createTableOrder = getExtraSQLCommand().getCreateTableOrder();
+        if (createTableOrder.contains("%s")) {
+            sourceExecuteWithLog(String.format(createTableOrder, SOURCE_TABLE_ORDER));
         } else {
-            proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderCopySingleTable(), 4);
+            sourceExecuteWithLog(createTableOrder);
         }
     }
     
-    protected void startMigrationOrder() throws SQLException {
-        proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderSingleTable(), 1);
+    protected void createSourceTableIndexList(final String schema) throws SQLException {
+        if (DatabaseTypeUtil.isPostgreSQL(getDatabaseType())) {
+            sourceExecuteWithLog(String.format("CREATE INDEX IF NOT EXISTS idx_user_id ON %s.%s ( user_id )", schema, SOURCE_TABLE_ORDER));
+        } else if (DatabaseTypeUtil.isOpenGauss(getDatabaseType())) {
+            sourceExecuteWithLog(String.format("CREATE INDEX idx_user_id ON %s.%s ( user_id )", schema, SOURCE_TABLE_ORDER));
+        }
     }
     
-    protected void startMigrationOrderItem(final boolean withSchema) throws SQLException {
-        if (withSchema) {
-            proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderItemSingleTableWithSchema(), 1);
-        } else {
-            proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderItemSingleTable(), 1);
-        }
+    protected void createSourceCommentOnList(final String schema) throws SQLException {
+        sourceExecuteWithLog(String.format("COMMENT ON COLUMN %s.%s.user_id IS 'user id'", schema, SOURCE_TABLE_ORDER));
+    }
+    
+    protected void startMigration(final String sourceTableName, final String targetTableName) throws SQLException {
+        proxyExecuteWithLog(String.format(migrationDistSQLCommand.getMigrationSingleTable(), sourceTableName, targetTableName), 1);
+    }
+    
+    protected void startMigrationWithSchema(final String sourceTableName, final String targetTableName) throws SQLException {
+        proxyExecuteWithLog(String.format(migrationDistSQLCommand.getMigrationSingleTableWithSchema(), sourceTableName, targetTableName), 1);
     }
     
     protected void addMigrationProcessConfig() throws SQLException {

@@ -189,22 +189,6 @@ public abstract class BaseITCase {
         return DataSourceEnvironment.getURL(getDatabaseType(), "127.0.0.1", ENV.getActualDataSourceDefaultPort(databaseType), databaseName);
     }
     
-    protected void createSourceOrderTable() throws SQLException {
-        sourceExecuteWithLog(extraSQLCommand.getCreateTableOrder());
-    }
-    
-    protected void createSourceTableIndexList(final String schema) throws SQLException {
-        if (DatabaseTypeUtil.isPostgreSQL(getDatabaseType())) {
-            sourceExecuteWithLog(String.format("CREATE INDEX IF NOT EXISTS idx_user_id ON %s.t_order_copy ( user_id )", schema));
-        } else if (DatabaseTypeUtil.isOpenGauss(getDatabaseType())) {
-            sourceExecuteWithLog(String.format("CREATE INDEX idx_user_id ON %s.t_order_copy ( user_id )", schema));
-        }
-    }
-    
-    protected void createSourceCommentOnList(final String schema) throws SQLException {
-        sourceExecuteWithLog(String.format("COMMENT ON COLUMN %s.t_order_copy.user_id IS 'user id'", schema));
-    }
-    
     protected void createSourceOrderItemTable() throws SQLException {
         sourceExecuteWithLog(extraSQLCommand.getCreateTableOrderItem());
     }
