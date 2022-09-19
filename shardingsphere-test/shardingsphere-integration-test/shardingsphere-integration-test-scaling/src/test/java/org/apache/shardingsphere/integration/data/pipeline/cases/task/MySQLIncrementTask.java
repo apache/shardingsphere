@@ -34,6 +34,8 @@ public final class MySQLIncrementTask extends BaseIncrementTask {
     
     private final JdbcTemplate jdbcTemplate;
     
+    private final String orderTableName;
+    
     private final KeyGenerateAlgorithm primaryKeyGenerateAlgorithm;
     
     private final int executeCountLimit;
@@ -44,7 +46,7 @@ public final class MySQLIncrementTask extends BaseIncrementTask {
         while (executeCount < executeCountLimit && !Thread.currentThread().isInterrupted()) {
             Object orderPrimaryKey = insertOrder();
             if (0 == executeCount % 2) {
-                jdbcTemplate.update("DELETE FROM t_order_copy WHERE order_id = ?", orderPrimaryKey);
+                jdbcTemplate.update(String.format("DELETE FROM %s WHERE order_id = ?", orderTableName), orderPrimaryKey);
             } else {
                 setNullToOrderFields(orderPrimaryKey);
                 updateOrderByPrimaryKey(orderPrimaryKey);
@@ -60,7 +62,7 @@ public final class MySQLIncrementTask extends BaseIncrementTask {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         Object[] orderInsertDate = new Object[]{primaryKeyGenerateAlgorithm.generateKey(), random.nextInt(0, 6),
                 random.nextInt(1, 99), RandomStringUtils.randomAlphabetic(10)};
-        jdbcTemplate.update("INSERT INTO t_order_copy (order_id,user_id,t_unsigned_int,status) VALUES (?, ?, ?, ?)", orderInsertDate);
+        jdbcTemplate.update(String.format("INSERT INTO %s (order_id,user_id,t_unsigned_int,status) VALUES (?, ?, ?, ?)", orderTableName), orderInsertDate);
         return orderInsertDate[0];
     }
     
@@ -74,11 +76,11 @@ public final class MySQLIncrementTask extends BaseIncrementTask {
     
     private void updateOrderByPrimaryKey(final Object primaryKey) {
         Object[] updateData = {"updated" + Instant.now().getEpochSecond(), ThreadLocalRandom.current().nextInt(0, 100), primaryKey};
-        jdbcTemplate.update("UPDATE t_order_copy SET t_char = ?,t_unsigned_int = ? WHERE order_id = ?", updateData);
-        jdbcTemplate.update("UPDATE t_order_copy SET t_char = null,t_unsigned_int = 299,t_datetime='0000-00-00 00:00:00' WHERE order_id = ?", primaryKey);
+        jdbcTemplate.update(String.format("UPDATE %s SET t_char = ?,t_unsigned_int = ? WHERE order_id = ?", orderTableName), updateData);
+        jdbcTemplate.update(String.format("UPDATE %s SET t_char = null,t_unsigned_int = 299,t_datetime='0000-00-00 00:00:00' WHERE order_id = ?", orderTableName), primaryKey);
     }
     
     private void setNullToOrderFields(final Object primaryKey) {
-        jdbcTemplate.update("UPDATE t_order_copy SET t_char = null, t_unsigned_int = null WHERE order_id = ?", primaryKey);
+        jdbcTemplate.update(String.format("UPDATE %s SET t_char = null, t_unsigned_int = null WHERE order_id = ?", orderTableName), primaryKey);
     }
 }

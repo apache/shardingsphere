@@ -86,13 +86,13 @@ public final class MySQLMigrationGeneralIT extends AbstractMigrationITCase {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(getSourceDataSource());
         Pair<List<Object[]>, List<Object[]>> dataPair = ScalingCaseHelper.generateFullInsertData(keyGenerateAlgorithm, parameterized.getDatabaseType(), 3000);
         log.info("init data begin: {}", LocalDateTime.now());
-        jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrder(), dataPair.getLeft());
+        jdbcTemplate.batchUpdate(String.format(getExtraSQLCommand().getFullInsertOrder(), TABLE_ORDER_COPY), dataPair.getLeft());
         jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
         log.info("init data end: {}", LocalDateTime.now());
-        startMigrationOrderCopy(false);
-        startMigrationOrderItem(false);
-        startIncrementTask(new MySQLIncrementTask(jdbcTemplate, keyGenerateAlgorithm, 30));
-        String orderJobId = getJobIdByTableName("t_order_copy");
+        startMigration(TABLE_ORDER_COPY, "t_order");
+        startMigration(TABLE_ORDER_ITEM, "t_order_item");
+        startIncrementTask(new MySQLIncrementTask(jdbcTemplate, TABLE_ORDER_COPY, keyGenerateAlgorithm, 30));
+        String orderJobId = getJobIdByTableName(TABLE_ORDER_COPY);
         String orderItemJobId = getJobIdByTableName("t_order_item");
         assertMigrationSuccessById(orderJobId);
         assertMigrationSuccessById(orderItemJobId);

@@ -279,6 +279,7 @@ public final class MySQLClient {
                 lastBinlogEvent = (AbstractBinlogEvent) msg;
                 blockingEventQueue.put(lastBinlogEvent);
             }
+            throw new RuntimeException("test");
         }
         
         @Override

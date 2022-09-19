@@ -40,6 +40,8 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
     
     private final String schema;
     
+    private final String orderTableName;
+    
     private final boolean incrementOrderItemTogether;
     
     private final int executeCountLimit;
@@ -56,7 +58,7 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
         while (executeCount < executeCountLimit && !Thread.currentThread().isInterrupted()) {
             Object orderId = insertOrder();
             if (0 == executeCount % 2) {
-                jdbcTemplate.update(prefixSchema("DELETE FROM ${schema}t_order_copy WHERE order_id = ?", schema), orderId);
+                jdbcTemplate.update(String.format(prefixSchema("DELETE FROM ${schema}%s WHERE order_id = ?", schema), orderTableName), orderId);
             } else {
                 updateOrderByPrimaryKey(orderId);
             }
@@ -74,7 +76,7 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         String status = 0 == random.nextInt() % 2 ? null : "NOT-NULL";
         Object[] orderInsertDate = new Object[]{KEY_GENERATE_ALGORITHM.generateKey(), random.nextInt(0, 6), status};
-        jdbcTemplate.update(prefixSchema("INSERT INTO ${schema}t_order_copy (order_id,user_id,status) VALUES (?, ?, ?)", schema), orderInsertDate);
+        jdbcTemplate.update(String.format(prefixSchema("INSERT INTO ${schema}%s (order_id,user_id,status) VALUES (?, ?, ?)", schema), orderTableName), orderInsertDate);
         return orderInsertDate[0];
     }
     
@@ -88,7 +90,7 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
     
     private void updateOrderByPrimaryKey(final Object primaryKey) {
         Object[] updateData = {"updated" + Instant.now().getEpochSecond(), primaryKey};
-        jdbcTemplate.update(prefixSchema("UPDATE ${schema}t_order_copy SET status = ? WHERE order_id = ?", schema), updateData);
+        jdbcTemplate.update(String.format(prefixSchema("UPDATE ${schema}%s SET status = ? WHERE order_id = ?", schema), updateData));
     }
     
     private String prefixSchema(final String sql, final String schema) {

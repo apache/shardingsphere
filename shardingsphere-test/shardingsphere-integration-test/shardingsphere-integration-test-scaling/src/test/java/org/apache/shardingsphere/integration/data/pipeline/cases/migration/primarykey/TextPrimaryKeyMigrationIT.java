@@ -78,7 +78,7 @@ public class TextPrimaryKeyMigrationIT extends AbstractMigrationITCase {
         addMigrationSourceResource();
         addMigrationTargetResource();
         createTargetOrderTableRule();
-        startMigrationOrder();
+        startMigration("t_order", "t_order");
         String jobId = listJobId().get(0);
         waitJobFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         sourceExecuteWithLog(String.format("INSERT INTO t_order (order_id,user_id,status) VALUES (%s, %s, '%s')", "1000000000", 1, "afterStop"));

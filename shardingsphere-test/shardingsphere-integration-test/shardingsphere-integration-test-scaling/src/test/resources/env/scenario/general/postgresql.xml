@@ -16,7 +16,7 @@
   -->
 <command>
     <create-table-order>
-        CREATE TABLE test.t_order_copy (
+        CREATE TABLE test.%s (
         order_id int8 NOT NULL,
         user_id int4 NOT NULL,
         status varchar ( 50 ) NULL,
@@ -55,7 +55,7 @@
     
     <full-insert-order>
         INSERT INTO
-        test.t_order_copy(order_id,user_id,status,t_int2,t_numeric,t_bool,t_char,t_varchar,t_float,t_double,t_timestmap,t_timestamptz)
+        test.%s(order_id,user_id,status,t_int2,t_numeric,t_bool,t_char,t_varchar,t_float,t_double,t_timestmap,t_timestamptz)
         VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
     </full-insert-order>
     
