@@ -32,5 +32,5 @@
         <column name="key_generator_type" />
         <column name="key_generator_props" />
     </metadata>
-    <row values="t_user| | write_ds_${0..9}| | | | | MOD| user_id| MOD| sharding-count=40| | | " />
+    <row values="t_user| ds_0.t_user_${0..1} | | | | | | STANDARD | user_id| inline| algorithm-expression=t_user_${user_id % 2} | | | " />
 </dataset>

@@ -17,14 +17,20 @@
 
 <dataset>
     <metadata>
-        <column name="name" />
-        <column name="auto_aware_data_source_name" />
-        <column name="write_data_source_query_enabled" />
-        <column name="write_data_source_name" />
-        <column name="read_data_source_names" />
-        <column name="load_balancer_type" />
-        <column name="load_balancer_props" />
+        <column name="table" />
+        <column name="actual_data_nodes" />
+        <column name="actual_data_sources" />
+        <column name="database_strategy_type" />
+        <column name="database_sharding_column" />
+        <column name="database_sharding_algorithm_type" />
+        <column name="database_sharding_algorithm_props" />
+        <column name="table_strategy_type" />
+        <column name="table_sharding_column" />
+        <column name="table_sharding_algorithm_type" />
+        <column name="table_sharding_algorithm_props" />
+        <column name="key_generate_column" />
+        <column name="key_generator_type" />
+        <column name="key_generator_props" />
     </metadata>
-    <row values="readwrite_ds_0| | | write_ds_0| read_ds_0| ROUND_ROBIN| " />
-    <row values="readwrite_ds_1| | | write_ds_1| read_ds_1| ROUND_ROBIN| " />
+    <row values="t_user| ds_0.t_user_${0..3} | | | | | | STANDARD | user_id| inline| algorithm-expression=t_user_${user_id % 4} | | | " />
 </dataset>
