@@ -31,7 +31,7 @@
         <column name="key_generate_column" />
         <column name="key_generator_type" />
         <column name="key_generator_props" />
-        <column name="auditor_names" />
+        <column name="auditor_types" />
         <column name="allow_hint_disable" />
     </metadata>
     <row values="t_order| ds_${0..9}.t_order| | STANDARD| user_id| IT.STANDARD.FIXTURE| | | | | | | | | | " />
