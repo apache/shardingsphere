@@ -15,42 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline;
+package org.apache.shardingsphere.data.pipeline.api.config.process.yaml;
 
 import lombok.Data;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 
 /**
- * YAML pipeline read configuration.
+ * YAML pipeline write configuration.
  */
 @Data
-public final class YamlPipelineReadConfiguration implements YamlConfiguration {
+public final class YamlPipelineWriteConfiguration implements YamlConfiguration {
     
     private static final Integer DEFAULT_WORKER_THREAD = 40;
     
     private static final Integer DEFAULT_BATCH_SIZE = 1000;
     
-    private static final Integer DEFAULT_SHARDING_SIZE = 1000_0000;
-    
     private Integer workerThread;
     
     private Integer batchSize;
-    
-    private Integer shardingSize;
     
     private YamlAlgorithmConfiguration rateLimiter;
     
     /**
      * Build with default value.
      *
-     * @return read configuration
+     * @return write configuration
      */
-    public static YamlPipelineReadConfiguration buildWithDefaultValue() {
-        YamlPipelineReadConfiguration result = new YamlPipelineReadConfiguration();
+    public static YamlPipelineWriteConfiguration buildWithDefaultValue() {
+        YamlPipelineWriteConfiguration result = new YamlPipelineWriteConfiguration();
         result.workerThread = DEFAULT_WORKER_THREAD;
         result.batchSize = DEFAULT_BATCH_SIZE;
-        result.shardingSize = DEFAULT_SHARDING_SIZE;
         return result;
     }
     
@@ -64,9 +59,6 @@ public final class YamlPipelineReadConfiguration implements YamlConfiguration {
         if (null == batchSize) {
             batchSize = DEFAULT_BATCH_SIZE;
         }
-        if (null == shardingSize) {
-            shardingSize = DEFAULT_SHARDING_SIZE;
-        }
     }
     
     /**
@@ -74,7 +66,7 @@ public final class YamlPipelineReadConfiguration implements YamlConfiguration {
      *
      * @param another another configuration
      */
-    public void copyNonNullFields(final YamlPipelineReadConfiguration another) {
+    public void copyNonNullFields(final YamlPipelineWriteConfiguration another) {
         if (null == another) {
             return;
         }
@@ -83,9 +75,6 @@ public final class YamlPipelineReadConfiguration implements YamlConfiguration {
         }
         if (null != another.batchSize) {
             batchSize = another.batchSize;
-        }
-        if (null != another.shardingSize) {
-            shardingSize = another.shardingSize;
         }
         if (null != another.rateLimiter) {
             rateLimiter = another.rateLimiter;
@@ -104,9 +93,6 @@ public final class YamlPipelineReadConfiguration implements YamlConfiguration {
                 break;
             case "BATCH_SIZE":
                 batchSize = null;
-                break;
-            case "SHARDING_SIZE":
-                shardingSize = null;
                 break;
             case "RATE_LIMITER":
                 rateLimiter = null;

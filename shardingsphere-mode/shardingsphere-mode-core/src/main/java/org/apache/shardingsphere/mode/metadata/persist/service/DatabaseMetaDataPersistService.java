@@ -105,7 +105,6 @@ public final class DatabaseMetaDataPersistService {
             addSchema(databaseName, schemaName);
         }
         tableMetaDataPersistService.compareAndPersist(databaseName, schemaName, schema.getTables());
-        viewMetaDataPersistService.compareAndPersist(databaseName, schemaName, schema.getViews());
     }
     
     /**
@@ -120,7 +119,6 @@ public final class DatabaseMetaDataPersistService {
             addSchema(databaseName, schemaName);
         }
         tableMetaDataPersistService.persist(databaseName, schemaName, schema.getTables());
-        viewMetaDataPersistService.persist(databaseName, schemaName, schema.getViews());
     }
     
     /**
@@ -132,7 +130,6 @@ public final class DatabaseMetaDataPersistService {
      */
     public void delete(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
         schema.getTables().forEach((key, value) -> tableMetaDataPersistService.delete(databaseName, schemaName, key));
-        schema.getViews().forEach((key, value) -> viewMetaDataPersistService.delete(databaseName, schemaName, key));
     }
     
     /**
