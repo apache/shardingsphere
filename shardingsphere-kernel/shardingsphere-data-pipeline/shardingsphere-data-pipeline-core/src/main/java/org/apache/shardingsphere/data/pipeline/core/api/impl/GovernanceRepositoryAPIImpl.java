@@ -115,7 +115,12 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     @Override
-    public String getJobItemErrorMsg(final String jobId, final int shardingItem) {
-        return repository.get(PipelineMetaDataNode.getJobItemErrorMsgPath(jobId, shardingItem));
+    public String getJobItemErrorMessage(final String jobId, final int shardingItem) {
+        return repository.get(PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem));
+    }
+    
+    @Override
+    public void cleanJobItemErrorMessage(final String jobId, final int shardingItem) {
+        repository.delete(PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem));
     }
 }

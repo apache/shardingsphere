@@ -148,5 +148,13 @@ public interface GovernanceRepositoryAPI {
      * @param shardingItem sharding item
      * @return error msg
      */
-    String getJobItemErrorMsg(String jobId, int shardingItem);
+    String getJobItemErrorMessage(String jobId, int shardingItem);
+    
+    /**
+     * Clean job item error message.
+     *
+     * @param jobId job id
+     * @param shardingItem sharding item
+     */
+    void cleanJobItemErrorMessage(String jobId, int shardingItem);
 }

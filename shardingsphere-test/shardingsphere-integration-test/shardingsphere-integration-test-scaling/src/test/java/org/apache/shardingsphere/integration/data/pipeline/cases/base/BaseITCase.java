@@ -277,7 +277,7 @@ public abstract class BaseITCase {
             assertFalse(CollectionUtils.containsAny(actualStatus, Arrays.asList(JobStatus.PREPARING_FAILURE.name(), JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name(),
                     JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name())));
             for (Map<String, Object> each : listJobStatus) {
-                assertTrue(StringUtils.isBlank(each.get("error_msg").toString()));
+                assertTrue(StringUtils.isBlank(each.get("error_message").toString()));
             }
             if (actualStatus.size() == 1 && actualStatus.contains(JobStatus.EXECUTE_INCREMENTAL_TASK.name())) {
                 return listJobStatus;

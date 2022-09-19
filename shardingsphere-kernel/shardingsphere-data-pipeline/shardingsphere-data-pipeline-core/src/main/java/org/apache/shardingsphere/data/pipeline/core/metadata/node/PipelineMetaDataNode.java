@@ -156,7 +156,7 @@ public final class PipelineMetaDataNode {
      * @param shardingItem sharding item
      * @return job item error msg
      */
-    public static String getJobItemErrorMsgPath(final String jobId, final int shardingItem) {
+    public static String getJobItemErrorMessagePath(final String jobId, final int shardingItem) {
         return String.join("/", getJobRootPath(jobId), "error", Integer.toString(shardingItem));
     }
 }

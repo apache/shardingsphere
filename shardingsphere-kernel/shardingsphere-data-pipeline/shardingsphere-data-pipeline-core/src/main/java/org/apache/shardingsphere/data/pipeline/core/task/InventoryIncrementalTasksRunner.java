@@ -31,8 +31,6 @@ import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPI;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPIFactory;
 
 import java.util.Collection;
 
@@ -44,8 +42,6 @@ import java.util.Collection;
 public final class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
     
     private final PipelineJobItemAPI jobItemAPI = new InventoryIncrementalJobItemAPIImpl();
-    
-    private final MigrationJobAPI jobAPI = MigrationJobAPIFactory.getInstance();
     
     @Getter
     private final PipelineJobItemContext jobItemContext;
@@ -115,21 +111,21 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
     
     private ExecuteCallback createInventoryTaskCallback() {
         return new ExecuteCallback() {
-            
+    
             @Override
             public void onSuccess() {
                 if (PipelineJobProgressDetector.allInventoryTasksFinished(inventoryTasks)) {
                     log.info("onSuccess, all inventory tasks finished.");
                     executeIncrementalTask();
                 }
-                jobAPI.persistJobItemErrorMsg(jobItemContext.getJobId(), jobItemContext.getShardingItem(), null);
             }
-    
+            
             @Override
             public void onFailure(final Throwable throwable) {
                 log.error("Inventory task execute failed.", throwable);
                 updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE);
-                jobAPI.persistJobItemErrorMsg(jobItemContext.getJobId(), jobItemContext.getShardingItem(), throwable);
+                PipelineAPIFactory.getPipelineJobAPI(PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()))
+                        .persistJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem(), throwable);
                 stop();
             }
         };
@@ -157,17 +153,17 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
     
     private ExecuteCallback createIncrementalTaskCallback() {
         return new ExecuteCallback() {
-    
+            
             @Override
             public void onSuccess() {
-                jobAPI.persistJobItemErrorMsg(jobItemContext.getJobId(), jobItemContext.getShardingItem(), null);
             }
             
             @Override
             public void onFailure(final Throwable throwable) {
                 log.error("Incremental task execute failed.", throwable);
                 updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE);
-                jobAPI.persistJobItemErrorMsg(jobItemContext.getJobId(), jobItemContext.getShardingItem(), throwable);
+                PipelineAPIFactory.getPipelineJobAPI(PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()))
+                        .persistJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem(), throwable);
                 stop();
             }
         };
