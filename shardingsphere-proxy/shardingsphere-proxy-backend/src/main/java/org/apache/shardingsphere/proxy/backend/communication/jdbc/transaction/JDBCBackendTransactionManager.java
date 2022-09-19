@@ -155,17 +155,13 @@ public final class JDBCBackendTransactionManager implements TransactionManager<V
         if (exceptions.isEmpty()) {
             return null;
         }
-        SQLException ex = null;
-        int count = 0;
-        for (SQLException each : exceptions) {
-            if (0 == count) {
-                ex = each;
-            } else {
-                // TODO use recursion to setNextException with chain, not overlap
-                ex.setNextException(each);
+        SQLException parentException = null;
+        for (SQLException ex : exceptions) {
+            if (parentException != null) {
+                ex.setNextException(parentException);
             }
-            count++;
+            parentException = ex;
         }
-        throw ex;
+        throw parentException;
     }
 }
