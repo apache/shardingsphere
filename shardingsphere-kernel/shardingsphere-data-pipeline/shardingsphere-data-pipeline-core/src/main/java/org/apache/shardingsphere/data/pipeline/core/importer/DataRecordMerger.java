@@ -88,9 +88,8 @@ public final class DataRecordMerger {
     
     private void mergeInsert(final DataRecord dataRecord, final Map<DataRecord.Key, DataRecord> dataRecords) {
         DataRecord beforeDataRecord = dataRecords.get(dataRecord.getKey());
-        if (null != beforeDataRecord && !IngestDataChangeType.DELETE.equals(beforeDataRecord.getType())) {
-            throw new PipelineUnexpectedDataRecordOrderException(beforeDataRecord, dataRecord);
-        }
+        ShardingSpherePreconditions.checkState(null == beforeDataRecord || IngestDataChangeType.DELETE.equals(beforeDataRecord.getType()),
+                () -> new PipelineUnexpectedDataRecordOrderException(beforeDataRecord, dataRecord));
         dataRecords.put(dataRecord.getKey(), dataRecord);
     }
     
@@ -121,17 +120,13 @@ public final class DataRecordMerger {
     
     private void mergeDelete(final DataRecord dataRecord, final Map<DataRecord.Key, DataRecord> dataRecords) {
         DataRecord beforeDataRecord = dataRecords.get(dataRecord.getKey());
-        if (null != beforeDataRecord && (IngestDataChangeType.DELETE.equals(beforeDataRecord.getType()))) {
-            throw new PipelineUnexpectedDataRecordOrderException(beforeDataRecord, dataRecord);
-        }
+        ShardingSpherePreconditions.checkState(null == beforeDataRecord || (!IngestDataChangeType.DELETE.equals(beforeDataRecord.getType())),
+                () -> new PipelineUnexpectedDataRecordOrderException(beforeDataRecord, dataRecord));
         if (null != beforeDataRecord && IngestDataChangeType.UPDATE.equals(beforeDataRecord.getType()) && checkUpdatedPrimaryKey(beforeDataRecord)) {
             DataRecord mergedDataRecord = new DataRecord(dataRecord.getPosition(), dataRecord.getColumnCount());
             for (int i = 0; i < dataRecord.getColumnCount(); i++) {
-                mergedDataRecord.addColumn(new Column(
-                        dataRecord.getColumn(i).getName(),
-                        dataRecord.getColumn(i).isUniqueKey() ? beforeDataRecord.getColumn(i).getOldValue() : beforeDataRecord.getColumn(i).getValue(),
-                        true,
-                        dataRecord.getColumn(i).isUniqueKey()));
+                mergedDataRecord.addColumn(new Column(dataRecord.getColumn(i).getName(),
+                        dataRecord.getColumn(i).isUniqueKey() ? beforeDataRecord.getColumn(i).getOldValue() : beforeDataRecord.getColumn(i).getValue(), true, dataRecord.getColumn(i).isUniqueKey()));
             }
             mergedDataRecord.setTableName(dataRecord.getTableName());
             mergedDataRecord.setType(IngestDataChangeType.DELETE);
