@@ -22,8 +22,8 @@ import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.impl.AbstractSchema;
-import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
@@ -52,7 +52,7 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     @Override
     public int getColumnCount() {
-        return selectStatementContext.getProjectionsContext().getExpandProjections().size();
+        return validatedNodeType.getFieldCount();
     }
     
     @Override
@@ -94,6 +94,9 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     @Override
     public String getColumnLabel(final int column) {
         Projection projection = selectStatementContext.getProjectionsContext().getExpandProjections().get(column - 1);
+        if (projection instanceof AggregationDistinctProjection) {
+            return projection.getExpression();
+        }
         return projection.getColumnLabel();
     }
     
@@ -103,7 +106,7 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
         if (projection instanceof ColumnProjection) {
             return ((ColumnProjection) projection).getName();
         }
-        return projection.getColumnLabel();
+        return getColumnLabel(column);
     }
     
     @Override
@@ -140,8 +143,7 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     @Override
     public String getColumnTypeName(final int column) {
-        int columnType = getColumnType(column);
-        return Optional.ofNullable(SqlTypeName.getNameForJdbcType(columnType)).map(SqlTypeName::getName).orElse("");
+        return validatedNodeType.getFieldList().get(column - 1).getType().getSqlTypeName().getName();
     }
     
     @Override
@@ -161,7 +163,7 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     @Override
     public String getColumnClassName(final int column) {
-        return "";
+        return validatedNodeType.getFieldList().get(column - 1).getType().getSqlTypeName().getClass().getName();
     }
     
     private Optional<String> findTableName(final int column) {

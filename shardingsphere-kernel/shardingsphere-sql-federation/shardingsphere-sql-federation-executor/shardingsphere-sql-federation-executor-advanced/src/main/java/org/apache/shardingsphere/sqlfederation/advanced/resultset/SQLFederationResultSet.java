@@ -22,6 +22,7 @@ import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtil;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
@@ -83,7 +84,9 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
         List<Projection> projections = selectStatementContext.getProjectionsContext().getExpandProjections();
         Map<String, Integer> result = new HashMap<>(projections.size(), 1);
         for (int columnIndex = 1; columnIndex <= projections.size(); columnIndex++) {
-            result.put(projections.get(columnIndex - 1).getColumnLabel().toLowerCase(), columnIndex);
+            Projection projection = projections.get(columnIndex - 1);
+            String columnLabel = projection instanceof AggregationDistinctProjection ? projection.getExpression() : projection.getColumnLabel();
+            result.put(columnLabel.toLowerCase(), columnIndex);
         }
         return result;
     }
