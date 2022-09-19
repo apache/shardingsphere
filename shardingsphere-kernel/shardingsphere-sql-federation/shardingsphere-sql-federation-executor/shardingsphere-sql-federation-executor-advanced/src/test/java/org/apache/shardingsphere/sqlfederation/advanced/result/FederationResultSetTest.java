@@ -22,9 +22,9 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.Projecti
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sqlfederation.advanced.resultset.SQLFederationResultSet;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.filter.FilterableSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,7 +51,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -59,7 +59,7 @@ import static org.mockito.Mockito.when;
 
 public final class FederationResultSetTest {
     
-    private Enumerator<Object[]> enumerator;
+    private Enumerator<Object> enumerator;
     
     private SQLFederationResultSet federationResultSet;
     
@@ -81,8 +81,8 @@ public final class FederationResultSetTest {
     }
     
     @SuppressWarnings("unchecked")
-    private Enumerator<Object[]> createEnumerator() {
-        Enumerator<Object[]> result = mock(Enumerator.class);
+    private Enumerator<Object> createEnumerator() {
+        Enumerator<Object> result = mock(Enumerator.class);
         when(result.moveNext()).thenReturn(true, false);
         when(result.current()).thenReturn(new Object[]{1, 1, "OK", 1});
         return result;

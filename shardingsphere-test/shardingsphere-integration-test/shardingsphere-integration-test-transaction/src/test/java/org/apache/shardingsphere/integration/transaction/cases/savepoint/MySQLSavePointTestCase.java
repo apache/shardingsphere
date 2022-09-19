@@ -17,18 +17,16 @@
 
 package org.apache.shardingsphere.integration.transaction.cases.savepoint;
 
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 
 /**
  * MySQL savepoint transaction integration test.
  */
-@Slf4j
 @TransactionTestCase(dbTypes = {TransactionTestConstants.MYSQL})
 public final class MySQLSavePointTestCase extends BaseSavePointTestCase {
     
@@ -37,8 +35,7 @@ public final class MySQLSavePointTestCase extends BaseSavePointTestCase {
     }
     
     @Override
-    @SneakyThrows
-    public void executeTest() {
+    public void executeTest() throws SQLException {
         assertRollback2Savepoint();
         assertReleaseSavepoint();
     }

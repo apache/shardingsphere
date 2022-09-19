@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.fixture.ParserFixture;
 import org.junit.Test;
 
 import static org.mockito.Mockito.mock;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.instanceOf;
 
 public final class SQLParserFactoryTest {

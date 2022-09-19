@@ -15,17 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.converter.context;
+package org.apache.shardingsphere.data.pipeline.api.config.process;
 
 import lombok.Getter;
-
-import java.util.concurrent.atomic.AtomicInteger;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 
 /**
- * Converter context.
+ * Pipeline write configuration.
  */
+@RequiredArgsConstructor
 @Getter
-public final class ConverterContext {
+@ToString
+public final class PipelineWriteConfiguration {
     
-    private final AtomicInteger parameterCount = new AtomicInteger();
+    private final Integer workerThread;
+    
+    private final Integer batchSize;
+    
+    private final AlgorithmConfiguration rateLimiter;
 }

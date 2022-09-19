@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 
 import java.lang.reflect.Method;
 import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import java.util.Map;
 
 /**
@@ -44,7 +45,7 @@ public final class JDBCExecutorCallbackAdvice implements InstanceMethodAroundAdv
     private static final String OPERATION_NAME = "/ShardingSphere/executeSQL/";
     
     @Override
-    @SneakyThrows
+    @SneakyThrows({ReflectiveOperationException.class, SQLException.class})
     @SuppressWarnings("unchecked")
     public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         Span root = (Span) ((Map<String, Object>) args[2]).get(JaegerConstants.ROOT_SPAN);

@@ -32,13 +32,13 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -82,14 +82,14 @@ public final class ShowShardingTableRulesUsedAuditorQueryResultSetTest {
     private ShardingAutoTableRuleConfiguration createShardingAutoTableRuleConfiguration() {
         ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("t_order_auto", "ds_0, ds_1");
         result.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "auto_mod"));
-        result.setAuditStrategy(new ShardingAuditStrategyConfiguration(Arrays.asList("shardingKeyAudit"), true));
+        result.setAuditStrategy(new ShardingAuditStrategyConfiguration(Collections.singleton("shardingKeyAudit"), true));
         return result;
     }
     
     private ShardingTableRuleConfiguration createShardingTableRuleConfiguration() {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${0..1}");
         result.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_inline"));
-        result.setAuditStrategy(new ShardingAuditStrategyConfiguration(Arrays.asList("shardingKeyAudit"), true));
+        result.setAuditStrategy(new ShardingAuditStrategyConfiguration(Collections.singleton("shardingKeyAudit"), true));
         return result;
     }
     

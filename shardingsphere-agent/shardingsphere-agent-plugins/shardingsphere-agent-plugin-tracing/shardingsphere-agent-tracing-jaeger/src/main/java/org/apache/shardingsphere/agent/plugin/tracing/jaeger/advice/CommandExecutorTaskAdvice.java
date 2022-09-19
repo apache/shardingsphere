@@ -50,7 +50,7 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAroundAdvi
     }
     
     @Override
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     public void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         ExecutorDataMap.getValue().remove(JaegerConstants.ROOT_SPAN);
         Field field = CommandExecutorTask.class.getDeclaredField("connectionSession");

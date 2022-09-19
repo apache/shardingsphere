@@ -21,13 +21,13 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLExcepti
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Split pipeline job exception.
+ * Split pipeline job by range exception.
  */
-public final class SplitPipelineJobException extends PipelineSQLException {
+public final class SplitPipelineJobByRangeException extends PipelineSQLException {
     
     private static final long serialVersionUID = -8509592086832334026L;
     
-    public SplitPipelineJobException(final String tableName, final String reason) {
-        super(XOpenSQLState.GENERAL_ERROR, 83, "Can not split range for table `%s`, reason: %s", tableName, reason);
+    public SplitPipelineJobByRangeException(final String tableName, final String reason) {
+        super(XOpenSQLState.GENERAL_ERROR, 83, "Can not split by range for table `%s`, reason is: %s", tableName, reason);
     }
 }

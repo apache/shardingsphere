@@ -15,24 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.rule.data.pipeline;
+package org.apache.shardingsphere.data.pipeline.core.exception.job;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+
+import java.sql.SQLException;
 
 /**
- * Pipeline process configuration.
+ * Prepare job with get binlog position.
  */
-@RequiredArgsConstructor
-@Getter
-@ToString
-public final class PipelineProcessConfiguration {
+public final class PrepareJobWithGetBinlogPositionException extends PipelineSQLException {
     
-    private final PipelineReadConfiguration read;
+    private static final long serialVersionUID = -3701189611685636704L;
     
-    private final PipelineWriteConfiguration write;
-    
-    private final AlgorithmConfiguration streamChannel;
+    public PrepareJobWithGetBinlogPositionException(final String jobId, final SQLException cause) {
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 92, "Get binlog position failed by job `%s`, reason is: %s", jobId, cause.getMessage());
+    }
 }

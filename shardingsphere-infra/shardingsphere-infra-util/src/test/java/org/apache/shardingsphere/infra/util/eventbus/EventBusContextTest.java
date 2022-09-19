@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.util.eventbus.fixture.EventListenerFixtur
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class EventBusContextTest {
     

@@ -15,16 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.exception.job;
+package org.apache.shardingsphere.data.pipeline.api.config.process;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 
 /**
- * Pipeline job prepare failed exception.
+ * Pipeline read configuration.
  */
-public final class PipelineJobPrepareFailedException extends RuntimeException {
+@RequiredArgsConstructor
+@Getter
+@ToString
+public final class PipelineReadConfiguration {
     
-    private static final long serialVersionUID = 1409505606319197767L;
+    private final Integer workerThread;
     
-    public PipelineJobPrepareFailedException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
+    private final Integer batchSize;
+    
+    private final Integer shardingSize;
+    
+    private final AlgorithmConfiguration rateLimiter;
 }

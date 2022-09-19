@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.api.context;
 
-import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
 
 /**
  * Pipeline process context.

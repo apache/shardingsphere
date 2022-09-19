@@ -63,7 +63,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -401,7 +401,7 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private Collection<ProxyBackendHandler> getDatabaseCommunicationEngines() {
         Field field = JDBCBackendConnection.class.getDeclaredField("backendHandlers");
         field.setAccessible(true);
@@ -409,7 +409,7 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private Collection<ProxyBackendHandler> getInUseDatabaseCommunicationEngines() {
         Field field = JDBCBackendConnection.class.getDeclaredField("inUseBackendHandlers");
         field.setAccessible(true);
