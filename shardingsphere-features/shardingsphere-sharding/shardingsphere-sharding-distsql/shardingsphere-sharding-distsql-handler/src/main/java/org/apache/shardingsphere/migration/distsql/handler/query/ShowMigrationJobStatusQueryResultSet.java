@@ -19,6 +19,7 @@ package org.apache.shardingsphere.migration.distsql.handler.query;
 
 import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationStatusStatement;
@@ -28,6 +29,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -43,7 +45,8 @@ public final class ShowMigrationJobStatusQueryResultSet implements DatabaseDistS
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         long currentTimeMillis = System.currentTimeMillis();
-        data = JOB_API.getJobProgress(((ShowMigrationStatusStatement) sqlStatement).getJobId()).entrySet().stream()
+        Map<Integer, InventoryIncrementalJobItemProgress> jobProgress = JOB_API.getJobProgress(((ShowMigrationStatusStatement) sqlStatement).getJobId());
+        data = jobProgress.entrySet().stream()
                 .map(entry -> {
                     Collection<Object> result = new LinkedList<>();
                     result.add(entry.getKey());
@@ -55,7 +58,9 @@ public final class ShowMigrationJobStatusQueryResultSet implements DatabaseDistS
                         result.add(entry.getValue().getInventory().getInventoryFinishedPercentage());
                         long latestActiveTimeMillis = entry.getValue().getIncremental().getIncrementalLatestActiveTimeMillis();
                         result.add(latestActiveTimeMillis > 0 ? TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis) : 0);
+                        result.add(entry.getValue().getErrorMsg());
                     } else {
+                        result.add("");
                         result.add("");
                         result.add("");
                         result.add("");
@@ -69,7 +74,7 @@ public final class ShowMigrationJobStatusQueryResultSet implements DatabaseDistS
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("item", "data_source", "status", "active", "processed_records_count", "inventory_finished_percentage", "incremental_idle_seconds");
+        return Arrays.asList("item", "data_source", "status", "active", "processed_records_count", "inventory_finished_percentage", "incremental_idle_seconds", "error_msg");
     }
     
     @Override

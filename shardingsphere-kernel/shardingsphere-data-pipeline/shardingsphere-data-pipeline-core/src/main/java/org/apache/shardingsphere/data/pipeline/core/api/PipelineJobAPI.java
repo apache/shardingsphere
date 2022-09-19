@@ -83,4 +83,22 @@ public interface PipelineJobAPI extends PipelineJobPublicAPI, PipelineJobItemAPI
      * @return job configuration
      */
     PipelineJobConfiguration getJobConfiguration(String jobId);
+    
+    /**
+     * Get job item error msg.
+     *
+     * @param jobId job id
+     * @param shardingItem sharding item
+     * @return map, key is sharding item, value is error msg
+     */
+    String getJobItemErrorMsg(String jobId, int shardingItem);
+    
+    /**
+     * Persist job item error msg.
+     *
+     * @param jobId job id
+     * @param shardingItem sharding item
+     * @param errorMsg error msg
+     */
+    void persistJobItemErrorMsg(String jobId, int shardingItem, Throwable errorMsg);
 }

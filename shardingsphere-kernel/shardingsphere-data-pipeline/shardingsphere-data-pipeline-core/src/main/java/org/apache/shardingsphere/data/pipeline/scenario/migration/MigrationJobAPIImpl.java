@@ -22,6 +22,8 @@ import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.CreateTableConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.CreateTableConfiguration.CreateTableEntry;
@@ -68,6 +70,7 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.connection.AddMigrationSourceResourceException;
 import org.apache.shardingsphere.data.pipeline.core.exception.connection.DropMigrationSourceResourceException;
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineSchemaTableUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineTableMetaDataUtil;
@@ -271,6 +274,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
             InventoryIncrementalJobItemProgress jobItemProgress = getJobItemProgress(jobId, each);
             if (null != jobItemProgress) {
                 jobItemProgress.setActive(!jobConfigPOJO.isDisabled());
+                jobItemProgress.setErrorMsg(getJobItemErrorMsg(jobId, each));
             }
             map.put(each, jobItemProgress);
         }, LinkedHashMap::putAll);
@@ -491,5 +495,20 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         result.setType(type);
         result.setParameter(parameter);
         return result;
+    }
+    
+    @Override
+    public String getJobItemErrorMsg(final String jobId, final int shardingItem) {
+        return ObjectUtils.defaultIfNull(PipelineAPIFactory.getGovernanceRepositoryAPI().getJobItemErrorMsg(jobId, shardingItem), "");
+    }
+    
+    @Override
+    public void persistJobItemErrorMsg(final String jobId, final int shardingItem, final Throwable throwable) {
+        String key = PipelineMetaDataNode.getJobItemErrorMsgPath(jobId, shardingItem);
+        String value = "";
+        if (null != throwable) {
+            value = ExceptionUtils.getStackTrace(throwable);
+        }
+        PipelineAPIFactory.getGovernanceRepositoryAPI().persist(key, value);
     }
 }

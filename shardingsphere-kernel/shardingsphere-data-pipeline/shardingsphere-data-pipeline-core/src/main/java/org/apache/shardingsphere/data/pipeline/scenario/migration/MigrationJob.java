@@ -92,9 +92,10 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
         } catch (final SQLException | RuntimeException ex) {
             // CHECKSTYLE:ON
             log.error("job prepare failed, {}-{}", getJobId(), jobItemContext.getShardingItem(), ex);
-            PipelineJobCenter.stop(getJobId());
+            PipelineJobCenter.stop(jobItemContext.getJobId());
             jobItemContext.setStatus(JobStatus.PREPARING_FAILURE);
             jobAPI.persistJobItemProgress(jobItemContext);
+            jobAPI.persistJobItemErrorMsg(jobItemContext.getJobId(), jobItemContext.getShardingItem(), ex);
             if (ex instanceof RuntimeException) {
                 throw (RuntimeException) ex;
             }

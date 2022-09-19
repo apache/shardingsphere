@@ -113,4 +113,9 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     public void persistMetaDataProcessConfiguration(final JobType jobType, final String processConfigYamlText) {
         repository.persist(PipelineMetaDataNode.getMetaDataProcessConfigPath(jobType), processConfigYamlText);
     }
+    
+    @Override
+    public String getJobItemErrorMsg(final String jobId, final int shardingItem) {
+        return repository.get(PipelineMetaDataNode.getJobItemErrorMsgPath(jobId, shardingItem));
+    }
 }
