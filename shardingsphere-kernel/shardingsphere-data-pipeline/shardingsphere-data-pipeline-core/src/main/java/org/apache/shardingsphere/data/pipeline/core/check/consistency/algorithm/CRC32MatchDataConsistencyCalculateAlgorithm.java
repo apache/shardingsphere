@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm
 import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineDataConsistencyCheckFailedException;
+import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
@@ -65,20 +66,18 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm implements DataCo
             throw new PipelineDataConsistencyCheckFailedException(
                     String.format("Unsupported CRC32 data consistency calculate algorithm with database type `%s`", parameter.getDatabaseType()));
         }
-        try {
-            return calculateCRC32(parameter.getDataSource(), sql.get());
-        } catch (final SQLException ex) {
-            throw new PipelineDataConsistencyCheckFailedException(String.format("Table `%s` data check failed.", logicTableName), ex);
-        }
+        return calculateCRC32(parameter.getDataSource(), logicTableName, sql.get());
     }
     
-    private long calculateCRC32(final DataSource dataSource, final String sql) throws SQLException {
+    private long calculateCRC32(final DataSource dataSource, final String logicTableName, final String sql) {
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);
                 ResultSet resultSet = preparedStatement.executeQuery()) {
             resultSet.next();
             return resultSet.getLong(1);
+        } catch (final SQLException ex) {
+            throw new PipelineTableDataConsistencyCheckLoadingFailedException(logicTableName);
         }
     }
     
