@@ -103,6 +103,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropLo
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropOperatorContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropOutlineContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropPackageContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropPluggableDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropProcedureContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropRestorePointContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropRollbackSegmentContext;
@@ -224,6 +225,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropOperatorStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropOutlineStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropPackageStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropPluggableDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropProcedureStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropRestorePointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropRollbackSegmentStatement;
@@ -1003,5 +1005,10 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitDropIndexType(final DropIndexTypeContext ctx) {
         return new OracleDropIndexTypeStatement();
+    }
+    
+    @Override
+    public ASTNode visitDropPluggableDatabase(final DropPluggableDatabaseContext ctx) {
+        return new OracleDropPluggableDatabaseStatement();
     }
 }

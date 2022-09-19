@@ -235,6 +235,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropOutlineStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropOwnedStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropPackageStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropPluggableDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropPolicyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropProcedureStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropPublicationStatementTestCase;
@@ -1670,6 +1671,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-index-type")
     private final List<DropIndexTypeStatementTestCase> dropIndexTypeStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-pluggable-database")
+    private final List<DropPluggableDatabaseStatementTestCase> dropPluggableDatabaseStatementTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
