@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sqlfederation.advanced.resultset;
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
-import org.apache.calcite.rel.type.RelDataTypeField;
 import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.calcite.sql.type.SqlTypeName;
@@ -32,7 +31,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 
 import java.sql.ResultSetMetaData;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -50,7 +48,7 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     private final SelectStatementContext selectStatementContext;
     
-    private final List<RelDataTypeField> fields;
+    private final RelDataType validatedNodeType;
     
     @Override
     public int getColumnCount() {
@@ -137,7 +135,7 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     @Override
     public int getColumnType(final int column) {
-        return fields.get(column - 1).getType().getSqlTypeName().getJdbcOrdinal();
+        return validatedNodeType.getFieldList().get(column - 1).getType().getSqlTypeName().getJdbcOrdinal();
     }
     
     @Override

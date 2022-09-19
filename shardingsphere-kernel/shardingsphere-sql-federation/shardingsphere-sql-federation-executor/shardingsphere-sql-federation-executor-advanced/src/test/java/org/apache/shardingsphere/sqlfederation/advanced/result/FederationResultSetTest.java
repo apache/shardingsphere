@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sqlfederation.advanced.result;
 
 import org.apache.calcite.linq4j.Enumerator;
+import org.apache.calcite.rel.type.RelDataType;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
@@ -66,7 +67,7 @@ public final class FederationResultSetTest {
     @Before
     public void setUp() {
         enumerator = createEnumerator();
-        federationResultSet = new SQLFederationResultSet(enumerator, mock(ShardingSphereSchema.class), mock(FilterableSchema.class), createSelectStatementContext(), Collections.emptyList());
+        federationResultSet = new SQLFederationResultSet(enumerator, mock(ShardingSphereSchema.class), mock(FilterableSchema.class), createSelectStatementContext(), mock(RelDataType.class));
     }
     
     private static SelectStatementContext createSelectStatementContext() {
@@ -89,7 +90,7 @@ public final class FederationResultSetTest {
     }
     
     @Test
-    public void assertNext() throws SQLException {
+    public void assertNext() {
         assertTrue(federationResultSet.next());
     }
     

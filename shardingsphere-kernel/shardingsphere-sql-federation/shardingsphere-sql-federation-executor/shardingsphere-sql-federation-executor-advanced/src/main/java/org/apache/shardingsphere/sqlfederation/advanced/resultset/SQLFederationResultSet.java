@@ -19,10 +19,9 @@ package org.apache.shardingsphere.sqlfederation.advanced.resultset;
 
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.linq4j.Enumerator;
-import org.apache.calcite.rel.type.RelDataTypeField;
+import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtil;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
@@ -74,14 +73,13 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     private boolean closed;
     
     public SQLFederationResultSet(final Enumerator<Object> enumerator, final ShardingSphereSchema schema, final AbstractSchema filterableSchema,
-                                  final SQLStatementContext<?> sqlStatementContext, final List<RelDataTypeField> fields) {
+                                  final SelectStatementContext selectStatementContext, final RelDataType validatedNodeType) {
         this.enumerator = enumerator;
-        columnLabelAndIndexMap = createColumnLabelAndIndexMap(sqlStatementContext);
-        resultSetMetaData = new SQLFederationResultSetMetaData(schema, filterableSchema, new JavaTypeFactoryImpl(), (SelectStatementContext) sqlStatementContext, fields);
+        columnLabelAndIndexMap = createColumnLabelAndIndexMap(selectStatementContext);
+        resultSetMetaData = new SQLFederationResultSetMetaData(schema, filterableSchema, new JavaTypeFactoryImpl(), selectStatementContext, validatedNodeType);
     }
     
-    private Map<String, Integer> createColumnLabelAndIndexMap(final SQLStatementContext<?> sqlStatementContext) {
-        SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
+    private Map<String, Integer> createColumnLabelAndIndexMap(final SelectStatementContext selectStatementContext) {
         List<Projection> projections = selectStatementContext.getProjectionsContext().getExpandProjections();
         Map<String, Integer> result = new HashMap<>(projections.size(), 1);
         for (int columnIndex = 1; columnIndex <= projections.size(); columnIndex++) {
