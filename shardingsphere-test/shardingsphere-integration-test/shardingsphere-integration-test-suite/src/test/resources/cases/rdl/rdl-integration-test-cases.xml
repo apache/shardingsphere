@@ -26,22 +26,22 @@
 <!--            <assertion-sql sql="SHOW DATABASE RESOURCES" />-->
 <!--        </assertion>-->
 <!--    </test-case>-->
-    <test-case sql="DROP RESOURCE ds_2;" db-types="MySQL, PostgreSQL">
-        <assertion expected-data-file="drop_resource.xml">
-            <assertion-sql sql="SHOW DATABASE RESOURCES" />
-        </assertion>
-    </test-case>
-    <test-case sql="CREATE SHARDING TABLE RULE t_user (DATANODES('ds_0.t_user_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_user_${user_id % 2}')))))" db-types="MySQL, PostgreSQL">
+<!--    <test-case sql="DROP RESOURCE ds_2;" db-types="MySQL, PostgreSQL">-->
+<!--        <assertion expected-data-file="drop_resource.xml">-->
+<!--            <assertion-sql sql="SHOW DATABASE RESOURCES" />-->
+<!--        </assertion>-->
+<!--    </test-case>-->
+    <test-case sql="CREATE SHARDING TABLE RULE t_user (DATANODES('ds_0.t_user_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_user_${user_id % 2}')))))" db-types="MySQL">
         <assertion expected-data-file="create_sharding_rules.xml">
             <assertion-sql sql="SHOW SHARDING TABLE RULES;" />
         </assertion>
     </test-case>
-    <test-case sql="ALTER SHARDING TABLE RULE t_user (DATANODES('ds_0.t_user_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_user_${user_id % 4}')))))" db-types="MySQL, PostgreSQL">
+    <test-case sql="ALTER SHARDING TABLE RULE t_user (DATANODES('ds_0.t_user_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_user_${user_id % 4}')))))" db-types="MySQL">
         <assertion expected-data-file="alter_sharding_rules.xml">
             <assertion-sql sql="SHOW SHARDING TABLE RULES;" />
         </assertion>
     </test-case>
-    <test-case sql="DROP SHARDING TABLE RULE t_user" db-types="MySQL, PostgreSQL">
+    <test-case sql="DROP SHARDING TABLE RULE t_user" db-types="MySQL">
         <assertion expected-data-file="drop_sharding_rules.xml">
             <assertion-sql sql="SHOW SHARDING TABLE RULES;" />
         </assertion>
@@ -53,11 +53,6 @@
     </test-case>
     <test-case sql="ALTER READWRITE_SPLITTING RULE readwrite_ds (WRITE_RESOURCE=ds_0,READ_RESOURCES(ds_0),TYPE(NAME='RANDOM'));" db-types="MySQL, PostgreSQL">
         <assertion expected-data-file="alter_readwrite_splitting_rules.xml">
-            <assertion-sql sql="SHOW READWRITE_SPLITTING RULES;" />
-        </assertion>
-    </test-case>
-    <test-case sql="DROP READWRITE_SPLITTING RULE readwrite_ds" db-types="MySQL, PostgreSQL">
-        <assertion expected-data-file="drop_readwrite_splitting_rules.xml">
             <assertion-sql sql="SHOW READWRITE_SPLITTING RULES;" />
         </assertion>
     </test-case>

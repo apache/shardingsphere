@@ -50,8 +50,7 @@ public final class GeneralRDLIT extends BaseRDLIT {
     public void assertExecute() throws SQLException, ParseException {
         assertNotNull("Assertion SQL is required", getAssertion().getAssertionSQL());
         try (Connection connection = getTargetDataSource().getConnection()) {
-            try (
-                    Statement statement = connection.createStatement()) {
+            try (Statement statement = connection.createStatement()) {
                 executeSQLCase(statement);
                 assertResultSet(statement);
             }

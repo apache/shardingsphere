@@ -19,7 +19,7 @@ databaseName: rdl_empty_rules
 
 dataSources:
   ds_0:
-    url: jdbc:postgresql://postgresql.rdl.empty_rules.host:5432/ds_0
+    url: jdbc:postgresql://postgresql.rdl_empty_rules.host:5432/rdl_ds_0
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -28,7 +28,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   ds_1:
-    url: jdbc:postgresql://postgresql.rdl.empty_rules.host:5432/ds_1
+    url: jdbc:postgresql://postgresql.rdl_empty_rules.host:5432/rdl_ds_1
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -37,7 +37,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   ds_2:
-    url: jdbc:postgresql://postgresql.rdl.empty_rules.host:5432/ds_2
+    url: jdbc:postgresql://postgresql.rdl_empty_rules.host:5432/rdl_ds_2
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
