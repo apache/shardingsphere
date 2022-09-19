@@ -3482,3 +3482,7 @@ dropIndexType
     : DROP INDEXTYPE indexTypeName FORCE?
     ;
 
+dropPluggableDatabase
+    : DROP PLUGGABLE DATABASE pdbName ((KEEP | INCLUDING) DATAFILES)?
+    ;
+
