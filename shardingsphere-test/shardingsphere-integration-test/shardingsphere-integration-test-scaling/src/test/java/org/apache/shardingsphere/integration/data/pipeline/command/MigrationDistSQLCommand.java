@@ -72,7 +72,7 @@ public final class MigrationDistSQLCommand {
     }
     
     /**
-     * Get migration single table DistSQL.
+     * Get migration single table DistSQL with schema.
      *
      * @param sourceTableName source table name
      * @param targetTableName target table name

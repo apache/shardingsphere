@@ -93,7 +93,7 @@ public final class PostgreSQLMigrationGeneralIT extends AbstractMigrationITCase 
         createTargetOrderItemTableRule();
         Pair<List<Object[]>, List<Object[]>> dataPair = ScalingCaseHelper.generateFullInsertData(KEY_GENERATE_ALGORITHM, parameterized.getDatabaseType(), TABLE_INIT_ROW_COUNT);
         JdbcTemplate jdbcTemplate = new JdbcTemplate(getSourceDataSource());
-        jdbcTemplate.batchUpdate(String.format(getExtraSQLCommand().getFullInsertOrder(getSourceTableOrderName())), dataPair.getLeft());
+        jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrder(getSourceTableOrderName()), dataPair.getLeft());
         jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
         checkOrderMigration(jdbcTemplate);
         checkOrderItemMigration();

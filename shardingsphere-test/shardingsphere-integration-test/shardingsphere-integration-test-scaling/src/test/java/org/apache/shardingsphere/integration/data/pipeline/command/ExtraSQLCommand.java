@@ -45,7 +45,7 @@ public final class ExtraSQLCommand {
     private String fullInsertOrderItem;
     
     /**
-     * Get migration single table DistSQL.
+     * Get full insert order sql.
      *
      * @param orderTableName order table name
      * @return migration single table DistSQL

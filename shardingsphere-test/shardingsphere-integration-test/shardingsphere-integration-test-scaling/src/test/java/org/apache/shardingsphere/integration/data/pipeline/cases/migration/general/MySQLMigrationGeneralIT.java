@@ -91,7 +91,7 @@ public final class MySQLMigrationGeneralIT extends AbstractMigrationITCase {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(getSourceDataSource());
         Pair<List<Object[]>, List<Object[]>> dataPair = ScalingCaseHelper.generateFullInsertData(keyGenerateAlgorithm, parameterized.getDatabaseType(), 3000);
         log.info("init data begin: {}", LocalDateTime.now());
-        jdbcTemplate.batchUpdate(String.format(getExtraSQLCommand().getFullInsertOrder(getSourceTableOrderName())), dataPair.getLeft());
+        jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrder(getSourceTableOrderName()), dataPair.getLeft());
         jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
         log.info("init data end: {}", LocalDateTime.now());
         startMigration(getSourceTableOrderName(), getTargetTableOrderName());
