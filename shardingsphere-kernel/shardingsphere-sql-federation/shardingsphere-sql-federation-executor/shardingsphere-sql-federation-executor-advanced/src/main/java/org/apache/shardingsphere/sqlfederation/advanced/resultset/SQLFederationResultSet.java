@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.sqlfederation.advanced.resultset;
 
-import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtil;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -63,7 +65,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     
     private final Enumerator<Object> enumerator;
     
-    private final Map<String, Integer> columnLabelAndIndexMap;
+    private final Map<String, Integer> columnLabelAndIndexes;
     
     private final SQLFederationResultSetMetaData resultSetMetaData;
     
@@ -76,17 +78,29 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     public SQLFederationResultSet(final Enumerator<Object> enumerator, final ShardingSphereSchema schema, final AbstractSchema filterableSchema,
                                   final SelectStatementContext selectStatementContext, final RelDataType validatedNodeType) {
         this.enumerator = enumerator;
-        columnLabelAndIndexMap = createColumnLabelAndIndexMap(selectStatementContext);
-        resultSetMetaData = new SQLFederationResultSetMetaData(schema, filterableSchema, new JavaTypeFactoryImpl(), selectStatementContext, validatedNodeType);
+        columnLabelAndIndexes = new HashMap<>(selectStatementContext.getProjectionsContext().getExpandProjections().size(), 1);
+        Map<Integer, String> indexAndColumnLabels = new HashMap<>(selectStatementContext.getProjectionsContext().getExpandProjections().size(), 1);
+        handleColumnLabelAndIndex(columnLabelAndIndexes, indexAndColumnLabels, selectStatementContext);
+        resultSetMetaData = new SQLFederationResultSetMetaData(schema, filterableSchema, selectStatementContext, validatedNodeType, indexAndColumnLabels);
     }
     
-    private Map<String, Integer> createColumnLabelAndIndexMap(final SelectStatementContext selectStatementContext) {
+    private void handleColumnLabelAndIndex(final Map<String, Integer> columnLabelAndIndexes, final Map<Integer, String> indexAndColumnLabels, final SelectStatementContext selectStatementContext) {
         List<Projection> projections = selectStatementContext.getProjectionsContext().getExpandProjections();
-        Map<String, Integer> result = new HashMap<>(projections.size(), 1);
         for (int columnIndex = 1; columnIndex <= projections.size(); columnIndex++) {
             Projection projection = projections.get(columnIndex - 1);
-            String columnLabel = projection instanceof AggregationDistinctProjection ? projection.getExpression() : projection.getColumnLabel();
-            result.put(columnLabel.toLowerCase(), columnIndex);
+            String columnLabel = getColumnLabel(projection, selectStatementContext.getDatabaseType());
+            columnLabelAndIndexes.put(columnLabel.toLowerCase(), columnIndex);
+            indexAndColumnLabels.put(columnIndex, columnLabel);
+        }
+    }
+    
+    private String getColumnLabel(final Projection projection, final DatabaseType databaseType) {
+        String result;
+        if (projection instanceof AggregationDistinctProjection) {
+            boolean isPostgreSQLOpenGaussStatement = databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType;
+            result = isPostgreSQLOpenGaussStatement ? ((AggregationDistinctProjection) projection).getType().name() : projection.getExpression();
+        } else {
+            result = projection.getColumnLabel();
         }
         return result;
     }
@@ -448,7 +462,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     }
     
     private Integer getIndexFromColumnLabelAndIndexMap(final String columnLabel) throws SQLException {
-        Integer result = columnLabelAndIndexMap.get(columnLabel.toLowerCase());
+        Integer result = columnLabelAndIndexes.get(columnLabel.toLowerCase());
         ShardingSpherePreconditions.checkNotNull(result, () -> new SQLFeatureNotSupportedException(String.format("can not get index from column label `%s`", columnLabel)));
         return result;
     }

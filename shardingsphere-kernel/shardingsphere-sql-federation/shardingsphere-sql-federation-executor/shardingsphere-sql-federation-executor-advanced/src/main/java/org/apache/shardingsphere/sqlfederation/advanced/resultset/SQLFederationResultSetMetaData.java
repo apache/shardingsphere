@@ -17,19 +17,15 @@
 
 package org.apache.shardingsphere.sqlfederation.advanced.resultset;
 
-import lombok.RequiredArgsConstructor;
+import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 
 import java.sql.ResultSetMetaData;
@@ -40,7 +36,6 @@ import java.util.Optional;
 /**
  * SQL federation result set meta data.
  */
-@RequiredArgsConstructor
 public final class SQLFederationResultSetMetaData extends WrapperAdapter implements ResultSetMetaData {
     
     private final ShardingSphereSchema schema;
@@ -52,6 +47,18 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     private final SelectStatementContext selectStatementContext;
     
     private final RelDataType validatedNodeType;
+    
+    private final Map<Integer, String> indexAndColumnLabels;
+    
+    public SQLFederationResultSetMetaData(final ShardingSphereSchema schema, final AbstractSchema filterableSchema,
+                                          final SelectStatementContext selectStatementContext, final RelDataType validatedNodeType, final Map<Integer, String> indexAndColumnLabels) {
+        this.schema = schema;
+        this.filterableSchema = filterableSchema;
+        this.relDataTypeFactory = new JavaTypeFactoryImpl();
+        this.selectStatementContext = selectStatementContext;
+        this.validatedNodeType = validatedNodeType;
+        this.indexAndColumnLabels = indexAndColumnLabels;
+    }
     
     @Override
     public int getColumnCount() {
@@ -96,13 +103,7 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     
     @Override
     public String getColumnLabel(final int column) {
-        Projection projection = selectStatementContext.getProjectionsContext().getExpandProjections().get(column - 1);
-        if (projection instanceof AggregationDistinctProjection) {
-            DatabaseType databaseType = selectStatementContext.getDatabaseType();
-            boolean isPostgreSQLOpenGaussStatement = databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType;
-            return isPostgreSQLOpenGaussStatement ? ((AggregationDistinctProjection) projection).getType().name() : projection.getExpression();
-        }
-        return projection.getColumnLabel();
+        return indexAndColumnLabels.get(column);
     }
     
     @Override
