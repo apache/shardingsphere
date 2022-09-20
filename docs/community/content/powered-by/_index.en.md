@@ -20,6 +20,7 @@ Total: 218 companies.
     <li><a href="http://www.sphere-ex.com/" rel="nofollow">SphereEx</a></li>
     <li><a href="https://www.opengauss.org/en/" rel="nofollow">Huawei openGauss</a>: <a href="https://dev.to/apache_shardingsphere/apache-shardingsphere-opengauss-breaking-the-distributed-database-performance-record-with-10-million-tpmc-28an" rel="nofollow">User Case</a></li>
     <li><a href="https://www.mogdb.io/" rel="nofollow">ENMOTECH MogDB</a></li>
+    <li><a href="https://www.kingbase.com.cn/" rel="nofollow">KingBase KingbaseES</a></li>
 </ul>
 
 ### Bank
@@ -29,6 +30,7 @@ Total: 218 companies.
     <li><a href="http://en.cmbc.com.cn/" rel="nofollow">CHINA MINSHENG BANK</a></li>
     <li><a href="https://bank.pingan.com/" rel="nofollow">Ping An Bank</a></li>
     <li><a href="https://www.psbc.com/en/" rel="nofollow">Postal Savings Bank of China</a></li>
+    <li><a href="https://english.cmbchina.com/" rel="nofollow">China Merchants Bank</a></li> 
 </ul>
 
 ### Payment
