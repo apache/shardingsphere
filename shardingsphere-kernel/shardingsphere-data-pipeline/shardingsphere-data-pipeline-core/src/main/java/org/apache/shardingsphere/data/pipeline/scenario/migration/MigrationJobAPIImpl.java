@@ -383,9 +383,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
                 duplicateDataSourceNames.add(entry.getKey());
             }
         }
-        if (!duplicateDataSourceNames.isEmpty()) {
-            throw new AddMigrationSourceResourceException(String.format("Duplicate resource names %s.", duplicateDataSourceNames));
-        }
+        ShardingSpherePreconditions.checkState(duplicateDataSourceNames.isEmpty(), () -> new AddMigrationSourceResourceException(duplicateDataSourceNames));
         Map<String, DataSourceProperties> result = new LinkedHashMap<>(existDataSources);
         result.putAll(dataSourcePropsMap);
         dataSourcePersistService.persist(getJobType(), result);
