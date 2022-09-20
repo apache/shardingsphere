@@ -70,7 +70,7 @@ public final class ReadwriteSplittingRuleStatementChecker {
             if (!Strings.isNullOrEmpty(each.getWriteDataSource())) {
                 String writeDataSource = each.getWriteDataSource();
                 DistSQLException.predictionThrow(writeDataSourceNames.add(writeDataSource), () -> new InvalidRuleConfigurationException("readwrite splitting", each.getName(),
-                                String.format("Can not config duplicate write resource `%s` in database `%s`", writeDataSource, databaseName)));
+                        String.format("Can not config duplicate write resource `%s` in database `%s`", writeDataSource, databaseName)));
             }
         }
     }
@@ -78,10 +78,10 @@ public final class ReadwriteSplittingRuleStatementChecker {
     private static void checkDuplicateReadResourceNames(final String databaseName, final Collection<ReadwriteSplittingRuleSegment> segments,
                                                         final Collection<String> readDataSourceNames) throws DistSQLException {
         for (final ReadwriteSplittingRuleSegment each : segments) {
-            if (!each.getReadDataSources().isEmpty()) {
+            if (null != each.getReadDataSources()) {
                 for (final String readDataSource : each.getReadDataSources()) {
                     DistSQLException.predictionThrow(readDataSourceNames.add(readDataSource), () -> new InvalidRuleConfigurationException("readwrite splitting", each.getName(),
-                                    String.format("Can not config duplicate read resource `%s` in database `%s`", readDataSource, databaseName)));
+                            String.format("Can not config duplicate read resource `%s` in database `%s`", readDataSource, databaseName)));
                 }
             }
         }
