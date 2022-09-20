@@ -19,34 +19,20 @@ package org.apache.shardingsphere.test.integration.env.container.atomic.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
-import java.util.concurrent.atomic.AtomicInteger;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.ProxyContainerConstants;
 
 /**
- * Container util.
+ * Adapter Container Util.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ContainerUtil {
-    
-    private static final AtomicInteger ATOMIC_MYSQL_SERVER_ID = new AtomicInteger(1);
-    
-    private static final AtomicInteger ATOMIC_STORAGE_CONTAINER_ID = new AtomicInteger(1);
+public class AdapterContainerUtil {
     
     /**
-     * Generate a unique MySQL server id.
+     * Get adapter container image.
      * 
-     * @return unique MySQL server id
+     * @return adapter container image
      */
-    public static int generateMySQLServerId() {
-        return ATOMIC_MYSQL_SERVER_ID.getAndIncrement();
-    }
-    
-    /**
-     * Generate a unique storage container id.
-     *
-     * @return unique storage container id
-     */
-    public static int generateStorageContainerId() {
-        return ATOMIC_STORAGE_CONTAINER_ID.getAndIncrement();
+    public static String getAdapterContainerImage() {
+        return System.getProperty("it.docker.proxy.image", ProxyContainerConstants.PROXY_CONTAINER_IMAGE);
     }
 }
