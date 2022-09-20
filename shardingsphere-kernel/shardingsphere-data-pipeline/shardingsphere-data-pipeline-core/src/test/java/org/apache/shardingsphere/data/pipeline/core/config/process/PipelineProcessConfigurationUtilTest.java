@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.util;
+package org.apache.shardingsphere.data.pipeline.core.config.process;
 
 import org.junit.Test;
 
@@ -25,12 +25,12 @@ import java.util.Collection;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PipelineProcessConfigurationUtilsTest {
+public final class PipelineProcessConfigurationUtilTest {
     
     @Test
     public void assertVerifyConfPathSuccess() {
         for (String each : Arrays.asList("/", "/READ", "/READ/RATE_LIMITER")) {
-            PipelineProcessConfigurationUtils.verifyConfPath(each);
+            PipelineProcessConfigurationUtil.verifyConfPath(each);
         }
     }
     
@@ -40,7 +40,7 @@ public final class PipelineProcessConfigurationUtilsTest {
         int failCount = 0;
         for (String each : confPaths) {
             try {
-                PipelineProcessConfigurationUtils.verifyConfPath(each);
+                PipelineProcessConfigurationUtil.verifyConfPath(each);
             } catch (final IllegalArgumentException ex) {
                 ++failCount;
             }
