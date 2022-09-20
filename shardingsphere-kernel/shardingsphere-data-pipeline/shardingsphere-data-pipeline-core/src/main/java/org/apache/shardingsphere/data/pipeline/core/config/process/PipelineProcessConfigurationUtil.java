@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.util;
+package org.apache.shardingsphere.data.pipeline.core.config.process;
 
 import com.google.common.base.Splitter;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
@@ -31,9 +31,9 @@ import java.util.Properties;
 import java.util.regex.Pattern;
 
 /**
- * Pipeline process configuration utils.
+ * Pipeline process configuration util.
  */
-public final class PipelineProcessConfigurationUtils {
+public final class PipelineProcessConfigurationUtil {
     
     private static final YamlPipelineProcessConfigurationSwapper SWAPPER = new YamlPipelineProcessConfigurationSwapper();
     
