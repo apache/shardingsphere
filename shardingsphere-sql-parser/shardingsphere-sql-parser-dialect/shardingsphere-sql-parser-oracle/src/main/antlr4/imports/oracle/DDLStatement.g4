@@ -3490,4 +3490,3 @@ dropPluggableDatabase
      : DROP JAVA (SOURCE | CLASS | RESOURCE) objectName
      ;
 
-
