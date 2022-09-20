@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.process;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.QueryContext;
@@ -54,7 +55,7 @@ public final class ExecuteProcessEngine {
      */
     public static String initializeConnection(final Grantee grantee, final String databaseName, final EventBusContext eventBusContext) {
         ExecutionGroupContext<SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(Collections.emptyList());
-        executionGroupContext.setExecutionID(new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString());
+        executionGroupContext.setExecutionID(new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", ""));
         executionGroupContext.setGrantee(grantee);
         executionGroupContext.setDatabaseName(databaseName);
         Optional<ExecuteProcessReporter> reporter = ExecuteProcessReporterFactory.getInstance();
@@ -81,6 +82,9 @@ public final class ExecuteProcessEngine {
      */
     public static void initializeExecution(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final EventBusContext eventBusContext) {
         Optional<ExecuteProcessReporter> reporter = ExecuteProcessReporterFactory.getInstance();
+        if (Strings.isNullOrEmpty(executionGroupContext.getExecutionID())) {
+            executionGroupContext.setExecutionID(new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", ""));
+        }
         if (reporter.isPresent() && isMySQLDDLOrDMLStatement(queryContext.getSqlStatementContext().getSqlStatement())) {
             ExecutorDataMap.getValue().put(ExecuteProcessConstants.EXECUTE_ID.name(), executionGroupContext.getExecutionID());
             reporter.get().report(queryContext, executionGroupContext, ExecuteProcessConstants.EXECUTE_STATUS_START, eventBusContext);
