@@ -271,6 +271,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
             InventoryIncrementalJobItemProgress jobItemProgress = getJobItemProgress(jobId, each);
             if (null != jobItemProgress) {
                 jobItemProgress.setActive(!jobConfigPOJO.isDisabled());
+                jobItemProgress.setErrorMessage(getJobItemErrorMessage(jobId, each));
             }
             map.put(each, jobItemProgress);
         }, LinkedHashMap::putAll);

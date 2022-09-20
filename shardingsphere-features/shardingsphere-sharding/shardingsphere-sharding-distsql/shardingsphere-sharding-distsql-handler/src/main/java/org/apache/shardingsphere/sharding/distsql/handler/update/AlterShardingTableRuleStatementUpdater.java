@@ -73,6 +73,7 @@ public final class AlterShardingTableRuleStatementUpdater implements RuleDefinit
         currentRuleConfig.getAutoTables().addAll(toBeAlteredRuleConfig.getAutoTables());
         currentRuleConfig.getShardingAlgorithms().putAll(toBeAlteredRuleConfig.getShardingAlgorithms());
         currentRuleConfig.getKeyGenerators().putAll(toBeAlteredRuleConfig.getKeyGenerators());
+        currentRuleConfig.getAuditors().putAll(toBeAlteredRuleConfig.getAuditors());
     }
     
     @Override

@@ -148,4 +148,15 @@ public final class PipelineMetaDataNode {
     public static String getJobBarrierDisablePath(final String jobId) {
         return String.join("/", getJobRootPath(jobId), "barrier", "disable");
     }
+    
+    /**
+     * Get job item error msg.
+     *
+     * @param jobId job id
+     * @param shardingItem sharding item
+     * @return job item error msg
+     */
+    public static String getJobItemErrorMessagePath(final String jobId, final int shardingItem) {
+        return String.join("/", getJobRootPath(jobId), "error", Integer.toString(shardingItem));
+    }
 }

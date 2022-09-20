@@ -40,6 +40,9 @@ public abstract class AbstractTableRuleSegment implements ASTNode {
     @Setter
     private KeyGenerateStrategySegment keyGenerateStrategySegment;
     
+    @Setter
+    private AuditStrategySegment auditStrategySegment;
+    
     /**
      * Empty table rule segment.
      */

@@ -222,3 +222,11 @@ AUDITOR
 AUDITORS
     : A U D I T O R S
     ;
+
+AUDIT_STRATEGY
+    : A U D I T UL_ S T R A T E G Y
+    ;
+
+ALLOW_HINT_DISABLE
+    : A L L O W UL_ H I N T UL_ D I S A B L E
+    ;

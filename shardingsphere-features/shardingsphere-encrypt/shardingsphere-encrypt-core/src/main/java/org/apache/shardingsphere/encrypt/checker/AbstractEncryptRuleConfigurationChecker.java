@@ -68,7 +68,7 @@ public abstract class AbstractEncryptRuleConfigurationChecker<T extends RuleConf
         Preconditions.checkState(!Strings.isNullOrEmpty(column.getAssistedQueryEncryptorName()),
                 "Assisted query encryptor name of `%s` can not be null in database `%s`.", column.getLogicColumn(), databaseName);
         Preconditions.checkState(encryptors.contains(column.getAssistedQueryEncryptorName()),
-                "Can not find assisted query encryptor `%s` in database `%s`.", column.getEncryptorName(), databaseName);
+                "Can not find assisted query encryptor `%s` in database `%s`.", column.getAssistedQueryEncryptorName(), databaseName);
     }
     
     protected abstract Collection<String> getEncryptors(T config);

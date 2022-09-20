@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.mode.metadata.persist.service;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.metadata.database.schema.SchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.metadata.persist.service.schema.TableMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.schema.ViewMetaDataPersistService;
@@ -104,7 +106,9 @@ public final class DatabaseMetaDataPersistService {
         if (schema.getTables().isEmpty() && schema.getViews().isEmpty()) {
             addSchema(databaseName, schemaName);
         }
-        tableMetaDataPersistService.compareAndPersist(databaseName, schemaName, schema.getTables());
+        Map<String, ShardingSphereTable> currentTables = tableMetaDataPersistService.load(databaseName, schemaName);
+        tableMetaDataPersistService.persist(databaseName, schemaName, SchemaManager.getToBeAddedTables(schema.getTables(), currentTables));
+        SchemaManager.getToBeDeletedTables(schema.getTables(), currentTables).forEach((key, value) -> tableMetaDataPersistService.delete(databaseName, schemaName, key));
     }
     
     /**

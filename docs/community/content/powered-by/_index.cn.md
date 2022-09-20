@@ -20,6 +20,7 @@ chapter = true
     <li><a href="http://www.sphere-ex.com/" rel="nofollow">SphereEx</a></li>
     <li><a href="https://www.opengauss.org/zh/" rel="nofollow">华为 openGauss</a>：<a href="https://mp.weixin.qq.com/s/r7OfiuL2zqES66Y2r00nAw" rel="nofollow">用户案例</a></li>
     <li><a href="https://www.mogdb.io/" rel="nofollow">云和恩墨 MogDB</a>：<a href="https://mp.weixin.qq.com/s/x25xPc352tt0i7E2YtsqIA" rel="nofollow">用户案例</a></li>
+    <li><a href="https://www.kingbase.com.cn/" rel="nofollow">人大金仓 KingbaseES</a></li>
 </ul>
 
 ### 银行
@@ -29,6 +30,7 @@ chapter = true
     <li><a href="http://www.cmbc.com.cn/" rel="nofollow">中国民生银行股份有限公司</a></li>
     <li><a href="https://bank.pingan.com/" rel="nofollow">平安银行</a></li>
     <li><a href="https://www.psbc.com/cn/" rel="nofollow">中国邮政储蓄银行</a></li>
+    <li><a href="https://www.cmbchina.com/" rel="nofollow">招商银行</a></li>
 </ul>
 
 ### 支付
