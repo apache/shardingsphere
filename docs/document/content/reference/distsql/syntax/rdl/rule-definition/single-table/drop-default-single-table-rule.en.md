@@ -1,5 +1,5 @@
 +++
-title = "CREATE DEFAULT SINGLE TABLE RULE"
+title = "DROP DEFAULT SINGLE TABLE RULE"
 weight = 2
 +++
 
