@@ -68,6 +68,7 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.connection.AddMigrationSourceResourceException;
 import org.apache.shardingsphere.data.pipeline.core.exception.connection.DropMigrationSourceResourceException;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineSchemaTableUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineTableMetaDataUtil;
@@ -469,9 +470,14 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         result.setTargetDatabaseType(targetPipelineDataSource.getDatabaseType().getType());
         result.setTargetDatabaseName(targetDatabaseName);
         result.setTargetTableName(parameter.getTargetTableName());
-        YamlPipelineColumnMetaData uniqueKeyColumn = new YamlPipelineColumnMetaDataSwapper().swapToYamlConfiguration(PipelineTableMetaDataUtil.getUniqueKeyColumn(sourceSchemaName,
-                parameter.getSourceTableName(), sourceDataSourceConfig, null));
-        result.setUniqueKeyColumn(uniqueKeyColumn);
+        try (PipelineDataSourceWrapper dataSource = PipelineDataSourceFactory.newInstance(sourceDataSourceConfig)) {
+            StandardPipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(dataSource);
+            YamlPipelineColumnMetaData uniqueKeyColumn = new YamlPipelineColumnMetaDataSwapper().swapToYamlConfiguration(
+                    PipelineTableMetaDataUtil.getUniqueKeyColumn(sourceSchemaName, parameter.getSourceTableName(), metaDataLoader));
+            result.setUniqueKeyColumn(uniqueKeyColumn);
+        } catch (final SQLException ex) {
+            throw new RuntimeException(ex);
+        }
         extendYamlJobConfiguration(result);
         MigrationJobConfiguration jobConfiguration = new YamlMigrationJobConfigurationSwapper().swapToObject(result);
         start(jobConfiguration);
