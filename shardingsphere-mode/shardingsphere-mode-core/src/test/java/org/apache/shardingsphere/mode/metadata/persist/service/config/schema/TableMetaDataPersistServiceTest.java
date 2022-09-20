@@ -46,15 +46,6 @@ public final class TableMetaDataPersistServiceTest {
     private PersistRepository repository;
     
     @Test
-    public void assertCompareAndPersist() {
-        TableMetaDataPersistService tableMetaDataPersistService = new TableMetaDataPersistService(repository);
-        when(repository.getChildrenKeys("/metadata/foo_db/schemas/foo_schema/tables")).thenReturn(Collections.singletonList("t_order"));
-        when(repository.get("/metadata/foo_db/schemas/foo_schema/tables/t_order")).thenReturn(readYAML());
-        tableMetaDataPersistService.compareAndPersist("foo_db", "foo_schema", Collections.emptyMap());
-        verify(repository).delete("/metadata/foo_db/schemas/foo_schema/tables/t_order");
-    }
-    
-    @Test
     public void assertPersist() {
         ShardingSphereTable table = new ShardingSphereTable("foo_table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         new TableMetaDataPersistService(repository).persist("foo_db", "foo_schema", Collections.singletonMap("foo_table", table));

@@ -40,10 +40,6 @@ public final class ViewMetaDataPersistService implements SchemaMetaDataPersistSe
     private final PersistRepository repository;
     
     @Override
-    public void compareAndPersist(final String databaseName, final String schemaName, final Map<String, ShardingSphereView> loadedViews) {
-    }
-    
-    @Override
     public void persist(final String databaseName, final String schemaName, final Map<String, ShardingSphereView> views) {
         views.forEach((key, value) -> repository.persist(DatabaseMetaDataNode.getViewMetaDataPath(databaseName, schemaName, key.toLowerCase()),
                 YamlEngine.marshal(new YamlViewSwapper().swapToYamlConfiguration(value))));

@@ -25,15 +25,6 @@ package org.apache.shardingsphere.mode.metadata.persist.service.schema;
 public interface SchemaMetaDataPersistService<T> {
     
     /**
-     * Compare and persist meta data.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param schema schema meta data
-     */
-    void compareAndPersist(String databaseName, String schemaName, T schema);
-    
-    /**
      * Persist meta data.
      *
      * @param databaseName database name
