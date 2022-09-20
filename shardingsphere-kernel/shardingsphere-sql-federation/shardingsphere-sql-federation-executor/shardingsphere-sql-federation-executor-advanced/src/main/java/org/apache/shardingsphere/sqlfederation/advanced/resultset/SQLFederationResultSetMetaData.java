@@ -27,6 +27,9 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Agg
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 
 import java.sql.ResultSetMetaData;
@@ -95,7 +98,9 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
     public String getColumnLabel(final int column) {
         Projection projection = selectStatementContext.getProjectionsContext().getExpandProjections().get(column - 1);
         if (projection instanceof AggregationDistinctProjection) {
-            return projection.getExpression();
+            DatabaseType databaseType = selectStatementContext.getDatabaseType();
+            boolean isPostgreSQLOpenGaussStatement = databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType;
+            return isPostgreSQLOpenGaussStatement ? ((AggregationDistinctProjection) projection).getType().name() : projection.getExpression();
         }
         return projection.getColumnLabel();
     }
