@@ -125,7 +125,7 @@ public final class DataRecordMerger {
         if (null != beforeDataRecord && IngestDataChangeType.UPDATE.equals(beforeDataRecord.getType()) && checkUpdatedPrimaryKey(beforeDataRecord)) {
             DataRecord mergedDataRecord = new DataRecord(dataRecord.getPosition(), dataRecord.getColumnCount());
             for (int i = 0; i < dataRecord.getColumnCount(); i++) {
-                mergedDataRecord.addColumn(new Column(dataRecord.getColumn(i).getName(), 
+                mergedDataRecord.addColumn(new Column(dataRecord.getColumn(i).getName(),
                         dataRecord.getColumn(i).isUniqueKey() ? beforeDataRecord.getColumn(i).getOldValue() : beforeDataRecord.getColumn(i).getValue(), true, dataRecord.getColumn(i).isUniqueKey()));
             }
             mergedDataRecord.setTableName(dataRecord.getTableName());

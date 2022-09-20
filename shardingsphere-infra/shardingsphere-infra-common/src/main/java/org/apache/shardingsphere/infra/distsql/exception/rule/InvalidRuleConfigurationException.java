@@ -29,4 +29,8 @@ public final class InvalidRuleConfigurationException extends RuleDefinitionViola
     public InvalidRuleConfigurationException(final String ruleType, final Collection<String> rules, final Collection<String> errorMessages) {
         super(1117, String.format("Invalid %s rule %s, error messages are: %s.", ruleType, rules, errorMessages));
     }
+    
+    public InvalidRuleConfigurationException(final String ruleType, final String rule, final String errorMessage) {
+        super(1117, String.format("Invalid %s rule %s, error message is: %s.", ruleType, rule, errorMessage));
+    }
 }
