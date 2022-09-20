@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -15,16 +16,6 @@
   ~ limitations under the License.
   -->
 
-<dataset>
-    <metadata>
-        <column name="name" />
-        <column name="auto_aware_data_source_name" />
-        <column name="write_data_source_query_enabled" />
-        <column name="write_data_source_name" />
-        <column name="read_data_source_names" />
-        <column name="load_balancer_type" />
-        <column name="load_balancer_props" />
-    </metadata>
-    <row values="readwrite_ds_0| | | write_ds_0| read_ds_0| ROUND_ROBIN| " />
-    <row values="readwrite_ds_1| | | write_ds_1| read_ds_1| ROUND_ROBIN| " />
-</dataset>
+<databases>
+    <database>expected_dataset</database>
+</databases>

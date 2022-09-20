@@ -25,6 +25,5 @@
         <column name="load_balancer_type" />
         <column name="load_balancer_props" />
     </metadata>
-    <row values="readwrite_ds_0| | | write_ds_0| read_ds_0| ROUND_ROBIN| " />
-    <row values="readwrite_ds_1| | | write_ds_1| read_ds_1,read_ds_2| RANDOM| read_weight='2:1'" />
+    <row values="readwrite_ds| | | ds_0| ds_1| RANDOM| " />
 </dataset>

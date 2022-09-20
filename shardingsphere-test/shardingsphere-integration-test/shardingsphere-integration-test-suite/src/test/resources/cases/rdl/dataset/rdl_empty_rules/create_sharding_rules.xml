@@ -31,5 +31,8 @@
         <column name="key_generate_column" />
         <column name="key_generator_type" />
         <column name="key_generator_props" />
+        <column name="auditor_types" />
+        <column name="allow_hint_disable" />
     </metadata>
+    <row values="t_user| ds_0.t_user_${0..1} | | | | | | STANDARD | user_id| inline| algorithm-expression=t_user_${user_id % 2} | | | | | " />
 </dataset>

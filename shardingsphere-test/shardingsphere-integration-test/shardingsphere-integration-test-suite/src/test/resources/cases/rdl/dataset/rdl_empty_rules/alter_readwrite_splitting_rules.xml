@@ -17,20 +17,13 @@
 
 <dataset>
     <metadata>
-        <column name="table" />
-        <column name="actual_data_nodes" />
-        <column name="actual_data_sources" />
-        <column name="database_strategy_type" />
-        <column name="database_sharding_column" />
-        <column name="database_sharding_algorithm_type" />
-        <column name="database_sharding_algorithm_props" />
-        <column name="table_strategy_type" />
-        <column name="table_sharding_column" />
-        <column name="table_sharding_algorithm_type" />
-        <column name="table_sharding_algorithm_props" />
-        <column name="key_generate_column" />
-        <column name="key_generator_type" />
-        <column name="key_generator_props" />
+        <column name="name" />
+        <column name="auto_aware_data_source_name" />
+        <column name="write_data_source_query_enabled" />
+        <column name="write_data_source_name" />
+        <column name="read_data_source_names" />
+        <column name="load_balancer_type" />
+        <column name="load_balancer_props" />
     </metadata>
-    <row values="t_user| | write_ds_${0..9}| | | | | MOD| user_id| MOD| sharding-count=40| | | " />
+    <row values="readwrite_ds| | | ds_0| ds_0| RANDOM| " />
 </dataset>
