@@ -86,7 +86,7 @@ jobs:
       - name: Build IT image
         run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Pit.env.docker -DskipTests -Dspotless.apply.skip=true
       - name: Verify Suite CI Run
-        run: ./mvnw -B install -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Dspotless.apply.skip=true --offline
+        run: ./mvnw -B install -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Dspotless.apply.skip=true
       - name: Save IT image
         run: docker save -o /tmp/shardingsphere-proxy-test.tar apache/shardingsphere-proxy-test:latest
       - name: Upload IT image

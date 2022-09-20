@@ -111,7 +111,7 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
     
     private ExecuteCallback createInventoryTaskCallback() {
         return new ExecuteCallback() {
-    
+            
             @Override
             public void onSuccess() {
                 if (PipelineJobProgressDetector.allInventoryTasksFinished(inventoryTasks)) {
