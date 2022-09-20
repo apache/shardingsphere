@@ -85,6 +85,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
@@ -394,9 +395,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     public void dropMigrationSourceResources(final Collection<String> resourceNames) {
         Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(getJobType());
         List<String> noExistResources = resourceNames.stream().filter(each -> !metaDataDataSource.containsKey(each)).collect(Collectors.toList());
-        if (!noExistResources.isEmpty()) {
-            throw new DropMigrationSourceResourceException(String.format("Resource names %s not exist.", resourceNames));
-        }
+        ShardingSpherePreconditions.checkState(noExistResources.isEmpty(), () -> new DropMigrationSourceResourceException(resourceNames));
         for (String each : resourceNames) {
             metaDataDataSource.remove(each);
         }
