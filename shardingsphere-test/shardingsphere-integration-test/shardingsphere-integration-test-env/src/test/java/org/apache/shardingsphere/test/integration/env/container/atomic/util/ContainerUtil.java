@@ -30,8 +30,6 @@ public final class ContainerUtil {
     
     private static final AtomicInteger ATOMIC_MYSQL_SERVER_ID = new AtomicInteger(1);
     
-    private static final AtomicInteger ATOMIC_ADAPTOR_CONTAINER_ID = new AtomicInteger(1);
-    
     private static final AtomicInteger ATOMIC_STORAGE_CONTAINER_ID = new AtomicInteger(1);
     
     /**
@@ -41,15 +39,6 @@ public final class ContainerUtil {
      */
     public static int generateMySQLServerId() {
         return ATOMIC_MYSQL_SERVER_ID.getAndIncrement();
-    }
-    
-    /**
-     * Generate a unique adapter container id.
-     *
-     * @return unique adapter container id
-     */
-    public static int generateAdaptorContainerId() {
-        return ATOMIC_ADAPTOR_CONTAINER_ID.getAndIncrement();
     }
     
     /**

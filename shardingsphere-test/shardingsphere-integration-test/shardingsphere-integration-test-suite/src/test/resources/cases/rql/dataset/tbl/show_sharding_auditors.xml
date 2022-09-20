@@ -21,4 +21,5 @@
         <column name="type" />
         <column name="props" />
     </metadata>
+    <row values="auditor_constant| IT.AUDITOR.FIXTURE| {}" />
 </dataset>

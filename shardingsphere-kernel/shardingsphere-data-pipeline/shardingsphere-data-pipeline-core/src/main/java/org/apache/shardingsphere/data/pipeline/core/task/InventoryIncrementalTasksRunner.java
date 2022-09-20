@@ -124,6 +124,8 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
             public void onFailure(final Throwable throwable) {
                 log.error("Inventory task execute failed.", throwable);
                 updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE);
+                PipelineAPIFactory.getPipelineJobAPI(PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()))
+                        .persistJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem(), throwable);
                 stop();
             }
         };
@@ -160,6 +162,8 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
             public void onFailure(final Throwable throwable) {
                 log.error("Incremental task execute failed.", throwable);
                 updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE);
+                PipelineAPIFactory.getPipelineJobAPI(PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()))
+                        .persistJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem(), throwable);
                 stop();
             }
         };

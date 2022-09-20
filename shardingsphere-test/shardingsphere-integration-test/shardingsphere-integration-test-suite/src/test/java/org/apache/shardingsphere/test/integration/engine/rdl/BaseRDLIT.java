@@ -36,7 +36,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -48,7 +47,6 @@ public abstract class BaseRDLIT extends SingleITCase {
     
     @Before
     public final void init() throws Exception {
-        assertNotNull("Init SQL is required", getAssertion().getInitialSQL());
         try (Connection connection = getTargetDataSource().getConnection()) {
             executeInitSQLs(connection);
         }
@@ -64,7 +62,7 @@ public abstract class BaseRDLIT extends SingleITCase {
     }
     
     private void executeInitSQLs(final Connection connection) throws SQLException {
-        if (null == getAssertion().getInitialSQL().getSql()) {
+        if (null == getAssertion().getInitialSQL() || null == getAssertion().getInitialSQL().getSql()) {
             return;
         }
         for (String each : Splitter.on(";").trimResults().splitToList(getAssertion().getInitialSQL().getSql())) {

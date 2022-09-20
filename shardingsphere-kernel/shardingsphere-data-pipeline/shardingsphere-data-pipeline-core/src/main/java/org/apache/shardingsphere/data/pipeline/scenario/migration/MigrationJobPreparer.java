@@ -64,17 +64,23 @@ public final class MigrationJobPreparer {
     public void prepare(final MigrationJobItemContext jobItemContext) throws SQLException {
         PipelineJobPreparerUtils.checkSourceDataSource(jobItemContext.getJobConfig().getSourceDatabaseType(), Collections.singleton(jobItemContext.getSourceDataSource()));
         if (jobItemContext.isStopping()) {
+            log.info("prepare, job is stopping, jobId={}", jobItemContext.getJobId());
             PipelineJobCenter.stop(jobItemContext.getJobId());
+            return;
         }
         prepareAndCheckTargetWithLock(jobItemContext);
         if (jobItemContext.isStopping()) {
+            log.info("prepare, job is stopping, jobId={}", jobItemContext.getJobId());
             PipelineJobCenter.stop(jobItemContext.getJobId());
+            return;
         }
         // TODO check metadata
         if (PipelineJobPreparerUtils.isIncrementalSupported(jobItemContext.getJobConfig().getSourceDatabaseType())) {
             initIncrementalTasks(jobItemContext);
             if (jobItemContext.isStopping()) {
+                log.info("prepare, job is stopping, jobId={}", jobItemContext.getJobId());
                 PipelineJobCenter.stop(jobItemContext.getJobId());
+                return;
             }
         }
         initInventoryTasks(jobItemContext);

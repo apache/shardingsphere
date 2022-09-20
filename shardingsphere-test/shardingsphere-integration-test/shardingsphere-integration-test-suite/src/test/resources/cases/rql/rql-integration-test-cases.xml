@@ -60,9 +60,17 @@
     <test-case sql="SHOW UNUSED SHARDING KEY GENERATORS" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt">
         <assertion expected-data-file="show_unused_sharding_generators.xml" />
     </test-case>
+
+    <test-case sql="SHOW UNUSED SHARDING AUDITORS" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt">
+        <assertion expected-data-file="show_unused_sharding_auditors.xml" />
+    </test-case>
     
     <test-case sql="SHOW SHARDING TABLE RULES USED KEY GENERATOR constant" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt">
         <assertion expected-data-file="show_sharding_table_generator.xml" />
+    </test-case>
+
+    <test-case sql="SHOW SHARDING TABLE RULES USED AUDITOR auditor_constant" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt">
+        <assertion expected-data-file="show_sharding_table_auditor.xml" />
     </test-case>
     
     <test-case sql="SHOW DEFAULT SHARDING STRATEGY" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt">

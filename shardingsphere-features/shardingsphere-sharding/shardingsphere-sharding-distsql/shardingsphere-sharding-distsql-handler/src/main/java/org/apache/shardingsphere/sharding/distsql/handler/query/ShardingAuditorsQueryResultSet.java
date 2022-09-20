@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.distsql.handler.query;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.props.PropertiesConverter;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingAuditorsStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -32,9 +31,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Query result set for show sharding auditors.
@@ -68,12 +65,8 @@ public final class ShardingAuditorsQueryResultSet implements DatabaseDistSQLResu
         Collection<Object> result = new LinkedList<>();
         result.add(data.getKey());
         result.add(data.getValue().getType());
-        result.add(buildProps(data.getValue().getProps()));
+        result.add(data.getValue().getProps());
         return result;
-    }
-    
-    private Object buildProps(final Properties props) {
-        return Objects.nonNull(props) ? PropertiesConverter.convert(props) : "";
     }
     
     @Override
