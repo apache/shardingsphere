@@ -26,10 +26,12 @@ import org.junit.Test;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class MySQLPipelineSQLBuilderTest {
     
@@ -51,7 +53,9 @@ public final class MySQLPipelineSQLBuilderTest {
     
     @Test
     public void assertBuildSumCrc32SQL() {
-        assertThat(sqlBuilder.buildCRC32SQL(null, "t2", "id"), is("SELECT BIT_XOR(CAST(CRC32(id) AS UNSIGNED)) AS checksum FROM t2"));
+        Optional<String> actual = sqlBuilder.buildCRC32SQL(null, "t2", "id");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("SELECT BIT_XOR(CAST(CRC32(id) AS UNSIGNED)) AS checksum FROM t2"));
     }
     
     private DataRecord mockDataRecord(final String tableName) {
