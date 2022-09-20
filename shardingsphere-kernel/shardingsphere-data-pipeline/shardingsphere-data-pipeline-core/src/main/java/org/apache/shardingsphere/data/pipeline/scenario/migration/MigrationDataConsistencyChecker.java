@@ -213,8 +213,7 @@ public final class MigrationDataConsistencyChecker {
             throw new SQLWrapperException(ex);
         } catch (final ExecutionException | InterruptedException ex) {
             throw new SQLWrapperException(new SQLException(ex.getCause()));
-        }
-        finally {
+        } finally {
             executor.shutdown();
             executor.shutdownNow();
         }
