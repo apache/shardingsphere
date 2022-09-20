@@ -1677,7 +1677,7 @@ public final class SQLParserTestCases {
     private final List<DropPluggableDatabaseStatementTestCase> dropPluggableDatabaseStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-java")
-    private final List<DropJavaStatementTestCase> dropJavaTestCase = new LinkedList<>();
+    private final List<DropJavaStatementTestCase> dropJavaStatementTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
