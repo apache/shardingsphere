@@ -72,6 +72,11 @@ public final class MySQLMigrationGeneralIT extends AbstractMigrationITCase {
         return result;
     }
     
+    @Override
+    protected String getSourceTableOrderName() {
+        return "t_order_copy";
+    }
+    
     @Test
     public void assertMigrationSuccess() throws SQLException, InterruptedException {
         addMigrationProcessConfig();
@@ -86,13 +91,13 @@ public final class MySQLMigrationGeneralIT extends AbstractMigrationITCase {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(getSourceDataSource());
         Pair<List<Object[]>, List<Object[]>> dataPair = ScalingCaseHelper.generateFullInsertData(keyGenerateAlgorithm, parameterized.getDatabaseType(), 3000);
         log.info("init data begin: {}", LocalDateTime.now());
-        jdbcTemplate.batchUpdate(String.format(getExtraSQLCommand().getFullInsertOrder(), SOURCE_TABLE_ORDER), dataPair.getLeft());
+        jdbcTemplate.batchUpdate(String.format(getExtraSQLCommand().getFullInsertOrder(getSourceTableOrderName())), dataPair.getLeft());
         jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
         log.info("init data end: {}", LocalDateTime.now());
-        startMigration(SOURCE_TABLE_ORDER, "t_order");
-        startMigration(SOURCE_TABLE_ORDER_ITEM, "t_order_item");
-        startIncrementTask(new MySQLIncrementTask(jdbcTemplate, SOURCE_TABLE_ORDER, keyGenerateAlgorithm, 30));
-        String orderJobId = getJobIdByTableName(SOURCE_TABLE_ORDER);
+        startMigration(getSourceTableOrderName(), getTargetTableOrderName());
+        startMigration("t_order_item", "t_order_item");
+        startIncrementTask(new MySQLIncrementTask(jdbcTemplate, getSourceTableOrderName(), keyGenerateAlgorithm, 30));
+        String orderJobId = getJobIdByTableName(getSourceTableOrderName());
         String orderItemJobId = getJobIdByTableName("t_order_item");
         assertMigrationSuccessById(orderJobId);
         assertMigrationSuccessById(orderItemJobId);

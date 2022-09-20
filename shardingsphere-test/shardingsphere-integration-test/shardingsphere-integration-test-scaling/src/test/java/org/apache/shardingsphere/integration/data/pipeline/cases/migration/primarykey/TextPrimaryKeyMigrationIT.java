@@ -51,6 +51,14 @@ public class TextPrimaryKeyMigrationIT extends AbstractMigrationITCase {
         log.info("parameterized:{}", parameterized);
     }
     
+    @Override
+    protected String getSourceTableOrderName() {
+        if (DatabaseTypeUtil.isMySQL(getDatabaseType())) {
+            return "T_ORDER";
+        }
+        return "t_order";
+    }
+    
     @Parameters(name = "{0}")
     public static Collection<ScalingParameterized> getParameters() {
         Collection<ScalingParameterized> result = new LinkedList<>();
@@ -78,10 +86,10 @@ public class TextPrimaryKeyMigrationIT extends AbstractMigrationITCase {
         addMigrationSourceResource();
         addMigrationTargetResource();
         createTargetOrderTableRule();
-        startMigration("t_order", "t_order");
+        startMigration(getSourceTableOrderName(), getTargetTableOrderName());
         String jobId = listJobId().get(0);
         waitJobFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
-        sourceExecuteWithLog(String.format("INSERT INTO t_order (order_id,user_id,status) VALUES (%s, %s, '%s')", "1000000000", 1, "afterStop"));
+        sourceExecuteWithLog(String.format("INSERT INTO %s (order_id,user_id,status) VALUES (%s, %s, '%s')", getSourceTableOrderName(), "1000000000", 1, "afterStop"));
         // TODO The ordering of primary or unique keys for text types is different, but can't reproduce now
         if (DatabaseTypeUtil.isMySQL(getDatabaseType())) {
             assertCheckMigrationSuccess(jobId, "DATA_MATCH");
@@ -99,7 +107,7 @@ public class TextPrimaryKeyMigrationIT extends AbstractMigrationITCase {
     private void batchInsertOrder() throws SQLException {
         UUIDKeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
         try (Connection connection = getSourceDataSource().getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO t_order (order_id,user_id,status) VALUES (?,?,?)");
+            PreparedStatement preparedStatement = connection.prepareStatement(String.format("INSERT INTO %s (order_id,user_id,status) VALUES (?,?,?)", getSourceTableOrderName()));
             for (int i = 0; i < TABLE_INIT_ROW_COUNT * 2; i++) {
                 preparedStatement.setObject(1, keyGenerateAlgorithm.generateKey());
                 preparedStatement.setObject(2, ThreadLocalRandom.current().nextInt(0, 6));

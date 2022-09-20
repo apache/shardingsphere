@@ -16,7 +16,7 @@
   -->
 <command>
     <create-table-order>
-        CREATE TABLE t_order (
+        CREATE TABLE %s (
         order_id varchar(255) NOT NULL,
         user_id int NOT NULL,
         status varchar(255) NULL,
