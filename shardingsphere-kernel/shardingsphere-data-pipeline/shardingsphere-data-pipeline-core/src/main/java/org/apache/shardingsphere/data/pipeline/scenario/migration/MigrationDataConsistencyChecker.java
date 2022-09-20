@@ -31,13 +31,17 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineDataConsistencyCheckFailedException;
+import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -116,15 +120,14 @@ public final class MigrationDataConsistencyChecker {
             result.put(sourceTableName, checkCount(sourceDataSource, targetDataSource, executor));
             return result;
         } catch (final SQLException ex) {
-            throw new PipelineDataConsistencyCheckFailedException("Count check failed", ex);
+            throw new SQLWrapperException(ex);
         } finally {
             executor.shutdown();
             executor.shutdownNow();
         }
     }
     
-    private DataConsistencyCountCheckResult checkCount(final PipelineDataSourceWrapper sourceDataSource, final PipelineDataSourceWrapper targetDataSource,
-                                                       final ThreadPoolExecutor executor) {
+    private DataConsistencyCountCheckResult checkCount(final PipelineDataSourceWrapper sourceDataSource, final PipelineDataSourceWrapper targetDataSource, final ThreadPoolExecutor executor) {
         Future<Long> sourceFuture = executor.submit(() -> count(sourceDataSource, sourceTableName, sourceDataSource.getDatabaseType()));
         Future<Long> targetFuture = executor.submit(() -> count(targetDataSource, targetTableName, targetDataSource.getDatabaseType()));
         long sourceCount;
@@ -132,12 +135,18 @@ public final class MigrationDataConsistencyChecker {
         try {
             sourceCount = sourceFuture.get();
         } catch (final InterruptedException | ExecutionException ex) {
-            throw new PipelineDataConsistencyCheckFailedException(String.format("Count check failed for source table '%s'", sourceTableName), ex);
+            if (ex.getCause() instanceof PipelineSQLException) {
+                throw (PipelineSQLException) ex.getCause();
+            }
+            throw new SQLWrapperException(new SQLException(ex));
         }
         try {
             targetCount = targetFuture.get();
         } catch (final InterruptedException | ExecutionException ex) {
-            throw new PipelineDataConsistencyCheckFailedException(String.format("Count check failed for target table '%s'", targetTableName), ex);
+            if (ex.getCause() instanceof PipelineSQLException) {
+                throw (PipelineSQLException) ex.getCause();
+            }
+            throw new SQLWrapperException(new SQLException(ex));
         }
         return new DataConsistencyCountCheckResult(sourceCount, targetCount);
     }
@@ -156,7 +165,7 @@ public final class MigrationDataConsistencyChecker {
             resultSet.next();
             return resultSet.getLong(1);
         } catch (final SQLException ex) {
-            throw new PipelineDataConsistencyCheckFailedException(String.format("Count for table '%s' failed", tableName), ex);
+            throw new PipelineTableDataConsistencyCheckLoadingFailedException(tableName);
         }
     }
     
@@ -176,9 +185,7 @@ public final class MigrationDataConsistencyChecker {
             StandardPipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(sourceDataSource);
             for (String each : Collections.singletonList(sourceTableName)) {
                 PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(tableNameSchemaNameMapping.getSchemaName(each), each);
-                if (null == tableMetaData) {
-                    throw new PipelineDataConsistencyCheckFailedException("Can not get metadata for table " + each);
-                }
+                ShardingSpherePreconditions.checkNotNull(tableMetaData, () -> new PipelineTableDataConsistencyCheckLoadingFailedException(each));
                 Collection<String> columnNames = tableMetaData.getColumnNames();
                 PipelineColumnMetaData uniqueKey = jobConfig.getUniqueKeyColumn();
                 DataConsistencyCalculateParameter sourceParameter = buildParameter(sourceDataSource, tableNameSchemaNameMapping, each, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey);
@@ -202,9 +209,12 @@ public final class MigrationDataConsistencyChecker {
                 }
                 result.put(each, new DataConsistencyContentCheckResult(contentMatched));
             }
-        } catch (final ExecutionException | InterruptedException | SQLException ex) {
-            throw new PipelineDataConsistencyCheckFailedException("Data check failed", ex);
-        } finally {
+        } catch (final SQLException ex) {
+            throw new SQLWrapperException(ex);
+        } catch (final ExecutionException | InterruptedException ex) {
+            throw new SQLWrapperException(new SQLException(ex.getCause()));
+        }
+        finally {
             executor.shutdown();
             executor.shutdownNow();
         }
