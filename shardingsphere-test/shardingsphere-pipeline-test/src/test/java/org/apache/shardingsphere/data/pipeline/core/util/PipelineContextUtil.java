@@ -26,6 +26,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.process.yaml.YamlPipel
 import org.apache.shardingsphere.data.pipeline.api.config.process.yaml.YamlPipelineProcessConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.api.config.process.yaml.YamlPipelineReadConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.config.process.PipelineProcessConfigurationUtil;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
@@ -168,7 +169,7 @@ public final class PipelineContextUtil {
         yamlReadConfig.setShardingSize(10);
         YamlPipelineProcessConfiguration yamlProcessConfig = new YamlPipelineProcessConfiguration();
         yamlProcessConfig.setRead(yamlReadConfig);
-        PipelineProcessConfigurationUtils.fillInDefaultValue(yamlProcessConfig);
+        PipelineProcessConfigurationUtil.fillInDefaultValue(yamlProcessConfig);
         return new YamlPipelineProcessConfigurationSwapper().swapToObject(yamlProcessConfig);
     }
 }

@@ -140,4 +140,21 @@ public interface GovernanceRepositoryAPI {
      * @param processConfigYamlText process configuration YAML text
      */
     void persistMetaDataProcessConfiguration(JobType jobType, String processConfigYamlText);
+    
+    /**
+     * Get job item error msg.
+     *
+     * @param jobId job id
+     * @param shardingItem sharding item
+     * @return error msg
+     */
+    String getJobItemErrorMessage(String jobId, int shardingItem);
+    
+    /**
+     * Clean job item error message.
+     *
+     * @param jobId job id
+     * @param shardingItem sharding item
+     */
+    void cleanJobItemErrorMessage(String jobId, int shardingItem);
 }

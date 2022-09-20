@@ -24,7 +24,6 @@ import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWith
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -54,23 +53,25 @@ public abstract class AbstractDataSourceChecker implements DataSourceChecker {
     public final void checkTargetTable(final Collection<? extends DataSource> dataSources, final TableNameSchemaNameMapping tableNameSchemaNameMapping, final Collection<String> logicTableNames) {
         try {
             for (DataSource each : dataSources) {
-                checkEmpty(each, tableNameSchemaNameMapping, logicTableNames);
+                for (String tableName : logicTableNames) {
+                    if (!checkEmpty(each, tableNameSchemaNameMapping.getSchemaName(tableName), tableName)) {
+                        throw new PrepareJobWithTargetTableNotEmptyException(tableName);
+                    }
+                }
             }
         } catch (final SQLException ex) {
             throw new PrepareJobWithInvalidConnectionException(ex);
         }
     }
     
-    private void checkEmpty(final DataSource dataSource, final TableNameSchemaNameMapping tableNameSchemaNameMapping, final Collection<String> logicTableNames) throws SQLException {
-        for (String each : logicTableNames) {
-            String sql = getSQLBuilder().buildCheckEmptySQL(tableNameSchemaNameMapping.getSchemaName(each), each);
-            log.info("Check whether table is empty, SQL: {}", sql);
-            try (
-                    Connection connection = dataSource.getConnection();
-                    PreparedStatement preparedStatement = connection.prepareStatement(sql);
-                    ResultSet resultSet = preparedStatement.executeQuery()) {
-                ShardingSpherePreconditions.checkState(!resultSet.next(), () -> new PrepareJobWithTargetTableNotEmptyException(each));
-            }
+    private boolean checkEmpty(final DataSource dataSource, final String schemaName, final String tableName) throws SQLException {
+        String sql = getSQLBuilder().buildCheckEmptySQL(schemaName, tableName);
+        log.info("checkEmpty, sql={}", sql);
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                ResultSet resultSet = preparedStatement.executeQuery()) {
+            return !resultSet.next();
         }
     }
     

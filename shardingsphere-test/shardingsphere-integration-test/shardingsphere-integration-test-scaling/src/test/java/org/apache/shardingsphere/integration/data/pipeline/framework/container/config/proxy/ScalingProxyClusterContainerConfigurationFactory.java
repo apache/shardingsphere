@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.ProxyClusterContainerConfigurationFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.ProxyContainerConstants;
+import org.apache.shardingsphere.test.integration.env.container.atomic.util.AdapterContainerUtil;
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 
 import java.util.HashMap;
@@ -42,7 +43,7 @@ public final class ScalingProxyClusterContainerConfigurationFactory {
      * @return created instance
      */
     public static AdaptorContainerConfiguration newInstance(final DatabaseType databaseType, final String storageContainerImage) {
-        return new AdaptorContainerConfiguration(getProxyDatasourceName(databaseType), getMountedResource(databaseType, storageContainerImage));
+        return new AdaptorContainerConfiguration(getProxyDatasourceName(databaseType), getMountedResource(databaseType, storageContainerImage), AdapterContainerUtil.getAdapterContainerImage());
     }
     
     private static String getProxyDatasourceName(final DatabaseType databaseType) {

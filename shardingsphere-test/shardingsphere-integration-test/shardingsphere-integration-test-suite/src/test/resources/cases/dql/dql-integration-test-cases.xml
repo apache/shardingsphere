@@ -518,10 +518,9 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <!--fixme! issue #9719-->
-<!--    <test-case sql="SELECT * FROM t_single_table s INNER JOIN t_order o ON s.id = o.order_id" db-types="MySQL,Oracle,SQLServer" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">-->
-<!--        <assertion expected-data-source-name="read_dataset" />-->
-<!--    </test-case>-->
+    <test-case sql="SELECT * FROM t_single_table s INNER JOIN t_order o ON s.id = o.order_id" db-types="MySQL,Oracle,SQLServer" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
     
     <test-case sql="SELECT * FROM t_single_table s INNER JOIN t_user o ON s.id = o.user_id" db-types="MySQL,Oracle,SQLServer" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
@@ -547,10 +546,9 @@
         <assertion parameters="10001:int" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <!-- FIXME Expected: is "sum(distinct user_id)" but: was "aggregation_distinct_derived_0" -->
-    <!--<test-case sql="SELECT SUM(DISTINCT user_id), SUM(order_id_sharding) FROM t_order_federate_sharding WHERE order_id_sharding > ?" db-types="MySQL,PostgreSQL" scenario-types="tbl">
+    <test-case sql="SELECT SUM(DISTINCT user_id), SUM(order_id_sharding) FROM t_order_federate_sharding WHERE order_id_sharding > ?" db-types="MySQL,PostgreSQL" scenario-types="tbl">
         <assertion parameters="1000:int" />
-    </test-case>-->
+    </test-case>
     
     <test-case sql="SELECT (SELECT MAX(user_id) FROM t_order_federate_sharding) max_user_id, order_id_sharding, status FROM t_order_federate_sharding WHERE order_id_sharding > ?" db-types="MySQL,PostgreSQL" scenario-types="tbl">
         <assertion parameters="1100:int" />
@@ -602,15 +600,13 @@
     
     <test-case sql="SELECT o.item_id, o.order_id, o.creation_date, s.id FROM t_order_item o INNER JOIN t_single_table s ON o.order_id = s.id ORDER BY o.item_id " scenario-types="db,tbl" />
     
-    <!-- FIXME #15592 Expected: is "1000", but: was "10000" -->
-<!--    <test-case sql="select t_order_federate.*, t_order_item_federate_sharding.* from t_order_federate, t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id AND t_order_item_federate_sharding.remarks = 't_order_item_federate_sharding' " scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">-->
-<!--        <assertion expected-data-source-name="read_dataset" />-->
-<!--    </test-case>-->
+    <test-case sql="select t_order_federate.*, t_order_item_federate_sharding.* from t_order_federate, t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id AND t_order_item_federate_sharding.remarks = 't_order_item_federate_sharding' " scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
     
-    <!-- FIXME #15592 Expected: is "1000", but: was "10000" -->
-<!--    <test-case sql="select o.*, i.* from t_order_federate o, t_order_item_federate_sharding i where o.order_id = i.item_id " scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">-->
-<!--        <assertion expected-data-source-name="read_dataset" />-->
-<!--    </test-case>-->
+    <test-case sql="select o.*, i.* from t_order_federate o, t_order_item_federate_sharding i where o.order_id = i.item_id " scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
     
     <test-case sql="SELECT * FROM (SELECT order_id_sharding, user_id FROM t_order_federate_sharding WHERE order_id_sharding = 1010) AS TEMP" scenario-types="db,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />

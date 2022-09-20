@@ -71,10 +71,10 @@ public final class SQLFederationPlannerUtil {
     private static final Map<String, SqlLibrary> DATABASE_TYPE_SQL_LIBRARIES = new HashMap<>();
     
     static {
-        DATABASE_TYPE_SQL_LIBRARIES.put(SqlLibrary.MYSQL.name().toLowerCase(), SqlLibrary.MYSQL);
-        DATABASE_TYPE_SQL_LIBRARIES.put(SqlLibrary.POSTGRESQL.name().toLowerCase(), SqlLibrary.POSTGRESQL);
-        DATABASE_TYPE_SQL_LIBRARIES.put(SqlLibrary.ORACLE.name(), SqlLibrary.ORACLE);
+        DATABASE_TYPE_SQL_LIBRARIES.put("MySQL", SqlLibrary.MYSQL);
+        DATABASE_TYPE_SQL_LIBRARIES.put("PostgreSQL", SqlLibrary.POSTGRESQL);
         DATABASE_TYPE_SQL_LIBRARIES.put("openGauss", SqlLibrary.POSTGRESQL);
+        DATABASE_TYPE_SQL_LIBRARIES.put("Oracle", SqlLibrary.ORACLE);
     }
     
     /**

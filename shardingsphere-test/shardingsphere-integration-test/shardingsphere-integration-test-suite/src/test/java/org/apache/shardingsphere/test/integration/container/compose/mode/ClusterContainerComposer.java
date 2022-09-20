@@ -29,6 +29,7 @@ import org.apache.shardingsphere.test.integration.env.container.atomic.governanc
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.StorageContainerConfigurationFactory;
+import org.apache.shardingsphere.test.integration.env.container.atomic.util.AdapterContainerUtil;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
 import javax.sql.DataSource;
@@ -55,7 +56,8 @@ public final class ClusterContainerComposer implements ContainerComposer {
         // TODO add more version of databases
         storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(parameterizedArray.getDatabaseType(), "", scenario,
                 StorageContainerConfigurationFactory.newInstance(parameterizedArray.getDatabaseType())));
-        AdaptorContainerConfiguration containerConfig = ProxyClusterContainerConfigurationFactory.newInstance(scenario, parameterizedArray.getDatabaseType());
+        AdaptorContainerConfiguration containerConfig = ProxyClusterContainerConfigurationFactory.newInstance(
+                scenario, parameterizedArray.getDatabaseType(), AdapterContainerUtil.getAdapterContainerImage());
         AdapterContainer adapterContainer = AdapterContainerFactory.newInstance(
                 parameterizedArray.getMode(), parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), storageContainer, scenario, containerConfig);
         if (adapterContainer instanceof DockerITContainer) {

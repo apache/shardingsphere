@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
+import org.apache.shardingsphere.test.integration.env.container.atomic.util.AdapterContainerUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +40,7 @@ public final class ProxyStandaloneContainerConfigurationFactory {
      * @return created instance
      */
     public static AdaptorContainerConfiguration newInstance(final String scenario, final DatabaseType databaseType) {
-        return new AdaptorContainerConfiguration(scenario, getMountedResources(scenario, databaseType));
+        return new AdaptorContainerConfiguration(scenario, getMountedResources(scenario, databaseType), AdapterContainerUtil.getAdapterContainerImage());
     }
     
     private static Map<String, String> getMountedResources(final String scenario, final DatabaseType databaseType) {

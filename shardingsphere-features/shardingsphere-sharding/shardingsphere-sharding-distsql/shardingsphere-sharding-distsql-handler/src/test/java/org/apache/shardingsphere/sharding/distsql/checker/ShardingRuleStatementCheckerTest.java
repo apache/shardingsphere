@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
@@ -34,8 +35,10 @@ import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerate
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.checker.ShardingTableRuleStatementChecker;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.AbstractTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.AuditStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.KeyGenerateStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingAuditorSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
@@ -96,9 +99,9 @@ public final class ShardingRuleStatementCheckerTest {
         shardingRuleConfig.getBindingTableGroups().add("t_order,t_order_item");
         Collection<AbstractTableRuleSegment> rules = new LinkedList<>();
         rules.add(new AutoTableRuleSegment("t_order", Arrays.asList("ds_0", "ds_1"), "order_id",
-                new AlgorithmSegment("MOD", newProperties("sharding-count", "2")), null));
+                new AlgorithmSegment("MOD", newProperties("sharding-count", "2")), null, null));
         rules.add(new AutoTableRuleSegment("t_order_item", Arrays.asList("ds_0", "ds_1"), "order_id",
-                new AlgorithmSegment("MOD", newProperties("sharding-count", "2")), null));
+                new AlgorithmSegment("MOD", newProperties("sharding-count", "2")), null, null));
         ShardingTableRuleStatementChecker.checkAlteration(database, rules, shardingRuleConfig);
     }
     
@@ -132,6 +135,24 @@ public final class ShardingRuleStatementCheckerTest {
     public void assertCheckCreationWithInvalidKeyGenerateAlgorithm() throws DistSQLException {
         AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
         autoTableRuleSegment.setKeyGenerateStrategySegment(new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("invalid", newProperties("invalid", "invalid"))));
+        List<AbstractTableRuleSegment> rules = Collections.singletonList(autoTableRuleSegment);
+        ShardingTableRuleStatementChecker.checkCreation(database, rules, shardingRuleConfig);
+    }
+    
+    @Test(expected = RequiredAlgorithmMissedException.class)
+    public void assertCheckCreationWithMissedAuditAlgorithm() throws DistSQLException {
+        AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
+        autoTableRuleSegment.setAuditStrategySegment(new AuditStrategySegment(Arrays.asList("invalid"),
+                Arrays.asList(new ShardingAuditorSegment("invalid", new AlgorithmSegment("DML_SHARDING_CONDITIONS", new Properties()))), true));
+        List<AbstractTableRuleSegment> rules = Collections.singletonList(autoTableRuleSegment);
+        ShardingTableRuleStatementChecker.checkCreation(database, rules, shardingRuleConfig);
+    }
+    
+    @Test(expected = InvalidAlgorithmConfigurationException.class)
+    public void assertCheckCreationWithInvalidAuditAlgorithm() throws DistSQLException {
+        AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
+        autoTableRuleSegment.setAuditStrategySegment(new AuditStrategySegment(Arrays.asList("sharding_key_required_auditor"),
+                Arrays.asList(new ShardingAuditorSegment("sharding_key_required_auditor", new AlgorithmSegment("invalid", new Properties()))), true));
         List<AbstractTableRuleSegment> rules = Collections.singletonList(autoTableRuleSegment);
         ShardingTableRuleStatementChecker.checkCreation(database, rules, shardingRuleConfig);
     }
@@ -224,6 +245,7 @@ public final class ShardingRuleStatementCheckerTest {
         result.getAutoTables().add(autoTableRuleConfig);
         result.getShardingAlgorithms().put("t_order_algorithm", new AlgorithmConfiguration("hash_mod", newProperties("sharding-count", "4")));
         result.getKeyGenerators().put("t_order_item_snowflake", new AlgorithmConfiguration("snowflake", new Properties()));
+        result.getAuditors().put("sharding_key_required_auditor", new AlgorithmConfiguration("DML_SHARDING_CONDITIONS", new Properties()));
         return result;
     }
     
