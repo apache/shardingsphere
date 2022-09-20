@@ -17,14 +17,17 @@
 
 package org.apache.shardingsphere.data.pipeline.core.exception.data;
 
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+
 /**
- * Pipeline data consistency check failed exception.
+ * Unsupported CRC32 data consistency calculate algorithm exception.
  */
-public final class PipelineDataConsistencyCheckFailedException extends RuntimeException {
+public final class UnsupportedCRC32DataConsistencyCalculateAlgorithmException extends PipelineSQLException {
     
-    private static final long serialVersionUID = -4100671584682823997L;
+    private static final long serialVersionUID = 580323508713524816L;
     
-    public PipelineDataConsistencyCheckFailedException(final String message) {
-        super(message);
+    public UnsupportedCRC32DataConsistencyCalculateAlgorithmException(final String databaseType) {
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 53, "Unsupported CRC32 data consistency calculate algorithm with database type `%s`", databaseType);
     }
 }

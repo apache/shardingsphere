@@ -94,6 +94,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | HY000     | 18020       | Failed to get DDL for table \`%s\` |
 | HY000     | 18050       | Before data record is \`%s\`, after data record is \`%s\` |
 | 08000     | 18051       | Data check table \`%s\` failed |
+| 0A000     | 18053       | Unsupported CRC32 data consistency calculate algorithm with database type \`%s\` |
 | HY000     | 18080       | Can not find pipeline job \`%s\` |
 | HY000     | 18081       | Job has already started |
 | HY000     | 18082       | Sharding count of job \`%s\` is 0 |
