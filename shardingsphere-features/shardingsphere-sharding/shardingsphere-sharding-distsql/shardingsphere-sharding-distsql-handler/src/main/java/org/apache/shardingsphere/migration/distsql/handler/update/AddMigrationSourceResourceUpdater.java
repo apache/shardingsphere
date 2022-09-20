@@ -19,7 +19,6 @@ package org.apache.shardingsphere.migration.distsql.handler.update;
 
 import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
-import org.apache.shardingsphere.data.pipeline.core.exception.connection.AddMigrationSourceResourceException;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
@@ -31,6 +30,7 @@ import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourc
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.migration.distsql.statement.AddMigrationSourceResourceStatement;
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ResourceSegmentsConverter;
 
@@ -57,7 +57,7 @@ public final class AddMigrationSourceResourceUpdater implements RALUpdater<AddMi
         try {
             validator.validate(sourcePropertiesMap, databaseType);
         } catch (final InvalidResourcesException ex) {
-            throw new AddMigrationSourceResourceException(ex);
+            throw new SQLWrapperException(ex);
         }
         JOB_API.addMigrationSourceResources(sourcePropertiesMap);
     }
