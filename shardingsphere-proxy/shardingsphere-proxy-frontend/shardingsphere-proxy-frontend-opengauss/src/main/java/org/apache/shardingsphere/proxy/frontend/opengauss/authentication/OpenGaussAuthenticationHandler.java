@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.opengauss.authentication;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -167,9 +168,7 @@ public final class OpenGaussAuthenticationHandler {
     }
     
     private static byte[] xor(final byte[] password1, final byte[] password2) {
-        if (password1.length != password2.length) {
-            throw new IllegalArgumentException("Xor values with different length");
-        }
+        Preconditions.checkArgument(password1.length == password2.length, "Xor values with different length");
         int length = password1.length;
         byte[] result = new byte[length];
         for (int i = 0; i < length; i++) {
