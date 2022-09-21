@@ -68,7 +68,7 @@ public final class DataSetLoader {
             return result;
         }
         result = String.join(File.separator, parentPath, DATA_SET_FOLDER_NAME, dataSetFile);
-        Preconditions.checkState(new File(result).exists(), "%s not found, path=%s, scenario=%s, databaseType=%s, mode=%s", dataSetFile, parentPath, scenario, databaseType.getType(), mode);
+        Preconditions.checkArgument(new File(result).exists(), "%s not found, path=%s, scenario=%s, databaseType=%s, mode=%s", dataSetFile, parentPath, scenario, databaseType.getType(), mode);
         return result;
     }
 }
