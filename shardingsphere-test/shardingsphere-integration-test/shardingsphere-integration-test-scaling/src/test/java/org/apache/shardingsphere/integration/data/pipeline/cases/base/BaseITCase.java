@@ -129,7 +129,7 @@ public abstract class BaseITCase {
             password = ENV.getActualDataSourcePassword(databaseType);
         }
         createProxyDatabase(parameterized.getDatabaseType());
-        if (ENV.getItEnvType() == ITEnvTypeEnum.NATIVE) {
+        if (ITEnvTypeEnum.NATIVE == ENV.getItEnvType()) {
             cleanUpDataSource();
         }
         extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BaseITCase.class.getClassLoader().getResource(parameterized.getScenario())), ExtraSQLCommand.class);
@@ -137,7 +137,7 @@ public abstract class BaseITCase {
     }
     
     private void cleanUpDataSource() {
-        for (String each : Arrays.asList(DS_0, DS_2, DS_3, DS_4)) {
+        for (String each : Arrays.asList(DS_0, DS_1, DS_2, DS_3, DS_4)) {
             containerComposer.cleanUpDatabase(each);
         }
     }
@@ -149,7 +149,7 @@ public abstract class BaseITCase {
         }
         String jdbcUrl = containerComposer.getProxyJdbcUrl(defaultDatabaseName);
         try (Connection connection = DriverManager.getConnection(jdbcUrl, ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD)) {
-            if (ENV.getItEnvType() == ITEnvTypeEnum.NATIVE) {
+            if (ITEnvTypeEnum.NATIVE == ENV.getItEnvType()) {
                 try {
                     connectionExecuteWithLog(connection, String.format("DROP DATABASE %s", PROXY_DATABASE));
                 } catch (final SQLException ex) {

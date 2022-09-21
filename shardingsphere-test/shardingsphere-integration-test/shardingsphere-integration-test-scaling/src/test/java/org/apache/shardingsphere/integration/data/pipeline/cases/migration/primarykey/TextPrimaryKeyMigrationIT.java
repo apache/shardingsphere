@@ -34,6 +34,7 @@ import org.junit.runners.Parameterized.Parameters;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -105,6 +106,7 @@ public class TextPrimaryKeyMigrationIT extends AbstractMigrationITCase {
     }
     
     private void batchInsertOrder() throws SQLException {
+        log.info("init data begin: {}", LocalDateTime.now());
         UUIDKeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
         try (Connection connection = getSourceDataSource().getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(String.format("INSERT INTO %s (order_id,user_id,status) VALUES (?,?,?)", getSourceTableOrderName()));
@@ -116,6 +118,6 @@ public class TextPrimaryKeyMigrationIT extends AbstractMigrationITCase {
             }
             preparedStatement.executeBatch();
         }
-        log.info("init data succeed");
+        log.info("init data end: {}", LocalDateTime.now());
     }
 }
