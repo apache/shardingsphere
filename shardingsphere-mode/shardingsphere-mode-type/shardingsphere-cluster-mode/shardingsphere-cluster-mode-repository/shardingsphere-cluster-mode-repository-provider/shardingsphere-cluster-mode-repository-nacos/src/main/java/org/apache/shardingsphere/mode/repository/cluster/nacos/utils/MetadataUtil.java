@@ -20,6 +20,8 @@ package org.apache.shardingsphere.mode.repository.cluster.nacos.utils;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.PreservedMetadataKeys;
 import com.alibaba.nacos.api.naming.pojo.Instance;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.time.LocalDateTime;
@@ -28,6 +30,7 @@ import java.time.ZoneOffset;
 /**
  * Metadata util.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MetadataUtil {
     
     public static final String EMPTY = "";
@@ -36,6 +39,7 @@ public class MetadataUtil {
     
     /**
      * Get timestamp.
+     * 
      * @param instance instance
      * @return timestamp
      */
@@ -45,7 +49,8 @@ public class MetadataUtil {
     }
     
     /**
-     * Get timeStamp.
+     * Get timestamp.
+     * 
      * @return timeStamp
      */
     public static long getTimestamp() {
@@ -54,6 +59,7 @@ public class MetadataUtil {
     
     /**
      * Get value.
+     * 
      * @param instance instance
      * @return value
      */
@@ -63,6 +69,7 @@ public class MetadataUtil {
     
     /**
      * Get key.
+     * 
      * @param instance instance
      * @return key
      */

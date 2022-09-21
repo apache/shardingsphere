@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.mode.repository.cluster.nacos.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Key value.
  */
-@AllArgsConstructor
-@Data
+@RequiredArgsConstructor
+@Getter
 public class KeyValue {
     
     private final String key;

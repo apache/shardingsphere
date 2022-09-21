@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.mode.repository.cluster.nacos.listener;
 
 import com.alibaba.nacos.api.naming.pojo.Instance;
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
 /**
  * Watch data.
  */
-@Data
+@Getter
 @RequiredArgsConstructor
 public class WatchData {
     
