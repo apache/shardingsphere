@@ -243,7 +243,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
     
     private static byte[] decodeHex(final String hexString) {
         int dataLength = hexString.length();
-        Preconditions.checkState(0 == (dataLength & 1), "Illegal hex data `%s`", hexString);
+        Preconditions.checkArgument(0 == (dataLength & 1), "Illegal hex data `%s`", hexString);
         if (0 == dataLength) {
             return new byte[0];
         }
