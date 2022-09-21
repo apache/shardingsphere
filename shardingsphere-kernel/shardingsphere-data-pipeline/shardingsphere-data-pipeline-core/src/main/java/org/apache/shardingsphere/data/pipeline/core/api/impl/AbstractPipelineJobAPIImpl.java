@@ -49,7 +49,6 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -200,27 +199,9 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         pipelineDistributedBarrier.await(barrierPath, 5, TimeUnit.SECONDS);
     }
     
-    @Override
-    public void rollback(final String jobId) throws SQLException {
-        log.info("Rollback job {}", jobId);
-        stop(jobId);
-        cleanTempTableOnRollback(jobId);
-        dropJob(jobId);
-    }
-    
-    protected abstract void cleanTempTableOnRollback(String jobId) throws SQLException;
-    
-    private void dropJob(final String jobId) {
+    protected void dropJob(final String jobId) {
         PipelineAPIFactory.getJobOperateAPI().remove(String.valueOf(jobId), null);
         PipelineAPIFactory.getGovernanceRepositoryAPI().deleteJob(jobId);
-    }
-    
-    @Override
-    public void commit(final String jobId) {
-        checkModeConfig();
-        log.info("Commit job {}", jobId);
-        stop(jobId);
-        dropJob(jobId);
     }
     
     protected final JobConfigurationPOJO getElasticJobConfigPOJO(final String jobId) {

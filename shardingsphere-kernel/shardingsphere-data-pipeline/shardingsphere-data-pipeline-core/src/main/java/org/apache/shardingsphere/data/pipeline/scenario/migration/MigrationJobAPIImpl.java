@@ -356,7 +356,14 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     }
     
     @Override
-    protected void cleanTempTableOnRollback(final String jobId) throws SQLException {
+    public void rollback(final String jobId) throws SQLException {
+        log.info("Rollback job {}", jobId);
+        stop(jobId);
+        cleanTempTableOnRollback(jobId);
+        dropJob(jobId);
+    }
+    
+    private void cleanTempTableOnRollback(final String jobId) throws SQLException {
         MigrationJobConfiguration jobConfig = getJobConfiguration(jobId);
         String targetTableName = jobConfig.getTargetTableName();
         // TODO use jobConfig.targetSchemaName
@@ -371,6 +378,14 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
                 preparedStatement.execute();
             }
         }
+    }
+    
+    @Override
+    public void commit(final String jobId) {
+        checkModeConfig();
+        log.info("Commit job {}", jobId);
+        stop(jobId);
+        dropJob(jobId);
     }
     
     @Override

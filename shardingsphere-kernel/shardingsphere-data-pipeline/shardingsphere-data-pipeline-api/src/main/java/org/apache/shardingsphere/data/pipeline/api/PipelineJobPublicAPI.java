@@ -21,7 +21,6 @@ import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProces
 import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
-import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -70,21 +69,6 @@ public interface PipelineJobPublicAPI extends TypedSPI {
      * @param jobId job id
      */
     void stop(String jobId);
-    
-    /**
-     * Rollback pipeline job.
-     *
-     * @param jobId job id
-     * @throws SQLException when rollback underlying database data
-     */
-    void rollback(String jobId) throws SQLException;
-    
-    /**
-     * Commit pipeline job.
-     *
-     * @param jobId job id
-     */
-    void commit(String jobId);
     
     /**
      * Get pipeline job info.
