@@ -40,66 +40,60 @@ tree
 * 配置说明
 
 `conf/agent.yaml` 用于管理 agent 配置。
-内置插件包括 Jaeger、OpenTracing、Zipkin、OpenTelemetry、Logging 及 Prometheus。
-当需要开启插件时，只需要移除 `ignoredPluginNames` 中对应的插件名称即可。
+内置插件包括 Jaeger、OpenTracing、Zipkin、OpenTelemetry、BaseLogging 及 Prometheus。
+默认不开启任何插件，配置好对应插件配置后可启动对应的插件
 
 ```yaml
-applicationName: shardingsphere-agent
-ignoredPluginNames:
-  - Jaeger
-  - OpenTracing
-  - Zipkin
-  - OpenTelemetry
-  - Logging
-  - Prometheus
-
 plugins:
-  Prometheus:
-    host:  "localhost"
-    port: 9090
-    props:
-      JVM_INFORMATION_COLLECTOR_ENABLED : "true"
-  Jaeger:
-    host: "localhost"
-    port: 5775
-    props:
-      SERVICE_NAME: "shardingsphere-agent"
-      JAEGER_SAMPLER_TYPE: "const"
-      JAEGER_SAMPLER_PARAM: "1"
-  Zipkin:
-    host: "localhost"
-    port: 9411
-    props:
-      SERVICE_NAME: "shardingsphere-agent"
-      URL_VERSION: "/api/v2/spans"
-      SAMPLER_TYPE: "const"
-      SAMPLER_PARAM: "1"
-  OpenTracing:
-    props:
-      OPENTRACING_TRACER_CLASS_NAME: "org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer"
-  OpenTelemetry:
-    props:
-      otel.resource.attributes: "service.name=shardingsphere-agent"
-      otel.traces.exporter: "zipkin"
-  Logging:
-    props:
-      LEVEL: "INFO"
-
+  logging:
+#    BaseLogging:
+#      props:
+#        level: "INFO"
+  metrics:
+#    Prometheus:
+#      host:  "localhost"
+#      port: 9090
+#      props:
+#        jvm-information-collector-enabled: "true"
+  tracing:
+#    Jaeger:
+#      host: "localhost"
+#      port: 5775
+#      props:
+#        service-name: "shardingsphere"
+#        jaeger-sampler-type: "const"
+#        jaeger-sampler-param: "1"
+#    Zipkin:
+#      host: "localhost"
+#      port: 9411
+#      props:
+#        service-name: "shardingsphere"
+#        url-version: "/api/v2/spans"
+#        sampler-type: "const"
+#        sampler-param: "1"
+#    OpenTracing:
+#      props:
+#        opentracing-tracer-class-name: "org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer"
+#    OpenTelemetry:
+#      props:
+#        otel-resource-attributes: "service.name=shardingsphere"
+#        otel-traces-exporter: "zipkin"
 ```
 * 参数说明；
 
-| 名称       | 说明     |取值范围    |默认值     |
-| :--------- | :-------- |:--------- | :-------- |
-| JVM_INFORMATION_COLLECTOR_ENABLED      | 是否开启 JVM 采集器 |true、false|true|
-| SERVICE_NAME      | 链路跟踪的服务名称 | 自定义 | shardingsphere-agent |
-| JAEGER_SAMPLER_TYPE | Jaeger 采样率类型 | const、probabilistic、ratelimiting、remote | const |
-| JAEGER_SAMPLER_PARAM  | Jaeger 采样率参数 |const：0、1，probabilistic：0.0 - 1.0，ratelimiting：> 0，自定义每秒采集数量，remote：需要自定义配置远程采样率管理服务地址，JAEGER_SAMPLER_MANAGER_HOST_PORT |1（const 类型）|
-| SAMPLER_TYPE  | Zipkin 采样率类型 |const、counting、ratelimiting、boundary | const |
-| SAMPLER_PARAM | Zipkin 采样率参数 |const： 0、1，counting：0.01 - 1.0，ratelimiting：> 0，自定义每秒采集数量，boundary: 0.0001 - 1.0 | 1（const 类型）|
-| otel.resource.attributes|opentelemetry 资源属性 | 字符串键值对（,分割） | service.name=shardingsphere-agent |
-| otel.traces.exporter | Tracing expoter | zipkin、jaeger | zipkin |
-| otel.traces.sampler | opentelemetry 采样率类型 | always_on、always_off、traceidratio | always_on |
-| otel.traces.sampler.arg | opentelemetry 采样率参数 | traceidratio：0.0 - 1.0 | 1.0 |
+| 名称                                | 说明                  |取值范围    | 默认值                               |
+|:----------------------------------|:--------------------|:--------- |:----------------------------------|
+| jvm-information-collector-enabled | 是否开启 JVM 采集器        |true、false| true                              |
+| service-name                      | 链路跟踪的服务名称           | 自定义 | shardingsphere                    |
+| jaeger-sampler-type               | Jaeger 采样率类型        | const、probabilistic、ratelimiting、remote | const                             |
+| jaeger-sampler-param              | Jaeger 采样率参数        |const：0、1，probabilistic：0.0 - 1.0，ratelimiting：> 0，自定义每秒采集数量，remote：需要自定义配置远程采样率管理服务地址，JAEGER_SAMPLER_MANAGER_HOST_PORT | 1（const 类型）                       |
+| url-version                       | Zipkin url 地址       | 自定义 | /api/v2/spans                    |
+| sampler-type                      | Zipkin 采样率类型        |const、counting、ratelimiting、boundary | const                             |
+| sampler-param                     | Zipkin 采样率参数        |const： 0、1，counting：0.01 - 1.0，ratelimiting：> 0，自定义每秒采集数量，boundary: 0.0001 - 1.0 | 1（const 类型）                       |
+| otel-resource-attributes          | opentelemetry 资源属性  | 字符串键值对（,分割） | service.name=shardingsphere-agent |
+| otel-traces-exporter              | Tracing expoter     | zipkin、jaeger | zipkin                            |
+| otel-traces-sampler               | opentelemetry 采样率类型 | always_on、always_off、traceidratio | always_on                         |
+| otel-traces-sampler-arg           | opentelemetry 采样率参数 | traceidratio：0.0 - 1.0 | 1.0                               |
 
 ## ShardingSphere-Proxy 中使用
 

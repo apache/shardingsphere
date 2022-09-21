@@ -40,66 +40,60 @@ tree
 * Configuration file
 
 `conf/agent.yaml` is used to manage agent configuration.
-Built-in plugins include Jaeger, OpenTracing, Zipkin, OpenTelemetry, Logging and Prometheus.
-When a plugin needs to be enabled, just remove the corresponding name in `ignoredPluginNames`.
+Built-in plugins include Jaeger, OpenTracing, Zipkin, OpenTelemetry, BaseLogging and Prometheus.
+No plugin are enabled by default. After configuring the corresponding plugin configuration, the corresponding plugin can be started.
 
 ```yaml
-applicationName: shardingsphere-agent
-ignoredPluginNames:
-  - Jaeger
-  - OpenTracing
-  - Zipkin
-  - OpenTelemetry
-  - Logging
-  - Prometheus
-
 plugins:
-  Prometheus:
-    host:  "localhost"
-    port: 9090
-    props:
-      JVM_INFORMATION_COLLECTOR_ENABLED : "true"
-  Jaeger:
-    host: "localhost"
-    port: 5775
-    props:
-      SERVICE_NAME: "shardingsphere-agent"
-      JAEGER_SAMPLER_TYPE: "const"
-      JAEGER_SAMPLER_PARAM: "1"
-  Zipkin:
-    host: "localhost"
-    port: 9411
-    props:
-      SERVICE_NAME: "shardingsphere-agent"
-      URL_VERSION: "/api/v2/spans"
-      SAMPLER_TYPE: "const"
-      SAMPLER_PARAM: "1"
-  OpenTracing:
-    props:
-      OPENTRACING_TRACER_CLASS_NAME: "org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer"
-  OpenTelemetry:
-    props:
-      otel.resource.attributes: "service.name=shardingsphere-agent"
-      otel.traces.exporter: "zipkin"
-  Logging:
-    props:
-      LEVEL: "INFO"
-
+  logging:
+#    BaseLogging:
+#      props:
+#        level: "INFO"
+  metrics:
+#    Prometheus:
+#      host:  "localhost"
+#      port: 9090
+#      props:
+#        jvm-information-collector-enabled: "true"
+  tracing:
+#    Jaeger:
+#      host: "localhost"
+#      port: 5775
+#      props:
+#        service-name: "shardingsphere"
+#        jaeger-sampler-type: "const"
+#        jaeger-sampler-param: "1"
+#    Zipkin:
+#      host: "localhost"
+#      port: 9411
+#      props:
+#        service-name: "shardingsphere"
+#        url-version: "/api/v2/spans"
+#        sampler-type: "const"
+#        sampler-param: "1"
+#    OpenTracing:
+#      props:
+#        opentracing-tracer-class-name: "org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer"
+#    OpenTelemetry:
+#      props:
+#        otel-resource-attributes: "service.name=shardingsphere"
+#        otel-traces-exporter: "zipkin"
 ```
 * Parameter description:
 
-| Name       |  Description     |  Value range    |  Default value     |
-| :--------- | :-------- |:--------- | :-------- |
-| JVM_INFORMATION_COLLECTOR_ENABLED      | Start JVM collector |  true, false  |  true  |
-| SERVICE_NAME      | Tracking service name | Custom | shardingsphere-agent |
-| JAEGER_SAMPLER_TYPE | Jaeger sample rate type | const, probabilistic, ratelimiting, remote | const |
-| JAEGER_SAMPLER_PARAM  | Jaeger sample rate parameter |const:0, 1, probabilistic:0.0 - 1.0, ratelimiting: > 0, Customize the number of acquisitions per second, remote：need to customize the remote service addres,JAEGER_SAMPLER_MANAGER_HOST_PORT | 1 (const type) |
-| SAMPLER_TYPE  | Zipkin sample rate type | const, counting, ratelimiting, boundary | const |
-| SAMPLER_PARAM | Zipkin sampling rate parameter |const:0, 1, counting:0.01 - 1.0, ratelimiting: > 0, boundary:0.0001 - 1.0 | 1 (const type) |
-| otel.resource.attributes | opentelemetry properties | String key value pair (, split) | service.name=shardingsphere-agent |
-| otel.traces.exporter | Tracing expoter | zipkin, jaeger | zipkin |
-| otel.traces.sampler | Opentelemetry sample rate type | always_on, always_off, traceidratio | always_on |
-| otel.traces.sampler.arg | Opentelemetry sample rate parameter | traceidratio：0.0 - 1.0 | 1.0 |
+| Name                              | Description                         |  Value range    |  Default value     |
+|:----------------------------------|:------------------------------------|:--------- | :-------- |
+| jvm-information-collector-enabled | Start JVM collector                 |  true, false  |  true  |
+| service-name                      | Tracking service name               | Custom | shardingsphere-agent |
+| jaeger-sampler-type               | Jaeger sample rate type             | const, probabilistic, ratelimiting, remote | const |
+| jaeger-sampler-param              | Jaeger sample rate parameter        |const:0, 1, probabilistic:0.0 - 1.0, ratelimiting: > 0, Customize the number of acquisitions per second, remote：need to customize the remote service addres,JAEGER_SAMPLER_MANAGER_HOST_PORT | 1 (const type) |
+| url-version                       | Zipkin url address                  | Custom | /api/v2/spans                    |
+| sampler-type                      | Zipkin sample rate type             | const, counting, ratelimiting, boundary | const |
+| sampler-param                     | Zipkin sampling rate parameter      |const:0, 1, counting:0.01 - 1.0, ratelimiting: > 0, boundary:0.0001 - 1.0 | 1 (const type) |
+| otel-resource-attributes          | opentelemetry properties            | String key value pair (, split) | service.name=shardingsphere-agent |
+| otel-traces-exporter              | Tracing expoter                     | zipkin, jaeger | zipkin |
+| otel-traces-sampler               | Opentelemetry sample rate type      | always_on, always_off, traceidratio | always_on |
+| otel-traces-sampler-arg           | Opentelemetry sample rate parameter | traceidratio：0.0 - 1.0 | 1.0 |
 
 ## Usage in ShardingSphere-Proxy
 
