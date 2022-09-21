@@ -49,8 +49,8 @@ public final class ViewMetaDataPersistServiceTest {
     public void assertPersist() {
         ShardingSphereView view = new ShardingSphereView("foo_view", "select `db`.`db`.`id` AS `id`,`db`.`db`.`order_id` AS `order_id` from `db`.`db`");
         new ViewMetaDataPersistService(repository).persist("foo_db", "foo_schema", Collections.singletonMap("foo_view", view));
-        verify(repository).persist("/metadata/foo_db/schemas/foo_schema/views/foo_view", "name: foo_view" + System.lineSeparator() 
-                + "viewDefinition: select `db`.`db`.`id` AS `id`,`db`.`db`.`order_id` AS `order_id` from" + System.lineSeparator() 
+        verify(repository).persist("/metadata/foo_db/schemas/foo_schema/views/foo_view", "name: foo_view" + System.lineSeparator()
+                + "viewDefinition: select `db`.`db`.`id` AS `id`,`db`.`db`.`order_id` AS `order_id` from" + System.lineSeparator()
                 + "  `db`.`db`" + System.lineSeparator());
     }
     

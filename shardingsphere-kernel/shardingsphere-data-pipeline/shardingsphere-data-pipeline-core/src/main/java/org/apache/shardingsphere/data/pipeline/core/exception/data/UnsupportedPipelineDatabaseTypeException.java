@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.data.pipeline.core.exception.data;
 
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+
 /**
- * Pipeline data consistency check failed exception.
+ * Unsupported pipeline database type exception.
  */
-public final class PipelineDataConsistencyCheckFailedException extends RuntimeException {
+public final class UnsupportedPipelineDatabaseTypeException extends PipelineSQLException {
     
     private static final long serialVersionUID = -4100671584682823997L;
     
-    public PipelineDataConsistencyCheckFailedException(final String message) {
-        super(message);
-    }
-    
-    public PipelineDataConsistencyCheckFailedException(final String message, final Throwable cause) {
-        super(message, cause);
+    public UnsupportedPipelineDatabaseTypeException(final DatabaseType databaseType) {
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 52, "Unsupported pipeline database type `%s`", databaseType.getType());
     }
 }

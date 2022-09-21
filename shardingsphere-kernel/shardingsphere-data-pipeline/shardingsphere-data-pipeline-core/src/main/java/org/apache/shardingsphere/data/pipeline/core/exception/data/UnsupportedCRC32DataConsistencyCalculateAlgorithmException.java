@@ -15,22 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql;
+package org.apache.shardingsphere.data.pipeline.core.exception.data;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedDatabase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlElement;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Count database rules statement test case.
+ * Unsupported CRC32 data consistency calculate algorithm exception.
  */
-@Getter
-@Setter
-public final class CountDatabaseRulesStatementTestCase extends SQLParserTestCase {
+public final class UnsupportedCRC32DataConsistencyCalculateAlgorithmException extends PipelineSQLException {
     
-    @XmlElement
-    private ExpectedDatabase database;
+    private static final long serialVersionUID = 580323508713524816L;
+    
+    public UnsupportedCRC32DataConsistencyCalculateAlgorithmException(final String databaseType) {
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 53, "Unsupported CRC32 data consistency calculate algorithm with database type `%s`", databaseType);
+    }
 }

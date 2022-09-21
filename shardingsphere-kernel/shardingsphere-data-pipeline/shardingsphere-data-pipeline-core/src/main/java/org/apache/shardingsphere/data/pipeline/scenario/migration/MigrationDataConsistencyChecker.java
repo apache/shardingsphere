@@ -31,13 +31,17 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
-import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineDataConsistencyCheckFailedException;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.data.pipeline.core.exception.data.UnsupportedPipelineDatabaseTypeException;
+import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
-import org.apache.shardingsphere.data.pipeline.core.util.PipelineTableMetaDataUtil;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -116,15 +120,14 @@ public final class MigrationDataConsistencyChecker {
             result.put(sourceTableName, checkCount(sourceDataSource, targetDataSource, executor));
             return result;
         } catch (final SQLException ex) {
-            throw new PipelineDataConsistencyCheckFailedException("Count check failed", ex);
+            throw new SQLWrapperException(ex);
         } finally {
             executor.shutdown();
             executor.shutdownNow();
         }
     }
     
-    private DataConsistencyCountCheckResult checkCount(final PipelineDataSourceWrapper sourceDataSource, final PipelineDataSourceWrapper targetDataSource,
-                                                       final ThreadPoolExecutor executor) {
+    private DataConsistencyCountCheckResult checkCount(final PipelineDataSourceWrapper sourceDataSource, final PipelineDataSourceWrapper targetDataSource, final ThreadPoolExecutor executor) {
         Future<Long> sourceFuture = executor.submit(() -> count(sourceDataSource, sourceTableName, sourceDataSource.getDatabaseType()));
         Future<Long> targetFuture = executor.submit(() -> count(targetDataSource, targetTableName, targetDataSource.getDatabaseType()));
         long sourceCount;
@@ -132,12 +135,18 @@ public final class MigrationDataConsistencyChecker {
         try {
             sourceCount = sourceFuture.get();
         } catch (final InterruptedException | ExecutionException ex) {
-            throw new PipelineDataConsistencyCheckFailedException(String.format("Count check failed for source table '%s'", sourceTableName), ex);
+            if (ex.getCause() instanceof PipelineSQLException) {
+                throw (PipelineSQLException) ex.getCause();
+            }
+            throw new SQLWrapperException(new SQLException(ex));
         }
         try {
             targetCount = targetFuture.get();
         } catch (final InterruptedException | ExecutionException ex) {
-            throw new PipelineDataConsistencyCheckFailedException(String.format("Count check failed for target table '%s'", targetTableName), ex);
+            if (ex.getCause() instanceof PipelineSQLException) {
+                throw (PipelineSQLException) ex.getCause();
+            }
+            throw new SQLWrapperException(new SQLException(ex));
         }
         return new DataConsistencyCountCheckResult(sourceCount, targetCount);
     }
@@ -156,14 +165,14 @@ public final class MigrationDataConsistencyChecker {
             resultSet.next();
             return resultSet.getLong(1);
         } catch (final SQLException ex) {
-            throw new PipelineDataConsistencyCheckFailedException(String.format("Count for table '%s' failed", tableName), ex);
+            throw new PipelineTableDataConsistencyCheckLoadingFailedException(tableName);
         }
     }
     
     private Map<String, DataConsistencyContentCheckResult> checkData(final DataConsistencyCalculateAlgorithm calculator) {
-        decoratePipelineDataSourceConfiguration(calculator, jobConfig.getSource());
+        checkPipelineDatabaseType(calculator, jobConfig.getSource());
         PipelineDataSourceConfiguration sourceDataSourceConfig = jobConfig.getSource();
-        decoratePipelineDataSourceConfiguration(calculator, jobConfig.getTarget());
+        checkPipelineDatabaseType(calculator, jobConfig.getTarget());
         PipelineDataSourceConfiguration targetDataSourceConfig = jobConfig.getTarget();
         ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job-" + getJobIdDigest(jobConfig.getJobId()) + "-data-check-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
@@ -173,11 +182,10 @@ public final class MigrationDataConsistencyChecker {
                 PipelineDataSourceWrapper targetDataSource = PipelineDataSourceFactory.newInstance(targetDataSourceConfig)) {
             String sourceDatabaseType = sourceDataSourceConfig.getDatabaseType().getType();
             String targetDatabaseType = targetDataSourceConfig.getDatabaseType().getType();
+            StandardPipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(sourceDataSource);
             for (String each : Collections.singletonList(sourceTableName)) {
-                PipelineTableMetaData tableMetaData = PipelineTableMetaDataUtil.getPipelineTableMetaData(tableNameSchemaNameMapping.getSchemaName(each), each, sourceDataSource, null);
-                if (null == tableMetaData) {
-                    throw new PipelineDataConsistencyCheckFailedException("Can not get metadata for table " + each);
-                }
+                PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(tableNameSchemaNameMapping.getSchemaName(each), each);
+                ShardingSpherePreconditions.checkNotNull(tableMetaData, () -> new PipelineTableDataConsistencyCheckLoadingFailedException(each));
                 Collection<String> columnNames = tableMetaData.getColumnNames();
                 PipelineColumnMetaData uniqueKey = jobConfig.getUniqueKeyColumn();
                 DataConsistencyCalculateParameter sourceParameter = buildParameter(sourceDataSource, tableNameSchemaNameMapping, each, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey);
@@ -201,8 +209,10 @@ public final class MigrationDataConsistencyChecker {
                 }
                 result.put(each, new DataConsistencyContentCheckResult(contentMatched));
             }
-        } catch (final ExecutionException | InterruptedException | SQLException ex) {
-            throw new PipelineDataConsistencyCheckFailedException("Data check failed", ex);
+        } catch (final SQLException ex) {
+            throw new SQLWrapperException(ex);
+        } catch (final ExecutionException | InterruptedException ex) {
+            throw new SQLWrapperException(new SQLException(ex.getCause()));
         } finally {
             executor.shutdown();
             executor.shutdownNow();
@@ -210,14 +220,9 @@ public final class MigrationDataConsistencyChecker {
         return result;
     }
     
-    private void decoratePipelineDataSourceConfiguration(final DataConsistencyCalculateAlgorithm calculator, final PipelineDataSourceConfiguration dataSourceConfig) {
-        checkDatabaseTypeSupported(calculator.getSupportedDatabaseTypes(), dataSourceConfig.getDatabaseType().getType());
-    }
-    
-    private void checkDatabaseTypeSupported(final Collection<String> supportedDatabaseTypes, final String databaseType) {
-        if (!supportedDatabaseTypes.contains(databaseType)) {
-            throw new PipelineDataConsistencyCheckFailedException("Database type " + databaseType + " is not supported in " + supportedDatabaseTypes);
-        }
+    private void checkPipelineDatabaseType(final DataConsistencyCalculateAlgorithm calculator, final PipelineDataSourceConfiguration dataSourceConfig) {
+        ShardingSpherePreconditions.checkState(calculator.getSupportedDatabaseTypes().contains(dataSourceConfig.getDatabaseType().getType()),
+                () -> new UnsupportedPipelineDatabaseTypeException(dataSourceConfig.getDatabaseType()));
     }
     
     private DataConsistencyCalculateParameter buildParameter(final PipelineDataSourceWrapper sourceDataSource, final TableNameSchemaNameMapping tableNameSchemaNameMapping,

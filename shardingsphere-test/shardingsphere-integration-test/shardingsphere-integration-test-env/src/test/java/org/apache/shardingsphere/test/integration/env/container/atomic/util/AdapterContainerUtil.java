@@ -15,16 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rql.show;
+package org.apache.shardingsphere.test.integration.env.container.atomic.util;
 
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.ProxyContainerConstants;
 
 /**
- * Count database rules statement.
+ * Adapter Container Util.
  */
-public final class CountDatabaseRulesStatement extends ShowRulesStatement {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class AdapterContainerUtil {
     
-    public CountDatabaseRulesStatement(final DatabaseSegment database) {
-        super(database);
+    /**
+     * Get adapter container image.
+     * 
+     * @return adapter container image
+     */
+    public static String getAdapterContainerImage() {
+        return System.getProperty("it.docker.proxy.image", ProxyContainerConstants.PROXY_CONTAINER_IMAGE);
     }
 }

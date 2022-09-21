@@ -92,8 +92,12 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 44000     | 18001       | Created process configuration already existed |
 | 44000     | 18002       | Altered process configuration does not exist |
 | HY000     | 18020       | Failed to get DDL for table \`%s\` |
+| 42S01     | 18030       | Duplicate resource names \`%s\` |
+| 42S02     | 18031       | Resource names \`%s\` do not exist |
 | HY000     | 18050       | Before data record is \`%s\`, after data record is \`%s\` |
 | 08000     | 18051       | Data check table \`%s\` failed |
+| 0A000     | 18052       | Unsupported pipeline database type \`%s\` |
+| 0A000     | 18053       | Unsupported CRC32 data consistency calculate algorithm with database type \`%s\` |
 | HY000     | 18080       | Can not find pipeline job \`%s\` |
 | HY000     | 18081       | Job has already started |
 | HY000     | 18082       | Sharding count of job \`%s\` is 0 |
