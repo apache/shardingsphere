@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.constant;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.binary.BinaryColumnType;
@@ -142,10 +143,8 @@ public enum MySQLBinaryColumnType implements BinaryColumnType {
      * @return column type enum
      */
     public static MySQLBinaryColumnType valueOfJDBCType(final int jdbcType) {
-        if (JDBC_TYPE_AND_COLUMN_TYPE_MAP.containsKey(jdbcType)) {
-            return JDBC_TYPE_AND_COLUMN_TYPE_MAP.get(jdbcType);
-        }
-        throw new IllegalArgumentException(String.format("Cannot find JDBC type '%s' in column type", jdbcType));
+        Preconditions.checkArgument(JDBC_TYPE_AND_COLUMN_TYPE_MAP.containsKey(jdbcType), "Can not find JDBC type `%s` in column type", jdbcType);
+        return JDBC_TYPE_AND_COLUMN_TYPE_MAP.get(jdbcType);
     }
     
     /**
@@ -155,9 +154,7 @@ public enum MySQLBinaryColumnType implements BinaryColumnType {
      * @return column type
      */
     public static MySQLBinaryColumnType valueOf(final int value) {
-        if (VALUE_AND_COLUMN_TYPE_MAP.containsKey(value)) {
-            return VALUE_AND_COLUMN_TYPE_MAP.get(value);
-        }
-        throw new IllegalArgumentException(String.format("Cannot find value '%s' in column type", value));
+        Preconditions.checkState(VALUE_AND_COLUMN_TYPE_MAP.containsKey(value), "Can not find value `%s` in column type", value);
+        return VALUE_AND_COLUMN_TYPE_MAP.get(value);
     }
 }

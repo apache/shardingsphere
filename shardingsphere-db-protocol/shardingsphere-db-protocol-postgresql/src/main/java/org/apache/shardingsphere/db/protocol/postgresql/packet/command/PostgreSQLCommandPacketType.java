@@ -73,7 +73,7 @@ public enum PostgreSQLCommandPacketType implements CommandPacketType, PostgreSQL
                 return each;
             }
         }
-        throw new IllegalArgumentException(String.format("Cannot find '%s' in PostgreSQL command packet type", value));
+        throw new IllegalArgumentException(String.format("Can not find `%s` in PostgreSQL command packet type", value));
     }
     
     /**

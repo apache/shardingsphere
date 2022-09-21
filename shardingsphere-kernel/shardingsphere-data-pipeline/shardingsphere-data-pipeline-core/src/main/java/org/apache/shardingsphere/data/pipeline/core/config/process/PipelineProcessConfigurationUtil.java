@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.config.process;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.process.yaml.YamlPipelineProcessConfiguration;
@@ -83,9 +84,7 @@ public final class PipelineProcessConfigurationUtil {
      * @throws IllegalArgumentException if path doesn't match pattern
      */
     public static void verifyConfPath(final String confPath) {
-        if (!CONF_PATH_PATTERN.matcher(confPath).matches()) {
-            throw new IllegalArgumentException("Invalid confPath, it doesn't match pattern: " + CONF_PATH_REGEX);
-        }
+        Preconditions.checkArgument(CONF_PATH_PATTERN.matcher(confPath).matches(), "Invalid confPath, it doesn't match pattern: %s", CONF_PATH_REGEX);
     }
     
     /**
