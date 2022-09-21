@@ -154,7 +154,7 @@ public enum MySQLBinaryColumnType implements BinaryColumnType {
      * @return column type
      */
     public static MySQLBinaryColumnType valueOf(final int value) {
-        Preconditions.checkState(VALUE_AND_COLUMN_TYPE_MAP.containsKey(value), "Can not find value `%s` in column type", value);
+        Preconditions.checkArgument(VALUE_AND_COLUMN_TYPE_MAP.containsKey(value), "Can not find value `%s` in column type", value);
         return VALUE_AND_COLUMN_TYPE_MAP.get(value);
     }
 }
