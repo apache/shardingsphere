@@ -112,21 +112,52 @@ public final class PipelineMetaDataNode {
     /**
      * Get job config path.
      *
-     * @param jobId job id.
-     * @return job config path.
+     * @param jobId job id
+     * @return job configuration path
      */
     public static String getJobConfigPath(final String jobId) {
         return String.join("/", getJobRootPath(jobId), "config");
     }
     
     /**
-     * Get job check result path.
+     * Get check latest result path.
      *
-     * @param jobId job id.
-     * @return job config path.
+     * @param jobId job id
+     * @return check latest result path
      */
-    public static String getJobCheckResultPath(final String jobId) {
-        return String.join("/", getJobRootPath(jobId), "check", "result");
+    public static String getCheckLatestResultPath(final String jobId) {
+        return String.join("/", getJobRootPath(jobId), "check", "latest_result");
+    }
+    
+    /**
+     * Get check latest detailed result path.
+     *
+     * @param jobId job id
+     * @return check latest detailed result path
+     */
+    public static String getCheckLatestDetailedResultPath(final String jobId) {
+        return String.join("/", getJobRootPath(jobId), "check", "latest_detailed_result");
+    }
+    
+    /**
+     * Get check job ids root path.
+     *
+     * @param jobId job id
+     * @return check job ids root path
+     */
+    public static String getCheckJobIdsRootPath(final String jobId) {
+        return String.join("/", getJobRootPath(jobId), "check", "job_ids");
+    }
+    
+    /**
+     * Get check job id path.
+     *
+     * @param jobId job id
+     * @param checkJobId check job id
+     * @return check job id path
+     */
+    public static String getCheckJobIdPath(final String jobId, final String checkJobId) {
+        return String.join("/", getCheckJobIdsRootPath(jobId), checkJobId);
     }
     
     /**
