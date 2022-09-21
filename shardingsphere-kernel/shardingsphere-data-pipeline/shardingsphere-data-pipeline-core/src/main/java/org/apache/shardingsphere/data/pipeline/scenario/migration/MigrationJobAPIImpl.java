@@ -381,7 +381,7 @@ public final class MigrationJobAPIImpl extends InventoryIncrementalJobPublicAPII
     }
     
     @Override
-    public void commit(final String jobId) {
+    public void commit(final String jobId) throws SQLException {
         checkModeConfig();
         log.info("Commit job {}", jobId);
         stop(jobId);
