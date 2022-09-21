@@ -39,8 +39,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 /**
  * ShardingSphere Transaction manager for XA.
@@ -51,15 +49,11 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     
     private XATransactionManagerProvider xaTransactionManagerProvider;
     
-    // TODO Add a global lock to prevent the transaction manager from being used when modifying the rule before it is created.
-    private final CountDownLatch latch = new CountDownLatch(1);
-    
     @Override
     public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources, final String providerType) {
         xaTransactionManagerProvider = XATransactionManagerProviderFactory.getInstance(providerType);
         xaTransactionManagerProvider.init();
         resourceDataSources.forEach(each -> cachedDataSources.put(each.getOriginalName(), newXATransactionDataSource(databaseType, each)));
-        latch.countDown();
     }
     
     private XATransactionDataSource newXATransactionDataSource(final DatabaseType databaseType, final ResourceDataSource resourceDataSource) {
@@ -73,13 +67,10 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
         return TransactionType.XA;
     }
     
-    @SneakyThrows({SystemException.class, InterruptedException.class})
+    @SneakyThrows(SystemException.class)
     @Override
     public boolean isInTransaction() {
-        if (!latch.await(3000, TimeUnit.MILLISECONDS)) {
-            return false;
-        }
-        return Status.STATUS_NO_TRANSACTION != xaTransactionManagerProvider.getTransactionManager().getStatus();
+        return xaTransactionManagerProvider != null && Status.STATUS_NO_TRANSACTION != xaTransactionManagerProvider.getTransactionManager().getStatus();
     }
     
     @Override
