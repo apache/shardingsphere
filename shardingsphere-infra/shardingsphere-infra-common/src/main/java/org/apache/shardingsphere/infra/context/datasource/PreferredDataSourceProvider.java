@@ -5,7 +5,7 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- *
+ *  
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -15,14 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc;
+package org.apache.shardingsphere.infra.context.datasource;
 
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.CacheableExecutorConnectionManager;
-
-import java.sql.Connection;
+import java.util.Collection;
 
 /**
- * Executor JDBC connection manager.
+ * Preferred data source provider.
  */
-public interface ExecutorJDBCConnectionManager extends CacheableExecutorConnectionManager<Connection> {
+public interface PreferredDataSourceProvider {
+    
+    /**
+     * Get preferred data source names.
+     *
+     * @return preferred data source names
+     */
+    Collection<String> getPreferredDataSourceNames();
 }

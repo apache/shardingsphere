@@ -154,6 +154,11 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
         }
     }
     
+    @Override
+    public Collection<String> getDataSourceNamesOfCachedConnections() {
+        return cachedConnections.keySet();
+    }
+    
     /**
      * Whether execute SQL serial or not.
      *

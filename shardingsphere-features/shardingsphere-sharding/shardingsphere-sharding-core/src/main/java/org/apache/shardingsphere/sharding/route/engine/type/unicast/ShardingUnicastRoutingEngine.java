@@ -21,6 +21,7 @@ import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
+import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -48,6 +49,8 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
     private final SQLStatementContext<?> sqlStatementContext;
     
     private final Collection<String> logicTables;
+    
+    private final ConnectionContext connectionContext;
     
     @Override
     public RouteContext route(final ShardingRule shardingRule) {
@@ -104,6 +107,8 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
     }
     
     private String getRandomDataSourceName(final Collection<String> dataSourceNames) {
-        return new ArrayList<>(dataSourceNames).get(ThreadLocalRandom.current().nextInt(dataSourceNames.size()));
+        Collection<String> preferredDataSourceNames = connectionContext.getPreferredDataSourceNames();
+        List<String> availableDataSourceNames = new ArrayList<>(!preferredDataSourceNames.isEmpty() ? preferredDataSourceNames : dataSourceNames);
+        return availableDataSourceNames.get(ThreadLocalRandom.current().nextInt(availableDataSourceNames.size()));
     }
 }
