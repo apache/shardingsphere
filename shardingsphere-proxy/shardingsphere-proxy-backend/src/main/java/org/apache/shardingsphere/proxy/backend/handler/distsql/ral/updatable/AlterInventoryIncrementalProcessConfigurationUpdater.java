@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPI;
+import org.apache.shardingsphere.data.pipeline.api.InventoryIncrementalJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterInventoryIncrementalProcessConfigurationStatement;
@@ -31,7 +31,7 @@ public final class AlterInventoryIncrementalProcessConfigurationUpdater implemen
     
     @Override
     public void executeUpdate(final String databaseName, final AlterInventoryIncrementalProcessConfigurationStatement sqlStatement) {
-        PipelineJobPublicAPI jobAPI = PipelineJobPublicAPIFactory.getPipelineJobPublicAPI(sqlStatement.getJobTypeName());
+        InventoryIncrementalJobPublicAPI jobAPI = PipelineJobPublicAPIFactory.getInventoryIncrementalJobPublicAPI(sqlStatement.getJobTypeName());
         PipelineProcessConfiguration processConfig = InventoryIncrementalProcessConfigurationSegmentConverter.convert(sqlStatement.getProcessConfigSegment());
         jobAPI.alterProcessConfiguration(processConfig);
     }
