@@ -42,8 +42,6 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
     
     private final String orderTableName;
     
-    private final boolean incrementOrderItemTogether;
-    
     private final int executeCountLimit;
     
     static {
@@ -58,15 +56,13 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
         while (executeCount < executeCountLimit && !Thread.currentThread().isInterrupted()) {
             Object orderId = insertOrder();
             if (0 == executeCount % 2) {
-                jdbcTemplate.update(String.format(prefixSchema("DELETE FROM ${schema}%s WHERE order_id = ?", schema), orderTableName), orderId);
+                jdbcTemplate.update(String.format("DELETE FROM %s WHERE order_id = ?", getTableNameWithSchema(orderTableName)), orderId);
             } else {
                 updateOrderByPrimaryKey(orderId);
             }
-            if (incrementOrderItemTogether) {
-                Object orderItemPrimaryKey = insertOrderItem();
-                jdbcTemplate.update(prefixSchema("UPDATE ${schema}t_order_item SET status = ? WHERE item_id = ?", schema), "updated" + Instant.now().getEpochSecond(), orderItemPrimaryKey);
-                jdbcTemplate.update(prefixSchema("DELETE FROM ${schema}t_order_item WHERE item_id = ?", schema), orderItemPrimaryKey);
-            }
+            Object orderItemPrimaryKey = insertOrderItem();
+            jdbcTemplate.update(String.format("UPDATE %s SET status = ? WHERE item_id = ?", getTableNameWithSchema("t_order_item")), "updated" + Instant.now().getEpochSecond(), orderItemPrimaryKey);
+            jdbcTemplate.update(String.format("DELETE FROM %s WHERE item_id = ?", getTableNameWithSchema("t_order_item")), orderItemPrimaryKey);
             executeCount++;
         }
         log.info("PostgreSQL increment task runnable execute successfully.");
@@ -76,7 +72,9 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         String status = 0 == random.nextInt() % 2 ? null : "NOT-NULL";
         Object[] orderInsertDate = new Object[]{KEY_GENERATE_ALGORITHM.generateKey(), random.nextInt(0, 6), status};
-        jdbcTemplate.update(String.format(prefixSchema("INSERT INTO ${schema}%s (order_id,user_id,status) VALUES (?, ?, ?)", schema), orderTableName), orderInsertDate);
+        String insertSQL = String.format("INSERT INTO %s (order_id,user_id,status) VALUES (?, ?, ?)", getTableNameWithSchema(orderTableName));
+        log.info("insert order sql:{}", insertSQL);
+        jdbcTemplate.update(insertSQL, orderInsertDate);
         return orderInsertDate[0];
     }
     
@@ -84,20 +82,20 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         String status = 0 == random.nextInt() % 2 ? null : "NOT-NULL";
         Object[] orderInsertItemDate = new Object[]{KEY_GENERATE_ALGORITHM.generateKey(), ScalingCaseHelper.generateSnowflakeKey(), random.nextInt(0, 6), status};
-        jdbcTemplate.update(prefixSchema("INSERT INTO ${schema}t_order_item(item_id,order_id,user_id,status) VALUES(?,?,?,?)", schema), orderInsertItemDate);
+        jdbcTemplate.update(String.format("INSERT INTO %s(item_id,order_id,user_id,status) VALUES(?,?,?,?)", getTableNameWithSchema("t_order_item")), orderInsertItemDate);
         return orderInsertItemDate[0];
     }
     
     private void updateOrderByPrimaryKey(final Object primaryKey) {
         Object[] updateData = {"updated" + Instant.now().getEpochSecond(), primaryKey};
-        jdbcTemplate.update(String.format(prefixSchema("UPDATE ${schema}%s SET status = ? WHERE order_id = ?", schema), updateData));
+        jdbcTemplate.update(String.format("UPDATE %s SET status = ? WHERE order_id = ?", getTableNameWithSchema(orderTableName)), updateData);
     }
     
-    private String prefixSchema(final String sql, final String schema) {
+    private String getTableNameWithSchema(final String tableName) {
         if (StringUtils.isNotBlank(schema)) {
-            return sql.replace("${schema}", schema + ".");
+            return String.join(".", schema, tableName);
         } else {
-            return sql.replace("${schema}", "");
+            return tableName;
         }
     }
 }
