@@ -42,8 +42,6 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
     
     private final String orderTableName;
     
-    private final boolean incrementOrderItemTogether;
-    
     private final int executeCountLimit;
     
     static {
@@ -62,11 +60,9 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
             } else {
                 updateOrderByPrimaryKey(orderId);
             }
-            if (incrementOrderItemTogether) {
-                Object orderItemPrimaryKey = insertOrderItem();
-                jdbcTemplate.update(prefixSchema("UPDATE ${schema}t_order_item SET status = ? WHERE item_id = ?", schema), "updated" + Instant.now().getEpochSecond(), orderItemPrimaryKey);
-                jdbcTemplate.update(prefixSchema("DELETE FROM ${schema}t_order_item WHERE item_id = ?", schema), orderItemPrimaryKey);
-            }
+            Object orderItemPrimaryKey = insertOrderItem();
+            jdbcTemplate.update(prefixSchema("UPDATE ${schema}t_order_item SET status = ? WHERE item_id = ?", schema), "updated" + Instant.now().getEpochSecond(), orderItemPrimaryKey);
+            jdbcTemplate.update(prefixSchema("DELETE FROM ${schema}t_order_item WHERE item_id = ?", schema), orderItemPrimaryKey);
             executeCount++;
         }
         log.info("PostgreSQL increment task runnable execute successfully.");
@@ -90,7 +86,7 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
     
     private void updateOrderByPrimaryKey(final Object primaryKey) {
         Object[] updateData = {"updated" + Instant.now().getEpochSecond(), primaryKey};
-        jdbcTemplate.update(String.format(prefixSchema("UPDATE ${schema}%s SET status = ? WHERE order_id = ?", schema), updateData));
+        jdbcTemplate.update(String.format(prefixSchema("UPDATE ${schema}%s SET status = ? WHERE order_id = ?", schema), orderTableName), updateData);
     }
     
     private String prefixSchema(final String sql, final String schema) {
