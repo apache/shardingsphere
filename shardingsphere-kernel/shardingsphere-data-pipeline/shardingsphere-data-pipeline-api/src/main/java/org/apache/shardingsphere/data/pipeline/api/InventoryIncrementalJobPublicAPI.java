@@ -20,6 +20,8 @@ package org.apache.shardingsphere.data.pipeline.api;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
+import java.sql.SQLException;
+
 /**
  * Inventory incremental job API.
  */
@@ -52,4 +54,19 @@ public interface InventoryIncrementalJobPublicAPI extends PipelineJobPublicAPI, 
      * @return process configuration, non-null
      */
     PipelineProcessConfiguration showProcessConfiguration();
+    
+    /**
+     * Rollback pipeline job.
+     *
+     * @param jobId job id
+     * @throws SQLException when rollback underlying database data
+     */
+    void rollback(String jobId) throws SQLException;
+    
+    /**
+     * Commit pipeline job.
+     *
+     * @param jobId job id
+     */
+    void commit(String jobId);
 }

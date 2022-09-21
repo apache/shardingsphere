@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -79,21 +78,6 @@ public interface MigrationJobPublicAPI extends InventoryIncrementalJobPublicAPI,
      * @return each logic table check result
      */
     Map<String, DataConsistencyCheckResult> dataConsistencyCheck(String jobId, String algorithmType, Properties algorithmProps);
-    
-    /**
-     * Rollback pipeline job.
-     *
-     * @param jobId job id
-     * @throws SQLException when rollback underlying database data
-     */
-    void rollback(String jobId) throws SQLException;
-    
-    /**
-     * Commit pipeline job.
-     *
-     * @param jobId job id
-     */
-    void commit(String jobId);
     
     /**
      * Add migration source resources.
