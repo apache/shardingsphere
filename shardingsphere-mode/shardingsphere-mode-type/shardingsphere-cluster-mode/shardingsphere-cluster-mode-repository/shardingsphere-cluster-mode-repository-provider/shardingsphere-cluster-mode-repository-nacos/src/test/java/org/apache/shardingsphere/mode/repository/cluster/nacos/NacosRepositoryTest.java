@@ -31,6 +31,7 @@ import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryException;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.entity.RegisterMetadata;
+import org.apache.shardingsphere.mode.repository.cluster.nacos.listener.NamingEventListener;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.props.NacosProperties;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.props.NacosPropertyKey;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.utils.MetadataUtil;
@@ -52,7 +53,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -267,7 +267,8 @@ public class NacosRepositoryTest {
     @Test
     @SneakyThrows
     public void assertWatchAdded() {
-        RegisterMetadata.PERSISTENT.setListener(null);
+        MemberAccessor accessor = Plugins.getMemberAccessor();
+        accessor.set(RegisterMetadata.EPHEMERAL.getClass().getDeclaredField("listener"), RegisterMetadata.EPHEMERAL, new NamingEventListener());
         String key = "key/key";
         String value = "value2";
         Instance instance = new Instance();
@@ -285,7 +286,8 @@ public class NacosRepositoryTest {
     @Test
     @SneakyThrows
     public void assertWatchUpdate() {
-        RegisterMetadata.PERSISTENT.setListener(null);
+        MemberAccessor accessor = Plugins.getMemberAccessor();
+        accessor.set(RegisterMetadata.EPHEMERAL.getClass().getDeclaredField("listener"), RegisterMetadata.EPHEMERAL, new NamingEventListener());
         String key = "key/key";
         long epochMilliseconds = MetadataUtil.getTimestamp();
         Instance preInstance = new Instance();
@@ -311,7 +313,8 @@ public class NacosRepositoryTest {
     @Test
     @SneakyThrows
     public void assertWatchDelete() {
-        RegisterMetadata.PERSISTENT.setListener(null);
+        MemberAccessor accessor = Plugins.getMemberAccessor();
+        accessor.set(RegisterMetadata.PERSISTENT.getClass().getDeclaredField("listener"), RegisterMetadata.PERSISTENT, new NamingEventListener());
         String key = "key/key";
         Instance preInstance = new Instance();
         preInstance.setMetadata(Collections.singletonMap(key, "value1"));
@@ -345,7 +348,7 @@ public class NacosRepositoryTest {
     @Test(expected = IllegalStateException.class)
     @SneakyThrows
     public void assertExceededMaximum() {
-        RegisterMetadata.EPHEMERAL.setPort(new AtomicInteger(Integer.MAX_VALUE));
+        RegisterMetadata.EPHEMERAL.getPort().set(Integer.MAX_VALUE);
         try {
             REPOSITORY.persistEphemeral("/key2", "value");
         } catch (ClusterPersistRepositoryException cause) {
