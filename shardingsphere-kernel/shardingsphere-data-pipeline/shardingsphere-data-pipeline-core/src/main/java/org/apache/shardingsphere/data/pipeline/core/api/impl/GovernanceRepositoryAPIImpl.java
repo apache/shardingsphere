@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.api.impl;
 
 import com.google.common.base.Strings;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDa
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -55,15 +57,37 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     @Override
-    public void persistJobCheckResult(final String jobId, final boolean checkSuccess) {
-        log.info("persist job check result '{}' for job {}", checkSuccess, jobId);
-        repository.persist(PipelineMetaDataNode.getJobCheckResultPath(jobId), String.valueOf(checkSuccess));
+    public void persistCheckLatestResult(final String jobId, final boolean checkSuccess) {
+        log.info("persist check latest result '{}' for job {}", checkSuccess, jobId);
+        repository.persist(PipelineMetaDataNode.getCheckLatestResultPath(jobId), String.valueOf(checkSuccess));
     }
     
     @Override
-    public Optional<Boolean> getJobCheckResult(final String jobId) {
-        String data = repository.get(PipelineMetaDataNode.getJobCheckResultPath(jobId));
+    public Optional<Boolean> getCheckLatestResult(final String jobId) {
+        String data = repository.get(PipelineMetaDataNode.getCheckLatestResultPath(jobId));
         return Strings.isNullOrEmpty(data) ? Optional.empty() : Optional.of(Boolean.parseBoolean(data));
+    }
+    
+    @Override
+    public void persistCheckLatestDetailedResult(final String jobId, @NonNull final String checkDetailedSuccess) {
+        log.info("persist check latest detailed result, jobId={}, checkDetailedSuccess={}", jobId, checkDetailedSuccess);
+        repository.persist(PipelineMetaDataNode.getCheckLatestDetailedResultPath(jobId), checkDetailedSuccess);
+    }
+    
+    @Override
+    public Optional<String> getCheckLatestDetailedResult(final String jobId) {
+        return Optional.ofNullable(repository.get(PipelineMetaDataNode.getCheckLatestDetailedResultPath(jobId)));
+    }
+    
+    @Override
+    public void persistCheckJobId(final String jobId, final String checkJobId) {
+        log.info("persist check job id, jobId={}, checkJobId={}", jobId, checkJobId);
+        repository.persist(PipelineMetaDataNode.getCheckJobIdPath(jobId, checkJobId), "");
+    }
+    
+    @Override
+    public Collection<String> listCheckJobIds(final String jobId) {
+        return repository.getChildrenKeys(PipelineMetaDataNode.getCheckJobIdsRootPath(jobId));
     }
     
     @Override
