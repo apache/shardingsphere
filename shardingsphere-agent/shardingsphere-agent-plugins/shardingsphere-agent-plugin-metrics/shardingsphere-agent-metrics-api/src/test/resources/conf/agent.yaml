@@ -15,33 +15,39 @@
 # limitations under the License.
 #
 
-applicationName: shardingsphere
-ignoredPluginNames:
-  - Jaeger
-  - OpenTracing
-
 plugins:
-  prometheus:
-    host:  "localhost"
-    port: 9090
-    props:
-      JVM_INFORMATION_COLLECTOR_ENABLED : "true"
-  Jaeger:
-    host: "localhost"
-    port: 5775
-    props:
-      JAEGER_SAMPLER_TYPE: "const"
-      JAEGER_SAMPLER_PARAM: "1"
-      JAEGER_REPORTER_LOG_SPANS: "true"
-      JAEGER_REPORTER_FLUSH_INTERVAL: "1"
-  Zipkin:
-    host: "localhost"
-    port: 9441
-    props:
-      NAME: "Zipkin"
-  Opentracing:
-    props:
-      OPENTRACING_TRACER_CLASS_NAME: "org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer"
-  Logging:
-    props:
-      LEVEL: "INFO"
+  logging:
+    BaseLogging:
+      props:
+        level: "INFO"
+  metrics:
+    Prometheus:
+      host:  "localhost"
+      port: 9090
+      props:
+        jvm-information-collector-enabled: "true"
+  tracing:
+#    Jaeger:
+#      host: "localhost"
+#      port: 5775
+#      props:
+#        service-name: "shardingsphere"
+#        jaeger-sampler-type: "const"
+#        jaeger-sampler-param: "1"
+#        jaeger-reporter-log-spans: "true"
+#        jaeger-reporter-flush-interval: "1"
+    Zipkin:
+      host: "localhost"
+      port: 9411
+      props:
+        service-name: "shardingsphere"
+        url-version: "/api/v2/spans"
+        sampler-type: "const"
+        sampler-param: "1"
+#    OpenTracing:
+#      props:
+#        opentracing-tracer-class-name: "org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer"
+    OpenTelemetry:
+      props:
+        otel-resource-attributes: "service.name=shardingsphere"
+        otel-traces-exporter: "zipkin"

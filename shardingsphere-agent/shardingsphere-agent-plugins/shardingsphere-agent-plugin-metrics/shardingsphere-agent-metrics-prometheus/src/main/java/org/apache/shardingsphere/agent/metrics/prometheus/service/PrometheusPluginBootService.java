@@ -39,6 +39,8 @@ import java.net.InetSocketAddress;
 @Slf4j
 public final class PrometheusPluginBootService implements PluginBootService {
     
+    private static final String KEY_JVM_INFORMATION_COLLECTOR_ENABLED = "jvm-information-collector-enabled";
+    
     private HTTPServer httpServer;
     
     @Override
@@ -49,7 +51,7 @@ public final class PrometheusPluginBootService implements PluginBootService {
     }
     
     private void startServer(final PluginConfiguration pluginConfig) {
-        registerCollector(Boolean.parseBoolean(pluginConfig.getProps().getProperty("JVM_INFORMATION_COLLECTOR_ENABLED")));
+        registerCollector(Boolean.parseBoolean(pluginConfig.getProps().getProperty(KEY_JVM_INFORMATION_COLLECTOR_ENABLED)));
         InetSocketAddress socketAddress = getSocketAddress(pluginConfig.getHost(), pluginConfig.getPort());
         try {
             httpServer = new HTTPServer(socketAddress, CollectorRegistry.defaultRegistry, true);

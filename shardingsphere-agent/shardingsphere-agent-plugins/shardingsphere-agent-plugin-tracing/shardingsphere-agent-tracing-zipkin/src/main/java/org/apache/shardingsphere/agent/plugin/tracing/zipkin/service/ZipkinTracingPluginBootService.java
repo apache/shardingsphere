@@ -36,6 +36,22 @@ import java.util.Properties;
  */
 public final class ZipkinTracingPluginBootService implements PluginBootService {
     
+    private static final String DEFAULT_SERVICE_NAME = "shardingsphere";
+    
+    private static final String KEY_SERVICE_NAME = "service-name";
+    
+    private static final String DEFAULT_URL_VERSION = "/api/v2/spans";
+    
+    private static final String KEY_URL_VERSION = "url-version";
+    
+    private static final String DEFAULT_SAMPLER_TYPE = "const";
+    
+    private static final String KEY_SAMPLER_TYPE = "sampler-type";
+    
+    private static final String DEFAULT_SAMPLER_PARAM = "1";
+    
+    private static final String KEY_SAMPLER_PARAM = "sampler-param";
+    
     private AsyncZipkinSpanHandler zipkinSpanHandler;
     
     private OkHttpSender sender;
@@ -48,8 +64,8 @@ public final class ZipkinTracingPluginBootService implements PluginBootService {
             throw new PluginConfigurationException("zipkin config error, host is null or port is %s", pluginConfig.getPort());
         }
         Properties props = pluginConfig.getProps();
-        String urlVersion = Optional.ofNullable(props.getProperty("URL_VERSION")).orElse("/api/v2/spans");
-        String serviceName = Optional.ofNullable(props.getProperty("SERVICE_NAME")).orElse("shardingsphere-agent");
+        String urlVersion = Optional.ofNullable(props.getProperty(KEY_URL_VERSION)).orElse(DEFAULT_URL_VERSION);
+        String serviceName = Optional.ofNullable(props.getProperty(KEY_SERVICE_NAME)).orElse(DEFAULT_SERVICE_NAME);
         sender = OkHttpSender.create(String.format("http://%s:%s%s", pluginConfig.getHost(), pluginConfig.getPort(), urlVersion));
         Sampler sampler = createSampler(pluginConfig);
         zipkinSpanHandler = AsyncZipkinSpanHandler.create(sender);
@@ -57,8 +73,8 @@ public final class ZipkinTracingPluginBootService implements PluginBootService {
     }
     
     private Sampler createSampler(final PluginConfiguration pluginConfig) {
-        String samplerType = Optional.ofNullable(pluginConfig.getProps().getProperty("SAMPLER_TYPE")).orElse("const");
-        String samplerParameter = Optional.ofNullable(pluginConfig.getProps().getProperty("SAMPLER_PARAM")).orElse("1");
+        String samplerType = Optional.ofNullable(pluginConfig.getProps().getProperty(KEY_SAMPLER_TYPE)).orElse(DEFAULT_SAMPLER_TYPE);
+        String samplerParameter = Optional.ofNullable(pluginConfig.getProps().getProperty(KEY_SAMPLER_PARAM)).orElse(DEFAULT_SAMPLER_PARAM);
         switch (samplerType) {
             case "const":
                 return "0".equals(samplerParameter) ? Sampler.NEVER_SAMPLE : Sampler.ALWAYS_SAMPLE;
