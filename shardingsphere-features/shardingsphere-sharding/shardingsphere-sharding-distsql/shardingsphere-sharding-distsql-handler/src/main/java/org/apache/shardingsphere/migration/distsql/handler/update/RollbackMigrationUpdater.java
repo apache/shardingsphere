@@ -32,13 +32,8 @@ public final class RollbackMigrationUpdater implements RALUpdater<RollbackMigrat
     private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
     
     @Override
-    public void executeUpdate(final String databaseName, final RollbackMigrationStatement sqlStatement) {
-        // TODO throw SQLException
-        try {
-            JOB_API.rollback(sqlStatement.getJobId());
-        } catch (final SQLException ex) {
-            throw new RuntimeException(ex);
-        }
+    public void executeUpdate(final String databaseName, final RollbackMigrationStatement sqlStatement) throws SQLException {
+        JOB_API.rollback(sqlStatement.getJobId());
     }
     
     @Override

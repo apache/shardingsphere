@@ -15,28 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.update;
+package org.apache.shardingsphere.readwritesplitting.exception;
 
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-
-import java.sql.SQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.SQLState;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 
 /**
- * RAL updater.
- * 
- * @param <T> type of updatable RAL statement
+ * Readwrite splitting SQL exception.
  */
-@SingletonSPI
-public interface RALUpdater<T extends SQLStatement> extends TypedSPI {
+public abstract class ReadwriteSplittingSQLException extends FeatureSQLException {
     
-    /**
-     * Execute update.
-     *
-     * @param databaseName database name
-     * @param sqlStatement updatable RAL statement
-     * @throws SQLException SQL exception
-     */
-    void executeUpdate(String databaseName, T sqlStatement) throws SQLException;
+    private static final long serialVersionUID = -4072517988732429040L;
+    
+    private static final int FEATURE_CODE = 2;
+    
+    public ReadwriteSplittingSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArguments) {
+        super(sqlState, FEATURE_CODE, errorCode, reason, messageArguments);
+    }
 }

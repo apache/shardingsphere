@@ -20,6 +20,7 @@ package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
+import org.apache.shardingsphere.readwritesplitting.exception.algorithm.InvalidReadDatabaseWeightException;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 
 import java.util.Arrays;
@@ -108,7 +109,7 @@ public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadB
         try {
             result = Double.parseDouble(weightObject.toString());
         } catch (final NumberFormatException ex) {
-            throw new NumberFormatException("Read database weight configuration error, configuration parameters:" + weightObject);
+            throw new InvalidReadDatabaseWeightException(weightObject);
         }
         if (Double.isInfinite(result)) {
             result = 10000.0D;

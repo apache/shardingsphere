@@ -151,6 +151,12 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 44000     | 20082       | Inline sharding algorithms expression \`%s\` and sharding column \`%s\` do not match |
 | 44000     | 20090       | Can not find strategy for generate keys with table \`%s\` |
 
+### 读写分离
+
+| SQL State | Vendor Code | 错误信息 |
+| --------- | ----------- | ------ |
+| HY004     | 20280       | Invalid read database weight \`%s\` |
+
 ### 数据库高可用
 
 | SQL State | Vendor Code | 错误信息 |

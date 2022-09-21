@@ -15,28 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.update;
+package org.apache.shardingsphere.readwritesplitting.exception.algorithm;
 
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-
-import java.sql.SQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingSQLException;
 
 /**
- * RAL updater.
- * 
- * @param <T> type of updatable RAL statement
+ * Invalid read database weight exception.
  */
-@SingletonSPI
-public interface RALUpdater<T extends SQLStatement> extends TypedSPI {
+public final class InvalidReadDatabaseWeightException extends ReadwriteSplittingSQLException {
     
-    /**
-     * Execute update.
-     *
-     * @param databaseName database name
-     * @param sqlStatement updatable RAL statement
-     * @throws SQLException SQL exception
-     */
-    void executeUpdate(String databaseName, T sqlStatement) throws SQLException;
+    private static final long serialVersionUID = -846600820893274188L;
+    
+    public InvalidReadDatabaseWeightException(final Object weight) {
+        super(XOpenSQLState.INVALID_DATA_TYPE, 80, "Invalid read database weight `%s`", weight);
+    }
 }

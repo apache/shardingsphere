@@ -59,7 +59,7 @@ public class PostgreSQLDataSourceChecker extends AbstractDataSourceChecker {
                 String isSuperRole = resultSet.getString("rolsuper");
                 String isReplicationRole = resultSet.getString("rolreplication");
                 log.info("checkPrivilege: isSuperRole: {}, isReplicationRole: {}", isSuperRole, isReplicationRole);
-                ShardingSpherePreconditions.checkState(!StringUtils.equalsIgnoreCase(isSuperRole, "f") && StringUtils.equalsIgnoreCase(isReplicationRole, "f"),
+                ShardingSpherePreconditions.checkState(StringUtils.equalsIgnoreCase(isSuperRole, "t") || StringUtils.equalsIgnoreCase(isReplicationRole, "t"),
                         () -> new PrepareJobWithoutEnoughPrivilegeException(Collections.singleton("REPLICATION")));
             }
         } catch (final SQLException ex) {
