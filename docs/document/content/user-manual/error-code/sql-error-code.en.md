@@ -151,6 +151,12 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 44000     | 20082       | Inline sharding algorithms expression \`%s\` and sharding column \`%s\` do not match |
 | 44000     | 20090       | Can not find strategy for generate keys with table \`%s\` |
 
+### Readwrite Splitting
+
+| SQL State | Vendor Code | Reason |
+| --------- | ----------- | ------ |
+| HY004     | 20280       | Invalid read database weight \`%s\` |
+
 ### Database HA
 
 | SQL State | Vendor Code | Reason |
