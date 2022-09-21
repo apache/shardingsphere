@@ -131,7 +131,6 @@ public abstract class BaseITCase {
         createProxyDatabase(parameterized.getDatabaseType());
         if (ITEnvTypeEnum.NATIVE == ENV.getItEnvType()) {
             cleanUpDataSource();
-            cleanUpPipelineJobs();
         }
         extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BaseITCase.class.getClassLoader().getResource(parameterized.getScenario())), ExtraSQLCommand.class);
         scalingWatcher = new ScalingWatcher(containerComposer);
@@ -141,10 +140,6 @@ public abstract class BaseITCase {
         for (String each : Arrays.asList(DS_0, DS_1, DS_2, DS_3, DS_4)) {
             containerComposer.cleanUpDatabase(each);
         }
-    }
-    
-    private void cleanUpPipelineJobs() {
-        
     }
     
     protected void createProxyDatabase(final DatabaseType databaseType) {
