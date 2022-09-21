@@ -57,6 +57,7 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
     private volatile ShardingSphereTransactionManagerEngine resource;
     
     public TransactionRule(final TransactionRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases, final InstanceContext instanceContext) {
+        log.info("Create transaction rule");
         configuration = ruleConfig;
         defaultType = TransactionType.valueOf(ruleConfig.getDefaultType().toUpperCase());
         providerType = ruleConfig.getProviderType();
@@ -95,6 +96,7 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
         if (null == database) {
             return;
         }
+        log.info("Transaction rule add resource: {}", database.getName());
         rebuildEngine();
     }
     
@@ -103,11 +105,13 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
         if (!databases.containsKey(databaseName.toLowerCase())) {
             return;
         }
+        log.info("Transaction rule close resource: {}", databaseName);
         rebuildEngine();
     }
     
     @Override
     public synchronized void closeStaleResource() {
+        log.info("Transaction rule close all resources");
         closeEngine();
     }
     
