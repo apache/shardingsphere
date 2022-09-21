@@ -26,14 +26,13 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
-import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.migration.distsql.statement.AddMigrationSourceResourceStatement;
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ResourceSegmentsConverter;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +45,7 @@ public final class AddMigrationSourceResourceUpdater implements RALUpdater<AddMi
     private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
     
     @Override
-    public void executeUpdate(final String databaseName, final AddMigrationSourceResourceStatement sqlStatement) {
+    public void executeUpdate(final String databaseName, final AddMigrationSourceResourceStatement sqlStatement) throws SQLException {
         List<DataSourceSegment> dataSources = new ArrayList<>(sqlStatement.getDataSources());
         ShardingSpherePreconditions.checkState(dataSources.stream().noneMatch(each -> each instanceof HostnameAndPortBasedDataSourceSegment),
                 () -> new UnsupportedSQLOperationException("Not currently support add hostname and port, please use url"));
@@ -54,11 +53,7 @@ public final class AddMigrationSourceResourceUpdater implements RALUpdater<AddMi
         DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(urlBasedDataSourceSegment.getUrl());
         Map<String, DataSourceProperties> sourcePropertiesMap = ResourceSegmentsConverter.convert(databaseType, dataSources);
         DataSourcePropertiesValidator validator = new DataSourcePropertiesValidator();
-        try {
-            validator.validate(sourcePropertiesMap, databaseType);
-        } catch (final InvalidResourcesException ex) {
-            throw new SQLWrapperException(ex);
-        }
+        validator.validate(sourcePropertiesMap, databaseType);
         JOB_API.addMigrationSourceResources(sourcePropertiesMap);
     }
     
