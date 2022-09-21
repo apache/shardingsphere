@@ -293,28 +293,30 @@ public final class ShardingTableRuleStatementChecker {
     private static void checkAlgorithm(final String databaseName, final ShardingRuleConfiguration currentRuleConfig, final Collection<TableRuleSegment> rules) throws DistSQLException {
         Map<String, AlgorithmConfiguration> currentAlgorithms = Optional.ofNullable(currentRuleConfig).map(ShardingRuleConfiguration::getShardingAlgorithms).orElse(Collections.emptyMap());
         Collection<String> invalidAlgorithms = rules.stream().map(each -> Arrays.asList(each.getDatabaseStrategySegment(), each.getTableStrategySegment())).flatMap(Collection::stream)
-                .filter(Objects::nonNull).map(each -> getInvalidAlgorithmName(currentAlgorithms, each)).filter(Objects::nonNull).collect(Collectors.toList());
+                .filter(Objects::nonNull).map(each -> getInvalidAlgorithmError(currentAlgorithms, each)).filter(Objects::nonNull).collect(Collectors.toList());
         DistSQLException.predictionThrow(invalidAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException(databaseName, invalidAlgorithms));
     }
-    
-    private static String getInvalidAlgorithmName(final Map<String, AlgorithmConfiguration> currentAlgorithms, final ShardingStrategySegment shardingStrategySegment) {
+
+    private static String getInvalidAlgorithmError(final Map<String, AlgorithmConfiguration> currentAlgorithms, final ShardingStrategySegment shardingStrategySegment) {
         ShardingAlgorithm shardingAlgorithm;
-        String shardingAlgorithmName;
         if (null == shardingStrategySegment.getShardingAlgorithmName() && null == shardingStrategySegment.getAlgorithmSegment()) {
-            return "ShardingAlgorithm is not fount";
+            return "The ShardingAlgorithm is not fount";
         } else if (null != shardingStrategySegment.getAlgorithmSegment()) {
-            shardingAlgorithmName = shardingStrategySegment.getAlgorithmSegment().getName();
-            shardingAlgorithm = ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration(shardingAlgorithmName, shardingStrategySegment.getAlgorithmSegment().getProps()));
+            String shardingAlgorithmType = shardingStrategySegment.getAlgorithmSegment().getName();
+            shardingAlgorithm = ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration(shardingAlgorithmType, shardingStrategySegment.getAlgorithmSegment().getProps()));
+            if (shardingAlgorithm instanceof ShardingAutoTableAlgorithm) {
+                return String.format("The ShardingAlgorithm type can't be %s", shardingAlgorithmType);
+            }
         } else {
-            shardingAlgorithmName = shardingStrategySegment.getShardingAlgorithmName();
+            String shardingAlgorithmName = shardingStrategySegment.getShardingAlgorithmName();
             AlgorithmConfiguration algorithmConfiguration = currentAlgorithms.get(shardingAlgorithmName);
             if (null == algorithmConfiguration) {
-                return shardingAlgorithmName;
+                return String.format("The '%s' is not fount", shardingAlgorithmName);
             }
             shardingAlgorithm = ShardingAlgorithmFactory.newInstance(algorithmConfiguration);
-        }
-        if (shardingAlgorithm instanceof ShardingAutoTableAlgorithm) {
-            return shardingAlgorithmName;
+            if (shardingAlgorithm instanceof ShardingAutoTableAlgorithm) {
+                return String.format("The '%s' type can't be %s", shardingAlgorithmName, shardingAlgorithm.getType());
+            }
         }
         return null;
     }
