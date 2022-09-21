@@ -28,6 +28,11 @@
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
+    <properties>
+        <native.maven.plugin.version>0.9.13</native.maven.plugin.version>
+        <maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
+    </properties>
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -215,6 +220,77 @@
                                 </configuration>
                             </execution>
                         </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>gunzip.untar</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>${maven-antrun-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>prepare</id>
+                                <phase>validate</phase>
+                                <configuration>
+                                    <tasks>
+                                        <gunzip src="target/${project.build.finalName}-shardingsphere-proxy-bin.tar.gz" dest="target/"/>
+                                        <untar src="target/${project.build.finalName}-shardingsphere-proxy-bin.tar" dest="target/"/>
+                                    </tasks>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>native</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.graalvm.buildtools</groupId>
+                        <artifactId>native-maven-plugin</artifactId>
+                        <version>${native.maven.plugin.version}</version>
+                        <extensions>true</extensions>
+                        <executions>
+                            <execution>
+                                <id>build-native</id>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                                <phase>package</phase>
+                            </execution>
+                            <execution>
+                                <id>test-native</id>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <phase>test</phase>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <imageName>${project.build.finalName}-shardingsphere-proxy-bin</imageName>
+                            <mainClass>org.apache.shardingsphere.proxy.Bootstrap</mainClass>
+                            <fallback>false</fallback>
+                            <verbose>true</verbose>
+                            <classpath>
+                                <entry>target/${project.build.finalName}-shardingsphere-proxy-bin/conf</entry>
+                                <entry>.</entry>
+                                <entry>target/${project.build.finalName}-shardingsphere-proxy-bin/lib/*</entry>
+                                <entry>target/${project.build.finalName}-shardingsphere-proxy-bin/ext-lib/*</entry>
+                            </classpath>
+                            <metadataRepository>
+                                <enabled>true</enabled>
+                            </metadataRepository>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
