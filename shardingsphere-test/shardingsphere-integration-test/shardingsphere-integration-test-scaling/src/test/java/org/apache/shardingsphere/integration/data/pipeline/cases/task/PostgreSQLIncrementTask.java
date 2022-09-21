@@ -56,13 +56,13 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
         while (executeCount < executeCountLimit && !Thread.currentThread().isInterrupted()) {
             Object orderId = insertOrder();
             if (0 == executeCount % 2) {
-                jdbcTemplate.update(parseSQL("DELETE FROM %s.%s WHERE order_id = ?", orderTableName), orderId);
+                jdbcTemplate.update(String.format("DELETE FROM %s WHERE order_id = ?", getTableNameWithSchema(orderTableName)), orderId);
             } else {
                 updateOrderByPrimaryKey(orderId);
             }
             Object orderItemPrimaryKey = insertOrderItem();
-            jdbcTemplate.update(parseSQL("UPDATE %s.%s SET status = ? WHERE item_id = ?", "t_order_item"), "updated" + Instant.now().getEpochSecond(), orderItemPrimaryKey);
-            jdbcTemplate.update(parseSQL("DELETE FROM %s.%s WHERE item_id = ?", "t_order_item"), orderItemPrimaryKey);
+            jdbcTemplate.update(String.format("UPDATE %s SET status = ? WHERE item_id = ?", getTableNameWithSchema("t_order_item")), "updated" + Instant.now().getEpochSecond(), orderItemPrimaryKey);
+            jdbcTemplate.update(String.format("DELETE FROM %s WHERE item_id = ?", getTableNameWithSchema("t_order_item")), orderItemPrimaryKey);
             executeCount++;
         }
         log.info("PostgreSQL increment task runnable execute successfully.");
@@ -72,7 +72,9 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         String status = 0 == random.nextInt() % 2 ? null : "NOT-NULL";
         Object[] orderInsertDate = new Object[]{KEY_GENERATE_ALGORITHM.generateKey(), random.nextInt(0, 6), status};
-        jdbcTemplate.update(parseSQL("INSERT INTO %s.%s (order_id,user_id,status) VALUES (?, ?, ?)", orderTableName), orderInsertDate);
+        String insertSQL = String.format("INSERT INTO %s (order_id,user_id,status) VALUES (?, ?, ?)", getTableNameWithSchema(orderTableName));
+        log.info("insert order sql:{}", insertSQL);
+        jdbcTemplate.update(insertSQL, orderInsertDate);
         return orderInsertDate[0];
     }
     
@@ -80,20 +82,20 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         String status = 0 == random.nextInt() % 2 ? null : "NOT-NULL";
         Object[] orderInsertItemDate = new Object[]{KEY_GENERATE_ALGORITHM.generateKey(), ScalingCaseHelper.generateSnowflakeKey(), random.nextInt(0, 6), status};
-        jdbcTemplate.update(parseSQL("INSERT INTO %s.%s(item_id,order_id,user_id,status) VALUES(?,?,?,?)", "t_order_item"), orderInsertItemDate);
+        jdbcTemplate.update(String.format("INSERT INTO %s(item_id,order_id,user_id,status) VALUES(?,?,?,?)", getTableNameWithSchema("t_order_item")), orderInsertItemDate);
         return orderInsertItemDate[0];
     }
     
     private void updateOrderByPrimaryKey(final Object primaryKey) {
         Object[] updateData = {"updated" + Instant.now().getEpochSecond(), primaryKey};
-        jdbcTemplate.update(parseSQL("UPDATE %s.%s SET status = ? WHERE order_id = ?", orderTableName), updateData);
+        jdbcTemplate.update(String.format("UPDATE %s SET status = ? WHERE order_id = ?", getTableNameWithSchema(orderTableName)), updateData);
     }
     
-    private String parseSQL(final String sql, final String tableName) {
+    private String getTableNameWithSchema(final String tableName) {
         if (StringUtils.isNotBlank(schema)) {
-            return String.format(sql, schema, tableName);
+            return String.join(".", schema, tableName);
         } else {
-            return String.format(sql.replaceFirst("%s.", ""), tableName);
+            return tableName;
         }
     }
 }
