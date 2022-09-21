@@ -32,12 +32,8 @@ public final class CommitMigrationUpdater implements RALUpdater<CommitMigrationS
     private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
     
     @Override
-    public void executeUpdate(final String databaseName, final CommitMigrationStatement sqlStatement) {
-        try {
-            JOB_API.commit(sqlStatement.getJobId());
-        } catch (final SQLException ex) {
-            throw new RuntimeException(ex);
-        }
+    public void executeUpdate(final String databaseName, final CommitMigrationStatement sqlStatement) throws SQLException {
+        JOB_API.commit(sqlStatement.getJobId());
     }
     
     @Override

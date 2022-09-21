@@ -26,6 +26,8 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
+import java.sql.SQLException;
+
 /**
  * Updatable scaling RAL backend handler factory.
  */
@@ -39,7 +41,7 @@ public final class UpdatableScalingRALBackendHandler implements ProxyBackendHand
     
     @SuppressWarnings("unchecked")
     @Override
-    public ResponseHeader execute() {
+    public ResponseHeader execute() throws SQLException {
         String databaseName = getDatabaseName(connectionSession);
         RALUpdaterFactory.getInstance(sqlStatement.getClass()).executeUpdate(databaseName, sqlStatement);
         return new UpdateResponseHeader(sqlStatement);
