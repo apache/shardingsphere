@@ -135,7 +135,7 @@ public final class MigrationJobAPIImplTest {
     }
     
     @Test
-    public void assertCommit() {
+    public void assertCommit() throws SQLException {
         Optional<String> jobId = jobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
         MigrationJobConfiguration jobConfig = jobAPI.getJobConfiguration(jobId.get());
