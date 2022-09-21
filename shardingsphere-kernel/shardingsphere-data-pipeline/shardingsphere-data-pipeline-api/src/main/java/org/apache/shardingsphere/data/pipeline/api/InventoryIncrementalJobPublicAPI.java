@@ -17,41 +17,39 @@
 
 package org.apache.shardingsphere.data.pipeline.api;
 
-import org.apache.shardingsphere.data.pipeline.api.job.JobType;
-import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
-
-import java.util.List;
+import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
- * Pipeline job public API.
+ * Inventory incremental job API.
  */
-public interface PipelineJobPublicAPI {
+public interface InventoryIncrementalJobPublicAPI extends PipelineJobPublicAPI, TypedSPI {
     
     /**
-     * Get job type.
+     * Create process configuration.
      *
-     * @return job type
+     * @param processConfig process configuration
      */
-    JobType getJobType();
+    void createProcessConfiguration(PipelineProcessConfiguration processConfig);
     
     /**
-     * Start disabled job.
+     * Alter process configuration.
      *
-     * @param jobId job id
+     * @param processConfig process configuration
      */
-    void startDisabledJob(String jobId);
+    void alterProcessConfiguration(PipelineProcessConfiguration processConfig);
     
     /**
-     * Stop pipeline job.
+     * Drop process configuration.
      *
-     * @param jobId job id
+     * @param confPath configuration path. e.g. <code>/</code>, <code>/READ</code>, <code>/READ/RATE_LIMITER</code>
      */
-    void stop(String jobId);
+    void dropProcessConfiguration(String confPath);
     
     /**
-     * Get pipeline job info.
+     * Show process configuration.
      *
-     * @return jobInfos
+     * @return process configuration, non-null
      */
-    List<? extends PipelineJobInfo> list();
+    PipelineProcessConfiguration showProcessConfiguration();
 }

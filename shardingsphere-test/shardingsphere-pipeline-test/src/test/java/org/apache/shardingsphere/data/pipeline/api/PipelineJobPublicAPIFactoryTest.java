@@ -31,11 +31,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public final class PipelineJobPublicAPIFactoryTest {
     
     @Test
-    public void assertGetPipelineJobPublicAPI() {
-        Collection<Pair<JobType, Class<? extends PipelineJobPublicAPI>>> paramResult = new LinkedList<>();
+    public void assertGetInventoryIncrementalJobPublicAPI() {
+        Collection<Pair<JobType, Class<? extends InventoryIncrementalJobPublicAPI>>> paramResult = new LinkedList<>();
         paramResult.add(Pair.of(JobType.MIGRATION, MigrationJobAPIImpl.class));
-        for (Pair<JobType, Class<? extends PipelineJobPublicAPI>> each : paramResult) {
-            assertThat(PipelineJobPublicAPIFactory.getPipelineJobPublicAPI(each.getKey().getTypeName()), instanceOf(each.getValue()));
+        for (Pair<JobType, Class<? extends InventoryIncrementalJobPublicAPI>> each : paramResult) {
+            assertThat(PipelineJobPublicAPIFactory.getInventoryIncrementalJobPublicAPI(each.getKey().getTypeName()), instanceOf(each.getValue()));
         }
     }
     

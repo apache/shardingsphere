@@ -36,7 +36,7 @@ import java.util.Properties;
  * Migration job public API.
  */
 @SingletonSPI
-public interface MigrationJobPublicAPI extends PipelineJobPublicAPI, RequiredSPI {
+public interface MigrationJobPublicAPI extends InventoryIncrementalJobPublicAPI, RequiredSPI {
     
     /**
      * List all jobs.
