@@ -52,7 +52,7 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
     }
     
     protected void addMigrationSourceResource() throws SQLException {
-        if (ENV.getItEnvType() == ITEnvTypeEnum.NATIVE) {
+        if (ITEnvTypeEnum.NATIVE == ENV.getItEnvType()) {
             try {
                 proxyExecuteWithLog("DROP MIGRATION SOURCE RESOURCE ds_0", 2);
             } catch (final SQLException ex) {
@@ -108,15 +108,15 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
     }
     
     protected void startMigration(final String sourceTableName, final String targetTableName) throws SQLException {
-        proxyExecuteWithLog(migrationDistSQLCommand.getMigrationSingleTable(sourceTableName, targetTableName), 1);
+        proxyExecuteWithLog(migrationDistSQLCommand.getMigrationSingleTable(sourceTableName, targetTableName), 5);
     }
     
     protected void startMigrationWithSchema(final String sourceTableName, final String targetTableName) throws SQLException {
-        proxyExecuteWithLog(migrationDistSQLCommand.getMigrationSingleTableWithSchema(sourceTableName, targetTableName), 1);
+        proxyExecuteWithLog(migrationDistSQLCommand.getMigrationSingleTableWithSchema(sourceTableName, targetTableName), 5);
     }
     
     protected void addMigrationProcessConfig() throws SQLException {
-        if (ENV.getItEnvType() == ITEnvTypeEnum.NATIVE) {
+        if (ITEnvTypeEnum.NATIVE == ENV.getItEnvType()) {
             try {
                 proxyExecuteWithLog("DROP MIGRATION PROCESS CONFIGURATION '/'", 0);
             } catch (final SQLException ex) {
