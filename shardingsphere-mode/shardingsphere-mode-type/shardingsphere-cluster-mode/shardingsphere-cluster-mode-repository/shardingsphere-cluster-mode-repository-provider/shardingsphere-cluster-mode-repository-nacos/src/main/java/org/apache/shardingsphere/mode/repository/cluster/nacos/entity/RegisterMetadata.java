@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.repository.cluster.nacos.entity;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.listener.NamingEventListener;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -29,26 +28,23 @@ import java.util.stream.Stream;
  * Register metadata.
  */
 @RequiredArgsConstructor
+@Getter
 public enum RegisterMetadata {
     
     /**
-     * persistent.
+     * Persistent service.
      */
-    PERSISTENT(false),
+    PERSISTENT(new AtomicInteger(Integer.MIN_VALUE), new NamingEventListener(), false),
     
     /**
-     * ephemeral.
+     * Ephemeral service.
      */
-    EPHEMERAL(true);
+    EPHEMERAL(new AtomicInteger(Integer.MIN_VALUE), new NamingEventListener(), true);
     
-    @Setter
-    private AtomicInteger port;
+    private final AtomicInteger port;
     
-    @Setter
-    @Getter
-    private NamingEventListener listener;
+    private final NamingEventListener listener;
     
-    @Getter
     private final boolean ephemeral;
     
     /**
@@ -61,18 +57,5 @@ public enum RegisterMetadata {
         return Stream.of(values())
                 .filter(registerMetadata -> registerMetadata.ephemeral == isEphemeral).findAny()
                 .orElseThrow(() -> new IllegalArgumentException("Status not exist: " + isEphemeral));
-    }
-    
-    /**
-     * This is to ensure that port is different from the last time when persisting.
-     *
-     * @return fake port
-     */
-    public int getPort() {
-        int port = this.port.incrementAndGet();
-        if (port == Integer.MIN_VALUE) {
-            throw new IllegalStateException("Specified cluster ip exceeded the maximum number of persisting");
-        }
-        return port;
     }
 }

@@ -45,7 +45,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -83,10 +82,9 @@ public final class NacosRepository implements ClusterPersistRepository {
         try {
             String ip = nacosProps.getValue(NacosPropertyKey.CLUSTER_IP);
             for (RegisterMetadata registerMetadata : RegisterMetadata.values()) {
-                AtomicInteger port = client.getAllInstances(registerMetadata.name(), false).stream()
+                client.getAllInstances(registerMetadata.name(), false).stream()
                         .filter(filterInstance -> StringUtils.equals(filterInstance.getIp(), ip)).max(Comparator.comparing(Instance::getPort))
-                        .map(convert -> new AtomicInteger(convert.getPort())).orElse(new AtomicInteger(Integer.MIN_VALUE));
-                registerMetadata.setPort(port);
+                        .ifPresent(instance -> registerMetadata.getPort().set(instance.getPort()));
             }
             // CHECKSTYLE:OFF
         } catch (Exception cause) {
@@ -142,14 +140,10 @@ public final class NacosRepository implements ClusterPersistRepository {
         try {
             for (RegisterMetadata registerMetadata : RegisterMetadata.values()) {
                 NamingEventListener eventListener = registerMetadata.getListener();
-                if (Objects.isNull(eventListener)) {
-                    Map<String, DataChangedEventListener> parentPathListenerMap = new HashMap<>();
-                    parentPathListenerMap.put(key, listener);
-                    eventListener = new NamingEventListener(parentPathListenerMap);
-                    registerMetadata.setListener(eventListener);
+                boolean isEmpty = eventListener.isEmpty();
+                eventListener.put(key, listener);
+                if (isEmpty) {
                     client.subscribe(registerMetadata.name(), eventListener);
-                } else {
-                    eventListener.put(key, listener);
                 }
             }
             // CHECKSTYLE:OFF
@@ -224,7 +218,7 @@ public final class NacosRepository implements ClusterPersistRepository {
         RegisterMetadata registerMetadata = RegisterMetadata.of(ephemeral);
         Instance instance = new Instance();
         instance.setIp(nacosProps.getValue(NacosPropertyKey.CLUSTER_IP));
-        instance.setPort(registerMetadata.getPort());
+        instance.setPort(getPort(registerMetadata));
         instance.setEphemeral(ephemeral);
         Map<String, String> metadataMap = new HashMap<>(5, 1);
         if (ephemeral) {
@@ -239,33 +233,41 @@ public final class NacosRepository implements ClusterPersistRepository {
     }
     
     private List<KeyValue> buildParentPath(final String key) throws NacosException {
-        List<KeyValue> keyValues = new LinkedList<>();
+        List<KeyValue> result = new LinkedList<>();
         StringBuilder parentPath = new StringBuilder();
         String[] partPath = key.split(PATH_SEPARATOR);
         for (int index = 1; index < partPath.length - 1; index++) {
             String path = parentPath.append(PATH_SEPARATOR).append(partPath[index]).toString();
             if (findExisted(path, false).isEmpty()) {
-                keyValues.addAll(build(path));
+                result.addAll(build(path));
             }
         }
-        return keyValues;
+        return result;
     }
     
     private List<KeyValue> build(final String key) throws NacosException {
-        List<KeyValue> keyValues = new LinkedList<>();
-        if (findExisted(key, RegisterMetadata.PERSISTENT.isEphemeral()).isEmpty()) {
+        List<KeyValue> result = new LinkedList<>();
+        if (findExisted(key, false).isEmpty()) {
             Instance instance = new Instance();
             instance.setIp(nacosProps.getValue(NacosPropertyKey.CLUSTER_IP));
-            instance.setPort(RegisterMetadata.PERSISTENT.getPort());
+            instance.setPort(getPort(RegisterMetadata.of(false)));
             instance.setEphemeral(false);
             Map<String, String> metadataMap = new HashMap<>(2, 1);
             metadataMap.put(key, MetadataUtil.EMPTY);
             metadataMap.put(MetadataUtil.UTC_ZONE_OFFSET.toString(), String.valueOf(MetadataUtil.getTimestamp()));
             instance.setMetadata(metadataMap);
             client.registerInstance(RegisterMetadata.PERSISTENT.name(), instance);
-            keyValues.add(new KeyValue(key, MetadataUtil.EMPTY, false));
+            result.add(new KeyValue(key, MetadataUtil.EMPTY, false));
         }
-        return keyValues;
+        return result;
+    }
+    
+    private int getPort(final RegisterMetadata registerMetadata) {
+        int result = registerMetadata.getPort().incrementAndGet();
+        if (result == Integer.MIN_VALUE) {
+            throw new IllegalStateException("Specified cluster ip exceeded the maximum number of persisting");
+        }
+        return result;
     }
     
     private void fillEphemeralMetadata(final Map<String, String> metadataMap) {
