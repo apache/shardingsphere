@@ -35,7 +35,6 @@ import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNot
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJob;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
@@ -91,6 +90,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         jobInfo.setShardingTotalCount(jobConfigPOJO.getShardingTotalCount());
         jobInfo.setCreateTime(jobConfigPOJO.getProps().getProperty("create_time"));
         jobInfo.setStopTime(jobConfigPOJO.getProps().getProperty("stop_time"));
+        jobInfo.setJobParameter(jobConfigPOJO.getJobParameter());
     }
     
     @Override
@@ -104,10 +104,12 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
             log.warn("jobId already exists in registry center, ignore, jobConfigKey={}", jobConfigKey);
             return Optional.of(jobId);
         }
-        repositoryAPI.persist(PipelineMetaDataNode.getJobRootPath(jobId), MigrationJob.class.getName());
+        repositoryAPI.persist(PipelineMetaDataNode.getJobRootPath(jobId), getJobRootClassName());
         repositoryAPI.persist(jobConfigKey, convertJobConfigurationToText(jobConfig));
         return Optional.of(jobId);
     }
+    
+    protected abstract String getJobRootClassName();
     
     private String convertJobConfigurationToText(final PipelineJobConfiguration jobConfig) {
         JobConfigurationPOJO jobConfigPOJO = new JobConfigurationPOJO();
