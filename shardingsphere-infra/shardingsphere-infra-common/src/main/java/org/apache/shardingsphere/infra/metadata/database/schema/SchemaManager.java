@@ -32,9 +32,9 @@ public final class SchemaManager {
     
     
     /**
-     * Get to be added table meta data.
+     * Get to be added tables by schemas.
      *
-     * @param reloadSchemas  reload schemas
+     * @param reloadSchemas reload schemas
      * @param currentSchemas current schemas
      * @return To be added table meta data
      */
@@ -45,19 +45,12 @@ public final class SchemaManager {
         return result;
     }
     
-    /**
-     * Get to be added schema meta data.
-     *
-     * @param reloadSchema  reload schema
-     * @param currentSchema current schema
-     * @return To be added schema meta data
-     */
     private static ShardingSphereSchema getToBeAddedTablesBySchema(final ShardingSphereSchema reloadSchema, final ShardingSphereSchema currentSchema) {
         return new ShardingSphereSchema(getToBeAddedTables(reloadSchema.getTables(), currentSchema.getTables()), new LinkedHashMap<>());
     }
     
     /**
-     * Get to be added table meta data.
+     * Get to be added tables.
      *
      * @param reloadTables  reload tables
      * @param currentTables current tables
@@ -68,9 +61,9 @@ public final class SchemaManager {
     }
     
     /**
-     * Get to be deleted table meta data.
+     * Get to be deleted tables by schemas.
      *
-     * @param reloadSchemas  reload schemas
+     * @param reloadSchemas reload schemas
      * @param currentSchemas current schemas
      * @return To be deleted table meta data
      */
@@ -81,21 +74,14 @@ public final class SchemaManager {
         return result;
     }
     
-    /**
-     * Get to be deleted schema meta data.
-     *
-     * @param reloadSchema  reload schema
-     * @param currentSchema current schema
-     * @return To be deleted schema meta data
-     */
     private static ShardingSphereSchema getToBeDeletedTablesBySchema(final ShardingSphereSchema reloadSchema, final ShardingSphereSchema currentSchema) {
         return new ShardingSphereSchema(getToBeDeletedTables(reloadSchema.getTables(), currentSchema.getTables()), new LinkedHashMap<>());
     }
     
     /**
-     * Get to be deleted table meta data.
+     * Get to be deleted tables.
      *
-     * @param reloadTables  reload tables
+     * @param reloadTables reload tables
      * @param currentTables current tables
      * @return To be deleted table meta data
      */
@@ -106,7 +92,7 @@ public final class SchemaManager {
     /**
      * Get to be deleted schema names.
      *
-     * @param reloadSchemas  reload schemas
+     * @param reloadSchemas reload schemas
      * @param currentSchemas current schemas
      * @return To be deleted schema names
      */
