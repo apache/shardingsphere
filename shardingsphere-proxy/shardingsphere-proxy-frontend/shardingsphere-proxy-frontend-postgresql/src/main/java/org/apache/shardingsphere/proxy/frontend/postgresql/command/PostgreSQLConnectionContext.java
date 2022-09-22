@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal;
 
 import java.util.LinkedHashMap;
@@ -36,9 +37,7 @@ public final class PostgreSQLConnectionContext {
      */
     public void addPortal(final Portal<?> portal) {
         boolean isNamedPortal = !portal.getName().isEmpty();
-        if (isNamedPortal && portals.containsKey(portal.getName())) {
-            throw new IllegalStateException("Named portal [" + portal.getName() + "] must be explicitly closed");
-        }
+        Preconditions.checkState(!isNamedPortal || !portals.containsKey(portal.getName()), "Named portal `%s` must be explicitly closed", portal.getName());
         Portal<?> previousPortal = portals.put(portal.getName(), portal);
         if (null != previousPortal) {
             previousPortal.close();
@@ -48,7 +47,7 @@ public final class PostgreSQLConnectionContext {
     /**
      * Get portal.
      *
-     * @param <T> type of Portal
+     * @param <T> type of portal
      * @param portal portal name
      * @return portal
      */
