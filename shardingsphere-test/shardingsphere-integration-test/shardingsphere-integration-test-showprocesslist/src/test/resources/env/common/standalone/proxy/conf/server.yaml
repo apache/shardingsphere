@@ -15,19 +15,6 @@
 # limitations under the License.
 #
 
-#mode:
-#  type: Cluster
-#  repository:
-#    type: ZooKeeper
-#    props:
-#      namespace: it_db
-#      server-lists: zk.host:2181
-#      timeToLiveSeconds: 60
-#      operationTimeoutMilliseconds: 500
-#      retryIntervalMilliseconds: 500
-#      maxRetries: 3
-#  overwrite: false
-
 rules:
   - !AUTHORITY
     users:
