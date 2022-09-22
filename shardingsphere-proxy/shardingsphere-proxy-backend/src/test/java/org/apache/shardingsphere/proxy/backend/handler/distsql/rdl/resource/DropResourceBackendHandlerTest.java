@@ -110,8 +110,8 @@ public final class DropResourceBackendHandlerTest extends ProxyContextRestorer {
     public void assertResourceNameNotExistedExecute() {
         try {
             dropResourceBackendHandler.execute("test", new DropResourceStatement(Collections.singleton("foo_ds"), false));
-        } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("Resources [foo_ds] do not exist in database test."));
+        } catch (final DistSQLException ex) {
+            assertThat(ex.toSQLException().getMessage(), is("Resources `[foo_ds]` do not exist in database `test`"));
         }
     }
     
@@ -125,8 +125,8 @@ public final class DropResourceBackendHandlerTest extends ProxyContextRestorer {
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("test")).thenReturn(database);
         try {
             dropResourceBackendHandler.execute("test", new DropResourceStatement(Collections.singleton("foo_ds"), false));
-        } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("Resource [foo_ds] is still used by [ShadowRule]."));
+        } catch (final DistSQLException ex) {
+            assertThat(ex.toSQLException().getMessage(), is("Resource `foo_ds` is still used by `[ShadowRule]`"));
         }
     }
     
@@ -142,8 +142,8 @@ public final class DropResourceBackendHandlerTest extends ProxyContextRestorer {
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("test")).thenReturn(database);
         try {
             dropResourceBackendHandler.execute("test", new DropResourceStatement(Collections.singleton("foo_ds"), false));
-        } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("Resource [foo_ds] is still used by [SingleTableRule]."));
+        } catch (final DistSQLException ex) {
+            assertThat(ex.toSQLException().getMessage(), is("Resource `foo_ds` is still used by `[SingleTableRule]`"));
         }
     }
     
