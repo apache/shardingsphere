@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.AuditorInUsedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAuditorMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -56,13 +56,13 @@ public final class DropShardingAuditorStatementUpdater implements RuleDefinition
             return;
         }
         Collection<String> notExistAuditors = auditorNames.stream().filter(each -> !currentRuleConfig.getAuditors().containsKey(each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(notExistAuditors.isEmpty(), () -> new RequiredAuditorMissedException("Sharding", databaseName, notExistAuditors));
+        ShardingSpherePreconditions.checkState(notExistAuditors.isEmpty(), () -> new MissingRequiredAlgorithmException("Sharding auditor", databaseName, notExistAuditors));
     }
     
     private void checkInUsed(final String databaseName, final Collection<String> auditorNames, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> usedAuditors = getUsedAuditors(currentRuleConfig);
         Collection<String> inUsedNames = auditorNames.stream().filter(usedAuditors::contains).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(inUsedNames.isEmpty(), () -> new AuditorInUsedException("Sharding", databaseName, inUsedNames));
+        ShardingSpherePreconditions.checkState(inUsedNames.isEmpty(), () -> new AlgorithmInUsedException("Sharding auditor", databaseName, inUsedNames));
     }
     
     private Collection<String> getUsedAuditors(final ShardingRuleConfiguration shardingRuleConfig) {

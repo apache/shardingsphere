@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -52,7 +52,7 @@ public final class DropShardingBroadcastTableRuleStatementUpdater implements Rul
         if (!sqlStatement.getRules().isEmpty()) {
             Collection<String> currentRules = currentRuleConfig.getBroadcastTables();
             Collection<String> notExistRules = sqlStatement.getRules().stream().filter(each -> !containsIgnoreCase(currentRules, each)).collect(Collectors.toList());
-            ShardingSpherePreconditions.checkState(notExistRules.isEmpty(), () -> new RequiredRuleMissedException("Broadcast", databaseName, notExistRules));
+            ShardingSpherePreconditions.checkState(notExistRules.isEmpty(), () -> new MissingRequiredRuleException("Broadcast", databaseName, notExistRules));
         }
     }
     
@@ -61,7 +61,7 @@ public final class DropShardingBroadcastTableRuleStatementUpdater implements Rul
     }
     
     private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new RequiredRuleMissedException("Broadcast", databaseName));
+        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Broadcast", databaseName));
     }
     
     @Override

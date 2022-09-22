@@ -21,7 +21,7 @@ import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleCon
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.DropDatabaseDiscoveryTypeStatement;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleInUsedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -50,7 +50,7 @@ public final class DropDatabaseDiscoveryTypeStatementUpdater implements RuleDefi
         if (sqlStatement.isIfExists()) {
             return;
         }
-        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new RequiredRuleMissedException(RULE_TYPE, databaseName));
+        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException(RULE_TYPE, databaseName));
         checkIsExist(databaseName, sqlStatement, currentRuleConfig);
     }
     
@@ -58,7 +58,7 @@ public final class DropDatabaseDiscoveryTypeStatementUpdater implements RuleDefi
                               final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> currentRuleNames = currentRuleConfig.getDiscoveryTypes().keySet();
         Collection<String> notExistedRuleNames = sqlStatement.getTypes().stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(notExistedRuleNames.isEmpty(), () -> new RequiredRuleMissedException(RULE_TYPE, databaseName, notExistedRuleNames));
+        ShardingSpherePreconditions.checkState(notExistedRuleNames.isEmpty(), () -> new MissingRequiredRuleException(RULE_TYPE, databaseName, notExistedRuleNames));
     }
     
     private void checkIsInUse(final String databaseName, final DropDatabaseDiscoveryTypeStatement sqlStatement,

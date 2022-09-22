@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -50,7 +50,7 @@ public final class DropDefaultStrategyStatementUpdater implements RuleDefinition
             return;
         }
         Optional<ShardingStrategyConfiguration> strategyConfig = getStrategyConfiguration(currentRuleConfig, sqlStatement.getDefaultType());
-        ShardingSpherePreconditions.checkState(strategyConfig.isPresent(), () -> new RequiredRuleMissedException(
+        ShardingSpherePreconditions.checkState(strategyConfig.isPresent(), () -> new MissingRequiredRuleException(
                 String.format("Default sharding %s strategy", sqlStatement.getDefaultType().toLowerCase()), databaseName));
     }
     
@@ -62,7 +62,7 @@ public final class DropDefaultStrategyStatementUpdater implements RuleDefinition
     }
     
     private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new RequiredRuleMissedException("Sharding", databaseName));
+        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Sharding", databaseName));
     }
     
     @Override

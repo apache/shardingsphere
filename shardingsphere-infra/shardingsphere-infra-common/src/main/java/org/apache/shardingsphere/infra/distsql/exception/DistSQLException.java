@@ -17,16 +17,19 @@
 
 package org.apache.shardingsphere.infra.distsql.exception;
 
-import java.sql.SQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.SQLState;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 
 /**
  * Dist SQL exception.
  */
-public abstract class DistSQLException extends SQLException {
+public abstract class DistSQLException extends KernelSQLException {
     
     private static final long serialVersionUID = -6464411607608071400L;
     
-    public DistSQLException(final int errorCode, final String reason) {
-        super(reason, "C" + errorCode, errorCode);
+    private static final int KERNEL_CODE = 9;
+    
+    public DistSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArguments) {
+        super(sqlState, KERNEL_CODE, errorCode, reason, messageArguments);
     }
 }

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.distsql.exception.rule;
 
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+
 /**
  * Rule enabled exception.
  */
@@ -25,6 +27,6 @@ public final class RuleEnabledException extends RuleDefinitionViolationException
     private static final long serialVersionUID = 2381983504661441914L;
     
     public RuleEnabledException(final String ruleType, final String databaseName, final String ruleName) {
-        super(1120, String.format("%s rule `%s` has been enabled in database `%s`.", ruleType, ruleName, databaseName));
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 103, "%s rule `%s` has been enabled in database `%s`", ruleType, ruleName, databaseName);
     }
 }

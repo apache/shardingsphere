@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -59,7 +59,7 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RuleD
     }
     
     private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        ShardingSpherePreconditions.checkState(null != currentRuleConfig && !currentRuleConfig.getBindingTableGroups().isEmpty(), () -> new RequiredRuleMissedException("Binding", databaseName));
+        ShardingSpherePreconditions.checkState(null != currentRuleConfig && !currentRuleConfig.getBindingTableGroups().isEmpty(), () -> new MissingRequiredRuleException("Binding", databaseName));
     }
     
     private Map<String, String> buildBindingTableRule(final ShardingRuleConfiguration config) {
@@ -79,7 +79,7 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RuleD
                 notExistBindingGroups.add(each.getTableGroups());
             }
         }
-        ShardingSpherePreconditions.checkState(notExistBindingGroups.isEmpty(), () -> new RequiredRuleMissedException("Binding", databaseName, notExistBindingGroups));
+        ShardingSpherePreconditions.checkState(notExistBindingGroups.isEmpty(), () -> new MissingRequiredRuleException("Binding", databaseName, notExistBindingGroups));
     }
     
     private boolean isToBeDroppedRuleExists(final BindingTableRuleSegment bindingRule, final Map<String, String> bindingRelationship) {

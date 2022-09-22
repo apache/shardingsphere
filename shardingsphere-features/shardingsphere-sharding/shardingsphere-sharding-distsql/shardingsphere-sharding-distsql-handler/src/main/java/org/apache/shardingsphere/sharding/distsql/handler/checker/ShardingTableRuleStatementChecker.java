@@ -23,12 +23,12 @@ import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigurationException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -149,7 +149,7 @@ public final class ShardingTableRuleStatementChecker {
         Collection<String> notExistedResources = database.getResource().getNotExistedResources(requiredResource);
         Collection<String> logicResources = getLogicResources(database);
         notExistedResources.removeIf(logicResources::contains);
-        ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistedResources));
+        ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, notExistedResources));
     }
     
     private static Collection<String> getLogicResources(final ShardingSphereDatabase database) {
@@ -213,7 +213,7 @@ public final class ShardingTableRuleStatementChecker {
             ShardingSpherePreconditions.checkState(identical.isEmpty(), () -> new DuplicateRuleException("sharding", databaseName, identical));
         } else {
             Collection<String> different = getDifferent(requiredTables, currentShardingTables);
-            ShardingSpherePreconditions.checkState(different.isEmpty(), () -> new RequiredRuleMissedException("sharding", databaseName, different));
+            ShardingSpherePreconditions.checkState(different.isEmpty(), () -> new MissingRequiredRuleException("sharding", databaseName, different));
         }
     }
     
@@ -249,7 +249,7 @@ public final class ShardingTableRuleStatementChecker {
                 .peek(each -> each.getKeyGenerateAlgorithmName()
                         .filter(optional -> null == currentRuleConfig || !currentRuleConfig.getKeyGenerators().containsKey(optional)).ifPresent(notExistKeyGenerator::add))
                 .filter(each -> !each.getKeyGenerateAlgorithmName().isPresent()).forEach(each -> requiredKeyGenerators.add(each.getKeyGenerateAlgorithmSegment().getName()));
-        ShardingSpherePreconditions.checkState(notExistKeyGenerator.isEmpty(), () -> new RequiredAlgorithmMissedException("key generator", notExistKeyGenerator));
+        ShardingSpherePreconditions.checkState(notExistKeyGenerator.isEmpty(), () -> new MissingRequiredAlgorithmException("key generator", notExistKeyGenerator));
         Collection<String> invalidKeyGenerators = requiredKeyGenerators.stream().distinct().filter(each -> !KeyGenerateAlgorithmFactory.contains(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(invalidKeyGenerators.isEmpty(), () -> new InvalidAlgorithmConfigurationException("key generator", invalidKeyGenerators));
     }
@@ -263,7 +263,7 @@ public final class ShardingTableRuleStatementChecker {
             auditorNames.addAll(each.getAuditorNames());
         }
         auditorNames.stream().filter(each -> null == currentRuleConfig || !currentRuleConfig.getAuditors().containsKey(each)).collect(Collectors.toList()).forEach(notExistAuditors::add);
-        ShardingSpherePreconditions.checkState(notExistAuditors.isEmpty(), () -> new RequiredAlgorithmMissedException("auditor", notExistAuditors));
+        ShardingSpherePreconditions.checkState(notExistAuditors.isEmpty(), () -> new MissingRequiredAlgorithmException("auditor", notExistAuditors));
         for (AuditStrategySegment each : auditStrategySegments) {
             requiredAuditors.addAll(each.getShardingAuditorSegments().stream().map(ShardingAuditorSegment::getAlgorithmSegment).collect(Collectors.toList())
                     .stream().map(AlgorithmSegment::getName).collect(Collectors.toList()));
