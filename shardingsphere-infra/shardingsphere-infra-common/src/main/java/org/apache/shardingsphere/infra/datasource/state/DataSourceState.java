@@ -38,26 +38,6 @@ public enum DataSourceState {
     }
     
     /**
-     * Data source disable or enable.
-     *
-     * @param state data source state
-     * @return disable or enable
-     */
-    public static boolean isDisable(final String state) {
-        return DISABLED.name().equalsIgnoreCase(state);
-    }
-    
-    /**
-     * Data source disable or enable.
-     *
-     * @param state data source state
-     * @return disable or enable
-     */
-    public static boolean isEnable(final String state) {
-        return ENABLED.name().equalsIgnoreCase(state);
-    }
-    
-    /**
      * Get data source state by state name.
      *
      * @param state data source state name
