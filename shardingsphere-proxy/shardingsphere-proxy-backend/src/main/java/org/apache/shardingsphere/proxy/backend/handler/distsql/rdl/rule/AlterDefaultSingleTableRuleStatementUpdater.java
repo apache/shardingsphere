@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResour
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 
 import java.util.Collections;
@@ -43,17 +44,17 @@ public final class AlterDefaultSingleTableRuleStatementUpdater implements RuleDe
     }
     
     private void checkConfigurationExist(final String databaseName, final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
-        DistSQLException.predictionThrow(null != currentRuleConfig, () -> new RequiredRuleMissedException(databaseName, "single table"));
+        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new RequiredRuleMissedException(databaseName, "single table"));
     }
     
     private void checkResourceExist(final ShardingSphereDatabase database, final AlterDefaultSingleTableRuleStatement sqlStatement) throws DistSQLException {
         Set<String> resourceNames = database.getResource().getDataSources().keySet();
-        DistSQLException.predictionThrow(resourceNames.contains(sqlStatement.getDefaultResource()), () -> new RequiredResourceMissedException(
-                database.getName(), Collections.singleton(sqlStatement.getDefaultResource())));
+        ShardingSpherePreconditions.checkState(resourceNames.contains(sqlStatement.getDefaultResource()),
+                () -> new RequiredResourceMissedException(database.getName(), Collections.singleton(sqlStatement.getDefaultResource())));
     }
     
     private void checkDefaultResourceExist(final String databaseName, final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
-        DistSQLException.predictionThrow(currentRuleConfig.getDefaultDataSource().isPresent(), () -> new RequiredRuleMissedException("single table", databaseName));
+        ShardingSpherePreconditions.checkState(currentRuleConfig.getDefaultDataSource().isPresent(), () -> new RequiredRuleMissedException("single table", databaseName));
     }
     
     @Override

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.checker;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigurationException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
@@ -69,7 +70,7 @@ public final class ReadwriteSplittingRuleStatementChecker {
         for (final ReadwriteSplittingRuleSegment each : segments) {
             if (!Strings.isNullOrEmpty(each.getWriteDataSource())) {
                 String writeDataSource = each.getWriteDataSource();
-                DistSQLException.predictionThrow(writeDataSourceNames.add(writeDataSource), () -> new InvalidRuleConfigurationException("readwrite splitting", each.getName(),
+                ShardingSpherePreconditions.checkState(writeDataSourceNames.add(writeDataSource), () -> new InvalidRuleConfigurationException("readwrite splitting", each.getName(),
                         String.format("Can not config duplicate write resource `%s` in database `%s`", writeDataSource, databaseName)));
             }
         }
@@ -80,7 +81,7 @@ public final class ReadwriteSplittingRuleStatementChecker {
         for (final ReadwriteSplittingRuleSegment each : segments) {
             if (null != each.getReadDataSources()) {
                 for (final String readDataSource : each.getReadDataSources()) {
-                    DistSQLException.predictionThrow(readDataSourceNames.add(readDataSource), () -> new InvalidRuleConfigurationException("readwrite splitting", each.getName(),
+                    ShardingSpherePreconditions.checkState(readDataSourceNames.add(readDataSource), () -> new InvalidRuleConfigurationException("readwrite splitting", each.getName(),
                             String.format("Can not config duplicate read resource `%s` in database `%s`", readDataSource, databaseName)));
                 }
             }

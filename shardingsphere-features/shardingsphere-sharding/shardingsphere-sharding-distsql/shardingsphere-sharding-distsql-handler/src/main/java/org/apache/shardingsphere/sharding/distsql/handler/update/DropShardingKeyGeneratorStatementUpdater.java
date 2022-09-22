@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.KeyGeneratorInUsed
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredKeyGeneratorMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingKeyGeneratorStatement;
@@ -56,13 +57,13 @@ public final class DropShardingKeyGeneratorStatementUpdater implements RuleDefin
             return;
         }
         Collection<String> notExistKeyGenerators = keyGeneratorNames.stream().filter(each -> !currentRuleConfig.getKeyGenerators().containsKey(each)).collect(Collectors.toList());
-        DistSQLException.predictionThrow(notExistKeyGenerators.isEmpty(), () -> new RequiredKeyGeneratorMissedException("Sharding", databaseName, notExistKeyGenerators));
+        ShardingSpherePreconditions.checkState(notExistKeyGenerators.isEmpty(), () -> new RequiredKeyGeneratorMissedException("Sharding", databaseName, notExistKeyGenerators));
     }
     
     private void checkInUsed(final String databaseName, final Collection<String> keyGeneratorNames, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> usedKeyGenerators = getUsedKeyGenerators(currentRuleConfig);
         Collection<String> inUsedNames = keyGeneratorNames.stream().filter(usedKeyGenerators::contains).collect(Collectors.toList());
-        DistSQLException.predictionThrow(inUsedNames.isEmpty(), () -> new KeyGeneratorInUsedException("Sharding", databaseName, inUsedNames));
+        ShardingSpherePreconditions.checkState(inUsedNames.isEmpty(), () -> new KeyGeneratorInUsedException("Sharding", databaseName, inUsedNames));
     }
     
     private Collection<String> getUsedKeyGenerators(final ShardingRuleConfiguration shardingRuleConfig) {
