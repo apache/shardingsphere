@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shadow.distsql.update;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
@@ -78,7 +78,7 @@ public final class CreateShadowRuleStatementUpdaterTest {
         updater.checkSQLStatement(database, createSQLStatement(ruleSegment), currentConfig);
     }
     
-    @Test(expected = RequiredResourceMissedException.class)
+    @Test(expected = MissingRequiredResourcesException.class)
     public void assertExecuteWithNotExistResource() throws DistSQLException {
         List<String> dataSources = Arrays.asList("ds0", "ds1");
         when(resource.getNotExistedResources(any())).thenReturn(dataSources);

@@ -17,16 +17,18 @@
 
 package org.apache.shardingsphere.infra.distsql.exception.rule;
 
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+
 import java.util.Collection;
 
 /**
- * Duplicate key generator exception.
+ * Duplicate algorithm exception.
  */
-public final class DuplicateKeyGeneratorException extends RuleDefinitionViolationException {
+public final class DuplicateAlgorithmException extends RuleDefinitionViolationException {
     
-    private static final long serialVersionUID = 4965160371403179153L;
+    private static final long serialVersionUID = 4382238091103015055L;
     
-    public DuplicateKeyGeneratorException(final String ruleType, final String databaseName, final Collection<String> keyGeneratorNames) {
-        super(1117, String.format("Duplicate %s key generator names `%s` in database `%s`", ruleType, keyGeneratorNames, databaseName));
+    public DuplicateAlgorithmException(final String type, final String databaseName, final Collection<String> auditorNames) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 153, "Duplicate %s algorithms `%s` in database `%s`", type, auditorNames, databaseName);
     }
 }

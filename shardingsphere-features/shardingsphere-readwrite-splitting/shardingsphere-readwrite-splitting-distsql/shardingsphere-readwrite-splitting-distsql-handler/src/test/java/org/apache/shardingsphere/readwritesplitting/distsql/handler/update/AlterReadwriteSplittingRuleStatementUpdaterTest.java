@@ -19,10 +19,10 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigurationException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
@@ -65,23 +65,23 @@ public final class AlterReadwriteSplittingRuleStatementUpdaterTest {
         when(database.getResource()).thenReturn(resource);
     }
     
-    @Test(expected = RequiredRuleMissedException.class)
+    @Test(expected = MissingRequiredRuleException.class)
     public void assertCheckSQLStatementWithoutCurrentRule() throws DistSQLException {
         updater.checkSQLStatement(database, createSQLStatement("TEST"), null);
     }
     
-    @Test(expected = RequiredRuleMissedException.class)
+    @Test(expected = MissingRequiredRuleException.class)
     public void assertCheckSQLStatementWithoutToBeAlteredRules() throws DistSQLException {
         updater.checkSQLStatement(database, createSQLStatement("TEST"), new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
     }
     
-    @Test(expected = RequiredResourceMissedException.class)
+    @Test(expected = MissingRequiredResourcesException.class)
     public void assertCheckSQLStatementWithoutExistedResources() throws DistSQLException {
         when(resource.getNotExistedResources(any())).thenReturn(Collections.singleton("read_ds_0"));
         updater.checkSQLStatement(database, createSQLStatement("TEST"), createCurrentRuleConfiguration());
     }
     
-    @Test(expected = RequiredResourceMissedException.class)
+    @Test(expected = MissingRequiredResourcesException.class)
     public void assertCheckSQLStatementWithoutExistedAutoAwareResources() throws DistSQLException {
         ExportableRule exportableRule = mock(ExportableRule.class);
         when(exportableRule.getExportData()).thenReturn(Collections.singletonMap(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES, Collections.singletonMap("ms_group", "ds_0")));

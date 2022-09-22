@@ -114,6 +114,26 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | HY000     | 18093       | Can not poll event because of binlog sync channel already closed |
 | HY000     | 18094       | Task \`%s\` execute failed |
 
+### DistSQL
+
+| SQL State | Vendor Code | Reason |
+| --------- | ----------- | ------ |
+| 44000     | 19000       | Can not process invalid resources, error message is: %s |
+| 44000     | 19001       | Resources \`%s\` do not exist in database \`%s\` |
+| 44000     | 19002       | There is no resource in the database \`%s\` |
+| 44000     | 19003       | Resource \`%s\` is still used by \`%s\` |
+| 44000     | 19004       | Duplicate resource names \`%s\` |
+| 44000     | 19100       | Invalid \`%s\` rule \`%s\`, error message is: %s |
+| 44000     | 19101       | %s rules \`%s\` do not exist in database \`%s\` |
+| 44000     | 19102       | %s rules \`%s\` in database \`%s\` are still in used |
+| 44000     | 19103       | %s rule \`%s\` has been enabled in database \`%s\` |
+| 44000     | 19104       | %s rule \`%s\` has been disabled in database \`%s\` |
+| 44000     | 19105       | Duplicate %s rule names \`%s\` in database \`%s\` |
+| 44000     | 19150       | Invalid %s algorithm(s) \`%s\` |
+| 44000     | 19151       | %s algorithm(s) \`%s\` do not exist in database \`%s\` |
+| 44000     | 19152       | %s algorithms \`%s\` in database \`%s\` are still in used |
+| 44000     | 19153       | Duplicate %s algorithms \`%s\` in database \`%s\` |
+
 ## Feature Exception
 
 ### Data Sharding

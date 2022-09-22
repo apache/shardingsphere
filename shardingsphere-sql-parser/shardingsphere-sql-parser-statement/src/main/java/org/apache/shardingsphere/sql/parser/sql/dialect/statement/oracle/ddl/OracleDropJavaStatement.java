@@ -15,18 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.exception.rule;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import java.util.Collection;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Duplicate auditor exception.
+ * Oracle drop java statement.
  */
-public final class DuplicateAuditorException extends RuleDefinitionViolationException {
-    
-    private static final long serialVersionUID = 4965160371403179153L;
-    
-    public DuplicateAuditorException(final String ruleType, final String databaseName, final Collection<String> auditorNames) {
-        super(1123, String.format("Duplicate %s auditor names `%s` in database `%s`", ruleType, auditorNames, databaseName));
-    }
+@ToString(callSuper = true)
+public final class OracleDropJavaStatement extends AbstractSQLStatement implements OracleStatement {
 }

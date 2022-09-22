@@ -22,7 +22,7 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDisc
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryHeartbeatStatement;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,7 +55,7 @@ public final class AlterDatabaseDiscoveryHeartbeatStatementUpdaterTest {
                 new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap()));
     }
     
-    @Test(expected = RequiredRuleMissedException.class)
+    @Test(expected = MissingRequiredRuleException.class)
     public void assertCheckSQLStatementWithNotExistDiscoveryHeartbeatName() throws DistSQLException {
         DatabaseDiscoveryHeartbeatSegment segment = new DatabaseDiscoveryHeartbeatSegment("heartbeat", createProperties("key", "value"));
         DatabaseDiscoveryRuleConfiguration config = new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.singletonMap("heartbeat1", null), Collections.emptyMap());

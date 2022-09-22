@@ -15,18 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.exception.rule;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import java.util.Collection;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Auditor in used exception.
+ * Drop java statement test case.
  */
-public final class AuditorInUsedException extends RuleDefinitionViolationException {
-    
-    private static final long serialVersionUID = 367366381929736622L;
-    
-    public AuditorInUsedException(final String ruleType, final String databaseName, final Collection<String> auditorNames) {
-        super(1128, String.format("%s auditor `%s` in database `%s` are still in used.", ruleType, auditorNames, databaseName));
-    }
+public final class DropJavaStatementTestCase extends SQLParserTestCase {
 }

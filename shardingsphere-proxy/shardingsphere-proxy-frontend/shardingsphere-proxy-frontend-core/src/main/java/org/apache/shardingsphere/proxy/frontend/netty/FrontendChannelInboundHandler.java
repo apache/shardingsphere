@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -77,6 +78,8 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
             if (authResult.isFinished()) {
                 connectionSession.setGrantee(new Grantee(authResult.getUsername(), authResult.getHostname()));
                 connectionSession.setCurrentDatabase(authResult.getDatabase());
+                connectionSession.setExecutionId(ExecuteProcessEngine.initializeConnection(connectionSession.getGrantee(), connectionSession.getDatabaseName(),
+                        ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext()));
             }
             return authResult.isFinished();
             // CHECKSTYLE:OFF
@@ -102,6 +105,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
         } catch (final BackendConnectionException ex) {
             log.error("Exception occurred when frontend connection [{}] disconnected", connectionSession.getConnectionId(), ex);
         }
+        ExecuteProcessEngine.finishConnection(connectionSession.getExecutionId());
         databaseProtocolFrontendEngine.release(connectionSession);
     }
     

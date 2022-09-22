@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleExcep
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.util.Collection;
 import java.util.Map.Entry;
@@ -57,7 +58,7 @@ public final class CreateDatabaseDiscoveryTypeStatementUpdater implements RuleDe
         Collection<String> duplicateRuleNames = sqlStatement.getProviders()
                 .stream().map(DatabaseDiscoveryProviderAlgorithmSegment::getDiscoveryProviderName).filter(existRuleNames::contains).collect(Collectors.toSet());
         duplicateRuleNames.addAll(getToBeCreatedDuplicateRuleNames(sqlStatement));
-        DistSQLException.predictionThrow(duplicateRuleNames.isEmpty(), () -> new DuplicateRuleException(RULE_TYPE, databaseName, duplicateRuleNames));
+        ShardingSpherePreconditions.checkState(duplicateRuleNames.isEmpty(), () -> new DuplicateRuleException(RULE_TYPE, databaseName, duplicateRuleNames));
     }
     
     private Collection<String> getToBeCreatedDuplicateRuleNames(final CreateDatabaseDiscoveryTypeStatement sqlStatement) {
@@ -68,7 +69,7 @@ public final class CreateDatabaseDiscoveryTypeStatementUpdater implements RuleDe
     private void checkInvalidDiscoverType(final CreateDatabaseDiscoveryTypeStatement sqlStatement) throws DistSQLException {
         Collection<String> invalidType = sqlStatement.getProviders().stream().map(each -> each.getAlgorithm().getName()).distinct()
                 .filter(each -> !DatabaseDiscoveryProviderAlgorithmFactory.contains(each)).collect(Collectors.toList());
-        DistSQLException.predictionThrow(invalidType.isEmpty(), () -> new InvalidAlgorithmConfigurationException(RULE_TYPE, invalidType));
+        ShardingSpherePreconditions.checkState(invalidType.isEmpty(), () -> new InvalidAlgorithmConfigurationException(RULE_TYPE, invalidType));
     }
     
     @Override

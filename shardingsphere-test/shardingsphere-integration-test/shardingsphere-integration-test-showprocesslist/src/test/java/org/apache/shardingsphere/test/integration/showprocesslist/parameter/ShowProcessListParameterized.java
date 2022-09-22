@@ -15,22 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.exception.resource;
+package org.apache.shardingsphere.test.integration.showprocesslist.parameter;
 
-import java.util.Collection;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
-/**
- * Required resource missed exception.
- */
-public final class RequiredResourceMissedException extends ResourceDefinitionViolationException {
+@Getter
+@RequiredArgsConstructor
+@ToString
+public final class ShowProcessListParameterized {
     
-    private static final long serialVersionUID = 1704331180489268L;
+    private final DatabaseType databaseType;
     
-    public RequiredResourceMissedException(final String databaseName, final Collection<String> resourceNames) {
-        super(1102, String.format("Resources %s do not exist in database %s.", resourceNames, databaseName));
-    }
-    
-    public RequiredResourceMissedException(final String databaseName) {
-        super(1102, String.format("There are no resources in the database %s.", databaseName));
-    }
+    private final String scenario;
 }

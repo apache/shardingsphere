@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.traffic.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
@@ -42,15 +42,15 @@ import static org.mockito.Mockito.when;
 
 public final class DropTrafficRuleStatementUpdaterTest {
     
-    @Test(expected = RequiredRuleMissedException.class)
-    public void assertExecuteForNotExistedRuleWithoutIfExists() throws SQLException {
+    @Test(expected = MissingRequiredRuleException.class)
+    public void assertExecuteForNotExistedRuleWithoutIfExists() {
         ShardingSphereMetaData metaData = createMetaData();
         DropTrafficRuleStatementUpdater updater = new DropTrafficRuleStatementUpdater();
         updater.executeUpdate(metaData, new DropTrafficRuleStatement(false, Collections.singleton("not_existed_rule")));
     }
     
     @Test
-    public void assertExecuteForNotExistedRuleWithIfExists() throws SQLException {
+    public void assertExecuteForNotExistedRuleWithIfExists() {
         ShardingSphereMetaData metaData = createMetaData();
         DropTrafficRuleStatementUpdater updater = new DropTrafficRuleStatementUpdater();
         updater.executeUpdate(metaData, new DropTrafficRuleStatement(true, Collections.singleton("rule_name_3")));

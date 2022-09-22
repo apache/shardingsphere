@@ -15,15 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.exception.rule;
+package org.apache.shardingsphere.test.integration.showprocesslist.env.enums;
 
-import java.util.Collection;
-
-public class RequiredKeyGeneratorMissedException extends RuleDefinitionViolationException {
+public enum ITEnvTypeEnum {
     
-    private static final long serialVersionUID = -2391552466149640249L;
-    
-    public RequiredKeyGeneratorMissedException(final String type, final String databaseName, final Collection<String> keyGeneratorNames) {
-        super(1118, String.format("%s key generator `%s` do not exist in database `%s`.", type, keyGeneratorNames, databaseName));
-    }
+    NONE, DOCKER
 }

@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.TableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ViewMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoaderFactory;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnknownSQLException;
@@ -73,7 +72,6 @@ public final class SchemaMetaDataLoaderEngine {
     
     private static Map<String, SchemaMetaData> loadByDefault(final Collection<SchemaMetaDataLoaderMaterials> materials, final DatabaseType databaseType) throws SQLException {
         Collection<TableMetaData> tableMetaData = new LinkedList<>();
-        Collection<ViewMetaData> viewMetaData = new LinkedList<>();
         String defaultSchemaName = null;
         for (SchemaMetaDataLoaderMaterials each : materials) {
             defaultSchemaName = each.getDefaultSchemaName();

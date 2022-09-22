@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.update;
 
 import com.google.common.base.Splitter;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleInUsedException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -55,12 +55,12 @@ public final class DropShardingTableRuleStatementUpdaterTest {
     
     private final DropShardingTableRuleStatementUpdater updater = new DropShardingTableRuleStatementUpdater();
     
-    @Test(expected = RequiredRuleMissedException.class)
+    @Test(expected = MissingRequiredRuleException.class)
     public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
         updater.checkSQLStatement(database, new DropShardingTableRuleStatement(Collections.emptyList()), null);
     }
     
-    @Test(expected = RequiredRuleMissedException.class)
+    @Test(expected = MissingRequiredRuleException.class)
     public void assertCheckSQLStatementWithoutExistedTableRule() throws RuleDefinitionViolationException {
         updater.checkSQLStatement(database, createSQLStatement("t_order"), new ShardingRuleConfiguration());
     }

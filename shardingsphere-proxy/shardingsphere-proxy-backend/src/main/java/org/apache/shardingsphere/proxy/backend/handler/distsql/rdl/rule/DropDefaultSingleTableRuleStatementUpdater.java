@@ -19,9 +19,10 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule;
 
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropDefaultSingleTableRuleStatement;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 
 /**
@@ -38,7 +39,8 @@ public final class DropDefaultSingleTableRuleStatementUpdater implements RuleDef
     private void checkCurrentRuleConfiguration(final String databaseName,
                                                final DropDefaultSingleTableRuleStatement sqlStatement, final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
         if (!sqlStatement.isIfExists()) {
-            DistSQLException.predictionThrow(null != currentRuleConfig && currentRuleConfig.getDefaultDataSource().isPresent(), () -> new RequiredRuleMissedException("single table", databaseName));
+            ShardingSpherePreconditions.checkState(null != currentRuleConfig && currentRuleConfig.getDefaultDataSource().isPresent(),
+                    () -> new MissingRequiredRuleException("single table", databaseName));
         }
     }
     

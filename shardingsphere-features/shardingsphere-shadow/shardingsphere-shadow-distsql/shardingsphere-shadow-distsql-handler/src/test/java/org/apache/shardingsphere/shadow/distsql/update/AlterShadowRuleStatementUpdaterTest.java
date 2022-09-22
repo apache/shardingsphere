@@ -19,11 +19,11 @@ package org.apache.shardingsphere.shadow.distsql.update;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -72,7 +72,7 @@ public final class AlterShadowRuleStatementUpdaterTest {
         when(currentConfig.getDataSources()).thenReturn(map);
     }
     
-    @Test(expected = RequiredRuleMissedException.class)
+    @Test(expected = MissingRequiredRuleException.class)
     public void assertExecuteWithoutCurrentConfiguration() throws DistSQLException {
         ShadowRuleSegment ruleSegment = new ShadowRuleSegment("ruleName", null, null, null);
         updater.checkSQLStatement(database, createSQLStatement(ruleSegment, ruleSegment), null);
@@ -90,7 +90,7 @@ public final class AlterShadowRuleStatementUpdaterTest {
         updater.checkSQLStatement(database, createSQLStatement(ruleSegment), currentConfig);
     }
     
-    @Test(expected = RequiredResourceMissedException.class)
+    @Test(expected = MissingRequiredResourcesException.class)
     public void assertExecuteWithNotExistResource() throws DistSQLException {
         List<String> dataSources = Arrays.asList("ds", "ds0");
         when(resource.getNotExistedResources(any())).thenReturn(dataSources);

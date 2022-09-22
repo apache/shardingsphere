@@ -24,7 +24,7 @@ import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDataba
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableItemConstants;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.RuleExportEngine;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -125,7 +125,7 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     private void checkResourceExists(final ContextManager contextManager, final String databaseName, final String toBeDisabledResource) throws DistSQLException {
         Collection<String> notExistedResources = contextManager
                 .getMetaDataContexts().getMetaData().getDatabase(databaseName).getResource().getNotExistedResources(Collections.singleton(toBeDisabledResource));
-        DistSQLException.predictionThrow(notExistedResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, Collections.singleton(toBeDisabledResource)));
+        ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, Collections.singleton(toBeDisabledResource)));
     }
     
     private void checkIsNotDisabled(final Collection<String> disabledResources, final String toBeEnabledResource) {

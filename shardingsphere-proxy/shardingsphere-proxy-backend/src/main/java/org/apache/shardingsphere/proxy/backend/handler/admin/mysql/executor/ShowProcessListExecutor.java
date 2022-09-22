@@ -95,12 +95,19 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
             rowValues.add(processContext.getUsername());
             rowValues.add(processContext.getHostname());
             rowValues.add(processContext.getDatabaseName());
-            rowValues.add("Execute");
+            rowValues.add(processContext.getExecuteProcessConstants() == ExecuteProcessConstants.EXECUTE_STATUS_SLEEP ? "Sleep" : "Execute");
             rowValues.add(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - processContext.getStartTimeMillis()));
-            int processDoneCount = processContext.getUnitStatuses().stream().map(each -> ExecuteProcessConstants.EXECUTE_STATUS_DONE == each.getStatus() ? 1 : 0).reduce(0, Integer::sum);
-            String statePrefix = "Executing ";
-            rowValues.add(statePrefix + processDoneCount + "/" + processContext.getUnitStatuses().size());
-            String sql = processContext.getSql();
+            String sql = null;
+            if (processContext.getExecuteProcessConstants() != ExecuteProcessConstants.EXECUTE_STATUS_SLEEP) {
+                int processDoneCount = processContext.getUnitStatuses().stream()
+                        .map(each -> ExecuteProcessConstants.EXECUTE_STATUS_DONE == each.getStatus() ? 1 : 0)
+                        .reduce(0, Integer::sum);
+                String statePrefix = "Executing ";
+                rowValues.add(statePrefix + processDoneCount + "/" + processContext.getUnitStatuses().size());
+                sql = processContext.getSql();
+            } else {
+                rowValues.add("");
+            }
             if (null != sql && sql.length() > 100) {
                 sql = sql.substring(0, 100);
             }
