@@ -156,7 +156,17 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     
     @Override
     public Collection<String> getDataSourceNamesOfCachedConnections() {
-        return cachedConnections.keySet();
+        Collection<String> result = new ArrayList<>(cachedConnections.size());
+        String databaseName = connectionSession.getDatabaseName();
+        for (String each : cachedConnections.keySet()) {
+            String[] split = each.split("\\.", 2);
+            String cachedDatabaseName = split[0];
+            String cachedDataSourceName = split[1];
+            if (databaseName.equals(cachedDatabaseName)) {
+                result.add(cachedDataSourceName);
+            }
+        }
+        return result;
     }
     
     /**
