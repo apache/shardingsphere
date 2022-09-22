@@ -111,3 +111,34 @@ nohup java ${JAVA_OPTS} ${JAVA_MEM_OPTS} \
 bin/start.sh
 ```
 After startup, you can find the plugin info in the log of ShardingSphere-Proxy, `Metric` and `Tracing` data can be viewed through the configured monitoring address.
+
+
+## Metrics
+| name                             | type       | description                                                                                              |
+|:---------------------------------|:-----------|:---------------------------------------------------------------------------------------------------------|
+| proxy_request_total              | COUNTER    | proxy request total                                                                                      |
+| proxy_connection_total           | GAUGE      | proxy connection total                                                                                   |
+| proxy_execute_latency_millis     | HISTOGRAM  | proxy executor latency millis                                                                            |
+| proxy_execute_error_total        | COUNTER    | proxy executor error total                                                                               |
+| route_sql_select_total           | COUNTER    | proxy executor route select sql total                                                                    |
+| route_sql_insert_total           | COUNTER    | proxy executor route insert sql total                                                                    |
+| route_sql_update_total           | COUNTER    | proxy executor route update sql total                                                                    |
+| route_sql_delete_total           | COUNTER    | proxy executor route delete sql total                                                                    |
+| route_datasource_total           | COUNTER    | number of datasource routed                                                                              |
+| route_table_total                | COUNTER    | number of table routed                                                                                   |
+| proxy_transaction_commit_total   | COUNTER    | transaction commit count total                                                                           |
+| proxy_transaction_rollback_total | COUNTER    | transaction rollback count total                                                                         |
+| parse_sql_dml_insert_total       | COUNTER    | proxy executor parse insert sql total                                                                    |
+| parse_sql_dml_delete_total       | COUNTER    | proxy executor parse delete sql total                                                                    |
+| parse_sql_dml_update_total       | COUNTER    | proxy executor parse update sql total                                                                    |
+| parse_sql_dml_select_total       | COUNTER    | proxy executor parse select sql total                                                                    |
+| parse_sql_ddl_total              | COUNTER    | proxy executor parse ddl sql total                                                                       |
+| parse_sql_dcl_total              | COUNTER    | proxy executor parse dcl sql total                                                                       |
+| parse_sql_dal_total              | COUNTER    | proxy executor parse dal sql total                                                                       |
+| parse_sql_tcl_total              | COUNTER    | proxy executor parse tcl sql total                                                                       |
+| parse_dist_sql_rql_total         | COUNTER    | proxy executor parse rql sql total                                                                       |
+| parse_dist_sql_rdl_total         | COUNTER    | proxy executor parse rdl sql total                                                                       |
+| parse_dist_sql_ral_total         | COUNTER    | proxy executor parse ral sql total                                                                       |
+| build_info                       | GAUGE      | build information                                                                                        |
+| proxy_info                       | GAUGE      | proxy information， state:1 OK， state:2 CIRCUIT BREAK                                                     |
+| meta_data_info                   | GAUGE      | meta data information， schema_count:logic number of databases， database_count:actual number of databases |
