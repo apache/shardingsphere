@@ -18,21 +18,19 @@
 package org.apache.shardingsphere.proxy.backend.exception;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.exception.internal.ShardingSphereInternalException;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Exception causes by backend connection.
  */
+@RequiredArgsConstructor
 @Getter
-public final class BackendConnectionException extends Exception {
+public final class BackendConnectionException extends ShardingSphereInternalException {
     
     private static final long serialVersionUID = -543640268050869018L;
     
-    private final Collection<Exception> exceptions = new LinkedList<>();
-    
-    public BackendConnectionException(final Collection<Exception> exceptions) {
-        this.exceptions.addAll(exceptions);
-    }
+    private final Collection<Exception> exceptions;
 }
