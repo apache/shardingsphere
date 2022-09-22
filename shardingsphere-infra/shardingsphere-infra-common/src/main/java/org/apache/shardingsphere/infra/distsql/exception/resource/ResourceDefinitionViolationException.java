@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.distsql.exception.resource;
 
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.SQLState;
 
 /**
  * Resource definition violation exception.
@@ -26,7 +27,7 @@ public abstract class ResourceDefinitionViolationException extends DistSQLExcept
     
     private static final long serialVersionUID = -2686784350802985974L;
     
-    public ResourceDefinitionViolationException(final int errorCode, final String reason) {
-        super(errorCode, reason);
+    public ResourceDefinitionViolationException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArguments) {
+        super(sqlState, errorCode, reason, messageArguments);
     }
 }

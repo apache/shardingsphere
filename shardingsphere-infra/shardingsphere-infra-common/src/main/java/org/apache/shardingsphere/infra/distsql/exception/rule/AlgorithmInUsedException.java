@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.distsql.exception.rule;
 
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+
 import java.util.Collection;
 
 /**
@@ -26,7 +28,7 @@ public final class AlgorithmInUsedException extends RuleDefinitionViolationExcep
     
     private static final long serialVersionUID = -5748228542420285726L;
     
-    public AlgorithmInUsedException(final String databaseName, final Collection<String> algorithmNames) {
-        super(1116, String.format("Sharding algorithms `%s` in database `%s` are still in used.", algorithmNames, databaseName));
+    public AlgorithmInUsedException(final String type, final String databaseName, final Collection<String> algorithmNames) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 152, "%s algorithms `%s` in database `%s` are still in used", type, algorithmNames, databaseName);
     }
 }

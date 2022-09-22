@@ -19,6 +19,8 @@ package org.apache.shardingsphere.sharding.route.engine.type.unicast;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -52,20 +54,20 @@ public final class ShardingUnicastRoutingEngineTest {
     
     @Test
     public void assertRoutingForShardingTable() {
-        RouteContext actual = new ShardingUnicastRoutingEngine(mock(SQLStatementContext.class), Collections.singleton("t_order")).route(shardingRule);
+        RouteContext actual = new ShardingUnicastRoutingEngine(mock(SQLStatementContext.class), Collections.singleton("t_order"), new ConnectionContext()).route(shardingRule);
         assertThat(actual.getRouteUnits().size(), is(1));
         assertFalse("ds_2".equalsIgnoreCase(actual.getRouteUnits().iterator().next().getDataSourceMapper().getLogicName()));
     }
     
     @Test
     public void assertRoutingForBroadcastTable() {
-        RouteContext actual = new ShardingUnicastRoutingEngine(mock(SQLStatementContext.class), Collections.singleton("t_config")).route(shardingRule);
+        RouteContext actual = new ShardingUnicastRoutingEngine(mock(SQLStatementContext.class), Collections.singleton("t_config"), new ConnectionContext()).route(shardingRule);
         assertThat(actual.getRouteUnits().size(), is(1));
     }
     
     @Test
     public void assertRoutingForNoTable() {
-        RouteContext actual = new ShardingUnicastRoutingEngine(mock(SQLStatementContext.class), Collections.emptyList()).route(shardingRule);
+        RouteContext actual = new ShardingUnicastRoutingEngine(mock(SQLStatementContext.class), Collections.emptyList(), new ConnectionContext()).route(shardingRule);
         assertThat(actual.getRouteUnits().size(), is(1));
     }
     
@@ -74,7 +76,7 @@ public final class ShardingUnicastRoutingEngineTest {
         Set<String> tables = new HashSet<>();
         tables.add("t_order");
         tables.add("t_config");
-        RouteContext actual = new ShardingUnicastRoutingEngine(mock(SQLStatementContext.class), tables).route(shardingRule);
+        RouteContext actual = new ShardingUnicastRoutingEngine(mock(SQLStatementContext.class), tables, new ConnectionContext()).route(shardingRule);
         assertThat(actual.getRouteUnits().size(), is(1));
     }
     
@@ -84,19 +86,27 @@ public final class ShardingUnicastRoutingEngineTest {
         tables.add("t_order");
         tables.add("t_config");
         tables.add("t_product");
-        new ShardingUnicastRoutingEngine(mock(SQLStatementContext.class), tables).route(shardingRule);
+        new ShardingUnicastRoutingEngine(mock(SQLStatementContext.class), tables, new ConnectionContext()).route(shardingRule);
     }
     
     @Test
     public void assertRoutingForTableWithoutTableRule() {
-        RouteContext actual = new ShardingUnicastRoutingEngine(mock(SQLStatementContext.class), Collections.singleton("t_other")).route(shardingRule);
+        RouteContext actual = new ShardingUnicastRoutingEngine(mock(SQLStatementContext.class), Collections.singleton("t_other"), new ConnectionContext()).route(shardingRule);
         assertThat(actual.getRouteUnits().size(), is(1));
     }
     
     @Test
     public void assertRoutingForBroadcastTableWithCursorStatement() {
-        RouteContext actual = new ShardingUnicastRoutingEngine(mock(CursorStatementContext.class), Collections.singleton("t_config")).route(shardingRule);
+        RouteContext actual = new ShardingUnicastRoutingEngine(mock(CursorStatementContext.class), Collections.singleton("t_config"), new ConnectionContext()).route(shardingRule);
         assertThat(actual.getRouteUnits().size(), is(1));
         assertThat(actual.getRouteUnits().iterator().next().getDataSourceMapper().getActualName(), is("ds_0"));
+    }
+    
+    @Test
+    public void assertRoutingForBroadcastTableWithPreferredDataSource() {
+        ConnectionContext connectionContext = new ConnectionContext(() -> Collections.singletonList("ds_1"));
+        RouteContext actual = new ShardingUnicastRoutingEngine(mock(SelectStatementContext.class), Collections.singleton("t_config"), connectionContext).route(shardingRule);
+        assertThat(actual.getRouteUnits().size(), is(1));
+        assertThat(actual.getRouteUnits().iterator().next().getDataSourceMapper().getActualName(), is("ds_1"));
     }
 }

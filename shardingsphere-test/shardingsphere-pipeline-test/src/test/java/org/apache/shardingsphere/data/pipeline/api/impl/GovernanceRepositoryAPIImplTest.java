@@ -76,8 +76,8 @@ public final class GovernanceRepositoryAPIImplTest {
     @Test
     public void assertPersistJobCheckResult() {
         MigrationJobItemContext jobItemContext = mockJobItemContext();
-        governanceRepositoryAPI.persistJobCheckResult(jobItemContext.getJobId(), true);
-        Optional<Boolean> checkResult = governanceRepositoryAPI.getJobCheckResult(jobItemContext.getJobId());
+        governanceRepositoryAPI.persistCheckLatestResult(jobItemContext.getJobId(), true);
+        Optional<Boolean> checkResult = governanceRepositoryAPI.getCheckLatestResult(jobItemContext.getJobId());
         assertTrue(checkResult.isPresent() && checkResult.get());
     }
     

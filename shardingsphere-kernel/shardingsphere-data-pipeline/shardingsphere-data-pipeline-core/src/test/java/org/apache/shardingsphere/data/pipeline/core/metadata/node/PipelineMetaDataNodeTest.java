@@ -27,11 +27,13 @@ public final class PipelineMetaDataNodeTest {
     
     private final String migrationMetaDataRootPath = "/pipeline/migration/metadata";
     
-    private final String jobId = "j01001";
+    private final String jobId = "j0101001";
     
     private final String jobsPath = "/pipeline/jobs";
     
-    private final String jobRootPath = jobsPath + "/j01001";
+    private final String jobRootPath = jobsPath + "/" + jobId;
+    
+    private final String jobCheckRootPath = jobRootPath + "/check";
     
     @Test
     public void assertGetMetaDataDataSourcesPath() {
@@ -69,8 +71,24 @@ public final class PipelineMetaDataNodeTest {
     }
     
     @Test
-    public void assertGetCheckResultPath() {
-        assertThat(PipelineMetaDataNode.getJobCheckResultPath(jobId), is(jobRootPath + "/check/result"));
+    public void assertGetCheckLatestResultPath() {
+        assertThat(PipelineMetaDataNode.getCheckLatestResultPath(jobId), is(jobCheckRootPath + "/latest_result"));
+    }
+    
+    @Test
+    public void assertGetCheckLatestDetailedResultPath() {
+        assertThat(PipelineMetaDataNode.getCheckLatestDetailedResultPath(jobId), is(jobCheckRootPath + "/latest_detailed_result"));
+    }
+    
+    @Test
+    public void assertGetCheckJobIdsPath() {
+        assertThat(PipelineMetaDataNode.getCheckJobIdsRootPath(jobId), is(jobCheckRootPath + "/job_ids"));
+    }
+    
+    @Test
+    public void assertGetCheckJobIdPath() {
+        String checkJobId = "j0201001";
+        assertThat(PipelineMetaDataNode.getCheckJobIdPath(jobId, checkJobId), is(jobCheckRootPath + "/job_ids/" + checkJobId));
     }
     
     @Test

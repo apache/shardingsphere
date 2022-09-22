@@ -69,7 +69,7 @@ public final class PostgreSQLCommandExecutorFactoryTest {
     private ConnectionSession connectionSession;
     
     @Mock
-    private PostgreSQLConnectionContext connectionContext;
+    private PortalContext portalContext;
     
     @Test
     public void assertNewInstance() throws SQLException {
@@ -89,7 +89,7 @@ public final class PostgreSQLCommandExecutorFactoryTest {
                 commandPacketClass = PostgreSQLCommandPacket.class;
             }
             PostgreSQLCommandPacket packet = preparePacket(commandPacketClass);
-            CommandExecutor actual = PostgreSQLCommandExecutorFactory.newInstance(each.getCommandPacketType(), packet, connectionSession, connectionContext);
+            CommandExecutor actual = PostgreSQLCommandExecutorFactory.newInstance(each.getCommandPacketType(), packet, connectionSession, portalContext);
             assertThat(actual, instanceOf(each.getResultClass()));
         }
     }
@@ -117,7 +117,7 @@ public final class PostgreSQLCommandExecutorFactoryTest {
         PostgreSQLAggregatedCommandPacket packet = mock(PostgreSQLAggregatedCommandPacket.class);
         when(packet.isContainsBatchedStatements()).thenReturn(false);
         when(packet.getPackets()).thenReturn(Arrays.asList(parsePacket, bindPacket, describePacket, executePacket, syncPacket));
-        CommandExecutor actual = PostgreSQLCommandExecutorFactory.newInstance(null, packet, connectionSession, connectionContext);
+        CommandExecutor actual = PostgreSQLCommandExecutorFactory.newInstance(null, packet, connectionSession, portalContext);
         assertThat(actual, instanceOf(PostgreSQLAggregatedCommandExecutor.class));
         Iterator<CommandExecutor> actualPacketsIterator = getExecutorsFromAggregatedCommandExecutor((PostgreSQLAggregatedCommandExecutor) actual).iterator();
         assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLComParseExecutor.class));
@@ -142,7 +142,7 @@ public final class PostgreSQLCommandExecutorFactoryTest {
         when(packet.getPackets()).thenReturn(Arrays.asList(parsePacket, bindPacket, describePacket, executePacket, bindPacket, describePacket, executePacket, syncPacket));
         when(packet.getFirstBindIndex()).thenReturn(1);
         when(packet.getLastExecuteIndex()).thenReturn(6);
-        CommandExecutor actual = PostgreSQLCommandExecutorFactory.newInstance(null, packet, connectionSession, connectionContext);
+        CommandExecutor actual = PostgreSQLCommandExecutorFactory.newInstance(null, packet, connectionSession, portalContext);
         assertThat(actual, instanceOf(PostgreSQLAggregatedCommandExecutor.class));
         Iterator<CommandExecutor> actualPacketsIterator = getExecutorsFromAggregatedCommandExecutor((PostgreSQLAggregatedCommandExecutor) actual).iterator();
         assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLComParseExecutor.class));

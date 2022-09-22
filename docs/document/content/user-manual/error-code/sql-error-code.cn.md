@@ -92,8 +92,12 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 44000     | 18001       | Created process configuration already existed |
 | 44000     | 18002       | Altered process configuration does not exist |
 | HY000     | 18020       | Failed to get DDL for table \`%s\` |
+| 42S01     | 18030       | Duplicate resource names \`%s\` |
+| 42S02     | 18031       | Resource names \`%s\` do not exist |
 | HY000     | 18050       | Before data record is \`%s\`, after data record is \`%s\` |
 | 08000     | 18051       | Data check table \`%s\` failed |
+| 0A000     | 18052       | Unsupported pipeline database type \`%s\` |
+| 0A000     | 18053       | Unsupported CRC32 data consistency calculate algorithm with database type \`%s\` |
 | HY000     | 18080       | Can not find pipeline job \`%s\` |
 | HY000     | 18081       | Job has already started |
 | HY000     | 18082       | Sharding count of job \`%s\` is 0 |
@@ -109,6 +113,26 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 08000     | 18092       | Get binlog position failed by job \`%s\`, reason is: %s |
 | HY000     | 18093       | Can not poll event because of binlog sync channel already closed |
 | HY000     | 18094       | Task \`%s\` execute failed |
+
+### DistSQL
+
+| SQL State | Vendor Code | 错误信息 |
+| --------- | ----------- | ------ |
+| 44000     | 19000       | Can not process invalid resources, error message is: %s |
+| 44000     | 19001       | Resources \`%s\` do not exist in database \`%s\` |
+| 44000     | 19002       | There is no resource in the database \`%s\` |
+| 44000     | 19003       | Resource \`%s\` is still used by \`%s\` |
+| 44000     | 19004       | Duplicate resource names \`%s\` |
+| 44000     | 19100       | Invalid \`%s\` rule \`%s\`, error message is: %s |
+| 44000     | 19101       | %s rules \`%s\` do not exist in database \`%s\` |
+| 44000     | 19102       | %s rules \`%s\` in database \`%s\` are still in used |
+| 44000     | 19103       | %s rule \`%s\` has been enabled in database \`%s\` |
+| 44000     | 19104       | %s rule \`%s\` has been disabled in database \`%s\` |
+| 44000     | 19105       | Duplicate %s rule names \`%s\` in database \`%s\` |
+| 44000     | 19150       | Invalid %s algorithm(s) \`%s\` |
+| 44000     | 19151       | %s algorithm(s) \`%s\` do not exist in database \`%s\` |
+| 44000     | 19152       | %s algorithms \`%s\` in database \`%s\` are still in used |
+| 44000     | 19153       | Duplicate %s algorithms \`%s\` in database \`%s\` |
 
 ## 功能异常
 
@@ -146,6 +170,12 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | HY000     | 20081       | Routed target \`%s\` does not exist, available targets are \`%s\` |
 | 44000     | 20082       | Inline sharding algorithms expression \`%s\` and sharding column \`%s\` do not match |
 | 44000     | 20090       | Can not find strategy for generate keys with table \`%s\` |
+
+### 读写分离
+
+| SQL State | Vendor Code | 错误信息 |
+| --------- | ----------- | ------ |
+| HY004     | 20280       | Invalid read database weight \`%s\` |
 
 ### 数据库高可用
 

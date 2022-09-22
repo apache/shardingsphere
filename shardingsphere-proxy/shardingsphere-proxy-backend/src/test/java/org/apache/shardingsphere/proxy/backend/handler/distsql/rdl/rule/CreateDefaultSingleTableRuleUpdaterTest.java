@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule;
 
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateDefaultSingleTableRuleStatement;
-import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
@@ -55,13 +55,13 @@ public final class CreateDefaultSingleTableRuleUpdaterTest {
         when(database.getResource().getDataSources()).thenReturn(Collections.singletonMap("ds_0", new MockedDataSource()));
     }
     
-    @Test(expected = RequiredResourceMissedException.class)
-    public void assertCheckWithInvalidResource() throws Exception {
+    @Test(expected = MissingRequiredResourcesException.class)
+    public void assertCheckWithInvalidResource() {
         updater.checkSQLStatement(database, new CreateDefaultSingleTableRuleStatement("ds_1"), currentConfig);
     }
     
     @Test(expected = DuplicateRuleException.class)
-    public void assertCheckWithDuplicateResource() throws Exception {
+    public void assertCheckWithDuplicateResource() {
         when(currentConfig.getDefaultDataSource()).thenReturn(Optional.of("single_table"));
         updater.checkSQLStatement(database, new CreateDefaultSingleTableRuleStatement("ds_0"), currentConfig);
     }

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.api.job;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -31,7 +30,8 @@ import java.util.stream.Collectors;
 @Getter
 public enum JobType {
     
-    MIGRATION("MIGRATION", "01");
+    MIGRATION("MIGRATION", "01"),
+    CONSISTENCY_CHECK("CONSISTENCY_CHECK", "02");
     
     private static final Map<String, JobType> CODE_JOB_TYPE_MAP;
     
@@ -46,7 +46,6 @@ public enum JobType {
     private final String typeCode;
     
     JobType(final String typeName, final String typeCode) {
-        Preconditions.checkArgument(StringUtils.isAlpha(typeName), "type name must be character of [a-z]");
         this.typeName = typeName;
         lowercaseTypeName = typeName.toLowerCase();
         Preconditions.checkArgument(2 == typeCode.length(), "code length is not 2");

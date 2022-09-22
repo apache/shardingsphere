@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.binary.BinaryColumnType;
@@ -183,10 +184,8 @@ public enum PostgreSQLColumnType implements BinaryColumnType {
      * @return PostgreSQL column type enum
      */
     public static PostgreSQLColumnType valueOfJDBCType(final int jdbcType) {
-        if (JDBC_TYPE_AND_COLUMN_TYPE_MAP.containsKey(jdbcType)) {
-            return JDBC_TYPE_AND_COLUMN_TYPE_MAP.get(jdbcType);
-        }
-        throw new IllegalArgumentException(String.format("Cannot find JDBC type '%s' in PostgreSQL column type", jdbcType));
+        Preconditions.checkArgument(JDBC_TYPE_AND_COLUMN_TYPE_MAP.containsKey(jdbcType), "Can not find JDBC type `%s` in PostgreSQL column type", jdbcType);
+        return JDBC_TYPE_AND_COLUMN_TYPE_MAP.get(jdbcType);
     }
     
     /**
@@ -201,6 +200,6 @@ public enum PostgreSQLColumnType implements BinaryColumnType {
                 return each;
             }
         }
-        throw new IllegalArgumentException(String.format("Cannot find value '%s' in PostgreSQL column type", value));
+        throw new IllegalArgumentException(String.format("Can not find value `%s` in PostgreSQL column type", value));
     }
 }

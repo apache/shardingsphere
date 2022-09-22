@@ -59,8 +59,8 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgo
 import org.apache.shardingsphere.data.pipeline.api.pojo.MigrationJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobItemAPI;
-import org.apache.shardingsphere.data.pipeline.core.api.impl.AbstractPipelineJobAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.InventoryIncrementalJobItemAPIImpl;
+import org.apache.shardingsphere.data.pipeline.core.api.impl.InventoryIncrementalJobPublicAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.PipelineDataSourcePersistService;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCalculateAlgorithmChooser;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCalculateAlgorithmFactory;
@@ -85,6 +85,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
@@ -115,7 +116,7 @@ import java.util.stream.IntStream;
  * Migration job API impl.
  */
 @Slf4j
-public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implements MigrationJobAPI {
+public final class MigrationJobAPIImpl extends InventoryIncrementalJobPublicAPIImpl implements MigrationJobAPI {
     
     private static final YamlRuleConfigurationSwapperEngine RULE_CONFIG_SWAPPER_ENGINE = new YamlRuleConfigurationSwapperEngine();
     
@@ -126,7 +127,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     private final PipelineDataSourcePersistService dataSourcePersistService = new PipelineDataSourcePersistService();
     
     @Override
-    protected JobType getJobType() {
+    public JobType getJobType() {
         return JobType.MIGRATION;
     }
     
@@ -333,7 +334,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         JobRateLimitAlgorithm readRateLimitAlgorithm = buildPipelineProcessContext(jobConfig).getReadRateLimitAlgorithm();
         Map<String, DataConsistencyCheckResult> result = new MigrationDataConsistencyChecker(jobConfig, readRateLimitAlgorithm).check(calculator);
         log.info("job {} with check algorithm '{}' data consistency checker result {}", jobId, calculator.getType(), result);
-        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobCheckResult(jobId, aggregateDataConsistencyCheckResults(jobId, result));
+        PipelineAPIFactory.getGovernanceRepositoryAPI().persistCheckLatestResult(jobId, aggregateDataConsistencyCheckResults(jobId, result));
         return result;
     }
     
@@ -355,7 +356,14 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     }
     
     @Override
-    protected void cleanTempTableOnRollback(final String jobId) throws SQLException {
+    public void rollback(final String jobId) throws SQLException {
+        log.info("Rollback job {}", jobId);
+        stop(jobId);
+        cleanTempTableOnRollback(jobId);
+        dropJob(jobId);
+    }
+    
+    private void cleanTempTableOnRollback(final String jobId) throws SQLException {
         MigrationJobConfiguration jobConfig = getJobConfiguration(jobId);
         String targetTableName = jobConfig.getTargetTableName();
         // TODO use jobConfig.targetSchemaName
@@ -373,6 +381,14 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     }
     
     @Override
+    public void commit(final String jobId) throws SQLException {
+        checkModeConfig();
+        log.info("Commit job {}", jobId);
+        stop(jobId);
+        dropJob(jobId);
+    }
+    
+    @Override
     public void addMigrationSourceResources(final Map<String, DataSourceProperties> dataSourcePropsMap) {
         log.info("Add migration source resources {}", dataSourcePropsMap.keySet());
         Map<String, DataSourceProperties> existDataSources = dataSourcePersistService.load(getJobType());
@@ -382,9 +398,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
                 duplicateDataSourceNames.add(entry.getKey());
             }
         }
-        if (!duplicateDataSourceNames.isEmpty()) {
-            throw new AddMigrationSourceResourceException(String.format("Duplicate resource names %s.", duplicateDataSourceNames));
-        }
+        ShardingSpherePreconditions.checkState(duplicateDataSourceNames.isEmpty(), () -> new AddMigrationSourceResourceException(duplicateDataSourceNames));
         Map<String, DataSourceProperties> result = new LinkedHashMap<>(existDataSources);
         result.putAll(dataSourcePropsMap);
         dataSourcePersistService.persist(getJobType(), result);
@@ -394,9 +408,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     public void dropMigrationSourceResources(final Collection<String> resourceNames) {
         Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(getJobType());
         List<String> noExistResources = resourceNames.stream().filter(each -> !metaDataDataSource.containsKey(each)).collect(Collectors.toList());
-        if (!noExistResources.isEmpty()) {
-            throw new DropMigrationSourceResourceException(String.format("Resource names %s not exist.", resourceNames));
-        }
+        ShardingSpherePreconditions.checkState(noExistResources.isEmpty(), () -> new DropMigrationSourceResourceException(resourceNames));
         for (String each : resourceNames) {
             metaDataDataSource.remove(each);
         }

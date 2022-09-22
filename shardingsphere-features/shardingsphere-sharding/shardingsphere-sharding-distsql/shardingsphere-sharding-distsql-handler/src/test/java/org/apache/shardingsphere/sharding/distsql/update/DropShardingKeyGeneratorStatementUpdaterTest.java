@@ -19,8 +19,8 @@ package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.KeyGeneratorInUsedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredKeyGeneratorMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -54,7 +54,7 @@ public final class DropShardingKeyGeneratorStatementUpdaterTest {
         when(database.getName()).thenReturn("test");
     }
     
-    @Test(expected = RequiredKeyGeneratorMissedException.class)
+    @Test(expected = MissingRequiredAlgorithmException.class)
     public void assertExecuteWithNotExist() throws DistSQLException {
         updater.checkSQLStatement(database, createSQLStatement("uuid_key_generator"), new ShardingRuleConfiguration());
     }
@@ -73,7 +73,7 @@ public final class DropShardingKeyGeneratorStatementUpdaterTest {
         assertTrue(currentRuleConfig.getKeyGenerators().isEmpty());
     }
     
-    @Test(expected = KeyGeneratorInUsedException.class)
+    @Test(expected = AlgorithmInUsedException.class)
     public void assertExecuteWithUsed() throws DistSQLException {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         currentRuleConfig.getKeyGenerators().put("uuid_key_generator", new AlgorithmConfiguration("UUID", null));

@@ -69,7 +69,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         this.contextManager = contextManager;
         this.jdbcContext = jdbcContext;
         connectionManager = new ConnectionManager(databaseName, contextManager);
-        connectionContext = new ConnectionContext();
+        connectionContext = new ConnectionContext(connectionManager::getDataSourceNamesOfCachedConnections);
     }
     
     /**

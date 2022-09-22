@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.distsql.exception.resource;
 
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+
 import java.util.Collection;
 
 /**
@@ -27,6 +29,6 @@ public final class InvalidResourcesException extends ResourceDefinitionViolation
     private static final long serialVersionUID = 7029641448948791509L;
     
     public InvalidResourcesException(final Collection<String> errorMessages) {
-        super(1104, String.format("Can not process invalid resources, error messages are: %s.", errorMessages));
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, "Can not process invalid resources, error message is: %s", errorMessages);
     }
 }

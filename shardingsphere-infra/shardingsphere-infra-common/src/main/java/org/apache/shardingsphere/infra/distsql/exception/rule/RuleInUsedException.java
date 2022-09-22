@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.distsql.exception.rule;
 
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+
 import java.util.Collection;
 
 /**
@@ -26,11 +28,7 @@ public final class RuleInUsedException extends RuleDefinitionViolationException 
     
     private static final long serialVersionUID = 3308787279125477660L;
     
-    public RuleInUsedException(final String ruleType, final String databaseName) {
-        super(1111, String.format("%s rule in database `%s` is still in used.", ruleType, databaseName));
-    }
-    
     public RuleInUsedException(final String ruleType, final String databaseName, final Collection<String> ruleNames) {
-        super(1111, String.format("%s rules `%s` in database `%s` are still in used.", ruleType, ruleNames, databaseName));
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 102, "%s rules `%s` in database `%s` are still in used", ruleType, ruleNames, databaseName);
     }
 }
