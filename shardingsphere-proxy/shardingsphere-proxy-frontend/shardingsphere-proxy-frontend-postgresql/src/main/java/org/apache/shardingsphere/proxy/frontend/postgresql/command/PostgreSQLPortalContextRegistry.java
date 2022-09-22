@@ -24,41 +24,41 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * PostgreSQL connection context registry.
+ * PostgreSQL portal context registry.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PostgreSQLConnectionContextRegistry {
+public final class PostgreSQLPortalContextRegistry {
     
-    private static final PostgreSQLConnectionContextRegistry INSTANCE = new PostgreSQLConnectionContextRegistry();
+    private static final PostgreSQLPortalContextRegistry INSTANCE = new PostgreSQLPortalContextRegistry();
     
-    private final ConcurrentMap<Integer, PostgreSQLConnectionContext> connectionContexts = new ConcurrentHashMap<>(1024);
+    private final ConcurrentMap<Integer, PortalContext> portalContexts = new ConcurrentHashMap<>(1024);
     
     /**
-     * Get instance of PostgreSQL connection context registry.
+     * Get instance of PostgreSQL portal context registry.
      *
-     * @return instance of PostgreSQL connection context registry.
+     * @return instance of PostgreSQL portal context registry.
      */
-    public static PostgreSQLConnectionContextRegistry getInstance() {
+    public static PostgreSQLPortalContextRegistry getInstance() {
         return INSTANCE;
     }
     
     /**
-     * Get PostgreSQL connection context.
+     * Get PostgreSQL portal context.
      *
      * @param connectionId connection id
-     * @return PostgreSQL connection context
+     * @return PostgreSQL portal context
      */
-    public PostgreSQLConnectionContext get(final int connectionId) {
-        return connectionContexts.computeIfAbsent(connectionId, unused -> new PostgreSQLConnectionContext());
+    public PortalContext get(final int connectionId) {
+        return portalContexts.computeIfAbsent(connectionId, unused -> new PortalContext());
     }
     
     /**
-     * Remove PostgreSQL connection context.
+     * Remove PostgreSQL portal context.
      *
      * @param connectionId connection id
-     * @return Removed PostgreSQL connection context
+     * @return Removed PostgreSQL portal context
      */
-    public PostgreSQLConnectionContext remove(final int connectionId) {
-        return connectionContexts.remove(connectionId);
+    public PortalContext remove(final int connectionId) {
+        return portalContexts.remove(connectionId);
     }
 }

@@ -33,8 +33,8 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.opengauss.err.OpenGaussErrorPacketFactory;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLCommandExecuteEngine;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContextRegistry;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLPortalContextRegistry;
 
 import java.sql.SQLException;
 import java.util.Optional;
@@ -58,8 +58,8 @@ public final class OpenGaussCommandExecuteEngine implements CommandExecuteEngine
     
     @Override
     public CommandExecutor getCommandExecutor(final CommandPacketType type, final CommandPacket packet, final ConnectionSession connectionSession) throws SQLException {
-        PostgreSQLConnectionContext connectionContext = PostgreSQLConnectionContextRegistry.getInstance().get(connectionSession.getConnectionId());
-        return OpenGaussCommandExecutorFactory.newInstance(type, (PostgreSQLCommandPacket) packet, connectionSession, connectionContext);
+        PortalContext portalContext = PostgreSQLPortalContextRegistry.getInstance().get(connectionSession.getConnectionId());
+        return OpenGaussCommandExecutorFactory.newInstance(type, (PostgreSQLCommandPacket) packet, connectionSession, portalContext);
     }
     
     @Override

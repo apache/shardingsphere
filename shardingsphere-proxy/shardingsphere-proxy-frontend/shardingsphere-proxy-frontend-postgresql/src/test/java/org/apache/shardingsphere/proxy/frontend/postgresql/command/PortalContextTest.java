@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command;
 
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.JDBCPortal;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal;
-import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -28,14 +27,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public final class PostgreSQLConnectionContextTest {
+public final class PortalContextTest {
     
-    private PostgreSQLConnectionContext connectionContext;
-    
-    @Before
-    public void setup() {
-        connectionContext = new PostgreSQLConnectionContext();
-    }
+    private final PortalContext portalContext = new PortalContext();
     
     @Test
     public void assertAddAndGetUnnamedPortal() {
@@ -50,16 +44,16 @@ public final class PostgreSQLConnectionContextTest {
     private void assertAddAndGetPortal(final String portalName) {
         Portal<?> portal = mock(Portal.class);
         when(portal.getName()).thenReturn(portalName);
-        connectionContext.addPortal(portal);
-        assertThat(connectionContext.getPortal(portalName), is(portal));
+        portalContext.add(portal);
+        assertThat(portalContext.get(portalName), is(portal));
     }
     
     @Test(expected = IllegalStateException.class)
     public void assertAddDuplicateNamedPortal() {
         Portal<?> portal = mock(Portal.class);
         when(portal.getName()).thenReturn("P_1");
-        connectionContext.addPortal(portal);
-        connectionContext.addPortal(portal);
+        portalContext.add(portal);
+        portalContext.add(portal);
     }
     
     @Test
@@ -67,8 +61,8 @@ public final class PostgreSQLConnectionContextTest {
         Portal<?> portal = mock(Portal.class);
         String portalName = "P_1";
         when(portal.getName()).thenReturn(portalName);
-        connectionContext.addPortal(portal);
-        connectionContext.closePortal(portalName);
+        portalContext.add(portal);
+        portalContext.close(portalName);
         verify(portal).close();
     }
     
@@ -78,9 +72,9 @@ public final class PostgreSQLConnectionContextTest {
         when(portal1.getName()).thenReturn("P_1");
         Portal<?> portal2 = mock(JDBCPortal.class);
         when(portal2.getName()).thenReturn("P_2");
-        connectionContext.addPortal(portal1);
-        connectionContext.addPortal(portal2);
-        connectionContext.closeAllPortals();
+        portalContext.add(portal1);
+        portalContext.add(portal2);
+        portalContext.closeAll();
         verify(portal1).close();
         verify(portal2).close();
     }

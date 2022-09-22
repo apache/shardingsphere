@@ -24,18 +24,18 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * PostgreSQL connection context.
+ * PostgreSQL portal context.
  */
-public final class PostgreSQLConnectionContext {
+public final class PortalContext {
     
     private final Map<String, Portal<?>> portals = new LinkedHashMap<>();
     
     /**
-     * Create a portal.
+     * Add portal.
      *
      * @param portal portal name
      */
-    public void addPortal(final Portal<?> portal) {
+    public void add(final Portal<?> portal) {
         boolean isNamedPortal = !portal.getName().isEmpty();
         Preconditions.checkState(!isNamedPortal || !portals.containsKey(portal.getName()), "Named portal `%s` must be explicitly closed", portal.getName());
         Portal<?> previousPortal = portals.put(portal.getName(), portal);
@@ -48,20 +48,20 @@ public final class PostgreSQLConnectionContext {
      * Get portal.
      *
      * @param <T> type of portal
-     * @param portal portal name
+     * @param portalName portal name
      * @return portal
      */
-    public <T extends Portal<?>> T getPortal(final String portal) {
-        return (T) portals.get(portal);
+    public <T extends Portal<?>> T get(final String portalName) {
+        return (T) portals.get(portalName);
     }
     
     /**
      * Close portal.
      *
-     * @param portal portal name
+     * @param portalName portal name
      */
-    public void closePortal(final String portal) {
-        Portal<?> result = portals.remove(portal);
+    public void close(final String portalName) {
+        Portal<?> result = portals.remove(portalName);
         if (null != result) {
             result.close();
         }
@@ -70,10 +70,8 @@ public final class PostgreSQLConnectionContext {
     /**
      * Close all portals.
      */
-    public void closeAllPortals() {
-        for (Portal<?> each : portals.values()) {
-            each.close();
-        }
+    public void closeAll() {
+        portals.values().forEach(Portal::close);
         portals.clear();
     }
 }
