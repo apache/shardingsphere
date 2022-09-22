@@ -15,15 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.exception.rule;
+package org.apache.shardingsphere.infra.distsql.exception.resource;
 
-import java.util.Collection;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
-public class RequiredAuditorMissedException extends RuleDefinitionViolationException {
+/**
+ * Empty resource exception.
+ */
+public final class EmptyResourceException extends ResourceDefinitionViolationException {
     
-    private static final long serialVersionUID = -1347038187749832773L;
+    private static final long serialVersionUID = 1704331180489268L;
     
-    public RequiredAuditorMissedException(final String type, final String databaseName, final Collection<String> auditorNames) {
-        super(1127, String.format("%s auditor `%s` do not exist in database `%s`.", type, auditorNames, databaseName));
+    public EmptyResourceException(final String databaseName) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 2, "There is no resource in the database `%s`", databaseName);
     }
 }

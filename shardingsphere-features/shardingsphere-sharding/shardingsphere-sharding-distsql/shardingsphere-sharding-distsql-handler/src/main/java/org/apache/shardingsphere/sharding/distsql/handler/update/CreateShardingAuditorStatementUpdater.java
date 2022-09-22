@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateAuditorException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateAlgorithmException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -50,9 +50,9 @@ public final class CreateShardingAuditorStatementUpdater implements RuleDefiniti
     
     private void checkDuplicate(final String databaseName, final CreateShardingAuditorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> auditorNames = sqlStatement.getAuditorSegments().stream().map(ShardingAuditorSegment::getAuditorName).collect(Collectors.toList());
-        checkDuplicateInput(auditorNames, duplicated -> new DuplicateAuditorException("sharding", databaseName, duplicated));
+        checkDuplicateInput(auditorNames, duplicated -> new DuplicateAlgorithmException("Sharding auditor", databaseName, duplicated));
         if (null != currentRuleConfig) {
-            checkExist(auditorNames, currentRuleConfig.getAuditors().keySet(), duplicated -> new DuplicateAuditorException("sharding", databaseName, duplicated));
+            checkExist(auditorNames, currentRuleConfig.getAuditors().keySet(), duplicated -> new DuplicateAlgorithmException("Sharding auditor", databaseName, duplicated));
         }
     }
     

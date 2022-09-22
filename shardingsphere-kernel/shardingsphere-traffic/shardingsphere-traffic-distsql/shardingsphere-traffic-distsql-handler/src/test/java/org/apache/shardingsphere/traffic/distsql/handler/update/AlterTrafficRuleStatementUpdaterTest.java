@@ -20,7 +20,7 @@ package org.apache.shardingsphere.traffic.distsql.handler.update;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
@@ -45,8 +45,8 @@ import static org.mockito.Mockito.when;
 
 public final class AlterTrafficRuleStatementUpdaterTest {
     
-    @Test(expected = RequiredRuleMissedException.class)
-    public void assertExecuteWithNotExistRuleName() throws SQLException {
+    @Test(expected = MissingRequiredRuleException.class)
+    public void assertExecuteWithNotExistRuleName() {
         ShardingSphereMetaData metaData = createMetaData();
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment(
                 "rule_name_3", Arrays.asList("olap", "order_by"), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
@@ -55,7 +55,7 @@ public final class AlterTrafficRuleStatementUpdaterTest {
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
-    public void assertExecuteWithInvalidAlgorithmType() throws SQLException {
+    public void assertExecuteWithInvalidAlgorithmType() {
         ShardingSphereMetaData metaData = createMetaData();
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment(
                 "rule_name_1", Arrays.asList("olap", "order_by"), new AlgorithmSegment("invalid", new Properties()), new AlgorithmSegment("invalid", new Properties()));
@@ -64,7 +64,7 @@ public final class AlterTrafficRuleStatementUpdaterTest {
     }
     
     @Test(expected = IllegalStateException.class)
-    public void assertExecuteWithLoadBalancerCannotBeNull() throws SQLException {
+    public void assertExecuteWithLoadBalancerCannotBeNull() {
         ShardingSphereMetaData metaData = createMetaData();
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("rule_name_1", Arrays.asList("olap", "order_by"),
                 new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), null);

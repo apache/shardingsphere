@@ -15,15 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.exception.rule;
+package org.apache.shardingsphere.infra.distsql.exception.resource;
+
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 import java.util.Collection;
 
-public class RequiredKeyGeneratorMissedException extends RuleDefinitionViolationException {
+/**
+ * Missing required resources exception.
+ */
+public final class MissingRequiredResourcesException extends ResourceDefinitionViolationException {
     
-    private static final long serialVersionUID = -2391552466149640249L;
+    private static final long serialVersionUID = 1704331180489268L;
     
-    public RequiredKeyGeneratorMissedException(final String type, final String databaseName, final Collection<String> keyGeneratorNames) {
-        super(1118, String.format("%s key generator `%s` do not exist in database `%s`.", type, keyGeneratorNames, databaseName));
+    public MissingRequiredResourcesException(final String databaseName, final Collection<String> resourceNames) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 1, "Resources `%s` do not exist in database `%s`", resourceNames, databaseName);
     }
 }

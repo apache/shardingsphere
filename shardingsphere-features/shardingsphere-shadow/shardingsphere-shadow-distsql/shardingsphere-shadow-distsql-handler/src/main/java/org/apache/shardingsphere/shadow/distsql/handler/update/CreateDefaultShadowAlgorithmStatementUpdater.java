@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shadow.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -53,7 +53,7 @@ public final class CreateDefaultShadowAlgorithmStatementUpdater implements RuleD
     
     private void checkAlgorithmExist(final String databaseName, final CreateDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
         ShardingSpherePreconditions.checkState(currentRuleConfig.getShadowAlgorithms().containsKey(sqlStatement.getAlgorithmName()),
-                () -> new RequiredAlgorithmMissedException(databaseName, Collections.singleton(sqlStatement.getAlgorithmName())));
+                () -> new MissingRequiredAlgorithmException(databaseName, Collections.singleton(sqlStatement.getAlgorithmName())));
     }
     
     @Override
