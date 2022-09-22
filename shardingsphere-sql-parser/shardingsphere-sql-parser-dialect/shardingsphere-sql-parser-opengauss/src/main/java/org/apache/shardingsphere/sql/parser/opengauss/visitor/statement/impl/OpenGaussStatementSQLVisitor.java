@@ -794,8 +794,15 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
     
     @Override
     public ASTNode visitSetTarget(final SetTargetContext ctx) {
-        IdentifierValue identifierValue = new IdentifierValue(ctx.colId().getText());
-        return new ColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), identifierValue);
+        List<ColIdContext> colIdContexts = ctx.colId();
+        if (2 == colIdContexts.size()) {
+            ColIdContext columnName = ctx.colId().get(1);
+            ColumnSegment result = new ColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(columnName.getText()));
+            ColIdContext ownerName = ctx.colId().get(0);
+            result.setOwner(new OwnerSegment(ownerName.start.getStartIndex(), ownerName.stop.getStopIndex(), new IdentifierValue(ownerName.getText())));
+            return result;
+        }
+        return new ColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.getText()));
     }
     
     @Override
