@@ -104,12 +104,12 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
             log.warn("jobId already exists in registry center, ignore, jobConfigKey={}", jobConfigKey);
             return Optional.of(jobId);
         }
-        repositoryAPI.persist(PipelineMetaDataNode.getJobRootPath(jobId), getJobRootClassName());
+        repositoryAPI.persist(PipelineMetaDataNode.getJobRootPath(jobId), getJobClassName());
         repositoryAPI.persist(jobConfigKey, convertJobConfigurationToText(jobConfig));
         return Optional.of(jobId);
     }
     
-    protected abstract String getJobRootClassName();
+    protected abstract String getJobClassName();
     
     private String convertJobConfigurationToText(final PipelineJobConfiguration jobConfig) {
         JobConfigurationPOJO jobConfigPOJO = new JobConfigurationPOJO();

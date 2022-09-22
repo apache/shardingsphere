@@ -184,7 +184,7 @@ public final class MigrationJobAPIImpl extends InventoryIncrementalJobPublicAPII
     }
     
     @Override
-    protected String getJobRootClassName() {
+    protected String getJobClassName() {
         return MigrationJob.class.getName();
     }
     
