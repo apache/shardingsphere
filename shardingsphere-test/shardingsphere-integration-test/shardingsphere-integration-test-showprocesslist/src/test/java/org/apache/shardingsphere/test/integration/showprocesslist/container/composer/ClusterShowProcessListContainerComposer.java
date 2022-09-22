@@ -55,10 +55,8 @@ public final class ClusterShowProcessListContainerComposer {
                 StorageContainerConfigurationFactory.newInstance(parameterized.getDatabaseType())));
         AdaptorContainerConfiguration containerConfig = new AdaptorContainerConfiguration(parameterized.getScenario(),
                 getMountedResources(parameterized.getScenario(), parameterized.getDatabaseType()), AdapterContainerUtil.getAdapterContainerImage());
-        jdbcContainer = AdapterContainerFactory.newInstance(
-                "cluster", "jdbc", parameterized.getDatabaseType(), storageContainer, parameterized.getScenario(), containerConfig);
-        proxyContainer = AdapterContainerFactory.newInstance(
-                "cluster", "proxy", parameterized.getDatabaseType(), storageContainer, parameterized.getScenario(), containerConfig);
+        jdbcContainer = AdapterContainerFactory.newInstance("cluster", "jdbc", parameterized.getDatabaseType(), storageContainer, parameterized.getScenario(), containerConfig);
+        proxyContainer = AdapterContainerFactory.newInstance("cluster", "proxy", parameterized.getDatabaseType(), storageContainer, parameterized.getScenario(), containerConfig);
         if (proxyContainer instanceof DockerITContainer) {
             ((DockerITContainer) proxyContainer).dependsOn(governanceContainer, storageContainer);
         }
