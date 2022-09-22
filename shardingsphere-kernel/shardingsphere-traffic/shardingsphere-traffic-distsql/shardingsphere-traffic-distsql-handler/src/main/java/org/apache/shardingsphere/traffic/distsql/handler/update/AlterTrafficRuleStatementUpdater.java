@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.distsql.update.GlobalRuleRALUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
@@ -61,7 +62,7 @@ public final class AlterTrafficRuleStatementUpdater implements GlobalRuleRALUpda
     
     private void checkRuleNames(final ShardingSphereRuleMetaData ruleMetaData, final AlterTrafficRuleStatement sqlStatement) throws DistSQLException {
         Collection<String> notExistRuleNames = getNotExistRuleNames(ruleMetaData, sqlStatement);
-        DistSQLException.predictionThrow(notExistRuleNames.isEmpty(), () -> new RequiredRuleMissedException("Traffic", notExistRuleNames));
+        ShardingSpherePreconditions.checkState(notExistRuleNames.isEmpty(), () -> new RequiredRuleMissedException("Traffic", notExistRuleNames));
     }
     
     private Collection<String> getNotExistRuleNames(final ShardingSphereRuleMetaData ruleMetaData, final AlterTrafficRuleStatement sqlStatement) {
@@ -72,7 +73,7 @@ public final class AlterTrafficRuleStatementUpdater implements GlobalRuleRALUpda
     
     private void checkAlgorithmNames(final AlterTrafficRuleStatement sqlStatement) throws DistSQLException {
         Collection<String> invalidAlgorithmNames = getInvalidAlgorithmNames(sqlStatement);
-        DistSQLException.predictionThrow(invalidAlgorithmNames.isEmpty(), () -> new InvalidAlgorithmConfigurationException("Traffic", invalidAlgorithmNames));
+        ShardingSpherePreconditions.checkState(invalidAlgorithmNames.isEmpty(), () -> new InvalidAlgorithmConfigurationException("Traffic", invalidAlgorithmNames));
     }
     
     private Collection<String> getInvalidAlgorithmNames(final AlterTrafficRuleStatement sqlStatement) {

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.distsql.update.GlobalRuleRALUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
@@ -59,7 +60,7 @@ public final class DropTrafficRuleStatementUpdater implements GlobalRuleRALUpdat
         TrafficRuleConfiguration config = rule.getConfiguration();
         Collection<String> currentRuleNames = config.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getName).collect(Collectors.toSet());
         Collection<String> notExistRuleNames = sqlStatement.getRuleNames().stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toSet());
-        DistSQLException.predictionThrow(notExistRuleNames.isEmpty(), () -> new RequiredRuleMissedException("Traffic"));
+        ShardingSpherePreconditions.checkState(notExistRuleNames.isEmpty(), () -> new RequiredRuleMissedException("Traffic"));
     }
     
     private void replaceNewRule(final ShardingSphereRuleMetaData ruleMetaData, final DropTrafficRuleStatement sqlStatement) {

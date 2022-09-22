@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingBindingTableRulesStatement;
@@ -58,7 +59,7 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RuleD
     }
     
     private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        DistSQLException.predictionThrow(null != currentRuleConfig && !currentRuleConfig.getBindingTableGroups().isEmpty(), () -> new RequiredRuleMissedException("Binding", databaseName));
+        ShardingSpherePreconditions.checkState(null != currentRuleConfig && !currentRuleConfig.getBindingTableGroups().isEmpty(), () -> new RequiredRuleMissedException("Binding", databaseName));
     }
     
     private Map<String, String> buildBindingTableRule(final ShardingRuleConfiguration config) {
@@ -78,7 +79,7 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RuleD
                 notExistBindingGroups.add(each.getTableGroups());
             }
         }
-        DistSQLException.predictionThrow(notExistBindingGroups.isEmpty(), () -> new RequiredRuleMissedException("Binding", databaseName, notExistBindingGroups));
+        ShardingSpherePreconditions.checkState(notExistBindingGroups.isEmpty(), () -> new RequiredRuleMissedException("Binding", databaseName, notExistBindingGroups));
     }
     
     private boolean isToBeDroppedRuleExists(final BindingTableRuleSegment bindingRule, final Map<String, String> bindingRelationship) {

@@ -35,6 +35,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissed
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -60,14 +61,14 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdater implements RuleDef
     }
     
     private void checkCurrentRuleConfiguration(final String databaseName, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
-        DistSQLException.predictionThrow(null != currentRuleConfig, () -> new RequiredRuleMissedException("database discovery", databaseName));
+        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new RequiredRuleMissedException("database discovery", databaseName));
     }
     
     private void checkToBeAlteredRules(final String databaseName,
                                        final AlterDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> currentRuleNames = currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName).collect(Collectors.toSet());
         Collection<String> notExistedRuleNames = getToBeAlteredRuleNames(sqlStatement).stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toList());
-        DistSQLException.predictionThrow(notExistedRuleNames.isEmpty(), () -> new RequiredRuleMissedException("database discovery", databaseName, notExistedRuleNames));
+        ShardingSpherePreconditions.checkState(notExistedRuleNames.isEmpty(), () -> new RequiredRuleMissedException("database discovery", databaseName, notExistedRuleNames));
     }
     
     private Collection<String> getToBeAlteredRuleNames(final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
@@ -76,7 +77,7 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdater implements RuleDef
     
     private void checkToBeAlteredResources(final String databaseName, final AlterDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereResource resource) throws DistSQLException {
         Collection<String> notExistedResources = resource.getNotExistedResources(getToBeAlteredResourceNames(sqlStatement));
-        DistSQLException.predictionThrow(notExistedResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistedResources));
+        ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistedResources));
     }
     
     private Collection<String> getToBeAlteredResourceNames(final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
@@ -90,7 +91,7 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdater implements RuleDef
         Collection<String> invalidInput = segmentMap.getOrDefault(DatabaseDiscoveryDefinitionSegment.class.getSimpleName(), Collections.emptyList()).stream()
                 .map(each -> ((DatabaseDiscoveryDefinitionSegment) each).getDiscoveryType().getName()).distinct()
                 .filter(each -> !DatabaseDiscoveryProviderAlgorithmFactory.contains(each)).collect(Collectors.toList());
-        DistSQLException.predictionThrow(invalidInput.isEmpty(), () -> new InvalidAlgorithmConfigurationException("database discovery", invalidInput));
+        ShardingSpherePreconditions.checkState(invalidInput.isEmpty(), () -> new InvalidAlgorithmConfigurationException("database discovery", invalidInput));
         segmentMap.getOrDefault(DatabaseDiscoveryConstructionSegment.class.getSimpleName(), Collections.emptyList()).stream().map(each -> (DatabaseDiscoveryConstructionSegment) each)
                 .forEach(each -> {
                     if (!currentRuleConfig.getDiscoveryTypes().containsKey(each.getDiscoveryTypeName())) {
@@ -100,7 +101,7 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdater implements RuleDef
                         invalidInput.add(each.getDiscoveryHeartbeatName());
                     }
                 });
-        DistSQLException.predictionThrow(invalidInput.isEmpty(), () -> new RequiredAlgorithmMissedException("database discovery", invalidInput));
+        ShardingSpherePreconditions.checkState(invalidInput.isEmpty(), () -> new RequiredAlgorithmMissedException("database discovery", invalidInput));
     }
     
     @Override

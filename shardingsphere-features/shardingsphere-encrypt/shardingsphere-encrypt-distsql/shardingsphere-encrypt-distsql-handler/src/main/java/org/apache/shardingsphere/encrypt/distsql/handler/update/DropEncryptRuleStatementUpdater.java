@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -44,10 +45,10 @@ public final class DropEncryptRuleStatementUpdater implements RuleDefinitionDrop
         if (sqlStatement.isIfExists()) {
             return;
         }
-        DistSQLException.predictionThrow(isExistRuleConfig(currentRuleConfig), () -> new RequiredRuleMissedException("Encrypt", databaseName));
+        ShardingSpherePreconditions.checkState(isExistRuleConfig(currentRuleConfig), () -> new RequiredRuleMissedException("Encrypt", databaseName));
         Collection<String> currentEncryptTableNames = currentRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistedTableNames = sqlStatement.getTables().stream().filter(each -> !currentEncryptTableNames.contains(each)).collect(Collectors.toList());
-        DistSQLException.predictionThrow(notExistedTableNames.isEmpty(), () -> new RequiredRuleMissedException("Encrypt", databaseName, notExistedTableNames));
+        ShardingSpherePreconditions.checkState(notExistedTableNames.isEmpty(), () -> new RequiredRuleMissedException("Encrypt", databaseName, notExistedTableNames));
     }
     
     @Override

@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.RuleExportEngine;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -57,7 +58,7 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RuleDefi
         if (sqlStatement.isIfExists()) {
             return;
         }
-        DistSQLException.predictionThrow(null != currentRuleConfig, () -> new RequiredRuleMissedException(RULE_TYPE, databaseName));
+        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new RequiredRuleMissedException(RULE_TYPE, databaseName));
         checkIsExist(databaseName, sqlStatement, currentRuleConfig);
     }
     
@@ -65,7 +66,7 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RuleDefi
                               final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> currentRuleNames = currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName).collect(Collectors.toList());
         Collection<String> notExistedRuleNames = sqlStatement.getRuleNames().stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toList());
-        DistSQLException.predictionThrow(notExistedRuleNames.isEmpty(), () -> new RequiredRuleMissedException(RULE_TYPE, databaseName));
+        ShardingSpherePreconditions.checkState(notExistedRuleNames.isEmpty(), () -> new RequiredRuleMissedException(RULE_TYPE, databaseName));
     }
     
     private void checkIsInUse(final String databaseName, final DropDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereDatabase database) throws DistSQLException {
@@ -78,7 +79,7 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RuleDefi
             readwriteRuleMap.values().stream().map(each -> each.get(ExportableItemConstants.AUTO_AWARE_DATA_SOURCE_NAME)).forEach(rulesInUse::add);
         });
         Collection<String> invalid = sqlStatement.getRuleNames().stream().filter(rulesInUse::contains).collect(Collectors.toList());
-        DistSQLException.predictionThrow(invalid.isEmpty(), () -> new RuleInUsedException(RULE_TYPE, databaseName, invalid));
+        ShardingSpherePreconditions.checkState(invalid.isEmpty(), () -> new RuleInUsedException(RULE_TYPE, databaseName, invalid));
     }
     
     @Override

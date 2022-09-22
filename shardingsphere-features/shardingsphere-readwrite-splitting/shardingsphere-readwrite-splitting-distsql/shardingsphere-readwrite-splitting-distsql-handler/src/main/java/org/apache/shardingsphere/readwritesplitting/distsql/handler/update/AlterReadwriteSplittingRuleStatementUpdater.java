@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.RuleExportEngine;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.handler.checker.ReadwriteSplittingRuleStatementChecker;
@@ -102,10 +103,10 @@ public final class AlterReadwriteSplittingRuleStatementUpdater implements RuleDe
             }
         });
         Collection<String> notExistResources = database.getResource().getNotExistedResources(requireResources);
-        DistSQLException.predictionThrow(notExistResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistResources));
+        ShardingSpherePreconditions.checkState(notExistResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistResources));
         Collection<String> logicResources = getLogicResources(database);
         Set<String> notExistLogicResources = requireDiscoverableResources.stream().filter(each -> !logicResources.contains(each)).collect(Collectors.toSet());
-        DistSQLException.predictionThrow(notExistLogicResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistLogicResources));
+        ShardingSpherePreconditions.checkState(notExistLogicResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistLogicResources));
     }
     
     @SuppressWarnings("unchecked")

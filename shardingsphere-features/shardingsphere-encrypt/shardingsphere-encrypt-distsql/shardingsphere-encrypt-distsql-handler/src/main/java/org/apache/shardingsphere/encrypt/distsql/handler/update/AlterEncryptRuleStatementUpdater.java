@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigu
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -74,7 +75,7 @@ public final class AlterEncryptRuleStatementUpdater implements RuleDefinitionAlt
     private void checkDataType(final AlterEncryptRuleStatement sqlStatement) throws DistSQLException {
         Collection<String> invalidRules = sqlStatement.getRules().stream()
                 .map(each -> getInvalidColumns(each.getTableName(), each.getColumns())).flatMap(Collection::stream).collect(Collectors.toList());
-        DistSQLException.predictionThrow(invalidRules.isEmpty(), () -> new InvalidRuleConfigurationException("encrypt", invalidRules, Collections.singleton("incomplete data type")));
+        ShardingSpherePreconditions.checkState(invalidRules.isEmpty(), () -> new InvalidRuleConfigurationException("encrypt", invalidRules, Collections.singleton("incomplete data type")));
     }
     
     private Collection<String> getInvalidColumns(final String tableName, final Collection<EncryptColumnSegment> columns) {
@@ -87,9 +88,7 @@ public final class AlterEncryptRuleStatementUpdater implements RuleDefinitionAlt
             encryptors.addAll(each.getColumns().stream().map(column -> column.getEncryptor().getName()).collect(Collectors.toSet()));
         }
         Collection<String> invalidEncryptors = encryptors.stream().filter(each -> !EncryptAlgorithmFactory.contains(each)).collect(Collectors.toList());
-        if (!invalidEncryptors.isEmpty()) {
-            throw new InvalidAlgorithmConfigurationException("encryptor", invalidEncryptors);
-        }
+        ShardingSpherePreconditions.checkState(invalidEncryptors.isEmpty(), () -> new InvalidAlgorithmConfigurationException("encryptor", invalidEncryptors));
     }
     
     @Override

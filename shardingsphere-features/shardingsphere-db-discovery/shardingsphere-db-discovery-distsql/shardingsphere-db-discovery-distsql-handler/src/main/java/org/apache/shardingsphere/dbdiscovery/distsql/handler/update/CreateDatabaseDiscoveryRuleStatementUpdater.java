@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmM
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -66,7 +67,7 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RuleDe
         Collection<String> existRuleNames = currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName).collect(Collectors.toList());
         Collection<String> duplicateRuleNames = sqlStatement.getRules().stream().map(AbstractDatabaseDiscoverySegment::getName).filter(existRuleNames::contains).collect(Collectors.toSet());
         duplicateRuleNames.addAll(getToBeCreatedDuplicateRuleNames(sqlStatement));
-        DistSQLException.predictionThrow(duplicateRuleNames.isEmpty(), () -> new DuplicateRuleException(RULE_TYPE.toLowerCase(), databaseName, duplicateRuleNames));
+        ShardingSpherePreconditions.checkState(duplicateRuleNames.isEmpty(), () -> new DuplicateRuleException(RULE_TYPE.toLowerCase(), databaseName, duplicateRuleNames));
     }
     
     private Collection<String> getToBeCreatedDuplicateRuleNames(final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
@@ -89,7 +90,7 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RuleDe
         Collection<String> invalidInput = segmentMap.getOrDefault(DatabaseDiscoveryDefinitionSegment.class.getSimpleName(), Collections.emptyList()).stream()
                 .map(each -> ((DatabaseDiscoveryDefinitionSegment) each).getDiscoveryType().getName()).distinct()
                 .filter(each -> !DatabaseDiscoveryProviderAlgorithmFactory.contains(each)).collect(Collectors.toList());
-        DistSQLException.predictionThrow(invalidInput.isEmpty(), () -> new InvalidAlgorithmConfigurationException(RULE_TYPE.toLowerCase(), invalidInput));
+        ShardingSpherePreconditions.checkState(invalidInput.isEmpty(), () -> new InvalidAlgorithmConfigurationException(RULE_TYPE.toLowerCase(), invalidInput));
         segmentMap.getOrDefault(DatabaseDiscoveryConstructionSegment.class.getSimpleName(), Collections.emptyList()).stream().map(each -> (DatabaseDiscoveryConstructionSegment) each)
                 .forEach(each -> {
                     if (null == currentRuleConfig || !currentRuleConfig.getDiscoveryTypes().containsKey(each.getDiscoveryTypeName())) {
@@ -99,7 +100,7 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RuleDe
                         invalidInput.add(each.getDiscoveryHeartbeatName());
                     }
                 });
-        DistSQLException.predictionThrow(invalidInput.isEmpty(), () -> new RequiredAlgorithmMissedException(RULE_TYPE, databaseName, invalidInput));
+        ShardingSpherePreconditions.checkState(invalidInput.isEmpty(), () -> new RequiredAlgorithmMissedException(RULE_TYPE, databaseName, invalidInput));
     }
     
     @Override

@@ -125,7 +125,7 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     private void checkResourceExists(final ContextManager contextManager, final String databaseName, final String toBeDisabledResource) throws DistSQLException {
         Collection<String> notExistedResources = contextManager
                 .getMetaDataContexts().getMetaData().getDatabase(databaseName).getResource().getNotExistedResources(Collections.singleton(toBeDisabledResource));
-        DistSQLException.predictionThrow(notExistedResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, Collections.singleton(toBeDisabledResource)));
+        ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, Collections.singleton(toBeDisabledResource)));
     }
     
     private void checkIsNotDisabled(final Collection<String> disabledResources, final String toBeEnabledResource) {

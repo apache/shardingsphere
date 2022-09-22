@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.AuditorInUsedExcep
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAuditorMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingAuditorStatement;
@@ -55,13 +56,13 @@ public final class DropShardingAuditorStatementUpdater implements RuleDefinition
             return;
         }
         Collection<String> notExistAuditors = auditorNames.stream().filter(each -> !currentRuleConfig.getAuditors().containsKey(each)).collect(Collectors.toList());
-        DistSQLException.predictionThrow(notExistAuditors.isEmpty(), () -> new RequiredAuditorMissedException("Sharding", databaseName, notExistAuditors));
+        ShardingSpherePreconditions.checkState(notExistAuditors.isEmpty(), () -> new RequiredAuditorMissedException("Sharding", databaseName, notExistAuditors));
     }
     
     private void checkInUsed(final String databaseName, final Collection<String> auditorNames, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> usedAuditors = getUsedAuditors(currentRuleConfig);
         Collection<String> inUsedNames = auditorNames.stream().filter(usedAuditors::contains).collect(Collectors.toList());
-        DistSQLException.predictionThrow(inUsedNames.isEmpty(), () -> new AuditorInUsedException("Sharding", databaseName, inUsedNames));
+        ShardingSpherePreconditions.checkState(inUsedNames.isEmpty(), () -> new AuditorInUsedException("Sharding", databaseName, inUsedNames));
     }
     
     private Collection<String> getUsedAuditors(final ShardingRuleConfiguration shardingRuleConfig) {

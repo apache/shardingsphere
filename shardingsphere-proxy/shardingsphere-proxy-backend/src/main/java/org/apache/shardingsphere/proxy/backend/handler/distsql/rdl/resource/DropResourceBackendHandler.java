@@ -29,12 +29,13 @@ import org.apache.shardingsphere.infra.distsql.exception.resource.ResourceInUsed
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.server.ShardingSphereServerException;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.handler.DatabaseRequiredBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.handler.DatabaseRequiredBackendHandler;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 
 import javax.sql.DataSource;
@@ -79,7 +80,7 @@ public final class DropResourceBackendHandler extends DatabaseRequiredBackendHan
     private void checkResourceNameExisted(final String databaseName, final Collection<String> resourceNames) throws DistSQLException {
         Map<String, DataSource> resources = ProxyContext.getInstance().getDatabase(databaseName).getResource().getDataSources();
         Collection<String> notExistedResourceNames = resourceNames.stream().filter(each -> !resources.containsKey(each)).collect(Collectors.toList());
-        DistSQLException.predictionThrow(notExistedResourceNames.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistedResourceNames));
+        ShardingSpherePreconditions.checkState(notExistedResourceNames.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistedResourceNames));
     }
     
     private void checkResourceNameNotInUse(final String databaseName, final Collection<String> toBeDroppedResourceNames, final boolean ignoreSingleTables) throws DistSQLException {
@@ -100,7 +101,7 @@ public final class DropResourceBackendHandler extends DatabaseRequiredBackendHan
         for (String each : inUsedResourceNames) {
             Collection<String> inUsedRules = inUsedMultimap.get(each);
             inUsedRules.remove(SingleTableRule.class.getSimpleName());
-            DistSQLException.predictionThrow(inUsedRules.isEmpty(), () -> new ResourceInUsedException(each, inUsedRules));
+            ShardingSpherePreconditions.checkState(inUsedRules.isEmpty(), () -> new ResourceInUsedException(each, inUsedRules));
         }
     }
     
