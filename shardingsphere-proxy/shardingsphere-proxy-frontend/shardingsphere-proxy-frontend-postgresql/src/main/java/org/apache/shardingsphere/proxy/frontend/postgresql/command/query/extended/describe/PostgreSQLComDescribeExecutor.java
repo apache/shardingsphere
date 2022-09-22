@@ -44,7 +44,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDB
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLPreparedStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -75,7 +75,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     
-    private final PostgreSQLConnectionContext connectionContext;
+    private final PortalContext portalContext;
     
     private final PostgreSQLComDescribePacket packet;
     
@@ -87,7 +87,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
             case 'S':
                 return describePreparedStatement();
             case 'P':
-                return Collections.singletonList(connectionContext.getPortal(packet.getName()).describe());
+                return Collections.singletonList(portalContext.get(packet.getName()).describe());
             default:
                 throw new UnsupportedSQLOperationException("Unsupported describe type: " + packet.getType());
         }
