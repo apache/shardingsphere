@@ -15,14 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc;
+package org.apache.shardingsphere.infra.executor.sql.prepare.driver;
 
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.CacheableExecutorConnectionManager;
-
-import java.sql.Connection;
+import java.util.Collection;
 
 /**
- * Executor JDBC connection manager.
+ * Executor connection manager which is able to cache connections.
+ *
+ * @param <C> type of resource connection
  */
-public interface ExecutorJDBCConnectionManager extends CacheableExecutorConnectionManager<Connection> {
+public interface CacheableExecutorConnectionManager<C> extends ExecutorConnectionManager<C> {
+    
+    /**
+     * Get data source names of cached connections.
+     *
+     * @return data source names of cached connections
+     */
+    Collection<String> getDataSourceNamesOfCachedConnections();
 }

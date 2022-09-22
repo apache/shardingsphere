@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.CacheableExecutorConnectionManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
@@ -83,7 +84,9 @@ public final class ConnectionSession {
         this.attributeMap = attributeMap;
         backendConnection = determineBackendConnection();
         statementManager = determineStatementManager();
-        connectionContext = new ConnectionContext();
+        connectionContext = backendConnection instanceof CacheableExecutorConnectionManager
+                ? new ConnectionContext(((CacheableExecutorConnectionManager<?>) backendConnection)::getDataSourceNamesOfCachedConnections)
+                : new ConnectionContext();
     }
     
     private BackendConnection determineBackendConnection() {
