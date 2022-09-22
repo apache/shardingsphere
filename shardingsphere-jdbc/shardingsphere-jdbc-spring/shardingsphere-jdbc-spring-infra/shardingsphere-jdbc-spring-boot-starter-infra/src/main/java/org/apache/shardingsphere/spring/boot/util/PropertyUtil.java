@@ -27,6 +27,7 @@ import org.springframework.core.env.PropertyResolver;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -75,7 +76,13 @@ public final class PropertyUtil {
      */
     @SuppressWarnings("unchecked")
     public static <T> T handle(final Environment environment, final String prefix, final Class<T> targetClass) {
-        return 1 == springBootVersion ? (T) v1(environment, prefix, true) : (T) v2(environment, prefix, targetClass);
+        try {
+            return 1 == springBootVersion ? (T) v1(environment, prefix, true) : (T) v2(environment, prefix, targetClass);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            return (T) Collections.emptyMap();
+        }
     }
     
     @SuppressWarnings("unchecked")

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.datasource.state;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
 import java.util.HashMap;
@@ -37,35 +38,13 @@ public enum DataSourceState {
     }
     
     /**
-     * Data source disable or enable.
-     *
-     * @param state data source state
-     * @return disable or enable
-     */
-    public static boolean isDisable(final String state) {
-        return DISABLED.name().equalsIgnoreCase(state);
-    }
-    
-    /**
-     * Data source disable or enable.
-     *
-     * @param state data source state
-     * @return disable or enable
-     */
-    public static boolean isEnable(final String state) {
-        return ENABLED.name().equalsIgnoreCase(state);
-    }
-    
-    /**
      * Get data source state by state name.
      *
      * @param state data source state name
      * @return data source state
      */
     public static DataSourceState getDataSourceState(final String state) {
-        if (!Strings.isNullOrEmpty(state) && DATA_SOURCE_STATES.containsKey(state.toLowerCase())) {
-            return DATA_SOURCE_STATES.get(state.toLowerCase());
-        }
-        throw new IllegalArgumentException("Illegal data source state: " + state);
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(state) && DATA_SOURCE_STATES.containsKey(state.toLowerCase()), "Illegal data source state `%s`", state);
+        return DATA_SOURCE_STATES.get(state.toLowerCase());
     }
 }

@@ -5,7 +5,7 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- *
+ *  
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -15,22 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.boot.exception;
+package org.apache.shardingsphere.infra.context.datasource;
 
-import org.apache.shardingsphere.infra.util.exception.external.server.ShardingSphereServerException;
+import java.util.Collection;
 
 /**
- * Unsupported data source type exception.
+ * Preferred data source provider.
  */
-public final class UnsupportedDataSourceTypeServerException extends ShardingSphereServerException {
+public interface PreferredDataSourceProvider {
     
-    private static final long serialVersionUID = 8264305279431450585L;
-    
-    private static final String ERROR_CATEGORY = "SPRING";
-    
-    private static final int ERROR_CODE = 1;
-    
-    public UnsupportedDataSourceTypeServerException(final Exception cause) {
-        super(ERROR_CATEGORY, ERROR_CODE, "Can not find data source type", cause);
-    }
+    /**
+     * Get preferred data source names.
+     *
+     * @return preferred data source names
+     */
+    Collection<String> getPreferredDataSourceNames();
 }

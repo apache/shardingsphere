@@ -53,12 +53,12 @@ public final class OraclePipelineSQLBuilder extends AbstractPipelineSQLBuilder {
         if (PipelineJdbcUtils.isIntegerColumn(uniqueKeyDataType)) {
             return "SELECT * FROM (SELECT * FROM " + decoratedTableName + " WHERE " + quotedUniqueKey + " " + (firstQuery ? ">=" : ">") + " ?"
                     + " AND " + quotedUniqueKey + " <= ? ORDER BY " + quotedUniqueKey + " ASC) WHERE ROWNUM<=?";
-        } else if (PipelineJdbcUtils.isStringColumn(uniqueKeyDataType)) {
+        }
+        if (PipelineJdbcUtils.isStringColumn(uniqueKeyDataType)) {
             return "SELECT * FROM (SELECT * FROM " + decoratedTableName + " WHERE " + quotedUniqueKey + " " + (firstQuery ? ">=" : ">") + " ?"
                     + " ORDER BY " + quotedUniqueKey + " ASC) WHERE ROWNUM<=?";
-        } else {
-            throw new IllegalArgumentException("Unknown uniqueKeyDataType: " + uniqueKeyDataType);
         }
+        throw new IllegalArgumentException("Unknown uniqueKeyDataType: " + uniqueKeyDataType);
     }
     
     @Override
@@ -70,11 +70,9 @@ public final class OraclePipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     
     @Override
     public String buildChunkedQuerySQL(final String schemaName, final @NonNull String tableName, final @NonNull String uniqueKey, final boolean firstQuery) {
-        if (firstQuery) {
-            return "SELECT * FROM (SELECT * FROM " + decorate(schemaName, tableName) + " ORDER BY " + quote(uniqueKey) + " ASC) WHERE ROWNUM<=?";
-        } else {
-            return "SELECT * FROM (SELECT * FROM " + decorate(schemaName, tableName) + " WHERE " + quote(uniqueKey) + " > ? ORDER BY " + quote(uniqueKey) + " ASC) WHERE ROWNUM<=?";
-        }
+        return firstQuery
+                ? "SELECT * FROM (SELECT * FROM " + decorate(schemaName, tableName) + " ORDER BY " + quote(uniqueKey) + " ASC) WHERE ROWNUM<=?"
+                : "SELECT * FROM (SELECT * FROM " + decorate(schemaName, tableName) + " WHERE " + quote(uniqueKey) + " > ? ORDER BY " + quote(uniqueKey) + " ASC) WHERE ROWNUM<=?";
     }
     
     @Override

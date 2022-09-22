@@ -122,7 +122,7 @@ public final class JDBCPortal implements Portal<Void> {
         if (responseHeader instanceof UpdateResponseHeader) {
             return PostgreSQLNoDataPacket.getInstance();
         }
-        throw new IllegalStateException("Cannot describe portal [" + name + "] before bind");
+        throw new IllegalStateException(String.format("Can not describe portal `%s` before bind", name));
     }
     
     private PostgreSQLRowDescriptionPacket createRowDescriptionPacket(final QueryResponseHeader queryResponseHeader) {

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.cases.dataset;
 
+import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
@@ -67,9 +68,7 @@ public final class DataSetLoader {
             return result;
         }
         result = String.join(File.separator, parentPath, DATA_SET_FOLDER_NAME, dataSetFile);
-        if (new File(result).exists()) {
-            return result;
-        }
-        throw new IllegalArgumentException(String.format("%s not found, path=%s, scenario=%s, databaseType=%s, mode=%s", dataSetFile, parentPath, scenario, databaseType.getType(), mode));
+        Preconditions.checkArgument(new File(result).exists(), "%s not found, path=%s, scenario=%s, databaseType=%s, mode=%s", dataSetFile, parentPath, scenario, databaseType.getType(), mode);
+        return result;
     }
 }

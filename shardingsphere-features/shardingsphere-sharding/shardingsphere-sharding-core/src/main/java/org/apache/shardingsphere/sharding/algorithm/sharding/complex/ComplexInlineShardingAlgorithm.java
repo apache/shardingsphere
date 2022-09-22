@@ -88,9 +88,8 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
             return availableTargetNames;
         }
         Map<String, Collection<Comparable<?>>> columnNameAndShardingValuesMap = shardingValue.getColumnNameAndShardingValuesMap();
-        if (!shardingColumns.isEmpty() && shardingColumns.size() != columnNameAndShardingValuesMap.size()) {
-            throw new IllegalArgumentException("Complex inline need " + shardingColumns.size() + " sharing columns, but only found " + columnNameAndShardingValuesMap.size());
-        }
+        Preconditions.checkArgument(shardingColumns.isEmpty() || shardingColumns.size() == columnNameAndShardingValuesMap.size(),
+                "Complex inline need %s sharing columns, but only found %s", shardingColumns.size(), columnNameAndShardingValuesMap.size());
         Collection<Map<String, Comparable<?>>> combine = combine(columnNameAndShardingValuesMap);
         return combine.stream().map(this::doSharding).collect(Collectors.toList());
     }

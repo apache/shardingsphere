@@ -37,7 +37,7 @@ import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLCommand;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -59,16 +59,15 @@ import java.util.List;
  */
 public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     
-    private final PostgreSQLConnectionContext connectionContext;
+    private final PortalContext portalContext;
     
     private final ProxyBackendHandler proxyBackendHandler;
     
     @Getter
     private volatile ResponseType responseType;
     
-    public PostgreSQLComQueryExecutor(final PostgreSQLConnectionContext connectionContext, final PostgreSQLComQueryPacket comQueryPacket,
-                                      final ConnectionSession connectionSession) throws SQLException {
-        this.connectionContext = connectionContext;
+    public PostgreSQLComQueryExecutor(final PortalContext portalContext, final PostgreSQLComQueryPacket comQueryPacket, final ConnectionSession connectionSession) throws SQLException {
+        this.portalContext = portalContext;
         proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(DatabaseTypeFactory.getInstance("PostgreSQL"), comQueryPacket.getSql(), connectionSession);
     }
     
@@ -100,7 +99,7 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     private List<DatabasePacket<?>> createUpdatePacket(final UpdateResponseHeader updateResponseHeader) {
         SQLStatement sqlStatement = updateResponseHeader.getSqlStatement();
         if (sqlStatement instanceof CommitStatement || sqlStatement instanceof RollbackStatement) {
-            connectionContext.closeAllPortals();
+            portalContext.closeAll();
         }
         if (sqlStatement instanceof SetStatement) {
             return createParameterStatusResponse((SetStatement) sqlStatement);
