@@ -19,9 +19,10 @@ package org.apache.shardingsphere.proxy.backend.handler;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
@@ -59,11 +60,7 @@ public abstract class DatabaseRequiredBackendHandler<T extends SQLStatement> imp
     }
     
     private void checkDatabaseName(final String databaseName) {
-        if (null == databaseName) {
-            throw new NoDatabaseSelectedException();
-        }
-        if (!ProxyContext.getInstance().databaseExists(databaseName)) {
-            throw new UnknownDatabaseException(databaseName);
-        }
+        ShardingSpherePreconditions.checkNotNull(databaseName, NoDatabaseSelectedException::new);
+        ShardingSpherePreconditions.checkState(ProxyContext.getInstance().databaseExists(databaseName), () -> new UnknownDatabaseException(databaseName));
     }
 }

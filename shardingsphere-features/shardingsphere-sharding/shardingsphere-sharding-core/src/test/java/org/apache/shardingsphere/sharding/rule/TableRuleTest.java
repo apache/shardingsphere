@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.exception.ActualDataNodesMissedWithShardingTableException;
+import org.apache.shardingsphere.sharding.exception.metadata.DataNodesMissedWithShardingTableException;
 import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import org.junit.Test;
 
@@ -41,7 +41,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class TableRuleTest {
@@ -148,7 +148,7 @@ public final class TableRuleTest {
         assertFalse(actual.isExisted("table_3"));
     }
     
-    @Test(expected = ActualDataNodesMissedWithShardingTableException.class)
+    @Test(expected = DataNodesMissedWithShardingTableException.class)
     public void assertActualDataNodesNotConfigured() {
         ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("LOGIC_TABLE", "");
         shardingTableRuleConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("shardingColumn", "INLINE"));
@@ -188,6 +188,16 @@ public final class TableRuleTest {
         assertThat(actual.getPrefix(), is("t_order_"));
         assertThat(actual.getPaddingChar(), is('0'));
         assertThat(actual.getSuffixMinLength(), is(3));
+    }
+    
+    @Test
+    public void assertGetTableDataNodeWhenLogicTableEndWithNumber() {
+        ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("t_order0", "ds_0.t_order0_0,ds_0.t_order0_1");
+        TableRule tableRule = new TableRule(shardingTableRuleConfig, Arrays.asList("ds_0", "ds_1"), "order_id");
+        DataNodeInfo actual = tableRule.getTableDataNode();
+        assertThat(actual.getPrefix(), is("t_order0_"));
+        assertThat(actual.getPaddingChar(), is('0'));
+        assertThat(actual.getSuffixMinLength(), is(1));
     }
     
     @Test

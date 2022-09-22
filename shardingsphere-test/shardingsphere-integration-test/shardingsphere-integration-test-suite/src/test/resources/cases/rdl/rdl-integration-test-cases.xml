@@ -15,165 +15,45 @@
   ~ limitations under the License.
   -->
 <integration-test-cases>
-    <!--FIXME! IP CANNOT CONNECT-->
-<!--    <test-case sql="SHOW SCHEMA RESOURCES" db-types="PostgreSQL">-->
-<!--        <assertion expected-data-file="alter_resource.xml">-->
-<!--            <initial-sql sql="ALTER RESOURCE rdl_test_0 (URL=&quot;jdbc:postgresql://postgresql.empty_rules.host:5432/rdl_test_0, USER=root, PASSWORD=Root@123,-->
-<!--            PROPERTIES(&quot;maxPoolSize&quot;=10,&quot;maxPoolSize&quot;=10,&quot;connectionTimeoutMilliseconds&quot;=3000,&quot;idleTimeoutMilliseconds&quot;=6000,&quot;maxLifetimeMilliseconds&quot;=180000));"/>-->
-<!--            <destroy-sql sql="ALTER RESOURCE rdl_test_0 (URL=&quot;jdbc:postgresql://postgresql.empty_rules.host:5432/rdl_test_0, USER=root, PASSWORD=Root@123,-->
-<!--            PROPERTIES(&quot;maxPoolSize&quot;=2,&quot;maxPoolSize&quot;=2,&quot;connectionTimeoutMilliseconds&quot;=30000,&quot;idleTimeoutMilliseconds&quot;=60000,&quot;maxLifetimeMilliseconds&quot;=1800000));"/>-->
-<!--        </assertion>-->
-<!--    </test-case>-->
-
-<!--    <test-case sql="SHOW SCHEMA RESOURCES" db-types="PostgreSQL">-->
+    <!-- TODO FIX HOST CANNOT CONNECT -->
+<!--    <test-case sql="ADD RESOURCE ds_0 (URL='jdbc:mysql://mysql.rdl.empty_rules.host:3306/rdl_ds_0?serverTimezone=UTC&amp;useSSL=false', USER='test_user',PASSWORD='Test@123');" db-types="MySQL">-->
 <!--        <assertion expected-data-file="add_resource.xml">-->
-<!--            <initial-sql sql="ADD RESOURCE rdl_test_0 (URL=&quot;jdbc:postgresql://postgresql.empty_rules.host:5432/rdl_test_1&quot;, USER=root, PASSWORD=Root@123,-->
-<!--                PROPERTIES(&quot;maxPoolSize&quot;=2,&quot;maxPoolSize&quot;=2,&quot;connectionTimeoutMilliseconds&quot;=30000,&quot;idleTimeoutMilliseconds&quot;=60000,&quot;maxLifetimeMilliseconds&quot;=1800000));" />-->
-<!--            <destroy-sql sql="DROP RESOURCE rdl_test_0;"/>-->
+<!--            <assertion-sql sql="SHOW DATABASE RESOURCES" />-->
 <!--        </assertion>-->
 <!--    </test-case>-->
-
-    <!-- FIXME #16005 Need to be redesigned:
-    1. The SQL of case should be RDL, not RQL;
-    2. Should not change current rules, which are used to RAL and RQL, it is better to CREATE/ALTER/DROP new rule for assertion.
-    -->
-<!--    <test-case sql="SHOW SCHEMA RESOURCES" db-types="PostgreSQL">-->
-<!--        <assertion expected-data-file="drop_resource.xml">-->
-<!--            <initial-sql sql="DROP RESOURCE rdl_test_0;"/>-->
-<!--            <destroy-sql sql="ADD RESOURCE rdl_test_0 (URL=&quot;jdbc:postgresql://postgresql.empty_rules.host:5432/rdl_test_0&quot;, USER=root, PASSWORD=Root@123,-->
-<!--                PROPERTIES(&quot;maxPoolSize&quot;=2,&quot;maxPoolSize&quot;=2,&quot;connectionTimeoutMilliseconds&quot;=30000,&quot;idleTimeoutMilliseconds&quot;=60000,&quot;maxLifetimeMilliseconds&quot;=1800000));" />-->
-<!--        </assertion>-->
-<!--    </test-case>-->
-<!--    -->
-<!--    <test-case sql="SHOW SCHEMA RESOURCES" db-types="PostgreSQL">-->
+<!--    <test-case sql="ALTER RESOURCE ds_2 (URL='jdbc:mysql://mysql.rdl.empty_rules.host:3306/rdl_ds_2?serverTimezone=UTC&amp;useSSL=false', USER='test_user',PASSWORD='Test@123',PROPERTIES('idleTimeout'='30000'));" db-types="MySQL">-->
 <!--        <assertion expected-data-file="alter_resource.xml">-->
-<!--            <initial-sql sql="ALTER RESOURCE rdl_test_0 (URL=&quot;jdbc:postgresql://postgresql.empty_rules.host:5432/rdl_test_0&quot;, USER=root, PASSWORD=Root@123,-->
-<!--                PROPERTIES(&quot;maxPoolSize&quot;=2,&quot;maxPoolSize&quot;=2,&quot;connectionTimeoutMilliseconds&quot;=30000,&quot;idleTimeoutMilliseconds&quot;=60000,&quot;maxLifetimeMilliseconds&quot;=1800000));" />-->
-<!--            <destroy-sql sql="DROP RESOURCE rdl_test_0;"/>-->
+<!--            <assertion-sql sql="SHOW DATABASE RESOURCES" />-->
 <!--        </assertion>-->
 <!--    </test-case>-->
-<!--    -->
-<!--    <test-case sql="SHOW SCHEMA RESOURCES" db-types="MySQL">-->
+<!--    <test-case sql="DROP RESOURCE ds_2;" db-types="MySQL, PostgreSQL">-->
 <!--        <assertion expected-data-file="drop_resource.xml">-->
-<!--            <initial-sql sql="DROP RESOURCE rdl_test_0;"/>-->
-<!--            <destroy-sql sql="ADD RESOURCE rdl_test_0 (URL=&quot;jdbc:mysql://mysql.empty_rules.host:3306/rdl_test_0?serverTimezone=UTC&amp;useSSL=false&amp;characterEncoding=utf-8&quot;, USER=root, PASSWORD=Root@123,-->
-<!--                PROPERTIES(&quot;maxPoolSize&quot;=2,&quot;maxPoolSize&quot;=2,&quot;connectionTimeoutMilliseconds&quot;=30000,&quot;idleTimeoutMilliseconds&quot;=60000,&quot;maxLifetimeMilliseconds&quot;=1800000));" />-->
+<!--            <assertion-sql sql="SHOW DATABASE RESOURCES" />-->
 <!--        </assertion>-->
 <!--    </test-case>-->
-<!--    -->
-<!--    <test-case sql="SHOW SHARDING TABLE RULE t_user">-->
-<!--        <assertion expected-data-file="create_sharding_rules.xml">-->
-<!--            <initial-sql sql="DROP SHARDING TABLE RULE t_user;CREATE SHARDING TABLE RULE t_user (-->
-<!--                RESOURCES(&quot;encrypt_write_ds_${0..9}&quot;),-->
-<!--                SHARDING_COLUMN=user_id, TYPE(NAME=MOD, PROPERTIES(&quot;sharding-count&quot;=40)))))"/>-->
-<!--            <destroy-sql sql="DROP SHARDING TABLE RULE t_user" />-->
-<!--        </assertion>-->
-<!--    </test-case>-->
-<!--    -->
-<!--    <test-case sql="SHOW SHARDING TABLE RULE t_user_item">-->
-<!--        <assertion expected-data-file="drop_sharding_rules.xml">-->
-<!--            <initial-sql sql="DROP SHARDING TABLE RULE t_user_item"/>-->
-<!--            <destroy-sql sql="CREATE SHARDING TABLE RULE t_user_item (-->
-<!--                RESOURCES(&quot;encrypt_write_ds_${0..9}&quot;),-->
-<!--                SHARDING_COLUMN=user_id, TYPE(NAME=MOD, PROPERTIES(&quot;sharding-count&quot;=40)))))" />-->
-<!--        </assertion>-->
-<!--    </test-case>-->
-<!--    -->
-<!--    <test-case sql="SHOW SHARDING BINDING TABLE RULES">-->
-<!--        <assertion expected-data-file="create_binding_rules.xml">-->
-<!--            <initial-sql sql="CREATE SHARDING TABLE RULE t_user (-->
-<!--                RESOURCES(&quot;encrypt_write_ds_${0..9}&quot;),-->
-<!--                SHARDING_COLUMN=user_id, TYPE(NAME=MOD, PROPERTIES(&quot;sharding-count&quot;=40)))));-->
-<!--                CREATE SHARDING BINDING TABLE RULES (t_user,t_user_item)"/>-->
-<!--            <destroy-sql sql="DROP SHARDING BINDING TABLE RULES;DROP SHARDING TABLE RULE t_user" />-->
-<!--        </assertion>-->
-<!--    </test-case>-->
-<!--    -->
-<!--    <test-case sql="SHOW SHARDING BINDING TABLE RULES">-->
-<!--        <assertion expected-data-file="alter_binding_rules.xml">-->
-<!--            <initial-sql sql="CREATE SHARDING TABLE RULE t_user (-->
-<!--                RESOURCES(&quot;encrypt_write_ds_${0..9}&quot;),-->
-<!--                SHARDING_COLUMN=user_id, TYPE(NAME=MOD, PROPERTIES(&quot;sharding-count&quot;=40)))));-->
-<!--                ALTER SHARDING BINDING TABLE RULES (t_user,t_user_item);"/>-->
-<!--            <destroy-sql sql="DROP SHARDING BINDING TABLE RULES;DROP SHARDING TABLE RULE t_user" />-->
-<!--        </assertion>-->
-<!--    </test-case>-->
-<!--    -->
-<!--    <test-case sql="SHOW SHARDING BINDING TABLE RULES">-->
-<!--        <assertion expected-data-file="drop_binding_rules.xml">-->
-<!--            <initial-sql sql="CREATE SHARDING TABLE RULE t_user (-->
-<!--                RESOURCES(&quot;encrypt_write_ds_${0..9}&quot;),-->
-<!--                SHARDING_COLUMN=user_id, TYPE(NAME=MOD, PROPERTIES(&quot;sharding-count&quot;=40)))));-->
-<!--                CREATE SHARDING BINDING TABLE RULES (t_user,t_user_item);-->
-<!--                DROP SHARDING BINDING TABLE RULES;DROP SHARDING TABLE RULE t_user"/>-->
-<!--        </assertion>-->
-<!--    </test-case>-->
-<!--    -->
-<!--    <test-case sql="SHOW SHARDING BROADCAST TABLE RULES">-->
-<!--        <assertion expected-data-file="create_broadcast_rules.xml">-->
-<!--            <initial-sql sql="CREATE SHARDING BROADCAST TABLE RULES (t_broadcast_table)"/>-->
-<!--            <destroy-sql sql="DROP SHARDING BROADCAST TABLE RULES" />-->
-<!--        </assertion>-->
-<!--    </test-case>-->
-<!--    -->
-<!--    <test-case sql="SHOW SHARDING BROADCAST TABLE RULES">-->
-<!--        <assertion expected-data-file="drop_broadcast_rules.xml">-->
-<!--            <initial-sql sql="CREATE SHARDING BROADCAST TABLE RULES (t_broadcast_table);-->
-<!--            DROP SHARDING BROADCAST TABLE RULES"/>-->
-<!--        </assertion>-->
-<!--    </test-case>-->
-<!--    -->
-<!--    <test-case sql="SHOW ENCRYPT TABLE RULE t_user">-->
-<!--        <assertion expected-data-file="create_encrypt_rule.xml">-->
-<!--            <initial-sql sql="CREATE ENCRYPT RULE t_user (COLUMNS ((-->
-<!--                NAME=pwd, PLAIN=pwd_plain, CIPHER=pwd_cipher, TYPE(NAME="AES",-->
-<!--                PROPERTIES(&quot;aes-key-value&quot;='123456abc')))))"/>-->
-<!--            <destroy-sql sql="DROP ENCRYPT RULE t_user" />-->
-<!--        </assertion>-->
-<!--    </test-case>-->
-<!--    -->
-<!--    <test-case sql="SHOW ENCRYPT TABLE RULE t_user">-->
-<!--        <assertion expected-data-file="alter_encrypt_rule.xml">-->
-<!--            <initial-sql sql="CREATE ENCRYPT RULE t_user (COLUMNS ((-->
-<!--                NAME=pwd, PLAIN=pwd_plain, CIPHER=pwd_cipher, TYPE(NAME="AES", PROPERTIES(&quot;aes-key-value&quot;='123456abc')))));-->
-<!--                ALTER ENCRYPT RULE t_user (COLUMNS ((NAME=pwd, PLAIN=pwd_plain, CIPHER=pwd_cipher, TYPE(NAME="AES",-->
-<!--                PROPERTIES(&quot;aes-key-value&quot;='123abc')))))"/>-->
-<!--            <destroy-sql sql="DROP ENCRYPT RULE t_user" />-->
-<!--        </assertion>-->
-<!--    </test-case>-->
-<!--    -->
-<!--    <test-case sql="SHOW ENCRYPT RULES">-->
-<!--        <assertion expected-data-file="drop_encrypt_rule.xml">-->
-<!--            <initial-sql sql="CREATE ENCRYPT RULE t_user (COLUMNS ((-->
-<!--                NAME=pwd, PLAIN=pwd_plain, CIPHER=pwd_cipher, TYPE(NAME="AES",-->
-<!--                PROPERTIES(&quot;aes-key-value&quot;='123456abc')))));-->
-<!--                DROP ENCRYPT RULE t_user"/>-->
-<!--        </assertion>-->
-<!--    </test-case>-->
-<!--    -->
-<!--    <test-case sql="SHOW READWRITE_SPLITTING RULES">-->
-<!--        <assertion expected-data-file="create_readwrite_splitting_rules.xml">-->
-<!--            <initial-sql sql="CREATE READWRITE_SPLITTING RULE readwrite_ds_1 (WRITE_RESOURCE=encrypt_write_ds_1,-->
-<!--            READ_RESOURCES(encrypt_read_ds_1), TYPE(NAME=ROUND_ROBIN))"/>-->
-<!--            <destroy-sql sql="DROP READWRITE_SPLITTING RULE readwrite_ds_1" />-->
-<!--        </assertion>-->
-<!--    </test-case>-->
-<!--    -->
-<!--    <test-case sql="SHOW READWRITE_SPLITTING RULES">-->
-<!--        <assertion expected-data-file="alter_readwrite_splitting_rules.xml">-->
-<!--            <initial-sql sql="CREATE READWRITE_SPLITTING RULE readwrite_ds_1 (WRITE_RESOURCE=encrypt_write_ds_1,-->
-<!--            READ_RESOURCES(encrypt_read_ds_1), TYPE(NAME=ROUND_ROBIN));-->
-<!--            ALTER READWRITE_SPLITTING RULE readwrite_ds_1 (WRITE_RESOURCE=encrypt_write_ds_1,-->
-<!--            READ_RESOURCES(encrypt_read_ds_1, encrypt_read_ds_2), TYPE(NAME=RANDOM,PROPERTIES(read_weight='2:1')))"/>-->
-<!--            <destroy-sql sql="DROP READWRITE_SPLITTING RULE readwrite_ds_1;" />-->
-<!--        </assertion>-->
-<!--    </test-case>-->
-<!--    -->
-<!--    <test-case sql="SHOW READWRITE_SPLITTING RULES">-->
-<!--        <assertion expected-data-file="drop_readwrite_splitting_rules.xml">-->
-<!--            <initial-sql sql="DROP READWRITE_SPLITTING RULE readwrite_ds_0"/>-->
-<!--        </assertion>-->
-<!--    </test-case>-->
-    
-    <!--TODO add db discovery tests-->
+    <test-case sql="CREATE SHARDING TABLE RULE t_user (DATANODES('ds_0.t_user_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_user_${user_id % 2}')))))" db-types="MySQL, PostgreSQL">
+        <assertion expected-data-file="create_sharding_rules.xml">
+            <assertion-sql sql="SHOW SHARDING TABLE RULES;" />
+        </assertion>
+    </test-case>
+    <test-case sql="ALTER SHARDING TABLE RULE t_user (DATANODES('ds_0.t_user_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_user_${user_id % 4}')))))" db-types="MySQL, PostgreSQL">
+        <assertion expected-data-file="alter_sharding_rules.xml">
+            <assertion-sql sql="SHOW SHARDING TABLE RULES;" />
+        </assertion>
+    </test-case>
+    <test-case sql="DROP SHARDING TABLE RULE t_user" db-types="MySQL, PostgreSQL">
+        <assertion expected-data-file="drop_sharding_rules.xml">
+            <assertion-sql sql="SHOW SHARDING TABLE RULES;" />
+        </assertion>
+    </test-case>
+    <test-case sql="CREATE READWRITE_SPLITTING RULE readwrite_ds (WRITE_RESOURCE=ds_0,READ_RESOURCES(ds_1),TYPE(NAME='RANDOM'));" db-types="MySQL, PostgreSQL">
+        <assertion expected-data-file="create_readwrite_splitting_rules.xml">
+            <assertion-sql sql="SHOW READWRITE_SPLITTING RULES;" />
+        </assertion>
+    </test-case>
+    <test-case sql="ALTER READWRITE_SPLITTING RULE readwrite_ds (WRITE_RESOURCE=ds_0,READ_RESOURCES(ds_0),TYPE(NAME='RANDOM'));" db-types="MySQL, PostgreSQL">
+        <assertion expected-data-file="alter_readwrite_splitting_rules.xml">
+            <assertion-sql sql="SHOW READWRITE_SPLITTING RULES;" />
+        </assertion>
+    </test-case>
 </integration-test-cases>

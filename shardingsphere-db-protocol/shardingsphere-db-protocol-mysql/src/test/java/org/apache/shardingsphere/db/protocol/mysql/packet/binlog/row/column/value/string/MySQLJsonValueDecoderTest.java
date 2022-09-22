@@ -30,7 +30,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class MySQLJsonValueDecoderTest {
     
@@ -364,7 +364,7 @@ public final class MySQLJsonValueDecoderTest {
     }
     
     private byte[] codecDataLength(final int length) {
-        byte[] lengthData = new byte[32 / 7 + (32 % 7 == 0 ? 0 : 1)];
+        byte[] lengthData = new byte[32 / 7 + (0 == 32 % 7 ? 0 : 1)];
         for (int i = 0; i < lengthData.length; i++) {
             lengthData[i] = (byte) ((length >> (7 * i)) & 0x7f);
         }

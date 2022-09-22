@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-integration-test</artifactId>
-        <version>5.1.3-SNAPSHOT</version>
+        <version>5.2.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-integration-test-suite</artifactId>
     <name>${project.artifactId}</name>
@@ -60,6 +60,13 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-test-common</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
     

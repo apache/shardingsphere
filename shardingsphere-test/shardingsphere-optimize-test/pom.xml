@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-test</artifactId>
-        <version>5.1.3-SNAPSHOT</version>
+        <version>5.2.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-optimize-test</artifactId>
     <name>${project.artifactId}</name>
@@ -34,7 +34,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-federation-optimizer</artifactId>
+            <artifactId>shardingsphere-sql-federation-optimizer</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

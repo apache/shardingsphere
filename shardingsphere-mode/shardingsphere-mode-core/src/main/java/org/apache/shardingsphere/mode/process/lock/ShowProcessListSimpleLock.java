@@ -54,7 +54,7 @@ public final class ShowProcessListSimpleLock {
      * 
      * @return boolean
      */
-    @SneakyThrows
+    @SneakyThrows(InterruptedException.class)
     public boolean awaitDefaultTime() {
         return condition.await(DEFAULT_TIMEOUT_MILLISECONDS, TimeUnit.MILLISECONDS);
     }

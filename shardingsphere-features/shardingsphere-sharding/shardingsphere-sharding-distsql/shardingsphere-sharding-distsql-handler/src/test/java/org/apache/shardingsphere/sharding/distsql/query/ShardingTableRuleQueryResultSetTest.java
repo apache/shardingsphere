@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
@@ -32,12 +33,13 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -49,7 +51,7 @@ public final class ShardingTableRuleQueryResultSetTest {
         DatabaseDistSQLResultSet resultSet = new ShardingTableRuleQueryResultSet();
         resultSet.init(mockDatabase(), mock(ShowShardingTableRulesStatement.class));
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
-        assertThat(actual.size(), is(14));
+        assertThat(actual.size(), is(16));
         assertThat(actual.get(0), is("t_order"));
         assertThat(actual.get(1), is("ds_${0..1}.t_order_${0..1}"));
         assertThat(actual.get(2), is(""));
@@ -63,6 +65,9 @@ public final class ShardingTableRuleQueryResultSetTest {
         assertThat(actual.get(10), is("algorithm-expression=t_order_${order_id % 2}"));
         assertThat(actual.get(11), is("order_id"));
         assertThat(actual.get(12), is("SNOWFLAKE"));
+        assertThat(actual.get(13), is(""));
+        assertThat(actual.get(14), is("DML_SHARDING_CONDITIONS"));
+        assertThat(actual.get(15), is("true"));
     }
     
     private ShardingSphereDatabase mockDatabase() {
@@ -82,6 +87,7 @@ public final class ShardingTableRuleQueryResultSetTest {
         result.getShardingAlgorithms().put("database_inline", createShardingInlineAlgorithmConfiguration("ds_${user_id % 2}"));
         result.getShardingAlgorithms().put("t_order_inline", createShardingInlineAlgorithmConfiguration("t_order_${order_id % 2}"));
         result.getKeyGenerators().put("snowflake", createKeyGeneratorConfiguration());
+        result.getAuditors().put("sharding_key_required_auditor", createAuditorConfiguration());
         return result;
     }
     
@@ -89,6 +95,7 @@ public final class ShardingTableRuleQueryResultSetTest {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${0..1}");
         result.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_inline"));
         result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake"));
+        result.setAuditStrategy(new ShardingAuditStrategyConfiguration(Arrays.asList("sharding_key_required_auditor"), true));
         return result;
     }
     
@@ -100,5 +107,9 @@ public final class ShardingTableRuleQueryResultSetTest {
     
     private AlgorithmConfiguration createKeyGeneratorConfiguration() {
         return new AlgorithmConfiguration("SNOWFLAKE", new Properties());
+    }
+    
+    private AlgorithmConfiguration createAuditorConfiguration() {
+        return new AlgorithmConfiguration("DML_SHARDING_CONDITIONS", new Properties());
     }
 }

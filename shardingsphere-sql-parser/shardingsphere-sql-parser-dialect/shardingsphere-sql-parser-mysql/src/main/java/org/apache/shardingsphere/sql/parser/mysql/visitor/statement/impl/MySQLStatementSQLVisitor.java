@@ -867,7 +867,11 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     @Override
     public final ASTNode visitGroupConcatFunction(final GroupConcatFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
-        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.GROUP_CONCAT().getText(), getOriginalText(ctx));
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.GROUP_CONCAT().getText(), getOriginalText(ctx));
+        for (ExprContext each : ctx.expr()) {
+            result.getParameters().add((ExpressionSegment) visit(each));
+        }
+        return result;
     }
     
     @Override

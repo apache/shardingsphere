@@ -20,7 +20,10 @@ package org.apache.shardingsphere.data.pipeline.opengauss.check.datasource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.core.check.datasource.AbstractDataSourceChecker;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithCheckPrivilegeFailedException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithoutEnoughPrivilegeException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithoutUserException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -29,6 +32,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Data source checker of openGauss.
@@ -50,20 +54,17 @@ public final class OpenGaussDataSourceChecker extends AbstractDataSourceChecker 
             DatabaseMetaData metaData = connection.getMetaData();
             preparedStatement.setString(1, metaData.getUserName());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (!resultSet.next()) {
-                    throw new PipelineJobPrepareFailedException(String.format("No role exists, rolname: %s.", metaData.getUserName()));
-                }
+                String username = metaData.getUserName();
+                ShardingSpherePreconditions.checkState(resultSet.next(), () -> new PrepareJobWithoutUserException(username));
                 String isSuperRole = resultSet.getString("rolsuper");
                 String isReplicationRole = resultSet.getString("rolreplication");
                 String isSystemAdminRole = resultSet.getString("rolsystemadmin");
                 log.info("checkPrivilege: isSuperRole: {}, isReplicationRole: {}, isSystemAdminRole: {}", isSuperRole, isReplicationRole, isSystemAdminRole);
-                if (!StringUtils.equalsAnyIgnoreCase("t", isSuperRole, isReplicationRole, isSystemAdminRole)) {
-                    throw new PipelineJobPrepareFailedException(String.format("Source data source is lack of REPLICATION privileges, you could try `ALTER ROLE \"%s\" REPLICATION;`.",
-                            metaData.getUserName()));
-                }
+                ShardingSpherePreconditions.checkState(StringUtils.equalsAnyIgnoreCase("t", isSuperRole, isReplicationRole, isSystemAdminRole),
+                        () -> new PrepareJobWithoutEnoughPrivilegeException(Collections.singleton("REPLICATION")));
             }
         } catch (final SQLException ex) {
-            throw new PipelineJobPrepareFailedException("Source data source check privileges failed.", ex);
+            throw new PrepareJobWithCheckPrivilegeFailedException(ex);
         }
     }
     

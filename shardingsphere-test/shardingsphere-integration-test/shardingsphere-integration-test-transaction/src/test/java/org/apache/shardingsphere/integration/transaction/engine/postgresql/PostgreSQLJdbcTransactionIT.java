@@ -54,11 +54,11 @@ public final class PostgreSQLJdbcTransactionIT extends BaseTransactionITCase {
     @SneakyThrows(SQLException.class)
     public void after() {
         getDataSource().close();
-        getComposedContainer().close();
+        getContainerComposer().close();
     }
     
     @Test
-    public void assertTransaction() {
+    public void assertTransaction() throws SQLException {
         callTestCases(parameterized);
     }
 }

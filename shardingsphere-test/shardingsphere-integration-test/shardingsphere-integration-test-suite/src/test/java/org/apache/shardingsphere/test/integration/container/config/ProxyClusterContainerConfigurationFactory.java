@@ -36,16 +36,17 @@ public final class ProxyClusterContainerConfigurationFactory {
      * 
      * @param scenario scenario
      * @param databaseType database type
+     * @param adapterContainerImage adapter container image
      * @return created instance
      */
-    public static AdaptorContainerConfiguration newInstance(final String scenario, final DatabaseType databaseType) {
-        return new AdaptorContainerConfiguration(scenario, getMountedResources(scenario, databaseType));
+    public static AdaptorContainerConfiguration newInstance(final String scenario, final DatabaseType databaseType, final String adapterContainerImage) {
+        return new AdaptorContainerConfiguration(scenario, getMountedResources(scenario, databaseType), adapterContainerImage);
     }
     
     private static Map<String, String> getMountedResources(final String scenario, final DatabaseType databaseType) {
         Map<String, String> result = new HashMap<>(2, 1);
         String pathInContainer = "/opt/shardingsphere-proxy/conf";
-        result.put("/env/common/standalone/proxy/conf/", pathInContainer);
+        result.put("/env/common/cluster/proxy/conf/", pathInContainer);
         result.put("/env/scenario/" + scenario + "/proxy/conf/" + databaseType.getType().toLowerCase(), pathInContainer);
         return result;
     }

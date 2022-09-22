@@ -17,22 +17,23 @@
 
 package org.apache.shardingsphere.data.pipeline.api.impl;
 
-import org.apache.shardingsphere.data.pipeline.api.config.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.fixture.FixturePipelineJobProgressListener;
-import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobItemContext;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationTaskConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.junit.BeforeClass;
@@ -50,7 +51,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -75,8 +76,8 @@ public final class GovernanceRepositoryAPIImplTest {
     @Test
     public void assertPersistJobCheckResult() {
         MigrationJobItemContext jobItemContext = mockJobItemContext();
-        governanceRepositoryAPI.persistJobCheckResult(jobItemContext.getJobId(), true);
-        Optional<Boolean> checkResult = governanceRepositoryAPI.getJobCheckResult(jobItemContext.getJobId());
+        governanceRepositoryAPI.persistCheckLatestResult(jobItemContext.getJobId(), true);
+        Optional<Boolean> checkResult = governanceRepositoryAPI.getCheckLatestResult(jobItemContext.getJobId());
         assertTrue(checkResult.isPresent() && checkResult.get());
     }
     
@@ -126,13 +127,13 @@ public final class GovernanceRepositoryAPIImplTest {
     
     private MigrationJobItemContext mockJobItemContext() {
         MigrationJobItemContext result = PipelineContextUtil.mockMigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration());
-        TaskConfiguration taskConfig = result.getTaskConfig();
+        MigrationTaskConfiguration taskConfig = result.getTaskConfig();
         result.getInventoryTasks().add(mockInventoryTask(taskConfig));
         result.getIncrementalTasks().add(mockIncrementalTask(taskConfig));
         return result;
     }
     
-    private InventoryTask mockInventoryTask(final TaskConfiguration taskConfig) {
+    private InventoryTask mockInventoryTask(final MigrationTaskConfiguration taskConfig) {
         InventoryDumperConfiguration dumperConfig = new InventoryDumperConfiguration(taskConfig.getDumperConfig());
         dumperConfig.setPosition(new PlaceholderPosition());
         dumperConfig.setActualTableName("t_order");
@@ -141,15 +142,15 @@ public final class GovernanceRepositoryAPIImplTest {
         dumperConfig.setUniqueKeyDataType(Types.INTEGER);
         dumperConfig.setShardingItem(0);
         PipelineDataSourceWrapper dataSource = mock(PipelineDataSourceWrapper.class);
-        PipelineTableMetaDataLoader metaDataLoader = new PipelineTableMetaDataLoader(dataSource);
+        PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(dataSource);
         return new InventoryTask(dumperConfig, taskConfig.getImporterConfig(), PipelineContextUtil.getPipelineChannelCreator(),
                 new DefaultPipelineDataSourceManager(), dataSource, metaDataLoader, PipelineContextUtil.getExecuteEngine(), new FixturePipelineJobProgressListener());
     }
     
-    private IncrementalTask mockIncrementalTask(final TaskConfiguration taskConfig) {
+    private IncrementalTask mockIncrementalTask(final MigrationTaskConfiguration taskConfig) {
         DumperConfiguration dumperConfig = taskConfig.getDumperConfig();
         dumperConfig.setPosition(new PlaceholderPosition());
-        PipelineTableMetaDataLoader metaDataLoader = new PipelineTableMetaDataLoader(mock(PipelineDataSourceWrapper.class));
+        PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(mock(PipelineDataSourceWrapper.class));
         return new IncrementalTask(3, dumperConfig, taskConfig.getImporterConfig(), PipelineContextUtil.getPipelineChannelCreator(),
                 new DefaultPipelineDataSourceManager(), metaDataLoader, PipelineContextUtil.getExecuteEngine(), new FixturePipelineJobProgressListener());
     }

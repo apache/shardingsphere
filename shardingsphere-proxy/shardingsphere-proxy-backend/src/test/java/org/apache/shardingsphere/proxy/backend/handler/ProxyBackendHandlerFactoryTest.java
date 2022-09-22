@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
@@ -62,7 +63,7 @@ import java.util.HashSet;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -240,7 +241,7 @@ public final class ProxyBackendHandlerFactoryTest extends ProxyContextRestorer {
         ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = UnsupportedSQLOperationException.class)
     public void assertUnsupportedNonQueryDistSQLInTransaction() throws SQLException {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
         String sql = "CREATE SHARDING KEY GENERATOR snowflake_key_generator (TYPE(NAME='SNOWFLAKE', PROPERTIES('max-vibration-offset'='3')));";

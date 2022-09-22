@@ -97,11 +97,13 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropDi
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropEditionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropFlashbackArchiveContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropIndexContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropIndexTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropInmemoryJoinGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropLockdownProfileContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropOperatorContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropOutlineContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropPackageContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropPluggableDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropProcedureContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropRestorePointContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropRollbackSegmentContext;
@@ -217,11 +219,13 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropEditionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropFlashbackArchiveStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropIndexTypeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropInmemoryJoinGroupStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropLockdownProfileStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropOperatorStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropOutlineStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropPackageStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropPluggableDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropProcedureStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropRestorePointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropRollbackSegmentStatement;
@@ -985,8 +989,7 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     
     @Override
     public ASTNode visitCreateProcedure(final CreateProcedureContext ctx) {
-        OracleCreateProcedureStatement result = new OracleCreateProcedureStatement();
-        return result;
+        return new OracleCreateProcedureStatement();
     }
     
     @Override
@@ -997,5 +1000,15 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitDropProcedure(final DropProcedureContext ctx) {
         return new OracleDropProcedureStatement();
+    }
+    
+    @Override
+    public ASTNode visitDropIndexType(final DropIndexTypeContext ctx) {
+        return new OracleDropIndexTypeStatement();
+    }
+    
+    @Override
+    public ASTNode visitDropPluggableDatabase(final DropPluggableDatabaseContext ctx) {
+        return new OracleDropPluggableDatabaseStatement();
     }
 }

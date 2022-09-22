@@ -97,22 +97,21 @@ public final class ShardingSphereDatabase {
      * @param name system database name
      * @param protocolType protocol database type
      * @return system database meta data
-     * @throws SQLException SQL exception
      */
-    public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType) throws SQLException {
+    public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType) {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(new LinkedHashMap<>(), new LinkedList<>());
         return create(name, protocolType, databaseConfig, new LinkedList<>(), SystemSchemaBuilder.build(name, protocolType));
     }
     
     private static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
                                                  final Collection<ShardingSphereRule> rules, final Map<String, ShardingSphereSchema> schemas) {
-        ShardingSphereResource resource = createResource(databaseConfig.getDataSources());
+        ShardingSphereResource resource = createResource(name, databaseConfig.getDataSources());
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(rules);
         return new ShardingSphereDatabase(name, protocolType, resource, ruleMetaData, schemas);
     }
     
-    private static ShardingSphereResource createResource(final Map<String, DataSource> dataSourceMap) {
-        return new ShardingSphereResource(dataSourceMap);
+    private static ShardingSphereResource createResource(final String databaseName, final Map<String, DataSource> dataSourceMap) {
+        return new ShardingSphereResource(databaseName, dataSourceMap);
     }
     
     /**

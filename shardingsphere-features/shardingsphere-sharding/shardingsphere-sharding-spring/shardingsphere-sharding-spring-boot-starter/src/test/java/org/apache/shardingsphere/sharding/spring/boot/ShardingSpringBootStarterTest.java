@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.spring.boot;
 
+import org.apache.shardingsphere.sharding.algorithm.audit.DMLShardingConditionsShardingAuditAlgorithm;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm;
@@ -36,7 +37,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = ShardingSpringBootStarterTest.class)
@@ -71,6 +72,7 @@ public class ShardingSpringBootStarterTest {
         assertShardingConfigurationDefaultDatabaseShardingStrategy();
         assertShardingConfigurationShardingAlgorithms();
         assertShardingConfigurationKeyGenerators();
+        assertShardingConfigurationAuditors();
     }
     
     private void assertShardingConfigurationTables() {
@@ -132,5 +134,10 @@ public class ShardingSpringBootStarterTest {
     private void assertShardingConfigurationKeyGenerators() {
         assertThat(shardingRuleConfig.getKeyGenerators().size(), is(1));
         assertThat(shardingRuleConfig.getKeyGenerators().get("keyGenerator"), instanceOf(SnowflakeKeyGenerateAlgorithm.class));
+    }
+    
+    private void assertShardingConfigurationAuditors() {
+        assertThat(shardingRuleConfig.getAuditors().size(), is(1));
+        assertThat(shardingRuleConfig.getAuditors().get("shardingKeyAudit"), instanceOf(DMLShardingConditionsShardingAuditAlgorithm.class));
     }
 }

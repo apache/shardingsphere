@@ -19,13 +19,13 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.describe.PostgreSQLComDescribePacket;
+import org.apache.shardingsphere.dialect.postgresql.exception.metadata.ColumnNotFoundException;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -37,6 +37,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMod
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -87,7 +89,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
             case 'P':
                 return Collections.singletonList(connectionContext.getPortal(packet.getName()).describe());
             default:
-                throw new UnsupportedOperationException("Unsupported describe type: " + packet.getType());
+                throw new UnsupportedSQLOperationException("Unsupported describe type: " + packet.getType());
         }
     }
     
@@ -108,12 +110,12 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     private void tryDescribePreparedStatement(final PostgreSQLPreparedStatement preparedStatement) throws SQLException {
         if (preparedStatement.getSqlStatement() instanceof InsertStatement) {
             describeInsertStatementByDatabaseMetaData(preparedStatement);
-            return;
+        } else {
+            tryDescribePreparedStatementByJDBC(preparedStatement);
         }
-        tryDescribePreparedStatementByJDBC(preparedStatement);
     }
     
-    private void describeInsertStatementByDatabaseMetaData(final PostgreSQLPreparedStatement preparedStatement) throws SQLException {
+    private void describeInsertStatementByDatabaseMetaData(final PostgreSQLPreparedStatement preparedStatement) {
         if (!preparedStatement.describeRows().isPresent()) {
             // TODO Consider the SQL `insert into table (col) values ($1) returning id`
             preparedStatement.setRowDescription(PostgreSQLNoDataPacket.getInstance());
@@ -162,12 +164,8 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
                     }
                     column = caseInsensitiveColumns.get(columnName);
                 }
-                if (null == column) {
-                    String reason = String.format("Column \"%s\" of relation \"%s\" does not exist. Please check the SQL or execute REFRESH TABLE METADATA.", columnName, logicTableName);
-                    throw new SQLException(reason, PostgreSQLVendorError.UNDEFINED_COLUMN.getSqlState().getValue());
-                }
-                PostgreSQLColumnType parameterType = PostgreSQLColumnType.valueOfJDBCType(column.getDataType());
-                preparedStatement.getParameterTypes().set(parameterMarkerIndex++, parameterType);
+                ShardingSpherePreconditions.checkState(null != column, () -> new ColumnNotFoundException(logicTableName, columnName));
+                preparedStatement.getParameterTypes().set(parameterMarkerIndex++, PostgreSQLColumnType.valueOfJDBCType(column.getDataType()));
             }
         }
     }
@@ -189,47 +187,47 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         return result;
     }
     
-    private void tryDescribePreparedStatementByJDBC(final PostgreSQLPreparedStatement preparedStatement) throws SQLException {
+    private void tryDescribePreparedStatementByJDBC(final PostgreSQLPreparedStatement logicPreparedStatement) throws SQLException {
         if (!(connectionSession.getBackendConnection() instanceof JDBCBackendConnection)) {
             return;
         }
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         String databaseName = connectionSession.getDatabaseName();
         SQLStatementContext<?> sqlStatementContext =
-                SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData().getDatabases(), preparedStatement.getSqlStatement(), databaseName);
-        QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), Collections.emptyList());
+                SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData().getDatabases(), logicPreparedStatement.getSqlStatement(), databaseName);
+        QueryContext queryContext = new QueryContext(sqlStatementContext, logicPreparedStatement.getSql(), Collections.emptyList());
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
         ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(
                 queryContext, database, metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps(), connectionSession.getConnectionContext());
         ExecutionUnit executionUnitSample = executionContext.getExecutionUnits().iterator().next();
         JDBCBackendConnection backendConnection = (JDBCBackendConnection) connectionSession.getBackendConnection();
         Connection connection = backendConnection.getConnections(executionUnitSample.getDataSourceName(), 1, ConnectionMode.CONNECTION_STRICTLY).iterator().next();
-        try (PreparedStatement ps = connection.prepareStatement(executionUnitSample.getSqlUnit().getSql())) {
-            populateParameterTypes(preparedStatement, ps);
-            populateColumnTypes(preparedStatement, ps);
+        try (PreparedStatement actualPreparedStatement = connection.prepareStatement(executionUnitSample.getSqlUnit().getSql())) {
+            populateParameterTypes(logicPreparedStatement, actualPreparedStatement);
+            populateColumnTypes(logicPreparedStatement, actualPreparedStatement);
         }
     }
     
-    private void populateParameterTypes(final PostgreSQLPreparedStatement preparedStatement, final PreparedStatement ps) throws SQLException {
-        if (0 == preparedStatement.getSqlStatement().getParameterCount()
-                || preparedStatement.getParameterTypes().stream().noneMatch(each -> PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED == each)) {
+    private void populateParameterTypes(final PostgreSQLPreparedStatement logicPreparedStatement, final PreparedStatement actualPreparedStatement) throws SQLException {
+        if (0 == logicPreparedStatement.getSqlStatement().getParameterCount()
+                || logicPreparedStatement.getParameterTypes().stream().noneMatch(each -> PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED == each)) {
             return;
         }
-        ParameterMetaData parameterMetaData = ps.getParameterMetaData();
-        for (int i = 0; i < preparedStatement.getSqlStatement().getParameterCount(); i++) {
-            if (PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED == preparedStatement.getParameterTypes().get(i)) {
-                preparedStatement.getParameterTypes().set(i, PostgreSQLColumnType.valueOfJDBCType(parameterMetaData.getParameterType(i + 1)));
+        ParameterMetaData parameterMetaData = actualPreparedStatement.getParameterMetaData();
+        for (int i = 0; i < logicPreparedStatement.getSqlStatement().getParameterCount(); i++) {
+            if (PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED == logicPreparedStatement.getParameterTypes().get(i)) {
+                logicPreparedStatement.getParameterTypes().set(i, PostgreSQLColumnType.valueOfJDBCType(parameterMetaData.getParameterType(i + 1)));
             }
         }
     }
     
-    private void populateColumnTypes(final PostgreSQLPreparedStatement preparedStatement, final PreparedStatement ps) throws SQLException {
-        if (preparedStatement.describeRows().isPresent()) {
+    private void populateColumnTypes(final PostgreSQLPreparedStatement logicPreparedStatement, final PreparedStatement actualPreparedStatement) throws SQLException {
+        if (logicPreparedStatement.describeRows().isPresent()) {
             return;
         }
-        ResultSetMetaData resultSetMetaData = ps.getMetaData();
+        ResultSetMetaData resultSetMetaData = actualPreparedStatement.getMetaData();
         if (null == resultSetMetaData) {
-            preparedStatement.setRowDescription(PostgreSQLNoDataPacket.getInstance());
+            logicPreparedStatement.setRowDescription(PostgreSQLNoDataPacket.getInstance());
             return;
         }
         List<PostgreSQLColumnDescription> columnDescriptions = new ArrayList<>(resultSetMetaData.getColumnCount());
@@ -240,6 +238,6 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
             String columnTypeName = resultSetMetaData.getColumnTypeName(columnIndex);
             columnDescriptions.add(new PostgreSQLColumnDescription(columnName, columnIndex, columnType, columnLength, columnTypeName));
         }
-        preparedStatement.setRowDescription(new PostgreSQLRowDescriptionPacket(columnDescriptions.size(), columnDescriptions));
+        logicPreparedStatement.setRowDescription(new PostgreSQLRowDescriptionPacket(columnDescriptions.size(), columnDescriptions));
     }
 }

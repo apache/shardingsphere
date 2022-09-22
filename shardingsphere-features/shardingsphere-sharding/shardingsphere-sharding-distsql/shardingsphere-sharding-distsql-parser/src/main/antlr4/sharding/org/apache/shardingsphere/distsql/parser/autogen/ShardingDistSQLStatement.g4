@@ -33,6 +33,7 @@ execute
     | dropShardingAlgorithm
     | showShardingTableRulesUsedAlgorithm
     | showShardingTableRulesUsedKeyGenerator
+    | showShardingTableRulesUsedAuditor
     | showShardingTableRules
     | showShardingBindingTableRules
     | showShardingBroadcastTableRules
@@ -52,11 +53,13 @@ execute
     | showShardingAuditors
     | createShardingAuditor
     | alterShardingAuditor
+    | dropShardingAuditor
     | showShardingDefaultShardingStrategy
     | alterDefaultShardingStrategy
     | dropDefaultShardingStrategy
     | showUnusedShardingAlgorithms
     | showUnusedShardingKeyGenerators
+    | showUnusedShardingAuditors
     | countShardingRule
     ) SEMI?
     ;

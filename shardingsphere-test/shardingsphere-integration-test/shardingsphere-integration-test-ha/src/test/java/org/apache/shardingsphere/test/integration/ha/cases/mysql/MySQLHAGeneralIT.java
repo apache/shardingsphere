@@ -49,16 +49,18 @@ public final class MySQLHAGeneralIT extends BaseITCase {
     public static Collection<HAParameterized> getParameters() {
         Collection<HAParameterized> result = new LinkedList<>();
         MySQLDatabaseType databaseType = new MySQLDatabaseType();
-        for (String version : ENV.listDatabaseDockerImageNames(databaseType)) {
-            result.add(new HAParameterized(databaseType, version, "mysql_ha"));
+        for (String each : ENV.listStorageContainerImages(databaseType)) {
+            result.add(new HAParameterized(databaseType, each, "mysql_ha"));
         }
         return result;
     }
     
     @Test
     public void assertProxyJdbcConnection() {
-        List<DataSource> dataSourceList = getStorageDataSources();
+        List<DataSource> mappedDataSources = getMappedDataSources();
+        List<DataSource> exposedDataSources = getExposedDataSources();
         // TODO add the MySQL HA logic here.
-        dataSourceList.forEach(each -> log.info(each.toString()));
+        mappedDataSources.forEach(each -> log.info(each.toString()));
+        exposedDataSources.forEach(each -> log.info(each.toString()));
     }
 }

@@ -64,7 +64,7 @@ public final class MySQLHandshakePacket implements MySQLPacket {
     }
     
     public MySQLHandshakePacket(final MySQLPacketPayload payload) {
-        Preconditions.checkArgument(0 == payload.readInt1(), "Sequence ID of MySQL handshake packet must be `0`.");
+        Preconditions.checkArgument(0 == payload.readInt1(), "Sequence ID of MySQL handshake packet must be `0`");
         Preconditions.checkArgument(protocolVersion == payload.readInt1());
         serverVersion = payload.readStringNul();
         connectionId = payload.readInt4();

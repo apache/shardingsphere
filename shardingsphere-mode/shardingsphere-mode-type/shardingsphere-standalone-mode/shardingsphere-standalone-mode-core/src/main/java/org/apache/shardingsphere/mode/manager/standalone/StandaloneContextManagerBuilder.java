@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.mode.manager.standalone;
 
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
+import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.lock.ShardingSphereLockContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
-import org.apache.shardingsphere.mode.manager.standalone.lock.StandaloneLockPersistService;
 import org.apache.shardingsphere.mode.manager.standalone.subscriber.ProcessStandaloneSubscriber;
 import org.apache.shardingsphere.mode.manager.standalone.workerid.generator.StandaloneWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -35,6 +36,8 @@ import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRep
 import org.apache.shardingsphere.schedule.core.ScheduleContextFactory;
 
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * Standalone context manager builder.
@@ -43,14 +46,22 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     
     @Override
     public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
-        ScheduleContextFactory.getInstance().init(parameter.getInstanceMetaData().getId(), parameter.getModeConfiguration());
         StandalonePersistRepository repository = StandalonePersistRepositoryFactory.getInstance(parameter.getModeConfiguration().getRepository());
         MetaDataPersistService persistService = new MetaDataPersistService(repository);
         persistConfigurations(persistService, parameter);
         InstanceContext instanceContext = buildInstanceContext(parameter);
         new ProcessStandaloneSubscriber(instanceContext.getEventBusContext());
+        checkDataSourceStates(parameter.getDatabaseConfigs(), parameter.isForce());
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, parameter, instanceContext);
         return new ContextManager(metaDataContexts, instanceContext);
+    }
+    
+    private void checkDataSourceStates(final Map<String, DatabaseConfiguration> databaseConfigs, final boolean force) {
+        databaseConfigs.forEach((key, value) -> {
+            if (null != value.getDataSources()) {
+                DataSourceStateManager.getInstance().initStates(key, value.getDataSources(), Collections.emptyMap(), force);
+            }
+        });
     }
     
     private void persistConfigurations(final MetaDataPersistService persistService, final ContextManagerBuilderParameter parameter) {
@@ -61,7 +72,8 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     
     private InstanceContext buildInstanceContext(final ContextManagerBuilderParameter parameter) {
         return new InstanceContext(new ComputeNodeInstance(parameter.getInstanceMetaData()),
-                new StandaloneWorkerIdGenerator(), parameter.getModeConfiguration(), new ShardingSphereLockContext(new StandaloneLockPersistService()), new EventBusContext());
+                new StandaloneWorkerIdGenerator(), parameter.getModeConfiguration(), new ShardingSphereLockContext(null),
+                new EventBusContext(), ScheduleContextFactory.newInstance(parameter.getModeConfiguration()));
     }
     
     @Override

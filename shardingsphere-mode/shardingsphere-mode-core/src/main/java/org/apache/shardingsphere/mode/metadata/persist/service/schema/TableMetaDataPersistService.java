@@ -27,11 +27,9 @@ import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.LinkedHashMap;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.stream.Collectors;
 
 /**
  * Table meta data persist service.
@@ -40,14 +38,6 @@ import java.util.stream.Collectors;
 public final class TableMetaDataPersistService implements SchemaMetaDataPersistService<Map<String, ShardingSphereTable>> {
     
     private final PersistRepository repository;
-    
-    @Override
-    public void compareAndPersist(final String databaseName, final String schemaName, final Map<String, ShardingSphereTable> loadedTables) {
-        // TODO Add ShardingSphereSchemaFactory to support toBeAddedTables and toBeDeletedTables.
-        Map<String, ShardingSphereTable> currentTables = load(databaseName, schemaName);
-        persist(databaseName, schemaName, getToBeAddedTables(loadedTables, currentTables));
-        getToBeDeletedTables(loadedTables, currentTables).forEach((key, value) -> delete(databaseName, schemaName, key));
-    }
     
     @Override
     public void persist(final String databaseName, final String schemaName, final Map<String, ShardingSphereTable> tables) {
@@ -64,23 +54,6 @@ public final class TableMetaDataPersistService implements SchemaMetaDataPersistS
     @Override
     public void delete(final String databaseName, final String schemaName, final String tableName) {
         repository.delete(DatabaseMetaDataNode.getTableMetaDataPath(databaseName, schemaName, tableName.toLowerCase()));
-    }
-    
-    private Map<String, ShardingSphereTable> getToBeAddedTables(final Map<String, ShardingSphereTable> loadedTables, final Map<String, ShardingSphereTable> currentTables) {
-        Map<String, ShardingSphereTable> result = new LinkedHashMap<>(loadedTables.size(), 1);
-        for (Entry<String, ShardingSphereTable> entry : loadedTables.entrySet()) {
-            ShardingSphereTable currentTable = currentTables.get(entry.getKey());
-            if (null != currentTable && !entry.getValue().equals(currentTable)) {
-                result.put(entry.getKey(), entry.getValue());
-            } else if (null == currentTable) {
-                result.put(entry.getKey(), entry.getValue());
-            }
-        }
-        return result;
-    }
-    
-    private Map<String, ShardingSphereTable> getToBeDeletedTables(final Map<String, ShardingSphereTable> loadedTables, final Map<String, ShardingSphereTable> currentTables) {
-        return currentTables.entrySet().stream().filter(entry -> !loadedTables.containsKey(entry.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
     
     private Map<String, ShardingSphereTable> getTableMetaDataByTableNames(final String databaseName, final String schemaName, final Collection<String> tableNames) {

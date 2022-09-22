@@ -17,6 +17,10 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
+import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
+
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,17 +42,15 @@ public final class PostgreSQLArrayParameterDecoder {
      * @return int array
      */
     public short[] decodeInt2Array(final byte[] parameterBytes, final boolean isBinary) {
-        if (!isBinary) {
-            String parameterValue = new String(parameterBytes, StandardCharsets.UTF_8);
-            Collection<String> parameterElements = decodeText(parameterValue);
-            short[] result = new short[parameterElements.size()];
-            int index = 0;
-            for (String element : parameterElements) {
-                result[index++] = Short.parseShort(element);
-            }
-            return result;
+        ShardingSpherePreconditions.checkState(!isBinary, () -> new UnsupportedSQLOperationException("binary mode"));
+        String parameterValue = new String(parameterBytes, StandardCharsets.UTF_8);
+        Collection<String> parameterElements = decodeText(parameterValue);
+        short[] result = new short[parameterElements.size()];
+        int index = 0;
+        for (String element : parameterElements) {
+            result[index++] = Short.parseShort(element);
         }
-        throw new UnsupportedOperationException("binary mode");
+        return result;
     }
     
     /**
@@ -59,17 +61,15 @@ public final class PostgreSQLArrayParameterDecoder {
      * @return int array
      */
     public int[] decodeInt4Array(final byte[] parameterBytes, final boolean isBinary) {
-        if (!isBinary) {
-            String parameterValue = new String(parameterBytes, StandardCharsets.UTF_8);
-            Collection<String> parameterElements = decodeText(parameterValue);
-            int[] result = new int[parameterElements.size()];
-            int index = 0;
-            for (String element : parameterElements) {
-                result[index++] = Integer.parseInt(element);
-            }
-            return result;
+        ShardingSpherePreconditions.checkState(!isBinary, () -> new UnsupportedSQLOperationException("binary mode"));
+        String parameterValue = new String(parameterBytes, StandardCharsets.UTF_8);
+        Collection<String> parameterElements = decodeText(parameterValue);
+        int[] result = new int[parameterElements.size()];
+        int index = 0;
+        for (String element : parameterElements) {
+            result[index++] = Integer.parseInt(element);
         }
-        throw new UnsupportedOperationException("binary mode");
+        return result;
     }
     
     /**
@@ -80,17 +80,15 @@ public final class PostgreSQLArrayParameterDecoder {
      * @return int array
      */
     public long[] decodeInt8Array(final byte[] parameterBytes, final boolean isBinary) {
-        if (!isBinary) {
-            String parameterValue = new String(parameterBytes, StandardCharsets.UTF_8);
-            Collection<String> parameterElements = decodeText(parameterValue);
-            long[] result = new long[parameterElements.size()];
-            int index = 0;
-            for (String element : parameterElements) {
-                result[index++] = Long.parseLong(element);
-            }
-            return result;
+        ShardingSpherePreconditions.checkState(!isBinary, () -> new UnsupportedSQLOperationException("binary mode"));
+        String parameterValue = new String(parameterBytes, StandardCharsets.UTF_8);
+        Collection<String> parameterElements = decodeText(parameterValue);
+        long[] result = new long[parameterElements.size()];
+        int index = 0;
+        for (String element : parameterElements) {
+            result[index++] = Long.parseLong(element);
         }
-        throw new UnsupportedOperationException("binary mode");
+        return result;
     }
     
     /**
@@ -101,17 +99,15 @@ public final class PostgreSQLArrayParameterDecoder {
      * @return int array
      */
     public float[] decodeFloat4Array(final byte[] parameterBytes, final boolean isBinary) {
-        if (!isBinary) {
-            String parameterValue = new String(parameterBytes, StandardCharsets.UTF_8);
-            Collection<String> parameterElements = decodeText(parameterValue);
-            float[] result = new float[parameterElements.size()];
-            int index = 0;
-            for (String element : parameterElements) {
-                result[index++] = Float.parseFloat(element);
-            }
-            return result;
+        ShardingSpherePreconditions.checkState(!isBinary, () -> new UnsupportedSQLOperationException("binary mode"));
+        String parameterValue = new String(parameterBytes, StandardCharsets.UTF_8);
+        Collection<String> parameterElements = decodeText(parameterValue);
+        float[] result = new float[parameterElements.size()];
+        int index = 0;
+        for (String element : parameterElements) {
+            result[index++] = Float.parseFloat(element);
         }
-        throw new UnsupportedOperationException("binary mode");
+        return result;
     }
     
     /**
@@ -122,17 +118,15 @@ public final class PostgreSQLArrayParameterDecoder {
      * @return int array
      */
     public double[] decodeFloat8Array(final byte[] parameterBytes, final boolean isBinary) {
-        if (!isBinary) {
-            String parameterValue = new String(parameterBytes, StandardCharsets.UTF_8);
-            Collection<String> parameterElements = decodeText(parameterValue);
-            double[] result = new double[parameterElements.size()];
-            int index = 0;
-            for (String element : parameterElements) {
-                result[index++] = Double.parseDouble(element);
-            }
-            return result;
+        ShardingSpherePreconditions.checkState(!isBinary, () -> new UnsupportedSQLOperationException("binary mode"));
+        String parameterValue = new String(parameterBytes, StandardCharsets.UTF_8);
+        Collection<String> parameterElements = decodeText(parameterValue);
+        double[] result = new double[parameterElements.size()];
+        int index = 0;
+        for (String element : parameterElements) {
+            result[index++] = Double.parseDouble(element);
         }
-        throw new UnsupportedOperationException("binary mode");
+        return result;
     }
     
     /**
@@ -143,17 +137,15 @@ public final class PostgreSQLArrayParameterDecoder {
      * @return int array
      */
     public boolean[] decodeBoolArray(final byte[] parameterBytes, final boolean isBinary) {
-        if (!isBinary) {
-            String parameterValue = new String(parameterBytes, StandardCharsets.UTF_8);
-            Collection<String> parameterElements = decodeText(parameterValue);
-            boolean[] result = new boolean[parameterElements.size()];
-            int index = 0;
-            for (String element : parameterElements) {
-                result[index++] = Boolean.parseBoolean(element);
-            }
-            return result;
+        ShardingSpherePreconditions.checkState(!isBinary, () -> new UnsupportedSQLOperationException("binary mode"));
+        String parameterValue = new String(parameterBytes, StandardCharsets.UTF_8);
+        Collection<String> parameterElements = decodeText(parameterValue);
+        boolean[] result = new boolean[parameterElements.size()];
+        int index = 0;
+        for (String element : parameterElements) {
+            result[index++] = Boolean.parseBoolean(element);
         }
-        throw new UnsupportedOperationException("binary mode");
+        return result;
     }
     
     /**
@@ -164,12 +156,10 @@ public final class PostgreSQLArrayParameterDecoder {
      * @return int array
      */
     public String[] decodeStringArray(final byte[] parameterBytes, final boolean isBinary) {
-        if (!isBinary) {
-            String parameterValue = new String(parameterBytes, StandardCharsets.UTF_8);
-            Collection<String> parameterElements = decodeText(parameterValue);
-            return parameterElements.toArray(EMPTY_STRING_ARRAY);
-        }
-        throw new UnsupportedOperationException("binary mode");
+        ShardingSpherePreconditions.checkState(!isBinary, () -> new UnsupportedSQLOperationException("binary mode"));
+        String parameterValue = new String(parameterBytes, StandardCharsets.UTF_8);
+        Collection<String> parameterElements = decodeText(parameterValue);
+        return parameterElements.toArray(EMPTY_STRING_ARRAY);
     }
     
     /**
@@ -179,12 +169,8 @@ public final class PostgreSQLArrayParameterDecoder {
      * @return decoded parameter value elements
      */
     private Collection<String> decodeText(final String value) {
-        if (value.length() < 2) {
-            throw new IllegalArgumentException("value length less than 2");
-        }
-        if ('{' != value.charAt(0) || '}' != value.charAt(value.length() - 1)) {
-            throw new IllegalArgumentException("value not start with '{' or not end with '}'");
-        }
+        Preconditions.checkArgument(value.length() >= 2, "value length less than 2");
+        Preconditions.checkArgument('{' == value.charAt(0) && '}' == value.charAt(value.length() - 1), "value not start with '{' or not end with '}'");
         String[] elements = value.substring(1, value.length() - 1).split(",");
         return Arrays.stream(elements).map(each -> {
             if ("NULL".equals(each)) {

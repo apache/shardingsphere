@@ -20,13 +20,13 @@ package org.apache.shardingsphere.sqltranslator.rule;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
-import org.apache.shardingsphere.sqltranslator.exception.UnsupportedTranslatedDatabaseException;
+import org.apache.shardingsphere.sqltranslator.exception.syntax.UnsupportedTranslatedDatabaseException;
 import org.junit.Test;
 
 import java.util.Locale;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class SQLTranslatorRuleTest {
     

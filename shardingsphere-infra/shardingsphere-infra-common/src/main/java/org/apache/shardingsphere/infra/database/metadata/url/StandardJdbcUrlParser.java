@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.database.metadata.url;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.database.metadata.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -56,9 +57,7 @@ public final class StandardJdbcUrlParser {
         Matcher matcher = CONNECTION_URL_PATTERN.matcher(jdbcUrl);
         if (matcher.matches()) {
             String authority = matcher.group(AUTHORITY_GROUP_KEY);
-            if (null == authority) {
-                throw new UnrecognizedDatabaseURLException(jdbcUrl, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%"));
-            }
+            ShardingSpherePreconditions.checkNotNull(authority, () -> new UnrecognizedDatabaseURLException(jdbcUrl, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%")));
             return new JdbcUrl(parseHostname(authority), parsePort(authority), matcher.group(PATH_GROUP_KEY), parseQueryProperties(matcher.group(QUERY_GROUP_KEY)));
         }
         throw new UnrecognizedDatabaseURLException(jdbcUrl, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%"));

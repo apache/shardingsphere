@@ -23,7 +23,6 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CountDatab
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryHeartbeatsStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryRulesStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryTypesStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountDatabaseRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountSingleTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesUsedResourceStatement;
@@ -45,12 +44,13 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingK
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableNodesStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesUsedAlgorithmStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesUsedAuditorStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesUsedKeyGeneratorStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowUnusedShardingAlgorithmsStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowUnusedShardingAuditorsStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowUnusedShardingKeyGeneratorsStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rql.impl.rule.CountDatabaseDiscoveryRuleStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rql.impl.rule.CountDatabaseRulesStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rql.impl.rule.CountEncryptRuleStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rql.impl.rule.CountReadwriteSplittingRuleStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rql.impl.rule.CountShadowRuleStatementAssert;
@@ -70,14 +70,15 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rql.impl.rule.ShowShardingTableNodesStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rql.impl.rule.ShowShardingTableRulesStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rql.impl.rule.ShowShardingTableRulesUsedAlgorithmStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rql.impl.rule.ShowShardingTableRulesUsedAuditorStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rql.impl.rule.ShowShardingTableRulesUsedKeyGeneratorStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rql.impl.rule.ShowSingleTableRulesStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rql.impl.rule.ShowSingleTableStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rql.impl.rule.ShowUnusedShardingAlgorithmsStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rql.impl.rule.ShowUnusedShardingAuditorsStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rql.impl.rule.ShowUnusedShardingKeyGeneratorsStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountDatabaseDiscoveryRuleStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountDatabaseRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountEncryptRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountReadwriteSplittingRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountShadowRuleStatementTestCase;
@@ -97,10 +98,12 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingTableNodesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingTableRulesUsedAlgorithmStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingTableRulesUsedAuditorStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingTableRulesUsedKeyGeneratorStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowSingleTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowSingleTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowUnusedShardingAlgorithmsStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowUnusedShardingAuditorsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowUnusedShardingKeyGeneratorsStatementTestCase;
 
 /**
@@ -149,8 +152,8 @@ public final class ShowRulesStatementAssert {
             ShowUnusedShardingAlgorithmsStatementAssert.assertIs(assertContext, (ShowUnusedShardingAlgorithmsStatement) actual, (ShowUnusedShardingAlgorithmsStatementTestCase) expected);
         } else if (actual instanceof ShowUnusedShardingKeyGeneratorsStatement) {
             ShowUnusedShardingKeyGeneratorsStatementAssert.assertIs(assertContext, (ShowUnusedShardingKeyGeneratorsStatement) actual, (ShowUnusedShardingKeyGeneratorsStatementTestCase) expected);
-        } else if (actual instanceof CountDatabaseRulesStatement) {
-            CountDatabaseRulesStatementAssert.assertIs(assertContext, (CountDatabaseRulesStatement) actual, (CountDatabaseRulesStatementTestCase) expected);
+        } else if (actual instanceof ShowUnusedShardingAuditorsStatement) {
+            ShowUnusedShardingAuditorsStatementAssert.assertIs(assertContext, (ShowUnusedShardingAuditorsStatement) actual, (ShowUnusedShardingAuditorsStatementTestCase) expected);
         } else if (actual instanceof ShowRulesUsedResourceStatement) {
             ShowRulesUsedResourceStatementAssert.assertIs(assertContext, (ShowRulesUsedResourceStatement) actual, (ShowRulesUsedResourceStatementTestCase) expected);
         } else if (actual instanceof ShowShardingTableRulesUsedAlgorithmStatement) {
@@ -159,6 +162,9 @@ public final class ShowRulesStatementAssert {
         } else if (actual instanceof ShowShardingTableRulesUsedKeyGeneratorStatement) {
             ShowShardingTableRulesUsedKeyGeneratorStatementAssert.assertIs(assertContext, (ShowShardingTableRulesUsedKeyGeneratorStatement) actual,
                     (ShowShardingTableRulesUsedKeyGeneratorStatementTestCase) expected);
+        } else if (actual instanceof ShowShardingTableRulesUsedAuditorStatement) {
+            ShowShardingTableRulesUsedAuditorStatementAssert.assertIs(assertContext, (ShowShardingTableRulesUsedAuditorStatement) actual,
+                    (ShowShardingTableRulesUsedAuditorStatementTestCase) expected);
         } else if (actual instanceof CountSingleTableRuleStatement) {
             CountSingleTableRuleStatementAssert.assertIs(assertContext, (CountSingleTableRuleStatement) actual, (CountSingleTableRuleStatementTestCase) expected);
         } else if (actual instanceof CountShardingRuleStatement) {

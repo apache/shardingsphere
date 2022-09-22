@@ -31,20 +31,20 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class GlobalRuleChangedWatcherTest {
     
     @Test
     public void assertCreateEvent() {
-        Optional<GlobalRuleConfigurationsChangedEvent> event = new GlobalRuleChangedWatcher().createGovernanceEvent(new DataChangedEvent("/rules", readYAML("yaml/authority-rule.yaml"), Type.UPDATED));
+        Optional<GlobalRuleConfigurationsChangedEvent> event = new GlobalRuleChangedWatcher().createGovernanceEvent(new DataChangedEvent("/rules", readYAML(), Type.UPDATED));
         assertTrue(event.isPresent());
         assertThat(event.get(), instanceOf(GlobalRuleConfigurationsChangedEvent.class));
     }
     
     @SneakyThrows({IOException.class, URISyntaxException.class})
-    protected String readYAML(final String yamlFile) {
-        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI())).stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
+    protected String readYAML() {
+        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("yaml/authority-rule.yaml").toURI())).stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
 }

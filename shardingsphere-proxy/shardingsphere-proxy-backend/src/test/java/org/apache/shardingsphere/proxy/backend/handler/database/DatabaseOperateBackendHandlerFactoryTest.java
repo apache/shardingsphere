@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.database;
 
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
@@ -24,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabas
 import org.junit.Test;
 import java.sql.SQLException;
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 public final class DatabaseOperateBackendHandlerFactoryTest {
@@ -39,7 +40,7 @@ public final class DatabaseOperateBackendHandlerFactoryTest {
         assertThat(DatabaseOperateBackendHandlerFactory.newInstance(mock(DropDatabaseStatement.class), mock(ConnectionSession.class)), instanceOf(DropDatabaseBackendHandler.class));
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = UnsupportedSQLOperationException.class)
     public void assertDatabaseOperateBackendHandlerFactoryThrowUnsupportedOperationException() throws SQLException {
         DatabaseOperateBackendHandlerFactory.newInstance(mock(AlterDatabaseStatement.class), mock(ConnectionSession.class));
     }

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
+import org.apache.shardingsphere.infra.exception.OverallConnectionNotEnoughException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -51,9 +52,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -104,13 +105,13 @@ public final class JDBCBackendDataSourceTest extends ProxyContextRestorer {
         assertThat(actual.size(), is(5));
     }
     
-    @Test(expected = SQLException.class)
+    @Test(expected = OverallConnectionNotEnoughException.class)
     public void assertGetConnectionsFailed() throws SQLException {
         ProxyContext.getInstance().getBackendDataSource().getConnections("schema", String.format(DATA_SOURCE_PATTERN, 1), 6, ConnectionMode.MEMORY_STRICTLY);
     }
     
     @Test
-    public void assertGetConnectionsByMultiThread() {
+    public void assertGetConnectionsByMultiThread() throws InterruptedException {
         ExecutorService executorService = Executors.newFixedThreadPool(20);
         Collection<Future<List<Connection>>> futures = new LinkedList<>();
         for (int i = 0; i < 200; i++) {
@@ -120,9 +121,8 @@ public final class JDBCBackendDataSourceTest extends ProxyContextRestorer {
         for (Future<List<Connection>> each : futures) {
             try {
                 actual.addAll(each.get());
-            } catch (final InterruptedException | ExecutionException ex) {
-                assertThat(ex.getMessage(), containsString("Could not get 6 connections at once. The 5 obtained connections have been released. "
-                        + "Please consider increasing the `maxPoolSize` of the data sources or decreasing the `max-connections-size-per-query` in props."));
+            } catch (final ExecutionException ex) {
+                assertThat(ex.getCause(), instanceOf(OverallConnectionNotEnoughException.class));
             }
         }
         assertTrue(actual.isEmpty());

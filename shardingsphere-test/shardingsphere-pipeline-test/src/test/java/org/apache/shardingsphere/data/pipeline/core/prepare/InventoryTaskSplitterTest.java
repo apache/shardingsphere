@@ -17,16 +17,22 @@
 
 package org.apache.shardingsphere.data.pipeline.core.prepare;
 
-import org.apache.shardingsphere.data.pipeline.api.config.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IntegerPrimaryKeyPosition;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
+import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.SplitPipelineJobByRangeException;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataUtil;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
+import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobItemContext;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationTaskConfiguration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -36,16 +42,18 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
 
 public final class InventoryTaskSplitterTest {
     
     private MigrationJobItemContext jobItemContext;
     
-    private TaskConfiguration taskConfig;
+    private MigrationTaskConfiguration taskConfig;
     
     private PipelineDataSourceManager dataSourceManager;
     
@@ -57,14 +65,19 @@ public final class InventoryTaskSplitterTest {
     }
     
     @Before
-    public void setUp() {
+    public void setUp() throws NoSuchFieldException, IllegalAccessException {
         initJobItemContext();
-        inventoryTaskSplitter = new InventoryTaskSplitter(jobItemContext.getSourceMetaDataLoader(), jobItemContext.getDataSourceManager(),
-                jobItemContext.getJobProcessContext().getImporterExecuteEngine(), jobItemContext.getSourceDataSource(), jobItemContext.getTaskConfig(), jobItemContext.getInitProgress());
+        InventoryDumperConfiguration dumperConfig = new InventoryDumperConfiguration(jobItemContext.getTaskConfig().getDumperConfig());
+        dumperConfig.setUniqueKeyDataType(Types.INTEGER);
+        dumperConfig.setUniqueKey("order_id");
+        inventoryTaskSplitter = new InventoryTaskSplitter(
+                jobItemContext.getSourceDataSource(), dumperConfig, jobItemContext.getTaskConfig().getImporterConfig(), jobItemContext.getInitProgress(),
+                jobItemContext.getSourceMetaDataLoader(), jobItemContext.getDataSourceManager(), jobItemContext.getJobProcessContext().getImporterExecuteEngine());
     }
     
-    private void initJobItemContext() {
+    private void initJobItemContext() throws NoSuchFieldException, IllegalAccessException {
         MigrationJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
+        ReflectionUtil.setFieldValue(jobConfig, "uniqueKeyColumn", new PipelineColumnMetaData(1, "order_id", 4, "", false, true, true));
         jobItemContext = PipelineContextUtil.mockMigrationJobItemContext(jobConfig);
         dataSourceManager = jobItemContext.getDataSourceManager();
         taskConfig = jobItemContext.getTaskConfig();
@@ -108,15 +121,23 @@ public final class InventoryTaskSplitterTest {
         assertThat(actual.size(), is(1));
     }
     
-    @Test(expected = PipelineJobCreationException.class)
-    public void assertSplitInventoryDataWithUnionPrimary() throws SQLException {
+    @Test(expected = SplitPipelineJobByRangeException.class)
+    public void assertSplitInventoryDataWithIllegalKeyDataType() throws SQLException, NoSuchFieldException, IllegalAccessException {
         initUnionPrimaryEnvironment(taskConfig.getDumperConfig());
+        InventoryDumperConfiguration dumperConfig = ReflectionUtil.getFieldValue(inventoryTaskSplitter, "dumperConfig", InventoryDumperConfiguration.class);
+        assertNotNull(dumperConfig);
+        dumperConfig.setUniqueKey("order_id,user_id");
+        dumperConfig.setUniqueKeyDataType(Integer.MIN_VALUE);
         inventoryTaskSplitter.splitInventoryData(jobItemContext);
     }
     
-    @Test(expected = PipelineJobCreationException.class)
-    public void assertSplitInventoryDataWithoutPrimaryAndUniqueIndex() throws SQLException {
+    @Test(expected = SplitPipelineJobByRangeException.class)
+    public void assertSplitInventoryDataWithoutPrimaryAndUniqueIndex() throws SQLException, NoSuchFieldException, IllegalAccessException {
         initNoPrimaryEnvironment(taskConfig.getDumperConfig());
+        try (PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig())) {
+            PipelineColumnMetaData uniqueKeyColumn = PipelineTableMetaDataUtil.getUniqueKeyColumn(null, "t_order", new StandardPipelineTableMetaDataLoader(dataSource));
+            ReflectionUtil.setFieldValue(jobItemContext.getJobConfig(), "uniqueKeyColumn", uniqueKeyColumn);
+        }
         inventoryTaskSplitter.splitInventoryData(jobItemContext);
     }
     

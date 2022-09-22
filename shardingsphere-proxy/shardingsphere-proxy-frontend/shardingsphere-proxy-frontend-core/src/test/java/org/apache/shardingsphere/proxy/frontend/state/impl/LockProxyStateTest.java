@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.proxy.frontend.state.impl;
 
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.junit.Test;
 
 public final class LockProxyStateTest {
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = UnsupportedSQLOperationException.class)
     public void assertExecute() {
         new LockProxyState().execute(null, null, null, null);
     }

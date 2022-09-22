@@ -46,9 +46,10 @@ public final class DataSourcePoolDestroyer {
         executor.shutdown();
     }
     
+    @SneakyThrows
     private void graceDestroy() {
         waitUntilActiveConnectionComplete();
-        close();
+        ((AutoCloseable) dataSource).close();
     }
     
     private void waitUntilActiveConnectionComplete() {
@@ -59,10 +60,5 @@ public final class DataSourcePoolDestroyer {
             } catch (final InterruptedException ignore) {
             }
         }
-    }
-    
-    @SneakyThrows
-    private void close() {
-        ((AutoCloseable) dataSource).close();
     }
 }

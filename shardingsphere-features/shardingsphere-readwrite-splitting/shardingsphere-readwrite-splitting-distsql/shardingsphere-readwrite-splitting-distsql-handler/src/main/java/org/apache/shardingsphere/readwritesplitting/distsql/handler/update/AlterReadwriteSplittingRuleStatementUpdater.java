@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.exportable.Exportabl
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.RuleExportEngine;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.distsql.handler.checker.ReadwriteSplittingRuleStatementChecker;
 import org.apache.shardingsphere.readwritesplitting.distsql.handler.converter.ReadwriteSplittingRuleStatementConverter;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.AlterReadwriteSplittingRuleStatement;
@@ -57,6 +58,8 @@ public final class AlterReadwriteSplittingRuleStatementUpdater implements RuleDe
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkToBeAlteredRules(databaseName, sqlStatement, currentRuleConfig);
         checkToBeAlteredResources(databaseName, sqlStatement, database);
+        // TODO move all check methods to checker
+        ReadwriteSplittingRuleStatementChecker.checkDuplicateResourceNames(databaseName, sqlStatement.getRules(), currentRuleConfig, false);
         checkToBeAlteredLoadBalancer(sqlStatement);
     }
     

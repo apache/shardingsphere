@@ -25,6 +25,8 @@ import org.apache.shardingsphere.test.integration.env.container.atomic.storage.D
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 /**
@@ -34,8 +36,8 @@ public final class OpenGaussContainer extends DockerStorageContainer {
     
     private final StorageContainerConfiguration storageContainerConfiguration;
     
-    public OpenGaussContainer(final String dockerImageName, final String scenario, final StorageContainerConfiguration storageContainerConfiguration) {
-        super(DatabaseTypeFactory.getInstance("openGauss"), Strings.isNullOrEmpty(dockerImageName) ? "enmotech/opengauss:3.0.0" : dockerImageName, scenario);
+    public OpenGaussContainer(final String containerImage, final String scenario, final StorageContainerConfiguration storageContainerConfiguration) {
+        super(DatabaseTypeFactory.getInstance("openGauss"), Strings.isNullOrEmpty(containerImage) ? "enmotech/opengauss:3.0.0" : containerImage, scenario);
         this.storageContainerConfiguration = storageContainerConfiguration;
     }
     
@@ -45,12 +47,18 @@ public final class OpenGaussContainer extends DockerStorageContainer {
         addEnvs(storageContainerConfiguration.getContainerEnvironments());
         mapResources(storageContainerConfiguration.getMountedResources());
         withPrivilegedMode(true);
+        withStartupTimeout(Duration.of(120, ChronoUnit.SECONDS));
         super.configure();
     }
     
     @Override
-    public int getPort() {
-        return 5432;
+    public int getExposedPort() {
+        return StorageContainerConstants.OPENGAUSS_EXPOSED_PORT;
+    }
+    
+    @Override
+    public int getMappedPort() {
+        return getMappedPort(StorageContainerConstants.OPENGAUSS_EXPOSED_PORT);
     }
     
     @Override
@@ -60,6 +68,6 @@ public final class OpenGaussContainer extends DockerStorageContainer {
     
     @Override
     public String getJdbcUrl(final String dataSourceName) {
-        return DataSourceEnvironment.getURL(getDatabaseType(), getHost(), getMappedPort(getPort()), StringUtils.isNotEmpty(dataSourceName) ? dataSourceName : StorageContainerConstants.USERNAME);
+        return DataSourceEnvironment.getURL(getDatabaseType(), getHost(), getMappedPort(), StringUtils.isNotEmpty(dataSourceName) ? dataSourceName : StorageContainerConstants.USERNAME);
     }
 }

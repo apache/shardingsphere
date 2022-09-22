@@ -27,7 +27,7 @@ import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class MySQLErrPacketFactoryTest {
     
@@ -53,7 +53,7 @@ public final class MySQLErrPacketFactoryTest {
     public void assertNewInstanceWithShardingSphereSQLException() {
         MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new CircuitBreakException());
         assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getErrorCode(), is(10000));
+        assertThat(actual.getErrorCode(), is(13010));
         assertThat(actual.getSqlState(), is(XOpenSQLState.GENERAL_WARNING.getValue()));
         assertThat(actual.getErrorMessage(), is("Circuit break open, the request has been ignored"));
     }

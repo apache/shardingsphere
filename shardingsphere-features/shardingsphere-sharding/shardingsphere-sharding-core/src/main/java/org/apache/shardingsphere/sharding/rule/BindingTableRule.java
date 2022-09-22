@@ -19,8 +19,8 @@ package org.apache.shardingsphere.sharding.rule;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.sharding.exception.ActualTableNotFoundException;
+import org.apache.shardingsphere.sharding.exception.metadata.ActualTableNotFoundException;
+import org.apache.shardingsphere.sharding.exception.metadata.BindingTableNotFoundException;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -67,7 +67,7 @@ public final class BindingTableRule {
         if (tableRule.isPresent()) {
             return tableRule.get().getActualDataNodes().get(index).getTableName();
         }
-        throw new ShardingSphereConfigurationException("Cannot find binding actual table, data source: %s, logic table: %s, other actual table: %s", dataSource, logicTable, otherActualTable);
+        throw new BindingTableNotFoundException(dataSource, logicTable, otherActualTable);
     }
     
     /**

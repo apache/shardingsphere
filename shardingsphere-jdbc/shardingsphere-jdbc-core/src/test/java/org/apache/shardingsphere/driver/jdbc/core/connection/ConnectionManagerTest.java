@@ -49,7 +49,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -225,7 +225,8 @@ public final class ConnectionManagerTest {
         try {
             connectionManager.getConnections("invalid_ds", 3, ConnectionMode.CONNECTION_STRICTLY);
         } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("Can not get 3 connections one time, partition succeed connection(0) have released!"));
+            assertThat(ex.getMessage(), is("Can not get 3 connections one time, partition succeed connection(0) have released. "
+                    + "Please consider increasing the `maxPoolSize` of the data sources or decreasing the `max-connections-size-per-query` in properties"));
         }
     }
 }

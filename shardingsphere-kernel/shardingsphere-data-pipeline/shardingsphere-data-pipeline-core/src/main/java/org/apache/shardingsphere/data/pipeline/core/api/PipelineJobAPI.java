@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.data.pipeline.core.api;
 
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPI;
-import org.apache.shardingsphere.data.pipeline.api.config.TaskConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.PipelineTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlPipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineProcessContext;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
-import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
@@ -58,7 +58,7 @@ public interface PipelineJobAPI extends PipelineJobPublicAPI, PipelineJobItemAPI
      * @param pipelineProcessConfig pipeline process configuration
      * @return task configuration
      */
-    TaskConfiguration buildTaskConfiguration(PipelineJobConfiguration pipelineJobConfig, int jobShardingItem, PipelineProcessConfiguration pipelineProcessConfig);
+    PipelineTaskConfiguration buildTaskConfiguration(PipelineJobConfiguration pipelineJobConfig, int jobShardingItem, PipelineProcessConfiguration pipelineProcessConfig);
     
     /**
      * Build pipeline process context.
@@ -83,4 +83,30 @@ public interface PipelineJobAPI extends PipelineJobPublicAPI, PipelineJobItemAPI
      * @return job configuration
      */
     PipelineJobConfiguration getJobConfiguration(String jobId);
+    
+    /**
+     * Get job item error message.
+     *
+     * @param jobId job id
+     * @param shardingItem sharding item
+     * @return map, key is sharding item, value is error message
+     */
+    String getJobItemErrorMessage(String jobId, int shardingItem);
+    
+    /**
+     * Persist job item error message.
+     *
+     * @param jobId job id
+     * @param shardingItem sharding item
+     * @param error error
+     */
+    void persistJobItemErrorMessage(String jobId, int shardingItem, Object error);
+    
+    /**
+     * Clean job item error message.
+     *
+     * @param jobId job id
+     * @param shardingItem sharding item
+     */
+    void cleanJobItemErrorMessage(String jobId, int shardingItem);
 }

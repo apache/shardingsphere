@@ -30,6 +30,8 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -157,9 +159,8 @@ public final class ProxyBackendHandlerFactory {
     }
     
     private static void checkUnsupportedDistSQLStatementInTransaction(final SQLStatement sqlStatement, final ConnectionSession connectionSession) {
-        if (connectionSession.getTransactionStatus().isInTransaction() && !isSupportedDistSQLStatementInTransaction(sqlStatement)) {
-            throw new UnsupportedOperationException("Non-query dist sql is not supported within a transaction");
-        }
+        ShardingSpherePreconditions.checkState(!connectionSession.getTransactionStatus().isInTransaction() || isSupportedDistSQLStatementInTransaction(sqlStatement),
+                () -> new UnsupportedSQLOperationException("Non-query dist sql is not supported within a transaction"));
     }
     
     private static boolean isSupportedDistSQLStatementInTransaction(final SQLStatement sqlStatement) {
@@ -208,7 +209,7 @@ public final class ProxyBackendHandlerFactory {
     
     private static void checkUnsupportedSQLStatement(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof DCLStatement || sqlStatement instanceof FlushStatement || sqlStatement instanceof MySQLShowCreateUserStatement) {
-            throw new UnsupportedOperationException("Unsupported operation");
+            throw new UnsupportedSQLOperationException("Unsupported operation");
         }
     }
 }

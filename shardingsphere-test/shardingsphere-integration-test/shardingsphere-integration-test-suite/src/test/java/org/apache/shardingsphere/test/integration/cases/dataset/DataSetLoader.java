@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.cases.dataset;
 
+import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
@@ -42,18 +43,23 @@ public final class DataSetLoader {
      * @param parentPath parent path of data set file
      * @param scenario scenario
      * @param databaseType database type
+     * @param mode mode
      * @param dataSetFile name of data set file
      * @return data set
      */
     @SneakyThrows({JAXBException.class, IOException.class})
-    public static DataSet load(final String parentPath, final String scenario, final DatabaseType databaseType, final String dataSetFile) {
-        try (FileReader reader = new FileReader(getFile(parentPath, scenario, databaseType, dataSetFile))) {
+    public static DataSet load(final String parentPath, final String scenario, final DatabaseType databaseType, final String mode, final String dataSetFile) {
+        try (FileReader reader = new FileReader(getFile(parentPath, scenario, databaseType, mode, dataSetFile))) {
             return (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);
         }
     }
     
-    private static String getFile(final String parentPath, final String scenario, final DatabaseType databaseType, final String dataSetFile) {
+    private static String getFile(final String parentPath, final String scenario, final DatabaseType databaseType, final String mode, final String dataSetFile) {
         String result = String.join(File.separator, parentPath, DATA_SET_FOLDER_NAME, scenario, databaseType.getType().toLowerCase(), dataSetFile);
+        if (new File(result).exists()) {
+            return result;
+        }
+        result = String.join(File.separator, parentPath, DATA_SET_FOLDER_NAME, scenario, mode.toLowerCase(), dataSetFile);
         if (new File(result).exists()) {
             return result;
         }
@@ -62,9 +68,7 @@ public final class DataSetLoader {
             return result;
         }
         result = String.join(File.separator, parentPath, DATA_SET_FOLDER_NAME, dataSetFile);
-        if (new File(result).exists()) {
-            return result;
-        }
-        throw new IllegalArgumentException(String.format("%s not found, path=%s, scenario=%s, databaseType=%s", dataSetFile, parentPath, scenario, databaseType.getType()));
+        Preconditions.checkArgument(new File(result).exists(), "%s not found, path=%s, scenario=%s, databaseType=%s, mode=%s", dataSetFile, parentPath, scenario, databaseType.getType(), mode);
+        return result;
     }
 }

@@ -33,7 +33,6 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesVali
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.exception.external.sql.SQLWrapperException;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -83,7 +82,7 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
     private final YamlProxyDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlProxyDataSourceConfigurationSwapper();
     
     @Override
-    protected void update(final ContextManager contextManager) throws DistSQLException {
+    protected void update(final ContextManager contextManager) throws SQLException {
         File file = new File(getSqlStatement().getFilePath());
         YamlProxyDatabaseConfiguration yamlConfig;
         try {
@@ -98,7 +97,7 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
         addResources(databaseName, yamlConfig.getDataSources());
         try {
             addRules(databaseName, yamlConfig.getRules());
-        } catch (DistSQLException ex) {
+        } catch (final DistSQLException ex) {
             dropDatabase(databaseName);
             throw ex;
         }
@@ -115,16 +114,12 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
         Preconditions.checkState(!dataSources.isEmpty(), "Data sources configuration in file `%s` is required.", file.getName());
     }
     
-    private void addDatabase(final String databaseName) {
-        try {
-            ProxyContext.getInstance().getContextManager().addDatabase(databaseName);
-        } catch (SQLException ex) {
-            throw new SQLWrapperException(ex);
-        }
+    private void addDatabase(final String databaseName) throws SQLException {
+        ProxyContext.getInstance().getContextManager().addDatabaseAndPersist(databaseName);
     }
     
     private void dropDatabase(final String databaseName) {
-        ProxyContext.getInstance().getContextManager().dropDatabase(databaseName);
+        ProxyContext.getInstance().getContextManager().dropDatabaseAndPersist(databaseName);
     }
     
     private void addResources(final String databaseName, final Map<String, YamlProxyDataSourceConfiguration> yamlDataSourceMap) throws DistSQLException {

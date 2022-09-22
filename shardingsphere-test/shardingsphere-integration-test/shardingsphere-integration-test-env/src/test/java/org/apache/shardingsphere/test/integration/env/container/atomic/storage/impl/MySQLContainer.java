@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.integration.env.container.atomic.storage.
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
 
@@ -31,8 +32,8 @@ public final class MySQLContainer extends DockerStorageContainer {
     
     private final StorageContainerConfiguration storageContainerConfiguration;
     
-    public MySQLContainer(final String dockerImageName, final String scenario, final StorageContainerConfiguration storageContainerConfiguration) {
-        super(DatabaseTypeFactory.getInstance("MySQL"), Strings.isNullOrEmpty(dockerImageName) ? "mysql/mysql-server:5.7" : dockerImageName, scenario);
+    public MySQLContainer(final String containerImage, final String scenario, final StorageContainerConfiguration storageContainerConfiguration) {
+        super(DatabaseTypeFactory.getInstance("MySQL"), Strings.isNullOrEmpty(containerImage) ? "mysql/mysql-server:5.7" : containerImage, scenario);
         this.storageContainerConfiguration = storageContainerConfiguration;
     }
     
@@ -45,8 +46,13 @@ public final class MySQLContainer extends DockerStorageContainer {
     }
     
     @Override
-    public int getPort() {
-        return 3306;
+    public int getExposedPort() {
+        return StorageContainerConstants.MYSQL_EXPOSED_PORT;
+    }
+    
+    @Override
+    public int getMappedPort() {
+        return getMappedPort(StorageContainerConstants.MYSQL_EXPOSED_PORT);
     }
     
     @Override

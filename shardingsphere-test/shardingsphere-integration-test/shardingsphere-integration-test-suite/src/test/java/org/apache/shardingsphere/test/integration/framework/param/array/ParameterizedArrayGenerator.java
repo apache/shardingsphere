@@ -121,8 +121,11 @@ public final class ParameterizedArrayGenerator {
     }
     
     private boolean filterScenarios(final String scenario, final Collection<String> scenarios, final Class<? extends SQLStatement> sqlStatementClass) {
-        if (sqlStatementClass == RDLStatement.class || sqlStatementClass == RALStatement.class) {
+        if (sqlStatementClass == RALStatement.class) {
             return "empty_rules".equals(scenario);
+        }
+        if (sqlStatementClass == RDLStatement.class) {
+            return "rdl_empty_rules".equals(scenario);
         }
         if ("empty_rules".equals(scenario)) {
             return false;

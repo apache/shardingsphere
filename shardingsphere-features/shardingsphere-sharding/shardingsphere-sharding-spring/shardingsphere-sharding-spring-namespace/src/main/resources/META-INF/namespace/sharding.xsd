@@ -36,6 +36,7 @@
             <xsd:attribute name="default-table-strategy-ref" type="xsd:string" />
             <xsd:attribute name="default-key-generate-strategy-ref" type="xsd:string" />
             <xsd:attribute name="default-sharding-column" type="xsd:string" />
+            <xsd:attribute name="default-audit-strategy-ref" type="xsd:string" />
         </xsd:complexType>
     </xsd:element>
     
@@ -53,6 +54,7 @@
             <xsd:attribute name="database-strategy-ref" type="xsd:string" />
             <xsd:attribute name="table-strategy-ref" type="xsd:string" />
             <xsd:attribute name="key-generate-strategy-ref" type="xsd:string" />
+            <xsd:attribute name="audit-strategy-ref" type="xsd:string" />
         </xsd:complexType>
     </xsd:element>
     <xsd:element name="auto-table-rules">
@@ -140,6 +142,40 @@
     </xsd:element>
     
     <xsd:element name="key-generate-algorithm">
+        <xsd:complexType>
+            <xsd:all>
+                <xsd:element ref="beans:props" minOccurs="0" />
+            </xsd:all>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="type" type="xsd:string" />
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="audit-strategy">
+        <xsd:complexType>
+            <xsd:all>
+                <xsd:element ref="auditors" minOccurs="0" />
+            </xsd:all>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="allow-hint-disable" type="xsd:boolean" use="required" />
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="auditors">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="auditor" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="auditor">
+        <xsd:complexType>
+            <xsd:attribute name="algorithm-ref" type="xsd:string" />
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="audit-algorithm">
         <xsd:complexType>
             <xsd:all>
                 <xsd:element ref="beans:props" minOccurs="0" />

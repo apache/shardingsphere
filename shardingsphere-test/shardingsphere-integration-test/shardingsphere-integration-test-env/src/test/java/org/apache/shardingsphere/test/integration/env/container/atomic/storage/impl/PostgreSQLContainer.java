@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.integration.env.container.atomic.storage.
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
 
@@ -31,8 +32,8 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
     
     private final StorageContainerConfiguration storageContainerConfiguration;
     
-    public PostgreSQLContainer(final String dockerImageName, final String scenario, final StorageContainerConfiguration storageContainerConfiguration) {
-        super(DatabaseTypeFactory.getInstance("PostgreSQL"), Strings.isNullOrEmpty(dockerImageName) ? "postgres:12-alpine" : dockerImageName, scenario);
+    public PostgreSQLContainer(final String containerImage, final String scenario, final StorageContainerConfiguration storageContainerConfiguration) {
+        super(DatabaseTypeFactory.getInstance("PostgreSQL"), Strings.isNullOrEmpty(containerImage) ? "postgres:12-alpine" : containerImage, scenario);
         this.storageContainerConfiguration = storageContainerConfiguration;
     }
     
@@ -45,8 +46,13 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
     }
     
     @Override
-    public int getPort() {
-        return 5432;
+    public int getExposedPort() {
+        return StorageContainerConstants.POSTGRESQL_EXPOSED_PORT;
+    }
+    
+    @Override
+    public int getMappedPort() {
+        return getMappedPort(StorageContainerConstants.POSTGRESQL_EXPOSED_PORT);
     }
     
     @Override

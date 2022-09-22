@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardi
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
-import org.apache.shardingsphere.sharding.exception.ShardingAlgorithmClassImplementationException;
+import org.apache.shardingsphere.sharding.exception.algorithm.ShardingAlgorithmClassImplementationException;
 import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import org.apache.shardingsphere.sharding.fixture.ClassBasedComplexKeysShardingAlgorithmFixture;
 import org.apache.shardingsphere.sharding.fixture.ClassBasedHintShardingAlgorithmFixture;
@@ -36,7 +36,7 @@ import java.util.Collection;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class ClassBasedShardingAlgorithmTest {
     

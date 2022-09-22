@@ -43,7 +43,7 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -81,7 +81,7 @@ public final class DropResourceBackendHandlerTest extends ProxyContextRestorer {
     private DropResourceBackendHandler dropResourceBackendHandler;
     
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         resource = mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS);
         when(resource.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);

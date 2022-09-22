@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
-import org.apache.shardingsphere.sharding.exception.MismatchedInlineShardingAlgorithmExpressionAndColumnException;
+import org.apache.shardingsphere.sharding.exception.algorithm.MismatchedInlineShardingAlgorithmExpressionAndColumnException;
 import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 

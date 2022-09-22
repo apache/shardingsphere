@@ -59,14 +59,6 @@ showTableMetadata
     : SHOW TABLE METADATA tableName (COMMA tableName*)? (FROM databaseName)?
     ;
 
-showSQLParserRule
-    : SHOW SQL_PARSER RULE
-    ;
-
-alterSQLParserRule
-    : ALTER SQL_PARSER RULE sqlParserRuleDefinition
-    ;
-
 showInstanceInfo
     : SHOW INSTANCE INFO
     ;
@@ -95,27 +87,23 @@ convertYamlConfiguration
     : CONVERT YAML (CONFIGURATION | CONFIG) FILE EQ filePath
     ;
 
-showSQLTranslatorRule
-    : SHOW SQL_TRANSLATOR RULE
-    ;
-
 showMigrationProcessConfiguration
     : SHOW MIGRATION PROCESS CONFIGURATION
     ;
 
 createMigrationProcessConfiguration
-    : CREATE MIGRATION PROCESS CONFIGURATION migrationProcessConfiguration?
+    : CREATE MIGRATION PROCESS CONFIGURATION inventoryIncrementalProcessConfiguration?
     ;
 
 alterMigrationProcessConfiguration
-    : ALTER MIGRATION PROCESS CONFIGURATION migrationProcessConfiguration?
+    : ALTER MIGRATION PROCESS CONFIGURATION inventoryIncrementalProcessConfiguration?
     ;
 
 dropMigrationProcessConfiguration
     : DROP MIGRATION PROCESS CONFIGURATION confPath
     ;
 
-migrationProcessConfiguration
+inventoryIncrementalProcessConfiguration
     : LP readDefinition? (COMMA? writeDefinition)? (COMMA? streamChannel)? RP
     ;
 
@@ -155,10 +143,6 @@ filePath
     : STRING
     ;
 
-sqlParserRuleDefinition
-    : SQL_COMMENT_PARSE_ENABLE EQ sqlCommentParseEnable (COMMA PARSE_TREE_CACHE LP parseTreeCache RP)? (COMMA SQL_STATEMENT_CACHE LP sqlStatementCache RP)?
-    ;
-
 variableName
     : IDENTIFIER
     ;
@@ -181,34 +165,6 @@ refreshScope
 
 fromSegment
     : FROM RESOURCE resourceName (SCHEMA schemaName)?
-    ;
-
-sqlCommentParseEnable
-    : TRUE | FALSE
-    ;
-
-parseTreeCache
-    : cacheOption
-    ;
-
-sqlStatementCache
-    : cacheOption
-    ;
-
-cacheOption
-    : (INITIAL_CAPACITY EQ initialCapacity)? (COMMA? MAXIMUM_SIZE EQ maximumSize)? (COMMA? CONCURRENCY_LEVEL EQ concurrencyLevel)? 
-    ;
-
-initialCapacity
-    : INT
-    ;
-
-maximumSize
-    : INT
-    ;
-
-concurrencyLevel
-    : INT
     ;
 
 label

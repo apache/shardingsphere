@@ -24,6 +24,7 @@ import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransact
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Transaction test parameters.
@@ -36,11 +37,11 @@ public final class TransactionParameterized {
     
     private final String adapter;
     
-    private final TransactionType transactionType;
+    private final List<TransactionType> transactionTypes;
     
-    private final String provider;
+    private final List<String> providers;
     
-    private final String dockerImageName;
+    private final String storageContainerImage;
     
     private final String group;
     
@@ -48,6 +49,6 @@ public final class TransactionParameterized {
     
     @Override
     public String toString() {
-        return String.format("%s -> %s -> %s -> %s -> %s -> %s", databaseType.getType(), adapter, transactionType, provider, dockerImageName, group);
+        return String.format("%s -> %s -> %s -> %s -> %s -> %s", databaseType.getType(), adapter, transactionTypes, providers, storageContainerImage, group);
     }
 }

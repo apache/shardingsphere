@@ -67,7 +67,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -80,7 +80,7 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     private ConnectionSession connectionSession;
     
     @Before
-    public void setUp() throws IllegalAccessException, NoSuchFieldException {
+    public void setUp() {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(getDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic;
 
+import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -27,14 +28,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class InsertValueTest {
     
     @Test
     public void assertToString() {
-        List<ExpressionSegment> expressionSegments = new ArrayList<>(3);
+        List<ExpressionSegment> expressionSegments = new ArrayList<>(4);
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment = new ParameterMarkerExpressionSegment(1, 1, 1);
+        ParameterMarkerExpressionSegment positionalParameterMarkerExpressionSegment = new ParameterMarkerExpressionSegment(1, 1, 0, ParameterMarkerType.DOLLAR);
         LiteralExpressionSegment literalExpressionSegment = new LiteralExpressionSegment(2, 2, "literals");
         ComplexExpressionSegment complexExpressionSegment = new ComplexExpressionSegment() {
             
@@ -54,11 +56,12 @@ public final class InsertValueTest {
             }
         };
         expressionSegments.add(parameterMarkerExpressionSegment);
+        expressionSegments.add(positionalParameterMarkerExpressionSegment);
         expressionSegments.add(literalExpressionSegment);
         expressionSegments.add(complexExpressionSegment);
         InsertValue insertValue = new InsertValue(expressionSegments);
         String actualToString = insertValue.toString();
-        String expectedToString = "(?, 'literals', complexExpressionSegment)";
+        String expectedToString = "(?, $1, 'literals', complexExpressionSegment)";
         assertThat(actualToString, is(expectedToString));
     }
 }

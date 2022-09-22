@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -44,15 +44,6 @@ public final class TableMetaDataPersistServiceTest {
     
     @Mock
     private PersistRepository repository;
-    
-    @Test
-    public void assertCompareAndPersist() {
-        TableMetaDataPersistService tableMetaDataPersistService = new TableMetaDataPersistService(repository);
-        when(repository.getChildrenKeys("/metadata/foo_db/schemas/foo_schema/tables")).thenReturn(Collections.singletonList("t_order"));
-        when(repository.get("/metadata/foo_db/schemas/foo_schema/tables/t_order")).thenReturn(readYAML());
-        tableMetaDataPersistService.compareAndPersist("foo_db", "foo_schema", Collections.emptyMap());
-        verify(repository).delete("/metadata/foo_db/schemas/foo_schema/tables/t_order");
-    }
     
     @Test
     public void assertPersist() {

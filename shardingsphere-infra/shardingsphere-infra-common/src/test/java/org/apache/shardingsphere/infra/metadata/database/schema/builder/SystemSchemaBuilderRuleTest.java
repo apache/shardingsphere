@@ -25,7 +25,7 @@ import java.util.HashSet;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class SystemSchemaBuilderRuleTest {
@@ -37,7 +37,7 @@ public final class SystemSchemaBuilderRuleTest {
         assertThat(actual.getTables(), is(new HashSet<>(Arrays.asList("columns", "engines", "parameters", "routines", "schemata", "tables", "views"))));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void assertValueOfSchemaPathFailure() {
         SystemSchemaBuilderRule.valueOf(new MySQLDatabaseType().getType(), "test");
     }

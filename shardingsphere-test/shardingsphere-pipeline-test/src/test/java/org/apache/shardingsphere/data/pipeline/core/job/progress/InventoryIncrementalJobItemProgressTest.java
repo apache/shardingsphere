@@ -33,7 +33,8 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertNotNull;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class InventoryIncrementalJobItemProgressTest {
@@ -46,13 +47,13 @@ public final class InventoryIncrementalJobItemProgressTest {
         assertThat(actual.getStatus(), is(JobStatus.RUNNING));
         assertThat(actual.getSourceDatabaseType(), is("H2"));
         assertThat(actual.getInventory().getInventoryTaskProgressMap().size(), is(4));
-        assertThat(actual.getIncremental().getIncrementalTaskProgressMap().size(), is(1));
+        assertNotNull(actual.getIncremental().getIncrementalTaskProgress());
     }
     
     @Test
     public void assertGetIncrementalPosition() {
         InventoryIncrementalJobItemProgress actual = getJobItemProgress(ConfigurationFileUtil.readFile("job-progress.yaml"));
-        Optional<IngestPosition<?>> position = actual.getIncremental().getIncrementalPosition("ds0");
+        Optional<IngestPosition<?>> position = actual.getIncremental().getIncrementalPosition();
         assertTrue(position.isPresent());
         assertThat(position.get(), instanceOf(PlaceholderPosition.class));
     }

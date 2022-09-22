@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.integration.transaction.engine.base;
 
-import org.apache.shardingsphere.integration.transaction.framework.container.compose.BaseComposedContainer;
+import org.apache.shardingsphere.integration.transaction.framework.container.compose.BaseContainerComposer;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -28,7 +28,7 @@ import java.sql.SQLException;
  */
 public final class ProxyDataSource extends AutoDataSource {
     
-    private final BaseComposedContainer composedContainer;
+    private final BaseContainerComposer containerComposer;
     
     private final String databaseName;
     
@@ -36,8 +36,8 @@ public final class ProxyDataSource extends AutoDataSource {
     
     private final String password;
     
-    public ProxyDataSource(final BaseComposedContainer composedContainer, final String databaseName, final String userName, final String password) {
-        this.composedContainer = composedContainer;
+    public ProxyDataSource(final BaseContainerComposer containerComposer, final String databaseName, final String userName, final String password) {
+        this.containerComposer = containerComposer;
         this.databaseName = databaseName;
         this.userName = userName;
         this.password = password;
@@ -54,7 +54,7 @@ public final class ProxyDataSource extends AutoDataSource {
     
     @Override
     public Connection getConnection(final String username, final String password) throws SQLException {
-        String jdbcUrl = composedContainer.getProxyJdbcUrl(databaseName);
+        String jdbcUrl = containerComposer.getProxyJdbcUrl(databaseName);
         Connection result = DriverManager.getConnection(jdbcUrl, username, password);
         synchronized (this) {
             getConnectionCache().add(result);
@@ -63,7 +63,7 @@ public final class ProxyDataSource extends AutoDataSource {
     }
     
     private Connection createConnection() throws SQLException {
-        String jdbcUrl = composedContainer.getProxyJdbcUrl(databaseName);
+        String jdbcUrl = containerComposer.getProxyJdbcUrl(databaseName);
         return DriverManager.getConnection(jdbcUrl, userName, password);
     }
 }

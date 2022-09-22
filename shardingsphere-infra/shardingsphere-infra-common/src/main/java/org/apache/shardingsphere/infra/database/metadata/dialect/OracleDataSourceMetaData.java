@@ -49,7 +49,7 @@ public final class OracleDataSourceMetaData implements DataSourceMetaData {
     
     private final Pattern thinUrlPattern = Pattern.compile("jdbc:oracle:(thin|oci|kprb):@(//)?([\\w\\-\\.]+):?([0-9]*)[:/]([\\w\\-]+)", Pattern.CASE_INSENSITIVE);
     
-    private final Pattern connectDescriptorUrlPattern = Pattern.compile("jdbc:oracle:(thin|oci|kprb):@[(\\w\\s=)]+HOST\\s*=\\s*([\\w\\-\\.]+).*PORT\\s*=\\s(\\d+).*SERVICE_NAME\\s*=\\s*(\\w+)\\)");
+    private final Pattern connectDescriptorUrlPattern = Pattern.compile("jdbc:oracle:(thin|oci|kprb):@[(\\w\\s=)]+HOST\\s*=\\s*([\\w\\-\\.]+).*PORT\\s*=\\s*(\\d+).*SERVICE_NAME\\s*=\\s*(\\w+)\\)");
     
     public OracleDataSourceMetaData(final String url, final String username) {
         List<Matcher> matcherList = Arrays.asList(thinUrlPattern.matcher(url), connectDescriptorUrlPattern.matcher(url));

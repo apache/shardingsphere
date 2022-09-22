@@ -39,7 +39,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
@@ -56,7 +56,7 @@ public final class ShardingSphereMetaDataTest {
         ResourceHeldRule<?> databaseResourceHeldRule = mock(ResourceHeldRule.class);
         ResourceHeldRule<?> globalResourceHeldRule = mock(ResourceHeldRule.class);
         ShardingSphereDatabase database = mockDatabase(resource, dataSource, databaseResourceHeldRule);
-        try (MockedStatic<ShardingSphereDatabase> mockedStatic = mockStatic(ShardingSphereDatabase.class);) {
+        try (MockedStatic<ShardingSphereDatabase> mockedStatic = mockStatic(ShardingSphereDatabase.class)) {
             DatabaseType databaseType = mock(DatabaseType.class);
             mockedStatic.when(() -> ShardingSphereDatabase.create("foo_db", databaseType)).thenReturn(database);
             Map<String, ShardingSphereDatabase> databases = new HashMap<>(Collections.singletonMap("foo_db", database));

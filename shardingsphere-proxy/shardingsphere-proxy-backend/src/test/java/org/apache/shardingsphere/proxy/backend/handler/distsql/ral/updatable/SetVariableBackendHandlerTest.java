@@ -51,7 +51,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -76,7 +76,7 @@ public final class SetVariableBackendHandlerTest extends ProxyContextRestorer {
         Map<String, ShardingSphereDatabase> result = new HashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-            when(database.getResource()).thenReturn(new ShardingSphereResource(Collections.emptyMap()));
+            when(database.getResource()).thenReturn(new ShardingSphereResource("sharding_db", Collections.emptyMap()));
             when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
             when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
             result.put(String.format(DATABASE_PATTERN, i), database);

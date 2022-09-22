@@ -20,12 +20,13 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ex
 import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.ByteBufTestUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class PostgreSQLInt4ArrayBinaryProtocolValueTest {
     
@@ -33,7 +34,7 @@ public final class PostgreSQLInt4ArrayBinaryProtocolValueTest {
         return new PostgreSQLInt4ArrayBinaryProtocolValue();
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = UnsupportedSQLOperationException.class)
     public void assertGetColumnLength() {
         newInstance().getColumnLength("val");
     }
@@ -52,7 +53,7 @@ public final class PostgreSQLInt4ArrayBinaryProtocolValueTest {
         assertThat(byteBuf.readerIndex(), is(expectedLength));
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = UnsupportedSQLOperationException.class)
     public void assertWrite() {
         newInstance().write(new PostgreSQLPacketPayload(null, StandardCharsets.UTF_8), "val");
     }

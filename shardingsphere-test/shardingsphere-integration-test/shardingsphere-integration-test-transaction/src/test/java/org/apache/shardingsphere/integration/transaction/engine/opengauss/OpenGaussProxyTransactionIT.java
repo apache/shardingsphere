@@ -20,11 +20,8 @@ package org.apache.shardingsphere.integration.transaction.engine.opengauss;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
-import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.integration.transaction.framework.param.TransactionParameterized;
-import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -32,7 +29,6 @@ import org.junit.runners.Parameterized.Parameters;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Objects;
 
 /**
  * OpenGauss general transaction test case with proxy container, includes multiple cases.
@@ -54,27 +50,15 @@ public final class OpenGaussProxyTransactionIT extends BaseTransactionITCase {
         return getTransactionParameterizedList(OpenGaussProxyTransactionIT.class);
     }
     
-    @Before
-    @SneakyThrows(SQLException.class)
-    public void before() {
-        if (TransactionTestConstants.PROXY.equalsIgnoreCase(parameterized.getAdapter())) {
-            if (Objects.equals(parameterized.getTransactionType(), TransactionType.LOCAL)) {
-                alterLocalTransactionRule();
-            } else if (Objects.equals(parameterized.getTransactionType(), TransactionType.XA)) {
-                alterXaTransactionRule(parameterized.getProvider());
-            }
-        }
-    }
-    
     @After
     @SneakyThrows(SQLException.class)
     public void after() {
         getDataSource().close();
-        getComposedContainer().close();
+        getContainerComposer().close();
     }
     
     @Test
-    public void assertTransaction() {
+    public void assertTransaction() throws SQLException {
         callTestCases(parameterized);
     }
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.type.complex;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.sharding.exception.ShardingRuleNotFoundException;
+import org.apache.shardingsphere.sharding.exception.metadata.ShardingRuleNotFoundException;
 import org.apache.shardingsphere.sharding.route.engine.fixture.AbstractRoutingEngineTest;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Test;
@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 public final class ShardingComplexRoutingEngineTest extends AbstractRoutingEngineTest {

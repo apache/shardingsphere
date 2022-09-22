@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
+import org.apache.shardingsphere.readwritesplitting.exception.algorithm.InvalidReadDatabaseWeightException;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 
 import java.util.Arrays;
@@ -63,9 +65,8 @@ public final class TransactionWeightReadQueryLoadBalanceAlgorithm implements Rea
     
     private double[] initWeight(final List<String> readDataSourceNames) {
         double[] result = getWeights(readDataSourceNames);
-        if (result.length != 0 && Math.abs(result[result.length - 1] - 1.0D) >= ACCURACY_THRESHOLD) {
-            throw new IllegalStateException("The cumulative weight is calculated incorrectly, and the sum of the probabilities is not equal to 1.");
-        }
+        Preconditions.checkState(0 == result.length || !(Math.abs(result[result.length - 1] - 1.0D) >= ACCURACY_THRESHOLD),
+                "The cumulative weight is calculated incorrectly, and the sum of the probabilities is not equal to 1");
         return result;
     }
     
@@ -99,14 +100,12 @@ public final class TransactionWeightReadQueryLoadBalanceAlgorithm implements Rea
     
     private double getWeightValue(final String readDataSourceName) {
         Object weightObject = props.get(readDataSourceName);
-        if (null == weightObject) {
-            throw new IllegalStateException("Read database access weight is not configured：" + readDataSourceName);
-        }
+        Preconditions.checkNotNull(weightObject, "Read database `%s` access weight is not configured", readDataSourceName);
         double result;
         try {
             result = Double.parseDouble(weightObject.toString());
         } catch (final NumberFormatException ex) {
-            throw new NumberFormatException("Read database weight configuration error, configuration parameters:" + weightObject);
+            throw new InvalidReadDatabaseWeightException(weightObject);
         }
         if (Double.isInfinite(result)) {
             result = 10000.0D;

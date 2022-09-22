@@ -31,7 +31,6 @@ import io.etcd.jetcd.support.Observers;
 import io.etcd.jetcd.watch.WatchEvent;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.lock.EtcdInternalLockHolder;
@@ -145,13 +144,13 @@ public final class EtcdRepository implements ClusterPersistRepository {
     }
     
     @Override
-    public void watchSessionConnection(final InstanceContext instanceContext) {
-        // TODO
+    public boolean persistLock(final String lockKey, final long timeoutMillis) {
+        return etcdInternalLockHolder.getInternalLock(lockKey).tryLock(timeoutMillis);
     }
     
     @Override
-    public boolean persistLock(final String lockKey, final long timeoutMillis) {
-        return etcdInternalLockHolder.getInternalLock(lockKey).tryLock(timeoutMillis);
+    public void deleteLock(final String lockKey) {
+        etcdInternalLockHolder.getInternalLock(lockKey).unlock();
     }
     
     @Override

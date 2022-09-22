@@ -24,7 +24,6 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemIncrementalTasksProgress;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemInventoryTasksProgress;
-import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobItemAPI;
@@ -53,18 +52,17 @@ public final class InventoryIncrementalJobItemAPIImpl implements PipelineJobItem
         InventoryIncrementalJobItemProgress jobItemProgress = new InventoryIncrementalJobItemProgress();
         jobItemProgress.setStatus(jobItemContext.getStatus());
         jobItemProgress.setSourceDatabaseType(jobItemContext.getJobConfig().getSourceDatabaseType());
+        jobItemProgress.setDataSourceName(jobItemContext.getDataSourceName());
         jobItemProgress.setIncremental(getIncrementalTasksProgress(context.getIncrementalTasks()));
         jobItemProgress.setInventory(getInventoryTasksProgress(context.getInventoryTasks()));
+        jobItemProgress.setProcessedRecordsCount(context.getProcessedRecordsCount());
         String value = YamlEngine.marshal(SWAPPER.swapToYamlConfiguration(jobItemProgress));
         PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), value);
     }
     
     private JobItemIncrementalTasksProgress getIncrementalTasksProgress(final Collection<IncrementalTask> incrementalTasks) {
-        Map<String, IncrementalTaskProgress> incrementalTaskProgressMap = new HashMap<>();
-        for (IncrementalTask each : incrementalTasks) {
-            incrementalTaskProgressMap.put(each.getTaskId(), each.getTaskProgress());
-        }
-        return new JobItemIncrementalTasksProgress(incrementalTaskProgressMap);
+        IncrementalTask incrementalTask = incrementalTasks.size() > 0 ? incrementalTasks.iterator().next() : null;
+        return new JobItemIncrementalTasksProgress(null != incrementalTask ? incrementalTask.getTaskProgress() : null);
     }
     
     private JobItemInventoryTasksProgress getInventoryTasksProgress(final Collection<InventoryTask> inventoryTasks) {

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.sharding.exception.ShardingRouteAlgorithmException;
+import org.apache.shardingsphere.sharding.exception.algorithm.ShardingRouteAlgorithmException;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.fixture.AbstractRoutingEngineTest;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngineTest {

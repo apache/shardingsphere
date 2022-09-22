@@ -19,16 +19,16 @@ package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.dbdiscovery.mysql.exception.InvalidMGRGroupNameConfigurationException;
-import org.apache.shardingsphere.dbdiscovery.mysql.exception.InvalidMGRModeException;
-import org.apache.shardingsphere.dbdiscovery.mysql.exception.InvalidMGRPluginException;
-import org.apache.shardingsphere.dbdiscovery.mysql.exception.InvalidMGRReplicationGroupMemberException;
+import org.apache.shardingsphere.dbdiscovery.mysql.exception.mgr.InvalidMGRGroupNameConfigurationException;
+import org.apache.shardingsphere.dbdiscovery.mysql.exception.mgr.InvalidMGRModeException;
+import org.apache.shardingsphere.dbdiscovery.mysql.exception.mgr.InvalidMGRPluginException;
+import org.apache.shardingsphere.dbdiscovery.mysql.exception.mgr.InvalidMGRReplicationGroupMemberException;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.exception.external.sql.SQLWrapperException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -88,7 +88,7 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
         return CompletableFuture.runAsync(() -> {
             try {
                 checkSingleDataSourceEnvironment(databaseName, dataSource);
-            } catch (SQLException ex) {
+            } catch (final SQLException ex) {
                 throw new SQLWrapperException(ex);
             }
         }, executorService);
@@ -107,20 +107,20 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
     
     private void checkPluginActive(final String databaseName, final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(QUERY_PLUGIN_STATUS)) {
-            ShardingSpherePreconditions.checkState(resultSet.next() && "ACTIVE".equals(resultSet.getString("PLUGIN_STATUS")), new InvalidMGRPluginException(databaseName));
+            ShardingSpherePreconditions.checkState(resultSet.next() && "ACTIVE".equals(resultSet.getString("PLUGIN_STATUS")), () -> new InvalidMGRPluginException(databaseName));
         }
     }
     
     private void checkSinglePrimaryMode(final String databaseName, final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(QUERY_SINGLE_PRIMARY_MODE)) {
-            ShardingSpherePreconditions.checkState(resultSet.next() && "ON".equals(resultSet.getString("VARIABLE_VALUE")), new InvalidMGRModeException(databaseName));
+            ShardingSpherePreconditions.checkState(resultSet.next() && "ON".equals(resultSet.getString("VARIABLE_VALUE")), () -> new InvalidMGRModeException(databaseName));
         }
     }
     
     private void checkGroupName(final String databaseName, final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(QUERY_GROUP_NAME)) {
             ShardingSpherePreconditions.checkState(resultSet.next() && props.getProperty("group-name", "").equals(resultSet.getString("VARIABLE_VALUE")),
-                    new InvalidMGRGroupNameConfigurationException(props.getProperty("group-name"), databaseName));
+                    () -> new InvalidMGRGroupNameConfigurationException(props.getProperty("group-name"), databaseName));
         }
     }
     

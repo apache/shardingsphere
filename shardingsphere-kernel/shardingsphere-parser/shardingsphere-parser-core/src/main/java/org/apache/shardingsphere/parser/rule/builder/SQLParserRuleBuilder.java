@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.parser.rule.builder;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRuleBuilder;
@@ -32,7 +33,8 @@ import java.util.Map;
 public final class SQLParserRuleBuilder implements GlobalRuleBuilder<SQLParserRuleConfiguration> {
     
     @Override
-    public SQLParserRule build(final SQLParserRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases, final InstanceContext instanceContext) {
+    public SQLParserRule build(final SQLParserRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases, final InstanceContext instanceContext,
+                               final ConfigurationProperties props) {
         return new SQLParserRule(ruleConfig);
     }
     

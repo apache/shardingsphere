@@ -44,7 +44,7 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -56,7 +56,7 @@ public final class ShowDatabasesExecutorTest extends ProxyContextRestorer {
     private ShowDatabasesExecutor showDatabasesExecutor;
     
     @Before
-    public void setUp() throws IllegalAccessException, NoSuchFieldException {
+    public void setUp() {
         showDatabasesExecutor = new ShowDatabasesExecutor(new MySQLShowDatabasesStatement());
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),

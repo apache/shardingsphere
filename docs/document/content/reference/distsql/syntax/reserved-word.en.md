@@ -35,7 +35,7 @@ weight = 3
 
 #### Shadow
 
-`CREATE`, `SHARDING`, `SINGLE`, `TABLE`, `RULE`, `RESOURCE`
+`CREATE`, `SHADOW`, `DEFAULT`, `ALGORITHM`, `RULE`, `SOURCE`, `SHADOW`, `TYPE`, `NAME`, `PROPERTIES`
 
 ### Supplement
 

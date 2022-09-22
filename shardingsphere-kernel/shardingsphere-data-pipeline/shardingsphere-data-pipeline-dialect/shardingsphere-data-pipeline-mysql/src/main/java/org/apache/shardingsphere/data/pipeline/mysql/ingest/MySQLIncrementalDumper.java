@@ -31,11 +31,11 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
+import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.AbstractIncrementalDumper;
-import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.api.metadata.PipelineColumnMetaData;
-import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.BinlogPosition;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractBinlogEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractRowsEvent;
@@ -137,8 +137,8 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
             DataRecord record = createDataRecord(event, each.length);
             record.setType(IngestDataChangeType.INSERT);
             for (int i = 0; i < each.length; i++) {
-                PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(i);
-                record.addColumn(new Column(columnMetaData.getName(), handleValue(columnMetaData, each[i]), true, tableMetaData.isUniqueKey(i)));
+                PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(i + 1);
+                record.addColumn(new Column(columnMetaData.getName(), handleValue(columnMetaData, each[i]), true, tableMetaData.getColumnMetaData(i + 1).isUniqueKey()));
             }
             pushRecord(record);
         }
@@ -158,7 +158,7 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
                 Serializable oldValue = beforeValues[j];
                 Serializable newValue = afterValues[j];
                 boolean updated = !Objects.equals(newValue, oldValue);
-                PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(j);
+                PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(j + 1);
                 record.addColumn(new Column(columnMetaData.getName(),
                         (columnMetaData.isPrimaryKey() && updated) ? handleValue(columnMetaData, oldValue) : null,
                         handleValue(columnMetaData, newValue), updated, columnMetaData.isPrimaryKey()));
@@ -172,8 +172,8 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
             DataRecord record = createDataRecord(event, each.length);
             record.setType(IngestDataChangeType.DELETE);
             for (int i = 0, length = each.length; i < length; i++) {
-                PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(i);
-                record.addColumn(new Column(columnMetaData.getName(), handleValue(columnMetaData, each[i]), true, tableMetaData.isUniqueKey(i)));
+                PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(i + 1);
+                record.addColumn(new Column(columnMetaData.getName(), handleValue(columnMetaData, each[i]), true, tableMetaData.getColumnMetaData(i + 1).isUniqueKey()));
             }
             pushRecord(record);
         }

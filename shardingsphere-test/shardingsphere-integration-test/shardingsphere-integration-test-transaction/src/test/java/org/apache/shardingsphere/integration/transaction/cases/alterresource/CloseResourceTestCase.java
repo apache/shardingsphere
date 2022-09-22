@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.integration.transaction.cases.alterresource;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.AdapterContainerConstants;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -31,8 +31,8 @@ import java.sql.SQLException;
 /**
  * Integration test of close resource.
  */
+@TransactionTestCase(adapters = AdapterContainerConstants.PROXY, group = "closeResource")
 @Slf4j
-@TransactionTestCase(adapters = TransactionTestConstants.PROXY, group = "closeResource")
 public final class CloseResourceTestCase extends BaseTransactionTestCase {
     
     public CloseResourceTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
@@ -40,8 +40,7 @@ public final class CloseResourceTestCase extends BaseTransactionTestCase {
     }
     
     @Override
-    @SneakyThrows
-    public void executeTest() {
+    public void executeTest() throws SQLException {
         assertCloseResource();
     }
     

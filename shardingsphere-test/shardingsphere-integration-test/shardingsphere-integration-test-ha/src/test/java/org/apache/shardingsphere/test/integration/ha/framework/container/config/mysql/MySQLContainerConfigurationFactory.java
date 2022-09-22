@@ -46,7 +46,7 @@ public final class MySQLContainerConfigurationFactory {
      */
     public static List<StorageContainerConfiguration> newInstance(final String scenario, final DatabaseType databaseType) {
         Integer containerQuantity = HAContainerUtil.loadContainerRawNamesAndQuantity(scenario).get(databaseType.getType().toLowerCase());
-        if (containerQuantity == null) {
+        if (null == containerQuantity) {
             return getDefaultConfiguration(databaseType);
         }
         if (1 == containerQuantity) {

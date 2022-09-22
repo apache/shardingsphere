@@ -34,6 +34,10 @@
         keyGenerateStrategy:
           column: order_item_id
           keyGeneratorName: snowflake
+        auditStrategy:
+          auditorNames:
+            - sharding_key_required_auditor
+          allowHintDisable: true
     autoTables:
       t_order_auto:
         actualDataSources: ds_0
@@ -71,3 +75,7 @@
     keyGenerators:
       snowflake:
         type: SNOWFLAKE
+
+    auditors:
+      sharding_key_required_auditor:
+        type: DML_SHARDING_CONDITIONS

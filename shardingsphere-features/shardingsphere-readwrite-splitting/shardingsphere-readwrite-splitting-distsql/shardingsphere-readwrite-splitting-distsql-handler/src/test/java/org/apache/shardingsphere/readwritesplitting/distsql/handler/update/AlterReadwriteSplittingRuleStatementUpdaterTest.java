@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
@@ -38,11 +39,13 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Properties;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -93,9 +96,54 @@ public final class AlterReadwriteSplittingRuleStatementUpdaterTest {
         updater.checkSQLStatement(database, createSQLStatement("INVALID_TYPE"), createCurrentRuleConfiguration());
     }
     
+    @Test(expected = InvalidRuleConfigurationException.class)
+    public void assertCheckSQLStatementWithDuplicateWriteResourceNamesInStatement() throws DistSQLException {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getResource()).thenReturn(resource);
+        updater.checkSQLStatement(database, createSQLStatementWithDuplicateWriteResourceNames("readwrite_ds_0", "readwrite_ds_1", "TEST"), createCurrentRuleConfigurationWithMultipleRules());
+    }
+    
+    @Test(expected = InvalidRuleConfigurationException.class)
+    public void assertCheckSQLStatementWithDuplicateWriteResourceNames() throws DistSQLException {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getResource()).thenReturn(resource);
+        updater.checkSQLStatement(database, createSQLStatement("readwrite_ds_0", "ds_write_1", Arrays.asList("read_ds_0", "read_ds_1"), "TEST"), createCurrentRuleConfigurationWithMultipleRules());
+    }
+    
+    @Test(expected = InvalidRuleConfigurationException.class)
+    public void assertCheckSQLStatementWithDuplicateReadResourceNamesInStatement() throws DistSQLException {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getResource()).thenReturn(resource);
+        updater.checkSQLStatement(database, createSQLStatementWithDuplicateReadResourceNames("readwrite_ds_0", "readwrite_ds_1", "TEST"), createCurrentRuleConfigurationWithMultipleRules());
+    }
+    
+    @Test(expected = InvalidRuleConfigurationException.class)
+    public void assertCheckSQLStatementWithDuplicateReadResourceNames() throws DistSQLException {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getResource()).thenReturn(resource);
+        updater.checkSQLStatement(database, createSQLStatement("readwrite_ds_1", "write_ds_1", Arrays.asList("read_ds_0_0", "read_ds_0_1"), "TEST"), createCurrentRuleConfigurationWithMultipleRules());
+    }
+    
     private AlterReadwriteSplittingRuleStatement createSQLStatement(final String loadBalancerTypeName) {
         ReadwriteSplittingRuleSegment ruleSegment = new ReadwriteSplittingRuleSegment("readwrite_ds", "write_ds", Arrays.asList("read_ds_0", "ds_read_ds_1"), loadBalancerTypeName, new Properties());
         return new AlterReadwriteSplittingRuleStatement(Collections.singleton(ruleSegment));
+    }
+    
+    private AlterReadwriteSplittingRuleStatement createSQLStatement(final String ruleName, final String writeDataSource, final Collection<String> readDataSources, final String loadBalancerName) {
+        ReadwriteSplittingRuleSegment ruleSegment = new ReadwriteSplittingRuleSegment(ruleName, writeDataSource, readDataSources, loadBalancerName, new Properties());
+        return new AlterReadwriteSplittingRuleStatement(Collections.singleton(ruleSegment));
+    }
+    
+    private AlterReadwriteSplittingRuleStatement createSQLStatementWithDuplicateWriteResourceNames(final String ruleName0, final String ruleName1, final String loadBalancerName) {
+        ReadwriteSplittingRuleSegment ruleSegment0 = new ReadwriteSplittingRuleSegment(ruleName0, "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), loadBalancerName, new Properties());
+        ReadwriteSplittingRuleSegment ruleSegment1 = new ReadwriteSplittingRuleSegment(ruleName1, "write_ds", Arrays.asList("read_ds_2", "read_ds_3"), loadBalancerName, new Properties());
+        return new AlterReadwriteSplittingRuleStatement(Arrays.asList(ruleSegment0, ruleSegment1));
+    }
+    
+    private AlterReadwriteSplittingRuleStatement createSQLStatementWithDuplicateReadResourceNames(final String ruleName0, final String ruleName1, final String loadBalancerName) {
+        ReadwriteSplittingRuleSegment ruleSegment0 = new ReadwriteSplittingRuleSegment(ruleName0, "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), loadBalancerName, new Properties());
+        ReadwriteSplittingRuleSegment ruleSegment1 = new ReadwriteSplittingRuleSegment(ruleName1, "write_ds_1", Arrays.asList("read_ds_0", "read_ds_1"), loadBalancerName, new Properties());
+        return new AlterReadwriteSplittingRuleStatement(Arrays.asList(ruleSegment0, ruleSegment1));
     }
     
     private ReadwriteSplittingRuleConfiguration createCurrentRuleConfiguration() {
@@ -103,5 +151,15 @@ public final class AlterReadwriteSplittingRuleStatementUpdaterTest {
                 new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds",
                         new StaticReadwriteSplittingStrategyConfiguration("ds_write", Arrays.asList("read_ds_0", "read_ds_1")), null, "TEST");
         return new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)), Collections.emptyMap());
+    }
+    
+    private ReadwriteSplittingRuleConfiguration createCurrentRuleConfigurationWithMultipleRules() {
+        ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig0 =
+                new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds_0",
+                        new StaticReadwriteSplittingStrategyConfiguration("ds_write_0", Arrays.asList("read_ds_0_0", "read_ds_0_1")), null, "TEST");
+        ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig1 =
+                new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds_1",
+                        new StaticReadwriteSplittingStrategyConfiguration("ds_write_1", Arrays.asList("read_ds_1_0", "read_ds_1_1")), null, "TEST");
+        return new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Arrays.asList(dataSourceRuleConfig0, dataSourceRuleConfig1)), Collections.emptyMap());
     }
 }

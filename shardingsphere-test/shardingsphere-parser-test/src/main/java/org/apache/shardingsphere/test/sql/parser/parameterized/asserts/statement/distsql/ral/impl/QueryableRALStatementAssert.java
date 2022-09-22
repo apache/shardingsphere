@@ -27,11 +27,11 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowAllV
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceInfoStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceListStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowModeInfoStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowSQLParserRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowSQLTranslatorRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTableMetadataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowVariableStatement;
+import org.apache.shardingsphere.parser.distsql.parser.statement.queryable.ShowSQLParserRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingReadResourcesStatement;
+import org.apache.shardingsphere.sqltranslator.distsql.parser.statement.ShowSQLTranslatorRuleStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.queryable.ConvertYamlConfigurationStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.queryable.ExportDatabaseConfigurationStatementAssert;

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.agent.plugin.tracing.zipkin.service;
 
 import brave.Tracing;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
 import org.junit.After;
 import org.junit.Test;
@@ -32,9 +31,8 @@ public final class ZipkinTracingPluginBootServiceTest {
     
     private final ZipkinTracingPluginBootService zipkinTracingPluginBootService = new ZipkinTracingPluginBootService();
     
-    @SneakyThrows
     @Test
-    public void assertStart() {
+    public void assertStart() throws ReflectiveOperationException {
         zipkinTracingPluginBootService.start(new PluginConfiguration("localhost", 9441, "", new Properties()));
         Field field = ZipkinTracingPluginBootService.class.getDeclaredField("tracing");
         field.setAccessible(true);

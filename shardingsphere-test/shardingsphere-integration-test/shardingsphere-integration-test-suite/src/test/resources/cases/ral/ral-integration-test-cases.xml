@@ -28,7 +28,7 @@
             <initial-sql sql="SET READWRITE_SPLITTING HINT SOURCE = write;CLEAR HINT"/>
         </assertion>
     </test-case>
-    
+
     <test-case sql="SHOW SHARDING HINT STATUS">
         <assertion expected-data-file="default_sharding_hint.xml"/>
         <assertion expected-data-file="set_database_value_hint.xml">
@@ -49,29 +49,33 @@
             <initial-sql sql="ADD SHARDING HINT TABLE_VALUE t_user_item= 100;CLEAR HINT"/>
         </assertion>
     </test-case>
-    
+
     <test-case sql="show variable transaction_type">
         <assertion expected-data-file="default_transaction_type.xml"/>
     </test-case>
-    
+
     <test-case sql="show variable transaction_type">
         <assertion expected-data-file="transaction_type.xml">
             <initial-sql sql="set variable transaction_type = 'XA'"/>
             <destroy-sql sql="set variable transaction_type = 'LOCAL'"/>
         </assertion>
     </test-case>
-    
+
     <test-case sql="show variable cached_connections">
         <assertion expected-data-file="cached_connections.xml"/>
     </test-case>
-    
+
     <test-case sql="preview select * from t_user_item">
         <assertion expected-data-file="preview_sql.xml"/>
     </test-case>
-    
+
     <test-case
             sql="PREVIEW SELECT * FROM t_single_table s INNER JOIN t_user_item i ON s.single_id = i.item_id WHERE i.user_id = 1">
         <assertion expected-data-file="preview_federation_select.xml"/>
+    </test-case>
+    
+    <test-case sql="SHOW INSTANCE LIST">
+        <assertion expected-data-file="show_instance_list.xml"/>
     </test-case>
 </integration-test-cases>
 

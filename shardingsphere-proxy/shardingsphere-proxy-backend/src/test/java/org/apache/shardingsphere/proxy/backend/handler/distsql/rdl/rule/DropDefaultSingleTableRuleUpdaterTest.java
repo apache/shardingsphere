@@ -43,7 +43,7 @@ public final class DropDefaultSingleTableRuleUpdaterTest {
     private ShardingSphereDatabase database;
     
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         when(database.getName()).thenReturn("sharding_db");
         when(database.getResource().getDataSources()).thenReturn(Collections.singletonMap("ds_0", new MockedDataSource()));
     }

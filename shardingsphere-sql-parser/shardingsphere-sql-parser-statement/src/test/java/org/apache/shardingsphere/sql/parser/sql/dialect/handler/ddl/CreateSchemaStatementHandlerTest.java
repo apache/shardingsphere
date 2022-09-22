@@ -20,12 +20,14 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateSchemaStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateSchemaStatement;
 import org.junit.Test;
 
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class CreateSchemaStatementHandlerTest {
@@ -46,5 +48,12 @@ public final class CreateSchemaStatementHandlerTest {
         Optional<IdentifierValue> actual = CreateSchemaStatementHandler.getUsername(createSchemaStatement);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getValue(), is("root"));
+    }
+    
+    @Test
+    public void assertGetUsernameForSQLServerStatement() {
+        SQLServerCreateSchemaStatement createSchemaStatement = new SQLServerCreateSchemaStatement();
+        Optional<IdentifierValue> actual = CreateSchemaStatementHandler.getUsername(createSchemaStatement);
+        assertFalse(actual.isPresent());
     }
 }

@@ -5,7 +5,7 @@ weight = 2
 
 ## 描述
 
-`CREATE SHADOW RULE` 语法用于创建影子库压测规则
+`CREATE SHADOW RULE` 语法用于创建影子库压测规则。
 
 ### 语法定义
 
@@ -38,7 +38,7 @@ algorithmName ::=
   identifier
 
 shadowAlgorithmType ::=
-  identifier
+  string
 ```
 
 ### 补充说明

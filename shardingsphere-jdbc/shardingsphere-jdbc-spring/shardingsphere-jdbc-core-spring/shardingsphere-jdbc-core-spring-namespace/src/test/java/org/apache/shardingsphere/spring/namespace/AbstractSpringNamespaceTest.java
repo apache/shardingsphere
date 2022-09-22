@@ -42,7 +42,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public abstract class AbstractSpringNamespaceTest extends AbstractJUnit4SpringContextTests {
@@ -110,7 +110,7 @@ public abstract class AbstractSpringNamespaceTest extends AbstractJUnit4SpringCo
     }
     
     private void assertGlobalRules(final Collection<ShardingSphereRule> actual) {
-        assertThat(actual.size(), is(5));
+        assertThat(actual.size(), is(6));
         for (ShardingSphereRule each : actual) {
             if (each instanceof SQLParserRule) {
                 assertSQLParserRule((SQLParserRule) each);

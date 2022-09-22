@@ -19,7 +19,7 @@ databaseName: sharding_db
 
 dataSources:
   ds_0:
-   url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false
+   url: jdbc:mysql://127.0.0.1:3306/demo_sharding_ds_0?serverTimezone=UTC&useSSL=false
    username: root
    password: 12345678
    connectionTimeoutMilliseconds: 30000
@@ -28,7 +28,7 @@ dataSources:
    maxPoolSize: 50
    minPoolSize: 1
   ds_1:
-   url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
+   url: jdbc:mysql://127.0.0.1:3306/demo_sharding_ds_1?serverTimezone=UTC&useSSL=false
    username: root
    password: 12345678
    connectionTimeoutMilliseconds: 30000
@@ -63,6 +63,8 @@ rules:
        column: order_item_id
        keyGeneratorName: snowflake
  bindingTables:
+   - t_order,t_order_item
+ broadcastTables:
    - t_order,t_order_item
  defaultDatabaseStrategy:
    standard:

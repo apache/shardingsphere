@@ -25,7 +25,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSource
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.SimpleMemoryPipelineChannel;
-import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,7 +36,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class PostgreSQLJdbcDumperTest {
     
@@ -50,7 +50,7 @@ public final class PostgreSQLJdbcDumperTest {
         InventoryDumperConfiguration dumperConfig = mockInventoryDumperConfiguration();
         dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
         jdbcDumper = new PostgreSQLInventoryDumper(mockInventoryDumperConfiguration(), new SimpleMemoryPipelineChannel(100),
-                dataSource, new PipelineTableMetaDataLoader(dataSource));
+                dataSource, new StandardPipelineTableMetaDataLoader(dataSource));
         initTableData(dataSource);
     }
     

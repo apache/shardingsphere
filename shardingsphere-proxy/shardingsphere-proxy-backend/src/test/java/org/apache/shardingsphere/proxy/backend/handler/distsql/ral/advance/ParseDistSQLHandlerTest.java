@@ -42,7 +42,7 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -58,7 +58,7 @@ public final class ParseDistSQLHandlerTest extends ProxyContextRestorer {
     private ConnectionSession connectionSession;
     
     @Before
-    public void setUp() throws SQLException {
+    public void setUp() {
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(globalRuleMetaData.getSingleRule(SQLParserRule.class)).thenReturn(sqlParserRule);

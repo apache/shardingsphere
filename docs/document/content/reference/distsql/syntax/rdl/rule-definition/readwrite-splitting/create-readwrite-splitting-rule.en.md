@@ -14,7 +14,7 @@ CreateReadwriteSplittingRule ::=
   'CREATE' 'READWRITE_SPLITTING' 'RULE' readwriteSplittingDefinition ( ',' readwriteSplittingDefinition )*
 
 readwriteSplittingDefinition ::=
-  ruleName '(' ( staticReadwriteSplittingDefinition | dynamicReadwriteSplittingDefinition ) ( ',' loadBanlancerDefinition )? ')'
+  ruleName '(' ( staticReadwriteSplittingDefinition | dynamicReadwriteSplittingDefinition ) ( ',' loadBalancerDefinition )? ')'
 
 staticReadwriteSplittingDefinition ::=
     'WRITE_RESOURCE' '=' writeResourceName ',' 'READ_RESOURCES' '(' ruleName (',' ruleName)* ')'
@@ -22,8 +22,8 @@ staticReadwriteSplittingDefinition ::=
 dynamicReadwriteSplittingDefinition ::=
     'AUTO_AWARE_RESOURCE' '=' resourceName ( ',' 'WRITE_DATA_SOURCE_QUERY_ENABLED' '=' ('TRUE' | 'FALSE') )?
 
-loadBanlancerDefinition ::=
-    'TYPE' '(' 'NAME' '=' loadBanlancerType ( ',' 'PROPERTIES' '(' 'key' '=' 'value' ( ',' 'key' '=' 'value' )* ')' )? ')'
+loadBalancerDefinition ::=
+    'TYPE' '(' 'NAME' '=' loadBalancerType ( ',' 'PROPERTIES' '(' 'key' '=' 'value' ( ',' 'key' '=' 'value' )* ')' )? ')'
 
 ruleName ::=
   identifier
@@ -33,13 +33,16 @@ writeResourceName ::=
 
 resourceName ::=
   identifier
+    
+loadBalancerType ::=
+  string
 ```
 
 ### Supplement
 
 - Support the creation of static readwrite-splitting rules and dynamic readwrite-splitting rules;
 - Dynamic readwrite-splitting rules rely on database discovery rules;
-- `loadBanlancerType` specifies the load balancing algorithm type, please refer to Load Balance Algorithm;
+- `loadBalancerType` specifies the load balancing algorithm type, please refer to Load Balance Algorithm;
 - Duplicate `ruleName` will not be created.
 
 ### Example

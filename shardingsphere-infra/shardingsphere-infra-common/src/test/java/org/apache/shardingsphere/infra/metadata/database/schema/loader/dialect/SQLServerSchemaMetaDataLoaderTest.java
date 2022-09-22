@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.Col
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ViewMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoaderFactory;
 import org.junit.Test;
@@ -36,7 +35,7 @@ import java.util.Iterator;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -143,18 +142,6 @@ public final class SQLServerSchemaMetaDataLoaderTest {
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
         assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, false, true, true, true)));
         assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false, true)));
-    }
-    
-    @Test
-    public void assertLoadViewMetaData() throws SQLException {
-        DataSource dataSource = mockDataSource();
-        ResultSet resultSet = mockViewMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement(LOAD_VIEW_META_DATA)
-                .executeQuery()).thenReturn(resultSet);
-        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.singletonList("tbl"), "sharding_db");
-        ViewMetaData actualViewMetaData = actual.iterator().next().getViews().iterator().next();
-        assertThat(actualViewMetaData.getName(), is("v_order"));
-        assertThat(actualViewMetaData.getViewDefinition(), is("create view v_order as select * from t_order;"));
     }
     
     private DataSource mockDataSource() throws SQLException {

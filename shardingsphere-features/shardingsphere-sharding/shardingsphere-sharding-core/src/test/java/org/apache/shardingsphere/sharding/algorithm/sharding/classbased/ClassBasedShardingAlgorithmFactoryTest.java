@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.classbased;
 
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
-import org.apache.shardingsphere.sharding.exception.ShardingAlgorithmClassImplementationException;
+import org.apache.shardingsphere.sharding.exception.algorithm.ShardingAlgorithmClassImplementationException;
 import org.apache.shardingsphere.sharding.fixture.ClassBasedHintShardingAlgorithmFixture;
 import org.apache.shardingsphere.sharding.fixture.ClassBasedStandardShardingAlgorithmFixture;
 import org.junit.Test;
@@ -26,7 +26,7 @@ import org.junit.Test;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class ClassBasedShardingAlgorithmFactoryTest {
     

@@ -50,26 +50,26 @@
         <user-create>
             <sql>CREATE ROLE default_role</sql>
             <sql>CREATE USER user_dev@localhost</sql>
-            <sql>GRANT select,update,insert,delete on encrypt_write_ds_0.* to user_dev@localhost</sql>
-            <sql>GRANT select,update,insert,delete on encrypt_write_ds_1.* to user_dev@localhost</sql>
-            <sql>GRANT select,update,insert,delete on encrypt_write_ds_2.* to user_dev@localhost</sql>
-            <sql>GRANT select,update,insert,delete on encrypt_write_ds_3.* to user_dev@localhost</sql>
-            <sql>GRANT select,update,insert,delete on encrypt_write_ds_4.* to user_dev@localhost</sql>
-            <sql>GRANT select,update,insert,delete on encrypt_write_ds_5.* to user_dev@localhost</sql>
-            <sql>GRANT select,update,insert,delete on encrypt_write_ds_6.* to user_dev@localhost</sql>
-            <sql>GRANT select,update,insert,delete on encrypt_write_ds_7.* to user_dev@localhost</sql>
-            <sql>GRANT select,update,insert,delete on encrypt_write_ds_8.* to user_dev@localhost</sql>
-            <sql>GRANT select,update,insert,delete on encrypt_write_ds_9.* to user_dev@localhost</sql>
-            <sql>GRANT select,update,insert,delete on encrypt_read_ds_0.* to user_dev@localhost</sql>
-            <sql>GRANT select,update,insert,delete on encrypt_read_ds_1.* to user_dev@localhost</sql>
-            <sql>GRANT select,update,insert,delete on encrypt_read_ds_2.* to user_dev@localhost</sql>
-            <sql>GRANT select,update,insert,delete on encrypt_read_ds_3.* to user_dev@localhost</sql>
-            <sql>GRANT select,update,insert,delete on encrypt_read_ds_4.* to user_dev@localhost</sql>
-            <sql>GRANT select,update,insert,delete on encrypt_read_ds_5.* to user_dev@localhost</sql>
-            <sql>GRANT select,update,insert,delete on encrypt_read_ds_6.* to user_dev@localhost</sql>
-            <sql>GRANT select,update,insert,delete on encrypt_read_ds_7.* to user_dev@localhost</sql>
-            <sql>GRANT select,update,insert,delete on encrypt_read_ds_8.* to user_dev@localhost</sql>
-            <sql>GRANT select,update,insert,delete on encrypt_read_ds_9.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on write_ds_0.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on write_ds_1.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on write_ds_2.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on write_ds_3.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on write_ds_4.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on write_ds_5.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on write_ds_6.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on write_ds_7.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on write_ds_8.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on write_ds_9.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on read_ds_0.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on read_ds_1.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on read_ds_2.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on read_ds_3.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on read_ds_4.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on read_ds_5.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on read_ds_6.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on read_ds_7.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on read_ds_8.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on read_ds_9.* to user_dev@localhost</sql>
         </user-create>
         <user-drop>
             <sql>DROP USER IF EXISTS user_dev@localhost</sql>

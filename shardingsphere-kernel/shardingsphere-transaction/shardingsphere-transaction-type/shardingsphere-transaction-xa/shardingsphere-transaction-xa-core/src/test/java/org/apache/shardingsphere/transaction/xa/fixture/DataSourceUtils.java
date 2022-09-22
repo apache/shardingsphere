@@ -22,6 +22,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
 
 import javax.sql.DataSource;
@@ -47,7 +48,7 @@ public final class DataSourceUtils {
         if (AtomikosDataSourceBean.class == dataSourceClass) {
             return createAtomikosDataSourceBean(databaseType, createHikariDataSource(databaseType, databaseName), databaseName);
         }
-        throw new UnsupportedOperationException(dataSourceClass.getName());
+        throw new UnsupportedSQLOperationException(dataSourceClass.getName());
     }
     
     private static HikariDataSource createHikariDataSource(final DatabaseType databaseType, final String databaseName) {
@@ -86,7 +87,7 @@ public final class DataSourceUtils {
             case "H2":
                 return String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL", databaseName);
             default:
-                throw new UnsupportedOperationException(databaseType.getType());
+                throw new UnsupportedSQLOperationException(databaseType.getType());
         }
     }
 }

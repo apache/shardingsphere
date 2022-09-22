@@ -21,7 +21,7 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -34,7 +34,7 @@ public final class MySQLCommandPacketTypeLoaderTest {
         assertThat(MySQLCommandPacketTypeLoader.getCommandPacketType(payload), is(MySQLCommandPacketType.COM_QUIT));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void assertGetCommandPacketTypeError() {
         MySQLPacketPayload payload = mock(MySQLPacketPayload.class);
         when(payload.readInt1()).thenReturn(0, 0x21);

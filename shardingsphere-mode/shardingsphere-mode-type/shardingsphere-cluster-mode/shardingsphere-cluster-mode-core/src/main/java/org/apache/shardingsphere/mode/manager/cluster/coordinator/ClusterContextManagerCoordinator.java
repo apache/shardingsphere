@@ -20,6 +20,8 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
+import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.BatchYamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
@@ -33,7 +35,8 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.RuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema.SchemaChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema.TableMetaDataChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema.ViewMetaDataChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version.DatabaseVersionChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseDeletedEvent;
@@ -128,14 +131,25 @@ public final class ClusterContextManagerCoordinator {
     }
     
     /**
-     * Renew meta data of the schema.
+     * Renew meta data of the table.
      *
-     * @param event meta data changed event
+     * @param event table meta data changed event
      */
     @Subscribe
-    public synchronized void renew(final SchemaChangedEvent event) {
-        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getChangedTableMetaData());
-        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getDeletedTable());
+    public synchronized void renew(final TableMetaDataChangedEvent event) {
+        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getChangedTableMetaData(), null);
+        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getDeletedTable(), null);
+    }
+    
+    /**
+     * Renew meta data of the view.
+     *
+     * @param event view meta data changed event
+     */
+    @Subscribe
+    public synchronized void renew(final ViewMetaDataChangedEvent event) {
+        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), null, event.getChangedViewMetaData());
+        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), null, event.getDeletedView());
     }
     
     /**
@@ -185,6 +199,8 @@ public final class ClusterContextManagerCoordinator {
                 .getRules().stream().filter(each -> each instanceof StaticDataSourceContainedRule).findFirst();
         staticDataSourceRule.ifPresent(shardingSphereRule -> ((StaticDataSourceContainedRule) shardingSphereRule)
                 .updateStatus(new StorageNodeDataSourceChangedEvent(qualifiedDatabase, event.getDataSource())));
+        DataSourceStateManager.getInstance().updateState(qualifiedDatabase.getDatabaseName(), qualifiedDatabase.getDataSourceName(),
+                DataSourceState.getDataSourceState(event.getDataSource().getStatus()));
     }
     
     /**

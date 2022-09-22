@@ -17,12 +17,16 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job;
 
+import com.google.common.base.Preconditions;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
 
 /**
  * Pipeline job id utils.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PipelineJobIdUtils {
     
     /**
@@ -40,20 +44,13 @@ public final class PipelineJobIdUtils {
      *
      * @param jobId job id
      * @return job type
-     * @throws IllegalArgumentException if job id is invalid
      */
     public static JobType parseJobType(final String jobId) {
-        if (jobId.length() <= 3) {
-            throw new IllegalArgumentException("Invalid jobId length, jobId=" + jobId);
-        }
-        if ('j' != jobId.charAt(0)) {
-            throw new IllegalArgumentException("Invalid jobId, first char=" + jobId.charAt(0));
-        }
+        Preconditions.checkArgument(jobId.length() > 3, "Invalid jobId length, jobId=%s", jobId);
+        Preconditions.checkArgument('j' == jobId.charAt(0), "Invalid jobId, first char=%s", jobId.charAt(0));
         String typeCode = jobId.substring(1, 3);
         JobType result = JobType.valueOfByCode(typeCode);
-        if (null == result) {
-            throw new IllegalArgumentException("Could not get JobType by '" + typeCode + "', jobId: " + jobId);
-        }
+        Preconditions.checkNotNull(result, "Can not get job type by `%s`, job ID is `%s`", typeCode, jobId);
         return result;
     }
 }

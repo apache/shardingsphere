@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.transaction.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.update.GlobalRuleRALUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -34,7 +33,7 @@ import java.util.Collection;
 public final class AlterTransactionRuleStatementUpdater implements GlobalRuleRALUpdater {
     
     @Override
-    public void executeUpdate(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) throws DistSQLException {
+    public void executeUpdate(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         Collection<ShardingSphereRule> globalRules = metaData.getGlobalRuleMetaData().getRules();
         globalRules.stream().filter(each -> each instanceof TransactionRule).forEach(each -> ((TransactionRule) each).closeStaleResource());
         globalRules.removeIf(each -> each instanceof TransactionRule);

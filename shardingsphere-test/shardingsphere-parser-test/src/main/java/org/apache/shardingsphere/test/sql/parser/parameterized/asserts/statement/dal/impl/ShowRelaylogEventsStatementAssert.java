@@ -19,12 +19,12 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowRelaylogEventsStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowRelayLogEventsStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowRelaylogEventsStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowRelayLogEventsStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Show relay log events statement assert.
@@ -39,7 +39,7 @@ public final class ShowRelaylogEventsStatementAssert {
      * @param actual actual show relay log events statement
      * @param expected expected show relay log events statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowRelaylogEventsStatement actual, final ShowRelaylogEventsStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowRelayLogEventsStatement actual, final ShowRelayLogEventsStatementTestCase expected) {
         assertThat(assertContext.getText("Actual show relay log channel name assertion error: "), actual.getChannel(), is(expected.getChannel()));
         if (null != expected.getLogName()) {
             assertThat(assertContext.getText("Actual show relay log name assertion error: "), actual.getLogName(), is(expected.getLogName()));

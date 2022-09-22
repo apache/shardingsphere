@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
@@ -45,18 +46,21 @@ public final class CreateViewStatementSchemaRefresher implements MetaDataRefresh
     public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                                                     final String schemaName, final CreateViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String viewName = sqlStatement.getView().getTableName().getIdentifier().getValue();
+        String viewDefinition = sqlStatement.getViewSQL().substring(sqlStatement.getViewSQL().substring(0, sqlStatement.getViewSQL().indexOf(" as ")).length() + 4).trim();
         if (!containsInImmutableDataNodeContainedRule(viewName, database)) {
             database.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, viewName));
         }
         GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(database.getProtocolType(),
                 database.getResource().getDatabaseType(), database.getResource().getDataSources(), database.getRuleMetaData().getRules(), props, schemaName);
         Map<String, ShardingSphereSchema> schemaMap = GenericSchemaBuilder.build(Collections.singletonList(viewName), materials);
-        Optional<ShardingSphereTable> actualViewMetaData = Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.getTable(viewName));
-        // TODO Put view meta data to ShardingSphereSchema 's views
-        if (actualViewMetaData.isPresent()) {
-            database.getSchema(schemaName).putTable(viewName, actualViewMetaData.get());
+        Optional<ShardingSphereTable> actualTableMetaData = Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.getTable(viewName));
+        if (actualTableMetaData.isPresent()) {
+            ShardingSphereView view = new ShardingSphereView(viewName, viewDefinition);
+            database.getSchema(schemaName).putTable(viewName, actualTableMetaData.get());
+            database.getSchema(schemaName).putView(viewName, view);
             SchemaAlteredEvent event = new SchemaAlteredEvent(database.getName(), schemaName);
-            event.getAlteredTables().add(actualViewMetaData.get());
+            event.getAlteredTables().add(actualTableMetaData.get());
+            event.getAlteredViews().add(view);
             return Optional.of(event);
         }
         return Optional.empty();

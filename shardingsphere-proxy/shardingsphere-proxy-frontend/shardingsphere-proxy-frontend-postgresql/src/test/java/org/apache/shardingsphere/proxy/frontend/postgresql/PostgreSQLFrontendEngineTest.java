@@ -48,7 +48,7 @@ public final class PostgreSQLFrontendEngineTest {
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private ConcurrentMap<Integer, PostgreSQLConnectionContext> getConnectionContexts() {
         Field field = PostgreSQLConnectionContextRegistry.class.getDeclaredField("connectionContexts");
         field.setAccessible(true);

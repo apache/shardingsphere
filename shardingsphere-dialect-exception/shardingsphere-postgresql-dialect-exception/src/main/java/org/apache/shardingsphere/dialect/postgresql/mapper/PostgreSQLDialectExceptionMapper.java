@@ -29,6 +29,7 @@ import org.apache.shardingsphere.dialect.postgresql.exception.authority.EmptyUse
 import org.apache.shardingsphere.dialect.postgresql.exception.authority.InvalidPasswordException;
 import org.apache.shardingsphere.dialect.postgresql.exception.authority.PrivilegeNotGrantedException;
 import org.apache.shardingsphere.dialect.postgresql.exception.authority.UnknownUsernameException;
+import org.apache.shardingsphere.dialect.postgresql.exception.metadata.ColumnNotFoundException;
 import org.apache.shardingsphere.dialect.postgresql.exception.protocol.ProtocolViolationException;
 import org.apache.shardingsphere.dialect.postgresql.message.ServerErrorMessageBuilder;
 import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
@@ -81,6 +82,10 @@ public final class PostgreSQLDialectExceptionMapper implements SQLDialectExcepti
         if (sqlDialectException instanceof ProtocolViolationException) {
             ProtocolViolationException cause = (ProtocolViolationException) sqlDialectException;
             return new PSQLException(ServerErrorMessageBuilder.build("FATAL", PostgreSQLVendorError.PROTOCOL_VIOLATION, cause.getExpectedMessageType(), cause.getActualMessageType()));
+        }
+        if (sqlDialectException instanceof ColumnNotFoundException) {
+            ColumnNotFoundException cause = (ColumnNotFoundException) sqlDialectException;
+            return new PSQLException(ServerErrorMessageBuilder.build("FATAL", PostgreSQLVendorError.UNDEFINED_COLUMN, cause.getTableName(), cause.getColumnName()));
         }
         return new PSQLException(sqlDialectException.getMessage(), PSQLState.UNEXPECTED_ERROR);
     }

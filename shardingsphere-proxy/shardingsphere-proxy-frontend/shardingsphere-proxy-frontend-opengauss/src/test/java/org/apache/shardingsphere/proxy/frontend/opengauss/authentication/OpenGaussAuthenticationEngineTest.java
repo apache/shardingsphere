@@ -62,7 +62,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -114,7 +114,7 @@ public final class OpenGaussAuthenticationEngineTest extends ProxyContextRestore
         authenticationEngine.authenticate(channelHandlerContext, payload);
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setAlreadyReceivedStartupMessage(final OpenGaussAuthenticationEngine target) {
         Field field = OpenGaussAuthenticationEngine.class.getDeclaredField("startupMessageReceived");
         field.setAccessible(true);
@@ -174,7 +174,7 @@ public final class OpenGaussAuthenticationEngineTest extends ProxyContextRestore
     
     private ShardingSphereRuleMetaData buildGlobalRuleMetaData(final ShardingSphereUser user) {
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.singletonList(user), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()));
-        AuthorityRule rule = new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap(), mock(InstanceContext.class));
+        AuthorityRule rule = new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap(), mock(InstanceContext.class), mock(ConfigurationProperties.class));
         return new ShardingSphereRuleMetaData(Collections.singletonList(rule));
     }
     

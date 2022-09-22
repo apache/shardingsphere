@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.mode.metadata.persist.service;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.metadata.database.schema.SchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.metadata.persist.service.schema.TableMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.schema.ViewMetaDataPersistService;
@@ -101,9 +103,12 @@ public final class DatabaseMetaDataPersistService {
      * @param schema schema meta data
      */
     public void compareAndPersist(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
-        addSchema(databaseName, schemaName);
-        tableMetaDataPersistService.compareAndPersist(databaseName, schemaName, schema.getTables());
-        viewMetaDataPersistService.compareAndPersist(databaseName, schemaName, schema.getViews());
+        if (schema.getTables().isEmpty() && schema.getViews().isEmpty()) {
+            addSchema(databaseName, schemaName);
+        }
+        Map<String, ShardingSphereTable> currentTables = tableMetaDataPersistService.load(databaseName, schemaName);
+        tableMetaDataPersistService.persist(databaseName, schemaName, SchemaManager.getToBeAddedTables(schema.getTables(), currentTables));
+        SchemaManager.getToBeDeletedTables(schema.getTables(), currentTables).forEach((key, value) -> tableMetaDataPersistService.delete(databaseName, schemaName, key));
     }
     
     /**
@@ -114,9 +119,21 @@ public final class DatabaseMetaDataPersistService {
      * @param schema schema meta data
      */
     public void persist(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
-        addSchema(databaseName, schemaName);
+        if (schema.getTables().isEmpty() && schema.getViews().isEmpty()) {
+            addSchema(databaseName, schemaName);
+        }
         tableMetaDataPersistService.persist(databaseName, schemaName, schema.getTables());
-        viewMetaDataPersistService.persist(databaseName, schemaName, schema.getViews());
+    }
+    
+    /**
+     * Delete schema meta data.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param schema schema meta data
+     */
+    public void delete(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
+        schema.getTables().forEach((key, value) -> tableMetaDataPersistService.delete(databaseName, schemaName, key));
     }
     
     /**

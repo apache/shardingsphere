@@ -33,7 +33,7 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -60,6 +60,7 @@ public final class AlterViewStatementContextTest {
     public void assertPostgreSQLNewInstance() {
         PostgreSQLAlterViewStatement postgreSQLAlterViewStatement = mock(PostgreSQLAlterViewStatement.class);
         when(postgreSQLAlterViewStatement.getView()).thenReturn(view);
+        when(postgreSQLAlterViewStatement.getRenameView()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("view")))));
         assertNewInstance(postgreSQLAlterViewStatement);
     }
     
@@ -67,5 +68,6 @@ public final class AlterViewStatementContextTest {
         AlterViewStatementContext actual = new AlterViewStatementContext(alterViewStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
         assertThat(actual.getSqlStatement(), is(alterViewStatement));
+        assertThat(actual.getAllTables().size(), is(2));
     }
 }

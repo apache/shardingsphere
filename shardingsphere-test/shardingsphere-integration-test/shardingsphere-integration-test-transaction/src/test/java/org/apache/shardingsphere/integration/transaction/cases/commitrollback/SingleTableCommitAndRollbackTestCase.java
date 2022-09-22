@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.integration.transaction.cases.commitrollback;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
@@ -38,14 +37,12 @@ public final class SingleTableCommitAndRollbackTestCase extends BaseTransactionT
     }
     
     @Override
-    @SneakyThrows
-    public void executeTest() {
+    public void executeTest() throws SQLException {
         assertRollback();
         assertCommit();
     }
     
-    @SneakyThrows(SQLException.class)
-    private void assertRollback() {
+    private void assertRollback() throws SQLException {
         Connection conn = getDataSource().getConnection();
         conn.setAutoCommit(false);
         assertAccountRowCount(conn, 0);
@@ -56,8 +53,7 @@ public final class SingleTableCommitAndRollbackTestCase extends BaseTransactionT
         assertAccountRowCount(conn, 0);
     }
     
-    @SneakyThrows(SQLException.class)
-    public void assertCommit() {
+    public void assertCommit() throws SQLException {
         Connection conn = getDataSource().getConnection();
         conn.setAutoCommit(false);
         assertAccountRowCount(conn, 0);

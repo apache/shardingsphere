@@ -23,13 +23,16 @@ import org.apache.shardingsphere.driver.jdbc.context.JDBCContext;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.metadata.ShardingSphereDatabaseMetaData;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
+import org.apache.shardingsphere.driver.jdbc.exception.connection.ConnectionClosedException;
 import org.apache.shardingsphere.infra.context.ConnectionContext;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.Array;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Savepoint;
 import java.sql.Statement;
 
@@ -199,7 +202,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     public Savepoint setSavepoint(final String name) throws SQLException {
         checkClose();
         if (!isHoldTransaction()) {
-            throw new SQLException("Savepoint can only be used in transaction blocks.");
+            throw new SQLFeatureNotSupportedException("Savepoint can only be used in transaction blocks.");
         }
         return connectionManager.setSavepoint(name);
     }
@@ -207,9 +210,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     @Override
     public Savepoint setSavepoint() throws SQLException {
         checkClose();
-        if (!isHoldTransaction()) {
-            throw new SQLException("Savepoint can only be used in transaction blocks.");
-        }
+        ShardingSpherePreconditions.checkState(isHoldTransaction(), () -> new SQLFeatureNotSupportedException("Savepoint can only be used in transaction blocks."));
         return connectionManager.setSavepoint();
     }
     
@@ -223,9 +224,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     }
     
     private void checkClose() throws SQLException {
-        if (isClosed()) {
-            throw new SQLException("This connection has been closed");
-        }
+        ShardingSpherePreconditions.checkState(!isClosed(), () -> new ConnectionClosedException().toSQLException());
     }
     
     @SuppressWarnings("MagicConstant")

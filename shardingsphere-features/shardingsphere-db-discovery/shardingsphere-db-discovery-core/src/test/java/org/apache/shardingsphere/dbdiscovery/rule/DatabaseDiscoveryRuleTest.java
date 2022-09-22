@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.schedule.core.ScheduleContextFactory;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -41,7 +40,7 @@ import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -53,12 +52,7 @@ public final class DatabaseDiscoveryRuleTest {
     
     @BeforeClass
     public static void setUp() {
-        ScheduleContextFactory.getInstance().init("foo_id", new ModeConfiguration("Cluster", mock(PersistRepositoryConfiguration.class), false));
-    }
-    
-    @AfterClass
-    public static void tearDown() {
-        ScheduleContextFactory.getInstance().getScheduleStrategy().remove("foo_id");
+        ScheduleContextFactory.newInstance(new ModeConfiguration("Cluster", mock(PersistRepositoryConfiguration.class), false));
     }
     
     @Test

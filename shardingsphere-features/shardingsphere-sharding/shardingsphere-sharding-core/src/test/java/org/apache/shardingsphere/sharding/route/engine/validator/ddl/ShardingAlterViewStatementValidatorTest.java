@@ -20,7 +20,8 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.sharding.exception.UnsupportedShardingOperationException;
+import org.apache.shardingsphere.sharding.exception.syntax.RenamedViewWithoutSameConfigurationException;
+import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingAlterViewStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterViewSt
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLAlterViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterViewStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -66,6 +68,30 @@ public final class ShardingAlterViewStatementValidatorTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         SQLStatementContext<AlterViewStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
+        new ShardingAlterViewStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database);
+    }
+    
+    @Test
+    public void assertPreValidateAlterRenamedView() {
+        OpenGaussAlterViewStatement selectStatement = new OpenGaussAlterViewStatement();
+        selectStatement.setView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        selectStatement.setRenameView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_new"))));
+        SQLStatementContext<AlterViewStatement> sqlStatementContext = new CommonSQLStatementContext<>(selectStatement);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(shardingRule.isBroadcastTable("t_order")).thenReturn(true);
+        when(shardingRule.isBroadcastTable("t_order_new")).thenReturn(true);
+        new ShardingAlterViewStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database);
+    }
+    
+    @Test(expected = RenamedViewWithoutSameConfigurationException.class)
+    public void assertPreValidateAlterRenamedViewWithoutSameConfig() {
+        OpenGaussAlterViewStatement selectStatement = new OpenGaussAlterViewStatement();
+        selectStatement.setView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        selectStatement.setRenameView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_new"))));
+        SQLStatementContext<AlterViewStatement> sqlStatementContext = new CommonSQLStatementContext<>(selectStatement);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(shardingRule.isBroadcastTable("t_order")).thenReturn(true);
+        when(shardingRule.isBroadcastTable("t_order_new")).thenReturn(false);
         new ShardingAlterViewStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database);
     }
 }

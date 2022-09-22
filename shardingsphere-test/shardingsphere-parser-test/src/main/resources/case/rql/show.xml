@@ -111,9 +111,9 @@
         <database name="databaseName" start-index="41" stop-index="52"/>
     </show-unused-sharding-key-generators>
 
-    <count-database-rules sql-case-id="count-database-rules">
-        <database name="databaseName" start-index="26" stop-index="37"/>
-    </count-database-rules>
+    <show-unused-sharding-auditors sql-case-id="show-unused-sharding-auditors">
+        <database name="databaseName" start-index="35" stop-index="46"/>
+    </show-unused-sharding-auditors>
 
     <show-rules-used-resource sql-case-id="show-rules-used-resource" resource-name="ds_0">
         <database name="databaseName" start-index="35" stop-index="46"/>
@@ -122,6 +122,10 @@
     <show-sharding-table-rules-used-key-generator sql-case-id="show-sharding-table-rules-used-key-generator" keyGenerator="snowflake">
         <database name="sharding_db" start-index="60" stop-index="70"/>
     </show-sharding-table-rules-used-key-generator>
+
+    <show-sharding-table-rules-used-auditor sql-case-id="show-sharding-table-rules-used-auditor" auditor="shardingKeyAudit">
+        <database name="sharding_db" start-index="61" stop-index="71"/>
+    </show-sharding-table-rules-used-auditor>
 
     <show-sharding-table-rules-used-algorithm sql-case-id="show-sharding-table-rules-used-algorithm" algorithmName="t_order_inline">
         <database name="sharding_db" start-index="61" stop-index="71"/>

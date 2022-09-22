@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 
 /**
@@ -49,7 +50,7 @@ public final class AggregationUnitFactory {
             case BIT_XOR:
                 return new BitXorAggregationUnit();
             default:
-                throw new UnsupportedOperationException(type.name());
+                throw new UnsupportedSQLOperationException(type.name());
         }
     }
 }

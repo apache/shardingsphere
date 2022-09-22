@@ -19,15 +19,15 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.context.AbstractPipelineProcessContext;
-import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.context.AbstractInventoryIncrementalProcessContext;
 
 /**
  * Migration process context.
  */
 @Getter
 @Slf4j
-public final class MigrationProcessContext extends AbstractPipelineProcessContext {
+public final class MigrationProcessContext extends AbstractInventoryIncrementalProcessContext {
     
     public MigrationProcessContext(final String jobId, final PipelineProcessConfiguration originalProcessConfig) {
         super(jobId, originalProcessConfig);

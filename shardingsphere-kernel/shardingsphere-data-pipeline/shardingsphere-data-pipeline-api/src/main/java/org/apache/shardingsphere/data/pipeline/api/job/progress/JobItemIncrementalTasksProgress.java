@@ -17,14 +17,12 @@
 
 package org.apache.shardingsphere.data.pipeline.api.job.progress;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
+
+import java.util.Optional;
 
 /**
  * Job item incremental tasks progress.
@@ -33,27 +31,15 @@ import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTask
 @Getter
 public final class JobItemIncrementalTasksProgress {
     
-    private final Map<String, IncrementalTaskProgress> incrementalTaskProgressMap;
+    private final IncrementalTaskProgress incrementalTaskProgress;
     
     /**
      * Get incremental position.
-     * 
-     * @param dataSourceName data source name
+     *
      * @return incremental position
      */
-    public Optional<IngestPosition<?>> getIncrementalPosition(final String dataSourceName) {
-        Optional<IncrementalTaskProgress> incrementalTaskProgress = incrementalTaskProgressMap.entrySet().stream()
-                .filter(entry -> dataSourceName.equals(entry.getKey())).map(Map.Entry::getValue).findAny();
-        return incrementalTaskProgress.map(IncrementalTaskProgress::getPosition);
-    }
-    
-    /**
-     * Get data source name.
-     *
-     * @return data source
-     */
-    public String getDataSourceName() {
-        return incrementalTaskProgressMap.keySet().stream().findAny().orElse("");
+    public Optional<IngestPosition<?>> getIncrementalPosition() {
+        return null == incrementalTaskProgress ? Optional.empty() : Optional.of(incrementalTaskProgress.getPosition());
     }
     
     /**
@@ -62,9 +48,6 @@ public final class JobItemIncrementalTasksProgress {
      * @return latest active time, <code>0</code> means there is no activity
      */
     public long getIncrementalLatestActiveTimeMillis() {
-        List<Long> delays = incrementalTaskProgressMap.values().stream()
-                .map(each -> each.getIncrementalTaskDelay().getLatestActiveTimeMillis())
-                .collect(Collectors.toList());
-        return delays.stream().reduce(Long::max).orElse(0L);
+        return null == incrementalTaskProgress ? 0L : incrementalTaskProgress.getIncrementalTaskDelay().getLatestActiveTimeMillis();
     }
 }

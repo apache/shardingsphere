@@ -30,6 +30,8 @@ org.apache.shardingsphere.migration.distsql.handler.query.ShowMigrationCheckAlgo
 org.apache.shardingsphere.migration.distsql.handler.query.ShowMigrationSourceResourceQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.UnusedShardingAlgorithmsQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.UnusedShardingKeyGeneratorsQueryResultSet
+org.apache.shardingsphere.sharding.distsql.handler.query.UnusedShardingAuditorsQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableRulesUsedAlgorithmQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableRulesUsedKeyGeneratorQueryResultSet
+org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableRulesUsedAuditorQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.CountShardingRuleQueryResultSet

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode;
 
+import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
@@ -70,7 +71,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
         StringBuilder mppData = new StringBuilder();
         mppData.append('{');
         int depth = 1;
-        while (depth != 0 && data.hasRemaining()) {
+        while (0 != depth && data.hasRemaining()) {
             char next = (char) data.get();
             mppData.append(next);
             int optDepth = '{' == next ? 1 : ('}' == next ? -1 : 0);
@@ -242,9 +243,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
     
     private static byte[] decodeHex(final String hexString) {
         int dataLength = hexString.length();
-        if (0 != (dataLength & 1)) {
-            throw new IllegalArgumentException(String.format("Illegal hex data %s", hexString));
-        }
+        Preconditions.checkArgument(0 == (dataLength & 1), "Illegal hex data `%s`", hexString);
         if (0 == dataLength) {
             return new byte[0];
         }
@@ -258,9 +257,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
     private static byte decodeHexByte(final String hexString, final int index) {
         int firstHexChar = Character.digit(hexString.charAt(index), 16);
         int secondHexChar = Character.digit(hexString.charAt(index + 1), 16);
-        if (-1 == firstHexChar || -1 == secondHexChar) {
-            throw new IllegalArgumentException(String.format("Illegal hex byte '%s' in index %d", hexString, index));
-        }
+        Preconditions.checkArgument(-1 != firstHexChar && -1 != secondHexChar, "Illegal hex byte `%s` in index `%d`", hexString, index);
         return (byte) ((firstHexChar << 4) + secondHexChar);
     }
 }

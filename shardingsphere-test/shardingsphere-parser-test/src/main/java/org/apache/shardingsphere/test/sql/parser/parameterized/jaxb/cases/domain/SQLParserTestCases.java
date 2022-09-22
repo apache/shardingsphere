@@ -59,7 +59,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowOpenTablesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowProcedureCodeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowProcedureStatusStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowRelaylogEventsStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowRelayLogEventsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowReplicaStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowReplicasStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowSlaveHostsStatementTestCase;
@@ -224,6 +224,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropFunctionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropGroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropIndexStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropIndexTypeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropInmemoryJoinGroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropLanguageStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropLockdownProfileStatementTestCase;
@@ -234,6 +235,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropOutlineStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropOwnedStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropPackageStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropPluggableDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropPolicyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropProcedureStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropPublicationStatementTestCase;
@@ -311,7 +313,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.AddMigrationSourceResourceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.CheckMigrationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.RollbackMigrationStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.DropMigrationProcessConfigurationStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.DropPipelineProcessConfigurationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.DropMigrationSourceResourceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.MigrateTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.CommitMigrationStatementTestCase;
@@ -368,12 +370,12 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShadowAlgorithmStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShadowRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingAlgorithmStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingAuditorStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingBindingTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingBroadcastTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingKeyGeneratorStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingTableRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountDatabaseDiscoveryRuleStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountDatabaseRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountEncryptRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountReadwriteSplittingRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountShadowRuleStatementTestCase;
@@ -395,10 +397,12 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingTableNodesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingTableRulesUsedAlgorithmStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingTableRulesUsedAuditorStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingTableRulesUsedKeyGeneratorStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowSingleTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowSingleTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowUnusedShardingAlgorithmsStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowUnusedShardingAuditorsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowUnusedShardingKeyGeneratorsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rul.FormatSQLStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rul.ParseStatementTestCase;
@@ -587,8 +591,8 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-procedure-code")
     private final List<ShowProcedureCodeStatementTestCase> showProcedureCodeTestCases = new LinkedList<>();
     
-    @XmlElement(name = "show-relaylog-events")
-    private final List<ShowRelaylogEventsStatementTestCase> showRelaylogEventsTestCases = new LinkedList<>();
+    @XmlElement(name = "show-relay-log-events")
+    private final List<ShowRelayLogEventsStatementTestCase> showRelayLogEventsTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-slave-hosts")
     private final List<ShowSlaveHostsStatementTestCase> showSlaveHostsTestCases = new LinkedList<>();
@@ -1023,7 +1027,7 @@ public final class SQLParserTestCases {
     private final List<StartMigrationStatementTestCase> startMigrationTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-migration-process-configuration")
-    private final List<DropMigrationProcessConfigurationStatementTestCase> dropMigrationProcessConfigurationStatementTestCases = new LinkedList<>();
+    private final List<DropPipelineProcessConfigurationStatementTestCase> dropMigrationProcessConfigurationStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "migrate-table")
     private final List<MigrateTableStatementTestCase> migrateTableTestCases = new LinkedList<>();
@@ -1198,6 +1202,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-sharding-key-generator")
     private final List<DropShardingKeyGeneratorStatementTestCase> dropShardingKeyGeneratorTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-sharding-auditor")
+    private final List<DropShardingAuditorStatementTestCase> dropShardingAuditorTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-default-sharding-strategy")
     private final List<DropDefaultShardingStrategyStatementTestCase> dropDefaultShardingStrategyTestCases = new LinkedList<>();
@@ -1409,11 +1416,11 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-unused-sharding-algorithms")
     private final List<ShowUnusedShardingAlgorithmsStatementTestCase> showUnusedShardingAlgorithmsTestCases = new LinkedList<>();
     
-    @XmlElement(name = "count-database-rules")
-    private final List<CountDatabaseRulesStatementTestCase> countDatabaseRulesTestCases = new LinkedList<>();
-    
     @XmlElement(name = "show-unused-sharding-key-generators")
     private final List<ShowUnusedShardingKeyGeneratorsStatementTestCase> showUnusedShardingKeyGeneratorsTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-unused-sharding-auditors")
+    private final List<ShowUnusedShardingAuditorsStatementTestCase> showUnusedShardingAuditorsStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-binlog-events")
     private final List<ShowBinlogEventsStatementTestCase> showBinlogEventsTestCases = new LinkedList<>();
@@ -1456,6 +1463,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "show-sharding-table-rules-used-key-generator")
     private final List<ShowShardingTableRulesUsedKeyGeneratorStatementTestCase> showShardingTableRulesUsedKeyGeneratorTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-sharding-table-rules-used-auditor")
+    private final List<ShowShardingTableRulesUsedAuditorStatementTestCase> showShardingTableRulesUsedAuditorTestCases = new LinkedList<>();
     
     @XmlElement(name = "prepared")
     private final List<PreparedStatementTestCase> preparedTestCases = new LinkedList<>();
@@ -1654,6 +1664,12 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "create-policy")
     private final List<CreatePolicyStatementTestCase> createPolicyStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-index-type")
+    private final List<DropIndexTypeStatementTestCase> dropIndexTypeStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-pluggable-database")
+    private final List<DropPluggableDatabaseStatementTestCase> dropPluggableDatabaseStatementTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.

@@ -9,7 +9,7 @@ The `SHOW UNUSED RESOURCE` syntax is used to query resources in the specified da
 
 ### Syntax
 
-```SQL
+```sql
 ShowUnusedResource ::=
   'SHOW' 'UNUSED' 'DATABASE'? 'RESOURCES' ('FROM' databaseName)?
 
@@ -21,7 +21,7 @@ databaseName ::=
 
 - When `databaseName` is not specified, the default is the currently used `DATABASE`; if `DATABASE` is not used, it will prompt `No database selected`.
 
- ### Return Value Description
+### Return Value Description
 
 | Column    | Description           |
 | --------- | --------------------- |
@@ -32,13 +32,14 @@ databaseName ::=
 | db        | Database name         |
 | attribute | Data source attribute |
 
- ### Example
+### Example
 
 - Query resources for the specified database
 
 ```sql
 SHOW UNUSED DATABASE RESOURCES FROM sharding_db;
 ```
+
 ```sql
 +------+-------+-----------+------+------+---------------------------------+---------------------------+---------------------------+---------------+---------------+-----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | name | type  | host      | port | db   | connection_timeout_milliseconds | idle_timeout_milliseconds | max_lifetime_milliseconds | max_pool_size | min_pool_size | read_only | other_attributes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
@@ -53,6 +54,7 @@ SHOW UNUSED DATABASE RESOURCES FROM sharding_db;
 ```sql
 SHOW UNUSED DATABASE RESOURCES;
 ```
+
 ```sql
 +------+-------+-----------+------+------+---------------------------------+---------------------------+---------------------------+---------------+---------------+-----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | name | type  | host      | port | db   | connection_timeout_milliseconds | idle_timeout_milliseconds | max_lifetime_milliseconds | max_pool_size | min_pool_size | read_only | other_attributes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |

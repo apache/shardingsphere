@@ -59,12 +59,20 @@ showUnusedShardingKeyGenerators
     : SHOW UNUSED SHARDING KEY GENERATORS (FROM databaseName)?
     ;
 
+showUnusedShardingAuditors
+    : SHOW UNUSED SHARDING AUDITORS (FROM databaseName)?
+    ;
+
 showShardingTableRulesUsedAlgorithm
     : SHOW SHARDING TABLE RULES USED ALGORITHM shardingAlgorithmName (FROM databaseName)?
     ;
 
 showShardingTableRulesUsedKeyGenerator
     : SHOW SHARDING TABLE RULES USED KEY GENERATOR keyGeneratorName (FROM databaseName)?
+    ;
+
+showShardingTableRulesUsedAuditor
+    : SHOW SHARDING TABLE RULES USED AUDITOR auditorName (FROM databaseName)?
     ;
 
 countShardingRule

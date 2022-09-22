@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.registry;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
@@ -42,15 +43,13 @@ public final class CoordinatorRegistryCenterInitializer {
     public CoordinatorRegistryCenter createRegistryCenter(final ModeConfiguration modeConfig, final String namespaceRelativePath) {
         ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) modeConfig.getRepository();
         String clusterType = modeConfig.getRepository().getType();
-        if ("ZooKeeper".equalsIgnoreCase(clusterType)) {
-            CoordinatorRegistryCenter result = new ZookeeperRegistryCenter(getZookeeperConfig(repositoryConfig, namespaceRelativePath));
-            result.init();
-            return result;
-        }
-        throw new IllegalArgumentException("Unsupported clusterType=" + clusterType);
+        Preconditions.checkArgument("ZooKeeper".equalsIgnoreCase(clusterType), "Unsupported cluster type `%s`", clusterType);
+        CoordinatorRegistryCenter result = new ZookeeperRegistryCenter(getZookeeperConfig(repositoryConfig, namespaceRelativePath));
+        result.init();
+        return result;
     }
     
-    // TODO Merge registry center code in ejob and ShardingSphere mode; Use spi to load impl;
+    // TODO Merge registry center code in ElasticJob and ShardingSphere mode; Use spi to load impl;
     private ZookeeperConfiguration getZookeeperConfig(final ClusterPersistRepositoryConfiguration repositoryConfig, final String namespaceRelativePath) {
         Properties props = repositoryConfig.getProps();
         ZookeeperProperties zookeeperProps = new ZookeeperProperties(props);
@@ -69,8 +68,7 @@ public final class CoordinatorRegistryCenterInitializer {
         if (0 != operationTimeoutMilliseconds) {
             result.setConnectionTimeoutMilliseconds(operationTimeoutMilliseconds);
         }
-        String digest = zookeeperProps.getValue(ZookeeperPropertyKey.DIGEST);
-        result.setDigest(digest);
+        result.setDigest(zookeeperProps.getValue(ZookeeperPropertyKey.DIGEST));
         return result;
     }
 }

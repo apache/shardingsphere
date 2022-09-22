@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.config.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
@@ -27,10 +26,11 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
+import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineIgnoredException;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryIncrementalTasksRunner;
@@ -68,13 +68,14 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
         MigrationJobConfiguration jobConfig = YamlMigrationJobConfigurationSwapper.swapToObject(shardingContext.getJobParameter());
         InventoryIncrementalJobItemProgress initProgress = jobAPI.getJobItemProgress(shardingContext.getJobName(), shardingItem);
         MigrationProcessContext jobProcessContext = jobAPI.buildPipelineProcessContext(jobConfig);
-        TaskConfiguration taskConfig = jobAPI.buildTaskConfiguration(jobConfig, shardingItem, jobProcessContext.getPipelineProcessConfig());
+        MigrationTaskConfiguration taskConfig = jobAPI.buildTaskConfiguration(jobConfig, shardingItem, jobProcessContext.getPipelineProcessConfig());
         MigrationJobItemContext jobItemContext = new MigrationJobItemContext(jobConfig, shardingItem, initProgress, jobProcessContext, taskConfig, dataSourceManager);
         if (getTasksRunnerMap().containsKey(shardingItem)) {
             log.warn("tasksRunnerMap contains shardingItem {}, ignore", shardingItem);
             return;
         }
         log.info("start tasks runner, jobId={}, shardingItem={}", getJobId(), shardingItem);
+        PipelineAPIFactory.getPipelineJobAPI(PipelineJobIdUtils.parseJobType(jobItemContext.getJobId())).cleanJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem());
         // TODO inventory and incremental tasks are always empty on construction
         InventoryIncrementalTasksRunner tasksRunner = new InventoryIncrementalTasksRunner(jobItemContext, jobItemContext.getInventoryTasks(), jobItemContext.getIncrementalTasks(),
                 jobItemContext.getJobProcessContext().getInventoryDumperExecuteEngine(), jobItemContext.getJobProcessContext().getIncrementalDumperExecuteEngine());
@@ -90,16 +91,14 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
     private void prepare(final MigrationJobItemContext jobItemContext) {
         try {
             jobPreparer.prepare(jobItemContext);
-        } catch (final PipelineIgnoredException ex) {
-            log.info("pipeline ignore exception: {}", ex.getMessage());
-            PipelineJobCenter.stop(getJobId());
             // CHECKSTYLE:OFF
         } catch (final SQLException | RuntimeException ex) {
             // CHECKSTYLE:ON
             log.error("job prepare failed, {}-{}", getJobId(), jobItemContext.getShardingItem(), ex);
-            PipelineJobCenter.stop(getJobId());
+            PipelineJobCenter.stop(jobItemContext.getJobId());
             jobItemContext.setStatus(JobStatus.PREPARING_FAILURE);
             jobAPI.persistJobItemProgress(jobItemContext);
+            jobAPI.persistJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem(), ex);
             if (ex instanceof RuntimeException) {
                 throw (RuntimeException) ex;
             }

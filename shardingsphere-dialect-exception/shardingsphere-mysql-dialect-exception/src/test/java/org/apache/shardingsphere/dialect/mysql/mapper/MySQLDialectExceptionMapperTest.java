@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.dialect.mysql.mapper;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 import org.apache.shardingsphere.dialect.exception.connection.TooManyConnectionsException;
-import org.apache.shardingsphere.dialect.mysql.exception.UnknownCollationException;
-import org.apache.shardingsphere.dialect.mysql.exception.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.dialect.exception.data.InsertColumnsAndValuesMismatchedException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.DatabaseDropNotExistsException;
@@ -29,19 +28,33 @@ import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDataba
 import org.apache.shardingsphere.dialect.exception.syntax.table.NoSuchTableException;
 import org.apache.shardingsphere.dialect.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.dialect.exception.transaction.TableModifyInTransactionException;
+import org.apache.shardingsphere.dialect.mysql.exception.UnknownCollationException;
+import org.apache.shardingsphere.dialect.mysql.exception.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
+import org.apache.shardingsphere.infra.util.exception.external.sql.vendor.VendorError;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
+@RunWith(Parameterized.class)
+@RequiredArgsConstructor
 public final class MySQLDialectExceptionMapperTest {
     
-    private Collection<Object[]> getConvertParameters() {
+    private final Class<SQLDialectException> sqlDialectExceptionClazz;
+    
+    private final VendorError vendorError;
+    
+    @Parameters(name = "{1} -> {0}")
+    public static Collection<Object[]> getParameters() {
         return Arrays.asList(new Object[][]{
                 {UnknownDatabaseException.class, MySQLVendorError.ER_NO_DB_ERROR},
                 {NoDatabaseSelectedException.class, MySQLVendorError.ER_NO_DB_ERROR},
@@ -58,11 +71,9 @@ public final class MySQLDialectExceptionMapperTest {
     }
     
     @Test
-    @SuppressWarnings("unchecked")
     public void assertConvert() {
-        MySQLDialectExceptionMapper mySQLDialect = new MySQLDialectExceptionMapper();
-        for (Object[] item : getConvertParameters()) {
-            assertThat(mySQLDialect.convert(mock((Class<SQLDialectException>) item[0])).getErrorCode(), is(((MySQLVendorError) item[1]).getVendorCode()));
-        }
+        SQLException actual = new MySQLDialectExceptionMapper().convert(mock(sqlDialectExceptionClazz));
+        assertThat(actual.getSQLState(), is(vendorError.getSqlState().getValue()));
+        assertThat(actual.getErrorCode(), is(vendorError.getVendorCode()));
     }
 }

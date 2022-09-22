@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.event.SchemaAlte
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -38,7 +37,7 @@ public final class CreateIndexStatementSchemaRefresher implements MetaDataRefres
     
     @Override
     public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
-                                                    final String schemaName, final CreateIndexStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
+                                                    final String schemaName, final CreateIndexStatement sqlStatement, final ConfigurationProperties props) {
         String indexName = null != sqlStatement.getIndex() ? sqlStatement.getIndex().getIndexName().getIdentifier().getValue()
                 : IndexMetaDataUtil.getGeneratedLogicIndexName(sqlStatement.getColumns());
         if (Strings.isNullOrEmpty(indexName)) {

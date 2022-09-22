@@ -38,9 +38,9 @@ import java.util.Map;
 import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertFalse;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
@@ -54,6 +54,10 @@ public final class ConvertYamlConfigurationHandlerTest extends ProxyContextResto
     
     private final String databaseDiscoveryFilePath = "/conf/convert/config-database-discovery.yaml";
     
+    private final String encryptFilePath = "/conf/convert/config-encrypt.yaml";
+    
+    private final String shadowFilePath = "/conf/convert/config-shadow.yaml";
+    
     private final String resourceExpectedFilePath = "/expected/convert-add-resource.yaml";
     
     private final String shardingExpectedFilePath = "/expected/convert-create-sharding.yaml";
@@ -61,6 +65,10 @@ public final class ConvertYamlConfigurationHandlerTest extends ProxyContextResto
     private final String readWriteSplittingExpectedFilePath = "/expected/convert-readwrite-splitting.yaml";
     
     private final String databaseDiscoveryExpectedFilePath = "/expected/convert-database-discovery.yaml";
+    
+    private final String encryptExpectedFilePath = "/expected/convert-create-encrypt.yaml";
+    
+    private final String shadowExpectedFilePath = "/expected/convert-create-shadow.yaml";
     
     private final String resource = "resource";
     
@@ -70,7 +78,11 @@ public final class ConvertYamlConfigurationHandlerTest extends ProxyContextResto
     
     private final String databaseDiscovery = "databaseDiscovery";
     
-    private final Map<String, String> featureMap = new HashMap<>(4, 1);
+    private final String encrypt = "encrypt";
+    
+    private final String shadow = "shadow";
+    
+    private final Map<String, String> featureMap = new HashMap<>(5, 1);
     
     @Before
     public void setup() {
@@ -78,6 +90,8 @@ public final class ConvertYamlConfigurationHandlerTest extends ProxyContextResto
         featureMap.put(sharding, shardingFilePath);
         featureMap.put(readWriteSplitting, readWriteSplittingFilePath);
         featureMap.put(databaseDiscovery, databaseDiscoveryFilePath);
+        featureMap.put(encrypt, encryptFilePath);
+        featureMap.put(shadow, shadowFilePath);
     }
     
     @Before
@@ -97,13 +111,23 @@ public final class ConvertYamlConfigurationHandlerTest extends ProxyContextResto
     }
     
     @Test
-    public void assertExecuteWithReadWriteSplitting() throws SQLException {
+    public void assertExecuteWithCreateReadWriteSplitting() throws SQLException {
         assertExecute(readWriteSplitting, readWriteSplittingExpectedFilePath);
     }
     
     @Test
-    public void assertExecuteWithDatabaseDiscovery() throws SQLException {
+    public void assertExecuteWithCreateDatabaseDiscovery() throws SQLException {
         assertExecute(databaseDiscovery, databaseDiscoveryExpectedFilePath);
+    }
+    
+    @Test
+    public void assertExecuteWithCreateEncrypt() throws SQLException {
+        assertExecute(encrypt, encryptExpectedFilePath);
+    }
+    
+    @Test
+    public void assertExecuteWithCreateShadow() throws SQLException {
+        assertExecute(shadow, shadowExpectedFilePath);
     }
     
     public void assertExecute(final String type, final String expectedFilePath) throws SQLException {

@@ -22,6 +22,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.TransactionWeightReadQueryLoadBalanceAlgorithm;
@@ -62,27 +63,36 @@ public abstract class AbstractReadwriteSplittingRuleConfigurationChecker<T exten
         for (ReadwriteSplittingDataSourceRuleConfiguration each : configs) {
             Preconditions.checkArgument(!Strings.isNullOrEmpty(each.getName()), "Readwrite-splitting data source name is required.");
             Preconditions.checkState(null != each.getStaticStrategy() || null != each.getDynamicStrategy(), "No available readwrite-splitting rule configuration in database `%s`.", databaseName);
-            Optional.ofNullable(each.getStaticStrategy()).ifPresent(optional -> checkStaticStrategy(databaseName, dataSourceMap, addedWriteDataSourceNames, addedReadDataSourceNames, optional));
+            Optional.ofNullable(each.getStaticStrategy()).ifPresent(optional -> checkStaticStrategy(databaseName, dataSourceMap, addedWriteDataSourceNames, addedReadDataSourceNames, optional, rules));
             Optional.ofNullable(each.getDynamicStrategy()).ifPresent(optional -> checkDynamicStrategy(rules, optional));
         }
     }
     
     private void checkStaticStrategy(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> addedWriteDataSourceNames,
-                                     final Collection<String> readDataSourceNames, final StaticReadwriteSplittingStrategyConfiguration strategyConfig) {
+                                     final Collection<String> readDataSourceNames, final StaticReadwriteSplittingStrategyConfiguration strategyConfig, final Collection<ShardingSphereRule> rules) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(strategyConfig.getWriteDataSourceName()), "Write data source name is required.");
         Preconditions.checkArgument(!strategyConfig.getReadDataSourceNames().isEmpty(), "Read data source names are required.");
-        checkWriteDataSourceNames(databaseName, dataSourceMap, addedWriteDataSourceNames, strategyConfig);
+        checkWriteDataSourceNames(databaseName, dataSourceMap, addedWriteDataSourceNames, strategyConfig, rules);
         for (String each : readDataSourceNames) {
             checkReadeDataSourceNames(databaseName, dataSourceMap, readDataSourceNames, each);
         }
     }
     
-    private void checkWriteDataSourceNames(final String databaseName, final Map<String, DataSource> dataSourceMap,
-                                           final Collection<String> addedWriteDataSourceNames, final StaticReadwriteSplittingStrategyConfiguration strategyConfig) {
+    private void checkWriteDataSourceNames(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> addedWriteDataSourceNames,
+                                           final StaticReadwriteSplittingStrategyConfiguration strategyConfig, final Collection<ShardingSphereRule> rules) {
         for (String each : new InlineExpressionParser(strategyConfig.getWriteDataSourceName()).splitAndEvaluate()) {
-            Preconditions.checkState(dataSourceMap.containsKey(each), "Write data source name `%s` not in database `%s`.", each, databaseName);
+            Preconditions.checkState(dataSourceMap.containsKey(each) || containsInOtherRules(each, rules), "Write data source name `%s` not in database `%s`.", each, databaseName);
             Preconditions.checkState(addedWriteDataSourceNames.add(each), "Can not config duplicate write data source `%s` in database `%s`.", each, databaseName);
         }
+    }
+    
+    private boolean containsInOtherRules(final String datasourceName, final Collection<ShardingSphereRule> rules) {
+        for (ShardingSphereRule each : rules) {
+            if (each instanceof DataSourceContainedRule && ((DataSourceContainedRule) each).getDataSourceMapper().containsKey(datasourceName)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private void checkReadeDataSourceNames(final String databaseName,

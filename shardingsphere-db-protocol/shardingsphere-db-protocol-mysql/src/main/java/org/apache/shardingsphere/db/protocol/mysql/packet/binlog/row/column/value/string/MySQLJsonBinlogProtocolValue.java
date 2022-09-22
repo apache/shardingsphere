@@ -21,6 +21,7 @@ import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.MySQLBinlogProtocolValue;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 
 import java.io.Serializable;
 
@@ -59,7 +60,7 @@ public final class MySQLJsonBinlogProtocolValue implements MySQLBinlogProtocolVa
             case 4:
                 return payload.readInt4();
             default:
-                throw new UnsupportedOperationException("MySQL JSON type meta in binlog should be range 1 to 4, but actual value is: " + columnMeta);
+                throw new UnsupportedSQLOperationException(String.format("MySQL JSON type meta in binlog should be range 1 to 4, but actual value is: %s", columnMeta));
         }
     }
 }

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleC
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean;
 import org.apache.shardingsphere.sharding.spring.namespace.factorybean.ShardingAlgorithmFactoryBean;
+import org.apache.shardingsphere.sharding.spring.namespace.factorybean.ShardingAuditAlgorithmFactoryBean;
 import org.apache.shardingsphere.sharding.spring.namespace.tag.rule.ShardingRuleBeanDefinitionTag;
 import org.apache.shardingsphere.spring.namespace.registry.ShardingSphereAlgorithmBeanRegistry;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -57,6 +58,7 @@ public final class ShardingRuleBeanDefinitionParser extends AbstractBeanDefiniti
         setDefaultShardingColumn(element, factory);
         factory.addPropertyValue("shardingAlgorithms", ShardingSphereAlgorithmBeanRegistry.getAlgorithmBeanReferences(parserContext, ShardingAlgorithmFactoryBean.class));
         factory.addPropertyValue("keyGenerators", ShardingSphereAlgorithmBeanRegistry.getAlgorithmBeanReferences(parserContext, KeyGenerateAlgorithmFactoryBean.class));
+        factory.addPropertyValue("auditors", ShardingSphereAlgorithmBeanRegistry.getAlgorithmBeanReferences(parserContext, ShardingAuditAlgorithmFactoryBean.class));
         return factory.getBeanDefinition();
     }
     

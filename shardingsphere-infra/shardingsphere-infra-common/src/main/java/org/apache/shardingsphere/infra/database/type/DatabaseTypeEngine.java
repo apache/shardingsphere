@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.infra.database.type;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.util.exception.external.sql.SQLWrapperException;
+import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -31,7 +33,9 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Database type engine.
@@ -44,12 +48,13 @@ public final class DatabaseTypeEngine {
     /**
      * Get protocol type.
      * 
+     * @param databaseName database name
      * @param databaseConfig database configuration
      * @param props props
      * @return protocol type
      */
-    public static DatabaseType getProtocolType(final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) {
-        return findConfiguredDatabaseType(props).orElseGet(() -> getDatabaseType(databaseConfig.getDataSources().values()));
+    public static DatabaseType getProtocolType(final String databaseName, final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) {
+        return findConfiguredDatabaseType(props).orElseGet(() -> getDatabaseType(DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, databaseConfig)));
     }
     
     /**
@@ -61,12 +66,7 @@ public final class DatabaseTypeEngine {
      */
     public static DatabaseType getProtocolType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs, final ConfigurationProperties props) {
         Optional<DatabaseType> configuredDatabaseType = findConfiguredDatabaseType(props);
-        if (configuredDatabaseType.isPresent()) {
-            return configuredDatabaseType.get();
-        }
-        Collection<DataSource> dataSources = databaseConfigs.values().stream()
-                .filter(each -> !each.getDataSources().isEmpty()).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList);
-        return getDatabaseType(dataSources);
+        return configuredDatabaseType.orElseGet(() -> getDatabaseType(getEnabledDataSources(databaseConfigs)));
     }
     
     /**
@@ -76,8 +76,15 @@ public final class DatabaseTypeEngine {
      * @return storage type
      */
     public static DatabaseType getStorageType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
-        return getDatabaseType(
-                databaseConfigs.values().stream().filter(each -> !each.getDataSources().isEmpty()).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList));
+        return getDatabaseType(getEnabledDataSources(databaseConfigs));
+    }
+    
+    private static Collection<DataSource> getEnabledDataSources(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
+        Map<String, ? extends DatabaseConfiguration> databaseConfigMap = databaseConfigs.entrySet().stream()
+                .filter(each -> !each.getValue().getDataSources().isEmpty()).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+        String databaseName = databaseConfigMap.isEmpty() ? "" : databaseConfigMap.entrySet().iterator().next().getKey();
+        return Strings.isNullOrEmpty(databaseName) ? Collections.emptyList()
+                : DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, databaseConfigMap.get(databaseName).getDataSources()).values();
     }
     
     /**
@@ -153,5 +160,15 @@ public final class DatabaseTypeEngine {
      */
     public static String getDefaultSchemaName(final DatabaseType databaseType, final String databaseName) {
         return databaseType instanceof SchemaSupportedDatabaseType ? ((SchemaSupportedDatabaseType) databaseType).getDefaultSchema() : databaseName.toLowerCase();
+    }
+    
+    /**
+     * Get default schema name.
+     *
+     * @param databaseType database type
+     * @return default schema name
+     */
+    public static Optional<String> getDefaultSchemaName(final DatabaseType databaseType) {
+        return databaseType instanceof SchemaSupportedDatabaseType ? Optional.of(((SchemaSupportedDatabaseType) databaseType).getDefaultSchema()) : Optional.empty();
     }
 }

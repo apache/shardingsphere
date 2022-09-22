@@ -3478,3 +3478,11 @@ setMaxPdbSnapshotsClause
     : SET maxPdbSnapshots EQ_ maxNumberOfSnapshots
     ;
 
+dropIndexType
+    : DROP INDEXTYPE indexTypeName FORCE?
+    ;
+
+dropPluggableDatabase
+    : DROP PLUGGABLE DATABASE pdbName ((KEEP | INCLUDING) DATAFILES)?
+    ;
+

@@ -19,8 +19,9 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.dumper;
 
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.InventoryDumper;
+import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.InventoryDumper;
+import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.InventoryDumperCreator;
 
 import javax.sql.DataSource;
 
@@ -33,5 +34,10 @@ public final class DefaultInventoryDumperCreator implements InventoryDumperCreat
     public InventoryDumper createInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final PipelineChannel channel,
                                                  final DataSource sourceDataSource, final PipelineTableMetaDataLoader sourceMetaDataLoader) {
         return new DefaultInventoryDumper(inventoryDumperConfig, channel, sourceDataSource, sourceMetaDataLoader);
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
     }
 }

@@ -52,7 +52,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
     
     private HikariDataSource hikariDataSource;
     
-    @SneakyThrows
+    @SneakyThrows(SQLException.class)
     @Override
     public void init(final Properties props) {
         JDBCRepositoryProperties jdbcRepositoryProps = new JDBCRepositoryProperties(props);
@@ -121,7 +121,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
                 String tempKey = tempPrefix + SEPARATOR + paths[i];
                 String tempKeyVal = get(tempKey);
                 if (Strings.isNullOrEmpty(tempKeyVal)) {
-                    if (i != 0) {
+                    if (0 != i) {
                         parent = tempPrefix;
                     }
                     insert(tempKey, "", parent);

@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.integration.transaction.cases.savepoint;
 
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
@@ -29,14 +27,13 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
  * OpenGauss savepoint transaction integration test.
  */
-@Slf4j
 @TransactionTestCase(dbTypes = {TransactionTestConstants.OPENGAUSS})
 public final class OpenGaussSavePointTestCase extends BaseSavePointTestCase {
     
@@ -45,32 +42,30 @@ public final class OpenGaussSavePointTestCase extends BaseSavePointTestCase {
     }
     
     @Override
-    @SneakyThrows
-    public void executeTest() {
+    public void executeTest() throws SQLException {
         assertRollback2Savepoint();
         assertReleaseSavepoint();
         assertErrors();
     }
     
-    @SneakyThrows(SQLException.class)
-    private void assertErrors() {
+    private void assertErrors() throws SQLException {
         Connection conn = getDataSource().getConnection();
         try {
             conn.setSavepoint("point");
             fail("Expect exception, but no exception report.");
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             assertThat(ex.getMessage(), is("Cannot establish a savepoint in auto-commit mode."));
         }
         try {
             conn.rollback(new PSQLSavepoint("point1"));
             fail("Expect exception, but no exception report.");
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             assertTrue(ex.getMessage().endsWith("ERROR: ROLLBACK TO SAVEPOINT can only be used in transaction blocks"));
         }
         try {
             conn.releaseSavepoint(new PSQLSavepoint("point1"));
             fail("Expect exception, but no exception report.");
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             assertTrue(ex.getMessage().endsWith("ERROR: RELEASE SAVEPOINT can only be used in transaction blocks"));
         }
     }

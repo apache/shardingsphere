@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.data.pipeline.core.sqlbuilder.OraclePipelineSQLBuilder
+org.apache.shardingsphere.data.pipeline.core.sqlbuilder.DefaultPipelineSQLBuilder

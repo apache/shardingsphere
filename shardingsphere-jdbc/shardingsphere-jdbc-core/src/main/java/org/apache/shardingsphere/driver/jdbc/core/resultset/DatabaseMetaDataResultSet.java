@@ -18,10 +18,13 @@
 package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
 import lombok.EqualsAndHashCode;
+import org.apache.shardingsphere.driver.jdbc.exception.syntax.ColumnIndexOutOfRangeException;
+import org.apache.shardingsphere.driver.jdbc.exception.syntax.ColumnLabelNotFoundException;
+import org.apache.shardingsphere.driver.jdbc.exception.connection.ResultSetClosedException;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedDatabaseMetaDataResultSet;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtil;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -360,7 +363,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     public int findColumn(final String columnLabel) throws SQLException {
         checkClosed();
         if (!columnLabelIndexMap.containsKey(columnLabel)) {
-            throw new SQLException(String.format("Can not find columnLabel %s", columnLabel));
+            throw new ColumnLabelNotFoundException(columnLabel).toSQLException();
         }
         return columnLabelIndexMap.get(columnLabel);
     }
@@ -404,13 +407,13 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     
     private void checkClosed() throws SQLException {
         if (closed) {
-            throw new SQLException("ResultSet has closed.");
+            throw new ResultSetClosedException().toSQLException();
         }
     }
     
     private void checkColumnIndex(final int columnIndex) throws SQLException {
         if (columnIndex < 1 || columnIndex > resultSetMetaData.getColumnCount()) {
-            throw new SQLException(String.format("ColumnIndex %d out of range from %d to %d", columnIndex, 1, resultSetMetaData.getColumnCount()));
+            throw new ColumnIndexOutOfRangeException(columnIndex).toSQLException();
         }
     }
     

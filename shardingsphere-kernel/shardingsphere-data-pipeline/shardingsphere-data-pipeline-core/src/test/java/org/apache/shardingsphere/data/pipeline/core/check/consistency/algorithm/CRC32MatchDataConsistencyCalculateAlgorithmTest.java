@@ -20,8 +20,8 @@ package org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
-import org.apache.shardingsphere.data.pipeline.api.metadata.PipelineColumnMetaData;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineDataConsistencyCheckFailedException;
+import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,8 +39,8 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.mock;
@@ -59,7 +59,7 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithmTest {
     
     @Before
     public void setUp() throws SQLException {
-        PipelineColumnMetaData uniqueKey = new PipelineColumnMetaData(1, "id", Types.INTEGER, "integer", false, true);
+        PipelineColumnMetaData uniqueKey = new PipelineColumnMetaData(1, "id", Types.INTEGER, "integer", false, true, true);
         parameter = new DataConsistencyCalculateParameter(pipelineDataSource, new TableNameSchemaNameMapping(Collections.emptyMap()),
                 "foo_tbl", Arrays.asList("foo_col", "bar_col"), "FIXTURE", "FIXTURE", uniqueKey);
         when(pipelineDataSource.getConnection()).thenReturn(connection);
@@ -85,7 +85,7 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithmTest {
         return result;
     }
     
-    @Test(expected = PipelineDataConsistencyCheckFailedException.class)
+    @Test(expected = PipelineTableDataConsistencyCheckLoadingFailedException.class)
     public void assertCalculateFailed() throws SQLException {
         when(connection.prepareStatement(anyString())).thenThrow(new SQLException());
         new CRC32MatchDataConsistencyCalculateAlgorithm().calculate(parameter);

@@ -27,5 +27,5 @@ import lombok.Setter;
 @Setter
 public final class ServerInfo {
     
-    private ServerVersion serverVersion;
+    private volatile ServerVersion serverVersion;
 }

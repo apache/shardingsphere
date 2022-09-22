@@ -40,8 +40,9 @@ public final class AutoTableRuleSegment extends AbstractTableRuleSegment {
     }
     
     public AutoTableRuleSegment(final String logicTable, final Collection<String> dataSources, final String shardingColumn,
-                                final AlgorithmSegment shardingAlgorithm, final KeyGenerateStrategySegment keyGenerateStrategySegment) {
-        super(logicTable, dataSources, keyGenerateStrategySegment);
+                                final AlgorithmSegment shardingAlgorithm, final KeyGenerateStrategySegment keyGenerateStrategySegment,
+                                final AuditStrategySegment auditStrategySegment) {
+        super(logicTable, dataSources, keyGenerateStrategySegment, auditStrategySegment);
         this.shardingColumn = shardingColumn;
         this.shardingAlgorithmSegment = shardingAlgorithm;
     }

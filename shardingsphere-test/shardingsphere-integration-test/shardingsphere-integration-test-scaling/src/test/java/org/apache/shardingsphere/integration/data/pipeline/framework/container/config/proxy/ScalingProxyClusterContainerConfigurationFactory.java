@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.ProxyClusterContainerConfigurationFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.ProxyContainerConstants;
+import org.apache.shardingsphere.test.integration.env.container.atomic.util.AdapterContainerUtil;
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 
 import java.util.HashMap;
@@ -38,22 +39,22 @@ public final class ScalingProxyClusterContainerConfigurationFactory {
      * Create instance of adaptor container configuration.
      * 
      * @param databaseType database type
-     * @param dockerImageName docker image name
+     * @param storageContainerImage storage container image
      * @return created instance
      */
-    public static AdaptorContainerConfiguration newInstance(final DatabaseType databaseType, final String dockerImageName) {
-        return new AdaptorContainerConfiguration(getProxyDatasourceName(databaseType), getMountedResource(databaseType, dockerImageName));
+    public static AdaptorContainerConfiguration newInstance(final DatabaseType databaseType, final String storageContainerImage) {
+        return new AdaptorContainerConfiguration(getProxyDatasourceName(databaseType), getMountedResource(databaseType, storageContainerImage), AdapterContainerUtil.getAdapterContainerImage());
     }
     
     private static String getProxyDatasourceName(final DatabaseType databaseType) {
         return (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) ? "postgres" : "";
     }
     
-    private static Map<String, String> getMountedResource(final DatabaseType databaseType, final String dockerImageName) {
+    private static Map<String, String> getMountedResource(final DatabaseType databaseType, final String storageContainerImage) {
         Map<String, String> result = new HashMap<>(2, 1);
         result.putAll(ProxyClusterContainerConfigurationFactory.newInstance().getMountedResources());
         if (DatabaseTypeUtil.isMySQL(databaseType)) {
-            String majorVersion = DatabaseTypeUtil.parseMajorVersion(dockerImageName);
+            String majorVersion = DatabaseTypeUtil.parseMajorVersion(storageContainerImage);
             result.put(String.format("/env/%s/server-%s.yaml", databaseType.getType().toLowerCase(), majorVersion), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "server.yaml");
         } else {
             result.put(String.format("/env/%s/server.yaml", databaseType.getType().toLowerCase()), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "server.yaml");

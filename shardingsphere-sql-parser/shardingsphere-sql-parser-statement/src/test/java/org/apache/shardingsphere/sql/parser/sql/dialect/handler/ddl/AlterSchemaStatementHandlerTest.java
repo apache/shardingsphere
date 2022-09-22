@@ -20,18 +20,20 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterSchemaStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerAlterSchemaStatement;
 import org.junit.Test;
 
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class AlterSchemaStatementHandlerTest {
     
     @Test
-    public void assertGetUsernameForPostgreSQL() {
+    public void assertGetRenameSchemaForPostgreSQL() {
         PostgreSQLAlterSchemaStatement alterSchemaStatement = new PostgreSQLAlterSchemaStatement();
         alterSchemaStatement.setRenameSchema(new IdentifierValue("new_schema"));
         Optional<IdentifierValue> actual = AlterSchemaStatementHandler.getRenameSchema(alterSchemaStatement);
@@ -40,11 +42,17 @@ public final class AlterSchemaStatementHandlerTest {
     }
     
     @Test
-    public void assertGetUsernameForOpenGauss() {
+    public void assertGetRenameSchemaForOpenGauss() {
         OpenGaussAlterSchemaStatement alterSchemaStatement = new OpenGaussAlterSchemaStatement();
         alterSchemaStatement.setRenameSchema(new IdentifierValue("new_schema"));
         Optional<IdentifierValue> actual = AlterSchemaStatementHandler.getRenameSchema(alterSchemaStatement);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getValue(), is("new_schema"));
+    }
+    
+    @Test
+    public void assertGetRenameSchemaForSQLServer() {
+        SQLServerAlterSchemaStatement alterSchemaStatement = new SQLServerAlterSchemaStatement();
+        assertFalse(AlterSchemaStatementHandler.getRenameSchema(alterSchemaStatement).isPresent());
     }
 }

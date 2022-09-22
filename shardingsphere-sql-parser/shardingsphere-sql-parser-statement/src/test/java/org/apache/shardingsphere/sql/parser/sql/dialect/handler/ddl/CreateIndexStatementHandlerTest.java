@@ -17,15 +17,18 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Optional;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateIndexStatement;
 import org.junit.Test;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public final class CreateIndexStatementHandlerTest {
     
@@ -36,5 +39,30 @@ public final class CreateIndexStatementHandlerTest {
         assertTrue(CreateIndexStatementHandler.ifNotExists(new OpenGaussCreateIndexStatement(true)));
         assertFalse(CreateIndexStatementHandler.ifNotExists(new OracleCreateIndexStatement()));
         assertFalse(CreateIndexStatementHandler.ifNotExists(new SQLServerCreateIndexStatement()));
+    }
+    
+    @Test
+    public void assertGeneratedIndexStartIndexForPostgres() {
+        PostgreSQLCreateIndexStatement postgreSQLCreateIndexStatement = new PostgreSQLCreateIndexStatement(true);
+        postgreSQLCreateIndexStatement.setGeneratedIndexStartIndex(2);
+        Optional<Integer> actual = CreateIndexStatementHandler.getGeneratedIndexStartIndex(postgreSQLCreateIndexStatement);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is(2));
+    }
+    
+    @Test
+    public void assertGeneratedIndexStartIndexForOpenGauss() {
+        OpenGaussCreateIndexStatement openGaussCreateIndexStatement = new OpenGaussCreateIndexStatement(true);
+        openGaussCreateIndexStatement.setGeneratedIndexStartIndex(2);
+        Optional<Integer> actual = CreateIndexStatementHandler.getGeneratedIndexStartIndex(openGaussCreateIndexStatement);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is(2));
+    }
+    
+    @Test
+    public void assertGeneratedIndexStartIndexForOtherDatabases() {
+        assertFalse(CreateIndexStatementHandler.getGeneratedIndexStartIndex(new MySQLCreateIndexStatement()).isPresent());
+        assertFalse(CreateIndexStatementHandler.getGeneratedIndexStartIndex(new OracleCreateIndexStatement()).isPresent());
+        assertFalse(CreateIndexStatementHandler.getGeneratedIndexStartIndex(new SQLServerCreateIndexStatement()).isPresent());
     }
 }

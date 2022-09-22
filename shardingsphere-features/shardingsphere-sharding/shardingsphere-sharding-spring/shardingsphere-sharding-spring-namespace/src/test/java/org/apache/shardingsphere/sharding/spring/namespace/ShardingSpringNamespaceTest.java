@@ -22,6 +22,7 @@ import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardi
 import org.apache.shardingsphere.sharding.algorithm.sharding.mod.ModShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardS
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -43,7 +45,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = "classpath:META-INF/spring/sharding-application-context.xml")
@@ -68,6 +70,9 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
     private KeyGenerateAlgorithm keyGenerateAlgorithm;
     
     @Resource
+    private ShardingAuditAlgorithm auditAlgorithm;
+    
+    @Resource
     private StandardShardingStrategyConfiguration dataSourceShardingStrategy;
     
     @Resource
@@ -87,6 +92,12 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
     
     @Resource
     private KeyGenerateStrategyConfiguration orderKeyGenerator;
+    
+    @Resource
+    private ShardingAuditStrategyConfiguration defaultAudit;
+    
+    @Resource
+    private ShardingAuditStrategyConfiguration shardingKeyAudit;
     
     @Resource
     private NoneShardingStrategyConfiguration noneStrategy;
@@ -186,6 +197,23 @@ public final class ShardingSpringNamespaceTest extends AbstractJUnit4SpringConte
     public void assertOrderKeyGenerator() {
         assertThat(orderKeyGenerator.getColumn(), is("order_id"));
         assertThat(orderKeyGenerator.getKeyGeneratorName(), is("uuidAlgorithm"));
+    }
+    
+    @Test
+    public void assertShardingAuditAlgorithm() {
+        assertThat(auditAlgorithm.getType(), is("DML_SHARDING_CONDITIONS"));
+    }
+    
+    @Test
+    public void assertDefaultAudit() {
+        assertTrue(defaultAudit.getAuditorNames().contains("auditAlgorithm"));
+        assertTrue(defaultAudit.isAllowHintDisable());
+    }
+    
+    @Test
+    public void assertShardingKeyAudit() {
+        assertTrue(shardingKeyAudit.getAuditorNames().contains("auditAlgorithm"));
+        assertTrue(shardingKeyAudit.isAllowHintDisable());
     }
     
     @Test

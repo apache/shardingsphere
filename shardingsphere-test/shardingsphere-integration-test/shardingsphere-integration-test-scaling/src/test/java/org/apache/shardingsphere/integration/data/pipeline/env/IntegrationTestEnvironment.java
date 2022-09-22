@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.StorageContainerConstants;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -96,11 +97,11 @@ public final class IntegrationTestEnvironment {
     public int getActualDataSourceDefaultPort(final DatabaseType databaseType) {
         switch (databaseType.getType()) {
             case "MySQL":
-                return Integer.parseInt(props.getOrDefault("scaling.it.native.mysql.port", 3306).toString());
+                return Integer.parseInt(props.getOrDefault("scaling.it.native.mysql.port", StorageContainerConstants.MYSQL_EXPOSED_PORT).toString());
             case "PostgreSQL":
-                return Integer.parseInt(props.getOrDefault("scaling.it.native.postgresql.port", 5432).toString());
+                return Integer.parseInt(props.getOrDefault("scaling.it.native.postgresql.port", StorageContainerConstants.POSTGRESQL_EXPOSED_PORT).toString());
             case "openGauss":
-                return Integer.parseInt(props.getOrDefault("scaling.it.native.opengauss.port", 5432).toString());
+                return Integer.parseInt(props.getOrDefault("scaling.it.native.opengauss.port", StorageContainerConstants.OPENGAUSS_EXPOSED_PORT).toString());
             default:
                 throw new IllegalArgumentException("Unsupported database type: " + databaseType.getType());
         }
@@ -145,14 +146,14 @@ public final class IntegrationTestEnvironment {
     }
     
     /**
-     * List database docker image names.
+     * List storage contaienr images.
      *
      * @param databaseType database type.
-     * @return database docker image names
+     * @return database storage container images
      */
-    public List<String> listDatabaseDockerImageNames(final DatabaseType databaseType) {
+    public List<String> listStorageContainerImages(final DatabaseType databaseType) {
         // Native mode needn't use docker image, just return a list which contain one item
-        if (getItEnvType() == ITEnvTypeEnum.NATIVE) {
+        if (ITEnvTypeEnum.NATIVE == getItEnvType()) {
             return databaseType.getType().equalsIgnoreCase(getNativeDatabaseType()) ? Collections.singletonList("") : Collections.emptyList();
         }
         switch (databaseType.getType()) {

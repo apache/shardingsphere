@@ -87,7 +87,7 @@ public final class ManualBitSet {
      * @return index
      */
     public synchronized long getEndIndex(final long fromIndex, final int size) {
-        if (size == 0) {
+        if (0 == size) {
             return fromIndex;
         }
         int correctIndex = fromIndex < startIndex ? 0 : (int) (fromIndex - startIndex);
@@ -96,7 +96,7 @@ public final class ManualBitSet {
         for (int i = listIndex; i < bitSets.size(); i++) {
             int begin = i == listIndex ? correctIndex % BIT_SET_SIZE : 0;
             for (int j = begin; j < BIT_SET_SIZE; j++) {
-                if (bitSets.get(i).get(j) && --count == 0) {
+                if (bitSets.get(i).get(j) && 0 == --count) {
                     return startIndex + (long) i * BIT_SET_SIZE + j + 1;
                 }
             }

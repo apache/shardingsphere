@@ -20,7 +20,7 @@ discoveryTypeName ::=
   identifier
 
 typeName ::=
-  identifier
+  string
 ```
 
 ### 补充说明

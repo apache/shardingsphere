@@ -42,6 +42,9 @@ columnName ::=
 
 algorithmName ::=
   identifier
+    
+algorithmType ::=
+  string
 ```
 
 ### 补充说明

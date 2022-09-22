@@ -31,7 +31,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.DropIndexStatementHandler;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -43,7 +42,7 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
     
     @Override
     public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
-                                                    final String schemaName, final DropIndexStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
+                                                    final String schemaName, final DropIndexStatement sqlStatement, final ConfigurationProperties props) {
         DropIndexEvent event = new DropIndexEvent();
         for (IndexSegment each : sqlStatement.getIndexes()) {
             String actualSchemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue().toLowerCase()).orElse(schemaName);

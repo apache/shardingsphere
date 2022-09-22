@@ -1200,4 +1200,28 @@
     <alter-table sql-case-id="alter_table_alter_column_set_invisible">
         <table name="t_order" start-index="12" stop-index="18" />
     </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_statistics">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_compression">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_reset">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_access_method">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_expression">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
 </sql-parser-test-cases>

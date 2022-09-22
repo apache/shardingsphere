@@ -45,7 +45,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -57,7 +57,7 @@ public final class UnusedDataSourceQueryResultSetTest {
     
     @Before
     public void before() {
-        ShardingSphereResource resource = new ShardingSphereResource(createDataSources());
+        ShardingSphereResource resource = new ShardingSphereResource("sharding_db", createDataSources());
         ShardingSphereRuleMetaData metaData = new ShardingSphereRuleMetaData(Collections.singleton(createShardingRule()));
         when(database.getResource()).thenReturn(resource);
         when(database.getRuleMetaData()).thenReturn(metaData);

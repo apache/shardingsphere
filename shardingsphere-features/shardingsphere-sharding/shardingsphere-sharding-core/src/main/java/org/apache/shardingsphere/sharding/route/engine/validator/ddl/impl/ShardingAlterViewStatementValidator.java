@@ -21,13 +21,16 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.sharding.exception.syntax.RenamedViewWithoutSameConfigurationException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.AlterViewStatementHandler;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,6 +47,23 @@ public final class ShardingAlterViewStatementValidator extends ShardingDDLStatem
             TableExtractor extractor = new TableExtractor();
             extractor.extractTablesFromSelect(selectStatement.get());
             validateShardingTable(shardingRule, "ALTER VIEW", extractor.getRewriteTables());
+        }
+        Optional<SimpleTableSegment> renamedView = AlterViewStatementHandler.getRenameView(sqlStatementContext.getSqlStatement());
+        if (renamedView.isPresent()) {
+            String targetView = renamedView.get().getTableName().getIdentifier().getValue();
+            String originView = sqlStatementContext.getSqlStatement().getView().getTableName().getIdentifier().getValue();
+            validateBroadcastShardingView(shardingRule, originView, targetView);
+        }
+    }
+    
+    private void validateBroadcastShardingView(final ShardingRule shardingRule, final String originView, final String targetView) {
+        if (shardingRule.isBroadcastTable(originView) ^ shardingRule.isBroadcastTable(targetView)) {
+            throw new RenamedViewWithoutSameConfigurationException(originView, targetView);
+        }
+        if (shardingRule.isShardingTable(originView) || shardingRule.isShardingTable(targetView)) {
+            if (!shardingRule.isAllBindingTables(Arrays.asList(originView, targetView))) {
+                throw new RenamedViewWithoutSameConfigurationException(originView, targetView);
+            }
         }
     }
     

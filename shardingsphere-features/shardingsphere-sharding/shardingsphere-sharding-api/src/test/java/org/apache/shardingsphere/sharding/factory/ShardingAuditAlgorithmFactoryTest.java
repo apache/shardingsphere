@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.factory;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;

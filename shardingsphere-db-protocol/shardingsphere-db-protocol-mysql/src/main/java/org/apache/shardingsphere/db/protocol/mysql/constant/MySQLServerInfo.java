@@ -60,10 +60,7 @@ public final class MySQLServerInfo {
      * @return server version
      */
     public static String getServerVersion(final String databaseName) {
-        if (databaseName == null) {
-            return getDefaultServerVersion();
-        }
-        return SERVER_VERSIONS.getOrDefault(databaseName, getDefaultServerVersion());
+        return null == databaseName ? getDefaultServerVersion() : SERVER_VERSIONS.getOrDefault(databaseName, getDefaultServerVersion());
     }
     
     /**

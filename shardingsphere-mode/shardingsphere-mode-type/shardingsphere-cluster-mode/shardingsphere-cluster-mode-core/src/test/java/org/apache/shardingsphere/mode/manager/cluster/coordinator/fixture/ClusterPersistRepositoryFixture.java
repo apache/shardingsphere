@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.fixture;
 
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
@@ -62,12 +61,12 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     }
     
     @Override
-    public void watchSessionConnection(final InstanceContext instanceContext) {
+    public boolean persistLock(final String lockKey, final long timeoutMillis) {
+        return false;
     }
     
     @Override
-    public boolean persistLock(final String lockKey, final long timeoutMillis) {
-        return false;
+    public void deleteLock(final String lockKey) {
     }
     
     @Override

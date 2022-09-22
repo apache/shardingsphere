@@ -38,6 +38,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
@@ -52,7 +53,8 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.RuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema.SchemaChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema.TableMetaDataChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema.ViewMetaDataChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version.DatabaseVersionChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseDeletedEvent;
@@ -92,7 +94,6 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -105,7 +106,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -141,19 +142,21 @@ public final class ClusterContextManagerCoordinatorTest {
     private ContextManagerBuilderParameter createContextManagerBuilderParameter() {
         ModeConfiguration modeConfig = new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("FIXTURE", "", "", new Properties()), false);
         InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3307);
-        return new ContextManagerBuilderParameter(modeConfig, Collections.emptyMap(), Collections.emptyList(), new Properties(), Collections.emptyList(), instanceMetaData);
+        return new ContextManagerBuilderParameter(modeConfig, Collections.emptyMap(), Collections.emptyList(), new Properties(), Collections.emptyList(), instanceMetaData, false);
     }
     
     private Map<String, ShardingSphereDatabase> createDatabases() {
         when(database.getName()).thenReturn("db");
-        when(database.getResource().getDataSources()).thenReturn(Collections.emptyMap());
+        when(database.getResource().getDataSources()).thenReturn(new LinkedHashMap<>());
         when(database.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(database.getProtocolType()).thenReturn(new MySQLDatabaseType());
         when(database.getSchema("foo_schema")).thenReturn(mock(ShardingSphereSchema.class));
         when(database.getRuleMetaData().getRules()).thenReturn(new LinkedList<>());
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         when(database.getRuleMetaData().findRules(ResourceHeldRule.class)).thenReturn(Collections.emptyList());
-        return new HashMap<>(Collections.singletonMap("db", database));
+        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
+        result.put("db", database);
+        return result;
     }
     
     @Test
@@ -193,12 +196,21 @@ public final class ClusterContextManagerCoordinatorTest {
     }
     
     @Test
-    public void assertRenewForSchemaChanged() {
+    public void assertRenewForTableMetaDataChangedChanged() {
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").containsSchema("db")).thenReturn(true);
         ShardingSphereTable changedTableMetaData = new ShardingSphereTable("t_order", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        SchemaChangedEvent event = new SchemaChangedEvent("db", "db", changedTableMetaData, null);
+        TableMetaDataChangedEvent event = new TableMetaDataChangedEvent("db", "db", changedTableMetaData, null);
         coordinator.renew(event);
-        // assertTrue(contextManager.getMetaDataContexts().getMetaData().containsKey("db"));
         verify(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").getSchema("db")).putTable("t_order", event.getChangedTableMetaData());
+    }
+    
+    @Test
+    public void assertRenewForViewMetaDataChanged() {
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").containsSchema("db")).thenReturn(true);
+        ShardingSphereView changedViewMetaData = new ShardingSphereView("t_order_view", "");
+        ViewMetaDataChangedEvent event = new ViewMetaDataChangedEvent("db", "db", changedViewMetaData, null);
+        coordinator.renew(event);
+        verify(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").getSchema("db")).putView("t_order_view", event.getChangedViewMetaData());
     }
     
     @Test
@@ -380,7 +392,7 @@ public final class ClusterContextManagerCoordinatorTest {
     
     private Map<String, DataSource> initContextManager() {
         Map<String, DataSource> result = getDataSourceMap();
-        ShardingSphereResource resource = new ShardingSphereResource(result);
+        ShardingSphereResource resource = new ShardingSphereResource("sharding_db", result);
         ShardingSphereDatabase database = new ShardingSphereDatabase("db", new MySQLDatabaseType(), resource, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
         contextManager.getMetaDataContexts().getMetaData().getDatabases().put("db", database);
         return result;

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -68,9 +69,8 @@ public abstract class MemoryMergedResult<T extends ShardingSphereRule> implement
     
     @Override
     public final Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        if (Blob.class == type || Clob.class == type || Reader.class == type || InputStream.class == type || SQLXML.class == type) {
-            throw new SQLFeatureNotSupportedException(String.format("Get value from `%s`", type.getName()));
-        }
+        ShardingSpherePreconditions.checkState(Blob.class != type && Clob.class != type && Reader.class != type && InputStream.class != type && SQLXML.class != type,
+                () -> new SQLFeatureNotSupportedException(String.format("Get value from `%s`", type.getName())));
         Object result = currentResultSetRow.getCell(columnIndex);
         wasNull = null == result;
         return result;

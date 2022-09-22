@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.meta
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.AddSchemaEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.AlterSchemaEvent;
@@ -51,9 +52,14 @@ public final class SchemaMetaDataRegistrySubscriber {
      */
     @Subscribe
     public void update(final SchemaAlteredEvent event) {
+        String databaseName = event.getDatabaseName();
+        String schemaName = event.getSchemaName();
         Map<String, ShardingSphereTable> tables = event.getAlteredTables().stream().collect(Collectors.toMap(ShardingSphereTable::getName, table -> table));
-        persistService.getTableMetaDataPersistService().persist(event.getDatabaseName(), event.getSchemaName(), tables);
-        event.getDroppedTables().forEach(each -> persistService.getTableMetaDataPersistService().delete(event.getDatabaseName(), event.getSchemaName(), each));
+        Map<String, ShardingSphereView> views = event.getAlteredViews().stream().collect(Collectors.toMap(ShardingSphereView::getName, view -> view));
+        persistService.getTableMetaDataPersistService().persist(databaseName, schemaName, tables);
+        persistService.getViewMetaDataPersistService().persist(databaseName, schemaName, views);
+        event.getDroppedTables().forEach(each -> persistService.getTableMetaDataPersistService().delete(databaseName, schemaName, each));
+        event.getDroppedViews().forEach(each -> persistService.getViewMetaDataPersistService().delete(databaseName, schemaName, each));
     }
     
     /**
@@ -73,7 +79,8 @@ public final class SchemaMetaDataRegistrySubscriber {
      */
     @Subscribe
     public void alterSchema(final AlterSchemaEvent event) {
-        persistService.compareAndPersist(event.getDatabaseName(), event.getRenameSchemaName(), event.getSchema());
+        persistService.persist(event.getDatabaseName(), event.getRenameSchemaName(), event.getSchema());
+        persistService.getViewMetaDataPersistService().persist(event.getDatabaseName(), event.getRenameSchemaName(), event.getSchema().getViews());
         persistService.dropSchema(event.getDatabaseName(), event.getSchemaName());
     }
     

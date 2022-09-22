@@ -35,7 +35,7 @@ import java.util.Collections;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -45,7 +45,7 @@ public final class DatabaseDiscoveryRuleBuilderTest {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertBuild() {
-        ScheduleContextFactory.getInstance().init("foo_id", new ModeConfiguration("Cluster", mock(PersistRepositoryConfiguration.class), false));
+        ScheduleContextFactory.newInstance(new ModeConfiguration("Cluster", mock(PersistRepositoryConfiguration.class), false));
         DatabaseDiscoveryRuleConfiguration config = new DatabaseDiscoveryRuleConfiguration(
                 Collections.singleton(new DatabaseDiscoveryDataSourceRuleConfiguration("name", Collections.singletonList("name"), "", "CORE.FIXTURE")),
                 Collections.singletonMap("ha_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties())),
@@ -55,6 +55,5 @@ public final class DatabaseDiscoveryRuleBuilderTest {
         when(instanceContext.getInstance().getCurrentInstanceId()).thenReturn("foo_id");
         assertThat(builder.build(config, "test_schema",
                 Collections.singletonMap("name", new MockedDataSource()), Collections.emptyList(), instanceContext), instanceOf(DatabaseDiscoveryRule.class));
-        ScheduleContextFactory.getInstance().getScheduleStrategy().remove("foo_id");
     }
 }

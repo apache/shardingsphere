@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.integration.transaction.engine.base;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.integration.transaction.framework.param.TransactionParameterized;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.AdapterContainerConstants;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import javax.sql.DataSource;
@@ -30,13 +30,14 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @Slf4j
@@ -140,16 +141,15 @@ public abstract class BaseTransactionITCase extends BaseITCase {
         executeWithLog(connection, "DROP TABLE IF EXISTS t_order;");
     }
     
-    protected void assertAccountRowCount(final Connection conn, final int rowNum) {
+    protected void assertAccountRowCount(final Connection conn, final int rowNum) throws SQLException {
         assertTableRowCount(conn, TransactionTestConstants.ACCOUNT, rowNum);
     }
     
-    @SneakyThrows(SQLException.class)
-    private void assertTableRowCount(final Connection conn, final String tableName, final int rowNum) {
+    private void assertTableRowCount(final Connection conn, final String tableName, final int rowNum) throws SQLException {
         Statement statement = conn.createStatement();
-        ResultSet rs = statement.executeQuery("select * from " + tableName);
+        ResultSet resultSet = statement.executeQuery("select * from " + tableName);
         int resultSetCount = 0;
-        while (rs.next()) {
+        while (resultSet.next()) {
             resultSetCount++;
         }
         statement.close();
@@ -176,13 +176,13 @@ public abstract class BaseTransactionITCase extends BaseITCase {
         assertTrue(waitExpectedTransactionRule(TransactionType.XA, providerType, 5));
     }
     
-    private boolean isExpectedTransactionRule(final Connection connection, final TransactionType expectedTransType, final String expectedProviderType) {
+    private boolean isExpectedTransactionRule(final Connection connection, final TransactionType expectedTransType, final String expectedProviderType) throws SQLException {
         Map<String, String> transactionRuleMap = executeShowTransactionRule(connection);
         return Objects.equals(transactionRuleMap.get(TransactionTestConstants.DEFAULT_TYPE), expectedTransType.toString())
                 && Objects.equals(transactionRuleMap.get(TransactionTestConstants.PROVIDER_TYPE), expectedProviderType);
     }
     
-    protected boolean waitExpectedTransactionRule(final TransactionType expectedTransType, final String expectedProviderType, final int maxWaitTimes) {
+    protected boolean waitExpectedTransactionRule(final TransactionType expectedTransType, final String expectedProviderType, final int maxWaitTimes) throws SQLException {
         ThreadUtil.sleep(5, TimeUnit.SECONDS);
         Connection connection = getProxyConnection();
         int waitTimes = 0;
@@ -196,14 +196,13 @@ public abstract class BaseTransactionITCase extends BaseITCase {
         return false;
     }
     
-    @SneakyThrows
-    protected Map<String, String> executeShowTransactionRule(final Connection conn) {
+    protected Map<String, String> executeShowTransactionRule(final Connection conn) throws SQLException {
         Statement statement = conn.createStatement();
-        ResultSet rs = statement.executeQuery("SHOW TRANSACTION RULE;");
+        ResultSet resultSet = statement.executeQuery("SHOW TRANSACTION RULE;");
         Map<String, String> result = new HashMap<>(1, 1);
-        while (rs.next()) {
-            String defaultType = rs.getString(TransactionTestConstants.DEFAULT_TYPE);
-            String providerType = rs.getString(TransactionTestConstants.PROVIDER_TYPE);
+        while (resultSet.next()) {
+            String defaultType = resultSet.getString(TransactionTestConstants.DEFAULT_TYPE);
+            String providerType = resultSet.getString(TransactionTestConstants.PROVIDER_TYPE);
             result.put(TransactionTestConstants.DEFAULT_TYPE, defaultType);
             result.put(TransactionTestConstants.PROVIDER_TYPE, providerType);
         }
@@ -211,7 +210,35 @@ public abstract class BaseTransactionITCase extends BaseITCase {
         return result;
     }
     
-    protected void callTestCases(final TransactionParameterized parameterized) {
+    protected void callTestCases(final TransactionParameterized parameterized) throws SQLException {
+        if (AdapterContainerConstants.PROXY.equalsIgnoreCase(parameterized.getAdapter())) {
+            for (TransactionType each : parameterized.getTransactionTypes()) {
+                if (TransactionType.LOCAL.equals(each)) {
+                    log.info("Call transaction IT {}, alter transaction rule {}.", parameterized, "");
+                    alterTransactionRule(each, "");
+                    doCallTestCases(parameterized, each, "");
+                } else if (TransactionType.XA.equals(each)) {
+                    for (String eachProvider : parameterized.getProviders()) {
+                        log.info("Call transaction IT {}, alter transaction rule {}.", parameterized, eachProvider);
+                        alterTransactionRule(each, eachProvider);
+                        doCallTestCases(parameterized, each, eachProvider);
+                    }
+                }
+            }
+        } else {
+            doCallTestCases(parameterized);
+        }
+    }
+    
+    private void alterTransactionRule(final TransactionType transactionType, final String each) throws SQLException {
+        if (Objects.equals(transactionType, TransactionType.LOCAL)) {
+            alterLocalTransactionRule();
+        } else if (Objects.equals(transactionType, TransactionType.XA)) {
+            alterXaTransactionRule(each);
+        }
+    }
+    
+    private void doCallTestCases(final TransactionParameterized parameterized) {
         for (Class<? extends BaseTransactionTestCase> each : parameterized.getTransactionTestCaseClasses()) {
             log.info("Transaction IT {} -> {} test begin.", parameterized, each.getSimpleName());
             try {
@@ -223,6 +250,28 @@ public abstract class BaseTransactionITCase extends BaseITCase {
                 throw new RuntimeException(ex);
             }
             log.info("Transaction IT {} -> {} test end.", parameterized, each.getSimpleName());
+            try {
+                getDataSource().close();
+            } catch (final SQLException ignored) {
+            }
+        }
+    }
+    
+    private void doCallTestCases(final TransactionParameterized parameterized, final TransactionType transactionType, final String provider) {
+        for (Class<? extends BaseTransactionTestCase> each : parameterized.getTransactionTestCaseClasses()) {
+            if (!Arrays.asList(each.getAnnotation(TransactionTestCase.class).transactionTypes()).contains(transactionType)) {
+                return;
+            }
+            log.info("Call transaction IT {} -> {} -> {} -> {} test begin.", parameterized, transactionType, provider, each.getSimpleName());
+            try {
+                each.getConstructor(BaseTransactionITCase.class, DataSource.class).newInstance(this, getDataSource()).execute();
+                // CHECKSTYLE:OFF
+            } catch (final Exception ex) {
+                // CHECKSTYLE:ON
+                log.error(String.format("Transaction IT %s -> %s test failed", parameterized, each.getSimpleName()), ex);
+                throw new RuntimeException(ex);
+            }
+            log.info("Call transaction IT {} -> {} -> {} -> {} test end.", parameterized, transactionType, provider, each.getSimpleName());
             try {
                 getDataSource().close();
             } catch (final SQLException ignored) {

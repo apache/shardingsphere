@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.database.metadata.UnrecognizedDatabaseURL
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class OracleDataSourceMetaDataTest {
     
@@ -112,5 +112,16 @@ public final class OracleDataSourceMetaDataTest {
     @Test(expected = UnrecognizedDatabaseURLException.class)
     public void assertNewConstructorFailure() {
         new OracleDataSourceMetaData("jdbc:oracle:xxxxxxxx", "test");
+    }
+    
+    @Test
+    public void assertNewConstructorWithConnectDescriptorUrlWithExtraSpaces() {
+        OracleDataSourceMetaData actual = new OracleDataSourceMetaData("jdbc:oracle:thin:@(DESCRIPTION = description"
+                + "(HOST   =   172.16.0.22)(PORT   =  1521))(LOAD_BALANCE = yes)(FAILOVER = ON)(CONNECT_DATA =(SERVER = DEDICATED)"
+                + "(SERVICE_NAME   =   rac)(FAILOVER_MODE=(TYPE = SELECT)(METHOD = BASIC)(RETIRES = 20)(DELAY = 15))))", "test");
+        assertThat(actual.getHostname(), is("172.16.0.22"));
+        assertThat(actual.getPort(), is(1521));
+        assertThat(actual.getCatalog(), is("rac"));
+        assertThat(actual.getSchema(), is("test"));
     }
 }

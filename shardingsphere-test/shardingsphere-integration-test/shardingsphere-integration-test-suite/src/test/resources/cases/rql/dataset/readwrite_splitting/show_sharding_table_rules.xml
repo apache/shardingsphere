@@ -31,8 +31,10 @@
         <column name="key_generate_column" />
         <column name="key_generator_type" />
         <column name="key_generator_props" />
+        <column name="auditor_types" />
+        <column name="allow_hint_disable" />
     </metadata>
-    <row values="t_order| write-read-ds.t_order| | | | | | | | | | | | " />
-    <row values="t_order_item| write-read-ds.t_order_item| | | | | | | | | | | | " />
-    <row values="t_order_details| write-read-ds.t_order_details| | | | | | | | | | | | " />
+    <row values="t_order| write-read-ds.t_order| | | | | | | | | | | | | | " />
+    <row values="t_order_item| write-read-ds.t_order_item| | | | | | | | | | | | | | " />
+    <row values="t_order_details| write-read-ds.t_order_details| | | | | | | | | | | | | | " />
 </dataset>

@@ -20,9 +20,13 @@ package org.apache.shardingsphere.data.pipeline.core.util;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
-import org.apache.shardingsphere.data.pipeline.api.config.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.process.yaml.YamlPipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.process.yaml.YamlPipelineProcessConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.api.config.process.yaml.YamlPipelineReadConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.config.process.PipelineProcessConfigurationUtil;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
@@ -32,16 +36,13 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.Memory
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPIImpl;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobItemContext;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationProcessContext;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineProcessConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineReadConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.data.pipeline.YamlPipelineProcessConfigurationSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -159,7 +160,7 @@ public final class PipelineContextUtil {
         PipelineProcessConfiguration processConfig = mockPipelineProcessConfiguration();
         MigrationProcessContext processContext = new MigrationProcessContext(jobConfig.getJobId(), processConfig);
         int jobShardingItem = 0;
-        TaskConfiguration taskConfig = new MigrationJobAPIImpl().buildTaskConfiguration(jobConfig, jobShardingItem, processConfig);
+        MigrationTaskConfiguration taskConfig = new MigrationJobAPIImpl().buildTaskConfiguration(jobConfig, jobShardingItem, processConfig);
         return new MigrationJobItemContext(jobConfig, jobShardingItem, null, processContext, taskConfig, new DefaultPipelineDataSourceManager());
     }
     
@@ -168,7 +169,7 @@ public final class PipelineContextUtil {
         yamlReadConfig.setShardingSize(10);
         YamlPipelineProcessConfiguration yamlProcessConfig = new YamlPipelineProcessConfiguration();
         yamlProcessConfig.setRead(yamlReadConfig);
-        PipelineProcessConfigurationUtils.fillInDefaultValue(yamlProcessConfig);
+        PipelineProcessConfigurationUtil.fillInDefaultValue(yamlProcessConfig);
         return new YamlPipelineProcessConfigurationSwapper().swapToObject(yamlProcessConfig);
     }
 }

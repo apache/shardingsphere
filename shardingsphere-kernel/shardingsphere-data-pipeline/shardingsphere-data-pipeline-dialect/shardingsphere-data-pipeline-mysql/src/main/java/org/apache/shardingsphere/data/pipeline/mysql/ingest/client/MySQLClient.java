@@ -31,7 +31,7 @@ import io.netty.util.concurrent.DefaultPromise;
 import io.netty.util.concurrent.Promise;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecutionException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.BinlogSyncChannelAlreadyClosedException;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.GlobalTableMapEventMapping;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractBinlogEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.netty.MySQLBinlogEventPacketDecoder;
@@ -46,6 +46,8 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.que
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.netty.ChannelAttrInitializer;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 
 import java.net.InetSocketAddress;
 import java.util.Objects;
@@ -185,7 +187,7 @@ public final class MySQLClient {
             case "CRC32":
                 return 4;
             default:
-                throw new UnsupportedOperationException(checksumType);
+                throw new UnsupportedSQLOperationException(checksumType);
         }
     }
     
@@ -205,11 +207,9 @@ public final class MySQLClient {
      * @return binlog event
      */
     public synchronized AbstractBinlogEvent poll() {
-        if (!running) {
-            throw new PipelineJobExecutionException("binlog sync channel already closed, can't poll event");
-        }
+        ShardingSpherePreconditions.checkState(running, BinlogSyncChannelAlreadyClosedException::new);
         try {
-            return blockingEventQueue.poll(100, TimeUnit.MILLISECONDS);
+            return blockingEventQueue.poll(100L, TimeUnit.MILLISECONDS);
         } catch (final InterruptedException ignored) {
             return null;
         }

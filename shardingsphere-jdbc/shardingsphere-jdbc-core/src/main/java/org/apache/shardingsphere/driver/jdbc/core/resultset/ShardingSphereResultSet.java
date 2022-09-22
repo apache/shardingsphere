@@ -21,6 +21,7 @@ import org.apache.shardingsphere.driver.jdbc.adapter.AbstractResultSetAdapter;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtil;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -369,15 +370,17 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     public <T> T getObject(final int columnIndex, final Class<T> type) throws SQLException {
         if (BigInteger.class.equals(type)) {
             return (T) BigInteger.valueOf(getLong(columnIndex));
-        } else if (Blob.class.equals(type)) {
-            return (T) getBlob(columnIndex);
-        } else if (Clob.class.equals(type)) {
-            return (T) getClob(columnIndex);
-        } else if (LocalDateTime.class.equals(type) || LocalDate.class.equals(type) || LocalTime.class.equals(type) || OffsetDateTime.class.equals(type)) {
-            return (T) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, Timestamp.class), type);
-        } else {
-            return (T) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, type), type);
         }
+        if (Blob.class.equals(type)) {
+            return (T) getBlob(columnIndex);
+        }
+        if (Clob.class.equals(type)) {
+            return (T) getClob(columnIndex);
+        }
+        if (LocalDateTime.class.equals(type) || LocalDate.class.equals(type) || LocalTime.class.equals(type) || OffsetDateTime.class.equals(type)) {
+            return (T) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, Timestamp.class), type);
+        }
+        return (T) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, type), type);
     }
     
     @Override
@@ -385,11 +388,9 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
         return getObject(getIndexFromColumnLabelAndIndexMap(columnLabel), type);
     }
     
-    private Integer getIndexFromColumnLabelAndIndexMap(final String columnLabel) throws SQLFeatureNotSupportedException {
+    private Integer getIndexFromColumnLabelAndIndexMap(final String columnLabel) throws SQLException {
         Integer result = columnLabelAndIndexMap.get(columnLabel);
-        if (null == result) {
-            throw new SQLFeatureNotSupportedException(String.format("can't get index from columnLabel[%s].", columnLabel));
-        }
+        ShardingSpherePreconditions.checkState(null != result, () -> new SQLFeatureNotSupportedException(String.format("Can not get index from column label `%s`.", columnLabel)));
         return result;
     }
 }

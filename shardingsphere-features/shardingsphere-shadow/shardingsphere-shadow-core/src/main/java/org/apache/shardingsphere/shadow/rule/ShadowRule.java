@@ -255,7 +255,7 @@ public final class ShadowRule implements DatabaseRule, DataSourceContainedRule {
      */
     public Optional<String> getSourceDataSourceName(final String actualDataSourceName) {
         ShadowDataSourceRule shadowDataSourceRule = shadowDataSourceMappings.get(actualDataSourceName);
-        return shadowDataSourceRule == null ? Optional.empty() : Optional.of(shadowDataSourceRule.getProductionDataSource());
+        return null == shadowDataSourceRule ? Optional.empty() : Optional.of(shadowDataSourceRule.getProductionDataSource());
     }
     
     @Override

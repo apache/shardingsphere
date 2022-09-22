@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.metadata.database.schema.loader.dialect;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ConstraintMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
@@ -36,7 +37,7 @@ import java.util.Iterator;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.startsWith;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -58,6 +59,11 @@ public final class PostgreSQLSchemaMetaDataLoaderTest {
     
     private static final String BASIC_INDEX_META_DATA_SQL = "SELECT tablename, indexname, schemaname FROM pg_indexes WHERE schemaname IN ('public')";
     
+    private static final String BASIC_CONSTRAINT_META_DATA_SQL = "SELECT tc.table_schema,tc.table_name,tc.constraint_name,pgo.relname refer_table_name FROM information_schema.table_constraints tc "
+            + "JOIN pg_constraint pgc ON tc.constraint_name = pgc.conname AND contype='f' "
+            + "JOIN pg_class pgo ON pgc.confrelid = pgo.oid "
+            + "WHERE tc.constraint_type = 'FOREIGN KEY' AND tc.table_schema IN ('public')";
+    
     private static final String LOAD_ALL_ROLE_TABLE_GRANTS_SQL = "SELECT table_name FROM information_schema.role_table_grants";
     
     @Test
@@ -71,6 +77,8 @@ public final class PostgreSQLSchemaMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(PRIMARY_KEY_META_DATA_SQL).executeQuery()).thenReturn(primaryKeyResultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(BASIC_INDEX_META_DATA_SQL).executeQuery()).thenReturn(indexResultSet);
+        ResultSet constraintResultSet = mockConstraintMetaDataResultSet();
+        when(dataSource.getConnection().prepareStatement(BASIC_CONSTRAINT_META_DATA_SQL).executeQuery()).thenReturn(constraintResultSet);
         ResultSet roleTableGrantsResultSet = mockRoleTableGrantsResultSet();
         when(dataSource.getConnection().prepareStatement(startsWith(LOAD_ALL_ROLE_TABLE_GRANTS_SQL)).executeQuery()).thenReturn(roleTableGrantsResultSet);
         assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList(), "sharding_db"));
@@ -94,6 +102,8 @@ public final class PostgreSQLSchemaMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(PRIMARY_KEY_META_DATA_SQL).executeQuery()).thenReturn(primaryKeyResultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(BASIC_INDEX_META_DATA_SQL).executeQuery()).thenReturn(indexResultSet);
+        ResultSet constraintResultSet = mockConstraintMetaDataResultSet();
+        when(dataSource.getConnection().prepareStatement(BASIC_CONSTRAINT_META_DATA_SQL).executeQuery()).thenReturn(constraintResultSet);
         ResultSet roleTableGrantsResultSet = mockRoleTableGrantsResultSet();
         when(dataSource.getConnection().prepareStatement(startsWith(LOAD_ALL_ROLE_TABLE_GRANTS_SQL)).executeQuery()).thenReturn(roleTableGrantsResultSet);
         assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.singletonList("tbl"), "sharding_db"));
@@ -152,6 +162,16 @@ public final class PostgreSQLSchemaMetaDataLoaderTest {
         return result;
     }
     
+    private ResultSet mockConstraintMetaDataResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, false);
+        when(result.getString("table_schema")).thenReturn("public");
+        when(result.getString("table_name")).thenReturn("tbl");
+        when(result.getString("constraint_name")).thenReturn("tbl_con");
+        when(result.getString("refer_table_name")).thenReturn("refer_tbl");
+        return result;
+    }
+    
     private DialectSchemaMetaDataLoader getDialectTableMetaDataLoader() {
         Optional<DialectSchemaMetaDataLoader> result = DialectSchemaMetaDataLoaderFactory.findInstance(DatabaseTypeFactory.getInstance("PostgreSQL"));
         assertTrue(result.isPresent());
@@ -168,5 +188,8 @@ public final class PostgreSQLSchemaMetaDataLoaderTest {
         assertThat(actualTableMetaData.getIndexes().size(), is(1));
         Iterator<IndexMetaData> indexesIterator = actualTableMetaData.getIndexes().iterator();
         assertThat(indexesIterator.next(), is(new IndexMetaData("id")));
+        assertThat(actualTableMetaData.getConstrains().size(), is(1));
+        Iterator<ConstraintMetaData> constrainsIterator = actualTableMetaData.getConstrains().iterator();
+        assertThat(constrainsIterator.next(), is(new ConstraintMetaData("tbl_con", "refer_tbl")));
     }
 }

@@ -68,7 +68,8 @@
 #    # and block other clients if client connections are more than `proxy-frontend-executor-size`, especially executing slow SQL.
 #  proxy-backend-executor-suitable: OLAP
 #  proxy-frontend-max-connections: 0 # Less than or equal to 0 means no limitation.
-#  sql-federation-enabled: false
+#    # Available sql federation type: NONE (default), ORIGINAL, ADVANCED
+#  sql-federation-type: NONE
 #    # Available proxy backend driver type: JDBC (default), ExperimentalVertx
 #  proxy-backend-driver-type: JDBC
 #  proxy-mysql-default-version: 5.7.22 # In the absence of schema name, the default version will be used.

@@ -19,6 +19,8 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rul.sql;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
+import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.distsql.parser.statement.rul.sql.PreviewStatement;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
@@ -33,9 +35,6 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
-import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
-import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
@@ -47,11 +46,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.dr
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
-import org.apache.shardingsphere.infra.federation.executor.FederationContext;
-import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
-import org.apache.shardingsphere.infra.federation.executor.FederationExecutorFactory;
-import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
-import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -63,9 +57,13 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDB
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.SQLRULBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
+import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
+import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
+import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -140,14 +138,14 @@ public final class PreviewHandler extends SQLRULBackendHandler<PreviewStatement>
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         boolean isReturnGeneratedKeys = sqlStatement instanceof MySQLInsertStatement;
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(isReturnGeneratedKeys, metaDataContexts);
-        FederationContext context = new FederationContext(true, queryContext, metaDataContexts.getMetaData().getDatabases());
+        SQLFederationExecutorContext context = new SQLFederationExecutorContext(true, queryContext, metaDataContexts.getMetaData().getDatabases());
         DatabaseType databaseType = metaDataContexts.getMetaData().getDatabase(getDatabaseName()).getResource().getDatabaseType();
         String schemaName = queryContext.getSqlStatementContext().getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(databaseType, databaseName));
         EventBusContext eventBusContext = ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext();
-        OptimizerContext optimizerContext = OptimizerContextFactory.create(metaDataContexts.getMetaData().getDatabases(), metaDataContexts.getMetaData().getGlobalRuleMetaData());
-        FederationExecutor executor = FederationExecutorFactory.newInstance(databaseName, schemaName, optimizerContext, metaDataContexts.getMetaData().getGlobalRuleMetaData(),
-                metaDataContexts.getMetaData().getProps(), new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), false), eventBusContext);
-        executor.executeQuery(prepareEngine, createPreviewFederationCallback(sqlStatement, databaseType, eventBusContext), context);
+        SQLFederationRule sqlFederationRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class);
+        SQLFederationExecutor sqlFederationExecutor = sqlFederationRule.getSQLFederationExecutor(databaseName, schemaName,
+                metaDataContexts.getMetaData(), new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), false), eventBusContext);
+        sqlFederationExecutor.executeQuery(prepareEngine, createPreviewFederationCallback(sqlStatement, databaseType, eventBusContext), context);
         return context.getExecutionUnits();
     }
     

@@ -17,78 +17,66 @@
 
 package org.apache.shardingsphere.data.pipeline.core.dumper;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-import java.util.Collections;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.IncrementalDumper;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.fixture.FixtureIncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.SimpleMemoryPipelineChannel;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.IncrementalDumperCreatorFactory;
-import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.MySQLIncrementalDumper;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.BinlogPosition;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.OpenGaussWalDumper;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLWalDumper;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WalPosition;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumper;
-import org.junit.Before;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumperCreatorFactory;
 import org.junit.Test;
 import org.mockito.Mock;
 
+import java.util.Collections;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 public final class IncrementalDumperCreatorFactoryTest {
     
-    private PipelineDataSourceWrapper dataSource;
-    
     @Mock
-    private WalPosition walPosition;
-    
-    @Before
-    public void setUp() {
-        PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
-        DumperConfiguration dumperConfig = mockDumperConfiguration();
-        dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
-    }
+    private IngestPosition<?> ingestPosition;
     
     @Test
     public void assertIncrementalDumperCreatorForMysql() {
-        IncrementalDumper actual = IncrementalDumperCreatorFactory.getInstance("MySQL")
-                .createIncrementalDumper(mockDumperConfiguration(), new BinlogPosition("binlog-000001", 4L), new SimpleMemoryPipelineChannel(100), new PipelineTableMetaDataLoader(dataSource));
+        IncrementalDumper actual = createIncrementalDumper("MySQL");
         assertThat(actual, instanceOf(MySQLIncrementalDumper.class));
     }
     
     @Test
     public void assertIncrementalDumperCreatorForPostgreSQL() {
-        IncrementalDumper actual = IncrementalDumperCreatorFactory.getInstance("PostgreSQL")
-                .createIncrementalDumper(mockDumperConfiguration(), walPosition, new SimpleMemoryPipelineChannel(100), new PipelineTableMetaDataLoader(dataSource));
+        IncrementalDumper actual = createIncrementalDumper("PostgreSQL");
         assertThat(actual, instanceOf(PostgreSQLWalDumper.class));
     }
     
     @Test
     public void assertIncrementalDumperCreatorForOpenGauss() {
-        IncrementalDumper actual = IncrementalDumperCreatorFactory.getInstance("openGauss")
-                .createIncrementalDumper(mockDumperConfiguration(), walPosition, new SimpleMemoryPipelineChannel(100), new PipelineTableMetaDataLoader(dataSource));
+        IncrementalDumper actual = createIncrementalDumper("openGauss");
         assertThat(actual, instanceOf(OpenGaussWalDumper.class));
     }
     
     @Test
     public void assertIncrementalDumperCreatorForFixture() {
-        IncrementalDumper actual = IncrementalDumperCreatorFactory.getInstance("Fixture")
-                .createIncrementalDumper(mockDumperConfiguration(), walPosition, new SimpleMemoryPipelineChannel(100), new PipelineTableMetaDataLoader(dataSource));
+        IncrementalDumper actual = createIncrementalDumper("Fixture");
         assertThat(actual, instanceOf(FixtureIncrementalDumper.class));
     }
     
     @Test
     public void assertIncrementalDumperCreatorForH2() {
-        IncrementalDumper actual = IncrementalDumperCreatorFactory.getInstance("H2")
-                .createIncrementalDumper(mockDumperConfiguration(), walPosition, new SimpleMemoryPipelineChannel(100), new PipelineTableMetaDataLoader(dataSource));
+        IncrementalDumper actual = createIncrementalDumper("H2");
         assertThat(actual, instanceOf(FixtureIncrementalDumper.class));
+    }
+    
+    private IncrementalDumper createIncrementalDumper(final String databaseType) {
+        return IncrementalDumperCreatorFactory.getInstance(databaseType)
+                .createIncrementalDumper(mockDumperConfiguration(), ingestPosition, new SimpleMemoryPipelineChannel(100), new StandardPipelineTableMetaDataLoader(null));
     }
     
     private DumperConfiguration mockDumperConfiguration() {

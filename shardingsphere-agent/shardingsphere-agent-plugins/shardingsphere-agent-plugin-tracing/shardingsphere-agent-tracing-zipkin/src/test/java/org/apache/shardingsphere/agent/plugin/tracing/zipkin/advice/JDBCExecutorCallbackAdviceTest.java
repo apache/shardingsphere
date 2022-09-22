@@ -31,7 +31,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCallbackAdviceTest {
     
@@ -53,7 +53,7 @@ public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCa
         Span span = COLLECTOR.pop();
         assertThat(span.name(), is("/ShardingSphere/executeSQL/".toLowerCase()));
         Map<String, String> tags = span.tags();
-        assertFalse(tags == null || tags.isEmpty());
+        assertFalse(null == tags || tags.isEmpty());
         assertThat(tags.get(ZipkinConstants.Tags.COMPONENT), is("shardingsphere"));
         assertThat(tags.get(ZipkinConstants.Tags.DB_INSTANCE), is("mock.db"));
         assertThat(tags.get(ZipkinConstants.Tags.DB_STATEMENT), is("select 1"));

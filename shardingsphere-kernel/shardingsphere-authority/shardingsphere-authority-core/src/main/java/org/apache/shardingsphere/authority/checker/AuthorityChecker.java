@@ -57,10 +57,7 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
     
     @Override
     public boolean check(final String databaseName, final Grantee grantee, final AuthorityRule rule) {
-        if (null == grantee) {
-            return true;
-        }
-        return rule.findPrivileges(grantee).map(optional -> optional.hasPrivileges(databaseName)).orElse(false);
+        return null == grantee || rule.findPrivileges(grantee).map(optional -> optional.hasPrivileges(databaseName)).orElse(false);
     }
     
     @Override

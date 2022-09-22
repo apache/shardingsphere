@@ -23,7 +23,7 @@ import org.junit.Test;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class DatabaseMetaDataNodeTest {
@@ -74,6 +74,13 @@ public class DatabaseMetaDataNodeTest {
         Optional<String> actualTableName = DatabaseMetaDataNode.getTableName("/metadata/logic_db/schemas/logic_schema/tables/t_order");
         assertTrue(actualTableName.isPresent());
         assertThat(actualTableName.get(), is("t_order"));
+    }
+    
+    @Test
+    public void assertGetViewName() {
+        Optional<String> actualViewName = DatabaseMetaDataNode.getViewName("/metadata/logic_db/schemas/logic_schema/views/foo_view");
+        assertTrue(actualViewName.isPresent());
+        assertThat(actualViewName.get(), is("foo_view"));
     }
     
     @Test

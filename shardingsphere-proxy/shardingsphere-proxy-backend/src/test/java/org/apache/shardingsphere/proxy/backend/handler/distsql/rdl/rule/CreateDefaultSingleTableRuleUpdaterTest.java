@@ -34,7 +34,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -50,7 +50,7 @@ public final class CreateDefaultSingleTableRuleUpdaterTest {
     private SingleTableRuleConfiguration currentConfig;
     
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         when(database.getName()).thenReturn("sharding_db");
         when(database.getResource().getDataSources()).thenReturn(Collections.singletonMap("ds_0", new MockedDataSource()));
     }

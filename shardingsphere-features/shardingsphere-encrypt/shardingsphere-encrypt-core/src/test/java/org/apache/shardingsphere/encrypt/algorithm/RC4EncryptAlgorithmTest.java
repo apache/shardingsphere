@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.algorithm;
 
-import org.apache.shardingsphere.encrypt.exception.EncryptAlgorithmInitializationException;
+import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.factory.EncryptAlgorithmFactory;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
@@ -29,7 +29,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 public final class RC4EncryptAlgorithmTest {
