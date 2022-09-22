@@ -20,10 +20,3 @@ SET character_set_server='utf8';
 
 DROP DATABASE IF EXISTS db;
 CREATE DATABASE db;
-
-CREATE TABLE db.t_shadow (order_id BIGINT NOT NULL, user_id INT NOT NULL, order_name_cipher VARCHAR(200) NOT NULL, order_name_plain VARCHAR(200) NOT NULL, type_char CHAR(1) NOT NULL, type_boolean BOOLEAN NOT NULL, type_smallint SMALLINT NOT NULL, type_enum ENUM('spring', 'summer', 'autumn', 'winter'), type_decimal DECIMAL(18,2) NOT NULL, type_date DATE NOT NULL, type_time TIME NOT NULL, type_timestamp TIMESTAMP NOT NULL, PRIMARY KEY (order_id));
-
-DROP DATABASE IF EXISTS encrypt_shadow_db;
-CREATE DATABASE encrypt_shadow_db;
-
-CREATE TABLE encrypt_shadow_db.t_shadow (order_id BIGINT NOT NULL, user_id INT NOT NULL, order_name_cipher VARCHAR(200) NOT NULL, order_name_plain VARCHAR(200) NOT NULL, type_char CHAR(1) NOT NULL, type_boolean BOOLEAN NOT NULL, type_smallint SMALLINT NOT NULL, type_enum ENUM('spring', 'summer', 'autumn', 'winter'), type_decimal DECIMAL(18,2) NOT NULL, type_date DATE NOT NULL, type_time TIME NOT NULL, type_timestamp TIMESTAMP NOT NULL, PRIMARY KEY (order_id));
