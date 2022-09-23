@@ -82,9 +82,8 @@ public final class ShowProcessListIT {
         CompletableFuture<Void> executeSelectSleep3 = CompletableFuture.runAsync(getExecuteSleepThread("proxy"));
         Thread.sleep(100);
         try (
-                Connection connection = containerComposer.getProxyDataSource().getConnection(); 
-                Statement statement = connection.createStatement()
-        ) {
+                Connection connection = containerComposer.getProxyDataSource().getConnection();
+                Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery("show processlist");
             assertResultSet(resultSet);
         }
@@ -109,9 +108,8 @@ public final class ShowProcessListIT {
     private Runnable getExecuteSleepThread(final String targetContainer) {
         return () -> {
             try (
-                    Connection connection = "proxy".equals(targetContainer) ? containerComposer.getProxyDataSource().getConnection() : containerComposer.getJdbcDataSource().getConnection(); 
-                    Statement statement = connection.createStatement()
-            ) {
+                    Connection connection = "proxy".equals(targetContainer) ? containerComposer.getProxyDataSource().getConnection() : containerComposer.getJdbcDataSource().getConnection();
+                    Statement statement = connection.createStatement()) {
                 statement.executeQuery("select sleep(10)");
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
