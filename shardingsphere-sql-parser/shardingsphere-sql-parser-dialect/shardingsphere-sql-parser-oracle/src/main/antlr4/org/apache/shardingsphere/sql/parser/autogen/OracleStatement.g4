@@ -128,5 +128,6 @@ execute
     | dropIndexType
     | dropPluggableDatabase
     | dropJava
+    | dropLibrary
     ) SEMI_?
     ;
