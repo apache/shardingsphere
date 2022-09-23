@@ -22,6 +22,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Date;
+
 /**
  * Abstract lifecycle executor.
  */
@@ -29,29 +31,33 @@ import lombok.extern.slf4j.Slf4j;
 public abstract class AbstractLifecycleExecutor implements LifecycleExecutor {
     
     @Setter(AccessLevel.PROTECTED)
-    @Getter(AccessLevel.PROTECTED)
+    @Getter
     private volatile boolean running;
     
-    private volatile boolean stopped;
+    private volatile long startTimeMillis;
     
     @Override
     public void start() {
-        log.info("start lifecycle executor: {}", super.toString());
+        log.info("start lifecycle executor {}", super.toString());
         running = true;
+        startTimeMillis = System.currentTimeMillis();
         doStart();
+        // TODO  1) running = false;, 2) stop();
     }
     
+    /**
+     * Start blocked running.
+     */
     protected abstract void doStart();
     
     @Override
     public final void stop() {
-        if (stopped) {
+        if (!running) {
             return;
         }
-        log.info("stop lifecycle executor: {}", super.toString());
-        running = false;
+        log.info("stop lifecycle executor {}, startTime={}, cost {} ms", super.toString(), new Date(startTimeMillis), System.currentTimeMillis() - startTimeMillis);
         doStop();
-        stopped = true;
+        running = false;
     }
     
     protected abstract void doStop();

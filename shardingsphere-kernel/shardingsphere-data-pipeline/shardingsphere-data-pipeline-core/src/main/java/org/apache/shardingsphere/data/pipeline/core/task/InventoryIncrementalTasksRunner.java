@@ -58,13 +58,18 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
     public void stop() {
         jobItemContext.setStopping(true);
         log.info("stop, jobId={}, shardingItem={}", jobItemContext.getJobId(), jobItemContext.getShardingItem());
-        // TODO blocking stop
         for (InventoryTask each : inventoryTasks) {
+            if (!each.isRunning()) {
+                continue;
+            }
             log.info("stop inventory task {} - {}", jobItemContext.getJobId(), each.getTaskId());
             each.stop();
             each.close();
         }
         for (IncrementalTask each : incrementalTasks) {
+            if (!each.isRunning()) {
+                continue;
+            }
             log.info("stop incremental task {} - {}", jobItemContext.getJobId(), each.getTaskId());
             each.stop();
             each.close();
