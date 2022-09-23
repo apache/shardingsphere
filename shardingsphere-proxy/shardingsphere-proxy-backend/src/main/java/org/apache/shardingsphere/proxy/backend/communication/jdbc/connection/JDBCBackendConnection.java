@@ -70,7 +70,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
         Preconditions.checkNotNull(connectionSession.getDatabaseName(), "Current database name is null.");
         Collection<Connection> connections;
         synchronized (cachedConnections) {
-            connections = cachedConnections.get(connectionSession.getDatabaseName() + "." + dataSourceName);
+            connections = cachedConnections.get(connectionSession.getDatabaseName().toLowerCase() + "." + dataSourceName);
         }
         List<Connection> result;
         if (connections.size() >= connectionSize) {
@@ -81,19 +81,19 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
             List<Connection> newConnections = createNewConnections(dataSourceName, connectionSize - connections.size(), connectionMode);
             result.addAll(newConnections);
             synchronized (cachedConnections) {
-                cachedConnections.putAll(connectionSession.getDatabaseName() + "." + dataSourceName, newConnections);
+                cachedConnections.putAll(connectionSession.getDatabaseName().toLowerCase() + "." + dataSourceName, newConnections);
             }
         } else {
             result = createNewConnections(dataSourceName, connectionSize, connectionMode);
             synchronized (cachedConnections) {
-                cachedConnections.putAll(connectionSession.getDatabaseName() + "." + dataSourceName, result);
+                cachedConnections.putAll(connectionSession.getDatabaseName().toLowerCase() + "." + dataSourceName, result);
             }
         }
         return result;
     }
     
     private List<Connection> createNewConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        List<Connection> result = ProxyContext.getInstance().getBackendDataSource().getConnections(connectionSession.getDatabaseName(), dataSourceName, connectionSize, connectionMode);
+        List<Connection> result = ProxyContext.getInstance().getBackendDataSource().getConnections(connectionSession.getDatabaseName().toLowerCase(), dataSourceName, connectionSize, connectionMode);
         setSessionVariablesIfNecessary(result);
         for (Connection each : result) {
             replayTransactionOption(each);
@@ -157,7 +157,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     @Override
     public Collection<String> getDataSourceNamesOfCachedConnections() {
         Collection<String> result = new ArrayList<>(cachedConnections.size());
-        String databaseName = connectionSession.getDatabaseName();
+        String databaseName = connectionSession.getDatabaseName().toLowerCase();
         for (String each : cachedConnections.keySet()) {
             String[] split = each.split("\\.", 2);
             String cachedDatabaseName = split[0];
