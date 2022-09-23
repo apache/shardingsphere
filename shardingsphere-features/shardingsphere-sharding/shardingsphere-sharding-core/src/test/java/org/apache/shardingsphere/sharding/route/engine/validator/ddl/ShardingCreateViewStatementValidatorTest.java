@@ -76,14 +76,16 @@ public final class ShardingCreateViewStatementValidatorTest {
     public void assertPreValidateCreateView() {
         when(shardingRule.isShardingTable(any())).thenReturn(true);
         when(shardingRule.isAllBindingTables(any())).thenReturn(true);
-        new ShardingCreateViewStatementValidator().preValidate(shardingRule, createViewStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class));
+        new ShardingCreateViewStatementValidator().preValidate(shardingRule, createViewStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class),
+                mock(ConfigurationProperties.class));
     }
     
     @Test(expected = EngagedViewException.class)
     public void assertPreValidateCreateViewWithException() {
         when(shardingRule.isShardingTable(any())).thenReturn(true);
         when(shardingRule.isAllBindingTables(any())).thenReturn(false);
-        new ShardingCreateViewStatementValidator().preValidate(shardingRule, createViewStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class));
+        new ShardingCreateViewStatementValidator().preValidate(shardingRule, createViewStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class),
+                mock(ConfigurationProperties.class));
     }
     
     @Test
@@ -107,6 +109,7 @@ public final class ShardingCreateViewStatementValidatorTest {
     public void assertPreValidateCreateViewWithBroadcastTable() {
         when(shardingRule.isAllBroadcastTables(any())).thenReturn(true);
         when(shardingRule.isBroadcastTable("order_view")).thenReturn(false);
-        new ShardingCreateViewStatementValidator().preValidate(shardingRule, createViewStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class));
+        new ShardingCreateViewStatementValidator().preValidate(shardingRule, createViewStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class),
+                mock(ConfigurationProperties.class));
     }
 }

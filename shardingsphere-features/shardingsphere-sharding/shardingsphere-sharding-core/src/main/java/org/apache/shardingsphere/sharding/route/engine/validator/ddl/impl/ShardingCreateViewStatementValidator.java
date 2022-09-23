@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.exception.metadata.EngagedViewException;
@@ -45,8 +46,8 @@ import java.util.Optional;
 public final class ShardingCreateViewStatementValidator extends ShardingDDLStatementValidator<CreateViewStatement> {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateViewStatement> sqlStatementContext,
-                            final List<Object> parameters, final ShardingSphereDatabase database) {
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateViewStatement> sqlStatementContext, 
+                            final List<Object> parameters, final ShardingSphereDatabase database, final ConfigurationProperties props) {
         Optional<SelectStatement> selectStatement = sqlStatementContext.getSqlStatement().getSelect();
         if (!selectStatement.isPresent()) {
             return;
@@ -54,10 +55,11 @@ public final class ShardingCreateViewStatementValidator extends ShardingDDLState
         TableExtractor extractor = new TableExtractor();
         extractor.extractTablesFromSelect(selectStatement.get());
         Collection<SimpleTableSegment> tableSegments = extractor.getRewriteTables();
-        if (isShardingTablesWithoutBinding(shardingRule, sqlStatementContext, tableSegments)) {
+        String sqlFederationType = props.getValue(ConfigurationPropertyKey.SQL_FEDERATION_TYPE);
+        if ("NONE".equals(sqlFederationType) && isShardingTablesWithoutBinding(shardingRule, sqlStatementContext, tableSegments)) {
             throw new EngagedViewException("sharding");
         }
-        if (isAllBroadcastTablesWithoutConfigView(shardingRule, sqlStatementContext, tableSegments)) {
+        if ("NONE".equals(sqlFederationType) && isAllBroadcastTablesWithoutConfigView(shardingRule, sqlStatementContext, tableSegments)) {
             throw new EngagedViewException("broadcast");
         }
     }

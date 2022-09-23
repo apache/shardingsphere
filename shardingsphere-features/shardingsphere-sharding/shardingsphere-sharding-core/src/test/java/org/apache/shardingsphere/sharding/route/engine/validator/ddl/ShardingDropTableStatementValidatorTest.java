@@ -81,7 +81,7 @@ public final class ShardingDropTableStatementValidatorTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("db_schema");
         ShardingDropTableStatementValidator validator = new ShardingDropTableStatementValidator();
-        validator.preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database);
+        validator.preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class));
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         RouteMapper dataSourceMapper = new RouteMapper("db", "db1");
         Collection<RouteMapper> tableMapper = new LinkedList<>();

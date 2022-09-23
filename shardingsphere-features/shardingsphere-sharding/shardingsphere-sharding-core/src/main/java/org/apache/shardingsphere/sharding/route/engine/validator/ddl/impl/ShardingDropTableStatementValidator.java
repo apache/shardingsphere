@@ -46,8 +46,8 @@ import java.util.stream.Collectors;
 public final class ShardingDropTableStatementValidator extends ShardingDDLStatementValidator<DropTableStatement> {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule,
-                            final SQLStatementContext<DropTableStatement> sqlStatementContext, final List<Object> parameters, final ShardingSphereDatabase database) {
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<DropTableStatement> sqlStatementContext, 
+                            final List<Object> parameters, final ShardingSphereDatabase database, final ConfigurationProperties props) {
         if (!DropTableStatementHandler.ifExists(sqlStatementContext.getSqlStatement())) {
             String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName());
             ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName()
