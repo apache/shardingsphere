@@ -23,6 +23,7 @@ import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
 import org.apache.shardingsphere.agent.metrics.api.fixture.FixtureWrapper;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -70,7 +71,7 @@ public final class SQLRouteEngineAdviceTest extends MetricsAdviceBaseTest {
     
     public void assertRoute(final String metricIds, final QueryContext queryContext) {
         MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
-        sqlRouteEngineAdvice.beforeMethod(targetObject, mock(Method.class), new Object[]{queryContext}, new MethodInvocationResult());
+        sqlRouteEngineAdvice.beforeMethod(targetObject, mock(Method.class), new Object[]{new ConnectionContext(), queryContext}, new MethodInvocationResult());
         FixtureWrapper wrapper = (FixtureWrapper) MetricsPool.get(metricIds).get();
         assertTrue(MetricsPool.get(metricIds).isPresent());
         assertThat(((FixtureWrapper) MetricsPool.get(metricIds).get()).getFixtureValue(), is(1.0));
