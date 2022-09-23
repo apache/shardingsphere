@@ -38,4 +38,6 @@ public abstract class PipelineJobInfo {
     private String createTime;
     
     private String stopTime;
+    
+    private transient String jobParameter;
 }
