@@ -52,7 +52,8 @@ public final class MigrationChangedJobConfigurationProcessor implements Pipeline
                     log.info("{} added to executing jobs failed since it already exists", jobId);
                 } else {
                     log.info("{} executing jobs", jobId);
-                    CompletableFuture.runAsync(() -> execute(jobConfigPOJO), PipelineContext.getEventListenerExecutor());
+                    CompletableFuture.runAsync(() -> execute(jobConfigPOJO), PipelineContext.getEventListenerExecutor())
+                            .whenComplete((unused, throwable) -> log.error("execute failed, jobId={}", jobId, throwable));
                 }
                 break;
             case DELETED:
@@ -70,8 +71,8 @@ public final class MigrationChangedJobConfigurationProcessor implements Pipeline
         MigrationJob job = new MigrationJob();
         PipelineJobCenter.addJob(jobConfigPOJO.getJobName(), job);
         OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfigPOJO.toJobConfiguration());
-        oneOffJobBootstrap.execute();
         job.setOneOffJobBootstrap(oneOffJobBootstrap);
+        oneOffJobBootstrap.execute();
     }
     
     @Override
