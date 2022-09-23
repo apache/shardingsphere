@@ -17,14 +17,22 @@
 
 package org.apache.shardingsphere.data.pipeline.api;
 
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Properties;
 
 /**
- * Inventory incremental job API.
+ * Inventory incremental job public API.
  */
+@SingletonSPI
 public interface InventoryIncrementalJobPublicAPI extends PipelineJobPublicAPI, TypedSPI {
     
     /**
@@ -70,4 +78,37 @@ public interface InventoryIncrementalJobPublicAPI extends PipelineJobPublicAPI, 
      * @throws SQLException when commit underlying database data
      */
     void commit(String jobId) throws SQLException;
+    
+    /**
+     * Get job progress.
+     *
+     * @param jobId job id
+     * @return each sharding item progress
+     */
+    Map<Integer, InventoryIncrementalJobItemProgress> getJobProgress(String jobId);
+    
+    /**
+     * List all data consistency check algorithms from SPI.
+     *
+     * @return data consistency check algorithms
+     */
+    Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms();
+    
+    /**
+     * Do data consistency check.
+     *
+     * @param jobId job id
+     * @return each logic table check result
+     */
+    Map<String, DataConsistencyCheckResult> dataConsistencyCheck(String jobId);
+    
+    /**
+     * Do data consistency check.
+     *
+     * @param jobId job id
+     * @param algorithmType algorithm type
+     * @param algorithmProps algorithm props. Nullable
+     * @return each logic table check result
+     */
+    Map<String, DataConsistencyCheckResult> dataConsistencyCheck(String jobId, String algorithmType, Properties algorithmProps);
 }
