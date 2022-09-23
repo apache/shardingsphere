@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shadow.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -60,7 +59,7 @@ public final class CreateShadowRuleStatementUpdater implements RuleDefinitionCre
     }
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final CreateShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
+    public void checkSQLStatement(final ShardingSphereDatabase database, final CreateShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         String databaseName = database.getName();
         Collection<ShadowRuleSegment> rules = sqlStatement.getRules();
         checkRuleNames(databaseName, rules, currentRuleConfig);
@@ -68,19 +67,19 @@ public final class CreateShadowRuleStatementUpdater implements RuleDefinitionCre
         checkAlgorithms(databaseName, rules, currentRuleConfig);
     }
     
-    private void checkRuleNames(final String databaseName, final Collection<ShadowRuleSegment> rules, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkRuleNames(final String databaseName, final Collection<ShadowRuleSegment> rules, final ShadowRuleConfiguration currentRuleConfig) {
         Collection<String> requireRuleNames = ShadowRuleStatementSupporter.getRuleNames(rules);
         ShadowRuleStatementChecker.checkAnyDuplicate(requireRuleNames, duplicated -> new DuplicateRuleException(SHADOW, databaseName, duplicated));
         Collection<String> currentRuleName = ShadowRuleStatementSupporter.getRuleNames(currentRuleConfig);
         ShadowRuleStatementChecker.checkAnyDuplicate(requireRuleNames, currentRuleName, identical -> new DuplicateRuleException(SHADOW, databaseName, identical));
     }
     
-    private void checkResources(final ShardingSphereDatabase database, final Collection<ShadowRuleSegment> rules) throws DistSQLException {
+    private void checkResources(final ShardingSphereDatabase database, final Collection<ShadowRuleSegment> rules) {
         Collection<String> requireResource = ShadowRuleStatementSupporter.getResourceNames(rules);
         ShadowRuleStatementChecker.checkResourceExist(requireResource, database);
     }
     
-    private void checkAlgorithms(final String databaseName, final Collection<ShadowRuleSegment> rules, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkAlgorithms(final String databaseName, final Collection<ShadowRuleSegment> rules, final ShadowRuleConfiguration currentRuleConfig) {
         Collection<ShadowAlgorithmSegment> requireAlgorithms = ShadowRuleStatementSupporter.getShadowAlgorithmSegment(rules);
         ShadowRuleStatementChecker.checkAlgorithmCompleteness(requireAlgorithms);
         Collection<String> requireAlgorithmNames = ShadowRuleStatementSupporter.getAlgorithmNames(rules);

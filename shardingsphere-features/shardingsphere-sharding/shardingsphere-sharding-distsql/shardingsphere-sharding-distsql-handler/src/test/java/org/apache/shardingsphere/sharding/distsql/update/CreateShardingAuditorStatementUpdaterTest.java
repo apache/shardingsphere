@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateAlgorithmException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -53,13 +52,13 @@ public final class CreateShardingAuditorStatementUpdaterTest {
     }
     
     @Test(expected = DuplicateAlgorithmException.class)
-    public void assertExecuteWithDuplicate() throws DistSQLException {
+    public void assertExecuteWithDuplicate() {
         ShardingAuditorSegment auditorSegment = new ShardingAuditorSegment("sharding_key_required_auditor", new AlgorithmSegment("DML_SHARDING_CONDITIONS", new Properties()));
         updater.checkSQLStatement(database, createSQLStatement(auditorSegment, auditorSegment), null);
     }
     
     @Test(expected = DuplicateAlgorithmException.class)
-    public void assertExecuteWithExist() throws DistSQLException {
+    public void assertExecuteWithExist() {
         ShardingAuditorSegment auditorSegment = new ShardingAuditorSegment("sharding_key_required_auditor", new AlgorithmSegment("DML_SHARDING_CONDITIONS", new Properties()));
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         ruleConfig.getAuditors().put("sharding_key_required_auditor", new AlgorithmConfiguration("DML_SHARDING_CONDITIONS", new Properties()));
@@ -67,7 +66,7 @@ public final class CreateShardingAuditorStatementUpdaterTest {
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
-    public void assertExecuteWithInvalidAlgorithm() throws DistSQLException {
+    public void assertExecuteWithInvalidAlgorithm() {
         ShardingAuditorSegment auditorSegment = new ShardingAuditorSegment("invalid_auditor", new AlgorithmSegment("INVALID_ALGORITHM", new Properties()));
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         updater.checkSQLStatement(database, createSQLStatement(auditorSegment), ruleConfig);

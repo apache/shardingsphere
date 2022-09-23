@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.distsql.update;
 
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -38,8 +37,8 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -51,17 +50,17 @@ public final class DropShardingBindingTableRuleStatementUpdaterTest {
     private ShardingSphereDatabase database;
     
     @Test(expected = MissingRequiredRuleException.class)
-    public void assertCheckSQLStatementWithoutCurrentRule() throws DistSQLException {
+    public void assertCheckSQLStatementWithoutCurrentRule() {
         updater.checkSQLStatement(database, createSQLStatement(), null);
     }
     
     @Test(expected = MissingRequiredRuleException.class)
-    public void assertCheckSQLStatementWithoutExistedBindingTableRule() throws DistSQLException {
+    public void assertCheckSQLStatementWithoutExistedBindingTableRule() {
         updater.checkSQLStatement(database, createSQLStatement(), new ShardingRuleConfiguration());
     }
     
     @Test
-    public void assertCheckSQLStatementWithIfExists() throws DistSQLException {
+    public void assertCheckSQLStatementWithIfExists() {
         updater.checkSQLStatement(database, createSQLStatement(true, "t_1,t_2"), null);
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.setBindingTableGroups(Collections.singletonList("t_3,t_4"));
@@ -90,7 +89,7 @@ public final class DropShardingBindingTableRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertDropSpecifiedCurrentRuleConfiguration() throws DistSQLException {
+    public void assertDropSpecifiedCurrentRuleConfiguration() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         currentRuleConfig.getBindingTableGroups().add("t_1,t_2");
         DropShardingBindingTableRulesStatement sqlStatement = createSQLStatement("t_1,t_2");
@@ -101,7 +100,7 @@ public final class DropShardingBindingTableRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertDropRulesCurrentRuleConfigurationWithNoOrder() throws DistSQLException {
+    public void assertDropRulesCurrentRuleConfigurationWithNoOrder() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         currentRuleConfig.getBindingTableGroups().add("t_1,t_2,t_3");
         DropShardingBindingTableRulesStatement sqlStatement = createSQLStatement("t_3,t_2,t_1");
@@ -113,7 +112,7 @@ public final class DropShardingBindingTableRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertDropRulesCurrentRuleConfigurationWithDifferentCase() throws DistSQLException {
+    public void assertDropRulesCurrentRuleConfigurationWithDifferentCase() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         currentRuleConfig.getBindingTableGroups().add("t_1,t_2,t_3");
         DropShardingBindingTableRulesStatement sqlStatement = createSQLStatement("T_3,T_2,T_1");

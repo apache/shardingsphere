@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shadow.distsql.update;
 
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -45,7 +44,7 @@ public final class CreateDefaultShadowAlgorithmStatementUpdaterTest {
     private final CreateDefaultShadowAlgorithmStatementUpdater updater = new CreateDefaultShadowAlgorithmStatementUpdater();
     
     @Test(expected = MissingRequiredAlgorithmException.class)
-    public void assertExecuteWithNotExistAlgorithm() throws DistSQLException {
+    public void assertExecuteWithNotExistAlgorithm() {
         when(currentConfig.getShadowAlgorithms()).thenReturn(Collections.singletonMap("default_name", null));
         updater.checkSQLStatement(database, new CreateDefaultShadowAlgorithmStatement("input_default_name"), currentConfig);
     }

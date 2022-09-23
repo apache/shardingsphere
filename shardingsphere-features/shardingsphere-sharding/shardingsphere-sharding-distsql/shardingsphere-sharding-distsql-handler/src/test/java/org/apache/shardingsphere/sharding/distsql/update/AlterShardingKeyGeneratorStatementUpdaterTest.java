@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredAlgorithmException;
@@ -39,8 +38,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -57,13 +56,13 @@ public final class AlterShardingKeyGeneratorStatementUpdaterTest {
     }
     
     @Test(expected = DuplicateRuleException.class)
-    public void assertExecuteWithDuplicate() throws DistSQLException {
+    public void assertExecuteWithDuplicate() {
         ShardingKeyGeneratorSegment keyGeneratorSegment = new ShardingKeyGeneratorSegment("input_key_generator_name", new AlgorithmSegment("snowflake", createProperties()));
         updater.checkSQLStatement(database, new AlterShardingKeyGeneratorStatement(Arrays.asList(keyGeneratorSegment, keyGeneratorSegment)), null);
     }
     
     @Test(expected = MissingRequiredAlgorithmException.class)
-    public void assertExecuteWithNotExist() throws DistSQLException {
+    public void assertExecuteWithNotExist() {
         Properties props = createProperties();
         ShardingKeyGeneratorSegment keyGeneratorSegment = new ShardingKeyGeneratorSegment("not_exist_key_generator_name", new AlgorithmSegment("snowflake", props));
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
@@ -72,7 +71,7 @@ public final class AlterShardingKeyGeneratorStatementUpdaterTest {
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
-    public void assertExecuteWithInvalidAlgorithm() throws DistSQLException {
+    public void assertExecuteWithInvalidAlgorithm() {
         Properties props = createProperties();
         ShardingKeyGeneratorSegment keyGeneratorSegment = new ShardingKeyGeneratorSegment("exist_key_generator_name", new AlgorithmSegment("INVALID_TYPE", props));
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
