@@ -51,10 +51,10 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
- * Inventory incremental job public API implementation.
+ * Abstract inventory incremental job API implementation.
  */
 @Slf4j
-public abstract class InventoryIncrementalJobPublicAPIImpl extends AbstractPipelineJobAPIImpl implements InventoryIncrementalJobAPI, InventoryIncrementalJobPublicAPI {
+public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPipelineJobAPIImpl implements InventoryIncrementalJobAPI, InventoryIncrementalJobPublicAPI {
     
     private static final YamlPipelineProcessConfigurationSwapper PROCESS_CONFIG_SWAPPER = new YamlPipelineProcessConfigurationSwapper();
     
