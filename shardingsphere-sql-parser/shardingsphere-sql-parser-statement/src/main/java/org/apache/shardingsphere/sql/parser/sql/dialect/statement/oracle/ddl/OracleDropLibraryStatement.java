@@ -15,27 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.migration;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.context.AbstractInventoryIncrementalProcessContext;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Migration process context.
+ * Oracle drop library statement.
  */
-@Getter
-@Slf4j
-public final class MigrationProcessContext extends AbstractInventoryIncrementalProcessContext {
-    
-    /**
-     * Constructor.
-     *
-     * @param jobId job id
-     * @param originalProcessConfig original process configuration, nullable
-     */
-    public MigrationProcessContext(final String jobId, final PipelineProcessConfiguration originalProcessConfig) {
-        super(jobId, originalProcessConfig);
-    }
+@ToString(callSuper = true)
+public final class OracleDropLibraryStatement extends AbstractSQLStatement implements OracleStatement {
 }

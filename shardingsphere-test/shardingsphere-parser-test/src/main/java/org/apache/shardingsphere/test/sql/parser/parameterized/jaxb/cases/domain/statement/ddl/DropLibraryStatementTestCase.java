@@ -15,27 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.migration;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.context.AbstractInventoryIncrementalProcessContext;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Migration process context.
+ * Drop library statement test case.
  */
-@Getter
-@Slf4j
-public final class MigrationProcessContext extends AbstractInventoryIncrementalProcessContext {
-    
-    /**
-     * Constructor.
-     *
-     * @param jobId job id
-     * @param originalProcessConfig original process configuration, nullable
-     */
-    public MigrationProcessContext(final String jobId, final PipelineProcessConfiguration originalProcessConfig) {
-        super(jobId, originalProcessConfig);
-    }
+public final class DropLibraryStatementTestCase extends SQLParserTestCase {
 }

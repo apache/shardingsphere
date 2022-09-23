@@ -15,27 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.migration;
+package org.apache.shardingsphere.data.pipeline.api.check.consistency;
 
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.context.AbstractInventoryIncrementalProcessContext;
+import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
+
+import java.util.Map;
 
 /**
- * Migration process context.
+ * Pipeline data consistency checker.
  */
-@Getter
-@Slf4j
-public final class MigrationProcessContext extends AbstractInventoryIncrementalProcessContext {
+public interface PipelineDataConsistencyChecker {
     
     /**
-     * Constructor.
+     * Data consistency check.
      *
-     * @param jobId job id
-     * @param originalProcessConfig original process configuration, nullable
+     * @param calculateAlgorithm calculate algorithm
+     * @return check results. key is logic table name, value is check result.
      */
-    public MigrationProcessContext(final String jobId, final PipelineProcessConfiguration originalProcessConfig) {
-        super(jobId, originalProcessConfig);
-    }
+    Map<String, DataConsistencyCheckResult> check(DataConsistencyCalculateAlgorithm calculateAlgorithm);
 }

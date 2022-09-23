@@ -49,20 +49,20 @@ public interface ClusterPersistRepository extends PersistRepository {
     void persistExclusiveEphemeral(String key, String value);
     
     /**
-     * Persist lock.
+     * Try lock.
      *
      * @param lockKey lock key
      * @param timeoutMillis timeout millis
      * @return is locked or not
      */
-    boolean persistLock(String lockKey, long timeoutMillis);
+    boolean tryLock(String lockKey, long timeoutMillis);
     
     /**
-     * Delete lock.
+     * Unlock.
      *
      * @param lockKey lock key
      */
-    void deleteLock(String lockKey);
+    void unlock(String lockKey);
     
     /**
      * Watch key or path of governance server.
