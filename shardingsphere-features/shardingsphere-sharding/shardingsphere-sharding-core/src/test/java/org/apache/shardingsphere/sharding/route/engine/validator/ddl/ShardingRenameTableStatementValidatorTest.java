@@ -59,7 +59,7 @@ public final class ShardingRenameTableStatementValidatorTest {
         SQLStatementContext<RenameTableStatement> sqlStatementContext = createRenameTableStatementContext("t_order", "t_user_order");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(shardingRule.tableRuleExists(argThat(tableNames -> tableNames.contains("t_order") || tableNames.contains("t_user_order")))).thenReturn(true);
-        new ShardingRenameTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database);
+        new ShardingRenameTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class));
     }
     
     @Test(expected = UnsupportedShardingOperationException.class)
@@ -67,14 +67,14 @@ public final class ShardingRenameTableStatementValidatorTest {
         SQLStatementContext<RenameTableStatement> sqlStatementContext = createRenameTableStatementContext("t_order", "t_user_order");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(shardingRule.isBroadcastTable(eq("t_order"))).thenReturn(true);
-        new ShardingRenameTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database);
+        new ShardingRenameTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class));
     }
     
     @Test
     public void assertPreValidateNormalCase() {
         SQLStatementContext<RenameTableStatement> sqlStatementContext = createRenameTableStatementContext("t_not_sharding_table", "t_not_sharding_table_new");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        new ShardingRenameTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database);
+        new ShardingRenameTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class));
     }
     
     @Test(expected = ShardingDDLRouteException.class)

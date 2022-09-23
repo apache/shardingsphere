@@ -41,7 +41,7 @@ public final class ShardingAlterViewStatementValidator extends ShardingDDLStatem
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<AlterViewStatement> sqlStatementContext,
-                            final List<Object> parameters, final ShardingSphereDatabase database) {
+                            final List<Object> parameters, final ShardingSphereDatabase database, final ConfigurationProperties props) {
         Optional<SelectStatement> selectStatement = AlterViewStatementHandler.getSelectStatement(sqlStatementContext.getSqlStatement());
         if (selectStatement.isPresent()) {
             TableExtractor extractor = new TableExtractor();

@@ -34,8 +34,8 @@ import java.util.List;
 public final class ShardingCopyStatementValidator extends ShardingDMLStatementValidator<CopyStatement> {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule,
-                            final SQLStatementContext<CopyStatement> sqlStatementContext, final List<Object> parameters, final ShardingSphereDatabase database) {
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CopyStatement> sqlStatementContext,
+                            final List<Object> parameters, final ShardingSphereDatabase database, final ConfigurationProperties props) {
         String tableName = sqlStatementContext.getSqlStatement().getTableSegment().getTableName().getIdentifier().getValue();
         if (shardingRule.isShardingTable(tableName)) {
             throw new UnsupportedShardingOperationException("COPY", tableName);

@@ -41,7 +41,7 @@ public final class ShardingAlterTableStatementValidator extends ShardingDDLState
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<AlterTableStatement> sqlStatementContext,
-                            final List<Object> parameters, final ShardingSphereDatabase database) {
+                            final List<Object> parameters, final ShardingSphereDatabase database, final ConfigurationProperties props) {
         Collection<String> tableNames = sqlStatementContext instanceof TableAvailable
                 ? ((TableAvailable) sqlStatementContext).getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList())
                 : sqlStatementContext.getTablesContext().getTableNames();
