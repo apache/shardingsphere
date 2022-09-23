@@ -9,7 +9,7 @@ The `SHOW RULES USED RESOURCE` syntax is used to query the rules that use the sp
 
 ### Syntax
 
-```SQL
+```sql
 showRulesUsedResource ::=
   'SHOW' 'RULES' 'USED' 'RESOURCES' resourceName ('FROM' databaseName)?
 
@@ -34,9 +34,11 @@ databaseName ::=
 ### Example
 
 - Query the rules that use the specified resource in the specified database
+
 ```sql
 SHOW RULES USED RESOURCE ds_0 FROM sharding_db;
 ```
+
 ```sql
 +----------+--------------+
 | type     | name         |
@@ -48,9 +50,11 @@ SHOW RULES USED RESOURCE ds_0 FROM sharding_db;
 ```
 
 - Query the rules that use the specified resource in the current database
+
 ```sql
 SHOW RULES USED RESOURCE ds_0;
 ```
+
 ```sql
 +----------+--------------+
 | type     | name         |

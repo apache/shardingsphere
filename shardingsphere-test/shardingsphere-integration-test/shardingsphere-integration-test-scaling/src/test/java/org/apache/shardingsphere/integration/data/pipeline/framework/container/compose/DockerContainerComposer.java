@@ -20,17 +20,24 @@ package org.apache.shardingsphere.integration.data.pipeline.framework.container.
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.config.proxy.ScalingProxyClusterContainerConfigurationFactory;
+import org.apache.shardingsphere.integration.data.pipeline.util.DockerImageVersion;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.AdapterContainerConstants;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.EnvironmentConstants;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.integration.env.container.atomic.governance.GovernanceContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.governance.impl.ZookeeperContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainerFactory;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.StorageContainerConfigurationFactory;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.mysql.MySQLContainerConfigurationFactory;
+import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
+
+import java.util.Collections;
 
 /**
  * Composed container, include governance container and database container.
@@ -47,12 +54,19 @@ public final class DockerContainerComposer extends BaseContainerComposer {
     @Getter
     private final GovernanceContainer governanceContainer;
     
-    public DockerContainerComposer(final DatabaseType databaseType, final String dockerImageName) {
+    public DockerContainerComposer(final DatabaseType databaseType, final String storageContainerImage) {
         this.databaseType = databaseType;
         governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
-        storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, dockerImageName,
-                "", StorageContainerConfigurationFactory.newInstance(databaseType)));
-        AdaptorContainerConfiguration containerConfig = ScalingProxyClusterContainerConfigurationFactory.newInstance(databaseType, dockerImageName);
+        StorageContainerConfiguration storageContainerConfig;
+        if (DatabaseTypeUtil.isMySQL(databaseType) && new DockerImageVersion(storageContainerImage).getMajorVersion() > 5) {
+            storageContainerConfig = MySQLContainerConfigurationFactory.newInstance(null, null,
+                    Collections.singletonMap("/env/mysql/mysql8/my.cnf", StorageContainerConstants.MYSQL_CONF_IN_CONTAINER));
+        } else {
+            storageContainerConfig = StorageContainerConfigurationFactory.newInstance(databaseType);
+        }
+        storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, storageContainerImage,
+                "", storageContainerConfig));
+        AdaptorContainerConfiguration containerConfig = ScalingProxyClusterContainerConfigurationFactory.newInstance(databaseType, storageContainerImage);
         ShardingSphereProxyClusterContainer proxyClusterContainer = (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance(EnvironmentConstants.CLUSTER_MODE,
                 AdapterContainerConstants.PROXY, databaseType, storageContainer, "", containerConfig);
         proxyClusterContainer.dependsOn(governanceContainer, storageContainer);

@@ -20,10 +20,10 @@ package org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable;
 import lombok.Getter;
 import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.impl.AbstractSchema;
-import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
-import org.apache.shardingsphere.sqlfederation.optimizer.metadata.statistic.FederationStatistic;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
+import org.apache.shardingsphere.sqlfederation.optimizer.metadata.statistic.FederationStatistic;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

@@ -28,6 +28,6 @@ public final class PipelineJobExecutionException extends PipelineSQLException {
     private static final long serialVersionUID = -5530453461378051166L;
     
     public PipelineJobExecutionException(final String taskId, final Throwable cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 92, "Task `%s` execute failed", taskId, cause.getMessage());
+        super(XOpenSQLState.GENERAL_ERROR, 94, "Task `%s` execute failed", taskId, cause.getMessage());
     }
 }

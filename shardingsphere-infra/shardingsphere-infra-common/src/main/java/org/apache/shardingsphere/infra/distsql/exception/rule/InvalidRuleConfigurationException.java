@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.distsql.exception.rule;
 
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+
 import java.util.Collection;
 
 /**
@@ -26,7 +28,11 @@ public final class InvalidRuleConfigurationException extends RuleDefinitionViola
     
     private static final long serialVersionUID = 6085010920008859376L;
     
+    public InvalidRuleConfigurationException(final String ruleType, final String rule, final String errorMessage) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 100, "Invalid `%s` rule `%s`, error message is: %s", ruleType, rule, errorMessage);
+    }
+    
     public InvalidRuleConfigurationException(final String ruleType, final Collection<String> rules, final Collection<String> errorMessages) {
-        super(1117, String.format("Invalid %s rule %s, error messages are: %s.", ruleType, rules, errorMessages));
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 100, "Invalid `%s` rules `%s`, error messages are: %s", ruleType, rules, errorMessages);
     }
 }

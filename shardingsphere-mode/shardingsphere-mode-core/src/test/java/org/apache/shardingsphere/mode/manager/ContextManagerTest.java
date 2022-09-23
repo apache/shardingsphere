@@ -57,7 +57,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -100,7 +100,7 @@ public final class ContextManagerTest {
     
     @Test
     public void assertGetDataSourceMap() {
-        ShardingSphereResource resource = new ShardingSphereResource(Collections.singletonMap("foo_ds", new MockedDataSource()));
+        ShardingSphereResource resource = new ShardingSphereResource("sharding_db", Collections.singletonMap("foo_ds", new MockedDataSource()));
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), resource, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
         when(metaDataContexts.getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(database);
         assertThat(contextManager.getDataSourceMap(DefaultDatabase.LOGIC_NAME).size(), is(1));
@@ -115,14 +115,27 @@ public final class ContextManagerTest {
     
     @Test
     public void assertAddDatabase() throws SQLException {
-        contextManager.addDatabase("new_db");
+        contextManager.addDatabaseAndPersist("new_db");
+        verify(metaDataContexts.getMetaData()).addDatabase(eq("new_db"), any(DatabaseType.class));
+    }
+    
+    @Test
+    public void assertAddDatabaseAndPersist() throws SQLException {
+        contextManager.addDatabaseAndPersist("new_db");
         verify(metaDataContexts.getMetaData()).addDatabase(eq("new_db"), any(DatabaseType.class));
     }
     
     @Test
     public void assertAddExistedDatabase() throws SQLException {
         when(metaDataContexts.getMetaData().containsDatabase("foo_db")).thenReturn(true);
-        contextManager.addDatabase("foo_db");
+        contextManager.addDatabaseAndPersist("foo_db");
+        verify(metaDataContexts.getMetaData(), times(0)).addDatabase(eq("foo_db"), any(DatabaseType.class));
+    }
+    
+    @Test
+    public void assertAddExistedDatabaseAndPersist() throws SQLException {
+        when(metaDataContexts.getMetaData().containsDatabase("foo_db")).thenReturn(true);
+        contextManager.addDatabaseAndPersist("foo_db");
         verify(metaDataContexts.getMetaData(), times(0)).addDatabase(eq("foo_db"), any(DatabaseType.class));
     }
     
@@ -130,13 +143,27 @@ public final class ContextManagerTest {
     public void assertDropDatabase() {
         when(metaDataContexts.getMetaData().getActualDatabaseName("foo_db")).thenReturn("foo_db");
         when(metaDataContexts.getMetaData().containsDatabase("foo_db")).thenReturn(true);
-        contextManager.dropDatabase("foo_db");
+        contextManager.dropDatabaseAndPersist("foo_db");
+        verify(metaDataContexts.getMetaData()).dropDatabase("foo_db");
+    }
+    
+    @Test
+    public void assertDropDatabaseAndPersist() {
+        when(metaDataContexts.getMetaData().getActualDatabaseName("foo_db")).thenReturn("foo_db");
+        when(metaDataContexts.getMetaData().containsDatabase("foo_db")).thenReturn(true);
+        contextManager.dropDatabaseAndPersist("foo_db");
         verify(metaDataContexts.getMetaData()).dropDatabase("foo_db");
     }
     
     @Test
     public void assertDropNotExistedDatabase() {
-        contextManager.dropDatabase("not_existed_db");
+        contextManager.dropDatabaseAndPersist("not_existed_db");
+        verify(metaDataContexts.getMetaData(), times(0)).dropDatabase("not_existed_db");
+    }
+    
+    @Test
+    public void assertDropNotExistedDatabaseAndPersist() {
+        contextManager.dropDatabaseAndPersist("not_existed_db");
         verify(metaDataContexts.getMetaData(), times(0)).dropDatabase("not_existed_db");
     }
     

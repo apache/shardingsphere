@@ -23,7 +23,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ext
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.PreparedStatementRegistry;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.JDBCPortal;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLPreparedStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
@@ -38,7 +38,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.mock;
@@ -49,7 +49,7 @@ import static org.mockito.Mockito.when;
 public final class PostgreSQLComBindExecutorTest {
     
     @Mock
-    private PostgreSQLConnectionContext connectionContext;
+    private PortalContext portalContext;
     
     @Mock
     private PostgreSQLComBindPacket bindPacket;
@@ -75,6 +75,6 @@ public final class PostgreSQLComBindExecutorTest {
         Collection<DatabasePacket<?>> actual = executor.execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(PostgreSQLBindCompletePacket.getInstance()));
-        verify(connectionContext).addPortal(any(JDBCPortal.class));
+        verify(portalContext).add(any(JDBCPortal.class));
     }
 }

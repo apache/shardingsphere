@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.integration.transaction.cases.readonly;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
@@ -33,8 +32,8 @@ import static org.junit.Assert.fail;
 /**
  * MySQL set read only transaction integration test.
  */
-@Slf4j
 @TransactionTestCase(dbTypes = {TransactionTestConstants.MYSQL})
+@Slf4j
 public final class MySQLSetReadOnlyTestCase extends SetReadOnlyTestCase {
     
     public MySQLSetReadOnlyTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
@@ -42,8 +41,7 @@ public final class MySQLSetReadOnlyTestCase extends SetReadOnlyTestCase {
     }
     
     @Override
-    @SneakyThrows
-    public void executeTest() {
+    public void executeTest() throws SQLException {
         assertSetReadOnly();
         assertNotSetReadOnly();
     }

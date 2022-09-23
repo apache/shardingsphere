@@ -19,13 +19,13 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.co
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineReadConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineWriteConfiguration;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.parser.segment.InventoryIncrementalProcessConfigurationSegment;
 import org.apache.shardingsphere.distsql.parser.segment.ReadOrWriteSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
-import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineReadConfiguration;
-import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineWriteConfiguration;
 
 /**
  * Inventory incremental process configuration segment converter.

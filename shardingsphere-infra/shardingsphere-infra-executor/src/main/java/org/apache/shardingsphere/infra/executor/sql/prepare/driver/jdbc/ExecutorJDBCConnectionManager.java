@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc;
 
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorConnectionManager;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.CacheableExecutorConnectionManager;
 
 import java.sql.Connection;
 
 /**
  * Executor JDBC connection manager.
  */
-public interface ExecutorJDBCConnectionManager extends ExecutorConnectionManager<Connection> {
+public interface ExecutorJDBCConnectionManager extends CacheableExecutorConnectionManager<Connection> {
 }

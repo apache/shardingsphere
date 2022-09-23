@@ -19,7 +19,8 @@ package org.apache.shardingsphere.data.pipeline.core.check.datasource;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
-import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobPrepareFailedException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithInvalidConnectionException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithTargetTableNotEmptyException;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
@@ -44,7 +45,7 @@ public abstract class AbstractDataSourceChecker implements DataSourceChecker {
                 each.getConnection().close();
             }
         } catch (final SQLException ex) {
-            throw new PipelineJobPrepareFailedException("Data sources can not connect.", ex);
+            throw new PrepareJobWithInvalidConnectionException(ex);
         }
     }
     
@@ -52,25 +53,25 @@ public abstract class AbstractDataSourceChecker implements DataSourceChecker {
     public final void checkTargetTable(final Collection<? extends DataSource> dataSources, final TableNameSchemaNameMapping tableNameSchemaNameMapping, final Collection<String> logicTableNames) {
         try {
             for (DataSource each : dataSources) {
-                checkEmpty(each, tableNameSchemaNameMapping, logicTableNames);
+                for (String tableName : logicTableNames) {
+                    if (!checkEmpty(each, tableNameSchemaNameMapping.getSchemaName(tableName), tableName)) {
+                        throw new PrepareJobWithTargetTableNotEmptyException(tableName);
+                    }
+                }
             }
         } catch (final SQLException ex) {
-            throw new PipelineJobPrepareFailedException("Check target table failed.", ex);
+            throw new PrepareJobWithInvalidConnectionException(ex);
         }
     }
     
-    private void checkEmpty(final DataSource dataSource, final TableNameSchemaNameMapping tableNameSchemaNameMapping, final Collection<String> logicTableNames) throws SQLException {
-        for (String each : logicTableNames) {
-            String sql = getSQLBuilder().buildCheckEmptySQL(tableNameSchemaNameMapping.getSchemaName(each), each);
-            log.info("checkEmpty, sql={}", sql);
-            try (
-                    Connection connection = dataSource.getConnection();
-                    PreparedStatement preparedStatement = connection.prepareStatement(sql);
-                    ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    throw new PipelineJobPrepareFailedException(String.format("Target table `%s` is not empty, sql: %s.", each, sql));
-                }
-            }
+    private boolean checkEmpty(final DataSource dataSource, final String schemaName, final String tableName) throws SQLException {
+        String sql = getSQLBuilder().buildCheckEmptySQL(schemaName, tableName);
+        log.info("checkEmpty, sql={}", sql);
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                ResultSet resultSet = preparedStatement.executeQuery()) {
+            return !resultSet.next();
         }
     }
     

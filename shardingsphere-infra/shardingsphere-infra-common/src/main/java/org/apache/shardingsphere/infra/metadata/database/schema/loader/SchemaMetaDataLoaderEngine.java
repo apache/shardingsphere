@@ -23,10 +23,8 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.TableMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.ViewMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ViewMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoaderFactory;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnknownSQLException;
@@ -74,16 +72,14 @@ public final class SchemaMetaDataLoaderEngine {
     
     private static Map<String, SchemaMetaData> loadByDefault(final Collection<SchemaMetaDataLoaderMaterials> materials, final DatabaseType databaseType) throws SQLException {
         Collection<TableMetaData> tableMetaData = new LinkedList<>();
-        Collection<ViewMetaData> viewMetaData = new LinkedList<>();
         String defaultSchemaName = null;
         for (SchemaMetaDataLoaderMaterials each : materials) {
             defaultSchemaName = each.getDefaultSchemaName();
             for (String tableName : each.getActualTableNames()) {
                 TableMetaDataLoader.load(each.getDataSource(), tableName, databaseType).ifPresent(tableMetaData::add);
             }
-            ViewMetaDataLoader.load(each.getDataSource(), databaseType).ifPresent(viewMetaData::add);
         }
-        return Collections.singletonMap(defaultSchemaName, new SchemaMetaData(defaultSchemaName, tableMetaData, viewMetaData));
+        return Collections.singletonMap(defaultSchemaName, new SchemaMetaData(defaultSchemaName, tableMetaData));
     }
     
     private static Map<String, SchemaMetaData> loadByDialect(final DialectSchemaMetaDataLoader loader, final Collection<SchemaMetaDataLoaderMaterials> materials) throws SQLException {
@@ -107,9 +103,8 @@ public final class SchemaMetaDataLoaderEngine {
     
     private static void mergeSchemaMetaDataMap(final Map<String, SchemaMetaData> schemaMetaDataMap, final Collection<SchemaMetaData> addedSchemaMetaDataList) {
         for (SchemaMetaData each : addedSchemaMetaDataList) {
-            SchemaMetaData schemaMetaData = schemaMetaDataMap.computeIfAbsent(each.getName(), key -> new SchemaMetaData(each.getName(), new LinkedList<>(), new LinkedList<>()));
+            SchemaMetaData schemaMetaData = schemaMetaDataMap.computeIfAbsent(each.getName(), key -> new SchemaMetaData(each.getName(), new LinkedList<>()));
             schemaMetaData.getTables().addAll(each.getTables());
-            schemaMetaData.getViews().addAll(each.getViews());
         }
     }
 }

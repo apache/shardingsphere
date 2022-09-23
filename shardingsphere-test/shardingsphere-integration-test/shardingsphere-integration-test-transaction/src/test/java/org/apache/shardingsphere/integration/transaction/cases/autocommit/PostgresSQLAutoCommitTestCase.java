@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.integration.transaction.cases.autocommit;
 
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
@@ -36,7 +34,6 @@ import static org.junit.Assert.fail;
 /**
  * PostgresSQL auto commit transaction integration test.
  */
-@Slf4j
 @TransactionTestCase(dbTypes = {TransactionTestConstants.POSTGRESQL})
 public final class PostgresSQLAutoCommitTestCase extends BaseTransactionTestCase {
     
@@ -45,8 +42,7 @@ public final class PostgresSQLAutoCommitTestCase extends BaseTransactionTestCase
     }
     
     @Override
-    @SneakyThrows(SQLException.class)
-    public void executeTest() {
+    public void executeTest() throws SQLException {
         assertAutoCommit();
     }
     

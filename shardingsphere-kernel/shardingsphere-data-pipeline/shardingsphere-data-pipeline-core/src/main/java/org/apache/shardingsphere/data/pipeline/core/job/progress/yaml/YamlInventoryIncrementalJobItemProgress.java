@@ -37,4 +37,6 @@ public final class YamlInventoryIncrementalJobItemProgress implements YamlConfig
     private YamlJobItemInventoryTasksProgress inventory;
     
     private YamlJobItemIncrementalTasksProgress incremental;
+    
+    private long processedRecordsCount;
 }

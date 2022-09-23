@@ -26,11 +26,11 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlSelectKeyword;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -44,7 +44,7 @@ import java.util.TreeMap;
 /**
  * Aggregation projection converter. 
  */
-public final class AggregationProjectionConverter implements SQLSegmentConverter<AggregationProjectionSegment, SqlBasicCall> {
+public final class AggregationProjectionConverter implements SQLSegmentConverter<AggregationProjectionSegment, SqlNode> {
     
     private static final Map<String, SqlAggFunction> REGISTRY = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     
@@ -62,7 +62,7 @@ public final class AggregationProjectionConverter implements SQLSegmentConverter
     }
     
     @Override
-    public Optional<SqlBasicCall> convert(final AggregationProjectionSegment segment) {
+    public Optional<SqlNode> convert(final AggregationProjectionSegment segment) {
         if (null == segment) {
             return Optional.empty();
         }

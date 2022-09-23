@@ -25,7 +25,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ext
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.JDBCPortal;
 
 import java.sql.SQLException;
@@ -38,7 +38,7 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public final class PostgreSQLComBindExecutor implements CommandExecutor {
     
-    private final PostgreSQLConnectionContext connectionContext;
+    private final PortalContext portalContext;
     
     private final PostgreSQLComBindPacket packet;
     
@@ -49,7 +49,7 @@ public final class PostgreSQLComBindExecutor implements CommandExecutor {
         PostgreSQLPreparedStatement preparedStatement = connectionSession.getPreparedStatementRegistry().getPreparedStatement(packet.getStatementId());
         JDBCBackendConnection backendConnection = (JDBCBackendConnection) connectionSession.getBackendConnection();
         JDBCPortal portal = new JDBCPortal(packet.getPortal(), preparedStatement, packet.readParameters(preparedStatement.getParameterTypes()), packet.readResultFormats(), backendConnection);
-        connectionContext.addPortal(portal);
+        portalContext.add(portal);
         portal.bind();
         return Collections.singletonList(PostgreSQLBindCompletePacket.getInstance());
     }

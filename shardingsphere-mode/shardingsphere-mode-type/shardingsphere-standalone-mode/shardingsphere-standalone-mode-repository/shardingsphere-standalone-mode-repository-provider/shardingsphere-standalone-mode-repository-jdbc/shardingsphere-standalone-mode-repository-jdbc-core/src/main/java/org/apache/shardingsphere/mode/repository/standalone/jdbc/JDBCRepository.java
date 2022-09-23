@@ -52,7 +52,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
     
     private HikariDataSource hikariDataSource;
     
-    @SneakyThrows
+    @SneakyThrows(SQLException.class)
     @Override
     public void init(final Properties props) {
         JDBCRepositoryProperties jdbcRepositoryProps = new JDBCRepositoryProperties(props);

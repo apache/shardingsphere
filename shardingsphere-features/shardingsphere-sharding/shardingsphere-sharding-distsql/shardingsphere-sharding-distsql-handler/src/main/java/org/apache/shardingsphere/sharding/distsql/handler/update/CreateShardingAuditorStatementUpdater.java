@@ -20,10 +20,11 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateAuditorException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateAlgorithmException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingTableRuleStatementConverter;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingAuditorSegment;
@@ -49,27 +50,27 @@ public final class CreateShardingAuditorStatementUpdater implements RuleDefiniti
     
     private void checkDuplicate(final String databaseName, final CreateShardingAuditorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> auditorNames = sqlStatement.getAuditorSegments().stream().map(ShardingAuditorSegment::getAuditorName).collect(Collectors.toList());
-        checkDuplicateInput(auditorNames, duplicated -> new DuplicateAuditorException("sharding", databaseName, duplicated));
+        checkDuplicateInput(auditorNames, duplicated -> new DuplicateAlgorithmException("Sharding auditor", databaseName, duplicated));
         if (null != currentRuleConfig) {
-            checkExist(auditorNames, currentRuleConfig.getAuditors().keySet(), duplicated -> new DuplicateAuditorException("sharding", databaseName, duplicated));
+            checkExist(auditorNames, currentRuleConfig.getAuditors().keySet(), duplicated -> new DuplicateAlgorithmException("Sharding auditor", databaseName, duplicated));
         }
     }
     
     private void checkDuplicateInput(final Collection<String> rules, final Function<Collection<String>, DistSQLException> thrower) throws DistSQLException {
         Collection<String> duplicateRequire = rules.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
                 .filter(each -> each.getValue() > 1).map(Map.Entry::getKey).collect(Collectors.toSet());
-        DistSQLException.predictionThrow(duplicateRequire.isEmpty(), () -> thrower.apply(duplicateRequire));
+        ShardingSpherePreconditions.checkState(duplicateRequire.isEmpty(), () -> thrower.apply(duplicateRequire));
     }
     
     private void checkExist(final Collection<String> requireRules, final Collection<String> currentRules, final Function<Collection<String>, DistSQLException> thrower) throws DistSQLException {
         Collection<String> identical = requireRules.stream().filter(currentRules::contains).collect(Collectors.toSet());
-        DistSQLException.predictionThrow(identical.isEmpty(), () -> thrower.apply(identical));
+        ShardingSpherePreconditions.checkState(identical.isEmpty(), () -> thrower.apply(identical));
     }
     
     private void checkAuditorAlgorithm(final CreateShardingAuditorStatement sqlStatement) throws DistSQLException {
         Collection<String> notExistedAuditorAlgorithms = sqlStatement.getAuditorSegments().stream().map(ShardingAuditorSegment::getAlgorithmSegment).map(AlgorithmSegment::getName)
                 .filter(each -> !ShardingAuditAlgorithmFactory.contains(each)).collect(Collectors.toList());
-        DistSQLException.predictionThrow(notExistedAuditorAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException("sharding", notExistedAuditorAlgorithms));
+        ShardingSpherePreconditions.checkState(notExistedAuditorAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException("sharding", notExistedAuditorAlgorithms));
     }
     
     @Override

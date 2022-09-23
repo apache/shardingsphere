@@ -22,6 +22,8 @@ import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
 import org.apache.shardingsphere.migration.distsql.statement.CommitMigrationStatement;
 
+import java.sql.SQLException;
+
 /**
  * Commit migration updater.
  */
@@ -30,7 +32,7 @@ public final class CommitMigrationUpdater implements RALUpdater<CommitMigrationS
     private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
     
     @Override
-    public void executeUpdate(final String databaseName, final CommitMigrationStatement sqlStatement) {
+    public void executeUpdate(final String databaseName, final CommitMigrationStatement sqlStatement) throws SQLException {
         JOB_API.commit(sqlStatement.getJobId());
     }
     

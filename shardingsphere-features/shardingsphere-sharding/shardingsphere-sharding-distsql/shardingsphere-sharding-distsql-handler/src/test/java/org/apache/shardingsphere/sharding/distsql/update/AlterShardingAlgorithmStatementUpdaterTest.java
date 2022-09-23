@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingAlgorithmStatementUpdater;
@@ -39,7 +39,7 @@ import java.util.Arrays;
 import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -63,7 +63,7 @@ public final class AlterShardingAlgorithmStatementUpdaterTest {
         updater.checkSQLStatement(database, createSQLStatement(algorithmSegment, algorithmSegment), null);
     }
     
-    @Test(expected = RequiredAlgorithmMissedException.class)
+    @Test(expected = MissingRequiredAlgorithmException.class)
     public void assertExecuteWithNotExist() throws DistSQLException {
         Properties props = new Properties();
         props.put("input_key", "input_value");

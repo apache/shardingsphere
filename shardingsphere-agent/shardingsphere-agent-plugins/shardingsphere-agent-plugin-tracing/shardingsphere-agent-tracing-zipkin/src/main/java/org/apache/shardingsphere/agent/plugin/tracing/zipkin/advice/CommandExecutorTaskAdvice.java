@@ -47,7 +47,7 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAroundAdvi
         ExecutorDataMap.getValue().put(ZipkinConstants.ROOT_SPAN, span);
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     @Override
     public void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         Field field = CommandExecutorTask.class.getDeclaredField("connectionSession");

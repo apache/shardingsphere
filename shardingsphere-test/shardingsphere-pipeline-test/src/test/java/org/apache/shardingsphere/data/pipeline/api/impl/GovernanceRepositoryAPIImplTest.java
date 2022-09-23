@@ -51,7 +51,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -76,8 +76,8 @@ public final class GovernanceRepositoryAPIImplTest {
     @Test
     public void assertPersistJobCheckResult() {
         MigrationJobItemContext jobItemContext = mockJobItemContext();
-        governanceRepositoryAPI.persistJobCheckResult(jobItemContext.getJobId(), true);
-        Optional<Boolean> checkResult = governanceRepositoryAPI.getJobCheckResult(jobItemContext.getJobId());
+        governanceRepositoryAPI.persistCheckLatestResult(jobItemContext.getJobId(), true);
+        Optional<Boolean> checkResult = governanceRepositoryAPI.getCheckLatestResult(jobItemContext.getJobId());
         assertTrue(checkResult.isPresent() && checkResult.get());
     }
     

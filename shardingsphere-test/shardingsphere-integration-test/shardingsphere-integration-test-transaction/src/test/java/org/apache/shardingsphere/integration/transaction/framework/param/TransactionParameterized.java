@@ -41,7 +41,7 @@ public final class TransactionParameterized {
     
     private final List<String> providers;
     
-    private final String dockerImageName;
+    private final String storageContainerImage;
     
     private final String group;
     
@@ -49,6 +49,6 @@ public final class TransactionParameterized {
     
     @Override
     public String toString() {
-        return String.format("%s -> %s -> %s -> %s -> %s -> %s", databaseType.getType(), adapter, transactionTypes, providers, dockerImageName, group);
+        return String.format("%s -> %s -> %s -> %s -> %s -> %s", databaseType.getType(), adapter, transactionTypes, providers, storageContainerImage, group);
     }
 }

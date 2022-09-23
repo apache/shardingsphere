@@ -9,7 +9,7 @@ weight = 4
 
 ### 语法
 
-```SQL
+```sql
 showRulesUsedResource ::=
   'SHOW' 'RULES' 'USED' 'RESOURCES' resourceName ('FROM' databaseName)?
 
@@ -34,9 +34,11 @@ databaseName ::=
 ### 示例
 
 - 查询指定逻辑库中使用指定资源的规则
+
 ```sql
 SHOW RULES USED RESOURCE ds_0 FROM sharding_db;
 ```
+
 ```sql
 +----------+--------------+
 | type     | name         |
@@ -48,9 +50,11 @@ SHOW RULES USED RESOURCE ds_0 FROM sharding_db;
 ```
 
 - 查询当前逻辑库中使用指定资源的规则
+
 ```sql
 SHOW RULES USED RESOURCE ds_0;
 ```
+
 ```sql
 +----------+--------------+
 | type     | name         |

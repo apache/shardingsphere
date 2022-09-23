@@ -42,7 +42,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.PreparedStatementRegistry;
 import org.apache.shardingsphere.proxy.frontend.postgresql.ProxyContextRestorer;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLPreparedStatement;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
@@ -72,7 +72,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.nullable;
@@ -95,7 +95,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
     private ContextManager contextManager;
     
     @Mock
-    private PostgreSQLConnectionContext connectionContext;
+    private PortalContext portalContext;
     
     @Mock
     private PostgreSQLComDescribePacket packet;
@@ -138,7 +138,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
         Portal<?> portal = mock(Portal.class);
         PostgreSQLRowDescriptionPacket expected = mock(PostgreSQLRowDescriptionPacket.class);
         when(portal.describe()).thenReturn(expected);
-        when(connectionContext.getPortal("P_1")).thenReturn(portal);
+        when(portalContext.get("P_1")).thenReturn(portal);
         Collection<DatabasePacket<?>> actual = executor.execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(expected));
@@ -290,7 +290,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private List<PostgreSQLColumnDescription> getColumnDescriptions(final PostgreSQLRowDescriptionPacket packet) {
         Field columnDescriptionsField = PostgreSQLRowDescriptionPacket.class.getDeclaredField("columnDescriptions");
         columnDescriptionsField.setAccessible(true);
@@ -299,6 +299,6 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
     
     @Test(expected = UnsupportedSQLOperationException.class)
     public void assertDescribeUnknownType() throws SQLException {
-        new PostgreSQLComDescribeExecutor(connectionContext, packet, connectionSession).execute();
+        new PostgreSQLComDescribeExecutor(portalContext, packet, connectionSession).execute();
     }
 }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.distsql.exception.rule;
 
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.SQLState;
 
 /**
  * Rule definition violation exception.
@@ -26,7 +27,7 @@ public abstract class RuleDefinitionViolationException extends DistSQLException 
     
     private static final long serialVersionUID = 1090914641996552474L;
     
-    public RuleDefinitionViolationException(final int errorCode, final String reason) {
-        super(errorCode, reason);
+    public RuleDefinitionViolationException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArguments) {
+        super(sqlState, errorCode, reason, messageArguments);
     }
 }

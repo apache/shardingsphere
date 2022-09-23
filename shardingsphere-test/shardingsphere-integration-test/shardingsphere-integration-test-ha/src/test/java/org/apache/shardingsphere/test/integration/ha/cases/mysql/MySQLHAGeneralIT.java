@@ -49,8 +49,8 @@ public final class MySQLHAGeneralIT extends BaseITCase {
     public static Collection<HAParameterized> getParameters() {
         Collection<HAParameterized> result = new LinkedList<>();
         MySQLDatabaseType databaseType = new MySQLDatabaseType();
-        for (String version : ENV.listDatabaseDockerImageNames(databaseType)) {
-            result.add(new HAParameterized(databaseType, version, "mysql_ha"));
+        for (String each : ENV.listStorageContainerImages(databaseType)) {
+            result.add(new HAParameterized(databaseType, each, "mysql_ha"));
         }
         return result;
     }

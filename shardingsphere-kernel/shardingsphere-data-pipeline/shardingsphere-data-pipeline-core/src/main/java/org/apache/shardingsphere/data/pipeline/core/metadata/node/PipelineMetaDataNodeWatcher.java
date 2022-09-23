@@ -20,8 +20,8 @@ package org.apache.shardingsphere.data.pipeline.core.metadata.node;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
-import org.apache.shardingsphere.data.pipeline.core.spi.handler.PipelineMetaDataChangedHandler;
-import org.apache.shardingsphere.data.pipeline.core.spi.handler.PipelineMetaDataChangedHandlerFactory;
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler.PipelineMetaDataChangedEventHandler;
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler.PipelineMetaDataChangedEventHandlerFactory;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 
 import java.util.Collection;
@@ -31,25 +31,25 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 /**
- * Pipeline metaData nodeWatcher.
+ * Pipeline meta data node watcher.
  */
 @Slf4j
 public final class PipelineMetaDataNodeWatcher {
     
     private static final PipelineMetaDataNodeWatcher INSTANCE = new PipelineMetaDataNodeWatcher();
     
-    private final Map<Pattern, PipelineMetaDataChangedHandler> listenerMap = new ConcurrentHashMap<>();
+    private final Map<Pattern, PipelineMetaDataChangedEventHandler> listenerMap = new ConcurrentHashMap<>();
     
     private PipelineMetaDataNodeWatcher() {
-        Collection<PipelineMetaDataChangedHandler> instances = PipelineMetaDataChangedHandlerFactory.findAllInstances();
-        for (PipelineMetaDataChangedHandler each : instances) {
+        Collection<PipelineMetaDataChangedEventHandler> instances = PipelineMetaDataChangedEventHandlerFactory.findAllInstances();
+        for (PipelineMetaDataChangedEventHandler each : instances) {
             listenerMap.put(each.getKeyPattern(), each);
         }
         PipelineAPIFactory.getGovernanceRepositoryAPI().watch(DataPipelineConstants.DATA_PIPELINE_ROOT, this::dispatchEvent);
     }
     
     private void dispatchEvent(final DataChangedEvent event) {
-        for (Entry<Pattern, PipelineMetaDataChangedHandler> entry : listenerMap.entrySet()) {
+        for (Entry<Pattern, PipelineMetaDataChangedEventHandler> entry : listenerMap.entrySet()) {
             if (entry.getKey().matcher(event.getKey()).matches()) {
                 entry.getValue().handle(event);
                 return;
@@ -58,9 +58,9 @@ public final class PipelineMetaDataNodeWatcher {
     }
     
     /**
-     * Get pipeline metaData nodeWatcher instance.
+     * Get instance.
      *
-     * @return pipeline metaData nodeWatcher
+     * @return instance
      */
     public static PipelineMetaDataNodeWatcher getInstance() {
         return INSTANCE;

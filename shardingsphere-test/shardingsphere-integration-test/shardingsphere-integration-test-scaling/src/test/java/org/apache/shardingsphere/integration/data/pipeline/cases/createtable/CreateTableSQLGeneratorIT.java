@@ -48,7 +48,7 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(Parameterized.class)
 public final class CreateTableSQLGeneratorIT {
@@ -79,7 +79,7 @@ public final class CreateTableSQLGeneratorIT {
         this.parameterized = parameterized;
         rootEntity = JAXB.unmarshal(
                 Objects.requireNonNull(CreateTableSQLGeneratorIT.class.getClassLoader().getResource(parameterized.getScenario())), CreateTableSQLGeneratorAssertionsRootEntity.class);
-        storageContainer = (DockerStorageContainer) StorageContainerFactory.newInstance(parameterized.getDatabaseType(), parameterized.getDockerImageName(), "",
+        storageContainer = (DockerStorageContainer) StorageContainerFactory.newInstance(parameterized.getDatabaseType(), parameterized.getStorageContainerImage(), "",
                 StorageContainerConfigurationFactory.newInstance(parameterized.getDatabaseType()));
         storageContainer.start();
     }

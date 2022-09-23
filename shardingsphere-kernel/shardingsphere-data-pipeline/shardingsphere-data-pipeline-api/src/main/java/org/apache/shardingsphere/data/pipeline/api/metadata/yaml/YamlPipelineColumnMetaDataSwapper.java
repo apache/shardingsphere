@@ -37,6 +37,7 @@ public final class YamlPipelineColumnMetaDataSwapper implements YamlConfiguratio
         result.setNullable(data.isNullable());
         result.setPrimaryKey(data.isPrimaryKey());
         result.setOrdinalPosition(data.getOrdinalPosition());
+        result.setUniqueKey(data.isUniqueKey());
         return result;
     }
     
@@ -46,6 +47,6 @@ public final class YamlPipelineColumnMetaDataSwapper implements YamlConfiguratio
             return null;
         }
         return new PipelineColumnMetaData(yamlConfig.getOrdinalPosition(), yamlConfig.getName(), yamlConfig.getDataType(), yamlConfig.getDataTypeName(), yamlConfig.isNullable(),
-                yamlConfig.isPrimaryKey());
+                yamlConfig.isPrimaryKey(), yamlConfig.isUniqueKey());
     }
 }

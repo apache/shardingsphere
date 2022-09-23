@@ -66,7 +66,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @Slf4j
@@ -135,7 +135,7 @@ public final class MigrationJobAPIImplTest {
     }
     
     @Test
-    public void assertCommit() {
+    public void assertCommit() throws SQLException {
         Optional<String> jobId = jobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
         MigrationJobConfiguration jobConfig = jobAPI.getJobConfiguration(jobId.get());
@@ -155,7 +155,7 @@ public final class MigrationJobAPIImplTest {
     @Test
     public void assertDataConsistencyCheck() throws NoSuchFieldException, IllegalAccessException {
         MigrationJobConfiguration jobConfiguration = JobConfigurationBuilder.createJobConfiguration();
-        ReflectionUtil.setFieldValue(jobConfiguration, "uniqueKeyColumn", new PipelineColumnMetaData(1, "order_id", 4, "", false, true));
+        ReflectionUtil.setFieldValue(jobConfiguration, "uniqueKeyColumn", new PipelineColumnMetaData(1, "order_id", 4, "", false, true, true));
         Optional<String> jobId = jobAPI.start(jobConfiguration);
         assertTrue(jobId.isPresent());
         MigrationJobConfiguration jobConfig = jobAPI.getJobConfiguration(jobId.get());
@@ -225,7 +225,7 @@ public final class MigrationJobAPIImplTest {
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
         MigrationJobItemContext jobItemContext = PipelineContextUtil.mockMigrationJobItemContext(jobConfig);
         jobAPI.persistJobItemProgress(jobItemContext);
-        repositoryAPI.persistJobCheckResult(jobId.get(), true);
+        repositoryAPI.persistCheckLatestResult(jobId.get(), true);
         jobAPI.updateJobItemStatus(jobId.get(), jobItemContext.getShardingItem(), JobStatus.EXECUTE_INVENTORY_TASK);
         Map<Integer, InventoryIncrementalJobItemProgress> progress = jobAPI.getJobProgress(jobId.get());
         for (Entry<Integer, InventoryIncrementalJobItemProgress> entry : progress.entrySet()) {

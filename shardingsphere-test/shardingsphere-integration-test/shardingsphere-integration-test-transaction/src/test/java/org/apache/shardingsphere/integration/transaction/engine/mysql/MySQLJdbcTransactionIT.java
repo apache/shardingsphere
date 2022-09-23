@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.integration.transaction.engine.mysql;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.framework.param.TransactionParameterized;
@@ -33,8 +32,8 @@ import java.util.Collection;
 /**
  * MySQL general transaction test case with JDBC container, includes multiple cases.
  */
-@Slf4j
 @RunWith(Parameterized.class)
+@Slf4j
 public final class MySQLJdbcTransactionIT extends BaseTransactionITCase {
     
     private final TransactionParameterized parameterized;
@@ -51,14 +50,13 @@ public final class MySQLJdbcTransactionIT extends BaseTransactionITCase {
     }
     
     @After
-    @SneakyThrows(SQLException.class)
-    public void after() {
+    public void after() throws SQLException {
         getDataSource().close();
         getContainerComposer().close();
     }
     
     @Test
-    public void assertTransaction() {
+    public void assertTransaction() throws SQLException {
         callTestCases(parameterized);
     }
 }

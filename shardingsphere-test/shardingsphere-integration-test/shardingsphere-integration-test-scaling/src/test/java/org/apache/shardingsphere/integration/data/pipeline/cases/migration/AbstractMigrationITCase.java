@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.cases.migration;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
@@ -36,21 +37,36 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @Slf4j
 public abstract class AbstractMigrationITCase extends BaseITCase {
     
+    @Getter
     private final MigrationDistSQLCommand migrationDistSQLCommand;
     
     public AbstractMigrationITCase(final ScalingParameterized parameterized) {
         super(parameterized);
-        migrationDistSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BaseITCase.class.getClassLoader().getResource("env/common/command.xml")), MigrationDistSQLCommand.class);
+        migrationDistSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BaseITCase.class.getClassLoader().getResource("env/common/migration-command.xml")), MigrationDistSQLCommand.class);
+        if (ITEnvTypeEnum.NATIVE == ENV.getItEnvType()) {
+            try {
+                cleanUpPipelineJobs();
+            } catch (final SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
+    
+    private void cleanUpPipelineJobs() throws SQLException {
+        List<String> jobIds = listJobId();
+        for (String each : jobIds) {
+            proxyExecuteWithLog(String.format("ROLLBACK MIGRATION '%s'", each), 0);
+        }
     }
     
     protected void addMigrationSourceResource() throws SQLException {
-        if (ENV.getItEnvType() == ITEnvTypeEnum.NATIVE) {
+        if (ITEnvTypeEnum.NATIVE == ENV.getItEnvType()) {
             try {
                 proxyExecuteWithLog("DROP MIGRATION SOURCE RESOURCE ds_0", 2);
             } catch (final SQLException ex) {
@@ -105,28 +121,16 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
         proxyExecuteWithLog(migrationDistSQLCommand.getCreateTargetOrderItemTableRule(), 2);
     }
     
-    protected void startMigrationOrderCopy(final boolean withSchema) throws SQLException {
-        if (withSchema) {
-            proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderCopySingleTableWithSchema(), 4);
-        } else {
-            proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderCopySingleTable(), 4);
-        }
+    protected void startMigration(final String sourceTableName, final String targetTableName) throws SQLException {
+        proxyExecuteWithLog(migrationDistSQLCommand.getMigrationSingleTable(sourceTableName, targetTableName), 5);
     }
     
-    protected void startMigrationOrder() throws SQLException {
-        proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderSingleTable(), 1);
-    }
-    
-    protected void startMigrationOrderItem(final boolean withSchema) throws SQLException {
-        if (withSchema) {
-            proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderItemSingleTableWithSchema(), 1);
-        } else {
-            proxyExecuteWithLog(migrationDistSQLCommand.getMigrationOrderItemSingleTable(), 1);
-        }
+    protected void startMigrationWithSchema(final String sourceTableName, final String targetTableName) throws SQLException {
+        proxyExecuteWithLog(migrationDistSQLCommand.getMigrationSingleTableWithSchema(sourceTableName, targetTableName), 5);
     }
     
     protected void addMigrationProcessConfig() throws SQLException {
-        if (ENV.getItEnvType() == ITEnvTypeEnum.NATIVE) {
+        if (ITEnvTypeEnum.NATIVE == ENV.getItEnvType()) {
             try {
                 proxyExecuteWithLog("DROP MIGRATION PROCESS CONFIGURATION '/'", 0);
             } catch (final SQLException ex) {

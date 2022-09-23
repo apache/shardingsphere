@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPI;
+import org.apache.shardingsphere.data.pipeline.api.InventoryIncrementalJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.DropPipelineProcessConfigurationStatement;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
@@ -29,7 +29,7 @@ public final class DropPipelineProcessConfigurationUpdater implements RALUpdater
     
     @Override
     public void executeUpdate(final String databaseName, final DropPipelineProcessConfigurationStatement sqlStatement) {
-        PipelineJobPublicAPI jobAPI = PipelineJobPublicAPIFactory.getPipelineJobPublicAPI(sqlStatement.getJobTypeName());
+        InventoryIncrementalJobPublicAPI jobAPI = PipelineJobPublicAPIFactory.getInventoryIncrementalJobPublicAPI(sqlStatement.getJobTypeName());
         jobAPI.dropProcessConfiguration(sqlStatement.getConfPath());
     }
     

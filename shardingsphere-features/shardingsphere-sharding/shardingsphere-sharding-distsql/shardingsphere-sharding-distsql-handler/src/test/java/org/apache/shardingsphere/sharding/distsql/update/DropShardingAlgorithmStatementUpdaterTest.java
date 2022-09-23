@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -38,7 +38,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -49,7 +49,7 @@ public final class DropShardingAlgorithmStatementUpdaterTest {
     
     private final DropShardingAlgorithmStatementUpdater updater = new DropShardingAlgorithmStatementUpdater();
     
-    @Test(expected = RequiredAlgorithmMissedException.class)
+    @Test(expected = MissingRequiredAlgorithmException.class)
     public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
         updater.checkSQLStatement(database, new DropShardingAlgorithmStatement(false, Collections.emptyList()), null);
     }
@@ -60,7 +60,7 @@ public final class DropShardingAlgorithmStatementUpdaterTest {
         updater.checkSQLStatement(database, dropShardingAlgorithmStatement, null);
     }
     
-    @Test(expected = RequiredAlgorithmMissedException.class)
+    @Test(expected = MissingRequiredAlgorithmException.class)
     public void assertCheckSQLStatementWithoutExistedAlgorithm() throws RuleDefinitionViolationException {
         updater.checkSQLStatement(database, createSQLStatement("t_order"), new ShardingRuleConfiguration());
     }

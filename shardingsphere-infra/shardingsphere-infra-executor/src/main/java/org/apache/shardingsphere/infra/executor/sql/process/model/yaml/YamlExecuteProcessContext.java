@@ -21,6 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
 
@@ -50,6 +51,8 @@ public final class YamlExecuteProcessContext {
     
     private Long startTimeMillis;
     
+    private ExecuteProcessConstants executeProcessConstants;
+    
     public YamlExecuteProcessContext(final ExecuteProcessContext executeProcessContext) {
         executionID = executeProcessContext.getExecutionID();
         databaseName = executeProcessContext.getDatabaseName();
@@ -61,5 +64,6 @@ public final class YamlExecuteProcessContext {
             unitStatuses.add(new YamlExecuteProcessUnit(each));
         }
         startTimeMillis = executeProcessContext.getStartTimeMillis();
+        executeProcessConstants = executeProcessContext.getExecuteProcessConstants();
     }
 }

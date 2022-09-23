@@ -207,7 +207,7 @@ public final class MySQLClient {
      * @return binlog event
      */
     public synchronized AbstractBinlogEvent poll() {
-        ShardingSpherePreconditions.checkState(running, new BinlogSyncChannelAlreadyClosedException());
+        ShardingSpherePreconditions.checkState(running, BinlogSyncChannelAlreadyClosedException::new);
         try {
             return blockingEventQueue.poll(100L, TimeUnit.MILLISECONDS);
         } catch (final InterruptedException ignored) {

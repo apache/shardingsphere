@@ -24,7 +24,11 @@
         <projections start-index="7" stop-index="26">
             <expression-projection text="GROUP_CONCAT(status)" start-index="7" stop-index="26">
                 <expr>
-                    <function function-name="GROUP_CONCAT" start-index="7" stop-index="26" text="GROUP_CONCAT(status)" />
+                    <function function-name="GROUP_CONCAT" start-index="7" stop-index="26" text="GROUP_CONCAT(status)">
+                        <parameter>
+                            <column name="status" start-index="20" stop-index="25" />
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>

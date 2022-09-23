@@ -55,10 +55,7 @@ public final class DataSet {
      */
     public DataSetMetaData findMetaData(final String tableName) {
         Optional<DataSetMetaData> result = metaDataList.stream().filter(each -> tableName.equals(each.getTableName())).findFirst();
-        if (result.isPresent()) {
-            return result.get();
-        }
-        throw new IllegalArgumentException(String.format("Cannot find expected metadata via table name: '%s'", tableName));
+        return result.orElseThrow(() -> new IllegalArgumentException(String.format("Can not find expected meta data via table `%s`", tableName)));
     }
     
     /**
@@ -69,10 +66,7 @@ public final class DataSet {
      */
     public DataSetMetaData findMetaData(final DataNode dataNode) {
         Optional<DataSetMetaData> result = metaDataList.stream().filter(each -> contains(new InlineExpressionParser(each.getDataNodes()).splitAndEvaluate(), dataNode)).findFirst();
-        if (result.isPresent()) {
-            return result.get();
-        }
-        throw new IllegalArgumentException(String.format("Cannot find data node: %s", dataNode));
+        return result.orElseThrow(() -> new IllegalArgumentException(String.format("Cannot find data node: %s", dataNode)));
     }
     
     private boolean contains(final List<String> dataNodes, final DataNode dataNode) {

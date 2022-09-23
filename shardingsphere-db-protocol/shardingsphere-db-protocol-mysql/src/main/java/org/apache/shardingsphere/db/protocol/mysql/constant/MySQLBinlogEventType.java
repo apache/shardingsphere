@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.constant;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -121,9 +122,7 @@ public enum MySQLBinlogEventType {
      * @return MySQL binlog event type
      */
     public static MySQLBinlogEventType valueOf(final int value) {
-        if (VALUE_AND_EVENT_TYPE_MAP.containsKey(value)) {
-            return VALUE_AND_EVENT_TYPE_MAP.get(value);
-        }
-        throw new IllegalArgumentException(String.format("Cannot find value '%s' in binlog event type", value));
+        Preconditions.checkArgument(VALUE_AND_EVENT_TYPE_MAP.containsKey(value), "Can not find value `%s` in binlog event type", value);
+        return VALUE_AND_EVENT_TYPE_MAP.get(value);
     }
 }

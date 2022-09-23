@@ -65,7 +65,7 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
     @Override
     protected YamlRootConfiguration createRootConfiguration() throws IOException {
         URL url = EncryptSQLRewriterParameterizedTest.class.getClassLoader().getResource(getTestParameters().getRuleFile());
-        Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
+        Preconditions.checkNotNull(url, "Can not find rewrite rule yaml configuration");
         return YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class);
     }
     
