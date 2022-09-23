@@ -28,6 +28,6 @@ public final class TypedPropertyValueException extends ShardingSphereInternalExc
     private static final long serialVersionUID = -2989212435757964906L;
     
     public TypedPropertyValueException(final TypedPropertyKey key, final String value) {
-        super("Value `%s` of `%s` cannot convert to type `%s`.", value, key.getKey(), key.getType().getName());
+        super("Value `%s` of `%s` cannot convert to type `%s`", value, key.getKey(), key.getType().getName());
     }
 }
