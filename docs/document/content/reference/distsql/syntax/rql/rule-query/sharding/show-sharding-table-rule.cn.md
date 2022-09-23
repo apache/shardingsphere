@@ -1,14 +1,14 @@
 +++
 title = "SHOW SHARDING TABLE RULE"
-weight = 3
+weight = 2
 +++
-
 
 ### 描述
 
 `SHOW SHARDING TABLE RULE` 语法用于查询指定逻辑库中的分片规则。
 
 ### 语法
+
 ```
 ShowShardingTableRule ::=
   'SHOW' 'SHARDING' 'TABLE' ('RULE' tableName | 'RULES') ('FROM' databaseName)?
@@ -21,9 +21,10 @@ databaseName ::=
 ```
 
 ### 补充说明
+
 - 未指定 `databaseName` 时，默认是当前使用的 `DATABASE`。 如果也未使用 `DATABASE` 则会提示 `No database selected`。
 
- ### 返回值说明
+### 返回值说明
 
 | 列                                | 说明                                |
 | --------------------------------- | ---------------------------------- |
@@ -71,9 +72,11 @@ SHOW SHARDING TABLE RULES;
 2 rows in set (0.12 sec)
 ```
 - 查询指定逻辑表的分片规则
+
 ```sql
 SHOW SHARDING TABLE RULE t_order;
 ```
+
 ```sql
 +--------------+-------------------+---------------------+------------------------+--------------------------+----------------------------------+-----------------------------------+---------------------+-----------------------+-------------------------------+--------------------------------+---------------------+--------------------+---------------------+
 | table        | actual_data_nodes | actual_data_sources | database_strategy_type | database_sharding_column | database_sharding_algorithm_type | database_sharding_algorithm_props | table_strategy_type | table_sharding_column | table_sharding_algorithm_type | table_sharding_algorithm_props | key_generate_column | key_generator_type | key_generator_props |
@@ -82,3 +85,11 @@ SHOW SHARDING TABLE RULE t_order;
 +--------------+-------------------+---------------------+------------------------+--------------------------+----------------------------------+-----------------------------------+---------------------+-----------------------+-------------------------------+--------------------------------+---------------------+--------------------+---------------------+
 1 rows in set (0.12 sec)
 ```
+
+### 保留字
+
+`CREATE`、`SHARDING`、`TABLE`、`RULE`、`FROM`
+
+### 相关链接
+
+- [保留字](/cn/reference/distsql/syntax/reserved-word/)
