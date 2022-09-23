@@ -55,7 +55,7 @@ public final class JaegerTracingPluginBootService implements PluginBootService {
     
     private void setSystemProperty(final String key, final String value) {
         if (!KEY_SERVICE_NAME.equalsIgnoreCase(key)) {
-            String propertyKey = key.replaceAll("-", "_");
+            String propertyKey = key.replaceAll("-", "_").toUpperCase();
             System.setProperty(propertyKey, String.valueOf(value));
         }
     }
