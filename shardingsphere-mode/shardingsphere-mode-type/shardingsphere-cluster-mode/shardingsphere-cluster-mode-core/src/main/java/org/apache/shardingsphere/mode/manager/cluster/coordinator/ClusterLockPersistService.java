@@ -32,11 +32,11 @@ public final class ClusterLockPersistService implements LockPersistService {
     
     @Override
     public boolean tryLock(final LockDefinition lockDefinition, final long timeoutMillis) {
-        return repository.persistLock(lockDefinition.getLockKey(), timeoutMillis);
+        return repository.tryLock(lockDefinition.getLockKey(), timeoutMillis);
     }
     
     @Override
     public void unlock(final LockDefinition lockDefinition) {
-        repository.deleteLock(lockDefinition.getLockKey());
+        repository.unlock(lockDefinition.getLockKey());
     }
 }

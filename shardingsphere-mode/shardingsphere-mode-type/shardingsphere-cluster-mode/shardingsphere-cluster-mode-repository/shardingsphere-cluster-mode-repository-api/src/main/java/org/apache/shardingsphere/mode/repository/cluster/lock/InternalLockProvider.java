@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.mode.repository.cluster.lock;
 
 /**
- * Internal lock holder.
+ * Internal lock provider.
  */
-public interface InternalLockHolder {
+public interface InternalLockProvider {
     
     /**
      * Get internal lock.

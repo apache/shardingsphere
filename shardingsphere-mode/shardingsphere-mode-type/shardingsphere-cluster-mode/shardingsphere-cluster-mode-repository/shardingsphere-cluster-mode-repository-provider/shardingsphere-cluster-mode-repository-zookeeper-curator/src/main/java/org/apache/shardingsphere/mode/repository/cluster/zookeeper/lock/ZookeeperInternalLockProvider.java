@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.shardingsphere.mode.repository.cluster.lock.InternalLock;
-import org.apache.shardingsphere.mode.repository.cluster.lock.InternalLockHolder;
+import org.apache.shardingsphere.mode.repository.cluster.lock.InternalLockProvider;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -31,7 +31,7 @@ import java.util.Objects;
  * Zookeeper internal lock holder.
  */
 @RequiredArgsConstructor
-public final class ZookeeperInternalLockHolder implements InternalLockHolder {
+public final class ZookeeperInternalLockProvider implements InternalLockProvider {
     
     private final Map<String, ZookeeperInternalLock> locks = new LinkedHashMap<>();
     
