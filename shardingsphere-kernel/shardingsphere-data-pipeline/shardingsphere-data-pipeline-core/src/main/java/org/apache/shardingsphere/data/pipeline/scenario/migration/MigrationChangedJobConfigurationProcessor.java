@@ -52,8 +52,11 @@ public final class MigrationChangedJobConfigurationProcessor implements Pipeline
                     log.info("{} added to executing jobs failed since it already exists", jobId);
                 } else {
                     log.info("{} executing jobs", jobId);
-                    CompletableFuture.runAsync(() -> execute(jobConfigPOJO), PipelineContext.getEventListenerExecutor())
-                            .whenComplete((unused, throwable) -> log.error("execute failed, jobId={}", jobId, throwable));
+                    CompletableFuture.runAsync(() -> execute(jobConfigPOJO), PipelineContext.getEventListenerExecutor()).whenComplete((unused, throwable) -> {
+                        if (null != throwable) {
+                            log.error("execute failed, jobId={}", jobId, throwable);
+                        }
+                    });
                 }
                 break;
             case DELETED:

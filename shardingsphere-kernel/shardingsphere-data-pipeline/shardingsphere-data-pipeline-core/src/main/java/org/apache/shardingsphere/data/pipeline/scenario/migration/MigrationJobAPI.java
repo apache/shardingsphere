@@ -18,22 +18,18 @@
 package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
 import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
-import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
+import org.apache.shardingsphere.data.pipeline.core.api.InventoryIncrementalJobAPI;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
-
-import java.util.Map;
 
 /**
  * Migration job API.
  */
 @SingletonSPI
-public interface MigrationJobAPI extends PipelineJobAPI, MigrationJobPublicAPI, RequiredSPI {
+public interface MigrationJobAPI extends InventoryIncrementalJobAPI, MigrationJobPublicAPI, RequiredSPI {
     
     @Override
     MigrationJobConfiguration getJobConfiguration(String jobId);
@@ -43,32 +39,4 @@ public interface MigrationJobAPI extends PipelineJobAPI, MigrationJobPublicAPI, 
     
     @Override
     MigrationProcessContext buildPipelineProcessContext(PipelineJobConfiguration pipelineJobConfig);
-    
-    /**
-     * Get job progress.
-     *
-     * @param jobConfig job configuration
-     * @return each sharding item progress
-     */
-    Map<Integer, InventoryIncrementalJobItemProgress> getJobProgress(MigrationJobConfiguration jobConfig);
-    
-    @Override
-    InventoryIncrementalJobItemProgress getJobItemProgress(String jobId, int shardingItem);
-    
-    /**
-     * Do data consistency check.
-     *
-     * @param jobConfig job configuration
-     * @return each logic table check result
-     */
-    Map<String, DataConsistencyCheckResult> dataConsistencyCheck(MigrationJobConfiguration jobConfig);
-    
-    /**
-     * Aggregate data consistency check results.
-     *
-     * @param jobId job id
-     * @param checkResults check results
-     * @return check success or not
-     */
-    boolean aggregateDataConsistencyCheckResults(String jobId, Map<String, DataConsistencyCheckResult> checkResults);
 }
