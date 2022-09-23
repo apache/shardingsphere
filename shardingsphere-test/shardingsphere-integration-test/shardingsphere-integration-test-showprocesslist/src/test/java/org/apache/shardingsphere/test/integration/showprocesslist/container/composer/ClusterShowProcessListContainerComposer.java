@@ -23,6 +23,7 @@ import org.apache.shardingsphere.test.integration.env.container.atomic.ITContain
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.integration.env.container.atomic.governance.GovernanceContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.governance.GovernanceContainerFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainer;
@@ -66,9 +67,8 @@ public final class ClusterShowProcessListContainerComposer {
     
     private Map<String, String> getMountedResources(final String scenario, final DatabaseType databaseType) {
         Map<String, String> result = new HashMap<>(2, 1);
-        String pathInContainer = "/opt/shardingsphere-proxy/conf";
-        result.put("/env/common/cluster/proxy/conf/", pathInContainer);
-        result.put("/env/scenario/" + scenario + "/proxy/conf/" + databaseType.getType().toLowerCase(), pathInContainer);
+        result.put("/env/common/cluster/proxy/conf/", ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER);
+        result.put("/env/scenario/" + scenario + "/proxy/conf/" + databaseType.getType().toLowerCase(), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER);
         return result;
     }
     
