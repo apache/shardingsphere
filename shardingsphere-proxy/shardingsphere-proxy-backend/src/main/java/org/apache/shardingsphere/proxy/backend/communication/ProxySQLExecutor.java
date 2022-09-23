@@ -172,6 +172,7 @@ public final class ProxySQLExecutor {
         }
         executionGroupContext.setDatabaseName(backendConnection.getConnectionSession().getDatabaseName());
         executionGroupContext.setGrantee(backendConnection.getConnectionSession().getGrantee());
+        executionGroupContext.setExecutionID(backendConnection.getConnectionSession().getExecutionId());
         // TODO handle query header
         return rawExecutor.execute(executionGroupContext, executionContext.getQueryContext(), new RawSQLExecutorCallback(ProxyContext.getInstance().getContextManager().getInstanceContext()
                 .getEventBusContext()));
@@ -190,6 +191,7 @@ public final class ProxySQLExecutor {
         }
         executionGroupContext.setDatabaseName(backendConnection.getConnectionSession().getDatabaseName());
         executionGroupContext.setGrantee(backendConnection.getConnectionSession().getGrantee());
+        executionGroupContext.setExecutionID(backendConnection.getConnectionSession().getExecutionId());
         return jdbcExecutor.execute(executionContext.getQueryContext(), executionGroupContext, isReturnGeneratedKeys, isExceptionThrown);
     }
     

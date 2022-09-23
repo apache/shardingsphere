@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmCo
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -62,7 +63,7 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
     private void checkDataType(final CreateEncryptRuleStatement sqlStatement) throws DistSQLException {
         Collection<String> invalidRules = sqlStatement.getRules().stream()
                 .map(each -> getInvalidColumns(each.getTableName(), each.getColumns())).flatMap(Collection::stream).collect(Collectors.toList());
-        DistSQLException.predictionThrow(invalidRules.isEmpty(), () -> new InvalidRuleConfigurationException("encrypt", invalidRules, Collections.singleton("incomplete data type")));
+        ShardingSpherePreconditions.checkState(invalidRules.isEmpty(), () -> new InvalidRuleConfigurationException("encrypt", invalidRules, Collections.singleton("incomplete data type")));
     }
     
     private Collection<String> getInvalidColumns(final String tableName, final Collection<EncryptColumnSegment> columns) {
@@ -73,9 +74,7 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
         Collection<String> encryptors = new LinkedHashSet<>();
         sqlStatement.getRules().forEach(each -> encryptors.addAll(each.getColumns().stream().map(column -> column.getEncryptor().getName()).collect(Collectors.toSet())));
         Collection<String> notExistedEncryptors = encryptors.stream().filter(each -> !EncryptAlgorithmFactory.contains(each)).collect(Collectors.toList());
-        if (!notExistedEncryptors.isEmpty()) {
-            throw new InvalidAlgorithmConfigurationException("encryptor", notExistedEncryptors);
-        }
+        ShardingSpherePreconditions.checkState(notExistedEncryptors.isEmpty(), () -> new InvalidAlgorithmConfigurationException("encryptor", notExistedEncryptors));
     }
     
     @Override

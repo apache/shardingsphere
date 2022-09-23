@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.update;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateKeyGeneratorException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateAlgorithmException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -52,13 +52,13 @@ public final class CreateShardingKeyGeneratorStatementUpdaterTest {
         when(database.getName()).thenReturn("test");
     }
     
-    @Test(expected = DuplicateKeyGeneratorException.class)
+    @Test(expected = DuplicateAlgorithmException.class)
     public void assertExecuteWithDuplicate() throws DistSQLException {
         ShardingKeyGeneratorSegment keyGeneratorSegment = new ShardingKeyGeneratorSegment("uuid_key_generator", new AlgorithmSegment("uuid", new Properties()));
         updater.checkSQLStatement(database, createSQLStatement(keyGeneratorSegment, keyGeneratorSegment), null);
     }
     
-    @Test(expected = DuplicateKeyGeneratorException.class)
+    @Test(expected = DuplicateAlgorithmException.class)
     public void assertExecuteWithExist() throws DistSQLException {
         ShardingKeyGeneratorSegment keyGeneratorSegment = new ShardingKeyGeneratorSegment("uuid_key_generator", new AlgorithmSegment("uuid", new Properties()));
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();

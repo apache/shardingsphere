@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -35,9 +35,9 @@ public final class AlterShardingBroadcastTableRuleStatementUpdater implements Ru
         checkCurrentRuleConfiguration(database.getName(), currentRuleConfig);
     }
     
-    private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
+    private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) throws MissingRequiredRuleException {
         if (null == currentRuleConfig) {
-            throw new RequiredRuleMissedException("Sharding", databaseName);
+            throw new MissingRequiredRuleException("Sharding", databaseName);
         }
     }
     

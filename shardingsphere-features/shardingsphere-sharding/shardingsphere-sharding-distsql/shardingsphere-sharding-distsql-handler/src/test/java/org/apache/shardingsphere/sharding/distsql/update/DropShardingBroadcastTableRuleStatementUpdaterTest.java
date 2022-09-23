@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -44,12 +44,12 @@ public final class DropShardingBroadcastTableRuleStatementUpdaterTest {
     
     private final DropShardingBroadcastTableRuleStatementUpdater updater = new DropShardingBroadcastTableRuleStatementUpdater();
     
-    @Test(expected = RequiredRuleMissedException.class)
+    @Test(expected = MissingRequiredRuleException.class)
     public void assertCheckSQLStatementWithoutCurrentRule() throws DistSQLException {
         updater.checkSQLStatement(database, createSQLStatement("t_order"), null);
     }
     
-    @Test(expected = RequiredRuleMissedException.class)
+    @Test(expected = MissingRequiredRuleException.class)
     public void assertCheckSQLStatementWithoutExistBroadcastTableRule() throws DistSQLException {
         updater.checkSQLStatement(database, createSQLStatement("t_order"), new ShardingRuleConfiguration());
     }
@@ -67,7 +67,7 @@ public final class DropShardingBroadcastTableRuleStatementUpdaterTest {
         assertTrue(updater.hasAnyOneToBeDropped(createSQLStatement(true, "t_order"), createCurrentRuleConfiguration()));
     }
     
-    @Test(expected = RequiredRuleMissedException.class)
+    @Test(expected = MissingRequiredRuleException.class)
     public void assertCheckSQLStatementWithBroadcastTableRuleAreNotTheSame() throws DistSQLException {
         updater.checkSQLStatement(database, createSQLStatement("t_order_item"), createCurrentRuleConfiguration());
     }

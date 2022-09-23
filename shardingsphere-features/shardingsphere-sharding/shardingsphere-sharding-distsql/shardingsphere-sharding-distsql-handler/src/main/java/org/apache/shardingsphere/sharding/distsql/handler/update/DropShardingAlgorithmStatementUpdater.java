@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingAlgorithmStatement;
@@ -48,21 +49,19 @@ public final class DropShardingAlgorithmStatementUpdater implements RuleDefiniti
         checkShardingAlgorithmsInUsed(databaseName, sqlStatement, currentRuleConfig);
     }
     
-    private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) throws RequiredAlgorithmMissedException {
-        if (null == currentRuleConfig) {
-            throw new RequiredAlgorithmMissedException(databaseName);
-        }
+    private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) throws MissingRequiredAlgorithmException {
+        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredAlgorithmException("Sharding", databaseName));
     }
     
     private void checkToBeDroppedShardingAlgorithms(final String databaseName, final DropShardingAlgorithmStatement sqlStatement,
-                                                    final ShardingRuleConfiguration currentRuleConfig) throws RequiredAlgorithmMissedException {
+                                                    final ShardingRuleConfiguration currentRuleConfig) throws MissingRequiredAlgorithmException {
         if (sqlStatement.isIfExists()) {
             return;
         }
         Collection<String> currentShardingAlgorithms = getCurrentShardingAlgorithms(currentRuleConfig);
         Collection<String> notExistedAlgorithms = sqlStatement.getAlgorithmNames().stream().filter(each -> !currentShardingAlgorithms.contains(each)).collect(Collectors.toList());
         if (!notExistedAlgorithms.isEmpty()) {
-            throw new RequiredAlgorithmMissedException(databaseName, notExistedAlgorithms);
+            throw new MissingRequiredAlgorithmException(databaseName, notExistedAlgorithms);
         }
     }
     
@@ -70,9 +69,7 @@ public final class DropShardingAlgorithmStatementUpdater implements RuleDefiniti
                                                final ShardingRuleConfiguration currentRuleConfig) throws AlgorithmInUsedException {
         Collection<String> allInUsed = getAllOfAlgorithmsInUsed(currentRuleConfig);
         Collection<String> usedAlgorithms = sqlStatement.getAlgorithmNames().stream().filter(allInUsed::contains).collect(Collectors.toList());
-        if (!usedAlgorithms.isEmpty()) {
-            throw new AlgorithmInUsedException(databaseName, usedAlgorithms);
-        }
+        ShardingSpherePreconditions.checkState(usedAlgorithms.isEmpty(), () -> new AlgorithmInUsedException("Sharding", databaseName, usedAlgorithms));
     }
     
     private Collection<String> getAllOfAlgorithmsInUsed(final ShardingRuleConfiguration shardingRuleConfig) {

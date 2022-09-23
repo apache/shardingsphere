@@ -21,8 +21,8 @@ import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredAlgorithmException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.update.AlterShadowAlgorithmStatementUpdater;
@@ -60,7 +60,7 @@ public final class AlterShadowAlgorithmStatementUpdaterTest {
         updater.checkSQLStatement(database, sqlStatement, currentConfig);
     }
     
-    @Test(expected = RequiredRuleMissedException.class)
+    @Test(expected = MissingRequiredRuleException.class)
     public void assertExecuteAlgorithmWithoutConfiguration() throws DistSQLException {
         Properties prop = new Properties();
         prop.setProperty("type", "value");
@@ -68,7 +68,7 @@ public final class AlterShadowAlgorithmStatementUpdaterTest {
         updater.checkSQLStatement(database, sqlStatement, null);
     }
     
-    @Test(expected = RequiredAlgorithmMissedException.class)
+    @Test(expected = MissingRequiredAlgorithmException.class)
     public void assertExecuteAlgorithmNotInMetaData() throws DistSQLException {
         Properties prop = new Properties();
         prop.setProperty("type", "value");

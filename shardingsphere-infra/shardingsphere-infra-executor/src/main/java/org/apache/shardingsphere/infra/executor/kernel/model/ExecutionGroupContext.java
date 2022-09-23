@@ -23,8 +23,6 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 
 import java.util.Collection;
-import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Execution group context.
@@ -38,7 +36,7 @@ public final class ExecutionGroupContext<T> {
     
     private final Collection<ExecutionGroup<T>> inputGroups;
     
-    private final String executionID = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", "");
+    private volatile String executionID;
     
     private volatile String databaseName;
     

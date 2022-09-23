@@ -33,7 +33,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.mode.repository.cluster.etcd.lock.EtcdInternalLockHolder;
+import org.apache.shardingsphere.mode.repository.cluster.etcd.lock.EtcdInternalLockProvider;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdProperties;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdPropertyKey;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
@@ -55,7 +55,7 @@ public final class EtcdRepository implements ClusterPersistRepository {
     
     private EtcdProperties etcdProps;
     
-    private EtcdInternalLockHolder etcdInternalLockHolder;
+    private EtcdInternalLockProvider etcdInternalLockHolder;
     
     @Override
     public void init(final ClusterPersistRepositoryConfiguration config) {
@@ -64,7 +64,7 @@ public final class EtcdRepository implements ClusterPersistRepository {
                 .namespace(ByteSequence.from(config.getNamespace(), StandardCharsets.UTF_8))
                 .maxInboundMessageSize((int) 32e9)
                 .build();
-        etcdInternalLockHolder = new EtcdInternalLockHolder(client, etcdProps);
+        etcdInternalLockHolder = new EtcdInternalLockProvider(client, etcdProps);
     }
     
     @SneakyThrows({InterruptedException.class, ExecutionException.class})
@@ -144,12 +144,12 @@ public final class EtcdRepository implements ClusterPersistRepository {
     }
     
     @Override
-    public boolean persistLock(final String lockKey, final long timeoutMillis) {
+    public boolean tryLock(final String lockKey, final long timeoutMillis) {
         return etcdInternalLockHolder.getInternalLock(lockKey).tryLock(timeoutMillis);
     }
     
     @Override
-    public void deleteLock(final String lockKey) {
+    public void unlock(final String lockKey) {
         etcdInternalLockHolder.getInternalLock(lockKey).unlock();
     }
     

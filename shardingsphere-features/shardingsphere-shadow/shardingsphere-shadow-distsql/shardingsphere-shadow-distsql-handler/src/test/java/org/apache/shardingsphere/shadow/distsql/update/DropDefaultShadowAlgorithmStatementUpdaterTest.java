@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.distsql.update;
 
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.update.DropDefaultShadowAlgorithmStatementUpdater;
@@ -43,7 +43,7 @@ public final class DropDefaultShadowAlgorithmStatementUpdaterTest {
     
     private final DropDefaultShadowAlgorithmStatementUpdater updater = new DropDefaultShadowAlgorithmStatementUpdater();
     
-    @Test(expected = RequiredAlgorithmMissedException.class)
+    @Test(expected = MissingRequiredAlgorithmException.class)
     public void assertCheckWithoutDefaultAlgorithm() throws DistSQLException {
         updater.checkSQLStatement(database, new DropDefaultShadowAlgorithmStatement(false), currentConfig);
     }
