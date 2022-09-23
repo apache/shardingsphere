@@ -29,8 +29,10 @@
     <name>${project.artifactId}</name>
     
     <properties>
-        <native.maven.plugin.version>0.9.13</native.maven.plugin.version>
+        <native.image.name>apache-shardingsphere-proxy</native.image.name>
+        <exec-maven-plugin.version>3.0.0</exec-maven-plugin.version>
         <maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
+        <native.maven.plugin.version>0.9.14</native.maven.plugin.version>
     </properties>
     
     <dependencies>
@@ -137,7 +139,7 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
-                        <version>3.0.0</version>
+                        <version>${exec-maven-plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>create builder</id>
@@ -225,36 +227,19 @@
             </build>
         </profile>
         <profile>
-            <id>gunzip.untar</id>
+            <id>native</id>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <version>${maven-antrun-plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <id>prepare</id>
-                                <phase>validate</phase>
-                                <configuration>
-                                    <tasks>
-                                        <gunzip src="target/${project.build.finalName}-shardingsphere-proxy-bin.tar.gz" dest="target/"/>
-                                        <untar src="target/${project.build.finalName}-shardingsphere-proxy-bin.tar" dest="target/"/>
-                                    </tasks>
-                                </configuration>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                            </execution>
-                        </executions>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>${maven-compiler-plugin.version}</version>
+                        <configuration>
+                            <source>17</source>
+                            <target>17</target>
+                            <compilerArgument>--enable-preview</compilerArgument>
+                        </configuration>
                     </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>native</id>
-            <build>
-                <plugins>
                     <plugin>
                         <groupId>org.graalvm.buildtools</groupId>
                         <artifactId>native-maven-plugin</artifactId>
@@ -264,7 +249,7 @@
                             <execution>
                                 <id>build-native</id>
                                 <goals>
-                                    <goal>build</goal>
+                                    <goal>compile-no-fork</goal>
                                 </goals>
                                 <phase>package</phase>
                             </execution>
@@ -277,20 +262,160 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <imageName>${project.build.finalName}-shardingsphere-proxy-bin</imageName>
+                            <imageName>${native.image.name}</imageName>
                             <mainClass>org.apache.shardingsphere.proxy.Bootstrap</mainClass>
                             <fallback>false</fallback>
                             <verbose>true</verbose>
-                            <classpath>
-                                <entry>target/${project.build.finalName}-shardingsphere-proxy-bin/conf</entry>
-                                <entry>.</entry>
-                                <entry>target/${project.build.finalName}-shardingsphere-proxy-bin/lib/*</entry>
-                                <entry>target/${project.build.finalName}-shardingsphere-proxy-bin/ext-lib/*</entry>
-                            </classpath>
+                            <buildArgs>
+                                <arg>--report-unsupported-elements-at-runtime</arg>
+                            </buildArgs>
+                            <jvmArgs>
+                                <arg>--enable-preview</arg>
+                            </jvmArgs>
                             <metadataRepository>
                                 <enabled>true</enabled>
                             </metadataRepository>
                         </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>docker.native</id>
+            <properties>
+                <proxy.image.repository>apache/shardingsphere-proxy-native</proxy.image.repository>
+                <proxy.image.tag>${project.version}</proxy.image.tag>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>${exec-maven-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>build</id>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <phase>package</phase>
+                                <configuration>
+                                    <executable>docker</executable>
+                                    <arguments>
+                                        <argument>build</argument>
+                                        <argument>--pull</argument>
+                                        <argument>--build-arg</argument>
+                                        <argument>APP_NAME=${native.image.name}</argument>
+                                        <argument>-f</argument>
+                                        <argument>./Dockerfile-Native</argument>
+                                        <argument>.</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>docker.buildx.push.native</id>
+            <properties>
+                <proxy.image.platform>linux/amd64,linux/arm64</proxy.image.platform>
+                <proxy.image.repository>apache/shardingsphere-proxy</proxy.image.repository>
+                <proxy.image.tag>${project.version}</proxy.image.tag>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>${exec-maven-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>create builder</id>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <phase>package</phase>
+                                <configuration>
+                                    <executable>docker</executable>
+                                    <arguments>
+                                        <argument>buildx</argument>
+                                        <argument>create</argument>
+                                        <argument>--use</argument>
+                                        <argument>--driver</argument>
+                                        <argument>docker-container</argument>
+                                        <argument>--name</argument>
+                                        <argument>shardingsphere-builder</argument>
+                                        <argument>--platform</argument>
+                                        <argument>${proxy.image.platform}</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>build</id>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <phase>package</phase>
+                                <configuration>
+                                    <executable>docker</executable>
+                                    <arguments>
+                                        <argument>buildx</argument>
+                                        <argument>build</argument>
+                                        <argument>-f</argument>
+                                        <argument>./Dockerfile-Native</argument>
+                                        <argument>--pull</argument>
+                                        <argument>--platform</argument>
+                                        <argument>${proxy.image.platform}</argument>
+                                        <argument>--build-arg</argument>
+                                        <argument>APP_NAME=${native.image.name}</argument>
+                                        <argument>.</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>push</id>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <phase>package</phase>
+                                <configuration>
+                                    <executable>docker</executable>
+                                    <arguments>
+                                        <argument>buildx</argument>
+                                        <argument>build</argument>
+                                        <argument>-f</argument>
+                                        <argument>./Dockerfile-Native</argument>
+                                        <argument>--push</argument>
+                                        <argument>--platform</argument>
+                                        <argument>${proxy.image.platform}</argument>
+                                        <argument>--build-arg</argument>
+                                        <argument>APP_NAME=${native.image.name}</argument>
+                                        <argument>.</argument>
+                                        <argument>-t</argument>
+                                        <argument>${proxy.image.repository}:${proxy.image.tag}</argument>
+                                        <argument>-t</argument>
+                                        <argument>${proxy.image.repository}:latest</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>cleanup builder</id>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <phase>package</phase>
+                                <configuration>
+                                    <executable>docker</executable>
+                                    <arguments>
+                                        <argument>buildx</argument>
+                                        <argument>rm</argument>
+                                        <argument>shardingsphere-builder</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>

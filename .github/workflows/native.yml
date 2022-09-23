@@ -17,15 +17,12 @@
 name: GraalVM Native Image Daily Continuous Integration
 
 on:
-# TODO
-#  schedule:
-#    - cron: '0 0 * * *'
-  pull_request:
-    branches:
-      - master
-
-env: 
-  TARGET_DIR: /home/runner/work/shardingsphere/shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribution/target
+  schedule:
+    - cron: '0 0 * * *'
+    
+env:
+  HUB: ghcr.io/apache/shardingsphere
+  PROXY: ghcr.io/apache/shardingsphere-proxy-native
 
 jobs:
   build:
@@ -49,8 +46,11 @@ jobs:
           components: 'native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           cache: 'maven'
-      # Test TODO
-      - name: Build with Maven
-        run: |
-          ./mvnw -am -pl shardingsphere-distribution/shardingsphere-proxy-distribution -B -Prelease -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Drat.skip=true clean install
-          ./mvnw -am -pl shardingsphere-distribution/shardingsphere-proxy-distribution -B -Pgunzip.untar,native -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Drat.skip=true clean install
+      - name: Log in to the Container registry
+        uses: docker/login-action@v1.10.0
+        with:
+          registry: ${{ env.HUB }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push docker image
+        run: ./mvnw -am -pl shardingsphere-distribution/shardingsphere-proxy-distribution -B -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Drat.skip=true -Pnative,docker.buildx.push.native -Dproxy.image.repository=${{ env.PROXY }} -Dproxy.image.tag=${{ github.sha }} clean package
