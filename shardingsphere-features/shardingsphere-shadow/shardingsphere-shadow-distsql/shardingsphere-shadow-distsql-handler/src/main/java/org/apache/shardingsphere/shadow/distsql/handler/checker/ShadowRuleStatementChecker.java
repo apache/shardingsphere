@@ -19,9 +19,9 @@ package org.apache.shardingsphere.shadow.distsql.handler.checker;
 
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSegment;
@@ -47,7 +47,7 @@ public class ShadowRuleStatementChecker {
      * @throws DistSQLException DistSQL exception
      */
     public static void checkConfigurationExist(final String databaseName, final DatabaseRuleConfiguration config) throws DistSQLException {
-        ShardingSpherePreconditions.checkNotNull(config, () -> new RequiredRuleMissedException(SHADOW, databaseName));
+        ShardingSpherePreconditions.checkNotNull(config, () -> new MissingRequiredRuleException(SHADOW, databaseName));
     }
     
     /**
@@ -59,7 +59,7 @@ public class ShadowRuleStatementChecker {
      */
     public static void checkResourceExist(final Collection<String> resources, final ShardingSphereDatabase database) throws DistSQLException {
         Collection<String> notExistedResources = database.getResource().getNotExistedResources(resources);
-        ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new RequiredResourceMissedException(database.getName(), notExistedResources));
+        ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new MissingRequiredResourcesException(database.getName(), notExistedResources));
     }
     
     /**

@@ -184,6 +184,11 @@ public final class MigrationJobAPIImpl extends InventoryIncrementalJobPublicAPII
     }
     
     @Override
+    protected String getJobClassName() {
+        return MigrationJob.class.getName();
+    }
+    
+    @Override
     protected YamlPipelineJobConfiguration swapToYamlJobConfiguration(final PipelineJobConfiguration jobConfig) {
         return new YamlMigrationJobConfigurationSwapper().swapToYamlConfiguration((MigrationJobConfiguration) jobConfig);
     }

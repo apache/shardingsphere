@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.exception.rule;
+package org.apache.shardingsphere.infra.distsql.exception.resource;
 
-import java.util.Collection;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Duplicate auditor exception.
+ * Empty resource exception.
  */
-public final class DuplicateAuditorException extends RuleDefinitionViolationException {
+public final class EmptyResourceException extends ResourceDefinitionViolationException {
     
-    private static final long serialVersionUID = 4965160371403179153L;
+    private static final long serialVersionUID = 1704331180489268L;
     
-    public DuplicateAuditorException(final String ruleType, final String databaseName, final Collection<String> auditorNames) {
-        super(1123, String.format("Duplicate %s auditor names `%s` in database `%s`", ruleType, auditorNames, databaseName));
+    public EmptyResourceException(final String databaseName) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 2, "There is no resource in the database `%s`", databaseName);
     }
 }

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceS
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
-import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.ResourceInUsedException;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
@@ -80,7 +80,7 @@ public final class DropResourceBackendHandler extends DatabaseRequiredBackendHan
     private void checkResourceNameExisted(final String databaseName, final Collection<String> resourceNames) throws DistSQLException {
         Map<String, DataSource> resources = ProxyContext.getInstance().getDatabase(databaseName).getResource().getDataSources();
         Collection<String> notExistedResourceNames = resourceNames.stream().filter(each -> !resources.containsKey(each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(notExistedResourceNames.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistedResourceNames));
+        ShardingSpherePreconditions.checkState(notExistedResourceNames.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, notExistedResourceNames));
     }
     
     private void checkResourceNameNotInUse(final String databaseName, final Collection<String> toBeDroppedResourceNames, final boolean ignoreSingleTables) throws DistSQLException {

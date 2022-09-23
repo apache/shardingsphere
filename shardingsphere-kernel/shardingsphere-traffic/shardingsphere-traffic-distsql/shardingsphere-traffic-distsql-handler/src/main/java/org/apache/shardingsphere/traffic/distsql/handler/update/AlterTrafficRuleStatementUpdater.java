@@ -20,7 +20,7 @@ package org.apache.shardingsphere.traffic.distsql.handler.update;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.distsql.update.GlobalRuleRALUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -62,7 +62,7 @@ public final class AlterTrafficRuleStatementUpdater implements GlobalRuleRALUpda
     
     private void checkRuleNames(final ShardingSphereRuleMetaData ruleMetaData, final AlterTrafficRuleStatement sqlStatement) throws DistSQLException {
         Collection<String> notExistRuleNames = getNotExistRuleNames(ruleMetaData, sqlStatement);
-        ShardingSpherePreconditions.checkState(notExistRuleNames.isEmpty(), () -> new RequiredRuleMissedException("Traffic", notExistRuleNames));
+        ShardingSpherePreconditions.checkState(notExistRuleNames.isEmpty(), () -> new MissingRequiredRuleException("Traffic", notExistRuleNames));
     }
     
     private Collection<String> getNotExistRuleNames(final ShardingSphereRuleMetaData ruleMetaData, final AlterTrafficRuleStatement sqlStatement) {

@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.exception.rule;
+package org.apache.shardingsphere.test.integration.showprocesslist.parameter;
 
-import java.util.Collection;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
-/**
- * Auditor in used exception.
- */
-public final class AuditorInUsedException extends RuleDefinitionViolationException {
+@Getter
+@RequiredArgsConstructor
+@ToString
+public final class ShowProcessListParameterized {
     
-    private static final long serialVersionUID = 367366381929736622L;
+    private final DatabaseType databaseType;
     
-    public AuditorInUsedException(final String ruleType, final String databaseName, final Collection<String> auditorNames) {
-        super(1128, String.format("%s auditor `%s` in database `%s` are still in used.", ruleType, auditorNames, databaseName));
-    }
+    private final String scenario;
 }
