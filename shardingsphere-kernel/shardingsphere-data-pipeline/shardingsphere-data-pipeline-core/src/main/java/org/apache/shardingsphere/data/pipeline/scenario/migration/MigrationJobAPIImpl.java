@@ -127,11 +127,6 @@ public final class MigrationJobAPIImpl extends InventoryIncrementalJobPublicAPII
     private final PipelineDataSourcePersistService dataSourcePersistService = new PipelineDataSourcePersistService();
     
     @Override
-    public JobType getJobType() {
-        return JobType.MIGRATION;
-    }
-    
-    @Override
     protected String marshalJobIdLeftPart(final PipelineJobId pipelineJobId) {
         MigrationJobId jobId = (MigrationJobId) pipelineJobId;
         String sourceSchemaName = null != jobId.getSourceSchemaName() ? jobId.getSourceSchemaName() : "";
@@ -150,8 +145,7 @@ public final class MigrationJobAPIImpl extends InventoryIncrementalJobPublicAPII
         MigrationJobInfo result = new MigrationJobInfo(jobId);
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         fillJobInfo(result, jobConfigPOJO);
-        MigrationJobConfiguration jobConfig = getJobConfiguration(jobConfigPOJO);
-        result.setTable(jobConfig.getSourceTableName());
+        result.setTable(getJobConfiguration(jobConfigPOJO).getSourceTableName());
         return result;
     }
     
@@ -181,11 +175,6 @@ public final class MigrationJobAPIImpl extends InventoryIncrementalJobPublicAPII
         MigrationJobId jobId = new MigrationJobId(config.getSourceResourceName(), config.getSourceSchemaName(), config.getSourceTableName(),
                 config.getTargetDatabaseName(), config.getTargetTableName());
         return marshalJobId(jobId);
-    }
-    
-    @Override
-    protected String getJobClassName() {
-        return MigrationJob.class.getName();
     }
     
     @Override
@@ -515,5 +504,15 @@ public final class MigrationJobAPIImpl extends InventoryIncrementalJobPublicAPII
         result.setType(type);
         result.setParameter(parameter);
         return result;
+    }
+    
+    @Override
+    public JobType getJobType() {
+        return JobType.MIGRATION;
+    }
+    
+    @Override
+    protected String getJobClassName() {
+        return MigrationJob.class.getName();
     }
 }
