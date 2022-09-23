@@ -20,8 +20,8 @@ package org.apache.shardingsphere.test.integration.engine.rdl;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.framework.param.array.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
-import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelLevel;
-import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelRuntimeStrategy;
+import org.apache.shardingsphere.test.runner.parallel.annotaion.ParallelLevel;
+import org.apache.shardingsphere.test.runner.parallel.annotaion.ParallelRuntimeStrategy;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -31,6 +31,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Collection;
+
+import static org.junit.Assert.assertNotNull;
 
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralRDLIT extends BaseRDLIT {
@@ -46,12 +48,22 @@ public final class GeneralRDLIT extends BaseRDLIT {
     
     @Test
     public void assertExecute() throws SQLException, ParseException {
+        assertNotNull("Assertion SQL is required", getAssertion().getAssertionSQL());
         try (Connection connection = getTargetDataSource().getConnection()) {
-            try (
-                    Statement statement = connection.createStatement();
-                    ResultSet resultSet = statement.executeQuery(getSQL())) {
-                assertResultSet(resultSet);
+            try (Statement statement = connection.createStatement()) {
+                executeSQLCase(statement);
+                assertResultSet(statement);
             }
+        }
+    }
+    
+    private void executeSQLCase(final Statement statement) throws SQLException, ParseException {
+        statement.execute(getSQL());
+    }
+    
+    private void assertResultSet(final Statement statement) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery(getAssertion().getAssertionSQL().getSql())) {
+            assertResultSet(resultSet);
         }
     }
 }

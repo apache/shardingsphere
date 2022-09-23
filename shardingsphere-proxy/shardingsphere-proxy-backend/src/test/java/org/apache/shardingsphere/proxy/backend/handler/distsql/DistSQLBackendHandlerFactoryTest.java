@@ -24,7 +24,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResources
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowUnusedResourcesStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
@@ -67,7 +67,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -198,7 +198,7 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     
-    @Test(expected = RequiredRuleMissedException.class)
+    @Test(expected = MissingRequiredRuleException.class)
     public void assertExecuteDropReadwriteSplittingRuleContext() throws SQLException {
         setContextManager(true);
         ResponseHeader response = RDLBackendHandlerFactory.newInstance(mock(DropReadwriteSplittingRuleStatement.class), connectionSession).execute();
@@ -212,7 +212,7 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     
-    @Test(expected = RequiredRuleMissedException.class)
+    @Test(expected = MissingRequiredRuleException.class)
     public void assertExecuteAlterReadwriteSplittingRuleContext() throws SQLException {
         setContextManager(true);
         ResponseHeader response = RDLBackendHandlerFactory.newInstance(mock(AlterReadwriteSplittingRuleStatement.class), connectionSession).execute();

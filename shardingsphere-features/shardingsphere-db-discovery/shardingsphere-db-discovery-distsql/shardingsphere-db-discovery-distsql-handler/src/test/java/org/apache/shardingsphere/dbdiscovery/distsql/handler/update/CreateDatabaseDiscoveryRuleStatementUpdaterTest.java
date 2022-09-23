@@ -24,10 +24,10 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDisc
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.junit.Before;
@@ -45,7 +45,7 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -74,7 +74,7 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdaterTest {
                 new DatabaseDiscoveryRuleConfiguration(Collections.singleton(dataSourceRuleConfig), Collections.emptyMap(), Collections.emptyMap()));
     }
     
-    @Test(expected = RequiredResourceMissedException.class)
+    @Test(expected = MissingRequiredResourcesException.class)
     public void assertCheckSQLStatementWithoutExistedResources() throws DistSQLException {
         when(resource.getNotExistedResources(any())).thenReturn(Collections.singleton("ds_read_0"));
         DatabaseDiscoveryConstructionSegment segment = new DatabaseDiscoveryConstructionSegment("readwrite_ds", Arrays.asList("ds_read_0", "ds_read_1"), "", "");
@@ -88,14 +88,14 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdaterTest {
         updater.checkSQLStatement(database, new CreateDatabaseDiscoveryRuleStatement(Collections.singleton(segment)), null);
     }
     
-    @Test(expected = RequiredAlgorithmMissedException.class)
+    @Test(expected = MissingRequiredAlgorithmException.class)
     public void assertCheckSQLStatementWithNotExistDiscoveryTypeName() throws DistSQLException {
         DatabaseDiscoveryConstructionSegment segment = new DatabaseDiscoveryConstructionSegment("readwrite_ds", Arrays.asList("ds_read_0", "ds_read_1"), "not_exist_discovery_type_name", "");
         DatabaseDiscoveryRuleConfiguration ruleConfig = new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap());
         updater.checkSQLStatement(database, new CreateDatabaseDiscoveryRuleStatement(Collections.singleton(segment)), ruleConfig);
     }
     
-    @Test(expected = RequiredAlgorithmMissedException.class)
+    @Test(expected = MissingRequiredAlgorithmException.class)
     public void assertCheckSQLStatementWithNotExistDiscoveryHeartbeatName() throws DistSQLException {
         DatabaseDiscoveryConstructionSegment segment = new DatabaseDiscoveryConstructionSegment(
                 "readwrite_ds", Arrays.asList("ds_read_0", "ds_read_1"), "discovery_type_name", "not_exist_heartbeat_name");

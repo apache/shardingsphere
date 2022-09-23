@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 
 import java.sql.SQLException;
@@ -46,8 +47,8 @@ public final class ShardingSphereDatabasesFactory {
      */
     public static ShardingSphereDatabase create(final String databaseName, final DatabaseConfiguration databaseConfig,
                                                 final ConfigurationProperties props, final InstanceContext instanceContext) throws SQLException {
-        DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfig, props);
-        DatabaseType storageType = DatabaseTypeEngine.getDatabaseType(databaseConfig.getDataSources().values());
+        DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseName, databaseConfig, props);
+        DatabaseType storageType = DatabaseTypeEngine.getDatabaseType(DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, databaseConfig));
         return ShardingSphereDatabase.create(databaseName, protocolType, storageType, databaseConfig, props, instanceContext);
     }
     

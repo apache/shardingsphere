@@ -23,7 +23,7 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.DropEncryptRuleStatement;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +40,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -52,12 +52,12 @@ public final class DropEncryptRuleStatementUpdaterTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
-    @Test(expected = RequiredRuleMissedException.class)
+    @Test(expected = MissingRequiredRuleException.class)
     public void assertCheckSQLStatementWithoutCurrentRule() throws DistSQLException {
         updater.checkSQLStatement(database, createSQLStatement("t_encrypt"), null);
     }
     
-    @Test(expected = RequiredRuleMissedException.class)
+    @Test(expected = MissingRequiredRuleException.class)
     public void assertCheckSQLStatementWithoutToBeDroppedRule() throws DistSQLException {
         updater.checkSQLStatement(database, createSQLStatement("t_encrypt"), new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
     }

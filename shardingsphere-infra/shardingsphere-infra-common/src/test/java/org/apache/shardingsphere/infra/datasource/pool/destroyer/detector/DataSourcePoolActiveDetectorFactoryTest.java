@@ -24,7 +24,7 @@ import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class DataSourcePoolActiveDetectorFactoryTest {
     

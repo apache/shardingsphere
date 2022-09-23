@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.integration.env.container.atomic.storage.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.ContainerUtil;
@@ -40,6 +41,19 @@ public final class MySQLContainerConfigurationFactory {
      */
     public static StorageContainerConfiguration newInstance() {
         return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources());
+    }
+    
+    /**
+     * Create new instance of MySQL container configuration with parameter.
+     *
+     * @param command command
+     * @param containerEnvironments container environments
+     * @param mountedResources mounted resources
+     * @return created instance
+     */
+    public static StorageContainerConfiguration newInstance(final String command, final Map<String, String> containerEnvironments, final Map<String, String> mountedResources) {
+        return new StorageContainerConfiguration(ObjectUtils.defaultIfNull(command, getCommand()), ObjectUtils.defaultIfNull(containerEnvironments, getContainerEnvironments()),
+                ObjectUtils.defaultIfNull(mountedResources, getMountedResources()));
     }
     
     private static String getCommand() {

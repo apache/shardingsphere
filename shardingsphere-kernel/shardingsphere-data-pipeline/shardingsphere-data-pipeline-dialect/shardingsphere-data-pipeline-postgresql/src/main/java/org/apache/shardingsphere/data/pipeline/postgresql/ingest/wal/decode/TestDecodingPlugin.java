@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode;
 
+import com.google.common.base.Preconditions;
 import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
@@ -236,9 +237,7 @@ public final class TestDecodingPlugin implements DecodingPlugin {
     
     private byte[] decodeHex(final String hexString) {
         int dataLength = hexString.length();
-        if (0 != (dataLength & 1)) {
-            throw new IllegalArgumentException(String.format("Illegal hex data %s", hexString));
-        }
+        Preconditions.checkArgument(0 == (dataLength & 1), "Illegal hex data `%s`", hexString);
         if (0 == dataLength) {
             return new byte[0];
         }
@@ -252,9 +251,7 @@ public final class TestDecodingPlugin implements DecodingPlugin {
     private byte decodeHexByte(final String hexString, final int index) {
         int firstHexChar = Character.digit(hexString.charAt(index), 16);
         int secondHexChar = Character.digit(hexString.charAt(index + 1), 16);
-        if (-1 == firstHexChar || -1 == secondHexChar) {
-            throw new IllegalArgumentException(String.format("Illegal hex byte '%s' in index %d", hexString, index));
-        }
+        Preconditions.checkArgument(-1 != firstHexChar && -1 != secondHexChar, "Illegal hex byte `%s` in index `%d`", hexString, index);
         return (byte) ((firstHexChar << 4) + secondHexChar);
     }
 }

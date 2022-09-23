@@ -36,20 +36,20 @@ public final class StorageContainerFactory {
      * Create new instance of storage container.
      *
      * @param databaseType database type
-     * @param dockerImageName docker image name
+     * @param storageContainerImage storage container image
      * @param scenario scenario
-     * @param storageContainerConfiguration storageContainerConfiguration
+     * @param storageContainerConfiguration storage container configuration
      * @return created instance
      */
-    public static StorageContainer newInstance(final DatabaseType databaseType, final String dockerImageName, final String scenario,
+    public static StorageContainer newInstance(final DatabaseType databaseType, final String storageContainerImage, final String scenario,
                                                final StorageContainerConfiguration storageContainerConfiguration) {
         switch (databaseType.getType()) {
             case "MySQL":
-                return new MySQLContainer(dockerImageName, scenario, storageContainerConfiguration);
+                return new MySQLContainer(storageContainerImage, scenario, storageContainerConfiguration);
             case "PostgreSQL":
-                return new PostgreSQLContainer(dockerImageName, scenario, storageContainerConfiguration);
+                return new PostgreSQLContainer(storageContainerImage, scenario, storageContainerConfiguration);
             case "openGauss":
-                return new OpenGaussContainer(dockerImageName, scenario, storageContainerConfiguration);
+                return new OpenGaussContainer(storageContainerImage, scenario, storageContainerConfiguration);
             case "H2":
                 return new H2Container(scenario);
             default:

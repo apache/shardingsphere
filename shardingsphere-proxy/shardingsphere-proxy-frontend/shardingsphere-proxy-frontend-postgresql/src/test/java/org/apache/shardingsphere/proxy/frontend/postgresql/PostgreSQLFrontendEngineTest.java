@@ -20,8 +20,8 @@ package org.apache.shardingsphere.proxy.frontend.postgresql;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.executor.ConnectionThreadExecutorGroup;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContextRegistry;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLPortalContextRegistry;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -39,19 +39,19 @@ public final class PostgreSQLFrontendEngineTest {
         ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
         int connectionId = 1;
         when(connectionSession.getConnectionId()).thenReturn(connectionId);
-        PostgreSQLConnectionContextRegistry.getInstance().get(connectionId);
+        PostgreSQLPortalContextRegistry.getInstance().get(connectionId);
         PostgreSQLFrontendEngine frontendEngine = new PostgreSQLFrontendEngine();
         ConnectionThreadExecutorGroup.getInstance().register(connectionId);
         ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(connectionId);
         frontendEngine.release(connectionSession);
-        assertTrue(getConnectionContexts().isEmpty());
+        assertTrue(getPortalContexts().isEmpty());
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows
-    private ConcurrentMap<Integer, PostgreSQLConnectionContext> getConnectionContexts() {
-        Field field = PostgreSQLConnectionContextRegistry.class.getDeclaredField("connectionContexts");
+    @SneakyThrows(ReflectiveOperationException.class)
+    private ConcurrentMap<Integer, PortalContext> getPortalContexts() {
+        Field field = PostgreSQLPortalContextRegistry.class.getDeclaredField("portalContexts");
         field.setAccessible(true);
-        return (ConcurrentMap<Integer, PostgreSQLConnectionContext>) field.get(PostgreSQLConnectionContextRegistry.getInstance());
+        return (ConcurrentMap<Integer, PortalContext>) field.get(PostgreSQLPortalContextRegistry.getInstance());
     }
 }

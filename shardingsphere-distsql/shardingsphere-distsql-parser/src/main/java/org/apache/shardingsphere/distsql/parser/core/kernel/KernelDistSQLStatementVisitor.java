@@ -30,7 +30,6 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.BatchSizeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ClearHintContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ConvertYamlConfigurationContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.CountDatabaseRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.CountSingleTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.CreateDefaultSingleTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.CreateMigrationProcessConfigurationContext;
@@ -107,7 +106,6 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResource
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateDefaultSingleTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropDefaultSingleTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountDatabaseRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountSingleTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesUsedResourceStatement;
@@ -213,11 +211,6 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     @Override
     public ASTNode visitAlterInstance(final AlterInstanceContext ctx) {
         return new AlterInstanceStatement(getIdentifierValue(ctx.instanceId()), getIdentifierValue(ctx.variableName()), getIdentifierValue(ctx.variableValues()));
-    }
-    
-    @Override
-    public ASTNode visitCountDatabaseRules(final CountDatabaseRulesContext ctx) {
-        return new CountDatabaseRulesStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
     }
     
     @Override

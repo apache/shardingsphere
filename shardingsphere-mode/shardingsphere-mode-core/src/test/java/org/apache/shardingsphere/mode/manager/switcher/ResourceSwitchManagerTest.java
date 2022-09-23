@@ -29,7 +29,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class ResourceSwitchManagerTest {
@@ -37,7 +37,7 @@ public final class ResourceSwitchManagerTest {
     @Test
     public void assertCreate() throws InterruptedException {
         Map<String, DataSource> dataSourceMap = createDataSourceMap();
-        SwitchingResource actual = new ResourceSwitchManager().create(new ShardingSphereResource(dataSourceMap), createToBeChangedDataSourcePropsMap());
+        SwitchingResource actual = new ResourceSwitchManager().create(new ShardingSphereResource("sharding_db", dataSourceMap), createToBeChangedDataSourcePropsMap());
         assertNewDataSources(actual);
         actual.closeStaleDataSources();
         assertStaleDataSources(dataSourceMap);

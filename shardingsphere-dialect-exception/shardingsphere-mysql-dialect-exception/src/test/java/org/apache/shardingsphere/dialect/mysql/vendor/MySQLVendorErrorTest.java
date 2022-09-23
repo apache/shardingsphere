@@ -20,7 +20,7 @@ package org.apache.shardingsphere.dialect.mysql.vendor;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class MySQLVendorErrorTest {
     

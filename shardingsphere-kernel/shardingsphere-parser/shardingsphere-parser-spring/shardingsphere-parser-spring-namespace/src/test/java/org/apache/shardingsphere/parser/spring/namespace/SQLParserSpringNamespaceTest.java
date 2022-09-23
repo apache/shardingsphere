@@ -26,7 +26,7 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import javax.annotation.Resource;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = "classpath:META-INF/spring/sql-parser-application-context.xml")

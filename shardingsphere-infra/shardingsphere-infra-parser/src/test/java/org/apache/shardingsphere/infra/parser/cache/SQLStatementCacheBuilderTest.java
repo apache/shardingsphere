@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.isA;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class SQLStatementCacheBuilderTest {
     

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.integration.transaction.cases.savepoint;
 
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
@@ -29,14 +28,13 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
  * PostgreSQL savepoint transaction integration test.
  */
-@Slf4j
 @TransactionTestCase(dbTypes = {TransactionTestConstants.POSTGRESQL})
 public final class PostgreSQLSavePointTestCase extends BaseSavePointTestCase {
     
@@ -45,8 +43,7 @@ public final class PostgreSQLSavePointTestCase extends BaseSavePointTestCase {
     }
     
     @Override
-    @SneakyThrows
-    public void executeTest() {
+    public void executeTest() throws SQLException {
         assertRollback2Savepoint();
         assertReleaseSavepoint();
         assertErrors();

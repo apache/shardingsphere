@@ -60,7 +60,7 @@ public final class PostgreSQLCreateTableSQLGenerator implements CreateTableSQLGe
         return PostgreSQLPipelineFreemarkerManager.getSQLByVersion(materials, "component/table/%s/create.ftl", majorVersion, minorVersion).trim();
     }
     
-    private String generateCreateIndexSQL(final Connection connection, final int majorVersion, final int minorVersion, final Map<String, Object> materials) {
+    private String generateCreateIndexSQL(final Connection connection, final int majorVersion, final int minorVersion, final Map<String, Object> materials) throws SQLException {
         return new PostgresIndexSQLGenerator(connection, majorVersion, minorVersion).generate(materials);
     }
     

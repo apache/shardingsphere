@@ -16,7 +16,7 @@
   -->
 <command>
     <create-table-order>
-        CREATE TABLE `t_order_copy` (
+        CREATE TABLE `%s` (
         `order_id` bigint NOT NULL,
         `user_id` int NOT NULL,
         `status` varchar ( 255 ) NULL,
@@ -47,7 +47,8 @@
         `t_set` set ('1', '2', '3') NULL,
         `t_json` json NULL COMMENT 'json test',
         PRIMARY KEY ( `order_id` ),
-        KEY `idx_user_id` (`user_id`)
+        KEY `idx_user_id` (`user_id`),
+        KEY `idx_mulit` (`t_mediumint`,`t_unsigned_mediumint`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     </create-table-order>
     
@@ -63,7 +64,7 @@
     
     <full-insert-order>
         INSERT INTO
-        t_order_copy(order_id,user_id,status,t_mediumint,t_smallint,t_tinyint,t_unsigned_int,t_unsigned_mediumint,
+        %s(order_id,user_id,status,t_mediumint,t_smallint,t_tinyint,t_unsigned_int,t_unsigned_mediumint,
         t_unsigned_smallint,t_unsigned_tinyint,t_float,t_double,t_decimal, t_timestamp,t_datetime,t_date,t_time,t_year,
         t_bit,t_binary,t_varbinary,t_blob,t_mediumblob,t_char,t_text,t_mediumtext,t_enum,t_set, t_json) 
         VALUES

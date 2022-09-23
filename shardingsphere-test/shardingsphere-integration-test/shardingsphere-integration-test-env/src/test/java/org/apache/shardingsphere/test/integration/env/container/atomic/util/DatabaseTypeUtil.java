@@ -59,16 +59,16 @@ public final class DatabaseTypeUtil {
     }
     
     /**
-     * Get docker image major version.
+     * Get storage container image major version.
      *
-     * @param dockerImageName dockerImageName
+     * @param storageContainerImage storage container image
      * @return major version
      */
-    public static String parseMajorVersion(final String dockerImageName) {
-        if (StringUtils.isBlank(dockerImageName)) {
+    public static String parseMajorVersion(final String storageContainerImage) {
+        if (StringUtils.isBlank(storageContainerImage)) {
             return "";
         }
-        String version = dockerImageName.split(":")[1];
+        String version = storageContainerImage.split(":")[1];
         return version.split("\\.")[0];
     }
 }

@@ -57,7 +57,7 @@ public final class FixturePipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildTruncateSQL(final String schemaName, final String tableName) {
+    public String buildDropSQL(final String schemaName, final String tableName) {
         return "";
     }
     

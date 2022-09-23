@@ -133,6 +133,7 @@ public final class ReactiveProxySQLExecutor {
         }
         executionGroupContext.setDatabaseName(backendConnection.getConnectionSession().getDatabaseName());
         executionGroupContext.setGrantee(backendConnection.getConnectionSession().getGrantee());
+        executionGroupContext.setExecutionID(backendConnection.getConnectionSession().getExecutionId());
         return reactiveExecutor.execute(executionContext.getQueryContext(), executionGroupContext);
     }
     

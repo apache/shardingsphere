@@ -80,7 +80,7 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
         ShardingSpherePreconditions.checkState(allowRangeQuery,
-                new UnsupportedSQLOperationException(String.format("Since the property of `%s` is false, inline sharding algorithm can not tackle with range query", ALLOW_RANGE_QUERY_KEY)));
+                () -> new UnsupportedSQLOperationException(String.format("Since the property of `%s` is false, inline sharding algorithm can not tackle with range query", ALLOW_RANGE_QUERY_KEY)));
         return availableTargetNames;
     }
     

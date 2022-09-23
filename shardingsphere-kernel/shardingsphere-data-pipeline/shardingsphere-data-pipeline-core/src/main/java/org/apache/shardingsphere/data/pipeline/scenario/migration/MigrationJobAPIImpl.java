@@ -33,6 +33,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfigu
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlMigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlPipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
@@ -58,8 +59,8 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgo
 import org.apache.shardingsphere.data.pipeline.api.pojo.MigrationJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobItemAPI;
-import org.apache.shardingsphere.data.pipeline.core.api.impl.AbstractPipelineJobAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.InventoryIncrementalJobItemAPIImpl;
+import org.apache.shardingsphere.data.pipeline.core.api.impl.InventoryIncrementalJobPublicAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.PipelineDataSourcePersistService;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCalculateAlgorithmChooser;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCalculateAlgorithmFactory;
@@ -67,15 +68,15 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.connection.AddMigrationSourceResourceException;
 import org.apache.shardingsphere.data.pipeline.core.exception.connection.DropMigrationSourceResourceException;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineSchemaUtil;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataUtil;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
-import org.apache.shardingsphere.data.pipeline.core.util.PipelineSchemaTableUtil;
-import org.apache.shardingsphere.data.pipeline.core.util.PipelineTableMetaDataUtil;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
@@ -84,6 +85,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
@@ -114,7 +116,7 @@ import java.util.stream.IntStream;
  * Migration job API impl.
  */
 @Slf4j
-public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implements MigrationJobAPI {
+public final class MigrationJobAPIImpl extends InventoryIncrementalJobPublicAPIImpl implements MigrationJobAPI {
     
     private static final YamlRuleConfigurationSwapperEngine RULE_CONFIG_SWAPPER_ENGINE = new YamlRuleConfigurationSwapperEngine();
     
@@ -125,7 +127,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     private final PipelineDataSourcePersistService dataSourcePersistService = new PipelineDataSourcePersistService();
     
     @Override
-    protected JobType getJobType() {
+    public JobType getJobType() {
         return JobType.MIGRATION;
     }
     
@@ -179,6 +181,11 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         MigrationJobId jobId = new MigrationJobId(config.getSourceResourceName(), config.getSourceSchemaName(), config.getSourceTableName(),
                 config.getTargetDatabaseName(), config.getTargetTableName());
         return marshalJobId(jobId);
+    }
+    
+    @Override
+    protected String getJobClassName() {
+        return MigrationJob.class.getName();
     }
     
     @Override
@@ -271,6 +278,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
             InventoryIncrementalJobItemProgress jobItemProgress = getJobItemProgress(jobId, each);
             if (null != jobItemProgress) {
                 jobItemProgress.setActive(!jobConfigPOJO.isDisabled());
+                jobItemProgress.setErrorMessage(getJobItemErrorMessage(jobId, each));
             }
             map.put(each, jobItemProgress);
         }, LinkedHashMap::putAll);
@@ -331,7 +339,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         JobRateLimitAlgorithm readRateLimitAlgorithm = buildPipelineProcessContext(jobConfig).getReadRateLimitAlgorithm();
         Map<String, DataConsistencyCheckResult> result = new MigrationDataConsistencyChecker(jobConfig, readRateLimitAlgorithm).check(calculator);
         log.info("job {} with check algorithm '{}' data consistency checker result {}", jobId, calculator.getType(), result);
-        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobCheckResult(jobId, aggregateDataConsistencyCheckResults(jobId, result));
+        PipelineAPIFactory.getGovernanceRepositoryAPI().persistCheckLatestResult(jobId, aggregateDataConsistencyCheckResults(jobId, result));
         return result;
     }
     
@@ -353,7 +361,14 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     }
     
     @Override
-    protected void cleanTempTableOnRollback(final String jobId) throws SQLException {
+    public void rollback(final String jobId) throws SQLException {
+        log.info("Rollback job {}", jobId);
+        stop(jobId);
+        cleanTempTableOnRollback(jobId);
+        dropJob(jobId);
+    }
+    
+    private void cleanTempTableOnRollback(final String jobId) throws SQLException {
         MigrationJobConfiguration jobConfig = getJobConfiguration(jobId);
         String targetTableName = jobConfig.getTargetTableName();
         // TODO use jobConfig.targetSchemaName
@@ -362,12 +377,20 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         try (
                 PipelineDataSourceWrapper dataSource = PipelineDataSourceFactory.newInstance(jobConfig.getTarget());
                 Connection connection = dataSource.getConnection()) {
-            String sql = pipelineSQLBuilder.buildTruncateSQL(targetSchemaName, targetTableName);
+            String sql = pipelineSQLBuilder.buildDropSQL(targetSchemaName, targetTableName);
             log.info("cleanTempTableOnRollback, targetSchemaName={}, targetTableName={}, sql={}", targetSchemaName, targetTableName, sql);
             try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 preparedStatement.execute();
             }
         }
+    }
+    
+    @Override
+    public void commit(final String jobId) throws SQLException {
+        checkModeConfig();
+        log.info("Commit job {}", jobId);
+        stop(jobId);
+        dropJob(jobId);
     }
     
     @Override
@@ -380,9 +403,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
                 duplicateDataSourceNames.add(entry.getKey());
             }
         }
-        if (!duplicateDataSourceNames.isEmpty()) {
-            throw new AddMigrationSourceResourceException(String.format("Duplicate resource names %s.", duplicateDataSourceNames));
-        }
+        ShardingSpherePreconditions.checkState(duplicateDataSourceNames.isEmpty(), () -> new AddMigrationSourceResourceException(duplicateDataSourceNames));
         Map<String, DataSourceProperties> result = new LinkedHashMap<>(existDataSources);
         result.putAll(dataSourcePropsMap);
         dataSourcePersistService.persist(getJobType(), result);
@@ -392,9 +413,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
     public void dropMigrationSourceResources(final Collection<String> resourceNames) {
         Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(getJobType());
         List<String> noExistResources = resourceNames.stream().filter(each -> !metaDataDataSource.containsKey(each)).collect(Collectors.toList());
-        if (!noExistResources.isEmpty()) {
-            throw new DropMigrationSourceResourceException(String.format("Resource names %s not exist.", resourceNames));
-        }
+        ShardingSpherePreconditions.checkState(noExistResources.isEmpty(), () -> new DropMigrationSourceResourceException(resourceNames));
         for (String each : resourceNames) {
             metaDataDataSource.remove(each);
         }
@@ -451,7 +470,7 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         DatabaseType sourceDatabaseType = sourceDataSourceConfig.getDatabaseType();
         result.setSourceDatabaseType(sourceDatabaseType.getType());
         String sourceSchemaName = null == parameter.getSourceSchemaName() && sourceDatabaseType.isSchemaAvailable()
-                ? PipelineSchemaTableUtil.getDefaultSchema(sourceDataSourceConfig)
+                ? PipelineSchemaUtil.getDefaultSchema(sourceDataSourceConfig)
                 : parameter.getSourceSchemaName();
         result.setSourceSchemaName(sourceSchemaName);
         result.setSourceTableName(parameter.getSourceTableName());
@@ -468,9 +487,14 @@ public final class MigrationJobAPIImpl extends AbstractPipelineJobAPIImpl implem
         result.setTargetDatabaseType(targetPipelineDataSource.getDatabaseType().getType());
         result.setTargetDatabaseName(targetDatabaseName);
         result.setTargetTableName(parameter.getTargetTableName());
-        YamlPipelineColumnMetaData uniqueKeyColumn = new YamlPipelineColumnMetaDataSwapper().swapToYamlConfiguration(PipelineTableMetaDataUtil.getUniqueKeyColumn(sourceSchemaName,
-                parameter.getSourceTableName(), sourceDataSourceConfig, null));
-        result.setUniqueKeyColumn(uniqueKeyColumn);
+        try (PipelineDataSourceWrapper dataSource = PipelineDataSourceFactory.newInstance(sourceDataSourceConfig)) {
+            StandardPipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(dataSource);
+            YamlPipelineColumnMetaData uniqueKeyColumn = new YamlPipelineColumnMetaDataSwapper().swapToYamlConfiguration(
+                    PipelineTableMetaDataUtil.getUniqueKeyColumn(sourceSchemaName, parameter.getSourceTableName(), metaDataLoader));
+            result.setUniqueKeyColumn(uniqueKeyColumn);
+        } catch (final SQLException ex) {
+            throw new RuntimeException(ex);
+        }
         extendYamlJobConfiguration(result);
         MigrationJobConfiguration jobConfiguration = new YamlMigrationJobConfigurationSwapper().swapToObject(result);
         start(jobConfiguration);

@@ -17,16 +17,22 @@
 
 package org.apache.shardingsphere.infra.context;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.context.cursor.CursorConnectionContext;
+import org.apache.shardingsphere.infra.context.datasource.PreferredDataSourceProvider;
 import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
  * Connection context.
  */
+@RequiredArgsConstructor
 @Getter
 public final class ConnectionContext implements AutoCloseable {
     
@@ -34,12 +40,28 @@ public final class ConnectionContext implements AutoCloseable {
     
     private final TransactionConnectionContext transactionConnectionContext = new TransactionConnectionContext();
     
+    @Getter(AccessLevel.NONE)
+    private final PreferredDataSourceProvider preferredDataSourceProvider;
+    
     @Setter
     private String trafficInstanceId;
     
+    public ConnectionContext() {
+        preferredDataSourceProvider = Collections::emptySet;
+    }
+    
+    /**
+     * Get preferred data source names.
+     *
+     * @return preferred data source names
+     */
+    public Collection<String> getPreferredDataSourceNames() {
+        return preferredDataSourceProvider.getPreferredDataSourceNames();
+    }
+    
     /**
      * Get traffic instance id.
-     * 
+     *
      * @return traffic instance id
      */
     public Optional<String> getTrafficInstanceId() {

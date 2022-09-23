@@ -51,6 +51,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -114,7 +115,7 @@ public abstract class BaseITCase {
     public BaseITCase(final ScalingParameterized parameterized) {
         databaseType = parameterized.getDatabaseType();
         if (ENV.getItEnvType() == ITEnvTypeEnum.DOCKER) {
-            containerComposer = new DockerContainerComposer(parameterized.getDatabaseType(), parameterized.getDockerImageName());
+            containerComposer = new DockerContainerComposer(parameterized.getDatabaseType(), parameterized.getStorageContainerImage());
         } else {
             containerComposer = new NativeContainerComposer(parameterized.getDatabaseType());
         }
@@ -128,7 +129,7 @@ public abstract class BaseITCase {
             password = ENV.getActualDataSourcePassword(databaseType);
         }
         createProxyDatabase(parameterized.getDatabaseType());
-        if (ENV.getItEnvType() == ITEnvTypeEnum.NATIVE) {
+        if (ITEnvTypeEnum.NATIVE == ENV.getItEnvType()) {
             cleanUpDataSource();
         }
         extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BaseITCase.class.getClassLoader().getResource(parameterized.getScenario())), ExtraSQLCommand.class);
@@ -136,7 +137,7 @@ public abstract class BaseITCase {
     }
     
     private void cleanUpDataSource() {
-        for (String each : Arrays.asList(DS_0, DS_2, DS_3, DS_4)) {
+        for (String each : Arrays.asList(DS_0, DS_1, DS_2, DS_3, DS_4)) {
             containerComposer.cleanUpDatabase(each);
         }
     }
@@ -148,7 +149,7 @@ public abstract class BaseITCase {
         }
         String jdbcUrl = containerComposer.getProxyJdbcUrl(defaultDatabaseName);
         try (Connection connection = DriverManager.getConnection(jdbcUrl, ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD)) {
-            if (ENV.getItEnvType() == ITEnvTypeEnum.NATIVE) {
+            if (ITEnvTypeEnum.NATIVE == ENV.getItEnvType()) {
                 try {
                     connectionExecuteWithLog(connection, String.format("DROP DATABASE %s", PROXY_DATABASE));
                 } catch (final SQLException ex) {
@@ -188,20 +189,26 @@ public abstract class BaseITCase {
         return DataSourceEnvironment.getURL(getDatabaseType(), "127.0.0.1", ENV.getActualDataSourceDefaultPort(databaseType), databaseName);
     }
     
+    protected abstract String getSourceTableOrderName();
+    
+    protected String getTargetTableOrderName() {
+        return "t_order";
+    }
+    
     protected void createSourceOrderTable() throws SQLException {
-        sourceExecuteWithLog(extraSQLCommand.getCreateTableOrder());
+        sourceExecuteWithLog(getExtraSQLCommand().getCreateTableOrder(getSourceTableOrderName()));
     }
     
     protected void createSourceTableIndexList(final String schema) throws SQLException {
         if (DatabaseTypeUtil.isPostgreSQL(getDatabaseType())) {
-            sourceExecuteWithLog(String.format("CREATE INDEX IF NOT EXISTS idx_user_id ON %s.t_order_copy ( user_id )", schema));
+            sourceExecuteWithLog(String.format("CREATE INDEX IF NOT EXISTS idx_user_id ON %s.%s ( user_id )", schema, getSourceTableOrderName()));
         } else if (DatabaseTypeUtil.isOpenGauss(getDatabaseType())) {
-            sourceExecuteWithLog(String.format("CREATE INDEX idx_user_id ON %s.t_order_copy ( user_id )", schema));
+            sourceExecuteWithLog(String.format("CREATE INDEX idx_user_id ON %s.%s ( user_id )", schema, getSourceTableOrderName()));
         }
     }
     
     protected void createSourceCommentOnList(final String schema) throws SQLException {
-        sourceExecuteWithLog(String.format("COMMENT ON COLUMN %s.t_order_copy.user_id IS 'user id'", schema));
+        sourceExecuteWithLog(String.format("COMMENT ON COLUMN %s.%s.user_id IS 'user id'", schema, getSourceTableOrderName()));
     }
     
     protected void createSourceOrderItemTable() throws SQLException {
@@ -264,7 +271,7 @@ public abstract class BaseITCase {
         getIncreaseTaskThread().start();
     }
     
-    protected void waitJobFinished(final String distSQL) throws InterruptedException {
+    protected List<Map<String, Object>> waitJobFinished(final String distSQL) throws InterruptedException {
         if (null != getIncreaseTaskThread()) {
             TimeUnit.SECONDS.timedJoin(getIncreaseTaskThread(), 60);
         }
@@ -275,13 +282,17 @@ public abstract class BaseITCase {
             actualStatus = listJobStatus.stream().map(each -> each.get("status").toString()).collect(Collectors.toSet());
             assertFalse(CollectionUtils.containsAny(actualStatus, Arrays.asList(JobStatus.PREPARING_FAILURE.name(), JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name(),
                     JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name())));
+            for (Map<String, Object> each : listJobStatus) {
+                assertTrue(StringUtils.isBlank(each.get("error_message").toString()));
+            }
             if (actualStatus.size() == 1 && actualStatus.contains(JobStatus.EXECUTE_INCREMENTAL_TASK.name())) {
-                break;
+                return listJobStatus;
             } else if (actualStatus.size() >= 1 && actualStatus.containsAll(new HashSet<>(Arrays.asList("", JobStatus.EXECUTE_INCREMENTAL_TASK.name())))) {
                 log.warn("one of the shardingItem was not started correctly");
             }
             ThreadUtil.sleep(3, TimeUnit.SECONDS);
         }
+        return Collections.emptyList();
     }
     
     protected void assertGreaterThanOrderTableInitRows(final int tableInitRows, final String schema) throws SQLException {

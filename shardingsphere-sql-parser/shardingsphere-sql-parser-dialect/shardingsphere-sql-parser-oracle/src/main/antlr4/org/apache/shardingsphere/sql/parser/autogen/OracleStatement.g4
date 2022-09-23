@@ -126,5 +126,7 @@ execute
     | dropProcedure
     | alterProcedure
     | dropIndexType
+    | dropPluggableDatabase
+    | dropJava
     ) SEMI_?
     ;

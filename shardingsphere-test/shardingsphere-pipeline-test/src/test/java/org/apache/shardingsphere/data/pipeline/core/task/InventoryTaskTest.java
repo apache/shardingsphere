@@ -41,7 +41,7 @@ import java.sql.Statement;
 import java.sql.Types;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class InventoryTaskTest {
     

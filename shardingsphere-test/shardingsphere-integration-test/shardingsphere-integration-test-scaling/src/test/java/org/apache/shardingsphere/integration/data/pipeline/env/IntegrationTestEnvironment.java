@@ -146,14 +146,14 @@ public final class IntegrationTestEnvironment {
     }
     
     /**
-     * List database docker image names.
+     * List storage contaienr images.
      *
      * @param databaseType database type.
-     * @return database docker image names
+     * @return database storage container images
      */
-    public List<String> listDatabaseDockerImageNames(final DatabaseType databaseType) {
+    public List<String> listStorageContainerImages(final DatabaseType databaseType) {
         // Native mode needn't use docker image, just return a list which contain one item
-        if (getItEnvType() == ITEnvTypeEnum.NATIVE) {
+        if (ITEnvTypeEnum.NATIVE == getItEnvType()) {
             return databaseType.getType().equalsIgnoreCase(getNativeDatabaseType()) ? Collections.singletonList("") : Collections.emptyList();
         }
         switch (databaseType.getType()) {

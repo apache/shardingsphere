@@ -61,7 +61,7 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - Without particular reasons, test cases should be fully covered.
  - Every test case need precised assertion.
  - Environment preparation codes should be separate from test codes.
- - Only those that relate to junit `Assert`, hamcrest `CoreMatchers` and `Mockito` can use static import.
+ - Only those that relate to `Mockito`, junit `Assert`, hamcrest `CoreMatchers` and `MatcherAssert` can use static import.
  - For single parameter asserts, `assertTrue`, `assertFalse`, `assertNull` and `assertNotNull` should be used.
  - For multiple parameter asserts, `assertThat` should be used.
  - For accurate asserts, try not to use `not`, `containsString` to make assertions.

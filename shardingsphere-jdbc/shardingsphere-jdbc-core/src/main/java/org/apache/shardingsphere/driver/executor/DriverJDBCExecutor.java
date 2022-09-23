@@ -78,12 +78,12 @@ public final class DriverJDBCExecutor {
     public List<QueryResult> executeQuery(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext,
                                           final QueryContext queryContext, final ExecuteQueryCallback callback) throws SQLException {
         try {
-            ExecuteProcessEngine.initialize(queryContext, executionGroupContext, eventBusContext);
+            ExecuteProcessEngine.initializeExecution(queryContext, executionGroupContext, eventBusContext);
             List<QueryResult> result = jdbcExecutor.execute(executionGroupContext, callback);
-            ExecuteProcessEngine.finish(executionGroupContext.getExecutionID(), eventBusContext);
+            ExecuteProcessEngine.finishExecution(executionGroupContext.getExecutionID(), eventBusContext);
             return result;
         } finally {
-            ExecuteProcessEngine.clean();
+            ExecuteProcessEngine.cleanExecution();
         }
     }
     
@@ -100,14 +100,14 @@ public final class DriverJDBCExecutor {
     public int executeUpdate(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext,
                              final QueryContext queryContext, final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Integer> callback) throws SQLException {
         try {
-            ExecuteProcessEngine.initialize(queryContext, executionGroupContext, eventBusContext);
+            ExecuteProcessEngine.initializeExecution(queryContext, executionGroupContext, eventBusContext);
             SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
             List<Integer> results = doExecute(executionGroupContext, sqlStatementContext, routeUnits, callback);
             int result = isNeedAccumulate(metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules(), sqlStatementContext) ? accumulate(results) : results.get(0);
-            ExecuteProcessEngine.finish(executionGroupContext.getExecutionID(), eventBusContext);
+            ExecuteProcessEngine.finishExecution(executionGroupContext.getExecutionID(), eventBusContext);
             return result;
         } finally {
-            ExecuteProcessEngine.clean();
+            ExecuteProcessEngine.cleanExecution();
         }
     }
     
@@ -141,13 +141,13 @@ public final class DriverJDBCExecutor {
     public boolean execute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final QueryContext queryContext,
                            final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Boolean> callback) throws SQLException {
         try {
-            ExecuteProcessEngine.initialize(queryContext, executionGroupContext, eventBusContext);
+            ExecuteProcessEngine.initializeExecution(queryContext, executionGroupContext, eventBusContext);
             List<Boolean> results = doExecute(executionGroupContext, queryContext.getSqlStatementContext(), routeUnits, callback);
             boolean result = null != results && !results.isEmpty() && null != results.get(0) && results.get(0);
-            ExecuteProcessEngine.finish(executionGroupContext.getExecutionID(), eventBusContext);
+            ExecuteProcessEngine.finishExecution(executionGroupContext.getExecutionID(), eventBusContext);
             return result;
         } finally {
-            ExecuteProcessEngine.clean();
+            ExecuteProcessEngine.cleanExecution();
         }
     }
     

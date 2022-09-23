@@ -34,13 +34,14 @@ import org.junit.runners.Parameterized.Parameters;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
 @Slf4j
@@ -51,20 +52,28 @@ public class TextPrimaryKeyMigrationIT extends AbstractMigrationITCase {
         log.info("parameterized:{}", parameterized);
     }
     
+    @Override
+    protected String getSourceTableOrderName() {
+        if (DatabaseTypeUtil.isMySQL(getDatabaseType())) {
+            return "T_ORDER";
+        }
+        return "t_order";
+    }
+    
     @Parameters(name = "{0}")
     public static Collection<ScalingParameterized> getParameters() {
         Collection<ScalingParameterized> result = new LinkedList<>();
         if (ENV.getItEnvType() == ITEnvTypeEnum.NONE) {
             return result;
         }
-        for (String version : ENV.listDatabaseDockerImageNames(new MySQLDatabaseType())) {
+        for (String version : ENV.listStorageContainerImages(new MySQLDatabaseType())) {
             result.add(new ScalingParameterized(new MySQLDatabaseType(), version, "env/scenario/primary_key/text_primary_key/mysql.xml"));
             result.add(new ScalingParameterized(new MySQLDatabaseType(), version, "env/scenario/primary_key/unique_key/mysql.xml"));
         }
-        for (String version : ENV.listDatabaseDockerImageNames(new PostgreSQLDatabaseType())) {
+        for (String version : ENV.listStorageContainerImages(new PostgreSQLDatabaseType())) {
             result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), version, "env/scenario/primary_key/text_primary_key/postgresql.xml"));
         }
-        for (String version : ENV.listDatabaseDockerImageNames(new OpenGaussDatabaseType())) {
+        for (String version : ENV.listStorageContainerImages(new OpenGaussDatabaseType())) {
             result.add(new ScalingParameterized(new OpenGaussDatabaseType(), version, "env/scenario/primary_key/text_primary_key/postgresql.xml"));
         }
         return result;
@@ -78,13 +87,13 @@ public class TextPrimaryKeyMigrationIT extends AbstractMigrationITCase {
         addMigrationSourceResource();
         addMigrationTargetResource();
         createTargetOrderTableRule();
-        startMigrationOrder();
+        startMigration(getSourceTableOrderName(), getTargetTableOrderName());
         String jobId = listJobId().get(0);
         waitJobFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
-        sourceExecuteWithLog(String.format("INSERT INTO t_order (order_id,user_id,status) VALUES (%s, %s, '%s')", "1000000000", 1, "afterStop"));
-        // TODO The ordering of primary or unique keys for text types is different, may cause check failed, need fix
+        sourceExecuteWithLog(String.format("INSERT INTO %s (order_id,user_id,status) VALUES (%s, %s, '%s')", getSourceTableOrderName(), "1000000000", 1, "afterStop"));
+        // TODO The ordering of primary or unique keys for text types is different, but can't reproduce now
         if (DatabaseTypeUtil.isMySQL(getDatabaseType())) {
-            assertCheckMigrationSuccess(jobId, "CRC32_MATCH");
+            assertCheckMigrationSuccess(jobId, "DATA_MATCH");
         } else {
             assertCheckMigrationSuccess(jobId, "DATA_MATCH");
         }
@@ -97,10 +106,11 @@ public class TextPrimaryKeyMigrationIT extends AbstractMigrationITCase {
     }
     
     private void batchInsertOrder() throws SQLException {
+        log.info("init data begin: {}", LocalDateTime.now());
         UUIDKeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
         try (Connection connection = getSourceDataSource().getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO t_order (order_id,user_id,status) VALUES (?,?,?)");
-            for (int i = 0; i < TABLE_INIT_ROW_COUNT; i++) {
+            PreparedStatement preparedStatement = connection.prepareStatement(String.format("INSERT INTO %s (order_id,user_id,status) VALUES (?,?,?)", getSourceTableOrderName()));
+            for (int i = 0; i < TABLE_INIT_ROW_COUNT * 2; i++) {
                 preparedStatement.setObject(1, keyGenerateAlgorithm.generateKey());
                 preparedStatement.setObject(2, ThreadLocalRandom.current().nextInt(0, 6));
                 preparedStatement.setObject(3, "OK");
@@ -108,6 +118,6 @@ public class TextPrimaryKeyMigrationIT extends AbstractMigrationITCase {
             }
             preparedStatement.executeBatch();
         }
-        log.info("init data succeed");
+        log.info("init data end: {}", LocalDateTime.now());
     }
 }

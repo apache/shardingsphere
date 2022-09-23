@@ -38,7 +38,7 @@ public final class CreateDatabaseBackendHandler implements ProxyBackendHandler {
     @Override
     public ResponseHeader execute() throws SQLException {
         check(sqlStatement);
-        ProxyContext.getInstance().getContextManager().addDatabase(sqlStatement.getDatabaseName());
+        ProxyContext.getInstance().getContextManager().addDatabaseAndPersist(sqlStatement.getDatabaseName());
         return new UpdateResponseHeader(sqlStatement);
     }
     

@@ -22,5 +22,5 @@ package org.apache.shardingsphere.infra.executor.sql.process.model;
  */
 public enum ExecuteProcessConstants {
     
-    EXECUTE_ID, EXECUTE_STATUS_START, EXECUTE_STATUS_DONE
+    EXECUTE_ID, EXECUTE_STATUS_START, EXECUTE_STATUS_DONE, EXECUTE_STATUS_SLEEP
 }

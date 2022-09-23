@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.integration.transaction.cases.alterresource;
 
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
@@ -32,7 +30,6 @@ import java.sql.SQLException;
 /**
  * Integration test of add resource.
  */
-@Slf4j
 @TransactionTestCase(adapters = AdapterContainerConstants.PROXY, group = "addResource")
 public final class AddResourceTestCase extends BaseTransactionTestCase {
     
@@ -41,8 +38,7 @@ public final class AddResourceTestCase extends BaseTransactionTestCase {
     }
     
     @Override
-    @SneakyThrows
-    public void executeTest() {
+    public void executeTest() throws SQLException {
         assertAddResource();
     }
     

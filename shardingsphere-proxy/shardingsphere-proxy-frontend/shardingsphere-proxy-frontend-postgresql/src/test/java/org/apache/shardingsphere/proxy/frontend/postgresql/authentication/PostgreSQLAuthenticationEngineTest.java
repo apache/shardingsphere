@@ -65,7 +65,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -117,7 +117,7 @@ public final class PostgreSQLAuthenticationEngineTest extends ProxyContextRestor
         authenticationEngine.authenticate(channelHandlerContext, payload);
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setAlreadyReceivedStartupMessage(final PostgreSQLAuthenticationEngine target) {
         Field field = PostgreSQLAuthenticationEngine.class.getDeclaredField("startupMessageReceived");
         field.setAccessible(true);
@@ -136,8 +136,7 @@ public final class PostgreSQLAuthenticationEngineTest extends ProxyContextRestor
     }
     
     @Test
-    @SneakyThrows(ReflectiveOperationException.class)
-    public void assertGetIdentifierPacket() {
+    public void assertGetIdentifierPacket() throws ReflectiveOperationException {
         Method method = PostgreSQLAuthenticationEngine.class.getDeclaredMethod("getIdentifierPacket", String.class);
         method.setAccessible(true);
         PostgreSQLIdentifierPacket packet = (PostgreSQLIdentifierPacket) method.invoke(new PostgreSQLAuthenticationEngine(), username);

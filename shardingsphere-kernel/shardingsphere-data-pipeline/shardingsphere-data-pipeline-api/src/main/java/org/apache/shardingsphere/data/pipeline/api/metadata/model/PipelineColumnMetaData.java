@@ -45,6 +45,8 @@ public final class PipelineColumnMetaData implements Comparable<PipelineColumnMe
     
     private final boolean primaryKey;
     
+    private final boolean uniqueKey;
+    
     @Override
     public boolean equals(final Object o) {
         if (this == o) {

@@ -85,7 +85,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -296,7 +296,7 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private <T> T getField(final JDBCDatabaseCommunicationEngine target, final String fieldName) {
         Field field = JDBCDatabaseCommunicationEngine.class.getDeclaredField(fieldName);
         field.setAccessible(true);

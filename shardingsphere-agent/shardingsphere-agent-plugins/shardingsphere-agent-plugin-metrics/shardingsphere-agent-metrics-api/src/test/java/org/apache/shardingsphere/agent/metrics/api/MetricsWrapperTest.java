@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.metrics.api;
 import org.apache.shardingsphere.agent.metrics.api.fixture.FixtureWrapper;
 import org.junit.Test;
 
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class MetricsWrapperTest {
     

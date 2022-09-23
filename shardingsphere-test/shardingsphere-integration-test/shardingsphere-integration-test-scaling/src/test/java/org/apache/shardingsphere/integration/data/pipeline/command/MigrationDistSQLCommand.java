@@ -17,48 +17,68 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.command;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@Data
+@Setter
 @XmlRootElement(name = "command")
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class MigrationDistSQLCommand {
     
     @XmlElement(name = "add-migration-process-config")
+    @Getter
     private String addMigrationProcessConfig;
     
     @XmlElement(name = "create-target-order-table-encrypt-rule")
+    @Getter
     private String createTargetOrderTableEncryptRule;
     
     @XmlElement(name = "create-target-order-table-rule")
+    @Getter
     private String createTargetOrderTableRule;
     
     @XmlElement(name = "create-target-order-item-table-rule")
+    @Getter
     private String createTargetOrderItemTableRule;
     
     @XmlElement(name = "add-migration-source-resource-template")
+    @Getter
     private String addMigrationSourceResourceTemplate;
     
     @XmlElement(name = "add-migration-target-resource-template")
+    @Getter
     private String addMigrationTargetResourceTemplate;
     
-    @XmlElement(name = "migration-order-single-table")
-    private String migrationOrderSingleTable;
+    @XmlElement(name = "migration-single-table")
+    private String migrationSingleTable;
     
-    @XmlElement(name = "migration-order-copy-single-table")
-    private String migrationOrderCopySingleTable;
+    @XmlElement(name = "migration-single-table-with-schema")
+    private String migrationSingleTableWithSchema;
     
-    @XmlElement(name = "migration-order-copy-single-table-with-schema")
-    private String migrationOrderCopySingleTableWithSchema;
+    /**
+     * Get migration single table DistSQL.
+     *
+     * @param sourceTableName source table name
+     * @param targetTableName target table name
+     * @return migration single table DistSQL
+     */
+    public String getMigrationSingleTable(final String sourceTableName, final String targetTableName) {
+        return String.format(migrationSingleTable, sourceTableName, targetTableName);
+    }
     
-    @XmlElement(name = "migration-order-item-single-table")
-    private String migrationOrderItemSingleTable;
-    
-    @XmlElement(name = "migration-order-item-single-table-with-schema")
-    private String migrationOrderItemSingleTableWithSchema;
+    /**
+     * Get migration single table DistSQL with schema.
+     *
+     * @param sourceTableName source table name
+     * @param targetTableName target table name
+     * @return migration single table DistSQL
+     */
+    public String getMigrationSingleTableWithSchema(final String sourceTableName, final String targetTableName) {
+        return String.format(migrationSingleTableWithSchema, sourceTableName, targetTableName);
+    }
 }

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ext
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -35,7 +35,7 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public final class PostgreSQLComCloseExecutor implements CommandExecutor {
     
-    private final PostgreSQLConnectionContext connectionContext;
+    private final PortalContext portalContext;
     
     private final PostgreSQLComClosePacket packet;
     
@@ -48,7 +48,7 @@ public final class PostgreSQLComCloseExecutor implements CommandExecutor {
                 connectionSession.getPreparedStatementRegistry().removePreparedStatement(packet.getName());
                 break;
             case PORTAL:
-                connectionContext.closePortal(packet.getName());
+                portalContext.close(packet.getName());
                 break;
             default:
                 throw new UnsupportedSQLOperationException(packet.getType().name());

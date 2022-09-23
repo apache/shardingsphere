@@ -35,12 +35,13 @@ import org.junit.runners.Parameterized.Parameters;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * PostgreSQL general scaling test case. include openGauss type, same process.
@@ -59,17 +60,22 @@ public final class PostgreSQLMigrationGeneralIT extends AbstractMigrationITCase 
         log.info("parameterized:{}", parameterized);
     }
     
+    @Override
+    protected String getSourceTableOrderName() {
+        return "t_order_copy";
+    }
+    
     @Parameters(name = "{0}")
     public static Collection<ScalingParameterized> getParameters() {
         Collection<ScalingParameterized> result = new LinkedList<>();
         if (ENV.getItEnvType() == ITEnvTypeEnum.NONE) {
             return result;
         }
-        for (String dockerImageName : ENV.listDatabaseDockerImageNames(new PostgreSQLDatabaseType())) {
-            result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), dockerImageName, "env/scenario/general/postgresql.xml"));
+        for (String each : ENV.listStorageContainerImages(new PostgreSQLDatabaseType())) {
+            result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), each, "env/scenario/general/postgresql.xml"));
         }
-        for (String dockerImageName : ENV.listDatabaseDockerImageNames(new OpenGaussDatabaseType())) {
-            result.add(new ScalingParameterized(new OpenGaussDatabaseType(), dockerImageName, "env/scenario/general/postgresql.xml"));
+        for (String each : ENV.listStorageContainerImages(new OpenGaussDatabaseType())) {
+            result.add(new ScalingParameterized(new OpenGaussDatabaseType(), each, "env/scenario/general/postgresql.xml"));
         }
         return result;
     }
@@ -88,8 +94,10 @@ public final class PostgreSQLMigrationGeneralIT extends AbstractMigrationITCase 
         createTargetOrderItemTableRule();
         Pair<List<Object[]>, List<Object[]>> dataPair = ScalingCaseHelper.generateFullInsertData(KEY_GENERATE_ALGORITHM, parameterized.getDatabaseType(), TABLE_INIT_ROW_COUNT);
         JdbcTemplate jdbcTemplate = new JdbcTemplate(getSourceDataSource());
-        jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrder(), dataPair.getLeft());
+        log.info("init data begin: {}", LocalDateTime.now());
+        jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrder(getSourceTableOrderName()), dataPair.getLeft());
         jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
+        log.info("init data end: {}", LocalDateTime.now());
         checkOrderMigration(jdbcTemplate);
         checkOrderItemMigration();
         if (ENV.getItEnvType() == ITEnvTypeEnum.DOCKER) {
@@ -103,12 +111,12 @@ public final class PostgreSQLMigrationGeneralIT extends AbstractMigrationITCase 
     }
     
     private void checkOrderMigration(final JdbcTemplate jdbcTemplate) throws SQLException, InterruptedException {
-        startMigrationOrderCopy(true);
-        startIncrementTask(new PostgreSQLIncrementTask(jdbcTemplate, SCHEMA_NAME, false, 20));
-        String jobId = getJobIdByTableName("t_order_copy");
+        startMigrationWithSchema(getSourceTableOrderName(), "t_order");
+        startIncrementTask(new PostgreSQLIncrementTask(jdbcTemplate, SCHEMA_NAME, getSourceTableOrderName(), 20));
+        String jobId = getJobIdByTableName(getSourceTableOrderName());
         waitJobFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         stopMigrationByJobId(jobId);
-        sourceExecuteWithLog(String.format("INSERT INTO %s.t_order_copy (order_id,user_id,status) VALUES (%s, %s, '%s')", SCHEMA_NAME, KEY_GENERATE_ALGORITHM.generateKey(),
+        sourceExecuteWithLog(String.format("INSERT INTO %s.%s (order_id,user_id,status) VALUES (%s, %s, '%s')", SCHEMA_NAME, getSourceTableOrderName(), KEY_GENERATE_ALGORITHM.generateKey(),
                 1, "afterStop"));
         startMigrationByJobId(jobId);
         assertCheckMigrationSuccess(jobId, "DATA_MATCH");
@@ -116,7 +124,7 @@ public final class PostgreSQLMigrationGeneralIT extends AbstractMigrationITCase 
     }
     
     private void checkOrderItemMigration() throws SQLException, InterruptedException {
-        startMigrationOrderItem(true);
+        startMigrationWithSchema("t_order_item", "t_order_item");
         String jobId = getJobIdByTableName("t_order_item");
         waitJobFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         assertCheckMigrationSuccess(jobId, "DATA_MATCH");
