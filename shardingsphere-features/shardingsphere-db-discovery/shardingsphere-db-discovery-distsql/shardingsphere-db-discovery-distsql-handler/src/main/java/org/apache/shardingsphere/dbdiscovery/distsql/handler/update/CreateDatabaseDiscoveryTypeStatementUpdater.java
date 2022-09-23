@@ -23,7 +23,6 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDisc
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryTypeStatement;
 import org.apache.shardingsphere.dbdiscovery.factory.DatabaseDiscoveryProviderAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
@@ -42,15 +41,13 @@ public final class CreateDatabaseDiscoveryTypeStatementUpdater implements RuleDe
     private static final String RULE_TYPE = "database discovery";
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database,
-                                  final CreateDatabaseDiscoveryTypeStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
+    public void checkSQLStatement(final ShardingSphereDatabase database, final CreateDatabaseDiscoveryTypeStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
         String databaseName = database.getName();
         checkDuplicateDiscoveryType(databaseName, sqlStatement, currentRuleConfig);
         checkInvalidDiscoverType(sqlStatement);
     }
     
-    private void checkDuplicateDiscoveryType(final String databaseName,
-                                             final CreateDatabaseDiscoveryTypeStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkDuplicateDiscoveryType(final String databaseName, final CreateDatabaseDiscoveryTypeStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
         if (null == currentRuleConfig) {
             return;
         }
@@ -66,7 +63,7 @@ public final class CreateDatabaseDiscoveryTypeStatementUpdater implements RuleDe
                 .entrySet().stream().filter(entry -> entry.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
     }
     
-    private void checkInvalidDiscoverType(final CreateDatabaseDiscoveryTypeStatement sqlStatement) throws DistSQLException {
+    private void checkInvalidDiscoverType(final CreateDatabaseDiscoveryTypeStatement sqlStatement) {
         Collection<String> invalidType = sqlStatement.getProviders().stream().map(each -> each.getAlgorithm().getName()).distinct()
                 .filter(each -> !DatabaseDiscoveryProviderAlgorithmFactory.contains(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(invalidType.isEmpty(), () -> new InvalidAlgorithmConfigurationException(RULE_TYPE, invalidType));

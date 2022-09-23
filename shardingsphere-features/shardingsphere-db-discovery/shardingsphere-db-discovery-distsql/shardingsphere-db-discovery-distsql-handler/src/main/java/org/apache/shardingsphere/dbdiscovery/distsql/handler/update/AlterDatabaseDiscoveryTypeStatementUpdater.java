@@ -23,7 +23,6 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDisc
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryTypeStatement;
 import org.apache.shardingsphere.dbdiscovery.factory.DatabaseDiscoveryProviderAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
@@ -43,8 +42,7 @@ public final class AlterDatabaseDiscoveryTypeStatementUpdater implements RuleDef
     private static final String RULE_TYPE = "database discovery";
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database,
-                                  final AlterDatabaseDiscoveryTypeStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
+    public void checkSQLStatement(final ShardingSphereDatabase database, final AlterDatabaseDiscoveryTypeStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
         String databaseName = database.getName();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkDuplicateDiscoveryType(databaseName, sqlStatement);
@@ -52,8 +50,7 @@ public final class AlterDatabaseDiscoveryTypeStatementUpdater implements RuleDef
         checkInvalidDiscoverType(sqlStatement);
     }
     
-    private void checkNotExistDiscoveryType(final String databaseName,
-                                            final AlterDatabaseDiscoveryTypeStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkNotExistDiscoveryType(final String databaseName, final AlterDatabaseDiscoveryTypeStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
         Collection<String> existTypes = currentRuleConfig.getDiscoveryTypes().keySet();
         Collection<String> notExistTypes = sqlStatement.getProviders().stream().map(DatabaseDiscoveryProviderAlgorithmSegment::getDiscoveryProviderName)
                 .filter(each -> !existTypes.contains(each)).collect(Collectors.toSet());
@@ -61,11 +58,11 @@ public final class AlterDatabaseDiscoveryTypeStatementUpdater implements RuleDef
         
     }
     
-    private void checkCurrentRuleConfiguration(final String databaseName, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkCurrentRuleConfiguration(final String databaseName, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
         ShardingSpherePreconditions.checkState(null != currentRuleConfig, () -> new MissingRequiredRuleException(RULE_TYPE, databaseName));
     }
     
-    private void checkDuplicateDiscoveryType(final String databaseName, final AlterDatabaseDiscoveryTypeStatement sqlStatement) throws DistSQLException {
+    private void checkDuplicateDiscoveryType(final String databaseName, final AlterDatabaseDiscoveryTypeStatement sqlStatement) {
         Collection<String> duplicateTypeNames = getToBeAlteredDuplicateTypeNames(sqlStatement);
         ShardingSpherePreconditions.checkState(duplicateTypeNames.isEmpty(), () -> new DuplicateRuleException(RULE_TYPE, databaseName, duplicateTypeNames));
     }
@@ -75,7 +72,7 @@ public final class AlterDatabaseDiscoveryTypeStatementUpdater implements RuleDef
                 .entrySet().stream().filter(entry -> entry.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
     }
     
-    private void checkInvalidDiscoverType(final AlterDatabaseDiscoveryTypeStatement sqlStatement) throws DistSQLException {
+    private void checkInvalidDiscoverType(final AlterDatabaseDiscoveryTypeStatement sqlStatement) {
         Collection<String> invalidType = sqlStatement.getProviders().stream().map(each -> each.getAlgorithm().getName()).distinct()
                 .filter(each -> !DatabaseDiscoveryProviderAlgorithmFactory.contains(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(invalidType.isEmpty(), () -> new InvalidAlgorithmConfigurationException(RULE_TYPE, invalidType));

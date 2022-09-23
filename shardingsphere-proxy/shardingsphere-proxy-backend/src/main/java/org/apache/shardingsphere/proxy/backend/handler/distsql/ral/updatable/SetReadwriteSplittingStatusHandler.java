@@ -23,7 +23,6 @@ import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSel
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableItemConstants;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.RuleExportEngine;
@@ -59,7 +58,7 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     private static final String DISABLE = "DISABLE";
     
     @Override
-    protected void update(final ContextManager contextManager) throws DistSQLException {
+    protected void update(final ContextManager contextManager) {
         String databaseName = getSqlStatement().getDatabase().isPresent() ? getSqlStatement().getDatabase().get().getIdentifier().getValue() : getConnectionSession().getDatabaseName();
         String toBeUpdatedResource = getSqlStatement().getResourceName();
         checkModeAndPersistRepository(contextManager);
@@ -117,12 +116,12 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
                 .collect(Collectors.toMap(QualifiedDatabase::getDataSourceName, QualifiedDatabase::getGroupName, (value1, value2) -> String.join(",", value1, value2)));
     }
     
-    private void checkEnable(final ContextManager contextManager, final String databaseName, final Map<String, String> disabledResources, final String toBeEnabledResource) throws DistSQLException {
+    private void checkEnable(final ContextManager contextManager, final String databaseName, final Map<String, String> disabledResources, final String toBeEnabledResource) {
         checkResourceExists(contextManager, databaseName, toBeEnabledResource);
         checkIsNotDisabled(disabledResources.keySet(), toBeEnabledResource);
     }
     
-    private void checkResourceExists(final ContextManager contextManager, final String databaseName, final String toBeDisabledResource) throws DistSQLException {
+    private void checkResourceExists(final ContextManager contextManager, final String databaseName, final String toBeDisabledResource) {
         Collection<String> notExistedResources = contextManager
                 .getMetaDataContexts().getMetaData().getDatabase(databaseName).getResource().getNotExistedResources(Collections.singleton(toBeDisabledResource));
         ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, Collections.singleton(toBeDisabledResource)));
@@ -133,7 +132,7 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     }
     
     private void checkDisable(final ContextManager contextManager, final String databaseName, final Collection<String> disabledResources, final String toBeDisabledResource,
-                              final Map<String, String> replicaResources) throws DistSQLException {
+                              final Map<String, String> replicaResources) {
         checkResourceExists(contextManager, databaseName, toBeDisabledResource);
         checkIsDisabled(replicaResources, disabledResources, toBeDisabledResource);
         checkIsReplicaResource(replicaResources, toBeDisabledResource);

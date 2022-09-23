@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
@@ -26,6 +25,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigu
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
@@ -33,7 +33,6 @@ import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.Readw
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.factory.ReadQueryLoadBalanceAlgorithmFactory;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -75,14 +74,14 @@ public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
     }
     
     @Test(expected = DuplicateRuleException.class)
-    public void assertCheckSQLStatementWithDuplicateRuleNames() throws DistSQLException {
+    public void assertCheckSQLStatementWithDuplicateRuleNames() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResource().getDataSources().keySet()).thenReturn(Collections.emptySet());
         updater.checkSQLStatement(database, createSQLStatement("TEST"), createCurrentRuleConfiguration());
     }
     
     @Test(expected = InvalidRuleConfigurationException.class)
-    public void assertCheckSQLStatementWithDuplicateResource() throws DistSQLException {
+    public void assertCheckSQLStatementWithDuplicateResource() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResource()).thenReturn(resource);
         when(resource.getDataSources()).thenReturn(Collections.singletonMap("write_ds", null));
@@ -90,13 +89,13 @@ public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
     }
     
     @Test(expected = MissingRequiredResourcesException.class)
-    public void assertCheckSQLStatementWithoutExistedResources() throws DistSQLException {
+    public void assertCheckSQLStatementWithoutExistedResources() {
         when(resource.getNotExistedResources(any())).thenReturn(Arrays.asList("read_ds_0", "read_ds_1"));
         updater.checkSQLStatement(database, createSQLStatement("TEST"), null);
     }
     
     @Test(expected = MissingRequiredResourcesException.class)
-    public void assertCheckSQLStatementWithoutExistedAutoAwareResources() throws DistSQLException {
+    public void assertCheckSQLStatementWithoutExistedAutoAwareResources() {
         ExportableRule exportableRule = mock(ExportableRule.class);
         when(exportableRule.getExportData()).thenReturn(Collections.singletonMap(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES, Collections.singletonMap("ms_group", "ds_0")));
         when(database.getRuleMetaData().findRules(ExportableRule.class)).thenReturn(Collections.singleton(exportableRule));
@@ -105,41 +104,41 @@ public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
-    public void assertCheckSQLStatementWithoutToBeCreatedLoadBalancers() throws DistSQLException {
+    public void assertCheckSQLStatementWithoutToBeCreatedLoadBalancers() {
         when(database.getRuleMetaData().findRules(any())).thenReturn(Collections.emptyList());
         updater.checkSQLStatement(database, createSQLStatement("INVALID_TYPE"), null);
     }
     
     @Test(expected = InvalidRuleConfigurationException.class)
-    public void assertCheckSQLStatementWithDuplicateWriteResourceNamesInStatement() throws DistSQLException {
+    public void assertCheckSQLStatementWithDuplicateWriteResourceNamesInStatement() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResource()).thenReturn(resource);
         updater.checkSQLStatement(database, createSQLStatementWithDuplicateWriteResourceNames("write_ds_0", "write_ds_1", "TEST"), null);
     }
     
     @Test(expected = InvalidRuleConfigurationException.class)
-    public void assertCheckSQLStatementWithDuplicateWriteResourceNames() throws DistSQLException {
+    public void assertCheckSQLStatementWithDuplicateWriteResourceNames() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResource()).thenReturn(resource);
         updater.checkSQLStatement(database, createSQLStatement("readwrite_ds_1", "ds_write", Arrays.asList("read_ds_0", "read_ds_1"), "TEST"), createCurrentRuleConfiguration());
     }
     
     @Test(expected = InvalidRuleConfigurationException.class)
-    public void assertCheckSQLStatementWithDuplicateReadResourceNamesInStatement() throws DistSQLException {
+    public void assertCheckSQLStatementWithDuplicateReadResourceNamesInStatement() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResource()).thenReturn(resource);
         updater.checkSQLStatement(database, createSQLStatementWithDuplicateReadResourceNames("write_ds_0", "write_ds_1", "TEST"), null);
     }
     
     @Test(expected = InvalidRuleConfigurationException.class)
-    public void assertCheckSQLStatementWithDuplicateReadResourceNames() throws DistSQLException {
+    public void assertCheckSQLStatementWithDuplicateReadResourceNames() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResource()).thenReturn(resource);
         updater.checkSQLStatement(database, createSQLStatement("readwrite_ds_1", "write_ds_1", Arrays.asList("read_ds_0", "read_ds_1"), "TEST"), createCurrentRuleConfiguration());
     }
     
     @Test
-    public void assertUpdateSuccess() throws DistSQLException {
+    public void assertUpdateSuccess() {
         ExportableRule exportableRule = mock(ExportableRule.class);
         when(exportableRule.getExportData()).thenReturn(Collections.singletonMap(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES, Collections.singletonMap("ms_group", "ds_0")));
         when(database.getRuleMetaData().findRules(ExportableRule.class)).thenReturn(Collections.singleton(exportableRule));

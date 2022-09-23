@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
@@ -41,7 +40,7 @@ public final class CreateShardingBindingTableRuleStatementUpdater implements Rul
     
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database,
-                                  final CreateShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+                                  final CreateShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         String databaseName = database.getName();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkToBeCreatedBindingTables(databaseName, sqlStatement, currentRuleConfig);
@@ -55,7 +54,7 @@ public final class CreateShardingBindingTableRuleStatementUpdater implements Rul
     }
     
     private void checkToBeCreatedBindingTables(final String databaseName,
-                                               final CreateShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+                                               final CreateShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         Collection<String> currentLogicTables = getCurrentLogicTables(currentRuleConfig);
         Collection<String> notExistedBindingTables = sqlStatement.getBindingTables().stream()
                 .filter(each -> !containsIgnoreCase(currentLogicTables, each)).collect(Collectors.toSet());

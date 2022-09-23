@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -35,7 +34,7 @@ public final class DropShardingBroadcastTableRuleStatementUpdater implements Rul
     
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database,
-                                  final DropShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+                                  final DropShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         String databaseName = database.getName();
         if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isIfExists()) {
             return;
@@ -45,7 +44,7 @@ public final class DropShardingBroadcastTableRuleStatementUpdater implements Rul
     }
     
     private void checkBroadcastTableRuleExist(final String databaseName,
-                                              final DropShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+                                              final DropShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         if (sqlStatement.isIfExists()) {
             return;
         }
@@ -60,7 +59,7 @@ public final class DropShardingBroadcastTableRuleStatementUpdater implements Rul
         return collection.stream().anyMatch(each -> each.equalsIgnoreCase(str));
     }
     
-    private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) {
         ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Broadcast", databaseName));
     }
     

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -55,12 +54,12 @@ public final class DropShardingAuditorStatementUpdaterTest {
     }
     
     @Test(expected = MissingRequiredAlgorithmException.class)
-    public void assertExecuteWithNotExist() throws DistSQLException {
+    public void assertExecuteWithNotExist() {
         updater.checkSQLStatement(database, createSQLStatement("sharding_key_required_auditor"), new ShardingRuleConfiguration());
     }
     
     @Test
-    public void assertExecuteWithNotExistWithIfExists() throws DistSQLException {
+    public void assertExecuteWithNotExistWithIfExists() {
         DropShardingAuditorStatement sqlStatement = new DropShardingAuditorStatement(true, Collections.singletonList("sharding_key_required_auditor"));
         updater.checkSQLStatement(database, sqlStatement, new ShardingRuleConfiguration());
     }
@@ -74,7 +73,7 @@ public final class DropShardingAuditorStatementUpdaterTest {
     }
     
     @Test(expected = AlgorithmInUsedException.class)
-    public void assertExecuteWithUsed() throws DistSQLException {
+    public void assertExecuteWithUsed() {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         currentRuleConfig.getAuditors().put("sharding_key_required_auditor", new AlgorithmConfiguration("DML_SHARDING_CONDITIONS", null));
         currentRuleConfig.getAutoTables().add(createShardingAutoTableRuleConfiguration());
