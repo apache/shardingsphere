@@ -132,13 +132,13 @@ public final class NacosRepository implements ClusterPersistRepository {
     }
     
     @Override
-    public boolean persistLock(final String lockKey, final long timeoutMillis) {
+    public boolean tryLock(final String lockKey, final long timeoutMillis) {
         // TODO
         return false;
     }
     
     @Override
-    public void deleteLock(final String lockKey) {
+    public void unlock(final String lockKey) {
         // TODO
     }
     
