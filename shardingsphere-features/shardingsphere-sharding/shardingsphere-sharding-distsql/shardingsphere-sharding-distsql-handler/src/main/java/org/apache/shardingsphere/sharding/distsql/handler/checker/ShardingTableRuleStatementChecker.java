@@ -107,6 +107,21 @@ public final class ShardingTableRuleStatementChecker {
         check(database, rules, currentRuleConfig, false);
     }
     
+    /**
+     * Check binding table configuration.
+     *
+     * @param bindingTableGroups binding table groups
+     * @param currentRuleConfig current rule configuration
+     */
+    public static void checkBindingTableConfiguration(final Collection<String> bindingTableGroups, final ShardingRuleConfiguration currentRuleConfig) {
+        ShardingRuleConfiguration toBeCheckedRuleConfig = createToBeCheckedShardingRuleConfiguration(currentRuleConfig);
+        toBeCheckedRuleConfig.setBindingTableGroups(bindingTableGroups);
+        Collection<String> dataSourceNames = getRequiredResource(toBeCheckedRuleConfig);
+        dataSourceNames.addAll(getRequiredResource(currentRuleConfig));
+        ShardingSpherePreconditions.checkState(check(toBeCheckedRuleConfig, dataSourceNames),
+                () -> new InvalidRuleConfigurationException("sharding table", bindingTableGroups, Collections.singleton("invalid binding table configuration")));
+    }
+    
     private static void check(final ShardingSphereDatabase database,
                               final Collection<AbstractTableRuleSegment> rules, final ShardingRuleConfiguration currentRuleConfig, final boolean isCreate) {
         String databaseName = database.getName();
@@ -334,24 +349,29 @@ public final class ShardingTableRuleStatementChecker {
         if (toBeAlteredBindingTableNames.isEmpty()) {
             return;
         }
-        ShardingRuleConfiguration toBeCheckedRuleConfig = new ShardingRuleConfiguration();
-        toBeCheckedRuleConfig.setTables(new LinkedList<>(currentRuleConfig.getTables()));
-        toBeCheckedRuleConfig.setAutoTables(new LinkedList<>(currentRuleConfig.getAutoTables()));
-        toBeCheckedRuleConfig.setBindingTableGroups(new LinkedList<>(currentRuleConfig.getBindingTableGroups()));
-        toBeCheckedRuleConfig.setBroadcastTables(new LinkedList<>(currentRuleConfig.getBroadcastTables()));
-        toBeCheckedRuleConfig.setDefaultTableShardingStrategy(currentRuleConfig.getDefaultTableShardingStrategy());
-        toBeCheckedRuleConfig.setDefaultDatabaseShardingStrategy(currentRuleConfig.getDefaultDatabaseShardingStrategy());
-        toBeCheckedRuleConfig.setDefaultKeyGenerateStrategy(currentRuleConfig.getDefaultKeyGenerateStrategy());
-        toBeCheckedRuleConfig.setDefaultShardingColumn(currentRuleConfig.getDefaultShardingColumn());
-        toBeCheckedRuleConfig.setShardingAlgorithms(new LinkedHashMap<>(currentRuleConfig.getShardingAlgorithms()));
-        toBeCheckedRuleConfig.setKeyGenerators(new LinkedHashMap<>(currentRuleConfig.getKeyGenerators()));
-        toBeCheckedRuleConfig.setAuditors(new LinkedHashMap<>(currentRuleConfig.getAuditors()));
+        ShardingRuleConfiguration toBeCheckedRuleConfig = createToBeCheckedShardingRuleConfiguration(currentRuleConfig);
         removeRuleConfiguration(toBeCheckedRuleConfig, toBeAlteredRuleConfig);
         addRuleConfiguration(toBeCheckedRuleConfig, toBeAlteredRuleConfig);
         Collection<String> dataSourceNames = getRequiredResource(toBeCheckedRuleConfig);
         dataSourceNames.addAll(getRequiredResource(toBeAlteredRuleConfig));
         ShardingSpherePreconditions.checkState(check(toBeCheckedRuleConfig, dataSourceNames),
                 () -> new InvalidRuleConfigurationException("sharding table", toBeAlteredLogicTableNames, Collections.singleton("invalid binding table configuration")));
+    }
+    
+    private static ShardingRuleConfiguration createToBeCheckedShardingRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig) {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        result.setTables(new LinkedList<>(currentRuleConfig.getTables()));
+        result.setAutoTables(new LinkedList<>(currentRuleConfig.getAutoTables()));
+        result.setBindingTableGroups(new LinkedList<>(currentRuleConfig.getBindingTableGroups()));
+        result.setBroadcastTables(new LinkedList<>(currentRuleConfig.getBroadcastTables()));
+        result.setDefaultTableShardingStrategy(currentRuleConfig.getDefaultTableShardingStrategy());
+        result.setDefaultDatabaseShardingStrategy(currentRuleConfig.getDefaultDatabaseShardingStrategy());
+        result.setDefaultKeyGenerateStrategy(currentRuleConfig.getDefaultKeyGenerateStrategy());
+        result.setDefaultShardingColumn(currentRuleConfig.getDefaultShardingColumn());
+        result.setShardingAlgorithms(new LinkedHashMap<>(currentRuleConfig.getShardingAlgorithms()));
+        result.setKeyGenerators(new LinkedHashMap<>(currentRuleConfig.getKeyGenerators()));
+        result.setAuditors(new LinkedHashMap<>(currentRuleConfig.getAuditors()));
+        return result;
     }
     
     private static Collection<String> getRequiredResource(final ShardingRuleConfiguration config) {
@@ -367,7 +387,7 @@ public final class ShardingTableRuleStatementChecker {
         for (String each : checkedConfig.getBindingTableGroups()) {
             Collection<String> bindingTables = Splitter.on(",").trimResults().splitToList(each.toLowerCase());
             if (bindingTables.size() <= 1) {
-                continue;
+                return false;
             }
             Iterator<String> iterator = bindingTables.iterator();
             TableRule sampleTableRule = getTableRule(iterator.next(), checkedConfig.getDataSourceNames(), tableRules, checkedConfig.getBroadcastTables());
