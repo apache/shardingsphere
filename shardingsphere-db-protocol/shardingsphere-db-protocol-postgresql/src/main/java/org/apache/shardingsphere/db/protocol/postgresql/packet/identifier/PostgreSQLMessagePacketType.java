@@ -103,6 +103,6 @@ public enum PostgreSQLMessagePacketType implements PostgreSQLIdentifierTag {
                 return each;
             }
         }
-        throw new IllegalArgumentException(String.format("Cannot find '%s' in PostgreSQL identifier tag type", value));
+        throw new IllegalArgumentException(String.format("Can not find `%s` in PostgreSQL identifier tag type", value));
     }
 }

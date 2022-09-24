@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.shadow.distsql.update;
 
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -55,19 +54,19 @@ public final class DropShadowRuleStatementUpdaterTest {
         when(currentConfig.getDataSources()).thenReturn(Collections.singletonMap("initRuleName", null));
     }
     
-    @Test(expected = RequiredRuleMissedException.class)
-    public void assertExecuteWithoutRuleNameInMetaData() throws DistSQLException {
+    @Test(expected = MissingRequiredRuleException.class)
+    public void assertExecuteWithoutRuleNameInMetaData() {
         updater.checkSQLStatement(database, createSQLStatement("ruleSegment"), null);
     }
     
     @Test
-    public void assertExecuteWithIfExists() throws DistSQLException {
+    public void assertExecuteWithIfExists() {
         DropShadowRuleStatement sqlStatement = createSQLStatement(true, "ruleSegment");
         updater.checkSQLStatement(database, sqlStatement, mock(ShadowRuleConfiguration.class));
     }
     
     @Test
-    public void assertUpdate() throws DistSQLException {
+    public void assertUpdate() {
         DropShadowRuleStatement sqlStatement = createSQLStatement(true, "ds_0");
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
         ruleConfig.getTables().put("t_order", new ShadowTableConfiguration(new ArrayList<>(Collections.singleton("ds_0")), Collections.emptyList()));
@@ -77,7 +76,7 @@ public final class DropShadowRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertExecuteSuccess() throws DistSQLException {
+    public void assertExecuteSuccess() {
         updater.checkSQLStatement(database, createSQLStatement("initRuleName"), currentConfig);
     }
     

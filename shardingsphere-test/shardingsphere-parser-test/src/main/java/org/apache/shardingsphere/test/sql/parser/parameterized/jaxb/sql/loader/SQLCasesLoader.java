@@ -165,10 +165,7 @@ public final class SQLCasesLoader extends CasesLoader {
     }
     
     private static void appendReplacement(final int markerIndex, final Object[] replacements, final Matcher matcher, final StringBuffer buffer) {
-        if (markerIndex > replacements.length) {
-            throw new IllegalArgumentException(
-                    String.format("Missing replacement for '%s' at [%s].", PARAMETER_MARKER.pattern(), markerIndex));
-        }
+        Preconditions.checkArgument(markerIndex <= replacements.length, "Missing replacement for `%s` at index `%s`", PARAMETER_MARKER.pattern(), markerIndex);
         matcher.appendReplacement(buffer, Matcher.quoteReplacement(replacements[markerIndex - 1].toString()));
     }
 }

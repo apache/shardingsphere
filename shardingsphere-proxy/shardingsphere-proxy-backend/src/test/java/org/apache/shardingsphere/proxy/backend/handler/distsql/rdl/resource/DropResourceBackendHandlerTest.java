@@ -20,6 +20,8 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.ResourceInUsedException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -42,7 +44,6 @@ import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -106,16 +107,12 @@ public final class DropResourceBackendHandlerTest extends ProxyContextRestorer {
         verify(contextManager).dropResources("test", dropResourceStatement.getNames());
     }
     
-    @Test
+    @Test(expected = MissingRequiredResourcesException.class)
     public void assertResourceNameNotExistedExecute() {
-        try {
-            dropResourceBackendHandler.execute("test", new DropResourceStatement(Collections.singleton("foo_ds"), false));
-        } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("Resources [foo_ds] do not exist in database test."));
-        }
+        dropResourceBackendHandler.execute("test", new DropResourceStatement(Collections.singleton("foo_ds"), false));
     }
     
-    @Test
+    @Test(expected = ResourceInUsedException.class)
     public void assertResourceNameInUseExecute() {
         when(ruleMetaData.getRules()).thenReturn(Collections.singleton(shadowRule));
         when(shadowRule.getType()).thenReturn("ShadowRule");
@@ -123,14 +120,10 @@ public final class DropResourceBackendHandlerTest extends ProxyContextRestorer {
         when(resource.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         when(database.getResource()).thenReturn(resource);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("test")).thenReturn(database);
-        try {
-            dropResourceBackendHandler.execute("test", new DropResourceStatement(Collections.singleton("foo_ds"), false));
-        } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("Resource [foo_ds] is still used by [ShadowRule]."));
-        }
+        dropResourceBackendHandler.execute("test", new DropResourceStatement(Collections.singleton("foo_ds"), false));
     }
     
-    @Test
+    @Test(expected = ResourceInUsedException.class)
     public void assertResourceNameInUseWithoutIgnoreSingleTables() {
         when(ruleMetaData.getRules()).thenReturn(Collections.singleton(singleTableRule));
         when(singleTableRule.getType()).thenReturn("SingleTableRule");
@@ -140,11 +133,7 @@ public final class DropResourceBackendHandlerTest extends ProxyContextRestorer {
         when(resource.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         when(database.getResource()).thenReturn(resource);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("test")).thenReturn(database);
-        try {
-            dropResourceBackendHandler.execute("test", new DropResourceStatement(Collections.singleton("foo_ds"), false));
-        } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("Resource [foo_ds] is still used by [SingleTableRule]."));
-        }
+        dropResourceBackendHandler.execute("test", new DropResourceStatement(Collections.singleton("foo_ds"), false));
     }
     
     @Test
@@ -170,7 +159,7 @@ public final class DropResourceBackendHandlerTest extends ProxyContextRestorer {
     }
     
     @Test(expected = DistSQLException.class)
-    public void assertResourceNameInUseWithIfExists() throws DistSQLException {
+    public void assertResourceNameInUseWithIfExists() {
         when(ruleMetaData.getRules()).thenReturn(Collections.singleton(shadowRule));
         when(shadowRule.getType()).thenReturn("ShadowRule");
         when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));

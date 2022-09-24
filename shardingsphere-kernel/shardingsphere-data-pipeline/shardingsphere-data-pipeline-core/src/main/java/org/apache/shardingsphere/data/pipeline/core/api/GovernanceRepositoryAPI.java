@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.api;
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,20 +56,52 @@ public interface GovernanceRepositoryAPI {
     String getJobItemProgress(String jobId, int shardingItem);
     
     /**
-     * Persist job check result.
+     * Persist check latest result.
      *
      * @param jobId job id
      * @param checkSuccess check success
      */
-    void persistJobCheckResult(String jobId, boolean checkSuccess);
+    void persistCheckLatestResult(String jobId, boolean checkSuccess);
     
     /**
-     * Get job check result.
+     * Get check latest result.
      *
      * @param jobId job id
-     * @return job check result
+     * @return check result
      */
-    Optional<Boolean> getJobCheckResult(String jobId);
+    Optional<Boolean> getCheckLatestResult(String jobId);
+    
+    /**
+     * Persist check latest detailed result.
+     *
+     * @param jobId job id
+     * @param checkDetailedSuccess check detailed success
+     */
+    void persistCheckLatestDetailedResult(String jobId, String checkDetailedSuccess);
+    
+    /**
+     * Get check latest detailed result.
+     *
+     * @param jobId job id
+     * @return check detailed result
+     */
+    Optional<String> getCheckLatestDetailedResult(String jobId);
+    
+    /**
+     * Persist check job id.
+     *
+     * @param jobId job id
+     * @param checkJobId check job id
+     */
+    void persistCheckJobId(String jobId, String checkJobId);
+    
+    /**
+     * List check job ids.
+     *
+     * @param jobId job id
+     * @return check job ids
+     */
+    Collection<String> listCheckJobIds(String jobId);
     
     /**
      * Delete job.

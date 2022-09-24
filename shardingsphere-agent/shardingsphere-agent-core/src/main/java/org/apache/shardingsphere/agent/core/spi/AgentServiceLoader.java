@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.agent.core.spi;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.agent.core.plugin.AgentPluginLoader;
 
 import java.util.Collection;
@@ -50,12 +51,8 @@ public final class AgentServiceLoader<T> {
      */
     @SuppressWarnings("unchecked")
     public static <T> AgentServiceLoader<T> getServiceLoader(final Class<T> service) {
-        if (null == service) {
-            throw new NullPointerException("extension clazz is null");
-        }
-        if (!service.isInterface()) {
-            throw new IllegalArgumentException(String.format("extension clazz ( %s is not interface!", service));
-        }
+        Preconditions.checkNotNull(service, "Extension clazz is null");
+        Preconditions.checkArgument(service.isInterface(), "Extension clazz `%s` is not interface", service);
         AgentServiceLoader<T> agentServiceLoader = (AgentServiceLoader<T>) LOADERS.get(service);
         if (null != agentServiceLoader) {
             return agentServiceLoader;
@@ -78,7 +75,6 @@ public final class AgentServiceLoader<T> {
             return;
         }
         serviceMap.put(service, new LinkedList<>());
-        ServiceLoader.load(service, AgentPluginLoader.getInstance())
-                .forEach(each -> serviceMap.get(service).add(each));
+        ServiceLoader.load(service, AgentPluginLoader.getInstance()).forEach(each -> serviceMap.get(service).add(each));
     }
 }

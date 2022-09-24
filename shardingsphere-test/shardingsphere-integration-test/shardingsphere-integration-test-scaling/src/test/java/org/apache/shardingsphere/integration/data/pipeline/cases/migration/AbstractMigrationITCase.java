@@ -49,10 +49,24 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
     public AbstractMigrationITCase(final ScalingParameterized parameterized) {
         super(parameterized);
         migrationDistSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BaseITCase.class.getClassLoader().getResource("env/common/migration-command.xml")), MigrationDistSQLCommand.class);
+        if (ITEnvTypeEnum.NATIVE == ENV.getItEnvType()) {
+            try {
+                cleanUpPipelineJobs();
+            } catch (final SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
+    
+    private void cleanUpPipelineJobs() throws SQLException {
+        List<String> jobIds = listJobId();
+        for (String each : jobIds) {
+            proxyExecuteWithLog(String.format("ROLLBACK MIGRATION '%s'", each), 0);
+        }
     }
     
     protected void addMigrationSourceResource() throws SQLException {
-        if (ENV.getItEnvType() == ITEnvTypeEnum.NATIVE) {
+        if (ITEnvTypeEnum.NATIVE == ENV.getItEnvType()) {
             try {
                 proxyExecuteWithLog("DROP MIGRATION SOURCE RESOURCE ds_0", 2);
             } catch (final SQLException ex) {
@@ -108,15 +122,15 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
     }
     
     protected void startMigration(final String sourceTableName, final String targetTableName) throws SQLException {
-        proxyExecuteWithLog(migrationDistSQLCommand.getMigrationSingleTable(sourceTableName, targetTableName), 1);
+        proxyExecuteWithLog(migrationDistSQLCommand.getMigrationSingleTable(sourceTableName, targetTableName), 5);
     }
     
     protected void startMigrationWithSchema(final String sourceTableName, final String targetTableName) throws SQLException {
-        proxyExecuteWithLog(migrationDistSQLCommand.getMigrationSingleTableWithSchema(sourceTableName, targetTableName), 1);
+        proxyExecuteWithLog(migrationDistSQLCommand.getMigrationSingleTableWithSchema(sourceTableName, targetTableName), 5);
     }
     
     protected void addMigrationProcessConfig() throws SQLException {
-        if (ENV.getItEnvType() == ITEnvTypeEnum.NATIVE) {
+        if (ITEnvTypeEnum.NATIVE == ENV.getItEnvType()) {
             try {
                 proxyExecuteWithLog("DROP MIGRATION PROCESS CONFIGURATION '/'", 0);
             } catch (final SQLException ex) {

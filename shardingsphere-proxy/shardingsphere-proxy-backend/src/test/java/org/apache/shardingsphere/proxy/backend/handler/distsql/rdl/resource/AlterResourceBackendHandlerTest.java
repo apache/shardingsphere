@@ -24,10 +24,9 @@ import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegmen
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
-import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -95,7 +94,7 @@ public final class AlterResourceBackendHandlerTest extends ProxyContextRestorer 
     }
     
     @Test
-    public void assertExecute() throws DistSQLException {
+    public void assertExecute() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
@@ -105,12 +104,12 @@ public final class AlterResourceBackendHandlerTest extends ProxyContextRestorer 
     }
     
     @Test(expected = DuplicateResourceException.class)
-    public void assertExecuteWithDuplicateResourceNames() throws DistSQLException {
+    public void assertExecuteWithDuplicateResourceNames() {
         alterResourceBackendHandler.execute("test_db", createAlterResourceStatementWithDuplicateResourceNames());
     }
     
-    @Test(expected = RequiredResourceMissedException.class)
-    public void assertExecuteWithNotExistedResourceNames() throws DistSQLException {
+    @Test(expected = MissingRequiredResourcesException.class)
+    public void assertExecuteWithNotExistedResourceNames() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
@@ -121,7 +120,7 @@ public final class AlterResourceBackendHandlerTest extends ProxyContextRestorer 
     }
     
     @Test(expected = InvalidResourcesException.class)
-    public void assertExecuteWithAlterDatabase() throws Exception {
+    public void assertExecuteWithAlterDatabase() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);

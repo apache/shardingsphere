@@ -24,6 +24,8 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingBroadcastTableRulesStatement;
 
+import java.util.Collections;
+
 /**
  * Create sharding broadcast table rule statement updater.
  */
@@ -37,7 +39,7 @@ public final class CreateShardingBroadcastTableRuleStatementUpdater implements R
     
     private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) throws RuleInUsedException {
         if (null != currentRuleConfig && !currentRuleConfig.getBroadcastTables().isEmpty()) {
-            throw new RuleInUsedException("Broadcast", databaseName);
+            throw new RuleInUsedException("Broadcast", databaseName, Collections.emptyList());
         }
     }
     

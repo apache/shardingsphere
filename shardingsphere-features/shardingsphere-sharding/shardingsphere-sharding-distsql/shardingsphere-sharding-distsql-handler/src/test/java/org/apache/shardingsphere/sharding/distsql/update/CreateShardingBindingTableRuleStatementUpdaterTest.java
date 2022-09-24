@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.sharding.distsql.update;
 
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -43,20 +42,20 @@ public final class CreateShardingBindingTableRuleStatementUpdaterTest {
     
     private final CreateShardingBindingTableRuleStatementUpdater updater = new CreateShardingBindingTableRuleStatementUpdater();
     
-    @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckSQLStatementWithoutCurrentTableRule() throws DistSQLException {
+    @Test(expected = MissingRequiredRuleException.class)
+    public void assertCheckSQLStatementWithoutCurrentTableRule() {
         updater.checkSQLStatement(database, createSQLStatement(), new ShardingRuleConfiguration());
     }
     
     @Test(expected = DuplicateRuleException.class)
-    public void assertCheckSQLStatementWithDuplicateTables() throws DistSQLException {
+    public void assertCheckSQLStatementWithDuplicateTables() {
         List<BindingTableRuleSegment> segments = Arrays.asList(new BindingTableRuleSegment("t_order,t_order_item"), new BindingTableRuleSegment("t_order,t_order_item"));
         CreateShardingBindingTableRulesStatement statement = new CreateShardingBindingTableRulesStatement(segments);
         updater.checkSQLStatement(database, statement, getCurrentRuleConfig());
     }
     
     @Test(expected = DuplicateRuleException.class)
-    public void assertCheckSQLStatementWithDifferentCaseDuplicateTables() throws DistSQLException {
+    public void assertCheckSQLStatementWithDifferentCaseDuplicateTables() {
         List<BindingTableRuleSegment> segments = Arrays.asList(new BindingTableRuleSegment("T_ORDER,T_ORDER_ITEM"), new BindingTableRuleSegment("t_order,t_order_item"));
         CreateShardingBindingTableRulesStatement statement = new CreateShardingBindingTableRulesStatement(segments);
         updater.checkSQLStatement(database, statement, getCurrentRuleConfig());

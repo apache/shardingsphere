@@ -40,6 +40,11 @@ public final class ShardingInsertValuesToken extends InsertValuesToken implement
         return result.toString();
     }
     
+    @Override
+    public String toString() {
+        return toString(null);
+    }
+    
     private void appendInsertValue(final RouteUnit routeUnit, final StringBuilder stringBuilder) {
         for (InsertValue each : getInsertValues()) {
             if (isAppend(routeUnit, (ShardingInsertValue) each)) {

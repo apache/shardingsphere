@@ -20,9 +20,8 @@ package org.apache.shardingsphere.dbdiscovery.distsql.handler.update;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryHeartbeatSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryHeartbeatStatement;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,15 +47,15 @@ public final class AlterDatabaseDiscoveryHeartbeatStatementUpdaterTest {
     private ShardingSphereDatabase database;
     
     @Test(expected = DuplicateRuleException.class)
-    public void assertCheckSQLStatementWithDuplicateHeartbeatNames() throws DistSQLException {
+    public void assertCheckSQLStatementWithDuplicateHeartbeatNames() {
         DatabaseDiscoveryHeartbeatSegment segment1 = new DatabaseDiscoveryHeartbeatSegment("heartbeat", createProperties("key", "value"));
         DatabaseDiscoveryHeartbeatSegment segment2 = new DatabaseDiscoveryHeartbeatSegment("heartbeat", createProperties("key", "value"));
         updater.checkSQLStatement(database, new AlterDatabaseDiscoveryHeartbeatStatement(Arrays.asList(segment1, segment2)),
                 new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap()));
     }
     
-    @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckSQLStatementWithNotExistDiscoveryHeartbeatName() throws DistSQLException {
+    @Test(expected = MissingRequiredRuleException.class)
+    public void assertCheckSQLStatementWithNotExistDiscoveryHeartbeatName() {
         DatabaseDiscoveryHeartbeatSegment segment = new DatabaseDiscoveryHeartbeatSegment("heartbeat", createProperties("key", "value"));
         DatabaseDiscoveryRuleConfiguration config = new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.singletonMap("heartbeat1", null), Collections.emptyMap());
         updater.checkSQLStatement(database, new AlterDatabaseDiscoveryHeartbeatStatement(Collections.singleton(segment)), config);

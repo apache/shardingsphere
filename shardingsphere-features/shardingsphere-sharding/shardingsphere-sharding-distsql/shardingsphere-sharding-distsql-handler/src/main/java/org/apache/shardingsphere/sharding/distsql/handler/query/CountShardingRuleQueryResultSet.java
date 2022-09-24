@@ -73,10 +73,9 @@ public final class CountShardingRuleQueryResultSet implements DatabaseDistSQLRes
     private LinkedList<Object> buildRow(final LinkedList<Object> value, final String databaseName, final int count) {
         if (null == value) {
             return new LinkedList<>(Arrays.asList(databaseName, count));
-        } else {
-            value.set(1, (Integer) value.get(1) + count);
-            return value;
         }
+        value.set(1, (Integer) value.get(1) + count);
+        return value;
     }
     
     @Override

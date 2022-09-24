@@ -83,8 +83,10 @@ public final class GovernanceExecuteProcessReporterTest {
     
     @Test
     public void assertReportClean() {
+        ExecuteProcessContext executeProcessContext = mock(ExecuteProcessContext.class);
+        when(showProcessListManager.getProcessContext("foo_id")).thenReturn(executeProcessContext);
         reporter.reportClean("foo_id");
-        verify(showProcessListManager, times(1)).removeProcessContext(eq("foo_id"));
+        verify(showProcessListManager, times(1)).removeProcessStatement(eq("foo_id"));
     }
     
     @After

@@ -32,7 +32,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public final class DataSourceMapSetterTest {
     
     @Test
-    public void assetGetDataSourceMap() throws SQLException {
+    public void assertGetDataSourceMap() throws SQLException {
         MockEnvironment mockEnvironment = new MockEnvironment();
         mockEnvironment.setProperty("spring.shardingsphere.datasource.names", "ds0,ds1");
         mockEnvironment.setProperty("spring.shardingsphere.datasource.ds0.url", "jdbc:mock://127.0.0.1/ds_0");
@@ -51,5 +51,19 @@ public final class DataSourceMapSetterTest {
         assertThat(dataSourceMap.size(), is(2));
         assertThat(dataSourceMap.get("ds0").getConnection().getMetaData().getURL(), is("jdbc:mock://127.0.0.1/ds_0"));
         assertThat(dataSourceMap.get("ds1").getConnection().getMetaData().getURL(), is("jdbc:mock://127.0.0.1/ds_1"));
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void assertInvalidDataSourceNames() {
+        MockEnvironment mockEnvironment = new MockEnvironment();
+        mockEnvironment.setProperty("spring.shardingsphere.datasource.names", "ds0,ds1");
+        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds0.url", "jdbc:mock://127.0.0.1/ds_0");
+        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds0.type", MockedDataSource.class.getName());
+        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds0.username", "sa");
+        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds0.password", "");
+        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds0.maxPoolSize", "50");
+        StandardEnvironment standardEnvironment = new StandardEnvironment();
+        standardEnvironment.merge(mockEnvironment);
+        DataSourceMapSetter.getDataSourceMap(standardEnvironment);
     }
 }

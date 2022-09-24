@@ -3486,3 +3486,11 @@ dropPluggableDatabase
     : DROP PLUGGABLE DATABASE pdbName ((KEEP | INCLUDING) DATAFILES)?
     ;
 
+ dropJava
+     : DROP JAVA (SOURCE | CLASS | RESOURCE) objectName
+     ;
+
+dropLibrary
+    : DROP LIBRARY libraryName
+    ;
+

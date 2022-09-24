@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.distsql.exception.resource;
 
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+
 import java.util.Collection;
 
 /**
@@ -27,6 +29,6 @@ public final class DuplicateResourceException extends ResourceDefinitionViolatio
     private static final long serialVersionUID = 2103793827572264148L;
     
     public DuplicateResourceException(final Collection<String> resourceNames) {
-        super(1103, String.format("Duplicate resource names %s.", resourceNames));
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, "Duplicate resource names `%s`", resourceNames);
     }
 }

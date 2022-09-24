@@ -74,8 +74,9 @@ public final class PostgreSQLByteConverter {
      */
     public static Number numeric(final byte[] bytes, final int pos) {
         short sign = readShort2(bytes, pos + 4);
+        Preconditions.checkArgument(0x0000 == sign || NUMERIC_NEG == sign || NUMERIC_NAN == sign, "invalid sign in \"numeric\" value");
         short scale = readShort2(bytes, pos + 6);
-        validator(sign, scale);
+        Preconditions.checkArgument((scale & 0x00003FFF) == scale, "invalid scale in \"numeric\" value");
         if (NUMERIC_NAN == sign) {
             return Double.NaN;
         }
@@ -356,15 +357,6 @@ public final class PostgreSQLByteConverter {
             unscaledBI = unscaledBI.negate();
         }
         return new BigDecimal(unscaledBI, scale);
-    }
-    
-    private static void validator(final short sign, final short scale) {
-        if (!(0x0000 == sign || NUMERIC_NEG == sign || NUMERIC_NAN == sign)) {
-            throw new IllegalArgumentException("invalid sign in \"numeric\" value");
-        }
-        if ((scale & 0x00003FFF) != scale) {
-            throw new IllegalArgumentException("invalid scale in \"numeric\" value");
-        }
     }
     
     private static BigInteger tenPower(final int exponent) {

@@ -43,8 +43,8 @@ import java.sql.SQLException;
 /**
  * Migration job.
  */
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public final class MigrationJob extends AbstractPipelineJob implements SimpleJob, PipelineJob {
     
     private final MigrationJobAPI jobAPI = MigrationJobAPIFactory.getInstance();

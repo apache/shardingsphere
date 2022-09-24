@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 
@@ -168,12 +169,8 @@ public final class PostgreSQLArrayParameterDecoder {
      * @return decoded parameter value elements
      */
     private Collection<String> decodeText(final String value) {
-        if (value.length() < 2) {
-            throw new IllegalArgumentException("value length less than 2");
-        }
-        if ('{' != value.charAt(0) || '}' != value.charAt(value.length() - 1)) {
-            throw new IllegalArgumentException("value not start with '{' or not end with '}'");
-        }
+        Preconditions.checkArgument(value.length() >= 2, "value length less than 2");
+        Preconditions.checkArgument('{' == value.charAt(0) && '}' == value.charAt(value.length() - 1), "value not start with '{' or not end with '}'");
         String[] elements = value.substring(1, value.length() - 1).split(",");
         return Arrays.stream(elements).map(each -> {
             if ("NULL".equals(each)) {

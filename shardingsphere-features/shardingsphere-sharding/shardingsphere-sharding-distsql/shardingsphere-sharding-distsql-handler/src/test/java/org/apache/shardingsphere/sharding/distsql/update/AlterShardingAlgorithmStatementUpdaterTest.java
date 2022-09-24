@@ -19,10 +19,9 @@ package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingAlgorithmStatementUpdater;
@@ -38,8 +37,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Arrays;
 import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -56,15 +55,15 @@ public final class AlterShardingAlgorithmStatementUpdaterTest {
     }
     
     @Test(expected = DuplicateRuleException.class)
-    public void assertExecuteWithDuplicate() throws DistSQLException {
+    public void assertExecuteWithDuplicate() {
         Properties props = new Properties();
         props.put("input_key", "input_value");
         ShardingAlgorithmSegment algorithmSegment = new ShardingAlgorithmSegment("input_algorithm_name", new AlgorithmSegment("input_algorithm_name", props));
         updater.checkSQLStatement(database, createSQLStatement(algorithmSegment, algorithmSegment), null);
     }
     
-    @Test(expected = RequiredAlgorithmMissedException.class)
-    public void assertExecuteWithNotExist() throws DistSQLException {
+    @Test(expected = MissingRequiredAlgorithmException.class)
+    public void assertExecuteWithNotExist() {
         Properties props = new Properties();
         props.put("input_key", "input_value");
         ShardingAlgorithmSegment algorithmSegment = new ShardingAlgorithmSegment("not_exist_algorithm_name", new AlgorithmSegment("input_algorithm_name", props));
@@ -74,7 +73,7 @@ public final class AlterShardingAlgorithmStatementUpdaterTest {
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
-    public void assertExecuteWithInvalidAlgorithm() throws DistSQLException {
+    public void assertExecuteWithInvalidAlgorithm() {
         Properties props = new Properties();
         props.put("input_key", "input_value");
         ShardingAlgorithmSegment algorithmSegment = new ShardingAlgorithmSegment("exist_algorithm_name", new AlgorithmSegment("input_algorithm_name", props));

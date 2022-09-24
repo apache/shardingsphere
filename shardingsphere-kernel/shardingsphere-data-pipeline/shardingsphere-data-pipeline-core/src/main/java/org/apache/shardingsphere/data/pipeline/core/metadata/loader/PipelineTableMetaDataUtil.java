@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.metadata.loader;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineIndexMetaData;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
@@ -42,7 +43,7 @@ public final class PipelineTableMetaDataUtil {
      * @param metaDataLoader meta data loader
      * @return pipeline column meta data
      */
-    public static PipelineColumnMetaData getUniqueKeyColumn(final String schemaName, final String tableName, final StandardPipelineTableMetaDataLoader metaDataLoader) {
+    public static PipelineColumnMetaData getUniqueKeyColumn(final String schemaName, final String tableName, final PipelineTableMetaDataLoader metaDataLoader) {
         PipelineTableMetaData pipelineTableMetaData = metaDataLoader.getTableMetaData(schemaName, tableName);
         return mustGetAnAppropriateUniqueKeyColumn(pipelineTableMetaData, tableName);
     }
