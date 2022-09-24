@@ -774,6 +774,7 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitCreateView(final CreateViewContext ctx) {
         PostgreSQLCreateViewStatement result = new PostgreSQLCreateViewStatement();
         result.setView((SimpleTableSegment) visit(ctx.qualifiedName()));
+        result.setViewSQL(getOriginalText(ctx));
         result.setSelect((SelectStatement) visit(ctx.select()));
         return result;
     }
@@ -782,6 +783,7 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitAlterView(final AlterViewContext ctx) {
         PostgreSQLAlterViewStatement result = new PostgreSQLAlterViewStatement();
         result.setView((SimpleTableSegment) visit(ctx.qualifiedName()));
+        result.setViewSQL(getOriginalText(ctx));
         if (ctx.alterViewClauses() instanceof AlterRenameViewContext) {
             NameContext nameContext = ((AlterRenameViewContext) ctx.alterViewClauses()).name();
             result.setRenameView(new SimpleTableSegment(new TableNameSegment(nameContext.getStart().getStartIndex(),

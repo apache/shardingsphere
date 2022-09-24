@@ -40,7 +40,7 @@ import java.util.Map;
 import java.util.LinkedHashMap;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 public final class IndexMetaDataUtilTest {

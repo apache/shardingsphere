@@ -17,10 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.api;
 
-import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.CreateMigrationJobParameter;
-import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.MigrationJobInfo;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
@@ -29,13 +26,12 @@ import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Migration job public API.
  */
 @SingletonSPI
-public interface MigrationJobPublicAPI extends PipelineJobPublicAPI, RequiredSPI {
+public interface MigrationJobPublicAPI extends InventoryIncrementalJobPublicAPI, RequiredSPI {
     
     /**
      * List all jobs.
@@ -44,40 +40,6 @@ public interface MigrationJobPublicAPI extends PipelineJobPublicAPI, RequiredSPI
      */
     @Override
     List<MigrationJobInfo> list();
-    
-    /**
-     * Get job progress.
-     *
-     * @param jobId job id
-     * @return each sharding item progress
-     */
-    // TODO add JobProgress
-    Map<Integer, InventoryIncrementalJobItemProgress> getJobProgress(String jobId);
-    
-    /**
-     * List all data consistency check algorithms from SPI.
-     *
-     * @return data consistency check algorithms
-     */
-    Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms();
-    
-    /**
-     * Do data consistency check.
-     *
-     * @param jobId job id
-     * @return each logic table check result
-     */
-    Map<String, DataConsistencyCheckResult> dataConsistencyCheck(String jobId);
-    
-    /**
-     * Do data consistency check.
-     *
-     * @param jobId job id
-     * @param algorithmType algorithm type
-     * @param algorithmProps algorithm props. Nullable
-     * @return each logic table check result
-     */
-    Map<String, DataConsistencyCheckResult> dataConsistencyCheck(String jobId, String algorithmType, Properties algorithmProps);
     
     /**
      * Add migration source resources.

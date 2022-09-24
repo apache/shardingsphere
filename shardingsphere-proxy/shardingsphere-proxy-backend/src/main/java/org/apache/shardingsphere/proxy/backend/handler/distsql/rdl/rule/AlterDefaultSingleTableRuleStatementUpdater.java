@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule;
 
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterDefaultSingleTableRuleStatement;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 
 import java.util.Collections;
@@ -35,25 +35,25 @@ public final class AlterDefaultSingleTableRuleStatementUpdater implements RuleDe
     
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database,
-                                  final AlterDefaultSingleTableRuleStatement sqlStatement, final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
+                                  final AlterDefaultSingleTableRuleStatement sqlStatement, final SingleTableRuleConfiguration currentRuleConfig) {
         String databaseName = database.getName();
         checkConfigurationExist(databaseName, currentRuleConfig);
         checkResourceExist(database, sqlStatement);
         checkDefaultResourceExist(databaseName, currentRuleConfig);
     }
     
-    private void checkConfigurationExist(final String databaseName, final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
-        DistSQLException.predictionThrow(null != currentRuleConfig, () -> new RequiredRuleMissedException(databaseName, "single table"));
+    private void checkConfigurationExist(final String databaseName, final SingleTableRuleConfiguration currentRuleConfig) {
+        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException(databaseName, "single table"));
     }
     
-    private void checkResourceExist(final ShardingSphereDatabase database, final AlterDefaultSingleTableRuleStatement sqlStatement) throws DistSQLException {
+    private void checkResourceExist(final ShardingSphereDatabase database, final AlterDefaultSingleTableRuleStatement sqlStatement) {
         Set<String> resourceNames = database.getResource().getDataSources().keySet();
-        DistSQLException.predictionThrow(resourceNames.contains(sqlStatement.getDefaultResource()), () -> new RequiredResourceMissedException(
-                database.getName(), Collections.singleton(sqlStatement.getDefaultResource())));
+        ShardingSpherePreconditions.checkState(resourceNames.contains(sqlStatement.getDefaultResource()),
+                () -> new MissingRequiredResourcesException(database.getName(), Collections.singleton(sqlStatement.getDefaultResource())));
     }
     
-    private void checkDefaultResourceExist(final String databaseName, final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
-        DistSQLException.predictionThrow(currentRuleConfig.getDefaultDataSource().isPresent(), () -> new RequiredRuleMissedException("single table", databaseName));
+    private void checkDefaultResourceExist(final String databaseName, final SingleTableRuleConfiguration currentRuleConfig) {
+        ShardingSpherePreconditions.checkState(currentRuleConfig.getDefaultDataSource().isPresent(), () -> new MissingRequiredRuleException("single table", databaseName));
     }
     
     @Override

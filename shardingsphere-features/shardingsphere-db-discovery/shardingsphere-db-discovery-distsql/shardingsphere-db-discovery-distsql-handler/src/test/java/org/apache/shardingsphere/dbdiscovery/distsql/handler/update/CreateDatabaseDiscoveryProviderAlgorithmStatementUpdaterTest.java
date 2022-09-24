@@ -23,7 +23,6 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDisc
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryTypeStatement;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -41,7 +40,7 @@ import java.util.LinkedList;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class CreateDatabaseDiscoveryProviderAlgorithmStatementUpdaterTest {
@@ -52,7 +51,7 @@ public final class CreateDatabaseDiscoveryProviderAlgorithmStatementUpdaterTest 
     private ShardingSphereDatabase database;
     
     @Test(expected = DuplicateRuleException.class)
-    public void assertCheckSQLStatementWithDuplicate() throws DistSQLException {
+    public void assertCheckSQLStatementWithDuplicate() {
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("readwrite_ds", Collections.emptyList(), "ha-heartbeat", "test");
         Collection<DatabaseDiscoveryProviderAlgorithmSegment> algorithmSegments = Arrays.asList(
                 new DatabaseDiscoveryProviderAlgorithmSegment("discovery_type", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())),
@@ -62,7 +61,7 @@ public final class CreateDatabaseDiscoveryProviderAlgorithmStatementUpdaterTest 
     }
     
     @Test(expected = DuplicateRuleException.class)
-    public void assertCheckSQLStatementWithExist() throws DistSQLException {
+    public void assertCheckSQLStatementWithExist() {
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("readwrite_ds", Collections.emptyList(), "ha-heartbeat", "test");
         Collection<DatabaseDiscoveryProviderAlgorithmSegment> algorithmSegments = Collections.singletonList(
                 new DatabaseDiscoveryProviderAlgorithmSegment("discovery_type", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())));
@@ -72,14 +71,14 @@ public final class CreateDatabaseDiscoveryProviderAlgorithmStatementUpdaterTest 
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
-    public void assertCheckSQLStatementWithDatabaseDiscoveryType() throws DistSQLException {
+    public void assertCheckSQLStatementWithDatabaseDiscoveryType() {
         Collection<DatabaseDiscoveryProviderAlgorithmSegment> algorithmSegments = Collections.singleton(
                 new DatabaseDiscoveryProviderAlgorithmSegment("discovery_type", new AlgorithmSegment("INVALID_TYPE", new Properties())));
         updater.checkSQLStatement(database, new CreateDatabaseDiscoveryTypeStatement(algorithmSegments), null);
     }
     
     @Test
-    public void assertBuildAndUpdate() throws DistSQLException {
+    public void assertBuildAndUpdate() {
         Collection<DatabaseDiscoveryProviderAlgorithmSegment> algorithmSegments = Collections.singleton(
                 new DatabaseDiscoveryProviderAlgorithmSegment("discovery_type", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())));
         updater.checkSQLStatement(database, new CreateDatabaseDiscoveryTypeStatement(algorithmSegments), null);

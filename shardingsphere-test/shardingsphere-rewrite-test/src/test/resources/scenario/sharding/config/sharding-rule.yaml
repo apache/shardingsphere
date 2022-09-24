@@ -98,6 +98,3 @@ rules:
   keyGenerators:
     rewrite_keygen_fixture:
       type: REWRITE.FIXTURE
-
-props:
-  sql-federation-type: ORIGINAL

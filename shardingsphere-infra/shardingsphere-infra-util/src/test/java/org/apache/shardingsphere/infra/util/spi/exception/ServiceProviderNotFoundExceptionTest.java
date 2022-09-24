@@ -20,17 +20,17 @@ package org.apache.shardingsphere.infra.util.spi.exception;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class ServiceProviderNotFoundExceptionTest {
     
     @Test
     public void assertGetMessageWithClassOnly() {
-        assertThat(new ServiceProviderNotFoundServerException(Object.class).getMessage(), is("SPI-00001: No implementation class load from SPI `java.lang.Object`."));
+        assertThat(new ServiceProviderNotFoundServerException(Object.class).getMessage(), is("SPI-00001: No implementation class load from SPI `java.lang.Object`"));
     }
     
     @Test
     public void assertGetMessageWithClassAndType() {
-        assertThat(new ServiceProviderNotFoundServerException(Object.class, "Foo").getMessage(), is("SPI-00001: No implementation class load from SPI `java.lang.Object` with type `Foo`."));
+        assertThat(new ServiceProviderNotFoundServerException(Object.class, "Foo").getMessage(), is("SPI-00001: No implementation class load from SPI `java.lang.Object` with type `Foo`"));
     }
 }

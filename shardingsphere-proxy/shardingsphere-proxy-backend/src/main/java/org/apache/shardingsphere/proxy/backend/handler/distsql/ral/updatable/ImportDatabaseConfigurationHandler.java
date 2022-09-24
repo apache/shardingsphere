@@ -104,25 +104,21 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
     }
     
     private void checkDatabase(final String databaseName, final File file) {
-        Preconditions.checkNotNull(databaseName, String.format("Property `databaseName` in file `%s` is required.", file.getName()));
+        Preconditions.checkNotNull(databaseName, "Property `databaseName` in file `%s` is required", file.getName());
         if (ProxyContext.getInstance().databaseExists(databaseName)) {
-            Preconditions.checkState(ProxyContext.getInstance().getDatabase(databaseName).getResource().getDataSources().isEmpty(), "Database `%s` exists and is not empty.", databaseName);
+            Preconditions.checkState(ProxyContext.getInstance().getDatabase(databaseName).getResource().getDataSources().isEmpty(), "Database `%s` exists and is not empty", databaseName);
         }
     }
     
     private void checkDataSource(final Map<String, YamlProxyDataSourceConfiguration> dataSources, final File file) {
-        Preconditions.checkState(!dataSources.isEmpty(), "Data sources configuration in file `%s` is required.", file.getName());
+        Preconditions.checkState(!dataSources.isEmpty(), "Data source configurations in file `%s` is required", file.getName());
     }
     
     private void addDatabase(final String databaseName) throws SQLException {
-        ProxyContext.getInstance().getContextManager().addDatabase(databaseName);
+        ProxyContext.getInstance().getContextManager().addDatabaseAndPersist(databaseName);
     }
     
-    private void dropDatabase(final String databaseName) {
-        ProxyContext.getInstance().getContextManager().dropDatabase(databaseName);
-    }
-    
-    private void addResources(final String databaseName, final Map<String, YamlProxyDataSourceConfiguration> yamlDataSourceMap) throws DistSQLException {
+    private void addResources(final String databaseName, final Map<String, YamlProxyDataSourceConfiguration> yamlDataSourceMap) {
         Map<String, DataSourceProperties> dataSourcePropsMap = new LinkedHashMap<>(yamlDataSourceMap.size(), 1);
         for (Entry<String, YamlProxyDataSourceConfiguration> entry : yamlDataSourceMap.entrySet()) {
             dataSourcePropsMap.put(entry.getKey(), DataSourcePropertiesCreator.create(HikariDataSource.class.getName(), dataSourceConfigSwapper.swap(entry.getValue())));
@@ -135,7 +131,7 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
         }
     }
     
-    private void addRules(final String databaseName, final Collection<YamlRuleConfiguration> yamlRuleConfigs) throws DistSQLException {
+    private void addRules(final String databaseName, final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
         if (yamlRuleConfigs.isEmpty()) {
             return;
         }
@@ -168,5 +164,9 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         ProxyContext.getInstance().getContextManager().renewMetaDataContexts(metaDataContexts);
         metaDataContexts.getPersistService().getDatabaseRulePersistService().persist(metaDataContexts.getMetaData().getActualDatabaseName(databaseName), ruleConfigs);
+    }
+    
+    private void dropDatabase(final String databaseName) {
+        ProxyContext.getInstance().getContextManager().dropDatabaseAndPersist(databaseName);
     }
 }

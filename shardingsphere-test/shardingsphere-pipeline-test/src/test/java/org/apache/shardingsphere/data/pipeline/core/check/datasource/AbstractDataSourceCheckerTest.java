@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.core.check.datasource;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
-import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobPrepareFailedException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithInvalidConnectionException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithTargetTableNotEmptyException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -78,15 +78,14 @@ public final class AbstractDataSourceCheckerTest {
         dataSources.add(dataSource);
     }
     
-    @SneakyThrows
     @Test
-    public void assertCheckConnection() {
+    public void assertCheckConnection() throws SQLException {
         when(dataSource.getConnection()).thenReturn(connection);
         dataSourceChecker.checkConnection(dataSources);
         verify(dataSource).getConnection();
     }
     
-    @Test(expected = PipelineJobPrepareFailedException.class)
+    @Test(expected = PrepareJobWithInvalidConnectionException.class)
     public void assertCheckConnectionFailed() throws SQLException {
         when(dataSource.getConnection()).thenThrow(new SQLException("error"));
         dataSourceChecker.checkConnection(dataSources);
@@ -100,7 +99,7 @@ public final class AbstractDataSourceCheckerTest {
         dataSourceChecker.checkTargetTable(dataSources, new TableNameSchemaNameMapping(Collections.emptyMap()), Collections.singletonList("t_order"));
     }
     
-    @Test(expected = PipelineJobPrepareFailedException.class)
+    @Test(expected = PrepareJobWithTargetTableNotEmptyException.class)
     public void assertCheckTargetTableFailed() throws SQLException {
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.prepareStatement("SELECT * FROM t_order LIMIT 1")).thenReturn(preparedStatement);

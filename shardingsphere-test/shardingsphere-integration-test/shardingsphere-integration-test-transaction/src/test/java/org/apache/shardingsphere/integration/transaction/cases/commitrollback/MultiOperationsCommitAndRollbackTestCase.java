@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.integration.transaction.cases.commitrollback;
 
 import com.google.common.base.Preconditions;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
@@ -32,12 +30,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Integration test of multiple operations in one transaction.
  */
-@Slf4j
 @TransactionTestCase
 public final class MultiOperationsCommitAndRollbackTestCase extends BaseTransactionTestCase {
     
@@ -46,8 +43,7 @@ public final class MultiOperationsCommitAndRollbackTestCase extends BaseTransact
     }
     
     @Override
-    @SneakyThrows
-    public void executeTest() {
+    public void executeTest() throws SQLException {
         assertRollback();
         assertCommit();
     }

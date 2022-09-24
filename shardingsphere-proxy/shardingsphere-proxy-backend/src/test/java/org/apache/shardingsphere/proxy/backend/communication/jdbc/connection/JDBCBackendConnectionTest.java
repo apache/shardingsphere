@@ -52,6 +52,8 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -61,9 +63,9 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -401,7 +403,7 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private Collection<ProxyBackendHandler> getDatabaseCommunicationEngines() {
         Field field = JDBCBackendConnection.class.getDeclaredField("backendHandlers");
         field.setAccessible(true);
@@ -409,7 +411,7 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private Collection<ProxyBackendHandler> getInUseDatabaseCommunicationEngines() {
         Field field = JDBCBackendConnection.class.getDeclaredField("inUseBackendHandlers");
         field.setAccessible(true);
@@ -468,5 +470,15 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
         backendConnection.getCachedConnections().put("", connection);
         Collection<SQLException> actualExceptions = backendConnection.closeConnections(false);
         assertThat(actualExceptions, is(Collections.singletonList(expectedException)));
+    }
+    
+    @Test
+    public void assertGetDataSourceNamesOfCachedConnections() {
+        backendConnection.getCachedConnections().put(connectionSession.getDatabaseName() + ".ds_0", null);
+        backendConnection.getCachedConnections().put(connectionSession.getDatabaseName() + ".ds_1", null);
+        backendConnection.getCachedConnections().put(connectionSession.getDatabaseName() + ".ds_2", null);
+        List<String> actual = new ArrayList<>(backendConnection.getDataSourceNamesOfCachedConnections());
+        Collections.sort(actual);
+        assertThat(actual, is(Arrays.asList("ds_0", "ds_1", "ds_2")));
     }
 }

@@ -26,13 +26,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.L
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.List;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class ShardingInsertValuesTokenTest {
     
@@ -53,13 +53,19 @@ public final class ShardingInsertValuesTokenTest {
         expressionSegment.add(expressionSegment1);
         expressionSegment.add(expressionSegment2);
         Collection<DataNode> dataNodes = new LinkedList<>();
+        dataNodes.add(new DataNode("logic_ds", "tbl_0"));
         ShardingInsertValue shardingInsertValue = new ShardingInsertValue(expressionSegment, dataNodes);
         List<InsertValue> insertValues = shardingInsertValuesToken.getInsertValues();
         insertValues.add(shardingInsertValue);
     }
     
     @Test
-    public void assertToString() {
+    public void assertToStringWithRouteUnit() {
         assertThat(shardingInsertValuesToken.toString(routeUnit), is("('shardingsphere', 'test')"));
+    }
+    
+    @Test
+    public void assertToStringWithoutRouteUnit() {
+        assertThat(shardingInsertValuesToken.toString(), is("('shardingsphere', 'test')"));
     }
 }

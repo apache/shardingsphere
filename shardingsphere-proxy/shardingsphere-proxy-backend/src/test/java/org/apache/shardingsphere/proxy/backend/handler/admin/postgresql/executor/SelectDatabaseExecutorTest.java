@@ -47,7 +47,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -96,13 +96,13 @@ public final class SelectDatabaseExecutorTest extends ProxyContextRestorer {
     private void addShardingDatabase() throws SQLException {
         Map<String, ShardingSphereDatabase> databases = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases();
         databases.put("sharding_db", new ShardingSphereDatabase("sharding_db", new PostgreSQLDatabaseType(),
-                new ShardingSphereResource(Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection()))), mock(ShardingSphereRuleMetaData.class), Collections.emptyMap()));
+                new ShardingSphereResource("sharding_db", Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection()))), mock(ShardingSphereRuleMetaData.class), Collections.emptyMap()));
     }
     
     private void addEmptyDatabase() {
         Map<String, ShardingSphereDatabase> databases = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases();
         databases.put("empty_db", new ShardingSphereDatabase("empty_db", new PostgreSQLDatabaseType(),
-                new ShardingSphereResource(Collections.emptyMap()), new ShardingSphereRuleMetaData(Collections.emptyList()), Collections.emptyMap()));
+                new ShardingSphereResource("sharding_db", Collections.emptyMap()), new ShardingSphereRuleMetaData(Collections.emptyList()), Collections.emptyMap()));
     }
     
     private Connection mockConnection() throws SQLException {

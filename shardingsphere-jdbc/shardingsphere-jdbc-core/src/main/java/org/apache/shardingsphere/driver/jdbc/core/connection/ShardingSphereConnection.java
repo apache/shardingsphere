@@ -69,7 +69,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         this.contextManager = contextManager;
         this.jdbcContext = jdbcContext;
         connectionManager = new ConnectionManager(databaseName, contextManager);
-        connectionContext = new ConnectionContext();
+        connectionContext = new ConnectionContext(connectionManager::getDataSourceNamesOfCachedConnections);
     }
     
     /**
@@ -210,7 +210,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     @Override
     public Savepoint setSavepoint() throws SQLException {
         checkClose();
-        ShardingSpherePreconditions.checkState(isHoldTransaction(), new SQLFeatureNotSupportedException("Savepoint can only be used in transaction blocks."));
+        ShardingSpherePreconditions.checkState(isHoldTransaction(), () -> new SQLFeatureNotSupportedException("Savepoint can only be used in transaction blocks."));
         return connectionManager.setSavepoint();
     }
     
@@ -224,7 +224,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     }
     
     private void checkClose() throws SQLException {
-        ShardingSpherePreconditions.checkState(!isClosed(), new ConnectionClosedException().toSQLException());
+        ShardingSpherePreconditions.checkState(!isClosed(), () -> new ConnectionClosedException().toSQLException());
     }
     
     @SuppressWarnings("MagicConstant")

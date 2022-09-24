@@ -17,18 +17,19 @@
 
 package org.apache.shardingsphere.data.pipeline.core.exception.connection;
 
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+
+import java.util.Collection;
+
 /**
  * Add migration source resource exception.
  */
-public final class AddMigrationSourceResourceException extends RuntimeException {
+public final class AddMigrationSourceResourceException extends PipelineSQLException {
     
     private static final long serialVersionUID = -3952313247315105684L;
     
-    public AddMigrationSourceResourceException(final String message) {
-        super(message);
-    }
-    
-    public AddMigrationSourceResourceException(final Throwable cause) {
-        super(cause);
+    public AddMigrationSourceResourceException(final Collection<String> duplicateDataSourceNames) {
+        super(XOpenSQLState.DUPLICATE, 30, "Duplicate resource names `%s`", duplicateDataSourceNames);
     }
 }

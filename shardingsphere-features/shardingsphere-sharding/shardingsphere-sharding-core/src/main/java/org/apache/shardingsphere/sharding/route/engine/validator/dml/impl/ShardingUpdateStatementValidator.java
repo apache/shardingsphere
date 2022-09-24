@@ -39,8 +39,8 @@ import java.util.Optional;
 public final class ShardingUpdateStatementValidator extends ShardingDMLStatementValidator<UpdateStatement> {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<UpdateStatement> sqlStatementContext,
-                            final List<Object> parameters, final ShardingSphereDatabase database) {
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<UpdateStatement> sqlStatementContext, final List<Object> parameters, final ShardingSphereDatabase database,
+                            final ConfigurationProperties props) {
         validateMultipleTable(shardingRule, sqlStatementContext);
     }
     

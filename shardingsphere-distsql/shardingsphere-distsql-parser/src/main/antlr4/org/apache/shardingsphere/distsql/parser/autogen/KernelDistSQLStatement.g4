@@ -38,7 +38,6 @@ execute
     | unlabelInstance
     | countSingleTableRule
     | alterInstance
-    | countDatabaseRules
     | prepareDistSQL
     | applyDistSQL
     | discardDistSQL
@@ -53,7 +52,6 @@ execute
     | showRulesUsedResource
     | importDatabaseConfiguration
     | convertYamlConfiguration
-    | showSQLTranslatorRule
     | showMigrationProcessConfiguration
     | createMigrationProcessConfiguration
     | alterMigrationProcessConfiguration

@@ -39,7 +39,7 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperInternalLock;
-import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperInternalLockHolder;
+import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperInternalLockProvider;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperPropertyKey;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.data.Stat;
@@ -59,10 +59,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -116,7 +117,6 @@ public final class CuratorZookeeperRepositoryTest {
     private InterProcessLock interProcessLock;
     
     @Before
-    @SneakyThrows
     public void init() {
         mockClient();
         mockBuilder();
@@ -125,7 +125,7 @@ public final class CuratorZookeeperRepositoryTest {
         mockInternalLockHolder();
     }
     
-    @SneakyThrows
+    @SneakyThrows({ReflectiveOperationException.class, InterruptedException.class})
     private void mockClient() {
         Field builderFiled = CuratorZookeeperRepository.class.getDeclaredField("builder");
         builderFiled.setAccessible(true);
@@ -141,15 +141,15 @@ public final class CuratorZookeeperRepositoryTest {
         when(client.blockUntilConnected(anyInt(), eq(TimeUnit.MILLISECONDS))).thenReturn(true);
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private void mockInternalLockHolder() {
-        Field internalLockHolderFiled = CuratorZookeeperRepository.class.getDeclaredField("internalLockHolder");
-        internalLockHolderFiled.setAccessible(true);
-        ZookeeperInternalLockHolder holder = new ZookeeperInternalLockHolder(client);
-        Field locksFiled = ZookeeperInternalLockHolder.class.getDeclaredField("locks");
+        Field internalLockProviderFiled = CuratorZookeeperRepository.class.getDeclaredField("internalLockProvider");
+        internalLockProviderFiled.setAccessible(true);
+        ZookeeperInternalLockProvider holder = new ZookeeperInternalLockProvider(client);
+        Field locksFiled = ZookeeperInternalLockProvider.class.getDeclaredField("locks");
         locksFiled.setAccessible(true);
         locksFiled.set(holder, Collections.singletonMap("/locks/glock", new ZookeeperInternalLock(interProcessLock)));
-        internalLockHolderFiled.set(REPOSITORY, holder);
+        internalLockProviderFiled.set(REPOSITORY, holder);
     }
     
     private void mockBuilder() {
@@ -163,32 +163,28 @@ public final class CuratorZookeeperRepositoryTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertPersist() {
+    public void assertPersist() throws Exception {
         when(protect.withMode(CreateMode.PERSISTENT)).thenReturn(protect);
         REPOSITORY.persist("/test", "value1");
         verify(protect).forPath("/test", "value1".getBytes(StandardCharsets.UTF_8));
     }
     
     @Test
-    @SneakyThrows
-    public void assertUpdate() {
+    public void assertUpdate() throws Exception {
         when(existsBuilder.forPath("/test")).thenReturn(new Stat());
         REPOSITORY.persist("/test", "value2");
         verify(setDataBuilder).forPath("/test", "value2".getBytes(StandardCharsets.UTF_8));
     }
     
     @Test
-    @SneakyThrows
-    public void assertPersistEphemeralNotExist() {
+    public void assertPersistEphemeralNotExist() throws Exception {
         when(protect.withMode(CreateMode.EPHEMERAL)).thenReturn(protect);
         REPOSITORY.persistEphemeral("/test/ephemeral", "value3");
         verify(protect).forPath("/test/ephemeral", "value3".getBytes(StandardCharsets.UTF_8));
     }
     
     @Test
-    @SneakyThrows
-    public void assertPersistEphemeralExist() {
+    public void assertPersistEphemeralExist() throws Exception {
         when(existsBuilder.forPath("/test/ephemeral")).thenReturn(new Stat());
         when(protect.withMode(CreateMode.EPHEMERAL)).thenReturn(protect);
         REPOSITORY.persistEphemeral("/test/ephemeral", "value4");
@@ -197,8 +193,7 @@ public final class CuratorZookeeperRepositoryTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetChildrenKeys() {
+    public void assertGetChildrenKeys() throws Exception {
         List<String> keys = Arrays.asList("/test/children/keys/1", "/test/children/keys/2");
         when(getChildrenBuilder.forPath("/test/children/keys")).thenReturn(keys);
         List<String> childrenKeys = REPOSITORY.getChildrenKeys("/test/children/keys");
@@ -206,8 +201,7 @@ public final class CuratorZookeeperRepositoryTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertWatchUpdatedChangedType() {
+    public void assertWatchUpdatedChangedType() throws ExecutionException, InterruptedException {
         mockCache("/test/children_updated/1");
         ChildData oldData = new ChildData("/test/children_updated/1", null, "value1".getBytes());
         ChildData data = new ChildData("/test/children_updated/1", null, "value2".getBytes());
@@ -221,7 +215,7 @@ public final class CuratorZookeeperRepositoryTest {
     }
     
     @Test
-    public void assertWatchDeletedChangedType() throws Exception {
+    public void assertWatchDeletedChangedType() throws ExecutionException, InterruptedException {
         mockCache("/test/children_deleted/5");
         ChildData oldData = new ChildData("/test/children_deleted/5", null, "value5".getBytes());
         ChildData data = new ChildData("/test/children_deleted/5", null, "value5".getBytes());
@@ -235,8 +229,7 @@ public final class CuratorZookeeperRepositoryTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertWatchAddedChangedType() {
+    public void assertWatchAddedChangedType() throws ExecutionException, InterruptedException {
         mockCache("/test/children_added/4");
         ChildData data = new ChildData("/test/children_added/4", null, "value4".getBytes());
         doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(CuratorCacheListener.Type.NODE_CREATED, null, data))).when(listenable).addListener(any(CuratorCacheListener.class));
@@ -248,7 +241,8 @@ public final class CuratorZookeeperRepositoryTest {
         assertThat(dataChangedEvent.getValue(), is("value4"));
     }
     
-    private void mockCache(final String key) throws Exception {
+    @SneakyThrows(ReflectiveOperationException.class)
+    private void mockCache(final String key) {
         Field cachesFiled = CuratorZookeeperRepository.class.getDeclaredField("caches");
         cachesFiled.setAccessible(true);
         Map<String, CuratorCache> caches = new HashMap<>();
@@ -298,15 +292,13 @@ public final class CuratorZookeeperRepositoryTest {
     }
     
     @Test
-    @SneakyThrows
     public void assertDeleteNotExistKey() {
         REPOSITORY.delete("/test/children/1");
         verify(client, times(0)).delete();
     }
     
     @Test
-    @SneakyThrows
-    public void assertDeleteExistKey() {
+    public void assertDeleteExistKey() throws Exception {
         when(existsBuilder.forPath("/test/children/1")).thenReturn(new Stat());
         when(deleteBuilder.deletingChildrenIfNeeded()).thenReturn(backgroundVersionable);
         REPOSITORY.delete("/test/children/1");

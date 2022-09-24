@@ -63,7 +63,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -78,7 +78,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     
     private final ShardingRuleConfiguration currentRuleConfig = createCurrentShardingRuleConfiguration();
     
-    private final ShardingSphereResource shardingSphereResource = new ShardingSphereResource(createDataSource());
+    private final ShardingSphereResource shardingSphereResource = new ShardingSphereResource("sharding_db", createDataSource());
     
     private final CreateShardingTableRuleStatementUpdater updater = new CreateShardingTableRuleStatementUpdater();
     
@@ -91,7 +91,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertUpdate() throws DistSQLException {
+    public void assertUpdate() {
         CreateShardingTableRuleStatement statement = new CreateShardingTableRuleStatement(Arrays.asList(createCompleteAutoTableRule(), createCompleteTableRule()));
         updater.checkSQLStatement(database, statement, currentRuleConfig);
         ShardingRuleConfiguration toBeAlteredRuleConfig = updater.buildToBeCreatedRuleConfiguration(statement);
@@ -131,7 +131,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertCheckCreateShardingStatement() throws DistSQLException {
+    public void assertCheckCreateShardingStatement() {
         String sql = "CREATE SHARDING TABLE RULE t_order("
                 + "RESOURCES(ds_0,ds_1),"
                 + "SHARDING_COLUMN=order_id,"
@@ -142,7 +142,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     }
     
     @Test(expected = DistSQLException.class)
-    public void assertCheckCreateShardingStatementThrows() throws DistSQLException {
+    public void assertCheckCreateShardingStatementThrows() {
         String sql = "CREATE SHARDING TABLE RULE t_order("
                 + "RESOURCES(ds_0,ds_1),"
                 + "SHARDING_COLUMN=order_id,"

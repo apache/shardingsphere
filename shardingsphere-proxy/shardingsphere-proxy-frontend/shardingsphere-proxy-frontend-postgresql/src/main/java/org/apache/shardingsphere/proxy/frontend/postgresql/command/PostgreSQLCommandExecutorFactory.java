@@ -60,62 +60,62 @@ public final class PostgreSQLCommandExecutorFactory {
      * @param commandPacketType command packet type for PostgreSQL
      * @param commandPacket command packet for PostgreSQL
      * @param connectionSession connection session
-     * @param connectionContext PostgreSQL connection context
+     * @param portalContext PostgreSQL portal context
      * @return created instance
      * @throws SQLException SQL exception
      */
     public static CommandExecutor newInstance(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLCommandPacket commandPacket,
-                                              final ConnectionSession connectionSession, final PostgreSQLConnectionContext connectionContext) throws SQLException {
+                                              final ConnectionSession connectionSession, final PortalContext portalContext) throws SQLException {
         log.debug("Execute packet type: {}, value: {}", commandPacketType, commandPacket);
         if (!(commandPacket instanceof PostgreSQLAggregatedCommandPacket)) {
-            return getCommandExecutor(commandPacketType, commandPacket, connectionSession, connectionContext);
+            return getCommandExecutor(commandPacketType, commandPacket, connectionSession, portalContext);
         }
         PostgreSQLAggregatedCommandPacket aggregatedCommandPacket = (PostgreSQLAggregatedCommandPacket) commandPacket;
         if (aggregatedCommandPacket.isContainsBatchedStatements()) {
-            return new PostgreSQLAggregatedCommandExecutor(getExecutorsOfAggregatedBatchedStatements(aggregatedCommandPacket, connectionSession, connectionContext));
+            return new PostgreSQLAggregatedCommandExecutor(getExecutorsOfAggregatedBatchedStatements(aggregatedCommandPacket, connectionSession, portalContext));
         }
         List<CommandExecutor> result = new ArrayList<>(aggregatedCommandPacket.getPackets().size());
         for (PostgreSQLCommandPacket each : aggregatedCommandPacket.getPackets()) {
-            result.add(getCommandExecutor((PostgreSQLCommandPacketType) each.getIdentifier(), each, connectionSession, connectionContext));
+            result.add(getCommandExecutor((PostgreSQLCommandPacketType) each.getIdentifier(), each, connectionSession, portalContext));
         }
         return new PostgreSQLAggregatedCommandExecutor(result);
     }
     
     private static List<CommandExecutor> getExecutorsOfAggregatedBatchedStatements(final PostgreSQLAggregatedCommandPacket aggregatedCommandPacket, final ConnectionSession connectionSession,
-                                                                                   final PostgreSQLConnectionContext connectionContext) throws SQLException {
+                                                                                   final PortalContext portalContext) throws SQLException {
         List<PostgreSQLCommandPacket> packets = aggregatedCommandPacket.getPackets();
         int firstBindIndex = aggregatedCommandPacket.getFirstBindIndex();
         int lastExecuteIndex = aggregatedCommandPacket.getLastExecuteIndex();
         List<CommandExecutor> result = new ArrayList<>(firstBindIndex + packets.size() - lastExecuteIndex);
         for (int i = 0; i < firstBindIndex; i++) {
             PostgreSQLCommandPacket each = packets.get(i);
-            result.add(getCommandExecutor((PostgreSQLCommandPacketType) each.getIdentifier(), each, connectionSession, connectionContext));
+            result.add(getCommandExecutor((PostgreSQLCommandPacketType) each.getIdentifier(), each, connectionSession, portalContext));
         }
         result.add(new PostgreSQLAggregatedBatchedStatementsCommandExecutor(connectionSession, packets.subList(firstBindIndex, lastExecuteIndex + 1)));
         for (int i = lastExecuteIndex + 1; i < packets.size(); i++) {
             PostgreSQLCommandPacket each = packets.get(i);
-            result.add(getCommandExecutor((PostgreSQLCommandPacketType) each.getIdentifier(), each, connectionSession, connectionContext));
+            result.add(getCommandExecutor((PostgreSQLCommandPacketType) each.getIdentifier(), each, connectionSession, portalContext));
         }
         return result;
     }
     
     private static CommandExecutor getCommandExecutor(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLCommandPacket commandPacket, final ConnectionSession connectionSession,
-                                                      final PostgreSQLConnectionContext connectionContext) throws SQLException {
+                                                      final PortalContext portalContext) throws SQLException {
         switch (commandPacketType) {
             case SIMPLE_QUERY:
-                return new PostgreSQLComQueryExecutor(connectionContext, (PostgreSQLComQueryPacket) commandPacket, connectionSession);
+                return new PostgreSQLComQueryExecutor(portalContext, (PostgreSQLComQueryPacket) commandPacket, connectionSession);
             case PARSE_COMMAND:
                 return new PostgreSQLComParseExecutor((PostgreSQLComParsePacket) commandPacket, connectionSession);
             case BIND_COMMAND:
-                return new PostgreSQLComBindExecutor(connectionContext, (PostgreSQLComBindPacket) commandPacket, connectionSession);
+                return new PostgreSQLComBindExecutor(portalContext, (PostgreSQLComBindPacket) commandPacket, connectionSession);
             case DESCRIBE_COMMAND:
-                return new PostgreSQLComDescribeExecutor(connectionContext, (PostgreSQLComDescribePacket) commandPacket, connectionSession);
+                return new PostgreSQLComDescribeExecutor(portalContext, (PostgreSQLComDescribePacket) commandPacket, connectionSession);
             case EXECUTE_COMMAND:
-                return new PostgreSQLComExecuteExecutor(connectionContext, (PostgreSQLComExecutePacket) commandPacket);
+                return new PostgreSQLComExecuteExecutor(portalContext, (PostgreSQLComExecutePacket) commandPacket);
             case SYNC_COMMAND:
                 return new PostgreSQLComSyncExecutor(connectionSession);
             case CLOSE_COMMAND:
-                return new PostgreSQLComCloseExecutor(connectionContext, (PostgreSQLComClosePacket) commandPacket, connectionSession);
+                return new PostgreSQLComCloseExecutor(portalContext, (PostgreSQLComClosePacket) commandPacket, connectionSession);
             case TERMINATE:
                 return new PostgreSQLComTerminationExecutor();
             default:

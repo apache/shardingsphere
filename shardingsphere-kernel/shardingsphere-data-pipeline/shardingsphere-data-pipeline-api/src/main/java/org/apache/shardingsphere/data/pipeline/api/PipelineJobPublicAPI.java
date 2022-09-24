@@ -17,45 +17,22 @@
 
 package org.apache.shardingsphere.data.pipeline.api;
 
+import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
-import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
-import java.sql.SQLException;
 import java.util.List;
 
 /**
  * Pipeline job public API.
  */
-public interface PipelineJobPublicAPI extends TypedSPI {
+public interface PipelineJobPublicAPI {
     
     /**
-     * Create process configuration.
+     * Get job type.
      *
-     * @param processConfig process configuration
+     * @return job type
      */
-    void createProcessConfiguration(PipelineProcessConfiguration processConfig);
-    
-    /**
-     * Alter process configuration.
-     *
-     * @param processConfig process configuration
-     */
-    void alterProcessConfiguration(PipelineProcessConfiguration processConfig);
-    
-    /**
-     * Drop process configuration.
-     *
-     * @param confPath configuration path. e.g. <code>/</code>, <code>/READ</code>, <code>/READ/RATE_LIMITER</code>
-     */
-    void dropProcessConfiguration(String confPath);
-    
-    /**
-     * Show process configuration.
-     *
-     * @return process configuration, non-null
-     */
-    PipelineProcessConfiguration showProcessConfiguration();
+    JobType getJobType();
     
     /**
      * Start disabled job.
@@ -70,21 +47,6 @@ public interface PipelineJobPublicAPI extends TypedSPI {
      * @param jobId job id
      */
     void stop(String jobId);
-    
-    /**
-     * Rollback pipeline job.
-     *
-     * @param jobId job id
-     * @throws SQLException when rollback underlying database data
-     */
-    void rollback(String jobId) throws SQLException;
-    
-    /**
-     * Commit pipeline job.
-     *
-     * @param jobId job id
-     */
-    void commit(String jobId);
     
     /**
      * Get pipeline job info.

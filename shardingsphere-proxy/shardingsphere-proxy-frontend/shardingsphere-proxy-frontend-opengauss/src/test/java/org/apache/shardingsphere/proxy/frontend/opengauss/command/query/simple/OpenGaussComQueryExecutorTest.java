@@ -31,7 +31,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,7 +47,7 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -57,7 +57,7 @@ import static org.mockito.Mockito.when;
 public final class OpenGaussComQueryExecutorTest {
     
     @Mock
-    private PostgreSQLConnectionContext connectionContext;
+    private PortalContext portalContext;
     
     @Mock
     private ProxyBackendHandler proxyBackendHandler;
@@ -69,11 +69,11 @@ public final class OpenGaussComQueryExecutorTest {
         PostgreSQLComQueryPacket queryPacket = mock(PostgreSQLComQueryPacket.class);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(queryPacket.getSql()).thenReturn("");
-        queryExecutor = new OpenGaussComQueryExecutor(connectionContext, queryPacket, connectionSession);
+        queryExecutor = new OpenGaussComQueryExecutor(portalContext, queryPacket, connectionSession);
         setMockFieldIntoExecutor(queryExecutor);
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setMockFieldIntoExecutor(final OpenGaussComQueryExecutor executor) {
         Field field = OpenGaussComQueryExecutor.class.getDeclaredField("proxyBackendHandler");
         field.setAccessible(true);

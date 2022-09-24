@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.postgresql.util.PostgreSQLPipelineFreemarkerManager;
 import org.postgresql.jdbc.PgArray;
 
@@ -44,9 +43,9 @@ public final class PostgresIndexSQLGenerator extends AbstractPostgresDDLAdapter 
      * 
      * @param context context
      * @return generated SQL
+     * @throws SQLException SQL exception
      */
-    @SneakyThrows
-    public String generate(final Map<String, Object> context) {
+    public String generate(final Map<String, Object> context) throws SQLException {
         StringBuilder result = new StringBuilder();
         Collection<Map<String, Object>> indexNodes = getIndexNodes(context);
         for (Map<String, Object> each : indexNodes) {

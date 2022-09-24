@@ -35,7 +35,7 @@ import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -50,7 +50,7 @@ public final class UnusedShardingAuditorsQueryResultSetTest {
         assertThat(actual.size(), is(3));
         assertThat(actual.get(0), is("fixture"));
         assertThat(actual.get(1), is("FIXTURE"));
-        assertThat(actual.get(2).toString(), is(""));
+        assertThat(actual.get(2).toString(), is("{}"));
     }
     
     private ShardingSphereDatabase mockDatabase() {

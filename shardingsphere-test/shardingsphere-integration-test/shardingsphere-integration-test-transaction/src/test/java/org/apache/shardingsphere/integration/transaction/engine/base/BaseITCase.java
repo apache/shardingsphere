@@ -69,7 +69,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @Slf4j
 @Getter(AccessLevel.PROTECTED)
@@ -258,7 +258,7 @@ public abstract class BaseITCase {
                                           final Map<String, TransactionParameterized> parameterizedMap, final String group) {
         String uniqueKey = getUniqueKey(currentTestCaseInfo.getDbType(), currentTestCaseInfo.getRunningAdaptor(), transactionTypes, providers, group);
         parameterizedMap.putIfAbsent(uniqueKey, new TransactionParameterized(getSqlDatabaseType(currentTestCaseInfo.getDbType()), currentTestCaseInfo.getRunningAdaptor(), transactionTypes, providers,
-                getDockerImageName(currentTestCaseInfo.getDbType(), version), group, new LinkedList<>()));
+                getStorageContainerImage(currentTestCaseInfo.getDbType(), version), group, new LinkedList<>()));
         parameterizedMap.get(uniqueKey).getTransactionTestCaseClasses().add(caseClass);
     }
     
@@ -279,7 +279,7 @@ public abstract class BaseITCase {
         }
     }
     
-    private static String getDockerImageName(final String databaseType, final String version) {
+    private static String getStorageContainerImage(final String databaseType, final String version) {
         switch (databaseType) {
             case TransactionTestConstants.MYSQL:
                 return "mysql/mysql-server:" + version;
@@ -358,8 +358,7 @@ public abstract class BaseITCase {
         }
     }
     
-    @SneakyThrows(SQLException.class)
-    protected Connection getProxyConnection() {
+    protected Connection getProxyConnection() throws SQLException {
         return dataSource.getConnection();
     }
     
@@ -392,7 +391,7 @@ public abstract class BaseITCase {
         return new ProxyDataSource(containerComposer, databaseName, ENV.getProxyUserName(), ENV.getProxyPassword());
     }
     
-    protected boolean waitShardingAlgorithmEffect(final int maxWaitTimes) {
+    protected boolean waitShardingAlgorithmEffect(final int maxWaitTimes) throws SQLException {
         long startTime = System.currentTimeMillis();
         int waitTimes = 0;
         do {
@@ -407,8 +406,7 @@ public abstract class BaseITCase {
         return false;
     }
     
-    @SneakyThrows
-    protected void addResources() {
+    protected void addResources() throws SQLException {
         if (DatabaseTypeUtil.isMySQL(databaseType)) {
             try (Connection connection = DriverManager.getConnection(getContainerComposer().getProxyJdbcUrl(""), ENV.getProxyUserName(), ENV.getProxyPassword())) {
                 executeWithLog(connection, "USE sharding_db");
@@ -439,9 +437,10 @@ public abstract class BaseITCase {
      * Add ds_2 resource to proxy.
      *
      * @param connection connection
+     * @throws SQLException SQL exception
      */
-    @SneakyThrows({SQLException.class, InterruptedException.class})
-    public void addNewResource(final Connection connection) {
+    @SneakyThrows(InterruptedException.class)
+    public void addNewResource(final Connection connection) throws SQLException {
         String addSourceResource = commonSQLCommand.getSourceAddNewResourceTemplate()
                 .replace("${user}", ENV.getActualDataSourceUsername(databaseType))
                 .replace("${password}", ENV.getActualDataSourcePassword(databaseType))
@@ -456,9 +455,9 @@ public abstract class BaseITCase {
      * Drop previous account table rule and create the table rule with three data sources.
      *
      * @param connection connection
+     * @throws SQLException SQL exception
      */
-    @SneakyThrows(SQLException.class)
-    public void createThreeDataSourceAccountTableRule(final Connection connection) {
+    public void createThreeDataSourceAccountTableRule(final Connection connection) throws SQLException {
         executeWithLog(connection, "DROP SHARDING TABLE RULE account;");
         executeWithLog(connection, getCommonSQLCommand().getCreateThreeDataSourceAccountTableRule());
         int ruleCount = countWithLog("SHOW SHARDING TABLE RULES FROM sharding_db;");
@@ -469,9 +468,9 @@ public abstract class BaseITCase {
      * Create the account table rule with one data source.
      *
      * @param connection connection
+     * @throws SQLException SQL exception
      */
-    @SneakyThrows(SQLException.class)
-    public void createOriginalAccountTableRule(final Connection connection) {
+    public void createOriginalAccountTableRule(final Connection connection) throws SQLException {
         executeWithLog(connection, "DROP SHARDING TABLE RULE account;");
         executeWithLog(connection, getCommonSQLCommand().getCreateOneDataSourceAccountTableRule());
         int ruleCount = countWithLog("SHOW SHARDING TABLE RULES FROM sharding_db;");
@@ -501,7 +500,7 @@ public abstract class BaseITCase {
         executeWithLog(connection, String.format("CREATE SCHEMA %s", schemaName));
     }
     
-    protected int countWithLog(final String sql) {
+    protected int countWithLog(final String sql) throws SQLException {
         Connection connection = getProxyConnection();
         int retryNumber = 0;
         while (retryNumber <= 3) {

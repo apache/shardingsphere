@@ -59,6 +59,6 @@ public final class StandaloneContextManagerBuilderTextTest {
                 "foo_db", new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.singleton(mock(RuleConfiguration.class))));
         Collection<RuleConfiguration> globalRuleConfigs = Collections.singleton(mock(RuleConfiguration.class));
         InstanceMetaData instanceMetaData = new ProxyInstanceMetaData(UUID.randomUUID().toString(), 3307);
-        return new ContextManagerBuilderParameter(modeConfig, databaseConfigs, globalRuleConfigs, new Properties(), Collections.emptyList(), instanceMetaData);
+        return new ContextManagerBuilderParameter(modeConfig, databaseConfigs, globalRuleConfigs, new Properties(), Collections.emptyList(), instanceMetaData, false);
     }
 }

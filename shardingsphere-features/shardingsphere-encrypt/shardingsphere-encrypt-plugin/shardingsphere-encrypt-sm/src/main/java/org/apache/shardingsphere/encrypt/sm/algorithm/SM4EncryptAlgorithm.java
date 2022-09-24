@@ -29,6 +29,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
 import java.security.Security;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -121,7 +122,6 @@ public final class SM4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
         return handle(plainValue, Cipher.ENCRYPT_MODE);
     }
     
-    @SneakyThrows
     @Override
     public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
         return null == cipherValue ? null : new String(decrypt(ByteUtils.fromHexString(cipherValue)), StandardCharsets.UTF_8);
@@ -131,7 +131,7 @@ public final class SM4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
         return handle(cipherValue, Cipher.DECRYPT_MODE);
     }
     
-    @SneakyThrows
+    @SneakyThrows(GeneralSecurityException.class)
     private byte[] handle(final byte[] input, final int mode) {
         Cipher cipher = Cipher.getInstance(sm4ModePadding, BouncyCastleProvider.PROVIDER_NAME);
         SecretKeySpec secretKeySpec = new SecretKeySpec(sm4Key, "SM4");

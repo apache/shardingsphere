@@ -19,10 +19,9 @@ package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingAuditorStatementUpdater;
@@ -39,8 +38,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Properties;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -57,13 +56,13 @@ public final class AlterShardingAuditorStatementUpdaterTest {
     }
     
     @Test(expected = DuplicateRuleException.class)
-    public void assertExecuteWithDuplicate() throws DistSQLException {
+    public void assertExecuteWithDuplicate() {
         ShardingAuditorSegment auditorSegment = new ShardingAuditorSegment("input_auditor_name", new AlgorithmSegment("DML_SHARDING_CONDITIONS", createProperties()));
         updater.checkSQLStatement(database, new AlterShardingAuditorStatement(Arrays.asList(auditorSegment, auditorSegment)), null);
     }
     
-    @Test(expected = RequiredAlgorithmMissedException.class)
-    public void assertExecuteWithNotExist() throws DistSQLException {
+    @Test(expected = MissingRequiredAlgorithmException.class)
+    public void assertExecuteWithNotExist() {
         Properties props = createProperties();
         ShardingAuditorSegment auditorSegment = new ShardingAuditorSegment("not_exist_auditor_name", new AlgorithmSegment("DML_SHARDING_CONDITIONS", props));
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
@@ -72,7 +71,7 @@ public final class AlterShardingAuditorStatementUpdaterTest {
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
-    public void assertExecuteWithInvalidAlgorithm() throws DistSQLException {
+    public void assertExecuteWithInvalidAlgorithm() {
         Properties props = createProperties();
         ShardingAuditorSegment auditorSegment = new ShardingAuditorSegment("exist_auditor_name", new AlgorithmSegment("INVALID_TYPE", props));
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ext
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class PostgreSQLBinaryProtocolValueFactoryTest {
     

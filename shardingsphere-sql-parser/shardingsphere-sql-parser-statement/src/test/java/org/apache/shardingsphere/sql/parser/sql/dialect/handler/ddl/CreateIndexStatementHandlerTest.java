@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Optional;

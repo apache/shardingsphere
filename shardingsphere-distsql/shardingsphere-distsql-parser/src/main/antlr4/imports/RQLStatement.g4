@@ -35,10 +35,6 @@ showSingleTable
     : SHOW SINGLE (TABLES | TABLE tableName) (FROM databaseName)?
     ;
 
-countDatabaseRules
-    : COUNT DATABASE RULES (FROM databaseName)?
-    ;
-
 showRulesUsedResource
     : SHOW RULES USED RESOURCE resourceName (FROM databaseName)?
     ;

@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.AuditorInUsedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAuditorMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingAuditorStatement;
@@ -38,8 +38,7 @@ import java.util.stream.Collectors;
 public final class DropShardingAuditorStatementUpdater implements RuleDefinitionDropUpdater<DropShardingAuditorStatement, ShardingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database,
-                                  final DropShardingAuditorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+    public void checkSQLStatement(final ShardingSphereDatabase database, final DropShardingAuditorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         if (null == currentRuleConfig && sqlStatement.isIfExists()) {
             return;
         }
@@ -49,19 +48,18 @@ public final class DropShardingAuditorStatementUpdater implements RuleDefinition
         checkInUsed(databaseName, auditorNames, currentRuleConfig);
     }
     
-    private void checkExist(final String databaseName, final Collection<String> auditorNames, final ShardingRuleConfiguration currentRuleConfig,
-                            final DropShardingAuditorStatement sqlStatement) throws DistSQLException {
+    private void checkExist(final String databaseName, final Collection<String> auditorNames, final ShardingRuleConfiguration currentRuleConfig, final DropShardingAuditorStatement sqlStatement) {
         if (sqlStatement.isIfExists()) {
             return;
         }
         Collection<String> notExistAuditors = auditorNames.stream().filter(each -> !currentRuleConfig.getAuditors().containsKey(each)).collect(Collectors.toList());
-        DistSQLException.predictionThrow(notExistAuditors.isEmpty(), () -> new RequiredAuditorMissedException("Sharding", databaseName, notExistAuditors));
+        ShardingSpherePreconditions.checkState(notExistAuditors.isEmpty(), () -> new MissingRequiredAlgorithmException("Sharding auditor", databaseName, notExistAuditors));
     }
     
-    private void checkInUsed(final String databaseName, final Collection<String> auditorNames, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkInUsed(final String databaseName, final Collection<String> auditorNames, final ShardingRuleConfiguration currentRuleConfig) {
         Collection<String> usedAuditors = getUsedAuditors(currentRuleConfig);
         Collection<String> inUsedNames = auditorNames.stream().filter(usedAuditors::contains).collect(Collectors.toList());
-        DistSQLException.predictionThrow(inUsedNames.isEmpty(), () -> new AuditorInUsedException("Sharding", databaseName, inUsedNames));
+        ShardingSpherePreconditions.checkState(inUsedNames.isEmpty(), () -> new AlgorithmInUsedException("Sharding auditor", databaseName, inUsedNames));
     }
     
     private Collection<String> getUsedAuditors(final ShardingRuleConfiguration shardingRuleConfig) {

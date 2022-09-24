@@ -19,10 +19,11 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -47,19 +48,15 @@ public final class AlterShardingBindingTableRulesStatementUpdater implements Rul
         checkToBeAlteredDuplicateBindingTables(databaseName, sqlStatement);
     }
     
-    private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
-        if (null == currentRuleConfig) {
-            throw new RequiredRuleMissedException("Sharding", databaseName);
-        }
+    private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) throws MissingRequiredRuleException {
+        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Sharding", databaseName));
     }
     
     private void checkToBeAlertedBindingTables(final String databaseName, final AlterShardingBindingTableRulesStatement sqlStatement,
                                                final ShardingRuleConfiguration currentRuleConfig) throws DuplicateRuleException {
         Collection<String> currentLogicTables = getCurrentLogicTables(currentRuleConfig);
         Collection<String> notExistedBindingTables = sqlStatement.getBindingTables().stream().filter(each -> !containsIgnoreCase(currentLogicTables, each)).collect(Collectors.toSet());
-        if (!notExistedBindingTables.isEmpty()) {
-            throw new DuplicateRuleException("binding", databaseName, notExistedBindingTables);
-        }
+        ShardingSpherePreconditions.checkState(notExistedBindingTables.isEmpty(), () -> new DuplicateRuleException("binding", databaseName, notExistedBindingTables));
     }
     
     private Collection<String> getCurrentLogicTables(final ShardingRuleConfiguration currentRuleConfig) {
@@ -73,9 +70,7 @@ public final class AlterShardingBindingTableRulesStatementUpdater implements Rul
         Collection<String> toBeAlteredBindingTables = new HashSet<>();
         Collection<String> duplicateBindingTables = sqlStatement.getBindingTables().stream().filter(each -> !toBeAlteredBindingTables.add(each.toLowerCase())).collect(Collectors.toSet());
         Collection<String> duplicateBindingTablesForDisplay = sqlStatement.getBindingTables().stream().filter(each -> containsIgnoreCase(duplicateBindingTables, each)).collect(Collectors.toSet());
-        if (!duplicateBindingTablesForDisplay.isEmpty()) {
-            throw new DuplicateRuleException("binding", databaseName, duplicateBindingTablesForDisplay);
-        }
+        ShardingSpherePreconditions.checkState(duplicateBindingTablesForDisplay.isEmpty(), () -> new DuplicateRuleException("binding", databaseName, duplicateBindingTablesForDisplay));
     }
     
     private boolean containsIgnoreCase(final Collection<String> collection, final String str) {

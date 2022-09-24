@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.command;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@Data
+@Setter
 @XmlRootElement(name = "command")
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExtraSQLCommand {
@@ -33,11 +34,33 @@ public final class ExtraSQLCommand {
     private String createTableOrder;
     
     @XmlElement(name = "create-table-order-item")
+    @Getter
     private String createTableOrderItem;
     
     @XmlElement(name = "full-insert-order")
     private String fullInsertOrder;
     
     @XmlElement(name = "full-insert-order-item")
+    @Getter
     private String fullInsertOrderItem;
+    
+    /**
+     * Get full insert order sql.
+     *
+     * @param orderTableName order table name
+     * @return migration single table DistSQL
+     */
+    public String getFullInsertOrder(final String orderTableName) {
+        return String.format(fullInsertOrder, orderTableName);
+    }
+    
+    /**
+     * Get create table order.
+     *
+     * @param orderTableName order table name
+     * @return Get create table order sql
+     */
+    public String getCreateTableOrder(final String orderTableName) {
+        return String.format(createTableOrder, orderTableName);
+    }
 }

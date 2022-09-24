@@ -19,9 +19,9 @@ package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.orde
 
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.orderby.item.OrderByItemConverterUtil;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 
 import java.util.Optional;
 

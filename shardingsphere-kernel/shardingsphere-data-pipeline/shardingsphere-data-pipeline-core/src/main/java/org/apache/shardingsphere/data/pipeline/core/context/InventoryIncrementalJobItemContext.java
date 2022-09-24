@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.context;
 
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 
@@ -26,7 +27,7 @@ import java.util.Collection;
 /**
  * Inventory incremental job item context.
  */
-public interface InventoryIncrementalJobItemContext extends PipelineJobItemContext {
+public interface InventoryIncrementalJobItemContext extends PipelineJobItemContext, PipelineJobProgressListener {
     
     @Override
     InventoryIncrementalProcessContext getJobProcessContext();
@@ -44,4 +45,11 @@ public interface InventoryIncrementalJobItemContext extends PipelineJobItemConte
      * @return incremental tasks
      */
     Collection<IncrementalTask> getIncrementalTasks();
+    
+    /**
+     * Get processed record count.
+     *
+     * @return processed record count.
+     */
+    long getProcessedRecordsCount();
 }

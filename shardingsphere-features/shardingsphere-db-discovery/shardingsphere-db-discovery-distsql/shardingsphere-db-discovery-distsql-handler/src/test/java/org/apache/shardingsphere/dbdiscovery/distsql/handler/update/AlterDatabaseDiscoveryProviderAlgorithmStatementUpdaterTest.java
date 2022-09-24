@@ -23,10 +23,9 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDisc
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryTypeStatement;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,7 +43,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class AlterDatabaseDiscoveryProviderAlgorithmStatementUpdaterTest {
@@ -55,7 +54,7 @@ public final class AlterDatabaseDiscoveryProviderAlgorithmStatementUpdaterTest {
     private ShardingSphereDatabase database;
     
     @Test(expected = DuplicateRuleException.class)
-    public void assertCheckSQLStatementWithDuplicate() throws DistSQLException {
+    public void assertCheckSQLStatementWithDuplicate() {
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("readwrite_ds", Collections.emptyList(), "ha-heartbeat", "test");
         List<DatabaseDiscoveryProviderAlgorithmSegment> algorithmSegments = Arrays.asList(
                 new DatabaseDiscoveryProviderAlgorithmSegment("discovery_type", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())),
@@ -64,8 +63,8 @@ public final class AlterDatabaseDiscoveryProviderAlgorithmStatementUpdaterTest {
                 new DatabaseDiscoveryRuleConfiguration(Collections.singleton(dataSourceRuleConfig), Collections.emptyMap(), Collections.emptyMap()));
     }
     
-    @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckSQLStatementWithNotExist() throws DistSQLException {
+    @Test(expected = MissingRequiredRuleException.class)
+    public void assertCheckSQLStatementWithNotExist() {
         List<DatabaseDiscoveryProviderAlgorithmSegment> algorithmSegments =
                 Collections.singletonList(new DatabaseDiscoveryProviderAlgorithmSegment("discovery_type_1", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())));
         updater.checkSQLStatement(database, new AlterDatabaseDiscoveryTypeStatement(algorithmSegments),
@@ -74,7 +73,7 @@ public final class AlterDatabaseDiscoveryProviderAlgorithmStatementUpdaterTest {
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
-    public void assertCheckSQLStatementWithDatabaseDiscoveryType() throws DistSQLException {
+    public void assertCheckSQLStatementWithDatabaseDiscoveryType() {
         Collection<DatabaseDiscoveryProviderAlgorithmSegment> algorithmSegments = Collections.singleton(
                 new DatabaseDiscoveryProviderAlgorithmSegment("discovery_type", new AlgorithmSegment("INVALID_TYPE", new Properties())));
         updater.checkSQLStatement(database, new AlterDatabaseDiscoveryTypeStatement(algorithmSegments),
@@ -83,7 +82,7 @@ public final class AlterDatabaseDiscoveryProviderAlgorithmStatementUpdaterTest {
     }
     
     @Test
-    public void assertBuildAndUpdate() throws DistSQLException {
+    public void assertBuildAndUpdate() {
         Properties currentProps = new Properties();
         currentProps.put("key", "value");
         DatabaseDiscoveryRuleConfiguration currentRuleConfig = new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(),

@@ -1,3 +1,6 @@
+opengauss-jdbc License
+---------------
+
 Copyright (c) 1997, PostgreSQL Global Development Group
 All rights reserved.
 

@@ -120,19 +120,16 @@ public final class ProxyConfigurationLoader {
         }
         Map<Class<? extends RuleConfiguration>, Long> ruleConfigTypeCountMap = ruleConfigurations.stream()
                 .collect(Collectors.groupingBy(YamlRuleConfiguration::getRuleConfigurationType, Collectors.counting()));
-        Optional<Entry<Class<? extends RuleConfiguration>, Long>> duplicateRuleConfiguration = ruleConfigTypeCountMap.entrySet().stream().filter(each -> each.getValue() > 1).findFirst();
-        if (duplicateRuleConfiguration.isPresent()) {
-            throw new IllegalStateException(String.format("Duplicate rule tag '!%s' in file %s.", getDuplicateRuleTagName(duplicateRuleConfiguration.get().getKey()), yamlFile.getName()));
+        Optional<Entry<Class<? extends RuleConfiguration>, Long>> duplicateRuleConfig = ruleConfigTypeCountMap.entrySet().stream().filter(each -> each.getValue() > 1).findFirst();
+        if (duplicateRuleConfig.isPresent()) {
+            throw new IllegalStateException(String.format("Duplicate rule tag `!%s` in file `%s`", getDuplicateRuleTagName(duplicateRuleConfig.get().getKey()), yamlFile.getName()));
         }
     }
     
     @SuppressWarnings("rawtypes")
-    private static Object getDuplicateRuleTagName(final Class<? extends RuleConfiguration> ruleConfigurationClass) {
-        Optional<YamlRuleConfigurationSwapper> optional = YamlRuleConfigurationSwapperFactory.getAllInstances().stream().filter(each -> ruleConfigurationClass.equals(each.getTypeClass())).findFirst();
-        if (optional.isPresent()) {
-            return optional.get().getRuleTagName();
-        }
-        throw new IllegalStateException("Not find rule tag name of class " + ruleConfigurationClass);
+    private static Object getDuplicateRuleTagName(final Class<? extends RuleConfiguration> ruleConfigClass) {
+        Optional<YamlRuleConfigurationSwapper> result = YamlRuleConfigurationSwapperFactory.getAllInstances().stream().filter(each -> ruleConfigClass.equals(each.getTypeClass())).findFirst();
+        return result.orElseThrow(() -> new IllegalStateException("Not find rule tag name of class " + ruleConfigClass));
     }
     
     private static File[] findRuleConfigurationFiles(final File path) {

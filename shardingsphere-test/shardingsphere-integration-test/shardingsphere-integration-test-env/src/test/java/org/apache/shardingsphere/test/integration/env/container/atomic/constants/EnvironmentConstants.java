@@ -30,5 +30,5 @@ public final class EnvironmentConstants {
     
     public static final String STANDALONE_MODE = "Standalone";
     
-    public static final int DEFAULT_FULL_CONTAINER_QUANTITY = 8;
+    public static final int MAX_CONTAINER_QUANTITY = 7;
 }

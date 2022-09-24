@@ -81,12 +81,11 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
         if (PipelineJdbcUtils.isIntegerColumn(uniqueKeyDataType)) {
             return "SELECT * FROM " + decoratedTableName + " WHERE " + quotedUniqueKey + " " + (firstQuery ? ">=" : ">") + " ?"
                     + " AND " + quotedUniqueKey + " <= ? ORDER BY " + quotedUniqueKey + " ASC LIMIT ?";
-        } else if (PipelineJdbcUtils.isStringColumn(uniqueKeyDataType)) {
-            return "SELECT * FROM " + decoratedTableName + " WHERE " + quotedUniqueKey + " " + (firstQuery ? ">=" : ">") + " ?"
-                    + " ORDER BY " + quotedUniqueKey + " ASC LIMIT ?";
-        } else {
-            throw new IllegalArgumentException("Unknown uniqueKeyDataType: " + uniqueKeyDataType);
         }
+        if (PipelineJdbcUtils.isStringColumn(uniqueKeyDataType)) {
+            return "SELECT * FROM " + decoratedTableName + " WHERE " + quotedUniqueKey + " " + (firstQuery ? ">=" : ">") + " ?" + " ORDER BY " + quotedUniqueKey + " ASC LIMIT ?";
+        }
+        throw new IllegalArgumentException("Unknown uniqueKeyDataType: " + uniqueKeyDataType);
     }
     
     protected String decorate(final String schemaName, final String tableName) {
@@ -162,8 +161,8 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildTruncateSQL(final String schemaName, final String tableName) {
-        return String.format("TRUNCATE TABLE %s", decorate(schemaName, tableName));
+    public String buildDropSQL(final String schemaName, final String tableName) {
+        return String.format("DROP TABLE IF EXISTS %s", decorate(schemaName, tableName));
     }
     
     private String buildDeleteSQLInternal(final String schemaName, final String tableName, final Collection<Column> conditionColumns) {

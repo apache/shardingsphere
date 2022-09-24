@@ -50,13 +50,13 @@ public final class ProxyReactiveExecutor {
      */
     public Future<List<ExecuteResult>> execute(final QueryContext queryContext, final ExecutionGroupContext<VertxExecutionUnit> executionGroupContext) {
         EventBusContext eventBusContext = ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext();
-        ExecuteProcessEngine.initialize(queryContext, executionGroupContext, eventBusContext);
+        ExecuteProcessEngine.initializeExecution(queryContext, executionGroupContext, eventBusContext);
         List<Future<ExecuteResult>> futures = vertxExecutor.execute(executionGroupContext, new VertxExecutorCallback());
         return CompositeFuture.all(new ArrayList<>(futures)).compose(compositeFuture -> {
-            ExecuteProcessEngine.finish(executionGroupContext.getExecutionID(), eventBusContext);
+            ExecuteProcessEngine.finishExecution(executionGroupContext.getExecutionID(), eventBusContext);
             return Future.succeededFuture(compositeFuture.<ExecuteResult>list());
         }).eventually(unused -> {
-            ExecuteProcessEngine.clean();
+            ExecuteProcessEngine.cleanExecution();
             return Future.succeededFuture();
         });
     }

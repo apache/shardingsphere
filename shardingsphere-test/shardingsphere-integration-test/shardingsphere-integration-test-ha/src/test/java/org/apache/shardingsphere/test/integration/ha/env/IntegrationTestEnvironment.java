@@ -77,12 +77,12 @@ public final class IntegrationTestEnvironment {
     }
     
     /**
-     * List database docker image names.
+     * List storage container images.
      *
-     * @param databaseType database type.
-     * @return database docker image names
+     * @param databaseType database type
+     * @return storage container images
      */
-    public List<String> listDatabaseDockerImageNames(final DatabaseType databaseType) {
+    public List<String> listStorageContainerImages(final DatabaseType databaseType) {
         switch (databaseType.getType()) {
             case "MySQL":
                 return mysqlVersions;

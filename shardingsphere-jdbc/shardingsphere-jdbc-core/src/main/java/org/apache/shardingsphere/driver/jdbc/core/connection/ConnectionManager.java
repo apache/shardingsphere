@@ -364,6 +364,11 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
     }
     
     @Override
+    public Collection<String> getDataSourceNamesOfCachedConnections() {
+        return cachedConnections.keySet();
+    }
+    
+    @Override
     public void close() throws SQLException {
         try {
             forceExecuteTemplate.execute(cachedConnections.values(), Connection::close);
