@@ -16,4 +16,3 @@
 #
 
 org.apache.shardingsphere.readwritesplitting.spring.boot.ReadwriteSplittingRuleSpringbootConfiguration
-    

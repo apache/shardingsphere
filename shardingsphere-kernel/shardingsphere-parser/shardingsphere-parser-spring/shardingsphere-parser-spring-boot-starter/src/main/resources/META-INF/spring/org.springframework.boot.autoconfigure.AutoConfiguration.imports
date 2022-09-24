@@ -16,4 +16,3 @@
 #
 
 org.apache.shardingsphere.parser.spring.boot.SQLParserRuleSpringBootConfiguration
-    

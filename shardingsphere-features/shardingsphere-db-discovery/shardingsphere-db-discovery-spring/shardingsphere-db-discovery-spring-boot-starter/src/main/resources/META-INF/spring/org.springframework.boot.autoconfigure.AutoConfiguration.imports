@@ -16,4 +16,3 @@
 #
 
 org.apache.shardingsphere.dbdiscovery.spring.boot.DatabaseDiscoveryRuleSpringbootConfiguration
-    

@@ -16,4 +16,3 @@
 #
 
 org.apache.shardingsphere.sharding.spring.boot.ShardingRuleSpringBootConfiguration
-    

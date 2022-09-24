@@ -16,4 +16,3 @@
 #
 
 org.apache.shardingsphere.spring.boot.ShardingSphereAutoConfiguration
-    
