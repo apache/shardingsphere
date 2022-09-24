@@ -29,7 +29,7 @@ import java.util.List;
 
 /**
  * Plugin interceptor point.
- * <p>
+ * 
  * {@code
  * PluginInterceptorPoint.intercept("Target.class")
  * .onConstructor(ElementMatchers.any()).implement("Advice.class").build()
