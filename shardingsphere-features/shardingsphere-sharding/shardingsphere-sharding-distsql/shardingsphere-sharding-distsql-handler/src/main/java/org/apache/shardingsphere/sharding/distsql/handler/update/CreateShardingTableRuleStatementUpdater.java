@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -31,8 +30,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardin
 public final class CreateShardingTableRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateShardingTableRuleStatement, ShardingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final CreateShardingTableRuleStatement sqlStatement,
-                                  final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+    public void checkSQLStatement(final ShardingSphereDatabase database, final CreateShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         ShardingTableRuleStatementChecker.checkCreation(database, sqlStatement.getRules(), currentRuleConfig);
     }
     
@@ -47,6 +45,7 @@ public final class CreateShardingTableRuleStatementUpdater implements RuleDefini
         currentRuleConfig.getAutoTables().addAll(toBeCreatedRuleConfig.getAutoTables());
         currentRuleConfig.getShardingAlgorithms().putAll(toBeCreatedRuleConfig.getShardingAlgorithms());
         currentRuleConfig.getKeyGenerators().putAll(toBeCreatedRuleConfig.getKeyGenerators());
+        currentRuleConfig.getAuditors().putAll(toBeCreatedRuleConfig.getAuditors());
     }
     
     @Override

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.dbdiscovery.distsql.handler.update;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryHeartbeatSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryHeartbeatStatement;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.junit.Test;
@@ -47,7 +46,7 @@ public final class CreateDatabaseDiscoveryHeartbeatStatementUpdaterTest {
     private ShardingSphereDatabase database;
     
     @Test(expected = DuplicateRuleException.class)
-    public void assertCheckSQLStatementWithDuplicateHeartbeatNames() throws DistSQLException {
+    public void assertCheckSQLStatementWithDuplicateHeartbeatNames() {
         DatabaseDiscoveryHeartbeatSegment segment1 = new DatabaseDiscoveryHeartbeatSegment("heartbeat", createProperties("key", "value"));
         DatabaseDiscoveryHeartbeatSegment segment2 = new DatabaseDiscoveryHeartbeatSegment("heartbeat", createProperties("key", "value"));
         updater.checkSQLStatement(database, new CreateDatabaseDiscoveryHeartbeatStatement(Arrays.asList(segment1, segment2)),
@@ -55,7 +54,7 @@ public final class CreateDatabaseDiscoveryHeartbeatStatementUpdaterTest {
     }
     
     @Test(expected = DuplicateRuleException.class)
-    public void assertCheckSQLStatementWithExistDiscoveryHeartbeatName() throws DistSQLException {
+    public void assertCheckSQLStatementWithExistDiscoveryHeartbeatName() {
         DatabaseDiscoveryHeartbeatSegment segment = new DatabaseDiscoveryHeartbeatSegment("heartbeat", createProperties("key", "value"));
         DatabaseDiscoveryRuleConfiguration ruleConfig = new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.singletonMap("heartbeat", null), Collections.emptyMap());
         updater.checkSQLStatement(database, new CreateDatabaseDiscoveryHeartbeatStatement(Collections.singleton(segment)), ruleConfig);

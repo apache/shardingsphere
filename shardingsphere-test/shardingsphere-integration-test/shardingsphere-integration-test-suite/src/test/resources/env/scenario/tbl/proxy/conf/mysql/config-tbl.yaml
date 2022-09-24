@@ -46,6 +46,10 @@ rules:
       keyGenerateStrategy:
         column: item_id
         keyGeneratorName: constant
+      auditStrategy:
+        auditorNames:
+          - auditor_constant
+        allowHintDisable: true
     t_order_details:
       actualDataNodes: tbl.t_order_details_${0..9}
       tableStrategy:
@@ -86,3 +90,7 @@ rules:
   keyGenerators:
     constant:
       type: IT.FIXTURE
+
+  auditors:
+    auditor_constant:
+      type: IT.AUDITOR.FIXTURE

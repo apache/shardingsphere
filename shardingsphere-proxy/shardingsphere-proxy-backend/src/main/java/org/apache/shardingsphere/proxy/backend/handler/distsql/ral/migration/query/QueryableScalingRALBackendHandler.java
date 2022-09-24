@@ -27,6 +27,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,7 +44,7 @@ public final class QueryableScalingRALBackendHandler implements ProxyBackendHand
     private final DatabaseDistSQLResultSet resultSet;
     
     @Override
-    public ResponseHeader execute() {
+    public ResponseHeader execute() throws SQLException {
         resultSet.init(null, sqlStatement);
         List<QueryHeader> queryHeaders = new ArrayList<>();
         for (String each : resultSet.getColumnNames()) {

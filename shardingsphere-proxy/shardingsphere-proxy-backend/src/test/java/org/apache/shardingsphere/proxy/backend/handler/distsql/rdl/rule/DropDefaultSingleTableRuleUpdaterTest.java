@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule;
 
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropDefaultSingleTableRuleStatement;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
@@ -48,18 +48,18 @@ public final class DropDefaultSingleTableRuleUpdaterTest {
         when(database.getResource().getDataSources()).thenReturn(Collections.singletonMap("ds_0", new MockedDataSource()));
     }
     
-    @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckWithoutConfig() throws Exception {
+    @Test(expected = MissingRequiredRuleException.class)
+    public void assertCheckWithoutConfig() {
         updater.checkSQLStatement(database, new DropDefaultSingleTableRuleStatement(), null);
     }
     
-    @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckWithoutResource() throws Exception {
+    @Test(expected = MissingRequiredRuleException.class)
+    public void assertCheckWithoutResource() {
         updater.checkSQLStatement(database, new DropDefaultSingleTableRuleStatement(), new SingleTableRuleConfiguration());
     }
     
     @Test
-    public void assertCheckWithIfExists() throws Exception {
+    public void assertCheckWithIfExists() {
         DropDefaultSingleTableRuleStatement statement = new DropDefaultSingleTableRuleStatement(true);
         SingleTableRuleConfiguration currentConfig = new SingleTableRuleConfiguration();
         updater.checkSQLStatement(database, statement, currentConfig);

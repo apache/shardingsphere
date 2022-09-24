@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule;
 
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterDefaultSingleTableRuleStatement;
-import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
@@ -55,18 +55,18 @@ public final class AlterDefaultSingleTableRuleUpdaterTest {
         when(database.getResource().getDataSources()).thenReturn(Collections.singletonMap("ds_0", new MockedDataSource()));
     }
     
-    @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckWithNotExistConfiguration() throws Exception {
+    @Test(expected = MissingRequiredRuleException.class)
+    public void assertCheckWithNotExistConfiguration() {
         updater.checkSQLStatement(database, new AlterDefaultSingleTableRuleStatement("ds_1"), null);
     }
     
-    @Test(expected = RequiredResourceMissedException.class)
-    public void assertCheckWithInvalidResource() throws Exception {
+    @Test(expected = MissingRequiredResourcesException.class)
+    public void assertCheckWithInvalidResource() {
         updater.checkSQLStatement(database, new AlterDefaultSingleTableRuleStatement("ds_1"), currentConfig);
     }
     
-    @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckWithNotExistResource() throws Exception {
+    @Test(expected = MissingRequiredRuleException.class)
+    public void assertCheckWithNotExistResource() {
         when(currentConfig.getDefaultDataSource()).thenReturn(Optional.empty());
         updater.checkSQLStatement(database, new AlterDefaultSingleTableRuleStatement("ds_0"), currentConfig);
     }

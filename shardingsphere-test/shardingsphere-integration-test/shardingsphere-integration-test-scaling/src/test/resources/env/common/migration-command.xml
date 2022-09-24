@@ -1,0 +1,91 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<command>
+    <add-migration-process-config>
+        CREATE MIGRATION PROCESS CONFIGURATION (
+        READ(
+        WORKER_THREAD=40,
+        BATCH_SIZE=1000,
+        SHARDING_SIZE=10000000,
+        RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='500')))
+        ),
+        WRITE(
+        WORKER_THREAD=40,
+        BATCH_SIZE=1000,
+        RATE_LIMITER (TYPE(NAME='TPS',PROPERTIES('tps'='2000')))
+        ),
+        STREAM_CHANNEL (TYPE(NAME='MEMORY',PROPERTIES('block-queue-size'='10000')))
+        );
+    </add-migration-process-config>
+    
+    <add-migration-source-resource-template>
+        ADD MIGRATION SOURCE RESOURCE ds_0 (
+        URL="${ds0}",
+        USER="${user}",
+        PASSWORD="${password}"
+        );
+    </add-migration-source-resource-template>
+    
+    <add-migration-target-resource-template>
+        ADD RESOURCE ds_2 (
+        URL="${ds2}",
+        USER="${user}",
+        PASSWORD="${password}"
+        ),ds_3 (
+        URL="${ds3}",
+        USER="${user}",
+        PASSWORD="${password}"
+        ),ds_4 (
+        URL="${ds4}",
+        USER="${user}",
+        PASSWORD="${password}"
+        )
+    </add-migration-target-resource-template>
+    
+    <create-target-order-table-encrypt-rule>
+        CREATE ENCRYPT RULE t_order (
+        COLUMNS((NAME=status, CIPHER=status,TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc')))),
+        QUERY_WITH_CIPHER_COLUMN=true)
+    </create-target-order-table-encrypt-rule>
+    
+    <create-target-order-table-rule>
+        CREATE SHARDING TABLE RULE t_order(
+        RESOURCES(ds_2,ds_3,ds_4),
+        SHARDING_COLUMN=order_id,
+        TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="6")),
+        KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
+        )
+    </create-target-order-table-rule>
+    
+    <create-target-order-item-table-rule>
+        CREATE SHARDING TABLE RULE t_order_item(
+        RESOURCES(ds_2,ds_3,ds_4),
+        SHARDING_COLUMN=order_id,
+        TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="6")),
+        KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
+        );
+    </create-target-order-item-table-rule>
+    
+    <migration-single-table>
+        MIGRATE TABLE ds_0.%s INTO sharding_db.%s;
+    </migration-single-table>
+    
+    <migration-single-table-with-schema>
+        MIGRATE TABLE ds_0.test.%s INTO sharding_db.%s;
+    </migration-single-table-with-schema>
+</command>

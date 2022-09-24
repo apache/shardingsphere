@@ -17,14 +17,19 @@
 
 package org.apache.shardingsphere.data.pipeline.core.exception.connection;
 
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+
+import java.util.Collection;
+
 /**
  * Drop migration source resource exception.
  */
-public final class DropMigrationSourceResourceException extends RuntimeException {
+public final class DropMigrationSourceResourceException extends PipelineSQLException {
     
     private static final long serialVersionUID = -7133815271017274299L;
     
-    public DropMigrationSourceResourceException(final String message) {
-        super(message);
+    public DropMigrationSourceResourceException(final Collection<String> resourceNames) {
+        super(XOpenSQLState.NOT_FOUND, 31, "Resource names `%s` do not exist", resourceNames);
     }
 }

@@ -642,7 +642,13 @@ public enum SQLVisitorRule {
     
     CREATE_POLICY("CreatePolicy", SQLStatementType.DDL),
     
-    DROP_INDEX_TYPE("DropIndexType", SQLStatementType.DDL);
+    DROP_INDEX_TYPE("DropIndexType", SQLStatementType.DDL),
+    
+    DROP_PLUGGABLE_DATABASE("DropPluggableDatabase", SQLStatementType.DDL),
+    
+    DROP_JAVA("DropJava", SQLStatementType.DDL),
+    
+    DROP_LIBRARY("DropLibrary", SQLStatementType.DDL);
     
     private final String name;
     

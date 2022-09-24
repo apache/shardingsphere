@@ -47,6 +47,6 @@ public enum MySQLNewParametersBoundFlag {
                 return each;
             }
         }
-        throw new IllegalArgumentException(String.format("Cannot find value '%s' in new parameters bound flag", value));
+        throw new IllegalArgumentException(String.format("Can not find value `%s` in new parameters bound flag", value));
     }
 }

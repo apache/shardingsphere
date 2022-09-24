@@ -86,11 +86,9 @@ public final class SQLNodeConvertEngineParameterizedTest {
         SUPPORTED_SQL_CASE_IDS.add("select_between_with_single_table");
         SUPPORTED_SQL_CASE_IDS.add("select_distinct_with_single_count_group_by");
         SUPPORTED_SQL_CASE_IDS.add("select_bit_xor");
-        SUPPORTED_SQL_CASE_IDS.add("select_position");
         SUPPORTED_SQL_CASE_IDS.add("select_with_schema");
         SUPPORTED_SQL_CASE_IDS.add("select_with_union");
         SUPPORTED_SQL_CASE_IDS.add("select_with_union_all");
-        SUPPORTED_SQL_CASE_IDS.add("select_cast_function");
         SUPPORTED_SQL_CASE_IDS.add("select_with_same_table_name_and_alias");
         SUPPORTED_SQL_CASE_IDS.add("select_count_like_concat");
         SUPPORTED_SQL_CASE_IDS.add("select_order_by_asc_and_index_desc");
@@ -106,6 +104,10 @@ public final class SQLNodeConvertEngineParameterizedTest {
         SUPPORTED_SQL_CASE_IDS.add("select_distinct_with_count_calculation");
         SUPPORTED_SQL_CASE_IDS.add("select_count_like_escape");
         SUPPORTED_SQL_CASE_IDS.add("select_with_projection_subquery_and_multiple_parameters");
+        SUPPORTED_SQL_CASE_IDS.add("select_group_concat");
+        SUPPORTED_SQL_CASE_IDS.add("select_cast_function");
+        SUPPORTED_SQL_CASE_IDS.add("select_position");
+        SUPPORTED_SQL_CASE_IDS.add("select_mod_function");
     }
     
     private final String sqlCaseId;

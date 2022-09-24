@@ -50,7 +50,7 @@ public final class UnusedShardingAuditorsQueryResultSetTest {
         assertThat(actual.size(), is(3));
         assertThat(actual.get(0), is("fixture"));
         assertThat(actual.get(1), is("FIXTURE"));
-        assertThat(actual.get(2).toString(), is(""));
+        assertThat(actual.get(2).toString(), is("{}"));
     }
     
     private ShardingSphereDatabase mockDatabase() {

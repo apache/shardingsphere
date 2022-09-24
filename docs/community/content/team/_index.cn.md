@@ -427,6 +427,11 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/86716581?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+       <td>
+            <a href="https://github.com/natehuangting" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/26433395?s=96&v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
         <td>
@@ -437,6 +442,9 @@ chapter = true
         </td>
         <td>
             <b>Yacine Si Tayeb</b>
+        </td>
+        <td>
+            <b>黄挺</b>
         </td>
     </tr>
 </table>

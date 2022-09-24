@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.metadata.persist.service.schema;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
-import org.apache.shardingsphere.infra.metadata.database.schema.SchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
@@ -39,13 +38,6 @@ import java.util.Collections;
 public final class TableMetaDataPersistService implements SchemaMetaDataPersistService<Map<String, ShardingSphereTable>> {
     
     private final PersistRepository repository;
-    
-    @Override
-    public void compareAndPersist(final String databaseName, final String schemaName, final Map<String, ShardingSphereTable> loadedTables) {
-        Map<String, ShardingSphereTable> currentTables = load(databaseName, schemaName);
-        persist(databaseName, schemaName, SchemaManager.getToBeAddedTables(loadedTables, currentTables));
-        SchemaManager.getToBeDeletedTables(loadedTables, currentTables).forEach((key, value) -> delete(databaseName, schemaName, key));
-    }
     
     @Override
     public void persist(final String databaseName, final String schemaName, final Map<String, ShardingSphereTable> tables) {

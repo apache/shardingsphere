@@ -46,7 +46,7 @@ public final class CreateViewStatementSchemaRefresher implements MetaDataRefresh
     public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                                                     final String schemaName, final CreateViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String viewName = sqlStatement.getView().getTableName().getIdentifier().getValue();
-        String viewDefinition = sqlStatement.getViewSQL().substring(sqlStatement.getViewSQL().substring(0, sqlStatement.getViewSQL().indexOf(" as ")).length() + 4).trim();
+        String viewDefinition = sqlStatement.getViewSQL().substring(getViewDefinitionStartIndex(sqlStatement)).trim();
         if (!containsInImmutableDataNodeContainedRule(viewName, database)) {
             database.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, viewName));
         }
@@ -64,6 +64,10 @@ public final class CreateViewStatementSchemaRefresher implements MetaDataRefresh
             return Optional.of(event);
         }
         return Optional.empty();
+    }
+    
+    private static int getViewDefinitionStartIndex(final CreateViewStatement sqlStatement) {
+        return sqlStatement.getViewSQL().toUpperCase().indexOf("AS") + "AS".length();
     }
     
     private boolean containsInImmutableDataNodeContainedRule(final String tableName, final ShardingSphereDatabase database) {

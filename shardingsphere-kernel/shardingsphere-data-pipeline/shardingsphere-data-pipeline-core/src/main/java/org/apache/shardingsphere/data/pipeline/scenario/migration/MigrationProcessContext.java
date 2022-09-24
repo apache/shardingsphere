@@ -29,6 +29,12 @@ import org.apache.shardingsphere.data.pipeline.core.context.AbstractInventoryInc
 @Slf4j
 public final class MigrationProcessContext extends AbstractInventoryIncrementalProcessContext {
     
+    /**
+     * Constructor.
+     *
+     * @param jobId job id
+     * @param originalProcessConfig original process configuration, nullable
+     */
     public MigrationProcessContext(final String jobId, final PipelineProcessConfiguration originalProcessConfig) {
         super(jobId, originalProcessConfig);
     }

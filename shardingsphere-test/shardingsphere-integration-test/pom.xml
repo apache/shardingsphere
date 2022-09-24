@@ -35,6 +35,7 @@
         <module>shardingsphere-integration-test-scaling</module>
         <module>shardingsphere-integration-test-transaction</module>
         <module>shardingsphere-integration-test-ha</module>
+        <module>shardingsphere-integration-test-showprocesslist</module>
     </modules>
     
     <properties>

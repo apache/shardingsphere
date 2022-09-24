@@ -37,7 +37,7 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler.CuratorZookeeperExceptionHandler;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.listener.SessionConnectionListener;
-import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperInternalLockHolder;
+import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperInternalLockProvider;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperProperties;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperPropertyKey;
 import org.apache.zookeeper.CreateMode;
@@ -65,13 +65,13 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     
     private CuratorFramework client;
     
-    private ZookeeperInternalLockHolder internalLockHolder;
+    private ZookeeperInternalLockProvider internalLockProvider;
     
     @Override
     public void init(final ClusterPersistRepositoryConfiguration config) {
         ZookeeperProperties zookeeperProps = new ZookeeperProperties(config.getProps());
         client = buildCuratorClient(config, zookeeperProps);
-        internalLockHolder = new ZookeeperInternalLockHolder(client);
+        internalLockProvider = new ZookeeperInternalLockProvider(client);
         initCuratorClient(zookeeperProps);
     }
     
@@ -272,13 +272,13 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     }
     
     @Override
-    public boolean persistLock(final String lockKey, final long timeoutMillis) {
-        return internalLockHolder.getInternalLock(lockKey).tryLock(timeoutMillis);
+    public boolean tryLock(final String lockKey, final long timeoutMillis) {
+        return internalLockProvider.getInternalLock(lockKey).tryLock(timeoutMillis);
     }
     
     @Override
-    public void deleteLock(final String lockKey) {
-        internalLockHolder.getInternalLock(lockKey).unlock();
+    public void unlock(final String lockKey) {
+        internalLockProvider.getInternalLock(lockKey).unlock();
     }
     
     @Override

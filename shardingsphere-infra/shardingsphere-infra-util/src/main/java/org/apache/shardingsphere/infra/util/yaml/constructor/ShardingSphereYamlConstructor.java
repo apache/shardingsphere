@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.util.yaml.constructor;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.util.yaml.shortcuts.ShardingSphereYamlShortcutsFactory;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.constructor.Construct;
@@ -49,9 +50,7 @@ public class ShardingSphereYamlConstructor extends Constructor {
     
     @Override
     protected Class<?> getClassForName(final String className) throws ClassNotFoundException {
-        if (className.equals(rootClass.getName())) {
-            return super.getClassForName(className);
-        }
-        throw new IllegalArgumentException(String.format("Class is not accepted: %s", className));
+        Preconditions.checkArgument(className.equals(rootClass.getName()), "Class `%s` is not accepted", className);
+        return super.getClassForName(className);
     }
 }

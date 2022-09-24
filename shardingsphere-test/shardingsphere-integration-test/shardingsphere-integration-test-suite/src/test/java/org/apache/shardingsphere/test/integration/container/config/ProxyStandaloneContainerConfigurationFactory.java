@@ -21,6 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.ProxyContainerConstants;
+import org.apache.shardingsphere.test.integration.env.container.atomic.util.AdapterContainerUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,14 +41,13 @@ public final class ProxyStandaloneContainerConfigurationFactory {
      * @return created instance
      */
     public static AdaptorContainerConfiguration newInstance(final String scenario, final DatabaseType databaseType) {
-        return new AdaptorContainerConfiguration(scenario, getMountedResources(scenario, databaseType));
+        return new AdaptorContainerConfiguration(scenario, getMountedResources(scenario, databaseType), AdapterContainerUtil.getAdapterContainerImage());
     }
     
     private static Map<String, String> getMountedResources(final String scenario, final DatabaseType databaseType) {
         Map<String, String> result = new HashMap<>(2, 1);
-        String pathInContainer = "/opt/shardingsphere-proxy/conf";
-        result.put("/env/common/standalone/proxy/conf/", pathInContainer);
-        result.put("/env/scenario/" + scenario + "/proxy/conf/" + databaseType.getType().toLowerCase(), pathInContainer);
+        result.put("/env/common/standalone/proxy/conf/", ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER);
+        result.put("/env/scenario/" + scenario + "/proxy/conf/" + databaseType.getType().toLowerCase(), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER);
         return result;
     }
 }

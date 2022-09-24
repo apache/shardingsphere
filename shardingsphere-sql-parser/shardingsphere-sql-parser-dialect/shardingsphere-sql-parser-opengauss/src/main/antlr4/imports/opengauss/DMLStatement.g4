@@ -73,7 +73,7 @@ setClause
     ;
 
 setTarget
-    : colId
+    : colId (DOT_ colId)?
     ;
 
 setTargetList

@@ -38,7 +38,6 @@ execute
     | unlabelInstance
     | countSingleTableRule
     | alterInstance
-    | countDatabaseRules
     | prepareDistSQL
     | applyDistSQL
     | discardDistSQL

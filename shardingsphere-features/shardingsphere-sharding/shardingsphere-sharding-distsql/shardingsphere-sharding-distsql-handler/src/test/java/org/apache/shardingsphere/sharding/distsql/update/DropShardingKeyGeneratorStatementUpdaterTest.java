@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.KeyGeneratorInUsedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredKeyGeneratorMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -54,13 +53,13 @@ public final class DropShardingKeyGeneratorStatementUpdaterTest {
         when(database.getName()).thenReturn("test");
     }
     
-    @Test(expected = RequiredKeyGeneratorMissedException.class)
-    public void assertExecuteWithNotExist() throws DistSQLException {
+    @Test(expected = MissingRequiredAlgorithmException.class)
+    public void assertExecuteWithNotExist() {
         updater.checkSQLStatement(database, createSQLStatement("uuid_key_generator"), new ShardingRuleConfiguration());
     }
     
     @Test
-    public void assertExecuteWithNotExistWithIfExists() throws DistSQLException {
+    public void assertExecuteWithNotExistWithIfExists() {
         DropShardingKeyGeneratorStatement sqlStatement = new DropShardingKeyGeneratorStatement(true, Collections.singletonList("uuid_key_generator"));
         updater.checkSQLStatement(database, sqlStatement, new ShardingRuleConfiguration());
     }
@@ -73,8 +72,8 @@ public final class DropShardingKeyGeneratorStatementUpdaterTest {
         assertTrue(currentRuleConfig.getKeyGenerators().isEmpty());
     }
     
-    @Test(expected = KeyGeneratorInUsedException.class)
-    public void assertExecuteWithUsed() throws DistSQLException {
+    @Test(expected = AlgorithmInUsedException.class)
+    public void assertExecuteWithUsed() {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         currentRuleConfig.getKeyGenerators().put("uuid_key_generator", new AlgorithmConfiguration("UUID", null));
         currentRuleConfig.getAutoTables().add(createShardingAutoTableRuleConfiguration());

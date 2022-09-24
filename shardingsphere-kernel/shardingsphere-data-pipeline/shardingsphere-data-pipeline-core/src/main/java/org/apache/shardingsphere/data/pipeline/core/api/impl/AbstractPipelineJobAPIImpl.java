@@ -19,12 +19,10 @@ package org.apache.shardingsphere.data.pipeline.core.api.impl;
 
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlPipelineJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.process.yaml.YamlPipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.process.yaml.YamlPipelineProcessConfigurationSwapper;
-import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
@@ -34,20 +32,15 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobCreationWithInvalidShardingCountException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobHasAlreadyStartedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
-import org.apache.shardingsphere.data.pipeline.core.exception.metadata.AlterNotExistProcessConfigurationException;
-import org.apache.shardingsphere.data.pipeline.core.exception.metadata.CreateExistsProcessConfigurationException;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
-import org.apache.shardingsphere.data.pipeline.core.util.PipelineProcessConfigurationUtils;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJob;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -64,50 +57,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     
     protected static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
-    private static final YamlPipelineProcessConfigurationSwapper PROCESS_CONFIG_SWAPPER = new YamlPipelineProcessConfigurationSwapper();
-    
-    private final PipelineProcessConfigurationPersistService processConfigPersistService = new PipelineProcessConfigurationPersistService();
-    
     private final PipelineDistributedBarrier pipelineDistributedBarrier = PipelineDistributedBarrier.getInstance();
-    
-    protected abstract JobType getJobType();
-    
-    @Override
-    public void createProcessConfiguration(final PipelineProcessConfiguration processConfig) {
-        PipelineProcessConfiguration existingProcessConfig = processConfigPersistService.load(getJobType());
-        ShardingSpherePreconditions.checkState(null == existingProcessConfig, CreateExistsProcessConfigurationException::new);
-        processConfigPersistService.persist(getJobType(), processConfig);
-    }
-    
-    @Override
-    public void alterProcessConfiguration(final PipelineProcessConfiguration processConfig) {
-        // TODO check rateLimiter type match or not
-        YamlPipelineProcessConfiguration targetYamlProcessConfig = getTargetYamlProcessConfiguration();
-        targetYamlProcessConfig.copyNonNullFields(PROCESS_CONFIG_SWAPPER.swapToYamlConfiguration(processConfig));
-        processConfigPersistService.persist(getJobType(), PROCESS_CONFIG_SWAPPER.swapToObject(targetYamlProcessConfig));
-    }
-    
-    private YamlPipelineProcessConfiguration getTargetYamlProcessConfiguration() {
-        PipelineProcessConfiguration existingProcessConfig = processConfigPersistService.load(getJobType());
-        ShardingSpherePreconditions.checkNotNull(existingProcessConfig, AlterNotExistProcessConfigurationException::new);
-        return PROCESS_CONFIG_SWAPPER.swapToYamlConfiguration(existingProcessConfig);
-    }
-    
-    @Override
-    public void dropProcessConfiguration(final String confPath) {
-        String finalConfPath = confPath.trim();
-        PipelineProcessConfigurationUtils.verifyConfPath(confPath);
-        YamlPipelineProcessConfiguration targetYamlProcessConfig = getTargetYamlProcessConfiguration();
-        PipelineProcessConfigurationUtils.setFieldsNullByConfPath(targetYamlProcessConfig, finalConfPath);
-        processConfigPersistService.persist(getJobType(), PROCESS_CONFIG_SWAPPER.swapToObject(targetYamlProcessConfig));
-    }
-    
-    @Override
-    public PipelineProcessConfiguration showProcessConfiguration() {
-        PipelineProcessConfiguration result = processConfigPersistService.load(getJobType());
-        result = PipelineProcessConfigurationUtils.convertWithDefaultValue(result);
-        return result;
-    }
     
     @Override
     public final String marshalJobId(final PipelineJobId pipelineJobId) {
@@ -140,6 +90,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         jobInfo.setShardingTotalCount(jobConfigPOJO.getShardingTotalCount());
         jobInfo.setCreateTime(jobConfigPOJO.getProps().getProperty("create_time"));
         jobInfo.setStopTime(jobConfigPOJO.getProps().getProperty("stop_time"));
+        jobInfo.setJobParameter(jobConfigPOJO.getJobParameter());
     }
     
     @Override
@@ -153,10 +104,12 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
             log.warn("jobId already exists in registry center, ignore, jobConfigKey={}", jobConfigKey);
             return Optional.of(jobId);
         }
-        repositoryAPI.persist(PipelineMetaDataNode.getJobRootPath(jobId), MigrationJob.class.getName());
+        repositoryAPI.persist(PipelineMetaDataNode.getJobRootPath(jobId), getJobClassName());
         repositoryAPI.persist(jobConfigKey, convertJobConfigurationToText(jobConfig));
         return Optional.of(jobId);
     }
+    
+    protected abstract String getJobClassName();
     
     private String convertJobConfigurationToText(final PipelineJobConfiguration jobConfig) {
         JobConfigurationPOJO jobConfigPOJO = new JobConfigurationPOJO();
@@ -198,27 +151,9 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         pipelineDistributedBarrier.await(barrierPath, 5, TimeUnit.SECONDS);
     }
     
-    @Override
-    public void rollback(final String jobId) throws SQLException {
-        log.info("Rollback job {}", jobId);
-        stop(jobId);
-        cleanTempTableOnRollback(jobId);
-        dropJob(jobId);
-    }
-    
-    protected abstract void cleanTempTableOnRollback(String jobId) throws SQLException;
-    
-    private void dropJob(final String jobId) {
+    protected void dropJob(final String jobId) {
         PipelineAPIFactory.getJobOperateAPI().remove(String.valueOf(jobId), null);
         PipelineAPIFactory.getGovernanceRepositoryAPI().deleteJob(jobId);
-    }
-    
-    @Override
-    public void commit(final String jobId) {
-        checkModeConfig();
-        log.info("Commit job {}", jobId);
-        stop(jobId);
-        dropJob(jobId);
     }
     
     protected final JobConfigurationPOJO getElasticJobConfigPOJO(final String jobId) {
@@ -230,5 +165,29 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     @Override
     public String getType() {
         return getJobType().getTypeName();
+    }
+    
+    @Override
+    public String getJobItemErrorMessage(final String jobId, final int shardingItem) {
+        return ObjectUtils.defaultIfNull(PipelineAPIFactory.getGovernanceRepositoryAPI().getJobItemErrorMessage(jobId, shardingItem), "");
+    }
+    
+    @Override
+    public void persistJobItemErrorMessage(final String jobId, final int shardingItem, final Object error) {
+        String key = PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem);
+        String value = "";
+        if (null != error) {
+            if (error instanceof Throwable) {
+                value = ExceptionUtils.getStackTrace((Throwable) error);
+            } else {
+                value = error.toString();
+            }
+        }
+        PipelineAPIFactory.getGovernanceRepositoryAPI().persist(key, value);
+    }
+    
+    @Override
+    public void cleanJobItemErrorMessage(final String jobId, final int shardingItem) {
+        PipelineAPIFactory.getGovernanceRepositoryAPI().cleanJobItemErrorMessage(jobId, shardingItem);
     }
 }

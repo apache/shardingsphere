@@ -21,6 +21,8 @@ import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.sql.SQLException;
+
 /**
  * RAL updater.
  * 
@@ -34,6 +36,7 @@ public interface RALUpdater<T extends SQLStatement> extends TypedSPI {
      *
      * @param databaseName database name
      * @param sqlStatement updatable RAL statement
+     * @throws SQLException SQL exception
      */
-    void executeUpdate(String databaseName, T sqlStatement);
+    void executeUpdate(String databaseName, T sqlStatement) throws SQLException;
 }

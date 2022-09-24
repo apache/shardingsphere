@@ -21,11 +21,11 @@ import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleCon
 import org.apache.shardingsphere.dbdiscovery.distsql.handler.converter.DatabaseDiscoveryRuleStatementConverter;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryHeartbeatSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryHeartbeatStatement;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.util.Collection;
 import java.util.Map.Entry;
@@ -48,29 +48,23 @@ public final class AlterDatabaseDiscoveryHeartbeatStatementUpdater implements Ru
     }
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final AlterDatabaseDiscoveryHeartbeatStatement sqlStatement,
-                                  final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
+    public void checkSQLStatement(final ShardingSphereDatabase database, final AlterDatabaseDiscoveryHeartbeatStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
         String databaseName = database.getName();
-        checkCurrentConfiguration(databaseName, currentRuleConfig);
+        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException(RULE_TYPE, databaseName));
         checkDuplicateHeartbeat(databaseName, sqlStatement);
         checkNotExistHeartbeat(databaseName, sqlStatement, currentRuleConfig);
     }
     
-    private void checkCurrentConfiguration(final String databaseName, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
-        DistSQLException.predictionThrow(currentRuleConfig != null, () -> new RequiredRuleMissedException(RULE_TYPE, databaseName));
-    }
-    
-    private void checkNotExistHeartbeat(final String databaseName, final AlterDatabaseDiscoveryHeartbeatStatement sqlStatement,
-                                        final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkNotExistHeartbeat(final String databaseName, final AlterDatabaseDiscoveryHeartbeatStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
         Collection<String> currentHeartbeats = currentRuleConfig.getDiscoveryHeartbeats().keySet();
         Collection<String> notExistHeartbeats = sqlStatement.getHeartbeats().stream().map(DatabaseDiscoveryHeartbeatSegment::getHeartbeatName)
                 .filter(each -> !currentHeartbeats.contains(each)).collect(Collectors.toSet());
-        DistSQLException.predictionThrow(notExistHeartbeats.isEmpty(), () -> new RequiredRuleMissedException(RULE_TYPE, databaseName, notExistHeartbeats));
+        ShardingSpherePreconditions.checkState(notExistHeartbeats.isEmpty(), () -> new MissingRequiredRuleException(RULE_TYPE, databaseName, notExistHeartbeats));
     }
     
-    private void checkDuplicateHeartbeat(final String databaseName, final AlterDatabaseDiscoveryHeartbeatStatement sqlStatement) throws DistSQLException {
+    private void checkDuplicateHeartbeat(final String databaseName, final AlterDatabaseDiscoveryHeartbeatStatement sqlStatement) {
         Collection<String> duplicateRuleNames = getToBeCreatedDuplicateRuleNames(sqlStatement);
-        DistSQLException.predictionThrow(duplicateRuleNames.isEmpty(), () -> new DuplicateRuleException(RULE_TYPE, databaseName, duplicateRuleNames));
+        ShardingSpherePreconditions.checkState(duplicateRuleNames.isEmpty(), () -> new DuplicateRuleException(RULE_TYPE, databaseName, duplicateRuleNames));
     }
     
     private Collection<String> getToBeCreatedDuplicateRuleNames(final AlterDatabaseDiscoveryHeartbeatStatement sqlStatement) {

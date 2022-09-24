@@ -23,11 +23,10 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDisc
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryDefinitionSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredAlgorithmException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.junit.Before;
@@ -66,20 +65,20 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
         when(database.getResource()).thenReturn(resource);
     }
     
-    @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckSQLStatementWithoutCurrentRule() throws DistSQLException {
+    @Test(expected = MissingRequiredRuleException.class)
+    public void assertCheckSQLStatementWithoutCurrentRule() {
         updater.checkSQLStatement(database, new AlterDatabaseDiscoveryRuleStatement(Collections.emptyList()), null);
     }
     
-    @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckSQLStatementWithoutToBeAlteredDatabaseDiscoveryRule() throws DistSQLException {
+    @Test(expected = MissingRequiredRuleException.class)
+    public void assertCheckSQLStatementWithoutToBeAlteredDatabaseDiscoveryRule() {
         DatabaseDiscoveryConstructionSegment segment = new DatabaseDiscoveryConstructionSegment("readwrite_ds", Arrays.asList("ds_read_0", "ds_read_1"), "", "");
         updater.checkSQLStatement(database, new AlterDatabaseDiscoveryRuleStatement(Collections.singletonList(segment)),
                 new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap()));
     }
     
-    @Test(expected = RequiredResourceMissedException.class)
-    public void assertCheckSQLStatementWithoutExistedResources() throws DistSQLException {
+    @Test(expected = MissingRequiredResourcesException.class)
+    public void assertCheckSQLStatementWithoutExistedResources() {
         when(resource.getNotExistedResources(any())).thenReturn(Collections.singleton("ds0"));
         DatabaseDiscoveryConstructionSegment segment = new DatabaseDiscoveryConstructionSegment("readwrite_ds", Arrays.asList("ds_read_0", "ds_read_1"), "readwrite_ds_mgr", "readwrite_ds_heartbeat");
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("readwrite_ds", Collections.emptyList(), "ha-heartbeat", "TEST");
@@ -89,7 +88,7 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
-    public void assertCheckSQLStatementWithDatabaseDiscoveryType() throws DistSQLException {
+    public void assertCheckSQLStatementWithDatabaseDiscoveryType() {
         AlgorithmSegment algorithmSegment = new AlgorithmSegment("INVALID_TYPE", new Properties());
         DatabaseDiscoveryDefinitionSegment segment = new DatabaseDiscoveryDefinitionSegment("readwrite_ds", Arrays.asList("ds_read_0", "ds_read_1"), algorithmSegment, new Properties());
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("readwrite_ds", Collections.emptyList(), "ha-heartbeat", "TEST");
@@ -98,8 +97,8 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
         updater.checkSQLStatement(database, new AlterDatabaseDiscoveryRuleStatement(Collections.singleton(segment)), ruleConfig);
     }
     
-    @Test(expected = RequiredAlgorithmMissedException.class)
-    public void assertCheckSQLStatementWithNotExistDiscoveryTypeName() throws DistSQLException {
+    @Test(expected = MissingRequiredAlgorithmException.class)
+    public void assertCheckSQLStatementWithNotExistDiscoveryTypeName() {
         DatabaseDiscoveryConstructionSegment segment = new DatabaseDiscoveryConstructionSegment("readwrite_ds", Arrays.asList("ds_read_0", "ds_read_1"), "not_exist_discovery_type_name", "");
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("readwrite_ds", Collections.emptyList(), "ha-heartbeat", "TEST");
         DatabaseDiscoveryRuleConfiguration ruleConfig = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)),
@@ -107,8 +106,8 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
         updater.checkSQLStatement(database, new AlterDatabaseDiscoveryRuleStatement(Collections.singleton(segment)), ruleConfig);
     }
     
-    @Test(expected = RequiredAlgorithmMissedException.class)
-    public void assertCheckSQLStatementWithNotExistDiscoveryHeartbeatName() throws DistSQLException {
+    @Test(expected = MissingRequiredAlgorithmException.class)
+    public void assertCheckSQLStatementWithNotExistDiscoveryHeartbeatName() {
         DatabaseDiscoveryConstructionSegment segment = new DatabaseDiscoveryConstructionSegment(
                 "readwrite_ds", Arrays.asList("ds_read_0", "ds_read_1"), "discovery_type_name", "not_exist_heartbeat_name");
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("readwrite_ds", Collections.emptyList(), "ha-heartbeat", "TEST");

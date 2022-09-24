@@ -115,10 +115,6 @@
         <database name="databaseName" start-index="35" stop-index="46"/>
     </show-unused-sharding-auditors>
 
-    <count-database-rules sql-case-id="count-database-rules">
-        <database name="databaseName" start-index="26" stop-index="37"/>
-    </count-database-rules>
-
     <show-rules-used-resource sql-case-id="show-rules-used-resource" resource-name="ds_0">
         <database name="databaseName" start-index="35" stop-index="46"/>
     </show-rules-used-resource>

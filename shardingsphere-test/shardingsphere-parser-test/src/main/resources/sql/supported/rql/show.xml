@@ -41,7 +41,6 @@
     <distsql-case id="show-unused-sharding-algorithms" value="SHOW UNUSED SHARDING ALGORITHMS FROM databaseName" />
     <distsql-case id="show-unused-sharding-key-generators" value="SHOW UNUSED SHARDING KEY GENERATORS FROM databaseName" />
     <distsql-case id="show-unused-sharding-auditors" value="SHOW UNUSED SHARDING AUDITORS FROM databaseName" />
-    <distsql-case id="count-database-rules" value="COUNT DATABASE RULES FROM databaseName" />
     <distsql-case id="show-rules-used-resource" value="SHOW RULES USED RESOURCE ds_0 FROM databaseName" />
     <distsql-case id="show-sharding-table-rules-used-key-generator" value="SHOW SHARDING TABLE RULES USED KEY GENERATOR snowflake FROM sharding_db" />
     <distsql-case id="show-sharding-table-rules-used-auditor" value="SHOW SHARDING TABLE RULES USED AUDITOR shardingKeyAudit FROM sharding_db" />
