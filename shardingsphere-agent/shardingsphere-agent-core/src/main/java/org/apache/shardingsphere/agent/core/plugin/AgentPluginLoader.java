@@ -103,7 +103,7 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable, P
      * @throws IOException IO exception
      */
     public void loadAllPlugins() throws IOException {
-        File[] jarFiles = AgentPathBuilder.getPluginPath().listFiles(each -> each.getName().endsWith(".jar"));
+        File[] jarFiles = AgentPathBuilder.getPLUGIN_PATH().listFiles(each -> each.getName().endsWith(".jar"));
         if (null == jarFiles) {
             return;
         }

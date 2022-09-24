@@ -36,15 +36,10 @@ import java.net.URL;
 public final class AgentPathBuilder {
     
     @Getter
-    private static final File agentPath;
+    private static final File AGENT_PATH = buildAgentPath();
     
     @Getter
-    private static final File pluginPath;
-    
-    static {
-        agentPath = buildAgentPath();
-        pluginPath = buildAgentPluginPath();
-    }
+    private static final File PLUGIN_PATH = buildAgentPluginPath();
     
     private static File buildAgentPath() {
         String classResourcePath = String.join("", AgentPathBuilder.class.getName().replaceAll("\\.", "/"), ".class");
@@ -77,6 +72,6 @@ public final class AgentPathBuilder {
     }
     
     private static File buildAgentPluginPath() {
-        return new File(String.join("", agentPath.getPath(), "/plugins"));
+        return new File(String.join("", AGENT_PATH.getPath(), "/plugins"));
     }
 }
