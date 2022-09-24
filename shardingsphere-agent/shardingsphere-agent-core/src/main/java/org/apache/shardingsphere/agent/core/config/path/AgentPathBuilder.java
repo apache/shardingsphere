@@ -36,10 +36,10 @@ import java.net.URL;
 public final class AgentPathBuilder {
     
     @Getter
-    private static File agentPath;
+    private static final File agentPath;
     
     @Getter
-    private static File pluginPath;
+    private static final File pluginPath;
     
     static {
         agentPath = buildAgentPath();
