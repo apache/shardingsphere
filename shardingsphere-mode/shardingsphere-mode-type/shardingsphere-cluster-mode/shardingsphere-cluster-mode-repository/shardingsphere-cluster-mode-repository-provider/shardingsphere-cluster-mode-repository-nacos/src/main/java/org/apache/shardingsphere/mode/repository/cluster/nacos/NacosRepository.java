@@ -25,7 +25,6 @@ import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.alibaba.nacos.common.utils.CollectionUtils;
 import com.alibaba.nacos.common.utils.StringUtils;
 import com.google.common.base.Strings;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.instance.utils.IpUtils;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
@@ -55,7 +54,6 @@ import java.util.stream.Stream;
 /**
  * Registry repository of Nacos.
  */
-@Slf4j
 public final class NacosRepository implements ClusterPersistRepository {
     
     private NamingService client;
