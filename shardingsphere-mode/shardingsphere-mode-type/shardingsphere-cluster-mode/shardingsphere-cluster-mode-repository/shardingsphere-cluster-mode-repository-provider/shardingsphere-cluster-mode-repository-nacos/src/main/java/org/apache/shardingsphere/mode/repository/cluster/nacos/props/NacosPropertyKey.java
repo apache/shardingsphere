@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.repository.cluster.nacos.props;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.instance.utils.IpUtils;
 import org.apache.shardingsphere.infra.util.props.TypedPropertyKey;
 
 /**
@@ -32,7 +31,7 @@ public enum NacosPropertyKey implements TypedPropertyKey {
     /**
      * Cluster ip.
      */
-    CLUSTER_IP("clusterIp", IpUtils.getIp(), String.class),
+    CLUSTER_IP("clusterIp", "", String.class),
     
     /**
      * Retry interval milliseconds when checking whether value is available.
