@@ -20,12 +20,12 @@ package org.apache.shardingsphere.sqlfederation.advanced;
 import com.google.common.base.Preconditions;
 import org.apache.calcite.adapter.enumerable.EnumerableInterpretable;
 import org.apache.calcite.adapter.enumerable.EnumerableRel;
+import org.apache.calcite.adapter.java.JavaTypeFactory;
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.prepare.CalciteCatalogReader;
-import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.runtime.Bindable;
 import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.calcite.sql.validate.SqlValidator;
@@ -69,6 +69,8 @@ import java.util.Map;
  * Advanced sql federation executor.
  */
 public final class AdvancedSQLFederationExecutor implements SQLFederationExecutor {
+    
+    private static final JavaTypeFactory JAVA_TYPE_FACTORY = new JavaTypeFactoryImpl();
     
     private String databaseName;
     
@@ -124,17 +126,17 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
         // TODO replace FilterableTableScanExecutor with TranslatableTableScanExecutor
         TableScanExecutor executor = new FilterableTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, globalRuleMetaData, executorContext, eventBusContext);
         // TODO replace FilterableSchema with TranslatableSchema
-        return new FilterableSchema(schemaName, schema, executor);
+        return new FilterableSchema(schemaName, schema, JAVA_TYPE_FACTORY, executor);
     }
     
     @SuppressWarnings("unchecked")
     private ResultSet execute(final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema, final AbstractSchema sqlFederationSchema, final Map<String, Object> parameters) {
         OptimizerParserContext parserContext = optimizerContext.getParserContexts().get(databaseName);
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(parserContext.getDialectProps());
-        RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
-        CalciteCatalogReader catalogReader = SQLFederationPlannerUtil.createCatalogReader(schemaName, sqlFederationSchema, relDataTypeFactory, connectionConfig);
-        SqlValidator validator = SQLFederationPlannerUtil.createSqlValidator(catalogReader, relDataTypeFactory, parserContext.getDatabaseType(), connectionConfig);
-        SqlToRelConverter converter = SQLFederationPlannerUtil.createSqlToRelConverter(catalogReader, validator, relDataTypeFactory);
+        CalciteCatalogReader catalogReader = SQLFederationPlannerUtil.createCatalogReader(schemaName, sqlFederationSchema, JAVA_TYPE_FACTORY, connectionConfig);
+        SqlValidator validator = SQLFederationPlannerUtil.createSqlValidator(catalogReader, JAVA_TYPE_FACTORY, parserContext.getDatabaseType(), connectionConfig);
+        SqlToRelConverter converter = SQLFederationPlannerUtil.createSqlToRelConverter(catalogReader, validator,
+                SQLFederationPlannerUtil.createRelOptCluster(JAVA_TYPE_FACTORY), optimizerContext, true);
         SQLOptimizeContext optimizeContext =
                 new SQLOptimizeEngine(converter, SQLFederationPlannerUtil.createHepPlanner()).optimize(selectStatementContext.getSqlStatement());
         Bindable<Object> executablePlan = EnumerableInterpretable.toBindable(Collections.emptyMap(), null, (EnumerableRel) optimizeContext.getBestPlan(), EnumerableRel.Prefer.ARRAY);

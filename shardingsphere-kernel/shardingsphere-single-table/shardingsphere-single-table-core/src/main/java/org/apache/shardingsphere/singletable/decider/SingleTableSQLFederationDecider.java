@@ -51,6 +51,10 @@ public final class SingleTableSQLFederationDecider implements SQLFederationDecid
         if (singleTableNames.isEmpty()) {
             return;
         }
+        if (containsView(database, singleTableNames)) {
+            deciderContext.setUseSQLFederation(true);
+            return;
+        }
         deciderContext.setUseSQLFederation(!isAllTablesInSameDataSource(deciderContext, rule, singleTableNames));
         addTableDataNodes(deciderContext, rule, singleTableNames);
     }
@@ -96,6 +100,15 @@ public final class SingleTableSQLFederationDecider implements SQLFederationDecid
             result.add(new QualifiedTable(actualSchemaName, each.getTableName().getIdentifier().getValue()));
         }
         return result;
+    }
+    
+    private boolean containsView(final ShardingSphereDatabase database, final Collection<QualifiedTable> singleTableNames) {
+        for (QualifiedTable each : singleTableNames) {
+            if (database.getSchema(each.getSchemaName()).containsView(each.getTableName())) {
+                return true;
+            }
+        }
+        return false;
     }
     
     @Override

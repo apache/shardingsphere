@@ -49,6 +49,8 @@ import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.sql2rel.SqlToRelConverter.Config;
 import org.apache.calcite.sql2rel.StandardConvertletTable;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
+import org.apache.shardingsphere.sqlfederation.optimizer.metadata.expander.ShardingSphereViewExpander;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.TranslatableFilterRule;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.TranslatableProjectFilterRule;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.TranslatableProjectRule;
@@ -214,13 +216,26 @@ public final class SQLFederationPlannerUtil {
      *
      * @param catalogReader catalog reader
      * @param validator validator
-     * @param relDataTypeFactory rel data type factory
+     * @param cluster cluster
+     * @param optimizerContext optimizer context
+     * @param needsViewExpand whether sql needs view expand or not
      * @return sql to rel converter
      */
-    public static SqlToRelConverter createSqlToRelConverter(final CalciteCatalogReader catalogReader, final SqlValidator validator, final RelDataTypeFactory relDataTypeFactory) {
-        ViewExpander expander = (rowType, queryString, schemaPath, viewPath) -> null;
+    public static SqlToRelConverter createSqlToRelConverter(final CalciteCatalogReader catalogReader, final SqlValidator validator,
+                                                            final RelOptCluster cluster, final OptimizerContext optimizerContext, final boolean needsViewExpand) {
+        ViewExpander expander = needsViewExpand ? new ShardingSphereViewExpander(optimizerContext,
+                createSqlToRelConverter(catalogReader, validator, cluster, optimizerContext, false)) : (rowType, queryString, schemaPath, viewPath) -> null;
         Config converterConfig = SqlToRelConverter.config().withTrimUnusedFields(true);
-        RelOptCluster cluster = RelOptCluster.create(SQLFederationPlannerUtil.createVolcanoPlanner(), new RexBuilder(relDataTypeFactory));
         return new SqlToRelConverter(expander, validator, catalogReader, cluster, StandardConvertletTable.INSTANCE, converterConfig);
+    }
+    
+    /**
+     * Create rel opt cluster.
+     * 
+     * @param relDataTypeFactory rel data type factory
+     * @return rel opt cluster
+     */
+    public static RelOptCluster createRelOptCluster(final RelDataTypeFactory relDataTypeFactory) {
+        return RelOptCluster.create(SQLFederationPlannerUtil.createVolcanoPlanner(), new RexBuilder(relDataTypeFactory));
     }
 }
