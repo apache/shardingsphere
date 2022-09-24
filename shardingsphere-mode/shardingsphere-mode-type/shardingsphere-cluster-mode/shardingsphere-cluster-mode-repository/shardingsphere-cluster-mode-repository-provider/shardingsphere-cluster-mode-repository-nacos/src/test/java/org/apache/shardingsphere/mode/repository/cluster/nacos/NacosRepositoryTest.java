@@ -30,7 +30,8 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryException;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
-import org.apache.shardingsphere.mode.repository.cluster.nacos.entity.RegisterMetadata;
+import org.apache.shardingsphere.mode.repository.cluster.nacos.entity.ServiceController;
+import org.apache.shardingsphere.mode.repository.cluster.nacos.entity.ServiceMetadata;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.props.NacosProperties;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.props.NacosPropertyKey;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.utils.MetadataUtil;
@@ -71,13 +72,16 @@ public final class NacosRepositoryTest {
     @Mock
     private NamingService client;
     
+    private ServiceController serviceController;
+    
     @Before
     @SneakyThrows(Exception.class)
     public void initClient() {
         MemberAccessor accessor = Plugins.getMemberAccessor();
         accessor.set(REPOSITORY.getClass().getDeclaredField("nacosProps"), REPOSITORY, new NacosProperties(new Properties()));
         accessor.set(REPOSITORY.getClass().getDeclaredField("client"), REPOSITORY, client);
-        accessor.invoke(REPOSITORY.getClass().getDeclaredMethod("initRegisterMetadata"), REPOSITORY);
+        accessor.invoke(REPOSITORY.getClass().getDeclaredMethod("initServiceMetadata"), REPOSITORY);
+        serviceController = (ServiceController) accessor.get(REPOSITORY.getClass().getDeclaredField("serviceController"), REPOSITORY);
     }
     
     @Test
@@ -94,7 +98,8 @@ public final class NacosRepositoryTest {
             instance.setMetadata(metadataMap);
             instances.add(instance);
         }
-        when(client.getAllInstances(RegisterMetadata.PERSISTENT.name(), false)).thenReturn(instances);
+        ServiceMetadata persistentService = serviceController.getPersistentService();
+        when(client.getAllInstances(persistentService.getServiceName(), false)).thenReturn(instances);
         String value = REPOSITORY.get(key);
         assertThat(value, is("value2"));
     }
@@ -105,11 +110,13 @@ public final class NacosRepositoryTest {
         Instance instance = new Instance();
         String key = "/test/children/keys/persistent/0";
         instance.setMetadata(Collections.singletonMap(key, "value0"));
-        when(client.getAllInstances(RegisterMetadata.PERSISTENT.name(), false)).thenReturn(Collections.singletonList(instance));
+        ServiceMetadata persistentService = serviceController.getPersistentService();
+        when(client.getAllInstances(persistentService.getServiceName(), false)).thenReturn(Collections.singletonList(instance));
         instance = new Instance();
         key = "/test/children/keys/ephemeral/0";
         instance.setMetadata(Collections.singletonMap(key, "value0"));
-        when(client.getAllInstances(RegisterMetadata.EPHEMERAL.name(), false)).thenReturn(Collections.singletonList(instance));
+        ServiceMetadata ephemeralService = serviceController.getEphemeralService();
+        when(client.getAllInstances(ephemeralService.getServiceName(), false)).thenReturn(Collections.singletonList(instance));
         List<String> childrenKeys = REPOSITORY.getChildrenKeys("/test/children/keys");
         assertThat(childrenKeys.size(), is(2));
         assertThat(childrenKeys.get(0), is("persistent"));
@@ -127,7 +134,8 @@ public final class NacosRepositoryTest {
         verify(client, times(5)).registerInstance(stringArgumentCaptor.capture(), instanceArgumentCaptor.capture());
         Instance registerInstance = instanceArgumentCaptor.getValue();
         String registerType = stringArgumentCaptor.getValue();
-        assertThat(registerType, is(RegisterMetadata.PERSISTENT.name()));
+        ServiceMetadata persistentService = serviceController.getPersistentService();
+        assertThat(registerType, is(persistentService.getServiceName()));
         assertThat(registerInstance.isEphemeral(), is(false));
         assertThat(MetadataUtil.getValue(registerInstance), is("value4"));
     }
@@ -146,7 +154,8 @@ public final class NacosRepositoryTest {
         List<Instance> instances = new LinkedList<>();
         buildParentPath(key, instances);
         instances.add(instance);
-        when(client.getAllInstances(RegisterMetadata.PERSISTENT.name(), false)).thenReturn(instances);
+        ServiceMetadata persistentService = serviceController.getPersistentService();
+        when(client.getAllInstances(persistentService.getServiceName(), false)).thenReturn(instances);
         doAnswer(AdditionalAnswers.answerVoid(getRegisterInstanceAnswer())).when(client).registerInstance(anyString(), any(Instance.class));
         REPOSITORY.persist(key, "value4");
         ArgumentCaptor<Instance> instanceArgumentCaptor = ArgumentCaptor.forClass(Instance.class);
@@ -154,7 +163,7 @@ public final class NacosRepositoryTest {
         verify(client).registerInstance(stringArgumentCaptor.capture(), instanceArgumentCaptor.capture());
         Instance registerInstance = instanceArgumentCaptor.getValue();
         String registerType = stringArgumentCaptor.getValue();
-        assertThat(registerType, is(RegisterMetadata.PERSISTENT.name()));
+        assertThat(registerType, is(persistentService.getServiceName()));
         assertThat(registerInstance.getIp(), is(ip));
         assertThat(registerInstance.isEphemeral(), is(false));
         assertThat(MetadataUtil.getValue(registerInstance), is("value4"));
@@ -174,10 +183,12 @@ public final class NacosRepositoryTest {
         instance.setMetadata(metadataMap);
         List<Instance> instances = new LinkedList<>();
         buildParentPath(key, instances);
-        when(client.getAllInstances(RegisterMetadata.PERSISTENT.name(), false)).thenReturn(instances);
+        ServiceMetadata persistentService = serviceController.getPersistentService();
+        when(client.getAllInstances(persistentService.getServiceName(), false)).thenReturn(instances);
         instances = new LinkedList<>();
         instances.add(instance);
-        when(client.getAllInstances(RegisterMetadata.EPHEMERAL.name(), false)).thenReturn(instances);
+        ServiceMetadata ephemeralService = serviceController.getEphemeralService();
+        when(client.getAllInstances(ephemeralService.getServiceName(), false)).thenReturn(instances);
         doAnswer(AdditionalAnswers.answerVoid(getDeregisterInstanceAnswer())).when(client).deregisterInstance(anyString(), any(Instance.class));
         doAnswer(AdditionalAnswers.answerVoid(getRegisterInstanceAnswer())).when(client).registerInstance(anyString(), any(Instance.class));
         REPOSITORY.persistEphemeral(key, "value4");
@@ -187,7 +198,7 @@ public final class NacosRepositoryTest {
         verify(client).registerInstance(stringArgumentCaptor.capture(), instanceArgumentCaptor.capture());
         Instance registerInstance = instanceArgumentCaptor.getValue();
         String registerType = stringArgumentCaptor.getValue();
-        assertThat(registerType, is(RegisterMetadata.EPHEMERAL.name()));
+        assertThat(registerType, is(ephemeralService.getServiceName()));
         assertThat(registerInstance.isEphemeral(), is(true));
         assertThat(MetadataUtil.getValue(registerInstance), is("value4"));
         Map<String, String> metadata = registerInstance.getMetadata();
@@ -222,7 +233,8 @@ public final class NacosRepositoryTest {
         verify(client, times(5)).registerInstance(stringArgumentCaptor.capture(), instanceArgumentCaptor.capture());
         Instance registerInstance = instanceArgumentCaptor.getValue();
         String registerType = stringArgumentCaptor.getValue();
-        assertThat(registerType, is(RegisterMetadata.EPHEMERAL.name()));
+        ServiceMetadata ephemeralService = serviceController.getEphemeralService();
+        assertThat(registerType, is(ephemeralService.getServiceName()));
         assertThat(registerInstance.isEphemeral(), is(true));
         assertThat(MetadataUtil.getValue(registerInstance), is("value0"));
         Map<String, String> metadata = registerInstance.getMetadata();
@@ -244,14 +256,16 @@ public final class NacosRepositoryTest {
             instance.setMetadata(Collections.singletonMap(key, "value" + count));
             instances.add(instance);
         }
-        when(client.getAllInstances(RegisterMetadata.EPHEMERAL.name(), false)).thenReturn(instances);
+        ServiceMetadata ephemeralService = serviceController.getEphemeralService();
+        when(client.getAllInstances(ephemeralService.getServiceName(), false)).thenReturn(instances);
         instances = new LinkedList<>();
         String key = "/test/children/keys/persistent/0";
         Instance instance = new Instance();
         instance.setEphemeral(false);
         instance.setMetadata(Collections.singletonMap(key, "value0"));
         instances.add(instance);
-        when(client.getAllInstances(RegisterMetadata.PERSISTENT.name(), false)).thenReturn(instances);
+        ServiceMetadata persistentService = serviceController.getPersistentService();
+        when(client.getAllInstances(persistentService.getServiceName(), false)).thenReturn(instances);
         doAnswer(AdditionalAnswers.answerVoid(getDeregisterInstanceAnswer())).when(client).deregisterInstance(anyString(), any(Instance.class));
         REPOSITORY.delete("/test/children/keys");
         verify(client, times(4)).deregisterInstance(anyString(), any(Instance.class));
@@ -267,12 +281,13 @@ public final class NacosRepositoryTest {
     @Test
     @SneakyThrows
     public void assertWatchAdded() {
-        RegisterMetadata.PERSISTENT.setListener(null);
+        ServiceMetadata ephemeralService = serviceController.getEphemeralService();
+        ephemeralService.setListener(null);
         String key = "key/key";
         String value = "value2";
         Instance instance = new Instance();
         instance.setMetadata(Collections.singletonMap(key, value));
-        Event event = new NamingEvent(RegisterMetadata.EPHEMERAL.name(), Collections.singletonList(instance));
+        Event event = new NamingEvent(ephemeralService.getServiceName(), Collections.singletonList(instance));
         doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(null, event))).when(client).subscribe(anyString(), any(EventListener.class));
         SettableFuture<DataChangedEvent> settableFuture = SettableFuture.create();
         REPOSITORY.watch(key, settableFuture::set);
@@ -285,7 +300,8 @@ public final class NacosRepositoryTest {
     @Test
     @SneakyThrows
     public void assertWatchUpdate() {
-        RegisterMetadata.PERSISTENT.setListener(null);
+        ServiceMetadata persistentService = serviceController.getPersistentService();
+        persistentService.setListener(null);
         String key = "key/key";
         long epochMilliseconds = MetadataUtil.getTimestamp();
         Instance preInstance = new Instance();
@@ -298,7 +314,7 @@ public final class NacosRepositoryTest {
         metadataMap.put(key, "value2");
         metadataMap.put(MetadataUtil.UTC_ZONE_OFFSET.toString(), String.valueOf(epochMilliseconds + 1));
         instance.setMetadata(metadataMap);
-        Event event = new NamingEvent(RegisterMetadata.EPHEMERAL.name(), Collections.singletonList(instance));
+        Event event = new NamingEvent(persistentService.getServiceName(), Collections.singletonList(instance));
         doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(preInstance, event))).when(client).subscribe(anyString(), any(EventListener.class));
         SettableFuture<DataChangedEvent> settableFuture = SettableFuture.create();
         REPOSITORY.watch(key, settableFuture::set);
@@ -311,11 +327,12 @@ public final class NacosRepositoryTest {
     @Test
     @SneakyThrows
     public void assertWatchDelete() {
-        RegisterMetadata.PERSISTENT.setListener(null);
+        ServiceMetadata persistentService = serviceController.getPersistentService();
+        persistentService.setListener(null);
         String key = "key/key";
         Instance preInstance = new Instance();
         preInstance.setMetadata(Collections.singletonMap(key, "value1"));
-        Event event = new NamingEvent(RegisterMetadata.PERSISTENT.name(), Collections.emptyList());
+        Event event = new NamingEvent(persistentService.getServiceName(), Collections.emptyList());
         doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(preInstance, event))).when(client).subscribe(anyString(), any(EventListener.class));
         SettableFuture<DataChangedEvent> settableFuture = SettableFuture.create();
         REPOSITORY.watch(key, settableFuture::set);
@@ -345,7 +362,8 @@ public final class NacosRepositoryTest {
     @Test(expected = IllegalStateException.class)
     @SneakyThrows
     public void assertExceededMaximum() {
-        RegisterMetadata.EPHEMERAL.setPort(new AtomicInteger(Integer.MAX_VALUE));
+        ServiceMetadata ephemeralService = serviceController.getEphemeralService();
+        ephemeralService.setPort(new AtomicInteger(Integer.MAX_VALUE));
         try {
             REPOSITORY.persistEphemeral("/key2", "value");
         } catch (ClusterPersistRepositoryException cause) {
