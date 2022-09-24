@@ -48,9 +48,7 @@ public final class CreateShardingBindingTableRuleStatementUpdater implements Rul
     }
     
     private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) throws MissingRequiredRuleException {
-        if (null == currentRuleConfig) {
-            throw new MissingRequiredRuleException("Sharding", databaseName);
-        }
+        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Sharding", databaseName));
     }
     
     private void checkToBeCreatedBindingTables(final String databaseName,
