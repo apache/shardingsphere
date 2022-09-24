@@ -31,7 +31,7 @@ import java.time.ZoneOffset;
  * Metadata util.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class MetadataUtil {
+public final class MetadataUtil {
     
     public static final String EMPTY = "";
     

@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
  * Naming event listener.
  */
 @RequiredArgsConstructor
-public class NamingEventListener implements EventListener {
+public final class NamingEventListener implements EventListener {
     
     private Map<String, Instance> preInstances = new HashMap<>();
     

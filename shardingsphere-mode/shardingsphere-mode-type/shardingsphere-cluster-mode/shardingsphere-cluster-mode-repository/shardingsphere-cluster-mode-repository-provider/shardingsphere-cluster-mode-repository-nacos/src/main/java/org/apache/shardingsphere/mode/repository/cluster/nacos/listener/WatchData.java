@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
  */
 @Getter
 @RequiredArgsConstructor
-public class WatchData {
+public final class WatchData {
     
     private final String key;
     

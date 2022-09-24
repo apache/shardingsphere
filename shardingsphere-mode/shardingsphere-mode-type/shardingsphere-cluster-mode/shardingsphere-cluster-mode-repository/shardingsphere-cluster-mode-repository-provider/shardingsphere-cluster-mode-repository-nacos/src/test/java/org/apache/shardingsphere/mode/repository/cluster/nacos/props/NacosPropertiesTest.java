@@ -25,7 +25,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class NacosPropertiesTest {
+public final class NacosPropertiesTest {
     
     @Test
     public void assertGetValue() {

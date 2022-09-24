@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class KeyValue {
+public final class KeyValue {
     
     private final String key;
     
