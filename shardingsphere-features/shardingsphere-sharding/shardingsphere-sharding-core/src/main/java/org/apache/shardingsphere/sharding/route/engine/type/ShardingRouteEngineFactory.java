@@ -122,7 +122,8 @@ public final class ShardingRouteEngineFactory {
                 : sqlStatementContext.getTablesContext().getTableNames();
         Collection<String> shardingRuleTableNames = shardingRule.getShardingRuleTableNames(tableNames);
         String sqlFederationType = props.getValue(ConfigurationPropertyKey.SQL_FEDERATION_TYPE);
-        if (!"NONE".equals(sqlFederationType) && sqlStatement instanceof CreateViewStatement || sqlStatement instanceof AlterViewStatement || sqlStatement instanceof DropViewStatement) {
+        // TODO remove this logic when jdbc adapter can support executing create logic view
+        if (!"NONE".equals(sqlFederationType) && (sqlStatement instanceof CreateViewStatement || sqlStatement instanceof AlterViewStatement || sqlStatement instanceof DropViewStatement)) {
             return new ShardingUnicastRoutingEngine(sqlStatementContext, shardingRuleTableNames, connectionContext);
         }
         if (!tableNames.isEmpty() && shardingRuleTableNames.isEmpty()) {
