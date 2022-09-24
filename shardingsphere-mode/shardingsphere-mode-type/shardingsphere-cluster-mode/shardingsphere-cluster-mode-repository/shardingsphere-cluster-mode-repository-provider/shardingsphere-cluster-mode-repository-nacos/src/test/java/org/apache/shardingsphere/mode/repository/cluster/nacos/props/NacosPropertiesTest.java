@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.repository.cluster.nacos.props;
 
-import org.apache.shardingsphere.infra.instance.utils.IpUtils;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -48,7 +47,7 @@ public final class NacosPropertiesTest {
     @Test
     public void assertGetDefaultValue() {
         NacosProperties actual = new NacosProperties(new Properties());
-        assertThat(actual.getValue(NacosPropertyKey.CLUSTER_IP), is(IpUtils.getIp()));
+        assertThat(actual.getValue(NacosPropertyKey.CLUSTER_IP), is(""));
         assertThat(actual.getValue(NacosPropertyKey.RETRY_INTERVAL_MILLISECONDS), is(500L));
         assertThat(actual.getValue(NacosPropertyKey.MAX_RETRIES), is(3));
         assertThat(actual.getValue(NacosPropertyKey.TIME_TO_LIVE_SECONDS), is(30));
