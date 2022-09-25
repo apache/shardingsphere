@@ -117,12 +117,12 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable, P
                 log.info("Loaded jar {}", each.getName());
             }
         }
-        Set<String> pluginNames = getPluginNames();
+        Collection<String> pluginNames = getPluginNames();
         loadPluginDefinitionServices(pluginNames, pointMap);
         interceptorPointMap = ImmutableMap.<String, PluginInterceptorPoint>builder().putAll(pointMap).build();
     }
     
-    private Set<String> getPluginNames() {
+    private Collection<String> getPluginNames() {
         AgentConfiguration configuration = AgentConfigurationRegistry.INSTANCE.get(AgentConfiguration.class);
         Set<String> pluginNames = new HashSet<>();
         if (null != configuration && null != configuration.getPlugins()) {
@@ -248,7 +248,7 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable, P
         }
     }
     
-    private void loadPluginDefinitionServices(final Set<String> pluginNames, final Map<String, PluginInterceptorPoint> pointMap) {
+    private void loadPluginDefinitionServices(final Collection<String> pluginNames, final Map<String, PluginInterceptorPoint> pointMap) {
         PluginServiceLoader.newServiceInstances(PluginDefinitionService.class)
                 .stream()
                 .filter(each -> pluginNames.contains(each.getType()))

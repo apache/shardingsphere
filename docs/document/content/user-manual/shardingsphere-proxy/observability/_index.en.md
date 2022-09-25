@@ -41,7 +41,7 @@ tree
 
 `conf/agent.yaml` is used to manage agent configuration.
 Built-in plugins include Jaeger, OpenTracing, Zipkin, OpenTelemetry, BaseLogging and Prometheus.
-No plugin are enabled by default. After configuring the corresponding plugin configuration, the corresponding plugin can be started.
+No plugin is enabled by default. is for single plugin. After configuring the corresponding plugin configuration, the corresponding plugin can be started.
 
 ```yaml
 plugins:
