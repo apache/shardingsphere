@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateAlgorithmException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -53,13 +52,13 @@ public final class CreateShardingKeyGeneratorStatementUpdaterTest {
     }
     
     @Test(expected = DuplicateAlgorithmException.class)
-    public void assertExecuteWithDuplicate() throws DistSQLException {
+    public void assertExecuteWithDuplicate() {
         ShardingKeyGeneratorSegment keyGeneratorSegment = new ShardingKeyGeneratorSegment("uuid_key_generator", new AlgorithmSegment("uuid", new Properties()));
         updater.checkSQLStatement(database, createSQLStatement(keyGeneratorSegment, keyGeneratorSegment), null);
     }
     
     @Test(expected = DuplicateAlgorithmException.class)
-    public void assertExecuteWithExist() throws DistSQLException {
+    public void assertExecuteWithExist() {
         ShardingKeyGeneratorSegment keyGeneratorSegment = new ShardingKeyGeneratorSegment("uuid_key_generator", new AlgorithmSegment("uuid", new Properties()));
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         ruleConfig.getKeyGenerators().put("uuid_key_generator", new AlgorithmConfiguration("uuid", new Properties()));
@@ -67,7 +66,7 @@ public final class CreateShardingKeyGeneratorStatementUpdaterTest {
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
-    public void assertExecuteWithInvalidAlgorithm() throws DistSQLException {
+    public void assertExecuteWithInvalidAlgorithm() {
         ShardingKeyGeneratorSegment keyGeneratorSegment = new ShardingKeyGeneratorSegment("invalid_key_generator", new AlgorithmSegment("INVALID_ALGORITHM", new Properties()));
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         updater.checkSQLStatement(database, createSQLStatement(keyGeneratorSegment), ruleConfig);

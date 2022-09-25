@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.check
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
@@ -65,9 +64,8 @@ public final class ShardingRuleConfigurationImportChecker {
      *
      * @param database database
      * @param currentRuleConfig current rule configuration
-     * @throws DistSQLException definition violation exception
      */
-    public void check(final ShardingSphereDatabase database, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+    public void check(final ShardingSphereDatabase database, final ShardingRuleConfiguration currentRuleConfig) {
         if (null == database || null == currentRuleConfig) {
             return;
         }
@@ -78,7 +76,7 @@ public final class ShardingRuleConfigurationImportChecker {
         checkShardingAlgorithms(currentRuleConfig);
     }
     
-    private void checkLogicTables(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkLogicTables(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) {
         Collection<String> tablesLogicTables = currentRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toList());
         Collection<String> autoTablesLogicTables = currentRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toList());
         Collection<String> allLogicTables = new LinkedList<>();
@@ -89,15 +87,15 @@ public final class ShardingRuleConfigurationImportChecker {
         ShardingSpherePreconditions.checkState(duplicatedLogicTables.isEmpty(), () -> new DuplicateRuleException(SHARDING, databaseName, duplicatedLogicTables));
     }
     
-    private void checkShardingAlgorithms(final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkShardingAlgorithms(final ShardingRuleConfiguration currentRuleConfig) {
         checkInvalidAlgorithms(SHARDING, currentRuleConfig.getShardingAlgorithms().values());
     }
     
-    private void checkKeyGenerators(final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkKeyGenerators(final ShardingRuleConfiguration currentRuleConfig) {
         checkInvalidAlgorithms(KEY_GENERATOR, currentRuleConfig.getKeyGenerators().values());
     }
     
-    private void checkInvalidAlgorithms(final String algorithmType, final Collection<AlgorithmConfiguration> algorithmConfigs) throws DistSQLException {
+    private void checkInvalidAlgorithms(final String algorithmType, final Collection<AlgorithmConfiguration> algorithmConfigs) {
         Collection<String> invalidAlgorithms = algorithmConfigs.stream()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(ALGORITHM_TYPE_MAP.get(algorithmType), each.getType(), each.getProps()).isPresent())
                 .map(AlgorithmConfiguration::getType).collect(Collectors.toList());
@@ -121,7 +119,7 @@ public final class ShardingRuleConfigurationImportChecker {
         return actualDataNodes.stream().map(each -> new DataNode(each).getDataSourceName()).collect(Collectors.toList());
     }
     
-    private void checkResources(final String databaseName, final ShardingSphereDatabase database, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkResources(final String databaseName, final ShardingSphereDatabase database, final ShardingRuleConfiguration currentRuleConfig) {
         Collection<String> requiredResource = getRequiredResources(currentRuleConfig);
         Collection<String> notExistedResources = database.getResource().getNotExistedResources(requiredResource);
         Collection<String> logicResources = getLogicResources(database);

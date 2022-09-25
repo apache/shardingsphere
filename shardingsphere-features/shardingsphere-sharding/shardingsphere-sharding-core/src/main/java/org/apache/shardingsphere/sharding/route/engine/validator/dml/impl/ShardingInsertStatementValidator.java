@@ -54,7 +54,7 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<InsertStatement> sqlStatementContext,
-                            final List<Object> parameters, final ShardingSphereDatabase database) {
+                            final List<Object> parameters, final ShardingSphereDatabase database, final ConfigurationProperties props) {
         if (null == ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()) {
             validateMultipleTable(shardingRule, sqlStatementContext);
         }

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shadow.distsql.update;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
@@ -52,7 +51,7 @@ public final class AlterShadowAlgorithmStatementUpdaterTest {
     private final AlterShadowAlgorithmStatementUpdater updater = new AlterShadowAlgorithmStatementUpdater();
     
     @Test(expected = AlgorithmInUsedException.class)
-    public void assertExecuteDuplicateAlgorithm() throws DistSQLException {
+    public void assertExecuteDuplicateAlgorithm() {
         Properties prop = new Properties();
         prop.setProperty("type", "value");
         AlterShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("simpleHintAlgorithm", new AlgorithmSegment("SIMPLE_HINT", prop)),
@@ -61,7 +60,7 @@ public final class AlterShadowAlgorithmStatementUpdaterTest {
     }
     
     @Test(expected = MissingRequiredRuleException.class)
-    public void assertExecuteAlgorithmWithoutConfiguration() throws DistSQLException {
+    public void assertExecuteAlgorithmWithoutConfiguration() {
         Properties prop = new Properties();
         prop.setProperty("type", "value");
         AlterShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("simpleHintAlgorithm", new AlgorithmSegment("SIMPLE_HINT", prop)));
@@ -69,7 +68,7 @@ public final class AlterShadowAlgorithmStatementUpdaterTest {
     }
     
     @Test(expected = MissingRequiredAlgorithmException.class)
-    public void assertExecuteAlgorithmNotInMetaData() throws DistSQLException {
+    public void assertExecuteAlgorithmNotInMetaData() {
         Properties prop = new Properties();
         prop.setProperty("type", "value");
         when(currentConfig.getShadowAlgorithms()).thenReturn(Collections.singletonMap("simpleHintAlgorithm", new AlgorithmConfiguration("type", prop)));

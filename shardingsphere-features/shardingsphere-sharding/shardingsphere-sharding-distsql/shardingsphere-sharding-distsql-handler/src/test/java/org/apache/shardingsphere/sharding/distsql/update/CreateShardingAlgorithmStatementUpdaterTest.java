@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -53,7 +52,7 @@ public final class CreateShardingAlgorithmStatementUpdaterTest {
     }
     
     @Test(expected = DuplicateRuleException.class)
-    public void assertExecuteWithDuplicate() throws DistSQLException {
+    public void assertExecuteWithDuplicate() {
         Properties props = new Properties();
         props.put("inputKey", "inputValue");
         ShardingAlgorithmSegment algorithmSegment = new ShardingAlgorithmSegment("inputAlgorithmName", new AlgorithmSegment("inputAlgorithmName", props));
@@ -61,7 +60,7 @@ public final class CreateShardingAlgorithmStatementUpdaterTest {
     }
     
     @Test(expected = DuplicateRuleException.class)
-    public void assertExecuteWithExist() throws DistSQLException {
+    public void assertExecuteWithExist() {
         Properties props = new Properties();
         props.put("inputKey", "inputValue");
         ShardingAlgorithmSegment algorithmSegment = new ShardingAlgorithmSegment("existAlgorithmName", new AlgorithmSegment("inputAlgorithmName", props));
@@ -71,7 +70,7 @@ public final class CreateShardingAlgorithmStatementUpdaterTest {
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
-    public void assertExecuteWithoutRuleConfiguration() throws DistSQLException {
+    public void assertExecuteWithoutRuleConfiguration() {
         Properties props = new Properties();
         props.put("inputKey", "inputValue");
         ShardingAlgorithmSegment algorithmSegment = new ShardingAlgorithmSegment("inputAlgorithmName", new AlgorithmSegment("inputAlgorithmName", props));
@@ -79,7 +78,7 @@ public final class CreateShardingAlgorithmStatementUpdaterTest {
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
-    public void assertExecuteWithInvalidAlgorithm() throws DistSQLException {
+    public void assertExecuteWithInvalidAlgorithm() {
         Properties props = new Properties();
         props.put("inputKey", "inputValue");
         ShardingAlgorithmSegment algorithmSegment = new ShardingAlgorithmSegment("inputAlgorithmName", new AlgorithmSegment("inputAlgorithmName", props));

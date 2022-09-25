@@ -28,8 +28,8 @@ import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfigura
 /**
  * Migration task configuration.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 @ToString
 public final class MigrationTaskConfiguration implements PipelineTaskConfiguration {
     

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
@@ -53,8 +52,7 @@ import java.util.stream.Collectors;
 public final class CreateReadwriteSplittingRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateReadwriteSplittingRuleStatement, ReadwriteSplittingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database,
-                                  final CreateReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws DistSQLException {
+    public void checkSQLStatement(final ShardingSphereDatabase database, final CreateReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         String databaseName = database.getName();
         checkDuplicateRuleNames(databaseName, sqlStatement, currentRuleConfig, database.getResource());
         checkToBeCreatedResources(databaseName, sqlStatement, database);
@@ -64,7 +62,7 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RuleD
     }
     
     private void checkDuplicateRuleNames(final String databaseName, final CreateReadwriteSplittingRuleStatement sqlStatement,
-                                         final ReadwriteSplittingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws DistSQLException {
+                                         final ReadwriteSplittingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) {
         Collection<String> currentRuleNames = new LinkedList<>();
         if (null != resource && null != resource.getDataSources()) {
             currentRuleNames.addAll(resource.getDataSources().keySet());
@@ -82,7 +80,7 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RuleD
         }
     }
     
-    private void checkToBeCreatedResources(final String databaseName, final CreateReadwriteSplittingRuleStatement sqlStatement, final ShardingSphereDatabase database) throws DistSQLException {
+    private void checkToBeCreatedResources(final String databaseName, final CreateReadwriteSplittingRuleStatement sqlStatement, final ShardingSphereDatabase database) {
         Collection<String> requireResources = new LinkedHashSet<>();
         Collection<String> requireDiscoverableResources = new LinkedHashSet<>();
         sqlStatement.getRules().forEach(each -> {

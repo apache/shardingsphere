@@ -23,7 +23,6 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResource
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -59,7 +58,7 @@ public final class AddResourceBackendHandler extends DatabaseRequiredBackendHand
     }
     
     @Override
-    public ResponseHeader execute(final String databaseName, final AddResourceStatement sqlStatement) throws DistSQLException {
+    public ResponseHeader execute(final String databaseName, final AddResourceStatement sqlStatement) {
         checkSQLStatement(databaseName, sqlStatement);
         Map<String, DataSourceProperties> dataSourcePropsMap = ResourceSegmentsConverter.convert(databaseType, sqlStatement.getDataSources());
         DatabaseType storeType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResource().getDatabaseType();
@@ -73,7 +72,7 @@ public final class AddResourceBackendHandler extends DatabaseRequiredBackendHand
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private void checkSQLStatement(final String databaseName, final AddResourceStatement sqlStatement) throws DistSQLException {
+    private void checkSQLStatement(final String databaseName, final AddResourceStatement sqlStatement) {
         Collection<String> dataSourceNames = new ArrayList<>(sqlStatement.getDataSources().size());
         Collection<String> duplicateDataSourceNames = new HashSet<>(sqlStatement.getDataSources().size(), 1);
         for (DataSourceSegment each : sqlStatement.getDataSources()) {

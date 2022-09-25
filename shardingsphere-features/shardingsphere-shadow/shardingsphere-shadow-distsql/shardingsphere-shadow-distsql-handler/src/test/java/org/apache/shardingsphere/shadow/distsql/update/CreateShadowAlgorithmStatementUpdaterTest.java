@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shadow.distsql.update;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -50,7 +49,7 @@ public final class CreateShadowAlgorithmStatementUpdaterTest {
     private final CreateShadowAlgorithmStatementUpdater updater = new CreateShadowAlgorithmStatementUpdater();
     
     @Test(expected = DuplicateRuleException.class)
-    public void assertExecuteWithDuplicateAlgorithm() throws DistSQLException {
+    public void assertExecuteWithDuplicateAlgorithm() {
         Properties props = new Properties();
         props.setProperty("type", "value");
         CreateShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("foo_algorithm", new AlgorithmSegment("SIMPLE_HINT", props)),
@@ -59,7 +58,7 @@ public final class CreateShadowAlgorithmStatementUpdaterTest {
     }
     
     @Test(expected = DuplicateRuleException.class)
-    public void assertExecuteWithExistAlgorithm() throws DistSQLException {
+    public void assertExecuteWithExistAlgorithm() {
         when(currentConfig.getShadowAlgorithms()).thenReturn(Collections.singletonMap("foo_algorithm", null));
         Properties props = new Properties();
         props.setProperty("type", "value");
@@ -68,7 +67,7 @@ public final class CreateShadowAlgorithmStatementUpdaterTest {
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
-    public void assertExecuteWithAlgorithmCompleteness() throws DistSQLException {
+    public void assertExecuteWithAlgorithmCompleteness() {
         Properties props = new Properties();
         props.setProperty("type", "value");
         CreateShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("foo_algorithm", new AlgorithmSegment("", props)));
@@ -76,7 +75,7 @@ public final class CreateShadowAlgorithmStatementUpdaterTest {
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
-    public void assertExecuteWithInvalidAlgorithmType() throws DistSQLException {
+    public void assertExecuteWithInvalidAlgorithmType() {
         Properties props = new Properties();
         props.setProperty("type", "value");
         CreateShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("foo_algorithm", new AlgorithmSegment("NOT_EXISTED_ALGORITHM", props)));

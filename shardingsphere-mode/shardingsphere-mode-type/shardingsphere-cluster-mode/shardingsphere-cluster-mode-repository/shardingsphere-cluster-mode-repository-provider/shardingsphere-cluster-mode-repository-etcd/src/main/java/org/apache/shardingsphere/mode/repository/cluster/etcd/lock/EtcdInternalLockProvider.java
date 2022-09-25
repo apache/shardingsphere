@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdProperties;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdPropertyKey;
 import org.apache.shardingsphere.mode.repository.cluster.lock.InternalLock;
-import org.apache.shardingsphere.mode.repository.cluster.lock.InternalLockHolder;
+import org.apache.shardingsphere.mode.repository.cluster.lock.InternalLockProvider;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -33,11 +33,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Etcd internal lock holder.
+ * Etcd internal lock provider.
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class EtcdInternalLockHolder implements InternalLockHolder {
+public final class EtcdInternalLockProvider implements InternalLockProvider {
     
     private final Map<String, EtcdInternalLock> locks = new ConcurrentHashMap<>();
     

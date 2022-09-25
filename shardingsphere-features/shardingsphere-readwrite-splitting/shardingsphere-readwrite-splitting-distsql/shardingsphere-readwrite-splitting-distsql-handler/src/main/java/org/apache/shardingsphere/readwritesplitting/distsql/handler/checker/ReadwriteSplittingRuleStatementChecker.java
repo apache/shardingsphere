@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.checker;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
@@ -42,10 +41,9 @@ public final class ReadwriteSplittingRuleStatementChecker {
      * @param segments segments
      * @param currentRuleConfig current rule config
      * @param isCreating whether is creating
-     * @throws DistSQLException DistSQL Exception
      */
     public static void checkDuplicateResourceNames(final String databaseName, final Collection<ReadwriteSplittingRuleSegment> segments,
-                                                   final ReadwriteSplittingRuleConfiguration currentRuleConfig, final boolean isCreating) throws DistSQLException {
+                                                   final ReadwriteSplittingRuleConfiguration currentRuleConfig, final boolean isCreating) {
         Collection<String> existedWriteDataSourceNames = new HashSet<>();
         Collection<String> existedReadDataSourceNames = new HashSet<>();
         if (null != currentRuleConfig) {
@@ -65,8 +63,7 @@ public final class ReadwriteSplittingRuleStatementChecker {
         return segments.stream().map(ReadwriteSplittingRuleSegment::getName).collect(Collectors.toSet());
     }
     
-    private static void checkDuplicateWriteResourceNames(final String databaseName, final Collection<ReadwriteSplittingRuleSegment> segments,
-                                                         final Collection<String> writeDataSourceNames) throws DistSQLException {
+    private static void checkDuplicateWriteResourceNames(final String databaseName, final Collection<ReadwriteSplittingRuleSegment> segments, final Collection<String> writeDataSourceNames) {
         for (final ReadwriteSplittingRuleSegment each : segments) {
             if (!Strings.isNullOrEmpty(each.getWriteDataSource())) {
                 String writeDataSource = each.getWriteDataSource();
@@ -77,7 +74,7 @@ public final class ReadwriteSplittingRuleStatementChecker {
     }
     
     private static void checkDuplicateReadResourceNames(final String databaseName, final Collection<ReadwriteSplittingRuleSegment> segments,
-                                                        final Collection<String> readDataSourceNames) throws DistSQLException {
+                                                        final Collection<String> readDataSourceNames) {
         for (final ReadwriteSplittingRuleSegment each : segments) {
             if (null != each.getReadDataSources()) {
                 for (final String readDataSource : each.getReadDataSources()) {
