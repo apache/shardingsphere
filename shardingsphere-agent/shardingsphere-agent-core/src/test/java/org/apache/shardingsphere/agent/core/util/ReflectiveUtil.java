@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.agent.core.util;
 
-import java.lang.reflect.Modifier;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 /**
  * Reflective utility.
@@ -43,6 +43,9 @@ public final class ReflectiveUtil {
         for (Field each : fields) {
             if (Modifier.isStatic(each.getModifiers()) && each.getName().equalsIgnoreCase(fieldName)) {
                 each.setAccessible(true);
+                Field modifiersField = Field.class.getDeclaredField("modifiers");
+                modifiersField.setAccessible(true);
+                modifiersField.setInt(each, each.getModifiers() & ~Modifier.FINAL);
                 each.set(null, value);
             }
         }

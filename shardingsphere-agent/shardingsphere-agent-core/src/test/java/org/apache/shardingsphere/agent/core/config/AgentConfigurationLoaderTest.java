@@ -35,7 +35,7 @@ public final class AgentConfigurationLoaderTest {
     
     @Test
     public void assertLoad() throws IOException {
-        ReflectiveUtil.setStaticField(AgentPathBuilder.class, "agentPath", new File(getResourceUrl()));
+        ReflectiveUtil.setStaticField(AgentPathBuilder.class, "AGENT_PATH", new File(getResourceUrl()));
         assertNotNull(AgentConfigurationLoader.load());
     }
     
