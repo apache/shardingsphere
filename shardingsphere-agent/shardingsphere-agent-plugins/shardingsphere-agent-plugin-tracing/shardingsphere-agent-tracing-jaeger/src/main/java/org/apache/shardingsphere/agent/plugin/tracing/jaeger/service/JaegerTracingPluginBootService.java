@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.jaeger.service;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import io.jaegertracing.Configuration;
 import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
@@ -41,7 +39,6 @@ public final class JaegerTracingPluginBootService implements PluginBootService {
     @Override
     public void start(final PluginConfiguration pluginConfig) {
         pluginConfig.validate("Jaeger");
-        checkConfiguration(pluginConfig);
         pluginConfig.getProps().forEach((key, value) -> setSystemProperty(String.valueOf(key), String.valueOf(value)));
         Configuration.SamplerConfiguration samplerConfig = Configuration.SamplerConfiguration.fromEnv();
         Configuration.ReporterConfiguration reporterConfig = Configuration.ReporterConfiguration.fromEnv()
@@ -58,11 +55,6 @@ public final class JaegerTracingPluginBootService implements PluginBootService {
             String propertyKey = key.replaceAll("-", "_").toUpperCase();
             System.setProperty(propertyKey, String.valueOf(value));
         }
-    }
-    
-    private void checkConfiguration(final PluginConfiguration pluginConfig) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(pluginConfig.getHost()), "Jaeger hostname is required");
-        Preconditions.checkArgument(pluginConfig.getPort() > 0, "Jaeger port `%d` must be a positive number");
     }
     
     @Override
