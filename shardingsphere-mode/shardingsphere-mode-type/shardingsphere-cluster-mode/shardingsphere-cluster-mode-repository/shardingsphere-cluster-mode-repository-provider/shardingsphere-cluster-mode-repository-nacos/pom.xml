@@ -21,16 +21,22 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-cluster-mode-repository</artifactId>
+        <artifactId>shardingsphere-cluster-mode-repository-provider</artifactId>
         <version>5.2.1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-cluster-mode-repository-provider</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-cluster-mode-repository-nacos</artifactId>
     <name>${project.artifactId}</name>
     
-    <modules>
-        <module>shardingsphere-cluster-mode-repository-zookeeper-curator</module>
-        <module>shardingsphere-cluster-mode-repository-etcd</module>
-        <module>shardingsphere-cluster-mode-repository-nacos</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-cluster-mode-repository-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.nacos</groupId>
+            <artifactId>nacos-client</artifactId>
+            <version>1.4.2</version>
+        </dependency>
+    </dependencies>
 </project>
