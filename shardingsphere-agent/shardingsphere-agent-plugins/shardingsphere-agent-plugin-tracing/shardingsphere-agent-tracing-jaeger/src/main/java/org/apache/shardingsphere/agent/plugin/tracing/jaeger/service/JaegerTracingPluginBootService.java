@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.jaeger.service;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import io.jaegertracing.Configuration;
 import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
-import org.apache.shardingsphere.agent.exception.PluginConfigurationException;
 import org.apache.shardingsphere.agent.spi.boot.PluginBootService;
 
 import java.util.Optional;
@@ -35,9 +36,7 @@ public final class JaegerTracingPluginBootService implements PluginBootService {
     @SuppressWarnings("AccessOfSystemProperties")
     @Override
     public void start(final PluginConfiguration pluginConfig) {
-        if (!checkConfiguration(pluginConfig)) {
-            throw new PluginConfigurationException("jaeger config error, host is null or port is %s", pluginConfig.getPort());
-        }
+        pluginConfig.validate("Jaeger");
         pluginConfig.getProps().forEach((key, value) -> System.setProperty(String.valueOf(key), String.valueOf(value)));
         Configuration.SamplerConfiguration samplerConfig = Configuration.SamplerConfiguration.fromEnv();
         Configuration.ReporterConfiguration reporterConfig = Configuration.ReporterConfiguration.fromEnv()
@@ -49,10 +48,9 @@ public final class JaegerTracingPluginBootService implements PluginBootService {
         }
     }
     
-    private boolean checkConfiguration(final PluginConfiguration pluginConfig) {
-        String host = pluginConfig.getHost();
-        int port = pluginConfig.getPort();
-        return null != host && !"".equalsIgnoreCase(host) && port > 0;
+    private void checkConfiguration(final PluginConfiguration pluginConfig) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(pluginConfig.getHost()), "Jaeger hostname is required");
+        Preconditions.checkArgument(pluginConfig.getPort() > 0, "Jaeger port `%d` must be a positive number");
     }
     
     @Override

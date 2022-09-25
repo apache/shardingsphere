@@ -15,16 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.exception;
+package org.apache.shardingsphere.mode.repository.cluster.nacos.listener;
+
+import com.alibaba.nacos.api.naming.pojo.Instance;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
 /**
- * Plugin configuration exception.
+ * Watch data.
  */
-public final class PluginConfigurationException extends RuntimeException {
+@Getter
+@RequiredArgsConstructor
+public final class WatchData {
     
-    private static final long serialVersionUID = -3298813951573088711L;
+    private final String key;
     
-    public PluginConfigurationException(final String errorMessage, final Object... args) {
-        super(String.format(errorMessage, args));
-    }
+    private final Instance preInstance;
+    
+    private final Instance instance;
+    
+    private final DataChangedEventListener listener;
 }
