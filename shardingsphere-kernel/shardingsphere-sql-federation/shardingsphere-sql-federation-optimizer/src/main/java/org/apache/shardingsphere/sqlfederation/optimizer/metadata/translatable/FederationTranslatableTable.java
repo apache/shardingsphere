@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.DataContext;
-import org.apache.calcite.avatica.SqlType;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.QueryProvider;
 import org.apache.calcite.linq4j.Queryable;
@@ -29,19 +28,18 @@ import org.apache.calcite.plan.RelOptTable.ToRelContext;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
-import org.apache.calcite.rel.type.RelDataTypeFactory.Builder;
 import org.apache.calcite.schema.QueryableTable;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.Schemas;
 import org.apache.calcite.schema.Statistic;
 import org.apache.calcite.schema.TranslatableTable;
 import org.apache.calcite.schema.impl.AbstractTable;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TranslatableScanNodeExecutorContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.statistic.FederationStatistic;
+import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationDataTypeUtil;
 
 import java.lang.reflect.Type;
 
@@ -59,7 +57,7 @@ public final class FederationTranslatableTable extends AbstractTable implements 
     
     @Override
     public RelDataType getRowType(final RelDataTypeFactory typeFactory) {
-        return createRelDataType(table, typeFactory);
+        return SQLFederationDataTypeUtil.createRelDataType(table, typeFactory);
     }
     
     /**
@@ -122,19 +120,5 @@ public final class FederationTranslatableTable extends AbstractTable implements 
             result[index] = index;
         }
         return result;
-    }
-    
-    private RelDataType createRelDataType(final ShardingSphereTable table, final RelDataTypeFactory typeFactory) {
-        Builder fieldInfoBuilder = typeFactory.builder();
-        for (ShardingSphereColumn each : table.getColumns().values()) {
-            fieldInfoBuilder.add(each.getName(), getRelDataType(each, typeFactory));
-        }
-        return fieldInfoBuilder.build();
-    }
-    
-    private RelDataType getRelDataType(final ShardingSphereColumn column, final RelDataTypeFactory typeFactory) {
-        Class<?> sqlTypeClass = SqlType.valueOf(column.getDataType()).clazz;
-        RelDataType javaType = typeFactory.createJavaType(sqlTypeClass);
-        return typeFactory.createTypeWithNullability(javaType, true);
     }
 }

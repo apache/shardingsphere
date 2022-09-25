@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
-        <artifactId>shardingsphere-example</artifactId>
+        <artifactId>shardingsphere-examples</artifactId>
         <version>${revision}</version>
     </parent>
     <artifactId>shardingsphere-proxy-example</artifactId>
@@ -34,7 +34,7 @@
         <module>shardingsphere-proxy-hint-example</module>
         <module>shardingsphere-proxy-distsql-example</module>
     </modules>
-
+    
     <build>
         <pluginManagement>
             <plugins>
@@ -55,7 +55,7 @@
                                     </goals>
                                 </pluginExecutionFilter>
                                 <action>
-                                    <ignore></ignore>
+                                    <ignore />
                                 </action>
                             </pluginExecution>
                         </pluginExecutions>
@@ -64,6 +64,4 @@
             </plugins>
         </pluginManagement>
     </build>
-
 </project>
-

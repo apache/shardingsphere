@@ -42,13 +42,12 @@ import java.util.stream.Collectors;
 public final class CreateShardingAuditorStatementUpdater implements RuleDefinitionCreateUpdater<CreateShardingAuditorStatement, ShardingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final CreateShardingAuditorStatement sqlStatement,
-                                  final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+    public void checkSQLStatement(final ShardingSphereDatabase database, final CreateShardingAuditorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         checkDuplicate(database.getName(), sqlStatement, currentRuleConfig);
         checkAuditorAlgorithm(sqlStatement);
     }
     
-    private void checkDuplicate(final String databaseName, final CreateShardingAuditorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkDuplicate(final String databaseName, final CreateShardingAuditorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         Collection<String> auditorNames = sqlStatement.getAuditorSegments().stream().map(ShardingAuditorSegment::getAuditorName).collect(Collectors.toList());
         checkDuplicateInput(auditorNames, duplicated -> new DuplicateAlgorithmException("Sharding auditor", databaseName, duplicated));
         if (null != currentRuleConfig) {
@@ -56,18 +55,18 @@ public final class CreateShardingAuditorStatementUpdater implements RuleDefiniti
         }
     }
     
-    private void checkDuplicateInput(final Collection<String> rules, final Function<Collection<String>, DistSQLException> thrower) throws DistSQLException {
+    private void checkDuplicateInput(final Collection<String> rules, final Function<Collection<String>, DistSQLException> thrower) {
         Collection<String> duplicateRequire = rules.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
                 .filter(each -> each.getValue() > 1).map(Map.Entry::getKey).collect(Collectors.toSet());
         ShardingSpherePreconditions.checkState(duplicateRequire.isEmpty(), () -> thrower.apply(duplicateRequire));
     }
     
-    private void checkExist(final Collection<String> requireRules, final Collection<String> currentRules, final Function<Collection<String>, DistSQLException> thrower) throws DistSQLException {
+    private void checkExist(final Collection<String> requireRules, final Collection<String> currentRules, final Function<Collection<String>, DistSQLException> thrower) {
         Collection<String> identical = requireRules.stream().filter(currentRules::contains).collect(Collectors.toSet());
         ShardingSpherePreconditions.checkState(identical.isEmpty(), () -> thrower.apply(identical));
     }
     
-    private void checkAuditorAlgorithm(final CreateShardingAuditorStatement sqlStatement) throws DistSQLException {
+    private void checkAuditorAlgorithm(final CreateShardingAuditorStatement sqlStatement) {
         Collection<String> notExistedAuditorAlgorithms = sqlStatement.getAuditorSegments().stream().map(ShardingAuditorSegment::getAlgorithmSegment).map(AlgorithmSegment::getName)
                 .filter(each -> !ShardingAuditAlgorithmFactory.contains(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistedAuditorAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException("sharding", notExistedAuditorAlgorithms));

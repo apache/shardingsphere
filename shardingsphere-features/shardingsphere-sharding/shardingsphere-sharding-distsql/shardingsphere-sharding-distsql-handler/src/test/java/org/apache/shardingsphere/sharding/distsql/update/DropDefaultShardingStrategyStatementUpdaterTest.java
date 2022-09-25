@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.distsql.update;
 
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -41,17 +40,17 @@ public final class DropDefaultShardingStrategyStatementUpdaterTest {
     private ShardingSphereDatabase database;
     
     @Test(expected = MissingRequiredRuleException.class)
-    public void assertCheckSQLStatementWithoutCurrentRule() throws DistSQLException {
+    public void assertCheckSQLStatementWithoutCurrentRule() {
         updater.checkSQLStatement(database, new DropDefaultShardingStrategyStatement(false, "TABLE"), null);
     }
     
     @Test(expected = MissingRequiredRuleException.class)
-    public void assertCheckSQLStatementWithoutExistedAlgorithm() throws DistSQLException {
+    public void assertCheckSQLStatementWithoutExistedAlgorithm() {
         updater.checkSQLStatement(database, createSQLStatement("table"), new ShardingRuleConfiguration());
     }
     
     @Test
-    public void assertCheckSQLStatementWithIfExists() throws DistSQLException {
+    public void assertCheckSQLStatementWithIfExists() {
         updater.checkSQLStatement(database, new DropDefaultShardingStrategyStatement(true, "table"), new ShardingRuleConfiguration());
         updater.checkSQLStatement(database, new DropDefaultShardingStrategyStatement(true, "table"), null);
     }

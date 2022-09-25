@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.transaction.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -48,7 +47,7 @@ import static org.mockito.Mockito.when;
 public final class AlterTransactionRuleStatementUpdaterTest {
     
     @Test
-    public void assertExecuteWithXA() throws DistSQLException {
+    public void assertExecuteWithXA() {
         AlterTransactionRuleStatementUpdater updater = new AlterTransactionRuleStatementUpdater();
         ShardingSphereMetaData metaData = createMetaData();
         updater.executeUpdate(metaData, new AlterTransactionRuleStatement("XA", new TransactionProviderSegment("Atomikos", createProperties())));
@@ -63,7 +62,7 @@ public final class AlterTransactionRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertExecuteWithLocal() throws DistSQLException {
+    public void assertExecuteWithLocal() {
         AlterTransactionRuleStatementUpdater updater = new AlterTransactionRuleStatementUpdater();
         ShardingSphereMetaData metaData = createMetaData();
         updater.executeUpdate(metaData, new AlterTransactionRuleStatement("LOCAL", new TransactionProviderSegment("", new Properties())));

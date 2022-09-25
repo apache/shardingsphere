@@ -22,7 +22,6 @@ import com.google.common.collect.Multimap;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.ResourceInUsedException;
@@ -57,7 +56,7 @@ public final class DropResourceBackendHandler extends DatabaseRequiredBackendHan
     }
     
     @Override
-    public ResponseHeader execute(final String databaseName, final DropResourceStatement sqlStatement) throws DistSQLException {
+    public ResponseHeader execute(final String databaseName, final DropResourceStatement sqlStatement) {
         Collection<String> toBeDroppedResourceNames = sqlStatement.getNames();
         check(databaseName, toBeDroppedResourceNames, sqlStatement.isIgnoreSingleTables(), sqlStatement.isIfExists());
         try {
@@ -70,20 +69,20 @@ public final class DropResourceBackendHandler extends DatabaseRequiredBackendHan
     }
     
     private void check(final String databaseName, final Collection<String> toBeDroppedResourceNames,
-                       final boolean ignoreSingleTables, final boolean allowNotExist) throws DistSQLException {
+                       final boolean ignoreSingleTables, final boolean allowNotExist) {
         if (!allowNotExist) {
             checkResourceNameExisted(databaseName, toBeDroppedResourceNames);
         }
         checkResourceNameNotInUse(databaseName, toBeDroppedResourceNames, ignoreSingleTables);
     }
     
-    private void checkResourceNameExisted(final String databaseName, final Collection<String> resourceNames) throws DistSQLException {
+    private void checkResourceNameExisted(final String databaseName, final Collection<String> resourceNames) {
         Map<String, DataSource> resources = ProxyContext.getInstance().getDatabase(databaseName).getResource().getDataSources();
         Collection<String> notExistedResourceNames = resourceNames.stream().filter(each -> !resources.containsKey(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistedResourceNames.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, notExistedResourceNames));
     }
     
-    private void checkResourceNameNotInUse(final String databaseName, final Collection<String> toBeDroppedResourceNames, final boolean ignoreSingleTables) throws DistSQLException {
+    private void checkResourceNameNotInUse(final String databaseName, final Collection<String> toBeDroppedResourceNames, final boolean ignoreSingleTables) {
         Multimap<String, String> inUsedMultimap = getInUsedResources(databaseName);
         Collection<String> inUsedResourceNames = inUsedMultimap.keySet();
         inUsedResourceNames.retainAll(toBeDroppedResourceNames);
@@ -97,7 +96,7 @@ public final class DropResourceBackendHandler extends DatabaseRequiredBackendHan
         }
     }
     
-    private void checkResourceNameNotInUseIgnoreSingleTableRule(final Collection<String> inUsedResourceNames, final Multimap<String, String> inUsedMultimap) throws DistSQLException {
+    private void checkResourceNameNotInUseIgnoreSingleTableRule(final Collection<String> inUsedResourceNames, final Multimap<String, String> inUsedMultimap) {
         for (String each : inUsedResourceNames) {
             Collection<String> inUsedRules = inUsedMultimap.get(each);
             inUsedRules.remove(SingleTableRule.class.getSimpleName());

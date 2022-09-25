@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
@@ -66,7 +65,7 @@ public final class AlterResourceBackendHandler extends DatabaseRequiredBackendHa
     }
     
     @Override
-    public ResponseHeader execute(final String databaseName, final AlterResourceStatement sqlStatement) throws DistSQLException {
+    public ResponseHeader execute(final String databaseName, final AlterResourceStatement sqlStatement) {
         checkSQLStatement(databaseName, sqlStatement);
         Map<String, DataSourceProperties> dataSourcePropsMap = ResourceSegmentsConverter.convert(databaseType, sqlStatement.getDataSources());
         validator.validate(dataSourcePropsMap, databaseType);
@@ -79,14 +78,14 @@ public final class AlterResourceBackendHandler extends DatabaseRequiredBackendHa
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private void checkSQLStatement(final String databaseName, final AlterResourceStatement sqlStatement) throws DistSQLException {
+    private void checkSQLStatement(final String databaseName, final AlterResourceStatement sqlStatement) {
         Collection<String> toBeAlteredResourceNames = getToBeAlteredResourceNames(sqlStatement);
         checkToBeAlteredDuplicateResourceNames(toBeAlteredResourceNames);
         checkResourceNameExisted(databaseName, toBeAlteredResourceNames);
         checkDatabase(databaseName, sqlStatement);
     }
     
-    private void checkDatabase(final String databaseName, final AlterResourceStatement sqlStatement) throws DistSQLException {
+    private void checkDatabase(final String databaseName, final AlterResourceStatement sqlStatement) {
         Map<String, DataSource> resources = ProxyContext.getInstance().getDatabase(databaseName).getResource().getDataSources();
         Collection<String> invalid = sqlStatement.getDataSources().stream().collect(Collectors.toMap(DataSourceSegment::getName, each -> each)).entrySet().stream()
                 .filter(each -> !isIdenticalDatabase(each.getValue(), resources.get(each.getKey()))).map(Entry::getKey).collect(Collectors.toSet());
@@ -97,7 +96,7 @@ public final class AlterResourceBackendHandler extends DatabaseRequiredBackendHa
         return sqlStatement.getDataSources().stream().map(DataSourceSegment::getName).collect(Collectors.toList());
     }
     
-    private void checkToBeAlteredDuplicateResourceNames(final Collection<String> resourceNames) throws DistSQLException {
+    private void checkToBeAlteredDuplicateResourceNames(final Collection<String> resourceNames) {
         Collection<String> duplicateResourceNames = getDuplicateResourceNames(resourceNames);
         ShardingSpherePreconditions.checkState(duplicateResourceNames.isEmpty(), () -> new DuplicateResourceException(duplicateResourceNames));
     }
@@ -106,7 +105,7 @@ public final class AlterResourceBackendHandler extends DatabaseRequiredBackendHa
         return resourceNames.stream().filter(each -> resourceNames.stream().filter(each::equals).count() > 1).collect(Collectors.toList());
     }
     
-    private void checkResourceNameExisted(final String databaseName, final Collection<String> resourceNames) throws DistSQLException {
+    private void checkResourceNameExisted(final String databaseName, final Collection<String> resourceNames) {
         Map<String, DataSource> resources = ProxyContext.getInstance().getDatabase(databaseName).getResource().getDataSources();
         Collection<String> notExistedResourceNames = resourceNames.stream().filter(each -> !resources.containsKey(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistedResourceNames.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, notExistedResourceNames));
