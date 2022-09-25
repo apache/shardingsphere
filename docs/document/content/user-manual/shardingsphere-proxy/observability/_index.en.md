@@ -45,17 +45,17 @@ No plugin is enabled by default. is for single plugin. After configuring the cor
 
 ```yaml
 plugins:
-  logging:
+#  logging:
 #    BaseLogging:
 #      props:
 #        level: "INFO"
-  metrics:
+#  metrics:
 #    Prometheus:
 #      host:  "localhost"
 #      port: 9090
 #      props:
 #        jvm-information-collector-enabled: "true"
-  tracing:
+#  tracing:
 #    Jaeger:
 #      host: "localhost"
 #      port: 5775
