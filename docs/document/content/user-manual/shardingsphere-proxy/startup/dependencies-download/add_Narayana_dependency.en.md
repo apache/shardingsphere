@@ -1,9 +1,9 @@
 ## Add Narayana dependencies
 
-Adding Narayana dependencies requires downloading the following .jar files and adding them under `ext-lib` path
+Adding Narayana dependencies requires downloading the following jar files and adding them under `ext-lib` path.
 
+### jar file downloads
 
-### .jar file downloads：
 - [arjuna-5.12.4.Final.jar](https://repo1.maven.org/maven2/org/jboss/narayana/arjunacore/arjuna/5.12.4.Final/arjuna-5.12.4.Final.jar)
 - [common-5.12.4.Final.jar](https://repo1.maven.org/maven2/org/jboss/narayana/common/5.12.4.Final/common-5.12.4.Final.jar)
 - [javax.activation-api-1.2.0.jar](https://repo1.maven.org/maven2/javax/activation/javax.activation-api/1.2.0/javax.activation-api-1.2.0.jar)
@@ -17,7 +17,5 @@ Adding Narayana dependencies requires downloading the following .jar files and a
 - [jta-5.12.4.Final.jar](https://repo1.maven.org/maven2/org/jboss/narayana/jta/jta/5.12.4.Final/jta-5.12.4.Final.jar)
 - [narayana-jts-integration-5.12.4.Final.jar](https://repo1.maven.org/maven2/org/jboss/narayana/jts/narayana-jts-integration/5.12.4.Final/narayana-jts-integration-5.12.4.Final.jar)
 - [shardingsphere-transaction-xa-narayana.jar](https://mvnrepository.com/artifact/org.apache.shardingsphere/shardingsphere-transaction-xa-narayana)
-Please download the corresponding `shardingsphere-transaction-xa-narayana.jar` file according to the `proxy` version
 
-
-
+Please download the corresponding `shardingsphere-transaction-xa-narayana.jar` file according to the `proxy` version.

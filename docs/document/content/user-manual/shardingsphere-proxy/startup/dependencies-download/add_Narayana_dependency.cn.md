@@ -1,9 +1,9 @@
 ## 添加 Narayana 依赖包
 
-添加 Narayana 依赖需要下载以下 .jar 文件并将其添加至 `ext-lib` 下
+添加 Narayana 依赖需要下载以下 jar 文件并将其添加至 `ext-lib` 下。
 
+### jar 文件下载地址
 
-### .jar 文件下载地址：
 - [arjuna-5.12.4.Final.jar](https://repo1.maven.org/maven2/org/jboss/narayana/arjunacore/arjuna/5.12.4.Final/arjuna-5.12.4.Final.jar)
 - [common-5.12.4.Final.jar](https://repo1.maven.org/maven2/org/jboss/narayana/common/5.12.4.Final/common-5.12.4.Final.jar)
 - [javax.activation-api-1.2.0.jar](https://repo1.maven.org/maven2/javax/activation/javax.activation-api/1.2.0/javax.activation-api-1.2.0.jar)
@@ -17,7 +17,5 @@
 - [jta-5.12.4.Final.jar](https://repo1.maven.org/maven2/org/jboss/narayana/jta/jta/5.12.4.Final/jta-5.12.4.Final.jar)
 - [narayana-jts-integration-5.12.4.Final.jar](https://repo1.maven.org/maven2/org/jboss/narayana/jts/narayana-jts-integration/5.12.4.Final/narayana-jts-integration-5.12.4.Final.jar)
 - [shardingsphere-transaction-xa-narayana.jar](https://mvnrepository.com/artifact/org.apache.shardingsphere/shardingsphere-transaction-xa-narayana)
-请根据 `proxy` 版本下载对应 `shardingsphere-transaction-xa-narayana.jar` 文件
 
-
-
+请根据 `proxy` 版本下载对应 `shardingsphere-transaction-xa-narayana.jar` 文件。
