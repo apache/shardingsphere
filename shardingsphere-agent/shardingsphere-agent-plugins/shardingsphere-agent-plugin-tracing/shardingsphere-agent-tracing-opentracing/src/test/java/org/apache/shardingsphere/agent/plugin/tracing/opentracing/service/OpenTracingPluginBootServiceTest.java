@@ -38,7 +38,7 @@ public final class OpenTracingPluginBootServiceTest {
     
     private Properties createProperties() {
         Properties result = new Properties();
-        result.setProperty("OPENTRACING_TRACER_CLASS_NAME", "io.opentracing.mock.MockTracer");
+        result.setProperty("opentracing-tracer-class-name", "io.opentracing.mock.MockTracer");
         return result;
     }
     

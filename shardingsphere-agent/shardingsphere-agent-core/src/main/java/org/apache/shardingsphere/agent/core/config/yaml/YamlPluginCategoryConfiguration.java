@@ -15,26 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.logging.base.service;
+package org.apache.shardingsphere.agent.core.config.yaml;
 
-import org.apache.shardingsphere.agent.config.PluginConfiguration;
-import org.apache.shardingsphere.agent.spi.boot.PluginBootService;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * Base logging plugin boot service.
+ * YAML plugin category configuration.
  */
-public final class BaseLoggingPluginBootService implements PluginBootService {
+@Getter
+@Setter
+public final class YamlPluginCategoryConfiguration {
     
-    @Override
-    public void start(final PluginConfiguration pluginConfig) {
-    }
+    private Map<String, YamlPluginConfiguration> logging = new LinkedHashMap<>();
     
-    @Override
-    public void close() {
-    }
+    private Map<String, YamlPluginConfiguration> metrics = new LinkedHashMap<>();
     
-    @Override
-    public String getType() {
-        return "BaseLogging";
-    }
+    private Map<String, YamlPluginConfiguration> tracing = new LinkedHashMap<>();
 }

@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.jaeger.service;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import io.jaegertracing.Configuration;
 import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
@@ -31,26 +29,32 @@ import java.util.Optional;
  */
 public final class JaegerTracingPluginBootService implements PluginBootService {
     
+    private static final String DEFAULT_SERVICE_NAME = "shardingsphere";
+    
+    private static final String KEY_SERVICE_NAME = "service-name";
+    
     private Configuration config;
     
     @SuppressWarnings("AccessOfSystemProperties")
     @Override
     public void start(final PluginConfiguration pluginConfig) {
         pluginConfig.validate("Jaeger");
-        pluginConfig.getProps().forEach((key, value) -> System.setProperty(String.valueOf(key), String.valueOf(value)));
+        pluginConfig.getProps().forEach((key, value) -> setSystemProperty(String.valueOf(key), String.valueOf(value)));
         Configuration.SamplerConfiguration samplerConfig = Configuration.SamplerConfiguration.fromEnv();
         Configuration.ReporterConfiguration reporterConfig = Configuration.ReporterConfiguration.fromEnv()
                 .withSender(Configuration.SenderConfiguration.fromEnv().withAgentHost(pluginConfig.getHost()).withAgentPort(pluginConfig.getPort()));
-        String serviceName = Optional.ofNullable(pluginConfig.getProps().getProperty("SERVICE_NAME")).orElse("shardingsphere-agent");
+        String serviceName = Optional.ofNullable(pluginConfig.getProps().getProperty(KEY_SERVICE_NAME)).orElse(DEFAULT_SERVICE_NAME);
         config = new Configuration(serviceName).withSampler(samplerConfig).withReporter(reporterConfig);
         if (!GlobalTracer.isRegistered()) {
             GlobalTracer.register(config.getTracer());
         }
     }
     
-    private void checkConfiguration(final PluginConfiguration pluginConfig) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(pluginConfig.getHost()), "Jaeger hostname is required");
-        Preconditions.checkArgument(pluginConfig.getPort() > 0, "Jaeger port `%d` must be a positive number");
+    private void setSystemProperty(final String key, final String value) {
+        if (!KEY_SERVICE_NAME.equalsIgnoreCase(key)) {
+            String propertyKey = key.replaceAll("-", "_").toUpperCase();
+            System.setProperty(propertyKey, String.valueOf(value));
+        }
     }
     
     @Override

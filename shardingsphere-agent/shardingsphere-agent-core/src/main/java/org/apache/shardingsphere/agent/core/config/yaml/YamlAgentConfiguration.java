@@ -20,11 +20,6 @@ package org.apache.shardingsphere.agent.core.config.yaml;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-
 /**
  * YAML agent configuration.
  */
@@ -32,9 +27,5 @@ import java.util.Set;
 @Setter
 public final class YamlAgentConfiguration {
     
-    private String applicationName = "shardingsphere-agent";
-    
-    private Set<String> ignoredPluginNames = new HashSet<>();
-    
-    private Map<String, YamlPluginConfiguration> plugins = new LinkedHashMap<>();
+    private YamlPluginCategoryConfiguration plugins;
 }

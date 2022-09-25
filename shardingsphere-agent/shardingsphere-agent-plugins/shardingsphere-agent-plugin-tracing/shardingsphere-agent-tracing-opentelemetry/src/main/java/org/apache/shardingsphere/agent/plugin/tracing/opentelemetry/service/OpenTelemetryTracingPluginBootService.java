@@ -26,10 +26,15 @@ public class OpenTelemetryTracingPluginBootService implements PluginBootService 
     
     @Override
     public void start(final PluginConfiguration pluginConfig) {
-        pluginConfig.getProps().forEach((key, value) -> System.setProperty(String.valueOf(key), String.valueOf(value)));
+        pluginConfig.getProps().forEach((key, value) -> setSystemProperty(String.valueOf(key), String.valueOf(value)));
         OpenTelemetrySdk sdk = OpenTelemetrySdkAutoConfiguration.initialize();
         // tracer will be created
         sdk.getTracer("shardingsphere-agent");
+    }
+    
+    private void setSystemProperty(final String key, final String value) {
+        String propertyKey = key.replaceAll("-", ".");
+        System.setProperty(propertyKey, String.valueOf(value));
     }
     
     @Override

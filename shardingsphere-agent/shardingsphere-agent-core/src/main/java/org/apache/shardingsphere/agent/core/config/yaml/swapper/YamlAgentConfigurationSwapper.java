@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.config.yaml.YamlAgentConfiguration;
+import org.apache.shardingsphere.agent.core.config.yaml.YamlPluginCategoryConfiguration;
 import org.apache.shardingsphere.agent.core.config.yaml.YamlPluginConfiguration;
 
 import java.util.LinkedHashMap;
@@ -42,10 +43,23 @@ public final class YamlAgentConfigurationSwapper {
      */
     public static AgentConfiguration swap(final YamlAgentConfiguration yamlConfig) {
         Map<String, PluginConfiguration> configurationMap = new LinkedHashMap<>();
-        for (Entry<String, YamlPluginConfiguration> entry : yamlConfig.getPlugins().entrySet()) {
-            configurationMap.put(entry.getKey(), transform(entry.getValue()));
+        YamlPluginCategoryConfiguration plugins = yamlConfig.getPlugins();
+        if (null != plugins) {
+            configurationMap.putAll(transformPluginConfigurationMap(plugins.getLogging()));
+            configurationMap.putAll(transformPluginConfigurationMap(plugins.getMetrics()));
+            configurationMap.putAll(transformPluginConfigurationMap(plugins.getTracing()));
         }
-        return new AgentConfiguration(yamlConfig.getApplicationName(), yamlConfig.getIgnoredPluginNames(), configurationMap);
+        return new AgentConfiguration(configurationMap);
+    }
+    
+    private static Map<String, PluginConfiguration> transformPluginConfigurationMap(final Map<String, YamlPluginConfiguration> yamlConfigurationMap) {
+        Map<String, PluginConfiguration> configurationMap = new LinkedHashMap<>();
+        if (null != yamlConfigurationMap && yamlConfigurationMap.size() > 0) {
+            for (Entry<String, YamlPluginConfiguration> entry : yamlConfigurationMap.entrySet()) {
+                configurationMap.put(entry.getKey(), transform(entry.getValue()));
+            }
+        }
+        return configurationMap;
     }
     
     private static PluginConfiguration transform(final YamlPluginConfiguration yamlConfig) {
