@@ -41,7 +41,7 @@ tree
 
 `conf/agent.yaml` 用于管理 agent 配置。
 内置插件包括 Jaeger、OpenTracing、Zipkin、OpenTelemetry、BaseLogging 及 Prometheus。
-默认不开启任何插件，配置好对应插件配置后可启动对应的插件
+默认不开启任何插件。
 
 ```yaml
 plugins:
