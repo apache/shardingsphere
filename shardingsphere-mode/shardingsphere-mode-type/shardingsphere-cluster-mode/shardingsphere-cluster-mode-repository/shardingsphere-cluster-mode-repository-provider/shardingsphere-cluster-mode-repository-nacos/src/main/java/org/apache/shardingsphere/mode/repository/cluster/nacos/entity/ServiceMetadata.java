@@ -28,23 +28,18 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Service metadata.
  */
 @RequiredArgsConstructor
+@Getter
+@Setter
 public final class ServiceMetadata {
     
-    @Getter
     private final String serviceName;
     
-    @Getter
-    @Setter
     private String ip;
     
-    @Setter
     private AtomicInteger port;
     
-    @Getter
-    @Setter
     private NamingEventListener listener;
     
-    @Getter
     private final boolean ephemeral;
     
     /**

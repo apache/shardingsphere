@@ -27,16 +27,21 @@
     <artifactId>shardingsphere-cluster-mode-repository-nacos</artifactId>
     <name>${project.artifactId}</name>
     
+    <properties>
+        <nacos.version>1.4.2</nacos.version>
+    </properties>
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-cluster-mode-repository-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
         <dependency>
             <groupId>com.alibaba.nacos</groupId>
             <artifactId>nacos-client</artifactId>
-            <version>1.4.2</version>
+            <version>${nacos.version}</version>
         </dependency>
     </dependencies>
 </project>

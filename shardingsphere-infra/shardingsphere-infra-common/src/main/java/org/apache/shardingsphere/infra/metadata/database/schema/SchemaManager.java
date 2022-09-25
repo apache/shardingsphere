@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
  */
 public final class SchemaManager {
     
-    
     /**
      * Get to be added tables by schemas.
      *

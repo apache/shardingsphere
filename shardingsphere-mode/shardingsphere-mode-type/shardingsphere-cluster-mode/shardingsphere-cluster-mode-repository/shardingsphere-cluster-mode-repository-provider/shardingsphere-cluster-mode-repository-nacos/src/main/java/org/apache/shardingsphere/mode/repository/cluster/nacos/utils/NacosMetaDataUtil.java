@@ -28,12 +28,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 /**
- * Metadata util.
+ * Nacos meta data util.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MetadataUtil {
-    
-    public static final String EMPTY = "";
+public final class NacosMetaDataUtil {
     
     public static final ZoneOffset UTC_ZONE_OFFSET = ZoneOffset.of("+8");
     
@@ -43,7 +41,6 @@ public final class MetadataUtil {
      * @param instance instance
      * @return timestamp
      */
-    @SneakyThrows
     public static long getTimestamp(final Instance instance) {
         return Long.parseLong(instance.getMetadata().get(UTC_ZONE_OFFSET.toString()));
     }
@@ -73,7 +70,7 @@ public final class MetadataUtil {
      * @param instance instance
      * @return key
      */
-    @SneakyThrows
+    @SneakyThrows(NacosException.class)
     public static String getKey(final Instance instance) {
         return instance.getMetadata().keySet().stream()
                 .filter(entryKey -> !entryKey.equals(PreservedMetadataKeys.HEART_BEAT_INTERVAL)
