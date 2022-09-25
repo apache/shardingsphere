@@ -339,7 +339,8 @@ public final class NacosRepositoryTest {
     }
     
     @Test(expected = NacosException.class)
-    public void assertPersistNotAvailable() throws Throwable {
+    @SneakyThrows
+    public void assertPersistNotAvailable() {
         try {
             REPOSITORY.persist("/test/children/keys/persistent/1", "value4");
         } catch (final ClusterPersistRepositoryException ex) {
@@ -348,7 +349,8 @@ public final class NacosRepositoryTest {
     }
     
     @Test(expected = IllegalStateException.class)
-    public void assertExceededMaximum() throws Throwable {
+    @SneakyThrows
+    public void assertExceededMaximum() {
         ServiceMetadata ephemeralService = serviceController.getEphemeralService();
         ephemeralService.setPort(new AtomicInteger(Integer.MAX_VALUE));
         try {

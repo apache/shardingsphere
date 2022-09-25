@@ -64,7 +64,7 @@ public final class NacosRepository implements ClusterPersistRepository {
     
     private NacosProperties nacosProps;
     
-    private final ServiceController serviceController = new ServiceController();
+    private ServiceController serviceController;
     
     @Override
     public void init(final ClusterPersistRepositoryConfiguration config) {
@@ -88,6 +88,7 @@ public final class NacosRepository implements ClusterPersistRepository {
         try {
             String clusterIp = nacosProps.getValue(NacosPropertyKey.CLUSTER_IP);
             String ip = Strings.isNullOrEmpty(clusterIp) ? IpUtils.getIp() : clusterIp;
+            serviceController = new ServiceController();
             for (ServiceMetadata each : serviceController.getAllServices()) {
                 Integer port = client.getAllInstances(each.getServiceName(), false).stream()
                         .filter(instance -> StringUtils.equals(instance.getIp(), ip)).map(Instance::getPort).max(Comparator.naturalOrder()).orElse(Integer.MIN_VALUE);
