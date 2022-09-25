@@ -27,6 +27,7 @@ import org.apache.shardingsphere.example.cluster.mode.raw.jdbc.config.local.Loca
 import org.apache.shardingsphere.example.cluster.mode.raw.jdbc.config.local.LocalReadwriteSplittingConfiguration;
 import org.apache.shardingsphere.example.cluster.mode.raw.jdbc.config.local.LocalShadowConfiguration;
 import org.apache.shardingsphere.example.cluster.mode.raw.jdbc.config.local.LocalShardingDatabasesAndTablesConfiguration;
+import org.apache.shardingsphere.example.cluster.mode.raw.jdbc.config.type.RepositoryType;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
@@ -51,8 +52,12 @@ public final class ClusterModeRawJavaConfigurationExample {
     private static boolean loadConfigFromRegCenter = false;
 //    private static boolean loadConfigFromRegCenter = true;
     
+    private static String repositoryType = RepositoryType.ZOOKEEPER;
+//    private static String repositoryType = RepositoryType.ETCD;
+//    private static String repositoryType = RepositoryType.NACOS;
+    
     public static void main(final String[] args) throws Exception {
-        DataSource dataSource = getDataSource(shardingType, loadConfigFromRegCenter);
+        DataSource dataSource = getDataSource(shardingType, loadConfigFromRegCenter, repositoryType);
         try {
             ExampleExecuteTemplate.run(getExampleService(dataSource));
         } finally {
@@ -60,8 +65,8 @@ public final class ClusterModeRawJavaConfigurationExample {
         }
     }
     
-    private static DataSource getDataSource(final ShardingType shardingType, final boolean loadConfigFromRegCenter) throws SQLException {
-        ModeConfiguration modeConfig = getModeConfiguration(shardingType);
+    private static DataSource getDataSource(final ShardingType shardingType, final boolean loadConfigFromRegCenter, final String repositoryType) throws SQLException {
+        ModeConfiguration modeConfig = getModeConfiguration(shardingType, repositoryType);
         ExampleConfiguration config;
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
@@ -83,8 +88,8 @@ public final class ClusterModeRawJavaConfigurationExample {
         return config.getDataSource();
     }
     
-    private static ModeConfiguration getModeConfiguration(final ShardingType shardingType) {
-        return ClusterModeConfigurationUtil.getZooKeeperConfiguration(!loadConfigFromRegCenter, shardingType);
+    private static ModeConfiguration getModeConfiguration(final ShardingType shardingType, final String repositoryType) {
+        return ClusterModeConfigurationUtil.getRepositoryConfiguration(!loadConfigFromRegCenter, shardingType, repositoryType);
     }
     
     private static ExampleService getExampleService(final DataSource dataSource) {
