@@ -14,10 +14,10 @@ CreateShardingTableRule ::=
   'CREATE' 'SHARDING' 'TABLE' 'RULE' ( tableDefinition | autoTableDefinition ) ( ',' ( tableDefinition | autoTableDefinition ) )*
 
 tableDefinition ::= 
-   tableName '(' 'DATANODES' '(' dataNode ( ',' dataNode )* ')'  ( ','  'DATABASE_STRATEGY' '(' strategyDefinition ')' )?  ( ','  'TABLE_STRATEGY' '(' strategyDefinition ')' )?  ( ','  'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )? ')'
+   tableName '(' 'DATANODES' '(' dataNode ( ',' dataNode )* ')' ( ',' 'DATABASE_STRATEGY' '(' strategyDefinition ')' )? ( ',' 'TABLE_STRATEGY' '(' strategyDefinition ')' )?  ( ',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )? ( ',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')' )? ')'
 
 autoTableDefinition ::=
-    tableName '(' 'RESOURCES' '(' resourceName ( ',' resourceName )*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition ( ','  'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )?')'
+    tableName '(' 'RESOURCES' '(' resourceName ( ',' resourceName )*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition ( ',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )? ( ',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')' )? ')'
 
 strategyDefinition ::=
   'TYPE' '=' strategyType ',' ( 'SHARDING_COLUMN' | 'SHARDING_COLUMNS' ) '=' columnName ',' algorithmDefinition
@@ -38,6 +38,9 @@ resourceName ::=
   identifier
 
 columnName ::=
+  identifier
+    
+auditorName ::=
   identifier
 
 algorithmName ::=
@@ -73,6 +76,9 @@ algorithmType ::=
 - `KEY_GENERATE_STRATEGY` is used to specify the primary key generation strategy, which is optional. For the primary key
   generation strategy, please refer
   to [Distributed Primary Key](/en/user-manual/common-config/builtin-algorithm/keygen/).
+- `AUDIT_STRATEGY` is used to specify the sharding audit strategy, which is optional. For the sharding audit
+  generation strategy, please refer
+  to [Sharding Audit](/en/user-manual/common-config/builtin-algorithm/audit/).
 
 ### Example
 
@@ -167,7 +173,7 @@ CREATE SHARDING TABLE RULE t_order (
 
 ### Reserved word
 
-`CREATE`, `SHARDING`, `TABLE`, `RULE`, `DATANODES`, `DATABASE_STRATEGY`, `TABLE_STRATEGY`, `KEY_GENERATE_STRATEGY`, `RESOURCES`, `SHARDING_COLUMN`, `TYPE`, `SHARDING_COLUMN`, `KEY_GENERATOR`, `SHARDING_ALGORITHM`, `COLUMN`, `NAME`, `PROPERTIES`
+`CREATE`, `SHARDING`, `TABLE`, `RULE`, `DATANODES`, `DATABASE_STRATEGY`, `TABLE_STRATEGY`, `KEY_GENERATE_STRATEGY`, `RESOURCES`, `SHARDING_COLUMN`, `TYPE`, `SHARDING_COLUMN`, `KEY_GENERATOR`, `SHARDING_ALGORITHM`, `COLUMN`, `NAME`, `PROPERTIES`, `AUDIT_STRATEGY`, `AUDITORS`, `ALLOW_HINT_DISABLE`
 
 ### Related links
 

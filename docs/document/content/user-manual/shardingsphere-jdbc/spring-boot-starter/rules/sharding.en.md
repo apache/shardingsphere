@@ -41,6 +41,10 @@ spring.shardingsphere.rules.sharding.auto-tables.<auto-table-name>.sharding-stra
 spring.shardingsphere.rules.sharding.tables.<table-name>.key-generate-strategy.column= # Column name of key generator
 spring.shardingsphere.rules.sharding.tables.<table-name>.key-generate-strategy.key-generator-name= # Key generator name
 
+# Sharding auditor strategy configuration
+spring.shardingsphere.rules.sharding.tables.<table-name>.audit-strategy.auditor-names= # Sharding auditor name
+spring.shardingsphere.rules.sharding.tables.<table-name>.audit-strategy.allow-hint-disable= # Enable or disable sharding audit hint
+
 spring.shardingsphere.rules.sharding.binding-tables[0]= # Binding table name
 spring.shardingsphere.rules.sharding.binding-tables[1]= # Binding table name
 spring.shardingsphere.rules.sharding.binding-tables[x]= # Binding table name
@@ -61,6 +65,10 @@ spring.shardingsphere.rules.sharding.sharding-algorithms.<sharding-algorithm-nam
 # Key generate algorithm configuration
 spring.shardingsphere.rules.sharding.key-generators.<key-generate-algorithm-name>.type= # Key generate algorithm type
 spring.shardingsphere.rules.sharding.key-generators.<key-generate-algorithm-name>.props.xxx= # Key generate algorithm properties
+
+# Sharding audit algorithm configuration
+spring.shardingsphere.rules.sharding.auditors.<sharding-audit-algorithm-name>.type= # Sharing audit algorithm type
+spring.shardingsphere.rules.sharding.auditors.<sharding-audit-algorithm-name>.props.xxx= # Sharding audit algorithm properties
 ```
 
 Please refer to [Built-in Sharding Algorithm List](/en/user-manual/common-config/builtin-algorithm/sharding) and [Built-in Key Generate Algorithm List](/en/user-manual/common-config/builtin-algorithm/keygen) for more details about type of algorithm.
@@ -104,6 +112,8 @@ spring.shardingsphere.rules.sharding.tables.t_order.table-strategy.standard.shar
 
 spring.shardingsphere.rules.sharding.tables.t_order.key-generate-strategy.column=order_id
 spring.shardingsphere.rules.sharding.tables.t_order.key-generate-strategy.key-generator-name=snowflake
+spring.shardingsphere.rules.sharding.tables.t_order.audit-strategy.auditor-names=shardingKeyAudit
+spring.shardingsphere.rules.sharding.tables.t_order.audit-strategy.allow-hint-disable=true
 
 spring.shardingsphere.rules.sharding.tables.t_order_item.actual-data-nodes=ds-$->{0..1}.t_order_item_$->{0..1}
 spring.shardingsphere.rules.sharding.tables.t_order_item.table-strategy.standard.sharding-column=order_id
@@ -120,6 +130,7 @@ spring.shardingsphere.rules.sharding.sharding-algorithms.t-order-item-inline.typ
 spring.shardingsphere.rules.sharding.sharding-algorithms.t-order-item-inline.props.algorithm-expression=t_order_item_$->{order_id % 2}
 
 spring.shardingsphere.rules.sharding.key-generators.snowflake.type=SNOWFLAKE
+spring.shardingsphere.rules.sharding.auditors.shardingKeyAudit.type=DML_SHARDING_CONDITIONS
 ```
 
 ## Related References
