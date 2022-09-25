@@ -47,17 +47,17 @@ public final class AlterShardingBindingTableRulesStatementUpdaterTest {
     
     @Test(expected = MissingRequiredRuleException.class)
     public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(database, createSQLStatement(Arrays.asList(new BindingTableRuleSegment("t_order,t_order_item"))), null);
+        updater.checkSQLStatement(database, createSQLStatement(Collections.singletonList(new BindingTableRuleSegment("t_order,t_order_item"))), null);
     }
     
     @Test(expected = MissingRequiredRuleException.class)
     public void assertCheckSQLStatementWithNotExistedTables() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(database, createSQLStatement(Arrays.asList(new BindingTableRuleSegment("t_3,t_4"))), createCurrentRuleConfiguration());
+        updater.checkSQLStatement(database, createSQLStatement(Collections.singletonList(new BindingTableRuleSegment("t_3,t_4"))), createCurrentRuleConfiguration());
     }
     
     @Test(expected = InvalidRuleConfigurationException.class)
     public void assertCheckSQLStatementWithOneTable() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(database, createSQLStatement(Arrays.asList(new BindingTableRuleSegment("t_order"))), createCurrentRuleConfiguration());
+        updater.checkSQLStatement(database, createSQLStatement(Collections.singletonList(new BindingTableRuleSegment("t_order"))), createCurrentRuleConfiguration());
     }
     
     @Test(expected = DuplicateRuleException.class)
