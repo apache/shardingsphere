@@ -21,9 +21,7 @@ import brave.Tracing;
 import brave.sampler.BoundarySampler;
 import brave.sampler.RateLimitingSampler;
 import brave.sampler.Sampler;
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
-import org.apache.shardingsphere.agent.exception.PluginConfigurationException;
 import org.apache.shardingsphere.agent.spi.boot.PluginBootService;
 import zipkin2.reporter.brave.AsyncZipkinSpanHandler;
 import zipkin2.reporter.okhttp3.OkHttpSender;
@@ -44,9 +42,7 @@ public final class ZipkinTracingPluginBootService implements PluginBootService {
     
     @Override
     public void start(final PluginConfiguration pluginConfig) {
-        if (Strings.isNullOrEmpty(pluginConfig.getHost()) || pluginConfig.getPort() < 1) {
-            throw new PluginConfigurationException("zipkin config error, host is null or port is %s", pluginConfig.getPort());
-        }
+        pluginConfig.validate("Zipkin");
         Properties props = pluginConfig.getProps();
         String urlVersion = Optional.ofNullable(props.getProperty("URL_VERSION")).orElse("/api/v2/spans");
         String serviceName = Optional.ofNullable(props.getProperty("SERVICE_NAME")).orElse("shardingsphere-agent");

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.agent.config;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -36,4 +38,14 @@ public final class PluginConfiguration {
     private final String password;
     
     private final Properties props;
+    
+    /**
+     * Validate.
+     * 
+     * @param type plugin component type
+     */
+    public void validate(final String type) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(host), "Hostname of %s is required", type);
+        Preconditions.checkArgument(port > 0, "Port `%d` of %s must be a positive number", port, type);
+    }
 }
