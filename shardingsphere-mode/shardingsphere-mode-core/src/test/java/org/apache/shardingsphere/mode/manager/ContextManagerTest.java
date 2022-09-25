@@ -267,7 +267,7 @@ public final class ContextManagerTest {
         dataSourcePropertiesMap.put("ds_2", mock(DataSourceProperties.class));
         when(metaDataContexts.getPersistService().getDataSourceService().load("foo_db")).thenReturn(dataSourcePropertiesMap);
         contextManager.dropResources("foo_db", Arrays.asList("ds_1", "ds_2"));
-        assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("foo_db").getResource().getDataSources().isEmpty());
+        assertTrue(metaDataContexts.getMetaData().getDatabases().get("foo_db").getResource().getDataSources().isEmpty());
     }
     
     @Test
