@@ -48,6 +48,8 @@ public final class JDBCRepository implements StandalonePersistRepository {
     
     private static final String SEPARATOR = "/";
     
+    private static final String H2_FILE_MODE_KEY = "file:";
+    
     private JDBCRepositoryProvider provider;
     
     private HikariDataSource hikariDataSource;
@@ -57,14 +59,17 @@ public final class JDBCRepository implements StandalonePersistRepository {
     public void init(final Properties props) {
         JDBCRepositoryProperties jdbcRepositoryProps = new JDBCRepositoryProperties(props);
         hikariDataSource = new HikariDataSource();
-        hikariDataSource.setJdbcUrl(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.JDBC_URL));
+        String jdbcUrl = jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.JDBC_URL);
+        hikariDataSource.setJdbcUrl(jdbcUrl);
         hikariDataSource.setUsername(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.USERNAME));
         hikariDataSource.setPassword(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.PASSWORD));
         try (
                 Connection connection = hikariDataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             provider = JDBCRepositoryProviderFactory.getInstance(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.PROVIDER));
-            statement.execute(provider.dropTableSQL());
+            if (!jdbcUrl.contains(H2_FILE_MODE_KEY)) {
+                statement.execute(provider.dropTableSQL());
+            }
             statement.execute(provider.createTableSQL());
         }
     }
@@ -112,16 +117,21 @@ public final class JDBCRepository implements StandalonePersistRepository {
     
     @Override
     public void persist(final String key, final String value) {
-        String[] paths = Arrays.stream(key.split(SEPARATOR)).filter(each -> !Strings.isNullOrEmpty(each)).toArray(String[]::new);
-        String tempPrefix = "";
-        String parent = SEPARATOR;
         try {
+            String keyValue = get(key);
+            if (!Strings.isNullOrEmpty(keyValue)) {
+                update(key, value);
+                return;
+            }
+            String tempPrefix = "";
+            String parent = SEPARATOR;
+            String[] paths = Arrays.stream(key.split(SEPARATOR)).filter(each -> !Strings.isNullOrEmpty(each)).toArray(String[]::new);
             // Create key level directory recursively.
             for (int i = 0; i < paths.length - 1; i++) {
                 String tempKey = tempPrefix + SEPARATOR + paths[i];
                 String tempKeyVal = get(tempKey);
                 if (Strings.isNullOrEmpty(tempKeyVal)) {
-                    if (0 != i) {
+                    if (i != 0) {
                         parent = tempPrefix;
                     }
                     insert(tempKey, "", parent);
@@ -129,12 +139,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
                 tempPrefix = tempKey;
                 parent = tempKey;
             }
-            String keyValue = get(key);
-            if (Strings.isNullOrEmpty(keyValue)) {
-                insert(key, value, parent);
-            } else {
-                update(key, value);
-            }
+            insert(key, value, parent);
         } catch (final SQLException ex) {
             log.error("Persist {} data to key: {} failed", getType(), key, ex);
         }
